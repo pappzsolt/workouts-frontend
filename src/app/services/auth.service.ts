@@ -1,10 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { jwtDecode } from 'jwt-decode'; // ✅ ESM modul helyes import
 
 interface LoginResponse {
   accessToken: string;
   refreshToken: string;
+}
+
+interface TokenPayload {
+  sub: string;
+  id: number;
+  roles: string;
+  iat: number;
+  exp: number;
 }
 
 @Injectable({
@@ -21,16 +30,44 @@ export class AuthService {
         tap(res => {
           localStorage.setItem('accessToken', res.accessToken);
           localStorage.setItem('refreshToken', res.refreshToken);
+          console.log('[AuthService] Bejelentkezve!', res);
         })
       );
   }
 
-  logout() {
+  logout(): void {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+    console.log('[AuthService] Kijelentkezve!');
   }
 
   getAccessToken(): string | null {
     return localStorage.getItem('accessToken');
+  }
+
+  getUserRole(): string | null {
+    const token = this.getAccessToken();
+    if (!token) return null;
+
+    try {
+      const decodedToken = jwtDecode<TokenPayload>(token);
+      console.log('[AuthService] Decoded token:', decodedToken);
+      return decodedToken.roles;
+    } catch (e) {
+      console.error('[AuthService] Token dekódolási hiba', e);
+      return null;
+    }
+  }
+
+  isAdmin(): boolean {
+    return this.getUserRole() === 'ROLE_ADMIN';
+  }
+
+  isCoach(): boolean {
+    return this.getUserRole() === 'ROLE_COACH';
+  }
+
+  isUser(): boolean {
+    return this.getUserRole() === 'ROLE_USER';
   }
 }

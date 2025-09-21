@@ -1,12 +1,22 @@
-<nav class="bg-gray-800 text-white w-64 p-4 min-h-screen">
+<nav class="bg-gray-800 text-white w-64 min-h-screen p-4">
   <ul>
     <ng-container *ngFor="let item of menuItems">
       <li>
-        <a *ngIf="!item.children" [routerLink]="item.path"
+        <!-- Normál link -->
+        <a *ngIf="!item.children && !item.action"
+           [routerLink]="item.path"
            class="block px-3 py-2 rounded hover:bg-gray-700 transition">
           {{ item.label }}
         </a>
 
+        <!-- Action (logout) -->
+        <span *ngIf="item.action"
+              class="block px-3 py-2 rounded hover:bg-gray-700 transition cursor-pointer"
+              (click)="onAction(item)">
+          {{ item.label }}
+        </span>
+
+        <!-- Dropdown -->
         <div *ngIf="item.children">
           <span class="block px-3 py-2 rounded hover:bg-gray-700 transition cursor-pointer"
                 (click)="toggle(item)">
@@ -14,7 +24,8 @@
           </span>
           <ul *ngIf="isOpen(item)" class="pl-4">
             <li *ngFor="let child of item.children">
-              <a [routerLink]="child.path" class="block px-3 py-2 rounded hover:bg-gray-700 transition">
+              <a [routerLink]="child.path"
+                 class="block px-3 py-2 rounded hover:bg-gray-700 transition">
                 {{ child.label }}
               </a>
             </li>

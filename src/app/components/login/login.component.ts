@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { catchError, of } from 'rxjs';
+import { Router } from '@angular/router'; // ← Hozzáadva
 
 interface LoginResponse {
   accessToken: string;
@@ -21,8 +22,7 @@ export class LoginComponent {
   errorMessage = '';
   loading = false;
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {
-    // Form inicializálása
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
@@ -30,24 +30,14 @@ export class LoginComponent {
   }
 
   onSubmit(event?: Event) {
-    // Megakadályozzuk a böngésző alapértelmezett submitját
-    if (event) {
-      event.preventDefault();
-    }
+    if (event) event.preventDefault();
 
-    // Front-end validáció
     if (this.loginForm.invalid) {
       this.errorMessage = 'Kérlek, töltsd ki az összes mezőt!';
       return;
     }
 
     const { username, password } = this.loginForm.value;
-
-    if (!username || !password) {
-      this.errorMessage = 'Felhasználónév és jelszó szükséges.';
-      return;
-    }
-
     this.loading = true;
     this.errorMessage = '';
 
@@ -64,9 +54,9 @@ export class LoginComponent {
         this.loading = false;
         if (res) {
           console.log('Bejelentkezve!', res);
-          // Például redirect a dashboard-ra:
-          // this.router.navigate(['/dashboard']);
+          this.router.navigate(['/dashboard']); // ← Itt navigál a dashboard-ra
         }
       });
   }
 }
+
