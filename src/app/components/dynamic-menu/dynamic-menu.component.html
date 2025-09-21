@@ -1,0 +1,27 @@
+<nav class="bg-gray-800 text-white w-64 p-4 min-h-screen">
+  <ul>
+    <ng-container *ngFor="let item of menuItems">
+      <li>
+        <a *ngIf="!item.children" [routerLink]="item.path"
+           class="block px-3 py-2 rounded hover:bg-gray-700 transition">
+          {{ item.label }}
+        </a>
+
+        <div *ngIf="item.children">
+          <span class="block px-3 py-2 rounded hover:bg-gray-700 transition cursor-pointer"
+                (click)="toggle(item)">
+            {{ item.label }}
+          </span>
+          <ul *ngIf="isOpen(item)" class="pl-4">
+            <li *ngFor="let child of item.children">
+              <a [routerLink]="child.path" class="block px-3 py-2 rounded hover:bg-gray-700 transition">
+                {{ child.label }}
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ng-container>
+  </ul>
+</nav>
+
