@@ -1,23 +1,17 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule, HttpClient } from '@angular/common/http';
-import { catchError, of } from 'rxjs';
 import { DynamicMenuComponent, MenuItem } from './components/dynamic-menu/dynamic-menu.component';
+import { LoginComponent } from './components/login/login.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, DynamicMenuComponent],
+  imports: [CommonModule, DynamicMenuComponent, LoginComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  username = '';
-  password = '';
-  errorMessage = '';
-  mobileMenuOpen = false;
-
+  // Menu items marad a kódod szerint
   menuItems: MenuItem[] = [
     { label: 'Dashboard', path: '/dashboard' },
     { label: 'Users', path: '/users' },
@@ -29,26 +23,4 @@ export class AppComponent {
       ]
     }
   ];
-
-  constructor(private http: HttpClient) {}
-
-  login() {
-    this.errorMessage = '';
-    const payload = { username: this.username, password: this.password };
-
-    this.http.post('http://localhost:8080/auth/login', payload)
-      .pipe(
-        catchError(err => {
-          console.error('Login error:', err);
-          this.errorMessage = 'Login failed';
-          return of(null);
-        })
-      )
-      .subscribe((res: any) => {
-        if (res) {
-          console.log('Tokens:', res);
-          alert('Login successful! Check console for tokens.');
-        }
-      });
-  }
 }
