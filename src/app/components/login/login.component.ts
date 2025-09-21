@@ -17,34 +17,39 @@ interface LoginResponse {
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  loginForm!: FormGroup;  // később inicializáljuk
+  loginForm: FormGroup;
   errorMessage = '';
   loading = false;
 
   constructor(private fb: FormBuilder, private authService: AuthService) {
-    // Form inicializálása a constructorban
+    // Form inicializálása
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
   }
 
-  onSubmit() {
+  onSubmit(event?: Event) {
+    // Megakadályozzuk a böngésző alapértelmezett submitját
+    if (event) {
+      event.preventDefault();
+    }
+
+    // Front-end validáció
     if (this.loginForm.invalid) {
       this.errorMessage = 'Kérlek, töltsd ki az összes mezőt!';
       return;
     }
 
-    this.loading = true;
-    this.errorMessage = '';
-
     const { username, password } = this.loginForm.value;
 
     if (!username || !password) {
       this.errorMessage = 'Felhasználónév és jelszó szükséges.';
-      this.loading = false;
       return;
     }
+
+    this.loading = true;
+    this.errorMessage = '';
 
     this.authService.login(username, password)
       .pipe(
@@ -52,14 +57,15 @@ export class LoginComponent {
           console.error('Login hiba:', err);
           this.errorMessage = 'Hibás felhasználónév vagy jelszó.';
           this.loading = false;
-          return of(null);  // null visszaadás hibánál
+          return of(null);
         })
       )
-      .subscribe((res: LoginResponse | null) => {  // típussal ellátva
+      .subscribe((res: LoginResponse | null) => {
+        this.loading = false;
         if (res) {
           console.log('Bejelentkezve!', res);
-          this.loading = false;
-          // ide tehetsz redirectet pl. dashboard-ra
+          // Például redirect a dashboard-ra:
+          // this.router.navigate(['/dashboard']);
         }
       });
   }

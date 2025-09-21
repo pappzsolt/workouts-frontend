@@ -1,7 +1,71 @@
+/* --- Tailwind alapok --- */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* --- Globális box-sizing --- */
+*, *::before, *::after {
+  @apply box-border;
+}
+
+/* --- Body globális stílus --- */
 body {
-  font-family: system-ui, sans-serif;
+  @apply bg-gray-50 text-gray-800 font-sans m-0 p-0;
+}
+
+/* --- Gombok globális stílusa --- */
+button {
+  @apply bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow hover:bg-blue-700 transition-colors w-full sm:w-auto;
+}
+
+button[disabled] {
+  @apply bg-gray-400 cursor-not-allowed;
+}
+
+/* --- Input mezők, select, textarea --- */
+input, select, textarea {
+  @apply border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-blue-500 transition;
+}
+
+/* --- Form csoportok --- */
+.form-group {
+  @apply mb-4;
+}
+
+/* --- Hibajelzés --- */
+.error-message {
+  @apply text-red-600 text-sm mt-1 text-center;
+}
+
+/* --- Táblázatok --- */
+table {
+  @apply border-collapse w-full text-sm sm:text-base rounded-lg overflow-hidden;
+}
+
+th, td {
+  @apply border border-gray-300 p-2 text-left;
+}
+
+th {
+  @apply bg-gray-100;
+  @apply first:rounded-tl-lg last:rounded-tr-lg; /* kerekített felső sarok */
+}
+
+tr:last-child td:first-child {
+  @apply rounded-bl-lg; /* kerekített alsó bal sarok */
+}
+
+tr:last-child td:last-child {
+  @apply rounded-br-lg; /* kerekített alsó jobb sarok */
+}
+
+/* --- Responsive --- */
+@media (max-width: 640px) {
+  button, input, select, textarea {
+    @apply w-full;
+  }
+
+  th, td {
+    @apply text-sm px-2 py-1;
+  }
 }
