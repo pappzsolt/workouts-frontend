@@ -7,13 +7,16 @@ import { CoachLayoutComponent } from './layouts/coach-layout/coach-layout.compon
 import { UserLayoutComponent } from './layouts/user-layout/user-layout.component';
 
 import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
-import { AdminListUsersComponent } from './components/admin-list-users/admin-list-users.component';
+import { AdminListUsersComponent } from './components/admin-dashboard/admin-list-users/admin-list-users.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
-import { CoachTrainingComponent } from './components/coach-training/coach-training.component'; // ← új komponens
+import { CoachTrainingComponent } from './components/coach-dashboard/coach-training/coach-training.component'; // ← új komponens
 import { UserDashboardComponent } from './components/user-dashboard/user-dashboard.component';
 
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
+import {UserSearchComponent} from './components/admin-dashboard/user-search/user-search.component';
+import {UserNewComponent} from './components/admin-dashboard/user-new/user-new.component';
+import {UserEditComponent} from './components/admin-dashboard/user-edit/user-edit.component';
 
 export const routes: Routes = [
   // Login layout
@@ -35,6 +38,9 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: AdminDashboardComponent },
       { path: 'users', component: AdminListUsersComponent },
+      { path: 'users/search', component: UserSearchComponent },
+      { path: 'users/new', component:  UserNewComponent},
+      { path: 'users/edit', component:  UserEditComponent},
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: '**', redirectTo: 'dashboard' }
     ]

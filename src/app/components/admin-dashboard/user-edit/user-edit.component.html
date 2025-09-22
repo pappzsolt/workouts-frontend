@@ -1,0 +1,19 @@
+<div class="p-6 max-w-xl mx-auto">
+  <h2 class="text-2xl font-bold mb-4">Felhasználó módosítása</h2>
+
+  <form (ngSubmit)="onSubmit()" class="space-y-4">
+    <div>
+      <label class="block mb-1">Név</label>
+      <input [(ngModel)]="user.name" name="name" class="border rounded px-3 py-2 w-full" />
+    </div>
+
+    <div>
+      <label class="block mb-1">Email</label>
+      <input [(ngModel)]="user.email" name="email" class="border rounded px-3 py-2 w-full" />
+    </div>
+
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+      Mentés
+    </button>
+  </form>
+</div>
