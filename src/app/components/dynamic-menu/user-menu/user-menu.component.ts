@@ -13,6 +13,7 @@ import { DynamicMenuComponent, MenuItem } from '../dynamic-menu.component';
 export class UserMenuComponent {
   userMenuItems: MenuItem[] = [
     { label: 'Dashboard', path: '/user/dashboard' },
+    { label: 'Profile', path: '/user/profile' },
     { label: 'Kijelentkezés', action: 'logout' }
   ];
 

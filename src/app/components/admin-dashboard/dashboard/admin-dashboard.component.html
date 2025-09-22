@@ -1,35 +1,39 @@
 <h2 class="text-3xl font-bold mb-8 text-center">Admin Dashboard</h2>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+<div class="flex flex-wrap justify-center gap-6">
+  <!-- Felhasználók listája -->
   <div
-    class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+    class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
     (click)="navigateTo('admin/users')"
   >
-    <div class="text-4xl mb-4">👥</div>
-    <div class="font-semibold text-lg">Felhasználók listája</div>
+    <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">👥</div>
+    <div class="font-semibold text-lg sm:text-xl md:text-2xl">Felhasználók listája</div>
   </div>
 
+  <!-- Felhasználó keresés -->
   <div
-    class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+    class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
     (click)="navigateTo('admin/users/search')"
   >
-    <div class="text-4xl mb-4">🔍</div>
-    <div class="font-semibold text-lg">Felhasználó keresés</div>
+    <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">🔍</div>
+    <div class="font-semibold text-lg sm:text-xl md:text-2xl">Felhasználó keresés</div>
   </div>
 
+  <!-- Új felhasználó -->
   <div
-    class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+    class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
     (click)="navigateTo('admin/users/new')"
   >
-    <div class="text-4xl mb-4">➕</div>
-    <div class="font-semibold text-lg">Új felhasználó</div>
+    <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">➕</div>
+    <div class="font-semibold text-lg sm:text-xl md:text-2xl">Új felhasználó</div>
   </div>
 
+  <!-- Felhasználó módosítás -->
   <div
-    class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+    class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
     (click)="navigateTo('admin/users/edit')"
   >
-    <div class="text-4xl mb-4">✏️</div>
-    <div class="font-semibold text-lg">Felhasználó módosítás</div>
+    <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">✏️</div>
+    <div class="font-semibold text-lg sm:text-xl md:text-2xl">Felhasználó módosítás</div>
   </div>
 </div>
