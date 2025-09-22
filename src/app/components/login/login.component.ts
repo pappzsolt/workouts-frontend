@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { catchError, of } from 'rxjs';
-import { Router } from '@angular/router'; // ← Hozzáadva
+import { Router } from '@angular/router';
 
 interface LoginResponse {
   accessToken: string;
@@ -54,9 +54,17 @@ export class LoginComponent {
         this.loading = false;
         if (res) {
           console.log('Bejelentkezve!', res);
-          this.router.navigate(['/dashboard']); // ← Itt navigál a dashboard-ra
+
+          // -------------------------------
+          // Role alapján történő navigáció (null-safety)
+          // -------------------------------
+          const role = this.authService.getUserRole() ?? ''; // ha null, üres string
+
+          if (role.includes('ROLE_ADMIN')) this.router.navigate(['/admin/dashboard']);
+          else if (role.includes('ROLE_COACH')) this.router.navigate(['/coach/dashboard']);
+          else if (role.includes('ROLE_USER')) this.router.navigate(['/user/dashboard']);
+          else this.router.navigate(['/login']); // ha nincs érvényes role
         }
       });
   }
 }
-

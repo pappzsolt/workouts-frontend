@@ -1,8 +1,15 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
-import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
+
+import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
+import { CoachLayoutComponent } from './layouts/coach-layout/coach-layout.component';
+import { UserLayoutComponent } from './layouts/user-layout/user-layout.component';
+
+import { AdminDashboardComponent } from './components/admin-dashboard/admin-dashboard.component';
+import { CoachDashboardComponent } from './components/coach-dashboard/coach-dashboard.component';
+import { UserDashboardComponent } from './components/user-dashboard/user-dashboard.component';
+
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
 
@@ -17,19 +24,39 @@ export const routes: Routes = [
     ]
   },
 
-  // Fő tartalom védett layoutban
+  // ADMIN layout
   {
     path: '',
-    component: MainLayoutComponent,
-    canActivate: [authGuard], // minden gyermek route védett
+    component: AdminLayoutComponent,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ROLE_ADMIN'] },
     children: [
-      {
-        path: 'dashboard',
-        component: DashboardComponent,
-        canActivate: [roleGuard],
-        data: { roles: ['ROLE_ADMIN', 'ROLE_COACH','ROLE_USER'] }
-      },
-      // Ide jöhetnek további védett route-ok
+      { path: 'admin/dashboard', component: AdminDashboardComponent },
+      // további admin route-ok
+    ]
+  },
+
+  // COACH layout
+  {
+    path: '',
+    component: CoachLayoutComponent,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ROLE_COACH'] },
+    children: [
+      { path: 'coach/dashboard', component: CoachDashboardComponent },
+      // további coach route-ok
+    ]
+  },
+
+  // USER layout
+  {
+    path: '',
+    component: UserLayoutComponent,
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ROLE_USER'] },
+    children: [
+      { path: 'user/dashboard', component: UserDashboardComponent },
+      // további user route-ok
     ]
   },
 
