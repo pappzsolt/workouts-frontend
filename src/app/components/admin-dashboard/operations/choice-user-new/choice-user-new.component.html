@@ -1,0 +1,21 @@
+<h2 class="text-3xl font-bold mb-8 text-center">New User</h2>
+
+<div class="flex flex-wrap justify-center gap-6">
+  <!-- New Coach -->
+  <div
+    class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+    (click)="navigateTo('admin/coach/new')"
+  >
+    <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">🏋️</div>
+    <div class="font-semibold text-lg sm:text-xl md:text-2xl">New Coach</div>
+  </div>
+
+  <!-- New User -->
+  <div
+    class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+    (click)="navigateTo('admin/users/new')"
+  >
+    <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">➕</div>
+    <div class="font-semibold text-lg sm:text-xl md:text-2xl">New User</div>
+  </div>
+</div>
