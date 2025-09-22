@@ -33,6 +33,10 @@ import {
 import {CoachProfileComponent} from './components/coach-dashboard/operations/coach-profile/coach-profile.component';
 import {CoachNewComponent} from './components/admin-dashboard/operations/coach-new/coach-new.component';
 import {UserNewComponent} from './components/admin-dashboard/operations/user-new/user-new.component';
+import {CoachEditComponent} from './components/admin-dashboard/operations/coach-edit/coach-edit.component';
+import {UserEditComponent} from './components/admin-dashboard/operations/user-edit/user-edit.component';
+import {WorkoutsComponent} from './components/workouts/workouts.component';
+import {ExercisesComponent} from './components/exercises/exercises/exercises.component';
 
 
 export const routes: Routes = [
@@ -56,16 +60,16 @@ export const routes: Routes = [
       { path: 'dashboard', component: AdminDashboardComponent },
       { path: 'users', component: AdminListUsersComponent },
       { path: 'users/search', component: UserSearchComponent },
-
       { path: 'choice-users/edit', component:  ChoiceUserEditComponent},
-
       { path: 'choice-users/new', component:  ChoiceUserNewComponent},
       { path: 'users/new', component:  UserNewComponent},
-
       { path: 'coach/new', component:  CoachNewComponent},
 
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'coach/edit', component:  CoachEditComponent},
+      { path: 'users/edit', component:  UserEditComponent},
 
+
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: '**', redirectTo: 'dashboard' }
     ]
   },
@@ -99,6 +103,8 @@ export const routes: Routes = [
       { path: 'profile', component: UserProfileComponent },
       { path: 'my-programs', component: UserMyProgramsComponent },
       { path: 'statistics', component: UserStatisticsComponent },
+      { path: 'programs/:id/workouts', component: WorkoutsComponent },
+      { path: 'workouts/:id/exercises', component: ExercisesComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: '**', redirectTo: 'dashboard' }
     ]

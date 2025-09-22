@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserMyProgramsService ,Program} from '../../../../services/user/user-my-programs.service';
 import { Observable } from 'rxjs';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-user-my-programs',
   standalone: true,
@@ -13,9 +13,13 @@ import { Observable } from 'rxjs';
 export class UserMyProgramsComponent implements OnInit {
   programs$!: Observable<Program[]>;
 
-  constructor(private programsService: UserMyProgramsService) {}
+  constructor(private programsService: UserMyProgramsService, private router: Router) {}
 
   ngOnInit(): void {
     this.programs$ = this.programsService.getPrograms();
+  }
+  goToWorkouts(programId: number) {
+    // ide navigálás
+    this.router.navigate(['/user//programs', programId, 'workouts']);
   }
 }
