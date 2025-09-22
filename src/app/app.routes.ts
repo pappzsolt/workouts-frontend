@@ -29,6 +29,7 @@ import {
 import {
   UserStatisticsComponent
 } from './components/user-dashboard/operations/user-statistics/user-statistics.component';
+import {CoachProfileComponent} from './components/coach-dashboard/operations/coach-profile/coach-profile.component';
 
 export const routes: Routes = [
   // Login layout
@@ -66,6 +67,7 @@ export const routes: Routes = [
     data: { roles: ['ROLE_COACH'] },
     children: [
       { path: 'dashboard', component: CoachDashboardComponent },
+      { path: 'profile', component: CoachProfileComponent },
       { path: 'trainings', component: CoachTrainingComponent }, // ← új route
       { path: 'exercises', component: CoachExercisesComponent },
       { path: 'programs', component: CoachProgramsComponent },

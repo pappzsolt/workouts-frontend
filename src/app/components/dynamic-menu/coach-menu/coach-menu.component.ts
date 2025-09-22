@@ -12,6 +12,7 @@ import { DynamicMenuComponent, MenuItem } from '../dynamic-menu.component';
 export class CoachMenuComponent {
   coachMenuItems: MenuItem[] = [
     { label: 'Coach Dashboard', path: '/coach/dashboard' },
+    { label: 'Profile', path: '/coach/profile' },
     { label: 'Kijelentkezés', action: 'logout' }
   ];
 
