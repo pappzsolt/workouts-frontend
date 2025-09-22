@@ -1,0 +1,12 @@
+<!-- main-layout.component.html -->
+<div class="flex min-h-screen">
+  <!-- Menüsáv bal oldalon -->
+  <app-dynamic-menu [menuItems]="menuItems"
+                    (menuAction)="handleMenuAction($event)">
+  </app-dynamic-menu>
+
+  <!-- Tartalom a menü mellett -->
+  <div class="flex-1 p-4">
+    <router-outlet></router-outlet> <!-- ide töltődik a DashboardComponent és további oldalak -->
+  </div>
+</div>

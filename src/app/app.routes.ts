@@ -27,7 +27,7 @@ export const routes: Routes = [
         path: 'dashboard',
         component: DashboardComponent,
         canActivate: [roleGuard],
-        data: { roles: ['ROLE_ADMIN', 'ROLE_COACH','ROLE_USER'] } // csak admin és coach férhet hozzá
+        data: { roles: ['ROLE_ADMIN', 'ROLE_COACH','ROLE_USER'] }
       },
       // Ide jöhetnek további védett route-ok
     ]
