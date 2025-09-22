@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UserSearchService } from '../../../services/user/user-search.service';
+import { UserSearchService } from '../../../../services/user/user-search.service';
 
 @Component({
   selector: 'app-user-search',

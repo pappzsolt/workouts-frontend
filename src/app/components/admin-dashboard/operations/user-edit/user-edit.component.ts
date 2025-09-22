@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UserService } from '../../../services/user/user.service';
+import { UserNewEditService } from '../../../../services/user/user-new-edit.service';
 
 @Component({
   selector: 'app-user-edit',
@@ -17,7 +17,7 @@ export class UserEditComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private userService: UserService,
+    private userService: UserNewEditService,
     private router: Router
   ) {}
 

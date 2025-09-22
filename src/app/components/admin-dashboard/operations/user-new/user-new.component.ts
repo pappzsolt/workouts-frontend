@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UserService } from '../../../services/user/user.service';
+import { UserNewEditService } from '../../../../services/user/user-new-edit.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -14,7 +14,7 @@ import { Router } from '@angular/router';
 export class UserNewComponent {
   user = { name: '', email: '', password: '' };
 
-  constructor(private userService: UserService, private router: Router) {}
+  constructor(private userService: UserNewEditService, private router: Router) {}
 
   onSubmit() {
     this.userService.createUser(this.user).subscribe({
