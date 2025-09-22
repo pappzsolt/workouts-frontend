@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UserNewEditService } from '../../../../services/user/user-new-edit.service';
+import { UserNewEditService } from '../../../../services/admin/user-new-edit.service';
 import { Router } from '@angular/router';
 
 @Component({

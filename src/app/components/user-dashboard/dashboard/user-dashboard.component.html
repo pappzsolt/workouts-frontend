@@ -1,0 +1,30 @@
+<h2 class="text-3xl font-bold mb-8 text-center">User Dashboard</h2>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+  <!-- Profile -->
+  <div
+    class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+    (click)="navigateTo('user/profile')"
+  >
+    <div class="text-4xl mb-4">👤</div>
+    <div class="font-semibold text-lg">Profile</div>
+  </div>
+
+  <!-- My Programs -->
+  <div
+    class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+    (click)="navigateTo('user/my-programs')"
+  >
+    <div class="text-4xl mb-4">📚</div>
+    <div class="font-semibold text-lg">My Programs</div>
+  </div>
+
+  <!-- Statisztika -->
+  <div
+    class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+    (click)="navigateTo('user/statistics')"
+  >
+    <div class="text-4xl mb-4">📊</div>
+    <div class="font-semibold text-lg">Statistics</div>
+  </div>
+</div>

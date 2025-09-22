@@ -1,0 +1,12 @@
+<h2 class="text-2xl font-bold mb-6 text-center">My Programs</h2>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+  <div
+    *ngFor="let program of programs$ | async"
+    class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+  >
+    <div class="text-4xl mb-4">🏋️‍♂️</div>
+    <div class="font-semibold text-lg">{{ program.name }}</div>
+    <div class="text-gray-500 text-sm mt-1">Duration: {{ program.durationWeeks }} weeks</div>
+  </div>
+</div>

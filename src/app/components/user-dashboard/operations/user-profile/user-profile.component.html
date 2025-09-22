@@ -1,0 +1,10 @@
+<h2 class="text-2xl font-bold mb-6 text-center">Profile</h2>
+
+<div *ngIf="profile$ | async as profile"
+     class="bg-white rounded-xl shadow-lg p-6 flex flex-col items-center justify-center text-center transform transition duration-300 hover:scale-105 hover:shadow-2xl">
+
+  <div class="text-4xl mb-4">👤</div>
+  <div class="font-semibold text-lg">{{ profile.username }}</div>
+  <div class="text-gray-500 text-sm mt-1">{{ profile.email }}</div>
+  <div class="text-gray-400 text-xs mt-1">Join Date: {{ profile.joinDate }}</div>
+</div>
