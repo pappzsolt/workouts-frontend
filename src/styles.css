@@ -13,6 +13,34 @@ body {
   @apply bg-gray-50 text-gray-800 font-sans m-0 p-0;
 }
 
+/* --- Layoutok: admin, coach, user --- */
+.admin-layout,
+.coach-layout,
+.user-layout {
+  @apply flex min-h-screen bg-gray-50;
+}
+
+/* --- Menü bal oldalon --- */
+.admin-layout app-admin-menu,
+.coach-layout app-coach-menu,
+.user-layout app-user-menu {
+  @apply w-64 bg-white border-r border-gray-200 h-screen p-4 shadow-md;
+}
+
+/* Menüpont hover/stílus */
+.admin-layout app-admin-menu a,
+.coach-layout app-coach-menu a,
+.user-layout app-user-menu a {
+  @apply block px-4 py-2 rounded-lg hover:bg-blue-50 hover:text-blue-600 transition;
+}
+
+/* --- Fő tartalom --- */
+.admin-layout main,
+.coach-layout main,
+.user-layout main {
+  @apply flex-1 p-6 overflow-auto bg-gray-50;
+}
+
 /* --- Gombok globális stílusa --- */
 button {
   @apply bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow
@@ -43,7 +71,7 @@ input, select, textarea {
 
 /* --- Táblázatok --- */
 table {
-  @apply border-collapse w-full text-sm sm:text-base rounded-lg overflow-hidden;
+  @apply border-collapse w-full text-sm sm:text-base rounded-lg overflow-hidden shadow-sm;
 }
 
 th, td {
@@ -51,22 +79,40 @@ th, td {
 }
 
 th {
-  @apply bg-gray-100;
-  @apply first:rounded-tl-lg last:rounded-tr-lg; /* kerekített felső sarok */
+  @apply bg-gray-100 font-semibold;
+  @apply first:rounded-tl-lg last:rounded-tr-lg;
 }
 
 tr:last-child td:first-child {
-  @apply rounded-bl-lg; /* kerekített alsó bal sarok */
+  @apply rounded-bl-lg;
 }
 
 tr:last-child td:last-child {
-  @apply rounded-br-lg; /* kerekített alsó jobb sarok */
+  @apply rounded-br-lg;
+}
+
+tr:hover {
+  @apply bg-gray-50;
 }
 
 /* --- Responsive --- */
-@media (max-width: 640px) {
-  button, input, select, textarea {
-    @apply w-full;
+@media (max-width: 768px) {
+  .admin-layout,
+  .coach-layout,
+  .user-layout {
+    @apply flex-col;
+  }
+
+  .admin-layout app-admin-menu,
+  .coach-layout app-coach-menu,
+  .user-layout app-user-menu {
+    @apply w-full h-auto border-r-0 border-b border-gray-200 shadow-none;
+  }
+
+  .admin-layout main,
+  .coach-layout main,
+  .user-layout main {
+    @apply p-4;
   }
 
   th, td {
