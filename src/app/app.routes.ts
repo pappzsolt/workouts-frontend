@@ -42,6 +42,12 @@ import {
   CoachWorkoutEditComponent
 } from './components/coach-dashboard/operations/coach-workouts/coach-workouts-edit/coach-workout-edit.component';
 import { CoachExerciseEditComponent } from './components/coach-dashboard/operations/coach-exercises/coach-exercise-edit/coach-exercise-edit.component';
+import {
+  CoachNewProgramComponent
+} from './components/coach-dashboard/operations/coach-programs/coach-new-program/coach-new-program.component';
+import {
+  CoachNewWorkoutComponent
+} from './components/coach-dashboard/operations/coach-workouts/coach-new-workout/coach-new-workout.component';
 
 
 export const routes: Routes = [
@@ -93,7 +99,9 @@ export const routes: Routes = [
       { path: 'programs/:id/workouts', component: CoachWorkoutsComponent }, // kártya kattintás
       { path: 'programs/:id/edit', component: CoachProgramEditComponent },  // Edit gomb
       { path: 'workouts', component: CoachWorkoutsComponent },
+      { path: 'programs/new', component: CoachNewProgramComponent },
       { path: 'workouts/:id/edit', component: CoachWorkoutEditComponent },
+      { path: 'workouts/new', component: CoachNewWorkoutComponent },
       { path: 'exercises/:id/edit', component: CoachExerciseEditComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: '**', redirectTo: 'dashboard' }

@@ -44,8 +44,9 @@ export class CoachProgramEditComponent implements OnInit {
 
 
   saveProgram() {
-    this.programService.updateProgram(this.program.id, this.program).subscribe(() => {
+    this.programService.updateProgram(this.program.id!, this.program).subscribe(() => {
       this.router.navigate(['/coach/programs']);
     });
   }
+
 }

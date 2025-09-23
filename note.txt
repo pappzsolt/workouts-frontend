@@ -5,10 +5,10 @@
 3.coach exercise szerkesztése ok
 
 
-4. coach - új program felvitel
-5. coach új workouts felvitel
+4. coach - új program felvitel ok
+5. coach új workouts felvitel ok
 6. coach új exercises felvitel
 
-4. a coach workoutnál ha csak a kártyáea kattintok akkor is azeedit jön be de ott az exercise nak kell bejönnie ezt meg kell nézni
+----
 Coach John
-most acoach program edit-et csinálom
+

@@ -45,5 +45,7 @@ export class CoachWorkoutsComponent implements OnInit {
   editWorkout(workoutId: number) {
     this.router.navigate([`/coach/workouts/${workoutId}/edit`]);
   }
-
+  createNewWorkout() {
+    this.router.navigate(['/coach/workouts/new']); // vagy a megfelelő útvonal
+  }
 }

@@ -1,13 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
+// Interface definíció
 export interface Program {
-  id: number;
+  id?: number;  // opcionális
   name: string;
   description?: string;
   duration_days?: number;
   difficulty_level?: string;
-  coach_id: number;
+  coach_id?: number;
 }
 
 @Injectable({
@@ -36,6 +37,12 @@ export class CoachProgramService {
     return of(program);
   }
 
+  // Üres create metódus
+  create(program: Program): Observable<Program> {
+    // Mock: egyszerűen visszaadjuk a paramétert
+    return of(program);
+  }
+
   // Program frissítése
   updateProgram(id: number, updatedProgram: Program): Observable<Program | undefined> {
     const index = this.mockPrograms.findIndex(p => p.id === id);
@@ -46,16 +53,4 @@ export class CoachProgramService {
     return of(undefined);
   }
 
-  // Backend hívásokhoz példa:
-  // private apiUrl = '/api/programs';
-  // getProgramsByCoach(coachId: number): Observable<Program[]> {
-  //   return this.http.get<Program[]>(`${this.apiUrl}?coach_id=${coachId}`);
-  // }
-  // getProgramById(id: number): Observable<Program> {
-  //   return this.http.get<Program>(`${this.apiUrl}/${id}`);
-  // }
-  // updateProgram(id: number, program: Program): Observable<Program> {
-  //   return this.http.put<Program>(`${this.apiUrl}/${id}`, program);
-  // }
 }
-

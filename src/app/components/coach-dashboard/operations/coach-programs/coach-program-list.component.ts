@@ -36,4 +36,7 @@ export class CoachProgramListComponent implements OnInit {
   editProgram(programId: number) {
     this.router.navigate([`coach/programs/${programId}/edit`]);
   }
+  createNewProgram() {
+    this.router.navigate(['/coach/programs/new']); // az út legyen a routodnak megfelelő
+  }
 }
