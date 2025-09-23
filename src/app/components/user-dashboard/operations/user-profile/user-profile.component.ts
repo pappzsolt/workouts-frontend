@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserProfileService ,UserProfile} from "../../../../services/user/user-profile.service";
+import { UserProfileService ,UserProfile} from "../../../../services/user/user-profile/user-profile.service";
 
 import { Observable } from 'rxjs';
 

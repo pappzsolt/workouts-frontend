@@ -1,24 +1,48 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CoachWorkoutsService, Training } from '../../../../services/coach/coach-workouts/coach-workouts.service';
-import { Observable } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-coach-training',
+  selector: 'app-coach-workouts',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './coach-workouts.component.html',
-  styleUrls: ['./coach-workouts.component.css']
 })
 export class CoachWorkoutsComponent implements OnInit {
-  trainings$: Observable<Training[]>;
+  programId!: number;
+  trainings: Training[] = [];
 
-  constructor(private coachTrainingService: CoachWorkoutsService) {
-    this.trainings$ = this.coachTrainingService.getTrainings();
-  }
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private workoutService: CoachWorkoutsService
+  ) {}
 
   ngOnInit(): void {
-    this.trainings$.subscribe(data => console.log('Fetched trainings:', data));
+    this.route.paramMap.subscribe(params => {
+      const id = Number(params.get('id'));
+      if (id) {
+        this.programId = id;
+        this.loadWorkouts(id);
+      } else {
+        // Ha nincs programId, akkor mindent mutat
+        this.workoutService.getTrainings().subscribe(data => this.trainings = data);
+      }
+    });
+  } // <-- itt lezárva a ngOnInit()
+
+  loadWorkouts(programId: number) {
+    this.workoutService.getWorkoutsByProgram(programId).subscribe(data => {
+      this.trainings = data;
+    });
+  }
+
+  goToWorkoutDetails(workoutId: number) {
+    this.router.navigate([`/coach/workouts/${workoutId}/edit`]);
+  }
+
+  editWorkout(workoutId: number) {
+    this.router.navigate([`/coach/workouts/${workoutId}/edit`]);
   }
 }
-

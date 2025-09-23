@@ -1,0 +1,58 @@
+<h2 class="text-2xl font-bold mb-6 text-center">Edit Program</h2>
+
+<form class="bg-white rounded-xl shadow-lg p-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+
+  <!-- Program Name -->
+  <div class="sm:col-span-2 md:col-span-3">
+    <label class="block text-gray-700 mb-1" for="name">Program Name</label>
+    <input id="name" name="name" type="text" placeholder="Program Name"
+           [(ngModel)]="program.name"
+           class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+  </div>
+
+  <!-- Description -->
+  <div class="sm:col-span-2 md:col-span-3">
+    <label class="block text-gray-700 mb-1" for="description">Description</label>
+    <textarea id="description" name="description" rows="3" placeholder="Program Description"
+              [(ngModel)]="program.description"
+              class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"></textarea>
+  </div>
+
+  <!-- Duration -->
+  <div>
+    <label class="block text-gray-700 mb-1" for="duration_days">Duration (days)</label>
+    <input id="duration_days" name="duration_days" type="number" placeholder="Duration"
+           [(ngModel)]="program.duration_days"
+           class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+  </div>
+
+  <!-- Difficulty Level -->
+  <div>
+    <label class="block text-gray-700 mb-1" for="difficulty_level">Difficulty Level</label>
+    <select id="difficulty_level" name="difficulty_level"
+            [(ngModel)]="program.difficulty_level"
+            class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500">
+      <option value="">Select</option>
+      <option value="Easy">Easy</option>
+      <option value="Medium">Medium</option>
+      <option value="Hard">Hard</option>
+    </select>
+  </div>
+
+  <!-- Coach ID -->
+  <div>
+    <label class="block text-gray-700 mb-1" for="coach_id">Coach ID</label>
+    <input id="coach_id" name="coach_id" type="number" placeholder="Coach ID"
+           [(ngModel)]="program.coach_id"
+           class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+  </div>
+
+  <!-- Submit Button -->
+  <div class="sm:col-span-2 md:col-span-3 text-center mt-4">
+    <button type="submit"
+            class="bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
+      Save Changes
+    </button>
+  </div>
+
+</form>

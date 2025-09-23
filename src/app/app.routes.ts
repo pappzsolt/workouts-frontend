@@ -35,6 +35,12 @@ import {UserExercisesComponent} from './components/user-dashboard/operations/use
 import {
   UserExerciseDetailComponent
 } from './components/user-dashboard/operations/user-exercises/user-exercises-detail/user-exercises-detail.component';
+import {
+  CoachProgramEditComponent
+} from './components/coach-dashboard/operations/coach-programs/coach-program-edit/coach-program-edit.component';
+import {
+  CoachWorkoutEditComponent
+} from './components/coach-dashboard/operations/coach-workouts/coach-workouts-edit/coach-workout-edit.component';
 
 
 
@@ -84,7 +90,10 @@ export const routes: Routes = [
       { path: 'profile', component: CoachProfileComponent },
       { path: 'exercises', component: CoachExercisesComponent },
       { path: 'programs', component: CoachProgramListComponent },
+      { path: 'programs/:id/workouts', component: CoachWorkoutsComponent }, // kártya kattintás
+      { path: 'programs/:id/edit', component: CoachProgramEditComponent },  // Edit gomb
       { path: 'workouts', component: CoachWorkoutsComponent },
+      { path: 'workouts/:id/edit', component: CoachWorkoutEditComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: '**', redirectTo: 'dashboard' }
     ]

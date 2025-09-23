@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CoachProgramService, Program } from '../../../../services/coach/coach-program/coach-program.service';
 import { CommonModule } from '@angular/common';
 
@@ -14,7 +14,8 @@ export class CoachProgramListComponent implements OnInit {
 
   constructor(
     private programService: CoachProgramService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -26,5 +27,13 @@ export class CoachProgramListComponent implements OnInit {
         });
       }
     });
+  }
+
+  goToWorkouts(programId: number) {
+    this.router.navigate([`coach/programs/${programId}/workouts`]);
+  }
+
+  editProgram(programId: number) {
+    this.router.navigate([`coach/programs/${programId}/edit`]);
   }
 }

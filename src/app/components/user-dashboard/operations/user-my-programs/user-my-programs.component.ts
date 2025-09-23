@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserMyProgramsService ,Program} from '../../../../services/user/user-my-programs.service';
+import { UserMyProgramsService ,Program} from '../../../../services/user/user-my-program/user-my-programs.service';
 import { Observable } from 'rxjs';
 import { Router } from '@angular/router';
 @Component({

@@ -1,1 +1,10 @@
-a coach -nál kell, hogy tudja szerkeszetni a programot, workoustot, exercixe-t
+1.OK-a coach -nál kell, hogy tudja szerkeszetni a programot, workoustot, exercixe-t OK
+---------
+2.coach workoutok szerkesztése iit tartok
+-----------
+3.coach exercise szerkesztése
+
+
+
+Coach John
+most acoach program edit-et csinálom

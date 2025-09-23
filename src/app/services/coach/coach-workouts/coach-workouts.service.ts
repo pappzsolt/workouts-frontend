@@ -3,9 +3,14 @@ import { Observable, of } from 'rxjs';
 
 export interface Training {
   id: number;
-  title: string;
-  date: string;
-  attendees: number;
+  programId?: number;           // kapcsolódó program ID
+  name: string;
+  description?: string;
+  workout_date: string;
+  duration_minutes?: number;
+  intensity_level?: string;
+  created_by_coach_id?: number;
+  created_at?: string;
 }
 
 @Injectable({
@@ -13,14 +18,49 @@ export interface Training {
 })
 export class CoachWorkoutsService {
 
-  constructor() { }
+  private workouts: Training[] = [
+    { id: 1, programId: 1, name: 'Workout 1', workout_date: '2025-09-25', duration_minutes: 60, intensity_level: 'Medium', created_by_coach_id: 1 },
+    { id: 2, programId: 1, name: 'Workout 2', workout_date: '2025-09-27', duration_minutes: 45, intensity_level: 'Hard', created_by_coach_id: 1 },
+    { id: 3, programId: 2, name: 'Workout 3', workout_date: '2025-09-30', duration_minutes: 30, intensity_level: 'Easy', created_by_coach_id: 2 }
+  ];
 
-  // Demo adatok a coach/training menühöz
+  // Összes edzés lekérése
   getTrainings(): Observable<Training[]> {
-    return of([
-      { id: 1, title: 'Edzés 1333', date: '2025-09-25', attendees: 10 },
-      { id: 2, title: 'Edzés 2', date: '2025-09-27', attendees: 8 },
-      { id: 3, title: 'Edzés 3', date: '2025-09-30', attendees: 12 }
-    ]);
+    return of(this.workouts);
+  }
+
+  // Edzések lekérése adott programhoz
+  getWorkoutsByProgram(programId: number): Observable<Training[]> {
+    const filtered = this.workouts.filter(w => w.programId === programId);
+    return of(filtered);
+  }
+
+  // Edzés lekérése ID alapján
+  getWorkoutById(id: number): Observable<Training | undefined> {
+    const workout = this.workouts.find(w => w.id === id);
+    return of(workout);
+  }
+
+  // Edzés frissítése
+  updateWorkout(id: number, workout: Training): Observable<Training> {
+    const index = this.workouts.findIndex(w => w.id === id);
+    if (index > -1) {
+      this.workouts[index] = { ...workout };
+    }
+    return of(workout);
+  }
+
+  // Új edzés létrehozása
+  createWorkout(workout: Training): Observable<Training> {
+    const newId = Math.max(...this.workouts.map(w => w.id)) + 1;
+    const newWorkout = { ...workout, id: newId };
+    this.workouts.push(newWorkout);
+    return of(newWorkout);
+  }
+
+  // Edzés törlése
+  deleteWorkout(id: number): Observable<void> {
+    this.workouts = this.workouts.filter(w => w.id !== id);
+    return of();
   }
 }

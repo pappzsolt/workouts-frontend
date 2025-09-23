@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserStatisticsService,Statistic } from '../../../../services/user/user-statistics.service';
+import { UserStatisticsService,Statistic } from '../../../../services/user/user-statistics/user-statistics.service';
 
 import { Observable } from 'rxjs';
 
