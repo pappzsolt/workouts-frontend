@@ -12,7 +12,7 @@ export interface Workout {
 @Injectable({
   providedIn: 'root'
 })
-export class WorkoutsService {
+export class UserWorkoutsService {
   private apiUrl = '/api/programs'; // backend API alap URL
 
   constructor(private http: HttpClient) {}

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { WorkoutsService, Workout } from '../../services/user/components/coach-dashboard/operations/workouts/workouts.service';
+import { UserWorkoutsService, Workout } from '../../../../services/user/user-workouts/user-workouts.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -17,7 +17,7 @@ export class WorkoutsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,  // ⬅ hozzáadva
-    private workoutsService: WorkoutsService
+    private workoutsService: UserWorkoutsService
   ) {}
 
   ngOnInit(): void {

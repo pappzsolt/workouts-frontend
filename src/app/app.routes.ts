@@ -30,8 +30,11 @@ import {CoachNewComponent} from './components/admin-dashboard/operations/coach-n
 import {UserNewComponent} from './components/admin-dashboard/operations/user-new/user-new.component';
 import {CoachEditComponent} from './components/admin-dashboard/operations/coach-edit/coach-edit.component';
 import {UserEditComponent} from './components/admin-dashboard/operations/user-edit/user-edit.component';
-import {WorkoutsComponent} from './components/workouts/workouts.component';
+import {WorkoutsComponent} from './components/user-dashboard/operations/user-workouts/workouts.component';
 import {UserExercisesComponent} from './components/user-dashboard/operations/user-exercises/user-exercises.component';
+import {
+  UserExerciseDetailComponent
+} from './components/user-dashboard/operations/user-exercises/user-exercises-detail/user-exercises-detail.component';
 
 
 
@@ -100,6 +103,7 @@ export const routes: Routes = [
       { path: 'statistics', component: UserStatisticsComponent },
       { path: 'programs/:id/workouts', component: WorkoutsComponent },
       { path: 'workouts/:id/exercises', component: UserExercisesComponent },
+      { path: 'exercises/:id', component: UserExerciseDetailComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: '**', redirectTo: 'dashboard' }
     ]
