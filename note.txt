@@ -1,10 +1,11 @@
 1.OK-a coach -nál kell, hogy tudja szerkeszetni a programot, workoustot, exercixe-t OK
 ---------
-2.coach workoutok szerkesztése iit tartok
+2.coach workoutok szerkesztése OK
 -----------
 3.coach exercise szerkesztése
+itt tartok
 
 
-
+4. a coach workoutnál ha csak a kártyáea kattintok akkor is azeedit jön be de ott az exercise nak kell bejönnie ezt meg kell nézni
 Coach John
 most acoach program edit-et csinálom
