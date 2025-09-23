@@ -41,7 +41,7 @@ import {
 import {
   CoachWorkoutEditComponent
 } from './components/coach-dashboard/operations/coach-workouts/coach-workouts-edit/coach-workout-edit.component';
-
+import { CoachExerciseEditComponent } from './components/coach-dashboard/operations/coach-exercises/coach-exercise-edit/coach-exercise-edit.component';
 
 
 export const routes: Routes = [
@@ -94,6 +94,7 @@ export const routes: Routes = [
       { path: 'programs/:id/edit', component: CoachProgramEditComponent },  // Edit gomb
       { path: 'workouts', component: CoachWorkoutsComponent },
       { path: 'workouts/:id/edit', component: CoachWorkoutEditComponent },
+      { path: 'exercises/:id/edit', component: CoachExerciseEditComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: '**', redirectTo: 'dashboard' }
     ]

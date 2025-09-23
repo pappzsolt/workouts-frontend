@@ -39,10 +39,11 @@ export class CoachWorkoutsComponent implements OnInit {
   }
 
   goToWorkoutDetails(workoutId: number) {
-    this.router.navigate([`/coach/workouts/${workoutId}/edit`]);
+    this.router.navigate([`/coach/workouts/${workoutId}`]);
   }
 
   editWorkout(workoutId: number) {
     this.router.navigate([`/coach/workouts/${workoutId}/edit`]);
   }
+
 }

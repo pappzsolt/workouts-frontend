@@ -25,7 +25,7 @@ export class CoachExercisesComponent implements OnInit {
   }
 
   goToExercise(exerciseId: number) {
-    this.router.navigate([`coach/exercises/${exerciseId}`]);
+    this.router.navigate(['/coach/exercises', exerciseId, 'edit']);
   }
 }
 
