@@ -9,20 +9,15 @@ import { UserLayoutComponent } from './layouts/user-layout/user-layout.component
 import { AdminDashboardComponent } from './components/admin-dashboard/dashboard/admin-dashboard.component';
 import { AdminListUsersComponent } from './components/admin-dashboard/operations/admin-list-users/admin-list-users.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/dashboard/coach-dashboard.component';
-import { CoachTrainingComponent } from './components/coach-dashboard/operations/coach-training/coach-training.component'; // ← új komponens
+import { CoachWorkoutsComponent } from './components/coach-dashboard/operations/coach-workouts/coach-workouts.component'; // ← új komponens
 import { UserDashboardComponent } from './components/user-dashboard/dashboard/user-dashboard.component';
-
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
 import {UserSearchComponent} from './components/admin-dashboard/operations/user-search/user-search.component';
-
 import {ChoiceUserNewComponent} from './components/admin-dashboard/operations/choice-user-new/choice-user-new.component';
-
 import {ChoiceUserEditComponent} from './components/admin-dashboard/operations/choice-user-edit/choice-user-edit.component';
-
 import {CoachExercisesComponent} from './components/coach-dashboard/operations/coach-exercises/coach-exercises.component';
-import {CoachProgramsComponent} from './components/coach-dashboard/operations/coach-programs/coach-programs.component';
-import {CoachWorkoutsComponent} from './components/coach-dashboard/operations/coach-workouts/coach-workouts.component';
+import {CoachProgramListComponent} from './components/coach-dashboard/operations/coach-programs/coach-program-list.component';
 import {UserProfileComponent} from './components/user-dashboard/operations/user-profile/user-profile.component';
 import {
   UserMyProgramsComponent
@@ -36,8 +31,8 @@ import {UserNewComponent} from './components/admin-dashboard/operations/user-new
 import {CoachEditComponent} from './components/admin-dashboard/operations/coach-edit/coach-edit.component';
 import {UserEditComponent} from './components/admin-dashboard/operations/user-edit/user-edit.component';
 import {WorkoutsComponent} from './components/workouts/workouts.component';
-import {ExercisesComponent} from './components/exercises/exercises.component';
-import {ExerciseDetailComponent} from './components/exercises/exercise-detail/exercise-detail.component';
+import {UserExercisesComponent} from './components/user-dashboard/operations/user-exercises/user-exercises.component';
+
 
 
 export const routes: Routes = [
@@ -84,9 +79,8 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: CoachDashboardComponent },
       { path: 'profile', component: CoachProfileComponent },
-      { path: 'trainings', component: CoachTrainingComponent }, // ← új route
       { path: 'exercises', component: CoachExercisesComponent },
-      { path: 'programs', component: CoachProgramsComponent },
+      { path: 'programs', component: CoachProgramListComponent },
       { path: 'workouts', component: CoachWorkoutsComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: '**', redirectTo: 'dashboard' }
@@ -105,8 +99,7 @@ export const routes: Routes = [
       { path: 'my-programs', component: UserMyProgramsComponent },
       { path: 'statistics', component: UserStatisticsComponent },
       { path: 'programs/:id/workouts', component: WorkoutsComponent },
-      { path: 'workouts/:id/exercises', component: ExercisesComponent },
-      { path: 'exercises/:exerciseId', component: ExerciseDetailComponent },
+      { path: 'workouts/:id/exercises', component: UserExercisesComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: '**', redirectTo: 'dashboard' }
     ]

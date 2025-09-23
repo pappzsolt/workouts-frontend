@@ -10,7 +10,7 @@ export interface Exercise {
 @Injectable({
   providedIn: 'root'
 })
-export class ExercisesService {
+export class CoachExercisesService {
 
   constructor() {}
 

@@ -1,11 +1,24 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { CoachWorkoutsService, Training } from '../../../../services/coach/coach-workouts/coach-workouts.service';
+import { Observable } from 'rxjs';
 
 @Component({
-  selector: 'app-coach-workouts',
-  imports: [],
+  selector: 'app-coach-training',
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './coach-workouts.component.html',
-  styleUrl: './coach-workouts.component.css'
+  styleUrls: ['./coach-workouts.component.css']
 })
-export class CoachWorkoutsComponent {
+export class CoachWorkoutsComponent implements OnInit {
+  trainings$: Observable<Training[]>;
 
+  constructor(private coachTrainingService: CoachWorkoutsService) {
+    this.trainings$ = this.coachTrainingService.getTrainings();
+  }
+
+  ngOnInit(): void {
+    this.trainings$.subscribe(data => console.log('Fetched trainings:', data));
+  }
 }
+

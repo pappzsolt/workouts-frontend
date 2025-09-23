@@ -29,7 +29,7 @@ export class WorkoutsService {
   // Tesztadatok metódus
   private getTestWorkouts(programId: number): Observable<Workout[]> {
     const testData: Workout[] = [
-      { id: 1, name: `Workout A (Program ${programId})`, description: 'Ez az első teszt workout' },
+      { id: 1, name: `Workout A (Program ${programId})`, description: 'Ez az első teszt workout  user ????????' },
       { id: 2, name: `Workout B (Program ${programId})`, description: 'Ez a második teszt workout' },
       { id: 3, name: `Workout C (Program ${programId})`, description: 'Ez a harmadik teszt workout' }
     ];

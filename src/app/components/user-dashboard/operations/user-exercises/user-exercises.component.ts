@@ -1,23 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ExercisesService, Exercise } from '../../services/exercises/exercises.service';
+import { CoachExercisesService, Exercise } from '../../../../services/coach/coach-exercises/coach-exercises.service';
 import { Observable } from 'rxjs';
 
 @Component({
   standalone: true,
   selector: 'app-exercises',
   imports: [CommonModule],
-  templateUrl: './exercises.component.html'
+  templateUrl: './user-exercises.component.html'
 })
-export class ExercisesComponent implements OnInit {
+export class UserExercisesComponent implements OnInit {
   workoutId!: number;
   exercises$!: Observable<Exercise[]>;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private exercisesService: ExercisesService
+    private exercisesService: CoachExercisesService
   ) {}
 
   ngOnInit(): void {

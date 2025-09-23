@@ -1,78 +1,90 @@
-<h2 class="text-3xl font-bold mb-8 text-center">Edit User</h2>
+<div class="w-screen min-h-screen bg-white px-4 sm:px-10 py-6 flex flex-col items-center">
+  <h2 class="text-2xl font-bold mb-6 text-center">Edit User</h2>
 
-<form  class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-md space-y-4">
-  <!-- Username -->
-  <div>
-    <label class="block font-semibold mb-1" for="username">Username</label>
-    <input id="username" name="username" required
-           class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-  </div>
+  <form class="w-full max-w-2xl bg-white rounded-xl shadow-lg p-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
 
-  <!-- Email -->
-  <div>
-    <label class="block font-semibold mb-1" for="email">Email</label>
-    <input id="email" type="email" name="email" required
-           class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-  </div>
+    <!-- Username -->
+    <div>
+      <label class="block text-gray-700 mb-1" for="username">Username</label>
+      <input id="username" name="username" type="text" placeholder="Username"
+             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+    </div>
 
-  <!-- Password -->
-  <div>
-    <label class="block font-semibold mb-1" for="password">Password</label>
-    <input id="password" type="password" name="password" required
-           class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-  </div>
+    <!-- Email -->
+    <div>
+      <label class="block text-gray-700 mb-1" for="email">Email</label>
+      <input id="email" name="email" type="email" placeholder="Email"
+             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+    </div>
 
-  <!-- Age -->
-  <div>
-    <label class="block font-semibold mb-1" for="age">Age</label>
-    <input id="age" type="number" name="age"
-           class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-  </div>
+    <!-- Password -->
+    <div>
+      <label class="block text-gray-700 mb-1" for="password">Password</label>
+      <input id="password" name="password" type="password" placeholder="Password"
+             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+    </div>
 
-  <!-- Weight -->
-  <div>
-    <label class="block font-semibold mb-1" for="weight">Weight</label>
-    <input id="weight" type="number" step="0.01" name="weight"
-           class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-  </div>
+    <!-- Age -->
+    <div>
+      <label class="block text-gray-700 mb-1" for="age">Age</label>
+      <input id="age" name="age" type="number" placeholder="Age"
+             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+    </div>
 
-  <!-- Height -->
-  <div>
-    <label class="block font-semibold mb-1" for="height">Height</label>
-    <input id="height" type="number" step="0.01" name="height"
-           class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-  </div>
+    <!-- Weight -->
+    <div>
+      <label class="block text-gray-700 mb-1" for="weight">Weight (kg)</label>
+      <input id="weight" name="weight" type="number" step="0.01" placeholder="Weight"
+             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+    </div>
 
-  <!-- Gender -->
-  <div>
-    <label class="block font-semibold mb-1" for="gender">Gender</label>
-    <input id="gender" name="gender"
-           class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-  </div>
+    <!-- Height -->
+    <div>
+      <label class="block text-gray-700 mb-1" for="height">Height (cm)</label>
+      <input id="height" name="height" type="number" step="0.01" placeholder="Height"
+             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+    </div>
 
-  <!-- Goals -->
-  <div>
-    <label class="block font-semibold mb-1" for="goals">Goals</label>
-    <textarea id="goals" name="goals"
-              class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-  </div>
+    <!-- Gender -->
+    <div>
+      <label class="block text-gray-700 mb-1" for="gender">Gender</label>
+      <select id="gender" name="gender"
+              class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500">
+        <option value="">Select</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
 
-  <!-- Avatar URL -->
-  <div>
-    <label class="block font-semibold mb-1" for="avatar_url">Avatar URL</label>
-    <input id="avatar_url" name="avatar_url"
-           class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-  </div>
+    <!-- Goals -->
+    <div class="sm:col-span-2 md:col-span-3">
+      <label class="block text-gray-700 mb-1" for="goals">Goals</label>
+      <textarea id="goals" name="goals" rows="3" placeholder="Your goals"
+                class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"></textarea>
+    </div>
 
-  <!-- Coach ID -->
-  <div>
-    <label class="block font-semibold mb-1" for="coach_id">Coach ID</label>
-    <input id="coach_id" type="number" name="coach_id"
-           class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-  </div>
+    <!-- Avatar URL -->
+    <div class="sm:col-span-2 md:col-span-3">
+      <label class="block text-gray-700 mb-1" for="avatar_url">Avatar URL</label>
+      <input id="avatar_url" name="avatar_url" type="text" placeholder="Avatar image URL"
+             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+    </div>
 
-  <!-- Submit Button -->
-  <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
-    Save User
-  </button>
-</form>
+    <!-- Coach ID -->
+    <div class="sm:col-span-2 md:col-span-3">
+      <label class="block text-gray-700 mb-1" for="coach_id">Coach ID</label>
+      <input id="coach_id" name="coach_id" type="number" placeholder="Coach ID"
+             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="sm:col-span-2 md:col-span-3 text-center mt-4">
+      <button type="submit"
+              class="bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors w-36">
+        Save User
+      </button>
+    </div>
+
+  </form>
+</div>

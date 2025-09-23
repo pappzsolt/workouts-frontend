@@ -1,50 +1,58 @@
-<h2 class="text-3xl font-bold mb-8 text-center">New Coach</h2>
+<div class="w-full min-h-screen bg-white px-4 sm:px-10 py-6 flex flex-col items-center">
+  <h2 class="text-2xl font-bold mb-6 text-center">New Coach</h2>
 
-<form class="max-w-md mx-auto bg-white p-6 rounded-xl shadow-md space-y-4">
-  <!-- Name -->
-  <div>
-    <label class="block font-semibold mb-1" for="name">Name</label>
-    <input id="name" name="name" required
-           class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-  </div>
+  <form class="w-full max-w-6xl bg-white rounded-xl shadow-lg p-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
 
-  <!-- Email -->
-  <div>
-    <label class="block font-semibold mb-1" for="email">Email</label>
-    <input id="email" type="email" name="email" required
-           class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-  </div>
+    <!-- Name -->
+    <div>
+      <label class="block text-gray-700 mb-1" for="name">Name</label>
+      <input id="name" name="name" type="text" placeholder="Name"
+             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+    </div>
 
-  <!-- Password -->
-  <div>
-    <label class="block font-semibold mb-1" for="password">Password</label>
-    <input id="password" type="password" name="password" required
-           class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-  </div>
+    <!-- Email -->
+    <div>
+      <label class="block text-gray-700 mb-1" for="email">Email</label>
+      <input id="email" name="email" type="email" placeholder="Email"
+             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+    </div>
 
-  <!-- Phone -->
-  <div>
-    <label class="block font-semibold mb-1" for="phone">Phone</label>
-    <input id="phone" name="phone"
-           class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-  </div>
+    <!-- Password -->
+    <div>
+      <label class="block text-gray-700 mb-1" for="password">Password</label>
+      <input id="password" name="password" type="password" placeholder="Password"
+             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+    </div>
 
-  <!-- Specialization -->
-  <div>
-    <label class="block font-semibold mb-1" for="specialization">Specialization</label>
-    <textarea id="specialization" name="specialization"
-              class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
-  </div>
+    <!-- Phone -->
+    <div>
+      <label class="block text-gray-700 mb-1" for="phone">Phone</label>
+      <input id="phone" name="phone" type="text" placeholder="Phone"
+             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+    </div>
 
-  <!-- Avatar URL -->
-  <div>
-    <label class="block font-semibold mb-1" for="avatar_url">Avatar URL</label>
-    <input id="avatar_url" name="avatar_url"
-           class="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-  </div>
+    <!-- Specialization -->
+    <div class="sm:col-span-2 md:col-span-3">
+      <label class="block text-gray-700 mb-1" for="specialization">Specialization</label>
+      <textarea id="specialization" name="specialization" rows="3" placeholder="Specialization"
+                class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"></textarea>
+    </div>
 
-  <!-- Submit Button -->
-  <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition">
-    Create Coach
-  </button>
-</form>
+    <!-- Avatar URL -->
+    <div class="sm:col-span-2 md:col-span-3">
+      <label class="block text-gray-700 mb-1" for="avatar_url">Avatar URL</label>
+      <input id="avatar_url" name="avatar_url" type="text" placeholder="Avatar image URL"
+             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="sm:col-span-2 md:col-span-3 text-center mt-4">
+      <button type="submit"
+              class="bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors w-36">
+        Create
+      </button>
+    </div>
+
+  </form>
+</div>
+

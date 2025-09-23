@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { WorkoutsService, Workout } from '../../services/workouts/workouts.service';
+import { WorkoutsService, Workout } from '../../services/user/components/coach-dashboard/operations/workouts/workouts.service';
 import { Observable } from 'rxjs';
 
 @Component({

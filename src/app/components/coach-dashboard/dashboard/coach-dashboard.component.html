@@ -1,15 +1,6 @@
 <h2 class="text-3xl font-bold mb-8 text-center">Coach Dashboard</h2>
 
 <div class="flex flex-wrap justify-center gap-6">
-  <!-- Exercises -->
-  <div
-    class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
-    (click)="navigateTo('coach/exercises')"
-  >
-    <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">🏋️</div>
-    <div class="font-semibold text-lg sm:text-xl md:text-2xl">Exercises</div>
-  </div>
-
   <!-- Programs -->
   <div
     class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
@@ -18,7 +9,6 @@
     <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">📋</div>
     <div class="font-semibold text-lg sm:text-xl md:text-2xl">Programs</div>
   </div>
-
   <!-- Workouts -->
   <div
     class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
@@ -26,5 +16,13 @@
   >
     <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">🔥</div>
     <div class="font-semibold text-lg sm:text-xl md:text-2xl">Workouts</div>
+  </div>
+  <!-- Exercises -->
+  <div
+    class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+    (click)="navigateTo('coach/exercises')"
+  >
+    <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">🏋️</div>
+    <div class="font-semibold text-lg sm:text-xl md:text-2xl">Exercises</div>
   </div>
 </div>
