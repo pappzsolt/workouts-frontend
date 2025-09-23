@@ -14,7 +14,10 @@ export interface ExerciseDetail {
   category?: string;
   calories_burned_per_minute?: number;
   duration_seconds?: number;
+
+  done?: boolean; // ← hozzáadva
 }
+
 
 @Injectable({
   providedIn: 'root'
