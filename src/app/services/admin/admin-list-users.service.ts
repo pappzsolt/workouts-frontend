@@ -6,13 +6,13 @@ import { environment } from '../../../environments/environment';
 // importálod a modellekből
 import { Member, MembersResponse } from '../../models/member.model';
 import { User } from '../../models/user.model';
-
+import { API_ENDPOINTS } from '../../api-endpoints';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminListUsersService {
-  private apiUrl = `${environment.apiUrl}/members`;
+  private apiUrl = API_ENDPOINTS.members;
   constructor(private http: HttpClient) {}
 
   /**
