@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { AdminListUsersService, User } from '../../../../services/admin/admin-list-users.service';
+import { AdminListUsersService } from '../../../../services/admin/admin-list-users.service';
+import { User } from '../../../../models/user.model';
 
 @Component({
   selector: 'app-admin-list-users',

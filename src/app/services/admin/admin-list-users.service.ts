@@ -2,24 +2,17 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-
+import { environment } from '../../../environments/environment';
 // importálod a modellekből
 import { Member, MembersResponse } from '../../models/member.model';
+import { User } from '../../models/user.model';
 
-
-export interface User {
-  id: number;
-  username: string;
-  email: string;
-  roles: string[]; // több role támogatása
-}
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminListUsersService {
-  private apiUrl = 'http://localhost:8080/api/members';
-
+  private apiUrl = `${environment.apiUrl}/members`;
   constructor(private http: HttpClient) {}
 
   /**

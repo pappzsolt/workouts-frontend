@@ -12,3 +12,6 @@
 ----
 Coach John
 
+ng serve Fejlesztői szerver indítása
+ng build --configuration=development ng build --configuration=development
+ng build --configuration=production Éles build
