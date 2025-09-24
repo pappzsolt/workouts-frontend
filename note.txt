@@ -6,7 +6,7 @@
 
 
 4. coach - új program felvitel ok
-5. coach új workouts felvitel ok
+5. coach új workouts felvitel ok a new gombot ugyan úgy mint a csempék
 6. coach új exercises felvitel
 
 ----
