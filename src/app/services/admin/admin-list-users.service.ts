@@ -1,25 +1,57 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
+// importálod a modellekből
+import { Member, MembersResponse } from '../../models/member.model';
+
 
 export interface User {
   id: number;
   username: string;
   email: string;
-  role: string;
+  roles: string[]; // több role támogatása
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminListUsersService {
-  constructor() {}
+  private apiUrl = 'http://localhost:8080/api/members';
 
+  constructor(private http: HttpClient) {}
+
+  /**
+   * Visszaadja a Member[] listát a backendről (a data mezőből)
+   */
+  getMembers(): Observable<Member[]> {
+    return this.http.get<MembersResponse>(this.apiUrl).pipe(
+      map(response => response.data),
+      catchError((error) => {
+        console.error('Hiba történt a members lekérése közben:', error);
+        return throwError(() => new Error('Nem sikerült betölteni a members listát.'));
+      })
+    );
+  }
+
+  /**
+   * Csak User[]-t ad vissza, roles tömbbel (a data mezőből)
+   */
   getUsers(): Observable<User[]> {
-    // Demo adatok, ide jön a valós API hívás
-    return of([
-      { id: 1, username: 'admin1', email: 'admin1@example.com', role: 'ROLE_ADMIN' },
-      { id: 2, username: 'coach1', email: 'coach1@example.com', role: 'ROLE_COACH' },
-      { id: 3, username: 'user1', email: 'user1@example.com', role: 'ROLE_USER' }
-    ]);
+    return this.http.get<MembersResponse>(this.apiUrl).pipe(
+      map(response =>
+        response.data.map((member) => ({
+          id: member.id,
+          username: member.usernameOrName,
+          email: member.email,
+          roles: member.roles
+        }))
+      ),
+      catchError((error) => {
+        console.error('Hiba történt a users lekérése közben:', error);
+        return throwError(() => new Error('Nem sikerült betölteni a users listát.'));
+      })
+    );
   }
 }
