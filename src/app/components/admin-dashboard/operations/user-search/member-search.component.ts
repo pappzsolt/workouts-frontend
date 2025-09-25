@@ -12,11 +12,12 @@ import { MemberSearchService, Member } from '../../../../services/admin/member-s
 })
 export class MemberSearchComponent {
   keyword = '';
-  members: Member[] = [];
+  members: (Member & { coach?: any })[] = []; // coach mező opcionális
   message = '';
   errorMessage = '';
   loading = false;
   viewMode: 'grid' | 'table' = 'grid';
+
   constructor(private memberSearchService: MemberSearchService) {}
 
   onSearch() {
@@ -29,10 +30,12 @@ export class MemberSearchComponent {
         this.loading = false;
         if (res.success) {
           this.members = res.data;
+
+
           if (this.members.length === 0) {
             this.message = 'Nincs találat.';
           } else {
-            this.message = res.message; // "Sikeres keresés"
+            this.message = res.message;
           }
         } else {
           this.message = 'A keresés sikertelen.';
