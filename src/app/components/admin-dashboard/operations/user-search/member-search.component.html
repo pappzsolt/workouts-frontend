@@ -78,7 +78,9 @@
 
           <div class="mt-3 w-full text-sm text-gray-600 space-y-1">
             <div *ngFor="let kv of member.extraFields | keyvalue">
-              <strong>{{ kv.key }}:</strong> {{ kv.value }}
+              <ng-container *ngIf="kv.key !== 'coach_id'">
+                <strong>{{ kv.key }}:</strong> {{ kv.value }}
+              </ng-container>
             </div>
           </div>
 
@@ -89,7 +91,7 @@
             <p><strong>Email:</strong> {{ member.coach.email }}</p>
             <p *ngIf="member.coach.avatarUrl">
               <strong>Avatar:</strong>
-              <img [src]="member.coach.avatarUrl" alt="Coach Avatar" class="w-12 h-12 rounded-full inline-block ml-2">
+              <img [src]="member.coach.avatarUrl" alt="Coach Avatar" class="w-12 h-12 inline-block ml-2 rounded-full">
             </p>
             <div *ngIf="member.coach.extraFields">
               <div *ngFor="let kv of member.coach.extraFields | keyvalue">
@@ -132,7 +134,9 @@
           <td class="px-4 py-2 border border-gray-200">
             <ng-container *ngIf="member.extraFields && (member.extraFields | keyvalue).length">
               <div *ngFor="let kv of member.extraFields | keyvalue" class="text-sm">
-                <strong>{{ kv.key }}:</strong> {{ kv.value }}
+                <ng-container *ngIf="kv.key !== 'coach_id'">
+                  <strong>{{ kv.key }}:</strong> {{ kv.value }}
+                </ng-container>
               </div>
             </ng-container>
           </td>
@@ -156,4 +160,4 @@
     </div>
 
   </div>
-
+</div>
