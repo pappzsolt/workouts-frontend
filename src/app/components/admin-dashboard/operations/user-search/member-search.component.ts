@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MemberSearchService, Member } from '../../../../services/admin/member-search.service';
+import { MemberSearchService } from '../../../../services/admin/member-search.service';
+import { USER_MESSAGES } from '../../../../constants/user-messages';
+import { Member } from '../../../../models/member-search-model';
 
 @Component({
   selector: 'app-member-search',
@@ -33,12 +35,12 @@ export class MemberSearchComponent {
 
 
           if (this.members.length === 0) {
-            this.message = 'Nincs találat.';
+            this.message = USER_MESSAGES.notFound;
           } else {
             this.message = res.message;
           }
         } else {
-          this.message = 'A keresés sikertelen.';
+          this.message = USER_MESSAGES.notResult;
         }
       },
       error: (err) => {

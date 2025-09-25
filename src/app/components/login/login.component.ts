@@ -4,6 +4,7 @@ import { AuthService } from '../../services/auth/auth.service';
 import { CommonModule } from '@angular/common';
 import { catchError, of } from 'rxjs';
 import { Router } from '@angular/router';
+import { USER_MESSAGES } from '../../constants/user-messages';
 
 interface LoginResponse {
   accessToken: string;
@@ -33,7 +34,7 @@ export class LoginComponent {
     if (event) event.preventDefault();
 
     if (this.loginForm.invalid) {
-      this.errorMessage = 'Kérlek, töltsd ki az összes mezőt!';
+      this.errorMessage = USER_MESSAGES.required;
       return;
     }
 
@@ -45,7 +46,7 @@ export class LoginComponent {
       .pipe(
         catchError(err => {
           console.error('Login hiba:', err);
-          this.errorMessage = 'Hibás felhasználónév vagy jelszó.';
+          this.errorMessage = USER_MESSAGES.userOrPassFailed;
           this.loading = false;
           return of(null);
         })

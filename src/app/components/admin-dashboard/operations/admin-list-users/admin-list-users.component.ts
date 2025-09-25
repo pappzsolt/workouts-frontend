@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminListUsersService } from '../../../../services/admin/admin-list-users.service';
 import { User } from '../../../../models/user.model';
+import { USER_MESSAGES } from '../../../../constants/user-messages';
 
 @Component({
   selector: 'app-admin-list-users',
@@ -31,8 +32,7 @@ export class AdminListUsersComponent {
         this.errorMessage = null;
       },
       error: (err) => {
-        console.error('Hiba történt a users lekérése közben:', err);
-        this.errorMessage = err.message || 'Hiba történt a felhasználók betöltése közben.';
+        this.errorMessage = err.message || USER_MESSAGES.loadError, err;
       }
     });
   }

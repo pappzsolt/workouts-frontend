@@ -2,45 +2,23 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, throwError, forkJoin, map } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
+import { API_ENDPOINTS } from '../../api-endpoints';
+import { Coach,SearchResponse } from '../../models/member-search-model';
 
-export interface Coach {
-  id: number;
-  usernameOrName: string; // HTML-hez igazítva
-  email: string;
-  avatarUrl: string | null;
-  roles: string[];
-  extraFields: any;
-}
 
-export interface Member {
-  id: number;
-  type: string;
-  usernameOrName: string;
-  email: string;
-  avatarUrl: string | null;
-  roles: string[];
-  extraFields: any;
-  coach?: Coach; // ide kerül a coach adata, ha van
-}
-
-export interface SearchResponse {
-  success: boolean;
-  message: string;
-  data: Member[];
-}
 
 @Injectable({
   providedIn: 'root'
 })
 export class MemberSearchService {
-  private apiUrl = 'http://localhost:8080/api/members/search';
-  private coachApiUrl = 'http://localhost:8080/api/coach';
+  private memberSearchApiUrl = API_ENDPOINTS.memberSearch;
+  private coachApiUrl = API_ENDPOINTS.coach
 
   constructor(private http: HttpClient) {}
 
   searchMembers(keyword: string): Observable<SearchResponse> {
     const params = new HttpParams().set('keyword', keyword);
-    return this.http.get<SearchResponse>(this.apiUrl, { params }).pipe(
+    return this.http.get<SearchResponse>(this.memberSearchApiUrl, { params }).pipe(
       switchMap(response => {
         const members = response.data;
 
