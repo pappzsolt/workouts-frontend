@@ -1,0 +1,160 @@
+<div class="w-screen min-h-screen bg-gray-50 px-4 sm:px-10 py-6 flex flex-col items-center">
+  <h2 class="text-3xl font-bold mb-8 text-center">Felhasználó keresés</h2>
+
+  <!-- 🔹 Keresőmező + gomb -->
+  <div class="w-full max-w-4xl flex flex-col sm:flex-row items-center mb-6 space-y-3 sm:space-y-0 sm:space-x-4">
+    <input
+      type="text"
+      [(ngModel)]="keyword"
+      placeholder="Írj be egy kulcsszót..."
+      class="flex-1 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
+    />
+    <button
+      (click)="onSearch()"
+      [disabled]="loading"
+      class="w-full sm:w-auto px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition disabled:bg-gray-300"
+    >
+      Keresés
+    </button>
+  </div>
+
+  <!-- 🔹 Nézetváltás gombok (legalább 1 találatnál látszik) -->
+  <div class="w-full max-w-4xl flex justify-end mb-4 space-x-2" *ngIf="members.length >= 1">
+    <button
+      (click)="viewMode='grid'"
+      [class]="viewMode === 'grid' ? 'px-4 py-2 rounded-lg bg-blue-500 text-white' : 'px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300'"
+    >
+      Kártya nézet
+    </button>
+    <button
+      (click)="viewMode='table'"
+      [class]="viewMode === 'table' ? 'px-4 py-2 rounded-lg bg-blue-500 text-white' : 'px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300'"
+    >
+      Táblázat nézet
+    </button>
+  </div>
+
+  <!-- 🔹 Loading -->
+  <div *ngIf="loading" class="text-gray-600 mb-4">
+    Keresés folyamatban...
+  </div>
+
+  <!-- 🔹 Hiba info sáv -->
+  <div
+    *ngIf="errorMessage"
+    class="w-full max-w-4xl mb-4 p-4 rounded-md bg-red-100 text-red-700 border border-red-300"
+  >
+    {{ errorMessage }}
+  </div>
+
+  <!-- 🔹 Info üzenet -->
+  <div
+    *ngIf="message && !errorMessage"
+    class="w-full max-w-4xl mb-4 p-4 rounded-md bg-green-100 text-green-700 border border-green-300"
+  >
+    {{ message }}
+  </div>
+
+  <!-- 🔹 Találatok száma / nincs találat -->
+  <div
+    *ngIf="!loading && !errorMessage"
+    class="w-full max-w-6xl mb-4 text-gray-700 text-base font-medium text-center"
+  >
+    <span *ngIf="members.length > 0">Találatok száma: {{ members.length }}</span>
+    <span *ngIf="members.length === 0 && keyword">
+      <div class="flex flex-col items-center justify-center p-6 rounded-xl bg-white border border-gray-200 shadow-sm">
+        <!-- Illusztráció -->
+        <svg class="w-12 h-12 mb-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2"
+             viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M21 21l-4.35-4.35M16.65 11a5.65 5.65 0 11-11.3 0 5.65 5.65 0 0111.3 0z"/>
+        </svg>
+        <p class="text-gray-500 text-sm sm:text-base">Nincs találat a megadott kulcsszóra.</p>
+        <p class="text-gray-400 text-xs mt-1">Próbálj meg másik kulcsszót, vagy nézd meg a legnépszerűbb kereséseket.</p>
+      </div>
+    </span>
+  </div>
+
+  <!-- 🔹 Találati lista (grid / table nézet) -->
+  <div class="w-full max-w-6xl mb-6">
+    <!-- 🔹 Grid nézet -->
+    <div *ngIf="viewMode==='grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      <ng-container *ngFor="let member of members">
+        <div
+          class="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition flex flex-col items-start border border-gray-100"
+        >
+          <h3 class="text-xl font-semibold mb-2">{{ member.usernameOrName }}</h3>
+          <p class="text-gray-600 text-base mb-1">{{ member.email }}</p>
+          <p class="text-gray-700 mt-2 text-sm">
+            Szerepkör: {{ member.roles.join(', ') }}
+          </p>
+
+          <!-- Avatar -->
+          <img *ngIf="member.avatarUrl"
+               [src]="member.avatarUrl"
+               alt="Avatar"
+               class="w-16 h-16 rounded-full mt-2 object-cover border" />
+
+          <!-- Extra mezők -->
+          <div class="mt-3 w-full text-sm text-gray-600 space-y-1">
+            <div *ngFor="let kv of member.extraFields | keyvalue">
+              <strong>{{ kv.key }}:</strong> {{ kv.value }}
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Skeleton placeholder kártyák ha kevés találat van -->
+      <ng-container *ngIf="members.length > 0 && members.length < 3">
+        <ng-container *ngFor="let i of [].constructor(3 - members.length)">
+          <div class="bg-gray-100 animate-pulse p-6 rounded-2xl border border-dashed border-gray-300 flex flex-col justify-center items-center">
+            <div class="w-20 h-20 bg-gray-200 rounded-full mb-4"></div>
+            <div class="w-32 h-4 bg-gray-200 rounded mb-2"></div>
+            <div class="w-24 h-4 bg-gray-200 rounded"></div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+
+    <!-- 🔹 Táblázat nézet -->
+    <div *ngIf="viewMode==='table'" class="overflow-x-auto">
+      <table class="w-full text-left border-collapse border border-gray-200">
+        <thead class="bg-gray-100">
+        <tr>
+          <th class="px-4 py-2 border border-gray-200">Név</th>
+          <th class="px-4 py-2 border border-gray-200">Email</th>
+          <th class="px-4 py-2 border border-gray-200">Szerepkör</th>
+          <th class="px-4 py-2 border border-gray-200">Extra adatok</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let member of members" class="hover:bg-gray-50">
+          <td class="px-4 py-2 border border-gray-200">{{ member.usernameOrName }}</td>
+          <td class="px-4 py-2 border border-gray-200">{{ member.email }}</td>
+          <td class="px-4 py-2 border border-gray-200">{{ member.roles.join(', ') }}</td>
+          <td class="px-4 py-2 border border-gray-200">
+            <ng-container *ngIf="member.extraFields && (member.extraFields | keyvalue).length">
+              <div *ngFor="let kv of member.extraFields | keyvalue" class="text-sm">
+                <strong>{{ kv.key }}:</strong> {{ kv.value }}
+              </div>
+            </ng-container>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 🔹 Extra szekció alul: statisztika / tippek -->
+  <div class="w-full max-w-4xl mt-10 p-6 rounded-xl bg-white border border-gray-200 shadow-sm text-center">
+    <h3 class="text-lg font-semibold mb-2 text-gray-700">Tippek a kereséshez</h3>
+    <p class="text-gray-500 text-sm mb-4">
+      • Próbáld ki többféle kulcsszóval<br>
+      • Ellenőrizd az ékezeteket<br>
+      • Nézd meg a legnépszerűbb felhasználókat
+    </p>
+    <button class="px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition">
+      Népszerű felhasználók megtekintése
+    </button>
+  </div>
+</div>

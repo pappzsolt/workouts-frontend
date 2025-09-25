@@ -13,7 +13,7 @@ import { CoachWorkoutsComponent } from './components/coach-dashboard/operations/
 import { UserDashboardComponent } from './components/user-dashboard/dashboard/user-dashboard.component';
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
-import {UserSearchComponent} from './components/admin-dashboard/operations/user-search/user-search.component';
+import {MemberSearchComponent} from './components/admin-dashboard/operations/user-search/member-search.component';
 import {ChoiceUserNewComponent} from './components/admin-dashboard/operations/choice-user-new/choice-user-new.component';
 import {ChoiceUserEditComponent} from './components/admin-dashboard/operations/choice-user-edit/choice-user-edit.component';
 import {CoachExercisesComponent} from './components/coach-dashboard/operations/coach-exercises/coach-exercises.component';
@@ -70,7 +70,7 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: AdminDashboardComponent },
       { path: 'users', component: AdminListUsersComponent },
-      { path: 'users/search', component: UserSearchComponent },
+      { path: 'users/search', component: MemberSearchComponent },
       { path: 'choice-users/edit', component:  ChoiceUserEditComponent},
       { path: 'choice-users/new', component:  ChoiceUserNewComponent},
       { path: 'users/new', component:  UserNewComponent},

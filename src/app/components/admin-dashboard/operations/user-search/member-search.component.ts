@@ -1,0 +1,47 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MemberSearchService, Member } from '../../../../services/admin/member-search.service';
+
+@Component({
+  selector: 'app-member-search',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './member-search.component.html',
+  styleUrls: ['./member-search.component.css']
+})
+export class MemberSearchComponent {
+  keyword = '';
+  members: Member[] = [];
+  message = '';
+  errorMessage = '';
+  loading = false;
+  viewMode: 'grid' | 'table' = 'grid';
+  constructor(private memberSearchService: MemberSearchService) {}
+
+  onSearch() {
+    this.errorMessage = '';
+    this.message = '';
+    this.loading = true;
+
+    this.memberSearchService.searchMembers(this.keyword).subscribe({
+      next: (res) => {
+        this.loading = false;
+        if (res.success) {
+          this.members = res.data;
+          if (this.members.length === 0) {
+            this.message = 'Nincs találat.';
+          } else {
+            this.message = res.message; // "Sikeres keresés"
+          }
+        } else {
+          this.message = 'A keresés sikertelen.';
+        }
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = err;
+      }
+    });
+  }
+}
