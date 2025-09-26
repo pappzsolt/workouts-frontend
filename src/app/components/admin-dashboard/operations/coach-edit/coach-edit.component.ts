@@ -13,7 +13,6 @@ import { Coach, CoachEditService } from '../../../../services/admin/coach-edit.s
 })
 export class CoachEditComponent implements OnInit {
   selectedCoachId: number | null = null;
-
   coaches: Coach[] = [];
   selectedCoach: Coach = {
     id: 0,
@@ -22,34 +21,47 @@ export class CoachEditComponent implements OnInit {
     phone: '',
     specialization: '',
     avatarUrl: '',
-    password: '' // ⬅️ hozzáadva
+    password: ''
   };
+
+  // Hibák/üzenetek a template-ben való megjelenítéshez
+  message: string = '';
+  error: string = '';
+  loading: boolean = false;
 
   constructor(private coachService: CoachEditService) {}
 
   ngOnInit() {
-    // Betöltjük az összes edzőt a select boxhoz
+    this.loadCoaches();
+  }
+
+  loadCoaches() {
+    this.loading = true;
+    this.message = '';
+    this.error = '';
     this.coachService.getCoaches().subscribe({
       next: (data) => {
         this.coaches = data;
-
-        // Ha van legalább egy coach, beállíthatjuk alapértelmezettként
+        this.loading = false;
+        this.message = 'Edzők betöltve.';
         if (this.coaches.length > 0) {
           this.selectedCoachId = this.coaches[0].id;
           this.onSelectCoach();
         }
       },
-      error: (err) => console.error('Hiba az edzők betöltésekor', err)
+      error: (err: any) => {
+        this.loading = false;
+        console.error('Hiba az edzők betöltésekor', err);
+        this.error = 'Hiba történt az edzők betöltésekor!';
+      }
     });
   }
 
   onSelectCoach() {
     const found = this.coaches.find(c => c.id === this.selectedCoachId);
     if (found) {
-      // Form mezők frissítése a kiválasztott coach adataival
-      this.selectedCoach = { ...found };
+      this.selectedCoach = { ...found, password: '' };
     } else {
-      // Ha nincs kiválasztva, alapértelmezett üres objektum
       this.selectedCoach = {
         id: 0,
         name: '',
@@ -64,14 +76,27 @@ export class CoachEditComponent implements OnInit {
 
   onSave() {
     if (this.selectedCoachId !== null) {
+      this.loading = true;
+      this.message = '';
+      this.error = '';
+
+      this.selectedCoach.id = this.selectedCoachId;
+
       this.coachService.updateCoach(this.selectedCoachId, this.selectedCoach).subscribe({
         next: (data) => {
-          console.log('Mentett edző:', data);
-          alert('Edző adatai sikeresen frissítve!');
+          this.loading = false;
+          this.message = 'Edző adatai sikeresen frissítve!';
+
+          // Lokális lista frissítése
+          const index = this.coaches.findIndex(c => c.id === this.selectedCoachId);
+          if (index !== -1) {
+            this.coaches[index] = { ...data, password: '' };
+          }
         },
-        error: (err) => {
+        error: (err: any) => {
+          this.loading = false;
           console.error('Hiba az edző mentésekor', err);
-          alert('Hiba történt a mentés során!');
+          this.error = 'Hiba történt az edző mentése során!';
         }
       });
     }

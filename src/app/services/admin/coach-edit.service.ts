@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { Observable, map, catchError, throwError } from 'rxjs';
 
 export interface Coach {
   id: number;
@@ -9,62 +9,76 @@ export interface Coach {
   phone: string;
   specialization?: string;
   avatarUrl?: string;
-  password?: string; // jelszó mező hozzáadva
-}
-
-interface BackendCoach {
-  id: number;
-  type: string;
-  usernameOrName: string;
-  email: string;
-  avatarUrl: string | null;
-  roles: string[];
-  extraFields: {
-    phone?: string;
-    specialization?: string;
-  };
+  password?: string; // opcionális, csak update-hez
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class CoachEditService {
-  private apiUrl = 'http://localhost:8080/api/members/all-coaches'; // Backend végpont
+  private apiUrl = 'http://localhost:8080/api/members/all-coaches';
 
   constructor(private http: HttpClient) {}
 
-  // Összes edző lekérése
   getCoaches(): Observable<Coach[]> {
     return this.http.get<any>(this.apiUrl).pipe(
-      map(res => res.data.map((c: BackendCoach) => ({
-        id: c.id,
-        name: c.usernameOrName,
-        email: c.email,
-        phone: c.extraFields.phone || '',
-        specialization: c.extraFields.specialization || '',
-        avatarUrl: c.avatarUrl || '',
-        password: '' // alapértelmezett üres
-      })))
-    );
-  }
-
-  // Egy edző lekérése id alapján
-  getCoach(id: number): Observable<Coach> {
-    return this.getCoaches().pipe(
-      map(coaches => coaches.find(c => c.id === id) || {
-        id: 0,
-        name: '',
-        email: '',
-        phone: '',
-        specialization: '',
-        avatarUrl: '',
-        password: ''
+      map(res =>
+        res.data.map((item: any) => ({
+          id: item.id,
+          name: item.usernameOrName,
+          email: item.email,
+          phone: item.extraFields?.phone || '',
+          specialization: item.extraFields?.specialization || '',
+          avatarUrl: item.avatarUrl || '',
+          password: ''
+        }))
+      ),
+      catchError(err => {
+        console.error('Hiba az edzők lekérésekor:', err);
+        return throwError(() => err);
       })
     );
   }
 
-  // Edző módosítása
+  getCoach(id: number): Observable<Coach> {
+    return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
+      map(item => ({
+        id: item.id,
+        name: item.usernameOrName,
+        email: item.email,
+        phone: item.extraFields?.phone || '',
+        specialization: item.extraFields?.specialization || '',
+        avatarUrl: item.avatarUrl || '',
+        password: ''
+      })),
+      catchError(err => {
+        console.error(`Hiba az edző lekérésekor (id=${id}):`, err);
+        return throwError(() => err);
+      })
+    );
+  }
+
   updateCoach(id: number, coach: Coach): Observable<Coach> {
-    return this.http.put<Coach>(`${this.apiUrl}/${id}`, coach);
+    const payload: any = {
+      id: id,
+      type: 'coach',
+      name: coach.name,
+      email: coach.email,
+      avatarUrl: coach.avatarUrl,
+      phone: coach.phone,
+      specialization: coach.specialization,
+      roleIds: [3]
+    };
+
+    if (coach.password && coach.password.trim() !== '') {
+      payload.passwordHash = coach.password;
+    }
+
+    return this.http.post<Coach>('http://localhost:8080/api/members', payload).pipe(
+      catchError(err => {
+        console.error(`Hiba az edző frissítésekor (id=${id}):`, err);
+        return throwError(() => err);
+      })
+    );
   }
 }
