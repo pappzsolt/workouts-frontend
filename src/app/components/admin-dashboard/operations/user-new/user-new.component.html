@@ -28,16 +28,30 @@
     <div>
       <label for="password">Password</label>
       <input id="password" name="password" type="password" required
-             [(ngModel)]="user.password"
+             [(ngModel)]="user.passwordHash"
              class="border px-3 py-2 rounded-lg w-full"/>
+    </div>
+
+    <!-- Role kiválasztás -->
+    <div class="sm:col-span-2 md:col-span-3 lg:col-span-4">
+      <label class="block mb-1">Roles*</label>
+      <app-role-select [roles]="roles" (roleSelected)="onRoleSelected($event)"></app-role-select>
+      <div class="mt-2">
+        <span *ngFor="let r of user.roleIds"
+              class="inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded mr-1 mb-1 cursor-pointer"
+              (click)="onRemoveRole(r)">
+          {{ r.name }} <span class="font-bold ml-1">x</span>
+        </span>
+      </div>
     </div>
 
     <!-- Submit -->
     <div class="sm:col-span-2 md:col-span-3 lg:col-span-4 text-center mt-4">
       <button type="submit"
               class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
-        új
+        Új
       </button>
     </div>
   </form>
 </div>
+
