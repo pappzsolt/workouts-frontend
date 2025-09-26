@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UserEditService, User } from '../../../services/admin/user-edit.service';
+import { UserNameIdService, UserNameId } from '../../../services/user/user-name-id.service'
 
 @Component({
   selector: 'app-user-select',
@@ -17,16 +17,16 @@ import { UserEditService, User } from '../../../services/admin/user-edit.service
   `
 })
 export class UserSelectComponent implements OnInit {
-  users: User[] = [];
+  users: UserNameId[] = [];
 
   @Input() selectedUserId?: number;
   @Output() selectedUserIdChange = new EventEmitter<number>();
-  @Output() userSelected = new EventEmitter<User>();
+  @Output() userSelected = new EventEmitter<UserNameId>();
 
-  constructor(private userService: UserEditService) {}
+  constructor(private userService: UserNameIdService) {}
 
   ngOnInit(): void {
-    this.userService.getUsers().subscribe({
+    this.userService.getAllUsers().subscribe({
       next: users => this.users = users,
       error: err => console.error('Hiba a felhasználók lekérésekor:', err)
     });

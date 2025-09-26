@@ -1,70 +1,91 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { UserEditService, User } from '../../../../services/admin/user-edit.service';
-import { RoleSelectComponent } from '../../../shared/roles/role-select.component';
+import { UserEditService, User, Coach, Role } from '../../../../services/admin/user-edit.service';
+import { UserSelectComponent } from '../../../../components/shared/user/user-select.component';
 import { CoachSelectComponent } from '../../../shared/coach/coach-select.component';
-import { UserSelectComponent } from '../../../../components/shared/user/user-select.component'; // 🔹 módosítva
+import { RoleSelectComponent } from '../../../shared/roles/role-select.component';
+import { UserNameId } from '../../../../services/user/user-name-id.service';
+import { Role as RoleModel } from '../../../../services/roles/role.service';
 
 @Component({
   selector: 'app-user-edit',
   standalone: true,
+  imports: [CommonModule, FormsModule, UserSelectComponent, CoachSelectComponent, RoleSelectComponent],
   templateUrl: './user-edit.component.html',
-  styleUrls: ['./user-edit.component.css'],
-  imports: [CommonModule, FormsModule, RoleSelectComponent, CoachSelectComponent, UserSelectComponent], // 🔹 módosítva
-  providers: [UserEditService]
 })
 export class UserEditComponent implements OnInit {
   users: User[] = [];
   selectedUserId?: number;
-  selectedUser: User = {
-    id: 0,
-    username: '',
-    email: '',
-    password: '',
-    avatarUrl: '',
-    age: undefined,
-    weight: undefined,
-    height: undefined,
-    gender: '',
-    goals: '',
-    coachId: undefined,
-    roleId: undefined
-  };
+  selectedUser: User | null = null;
 
-  selectedRole?: any;   // a RoleSelectComponent kezeli
-  selectedCoach?: any;  // a CoachSelectComponent kezeli
+  coaches: Coach[] = [];
+  roles: Role[] = [];
+
+  selectedCoach?: Coach;
+  selectedRole?: Role;
 
   constructor(private userService: UserEditService) {}
 
   ngOnInit(): void {
+    // Teljes user lista
     this.userService.getUsers().subscribe({
-      next: users => this.users = users,
-      error: err => console.error('Hiba a felhasználók lekérésekor:', err)
+      next: (users) => this.users = users,
+      error: (err) => console.error(err)
+    });
+
+    // Coach lista
+    this.userService.getCoaches().subscribe({
+      next: (coaches) => this.coaches = coaches,
+      error: (err) => console.error(err)
+    });
+
+    // Role lista
+    this.userService.getRoles().subscribe({
+      next: (roles) => this.roles = roles,
+      error: (err) => console.error(err)
     });
   }
 
-  onUserSelected(user: User): void {
+  onUserSelected(user: UserNameId): void {
     this.selectedUserId = user.id;
-    this.selectedUser = { ...user, password: '' };
-    if (user.roleId) this.selectedRole = { id: user.roleId, name: '' };
-    if (user.coachId) this.selectedCoach = { id: user.coachId, name: '' };
+
+    const foundUser = this.users.find(u => u.id === user.id);
+    if (foundUser) {
+      this.selectedUser = { ...foundUser, password: '' };
+
+      // 🔹 Itt állítjuk be a combobox Role-ját a RoleService Role típusára
+      if (foundUser.roleId) {
+        this.selectedRole = { id: foundUser.roleId, name: '' } as RoleModel;
+      } else {
+        this.selectedRole = undefined;
+      }
+
+      this.selectedCoach = foundUser.coachId ? { id: foundUser.coachId, name: '' } : undefined;
+    } else {
+      this.selectedUser = null;
+      this.selectedCoach = undefined;
+      this.selectedRole = undefined;
+    }
   }
 
-  onRoleSelected(role: any): void {
-    this.selectedRole = role;
-    this.selectedUser.roleId = role.id;
-  }
 
-  onCoachSelected(coach: any): void {
+  onCoachSelected(coach: Coach): void {
     this.selectedCoach = coach;
-    this.selectedUser.coachId = coach.id;
+    if (this.selectedUser) this.selectedUser.coachId = coach.id;
+  }
+
+  onRoleSelected(role: Role): void {
+    this.selectedRole = role;
+    if (this.selectedUser) this.selectedUser.roleId = role.id;
   }
 
   onSave(): void {
-    this.userService.updateUser(this.selectedUser).subscribe({
-      next: () => alert('Felhasználó sikeresen frissítve!'),
-      error: err => alert('Hiba a frissítés során: ' + err.message)
-    });
+    if (this.selectedUser) {
+      this.userService.updateUser(this.selectedUser).subscribe({
+        next: () => alert('Felhasználó sikeresen frissítve!'),
+        error: (err) => alert('Hiba a frissítés során: ' + err.message)
+      });
+    }
   }
 }
