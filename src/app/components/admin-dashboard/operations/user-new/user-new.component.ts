@@ -4,12 +4,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { UserNewService } from '../../../../services/admin/user-new.service';
 import { RoleSelectComponent } from '../../../shared/roles/role-select.component';
+import { CoachSelectComponent } from '../../../shared/coach/coach-select.component'; // 🔹 importáljuk a coach selectet
 import { Role } from '../../../../services/roles/role.service'; // 🔹 ide importáljuk a service-ből
+import { CoachNameId } from '../../../../services/coach/coach-name-id.service'; // 🔹 szükséges a típus
 
 @Component({
   selector: 'app-user-new',
   standalone: true,
-  imports: [CommonModule, FormsModule, RoleSelectComponent],
+  imports: [CommonModule, FormsModule, RoleSelectComponent, CoachSelectComponent], // 🔹 hozzáadva a CoachSelectComponent
   templateUrl: './user-new.component.html',
   styleUrls: ['./user-new.component.css']
 })
@@ -24,7 +26,8 @@ export class UserNewComponent {
     height: null,
     gender: '',
     goals: '',
-    coachId: null,
+    coachId: null, // kiválasztott coach id
+    coachName: '', // 🔹 új mező a kiválasztott coach nevének tárolására
     roleIds: [] as Role[] // Role objektumokat tartalmaz
   };
 
@@ -44,6 +47,12 @@ export class UserNewComponent {
 
   onRemoveRole(role: Role) {
     this.user.roleIds = this.user.roleIds.filter((r: Role) => r.id !== role.id);
+  }
+
+  // 🔹 callback a coach selectból
+  onCoachSelected(coach: CoachNameId) {
+    this.user.coachId = coach.id;
+    this.user.coachName = coach.name; // 🔹 tároljuk a kiválasztott coach nevét is
   }
 
   onSubmit(form: NgForm) {
