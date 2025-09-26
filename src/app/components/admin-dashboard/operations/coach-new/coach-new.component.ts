@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm, NgModel } from '@angular/forms';
 import { CoachNewService } from '../../../../services/admin/coach-new.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-coach-new',
@@ -12,14 +11,53 @@ import { Router } from '@angular/router';
   styleUrls: ['./coach-new.component.css']
 })
 export class CoachNewComponent {
-  coach = { name: '', description: '', duration: '' };
+  user: any = {
+    name: '',
+    email: '',
+    passwordHash: '',
+    phone: '',
+    specialization: '',
+    avatarUrl: ''
+  };
 
-  constructor(private coachService: CoachNewService, private router: Router) {}
+  message = '';
+  isError = false;
 
-  onSubmit() {
-    this.coachService.createCoach(this.coach).subscribe({
-      next: () => this.router.navigate(['/coach']),
-      error: (err) => console.error(err)
+  constructor(private coachNewService: CoachNewService) {}
+
+  onSubmit(form: NgForm) {
+    if (!form.valid) {
+      this.message = 'Kérlek töltsd ki az összes kötelező mezőt és adj meg érvényes adatokat!';
+      this.isError = true;
+      return;
+    }
+
+    const payload = {
+      type: 'coach',
+      name: this.user.name,
+      email: this.user.email,
+      passwordHash: this.user.passwordHash,
+      avatarUrl: this.user.avatarUrl,
+      phone: this.user.phone,
+      specialization: this.user.specialization,
+      roleIds: [3] // fix roleId a coach
+    };
+
+    console.log('Payload:', payload);
+
+    this.coachNewService.createCoach(payload).subscribe({
+      next: (res) => {
+        this.message = res.message || 'Sikeres létrehozás';
+        this.isError = !res.success;
+        if (res.success) {
+          console.log('Coach created successfully');
+          form.resetForm();
+        }
+      },
+      error: (err) => {
+        this.message = err.error?.message || 'Hiba a mentésnél';
+        this.isError = true;
+      }
     });
   }
 }

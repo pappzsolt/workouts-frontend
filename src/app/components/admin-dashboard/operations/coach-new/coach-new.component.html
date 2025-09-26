@@ -1,58 +1,80 @@
 <div class="w-full min-h-screen bg-white px-4 sm:px-10 py-6 flex flex-col items-center">
   <h2 class="text-2xl font-bold mb-6 text-center">New Coach</h2>
 
-  <form class="w-full max-w-6xl bg-white rounded-xl shadow-lg p-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+  <form #userForm="ngForm" (ngSubmit)="onSubmit(userForm)"
+        class="w-full max-w-6xl bg-white rounded-xl shadow-lg p-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
 
     <!-- Name -->
     <div>
-      <label class="block text-gray-700 mb-1" for="name">Name</label>
-      <input id="name" name="name" type="text" placeholder="Name"
+      <label for="name" class="block text-gray-700 mb-1">Name*</label>
+      <input id="name" name="name" type="text" [(ngModel)]="user.name" required
+             #nameModel="ngModel"
              class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+      <div *ngIf="nameModel.invalid && (nameModel.dirty || nameModel.touched)" class="text-red-600 text-sm mt-1">
+        Név megadása kötelező
+      </div>
     </div>
 
     <!-- Email -->
     <div>
-      <label class="block text-gray-700 mb-1" for="email">Email</label>
-      <input id="email" name="email" type="email" placeholder="Email"
+      <label for="email" class="block text-gray-700 mb-1">Email*</label>
+      <input id="email" name="email" type="email" [(ngModel)]="user.email" required email
+             #emailModel="ngModel"
              class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+      <div *ngIf="emailModel.invalid && (emailModel.dirty || emailModel.touched)" class="text-red-600 text-sm mt-1">
+        Érvényes email cím szükséges
+      </div>
     </div>
 
     <!-- Password -->
     <div>
-      <label class="block text-gray-700 mb-1" for="password">Password</label>
-      <input id="password" name="password" type="password" placeholder="Password"
+      <label for="passwordHash" class="block text-gray-700 mb-1">Password*</label>
+      <input id="passwordHash" name="passwordHash" type="password" [(ngModel)]="user.passwordHash" required minlength="6"
+             #passwordModel="ngModel"
              class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+      <div *ngIf="passwordModel.invalid && (passwordModel.dirty || passwordModel.touched)" class="text-red-600 text-sm mt-1">
+        Minimum 6 karakter
+      </div>
     </div>
 
     <!-- Phone -->
     <div>
-      <label class="block text-gray-700 mb-1" for="phone">Phone</label>
-      <input id="phone" name="phone" type="text" placeholder="Phone"
+      <label for="phone" class="block text-gray-700 mb-1">Phone*</label>
+      <input id="phone" name="phone" type="text" [(ngModel)]="user.phone" required
+             pattern="^\+36\d{9}$"
+             #phoneModel="ngModel"
              class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+      <div *ngIf="phoneModel.invalid && (phoneModel.dirty || phoneModel.touched)" class="text-red-600 text-sm mt-1">
+        Érvényes magyar telefonszám szükséges (+36xxxxxxxxx)
+      </div>
     </div>
 
     <!-- Specialization -->
     <div class="sm:col-span-2 md:col-span-3">
-      <label class="block text-gray-700 mb-1" for="specialization">Specialization</label>
+      <label for="specialization" class="block text-gray-700 mb-1">Specialization</label>
       <textarea id="specialization" name="specialization" rows="3" placeholder="Specialization"
+                [(ngModel)]="user.specialization"
                 class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"></textarea>
     </div>
 
     <!-- Avatar URL -->
     <div class="sm:col-span-2 md:col-span-3">
-      <label class="block text-gray-700 mb-1" for="avatar_url">Avatar URL</label>
-      <input id="avatar_url" name="avatar_url" type="text" placeholder="Avatar image URL"
+      <label for="avatarUrl" class="block text-gray-700 mb-1">Avatar URL</label>
+      <input id="avatarUrl" name="avatarUrl" type="text" [(ngModel)]="user.avatarUrl"
              class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
     </div>
 
     <!-- Submit Button -->
     <div class="sm:col-span-2 md:col-span-3 text-center mt-4">
       <button type="submit"
-              class="bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors w-36">
-        Create
+              class="bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow hover:bg-blue-700 w-36">
+        Create Coach
       </button>
     </div>
 
   </form>
-</div>
 
+  <div *ngIf="message" [ngClass]="{'text-red-600': isError, 'text-green-600': !isError}" class="mt-4 font-medium">
+    {{ message }}
+  </div>
+</div>
