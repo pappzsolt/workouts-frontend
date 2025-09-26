@@ -1,12 +1,25 @@
 <div class="w-screen min-h-screen bg-white px-4 sm:px-10 py-6 flex flex-col items-center">
-  <h2 class="text-2xl font-bold mb-6 text-center">Edit Coach</h2>
+  <h2 class="text-2xl font-bold mb-6 text-center">Edző módosítása</h2>
 
-  <form class="w-full max-w-2xl bg-white rounded-xl shadow-lg p-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+  <!-- Coach select -->
+  <div class="w-full max-w-2xl mb-4">
+    <label class="block text-gray-700 mb-1" for="coachSelect">Válassz edzőt</label>
+    <select id="coachSelect" [(ngModel)]="selectedCoachId" (change)="onSelectCoach()"
+            class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500">
+      <option [ngValue]="null">-- Válassz edzőt --</option>
+      <option *ngFor="let c of coaches" [ngValue]="c.id">
+        {{ c.name }} ({{ c.email }})
+      </option>
+    </select>
+  </div>
 
+  <!-- Form -->
+  <form class="w-full max-w-2xl bg-white rounded-xl shadow-lg p-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3" (ngSubmit)="onSave()">
     <!-- Name -->
     <div>
-      <label class="block text-gray-700 mb-1" for="name">Name</label>
-      <input id="name" name="name" type="text" placeholder="Name"
+      <label class="block text-gray-700 mb-1" for="name">Név</label>
+      <input id="name" name="name" type="text" placeholder="Név"
+             [(ngModel)]="selectedCoach.name"
              class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
     </div>
 
@@ -14,34 +27,38 @@
     <div>
       <label class="block text-gray-700 mb-1" for="email">Email</label>
       <input id="email" name="email" type="email" placeholder="Email"
+             [(ngModel)]="selectedCoach.email"
              class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
     </div>
 
     <!-- Password -->
     <div>
-      <label class="block text-gray-700 mb-1" for="password">Password</label>
-      <input id="password" name="password" type="password" placeholder="Password"
+      <label class="block text-gray-700 mb-1" for="password">Jelszó</label>
+      <input id="password" name="password" type="password" placeholder="Jelszó"
              class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
     </div>
 
     <!-- Phone -->
     <div>
-      <label class="block text-gray-700 mb-1" for="phone">Phone</label>
-      <input id="phone" name="phone" type="text" placeholder="Phone"
+      <label class="block text-gray-700 mb-1" for="phone">Telefon</label>
+      <input id="phone" name="phone" type="text" placeholder="Telefon"
+             [(ngModel)]="selectedCoach.phone"
              class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
     </div>
 
     <!-- Specialization -->
     <div class="sm:col-span-2 md:col-span-3">
-      <label class="block text-gray-700 mb-1" for="specialization">Specialization</label>
-      <textarea id="specialization" name="specialization" rows="3" placeholder="Specialization"
+      <label class="block text-gray-700 mb-1" for="specialization">Specializáció</label>
+      <textarea id="specialization" name="specialization" rows="3" placeholder="Specializáció"
+                [(ngModel)]="selectedCoach.specialization"
                 class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"></textarea>
     </div>
 
     <!-- Avatar URL -->
     <div class="sm:col-span-2 md:col-span-3">
       <label class="block text-gray-700 mb-1" for="avatar_url">Avatar URL</label>
-      <input id="avatar_url" name="avatar_url" type="text" placeholder="Avatar image URL"
+      <input id="avatar_url" name="avatar_url" type="text" placeholder="Avatar kép URL"
+             [(ngModel)]="selectedCoach.avatarUrl"
              class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
     </div>
 
@@ -49,11 +66,8 @@
     <div class="sm:col-span-2 md:col-span-3 text-center mt-4">
       <button type="submit"
               class="bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors w-36">
-        Save
+        Mentés
       </button>
     </div>
-
   </form>
 </div>
-
-

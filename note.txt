@@ -20,3 +20,5 @@ ng build --configuration=production Éles build
 itt tartok:http://localhost:4200/admin/users/edit
 edit user
 edit coacj
+backenden ezt módosítani kell, hogy csak a coachokat kérje le :http://localhost:8080/api/members
+kell egy oylan is ami a usereket külön
