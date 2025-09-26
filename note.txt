@@ -15,3 +15,8 @@ Coach John
 ng serve Fejlesztői szerver indítása
 ng build --configuration=development ng build --configuration=development
 ng build --configuration=production Éles build
+----
+
+itt tartok:http://localhost:4200/admin/users/edit
+edit user
+edit coacj

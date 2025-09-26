@@ -1,12 +1,12 @@
 <div class="w-full min-h-screen bg-white px-4 sm:px-10 py-6 flex flex-col items-center">
-  <h2 class="text-2xl font-bold mb-6 text-center">New Coach</h2>
+  <h2 class="text-2xl font-bold mb-6 text-center">Új Edző</h2>
 
   <form #userForm="ngForm" (ngSubmit)="onSubmit(userForm)"
         class="w-full max-w-6xl bg-white rounded-xl shadow-lg p-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
 
-    <!-- Name -->
+    <!-- Név -->
     <div>
-      <label for="name" class="block text-gray-700 mb-1">Name*</label>
+      <label for="name" class="block text-gray-700 mb-1">Név*</label>
       <input id="name" name="name" type="text" [(ngModel)]="user.name" required
              #nameModel="ngModel"
              class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
@@ -26,9 +26,9 @@
       </div>
     </div>
 
-    <!-- Password -->
+    <!-- Jelszó -->
     <div>
-      <label for="passwordHash" class="block text-gray-700 mb-1">Password*</label>
+      <label for="passwordHash" class="block text-gray-700 mb-1">Jelszó*</label>
       <input id="passwordHash" name="passwordHash" type="password" [(ngModel)]="user.passwordHash" required minlength="6"
              #passwordModel="ngModel"
              class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
@@ -37,9 +37,9 @@
       </div>
     </div>
 
-    <!-- Phone -->
+    <!-- Telefon -->
     <div>
-      <label for="phone" class="block text-gray-700 mb-1">Phone*</label>
+      <label for="phone" class="block text-gray-700 mb-1">Telefon*</label>
       <input id="phone" name="phone" type="text" [(ngModel)]="user.phone" required
              pattern="^\+36\d{9}$"
              #phoneModel="ngModel"
@@ -49,10 +49,10 @@
       </div>
     </div>
 
-    <!-- Specialization -->
+    <!-- Szakterület -->
     <div class="sm:col-span-2 md:col-span-3">
-      <label for="specialization" class="block text-gray-700 mb-1">Specialization</label>
-      <textarea id="specialization" name="specialization" rows="3" placeholder="Specialization"
+      <label for="specialization" class="block text-gray-700 mb-1">Szakterület</label>
+      <textarea id="specialization" name="specialization" rows="3" placeholder="Szakterület"
                 [(ngModel)]="user.specialization"
                 class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"></textarea>
     </div>
@@ -68,7 +68,7 @@
     <div class="sm:col-span-2 md:col-span-3 text-center mt-4">
       <button type="submit"
               class="bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow hover:bg-blue-700 w-36">
-        Create Coach
+        Edző létrehozása
       </button>
     </div>
 
