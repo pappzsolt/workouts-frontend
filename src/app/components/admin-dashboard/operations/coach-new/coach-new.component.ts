@@ -42,15 +42,12 @@ export class CoachNewComponent {
       specialization: this.user.specialization,
       roleIds: [3] // fix roleId a coach
     };
-
-    console.log('Payload:', payload);
-
     this.coachNewService.createCoach(payload).subscribe({
       next: (res) => {
         this.message = res.message || 'Sikeres létrehozás';
         this.isError = !res.success;
         if (res.success) {
-          console.log('Coach created successfully');
+
           form.resetForm();
         }
       },

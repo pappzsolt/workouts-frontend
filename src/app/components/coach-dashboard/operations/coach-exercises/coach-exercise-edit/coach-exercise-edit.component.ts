@@ -53,7 +53,7 @@ export class CoachExerciseEditComponent implements OnInit {
 
   saveExercise() {
     // TODO: itt majd a service hívása a mentéshez
-    console.log('Exercise saved:', this.exercise);
+
     this.router.navigate(['/coach/exercises']);
   }
 }

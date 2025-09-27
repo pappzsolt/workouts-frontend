@@ -30,7 +30,6 @@ export class AuthService {
         tap(res => {
           localStorage.setItem('accessToken', res.accessToken);
           localStorage.setItem('refreshToken', res.refreshToken);
-          console.log('[AuthService] Bejelentkezve!', res);
         })
       );
   }
@@ -38,7 +37,6 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
-    console.log('[AuthService] Kijelentkezve!');
   }
 
   getAccessToken(): string | null {
@@ -51,20 +49,19 @@ export class AuthService {
 
     try {
       const decodedToken = jwtDecode<TokenPayload>(token);
-      console.log('[AuthService] Decoded token:', decodedToken);
       return decodedToken.roles;
     } catch (e) {
       console.error('[AuthService] Token dekódolási hiba', e);
       return null;
     }
   }
+
   getUserId(): number | null {
     const token = this.getAccessToken();
     if (!token) return null;
 
     try {
       const decodedToken = jwtDecode<TokenPayload>(token);
-      console.log('[AuthService] Decoded token:', decodedToken);
       return decodedToken.id; // vagy decodedToken.sub, attól függ melyikben van
     } catch (e) {
       console.error('[AuthService] Token dekódolási hiba', e);

@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { UserProfilService, RawUser, Coach } from '../../../../services/user/user-profile/user-profile.service';
-import { CoachSelectComponent } from '../../../shared/coach/coach-select.component';
+
 import { Role, RoleService } from '../../../../services/roles/role.service';
 import { AuthService } from '../../../../services/auth/auth.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -28,7 +28,7 @@ interface User {
 @Component({
   selector: 'app-user-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, CoachSelectComponent,MatFormFieldModule,MatSelectModule,MatInputModule],
+  imports: [CommonModule, FormsModule,MatFormFieldModule,MatSelectModule,MatInputModule],
   templateUrl: './user-profile.component.html',
 })
 export class UserProfileComponent implements OnInit {
