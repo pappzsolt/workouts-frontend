@@ -2,19 +2,21 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
-export interface User {
+export interface RawUser {
   id: number;
-  username: string;
+  usernameOrName: string;
   email: string;
-  password?: string;
+  password?: string; // opcionális a frissítéshez
   avatarUrl?: string;
-  age?: number;
-  weight?: number;
-  height?: number;
-  gender?: string;
-  goals?: string;
-  coachId?: number;
-  roleId?: number;
+  roles: string[];
+  extraFields?: {
+    coach_id?: number;
+    age?: number;
+    weight?: number;
+    height?: number;
+    gender?: string;
+    goals?: string;
+  };
 }
 
 export interface Coach {
@@ -38,7 +40,7 @@ export class UserEditService {
 
   constructor(private http: HttpClient) {}
 
-  getUsers(): Observable<User[]> {
+  getUsers(): Observable<RawUser[]> {
     return this.http.get<any>(this.usersUrl).pipe(
       map(res => res.data)
     );
@@ -56,19 +58,20 @@ export class UserEditService {
     );
   }
 
-  updateUser(user: User): Observable<any> {
+  updateUser(user: RawUser, roleIds: number[]): Observable<any> {
+    // roleIds-t a komponens adja át
     const payload: any = {
       type: 'user',
-      username: user.username,
+      username: user.usernameOrName,
       email: user.email,
       avatarUrl: user.avatarUrl,
-      age: user.age,
-      weight: user.weight,
-      height: user.height,
-      gender: user.gender,
-      goals: user.goals,
-      coachId: user.coachId,
-      roleIds: user.roleId ? [user.roleId] : []
+      age: user.extraFields?.age,
+      weight: user.extraFields?.weight,
+      height: user.extraFields?.height,
+      gender: user.extraFields?.gender,
+      goals: user.extraFields?.goals,
+      coachId: user.extraFields?.coach_id,
+      roleIds: roleIds || []
     };
 
     if (user.password && user.password.trim() !== '') {

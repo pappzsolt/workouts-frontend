@@ -1,88 +1,145 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { UserEditService, User, Coach, Role } from '../../../../services/admin/user-edit.service';
+import { UserEditService, RawUser, Coach } from '../../../../services/admin/user-edit.service';
 import { UserSelectComponent } from '../../../../components/shared/user/user-select.component';
 import { CoachSelectComponent } from '../../../shared/coach/coach-select.component';
-import { RoleSelectComponent } from '../../../shared/roles/role-select.component';
 import { UserNameId } from '../../../../services/user/user-name-id.service';
-import { Role as RoleModel } from '../../../../services/roles/role.service';
+
+interface User {
+  id: number;
+  username: string;
+  email: string;
+  password?: string;
+  avatarUrl?: string;
+  age?: number;
+  weight?: number;
+  height?: number;
+  gender?: string;
+  goals?: string;
+  coachId?: number;
+}
 
 @Component({
   selector: 'app-user-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule, UserSelectComponent, CoachSelectComponent, RoleSelectComponent],
+  imports: [CommonModule, FormsModule, UserSelectComponent, CoachSelectComponent],
   templateUrl: './user-edit.component.html',
 })
 export class UserEditComponent implements OnInit {
-  users: User[] = [];
+  users: RawUser[] = [];
   selectedUserId?: number;
-  selectedUser: User | null = null;
+
+  selectedUser: User = {
+    id: 0,
+    username: '',
+    email: '',
+    password: '',
+    avatarUrl: '',
+    age: undefined,
+    weight: undefined,
+    height: undefined,
+    gender: '',
+    goals: '',
+    coachId: undefined
+  };
 
   coaches: Coach[] = [];
-  roles: Role[] = [];
-
   selectedCoach?: Coach;
-  selectedRole?: Role;
 
-  constructor(private userService: UserEditService) {}
+  constructor(private userService: UserEditService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
-    // Teljes user lista
-    this.userService.getUsers().subscribe({
-      next: (users) => this.users = users,
-      error: (err) => console.error(err)
-    });
-
-    // Coach lista
+    // Betöltjük a coach-okat
     this.userService.getCoaches().subscribe({
-      next: (coaches) => this.coaches = coaches,
+      next: (coaches) => {
+        this.coaches = coaches;
+        this.cdr.detectChanges();
+      },
       error: (err) => console.error(err)
     });
 
-    // Role lista
-    this.userService.getRoles().subscribe({
-      next: (roles) => this.roles = roles,
+    // Betöltjük a felhasználókat
+    this.userService.getUsers().subscribe({
+      next: (users) => {
+        this.users = users;
+        if (this.users.length > 0) {
+          this.selectedUserId = this.users[0].id;
+          this.patchUserFromRaw(this.users[0]);
+        }
+      },
       error: (err) => console.error(err)
     });
   }
 
   onUserSelected(user: UserNameId): void {
     this.selectedUserId = user.id;
-
-    const foundUser = this.users.find(u => u.id === user.id);
-    if (foundUser) {
-      this.selectedUser = { ...foundUser, password: '' };
-
-      // 🔹 Itt állítjuk be a combobox Role-ját a RoleService Role típusára
-      if (foundUser.roleId) {
-        this.selectedRole = { id: foundUser.roleId, name: '' } as RoleModel;
-      } else {
-        this.selectedRole = undefined;
-      }
-
-      this.selectedCoach = foundUser.coachId ? { id: foundUser.coachId, name: '' } : undefined;
+    const foundRaw = this.users.find(u => u.id === user.id);
+    if (foundRaw) {
+      this.patchUserFromRaw(foundRaw);
     } else {
-      this.selectedUser = null;
+      this.selectedUser = {
+        id: 0,
+        username: '',
+        email: '',
+        password: '',
+        avatarUrl: '',
+        age: undefined,
+        weight: undefined,
+        height: undefined,
+        gender: '',
+        goals: '',
+        coachId: undefined
+      };
       this.selectedCoach = undefined;
-      this.selectedRole = undefined;
     }
   }
 
+  private patchUserFromRaw(raw: RawUser) {
+    this.selectedUser = {
+      id: raw.id,
+      username: raw.usernameOrName || '',
+      email: raw.email || '',
+      password: '',
+      avatarUrl: raw.avatarUrl || '',
+      age: raw.extraFields?.age,
+      weight: raw.extraFields?.weight,
+      height: raw.extraFields?.height,
+      gender: raw.extraFields?.gender,
+      goals: raw.extraFields?.goals,
+      coachId: raw.extraFields?.coach_id
+    };
+
+    // Coach kiválasztása a listából
+    this.selectedCoach = this.coaches.find(c => c.id === this.selectedUser.coachId);
+
+    this.cdr.detectChanges();
+  }
 
   onCoachSelected(coach: Coach): void {
     this.selectedCoach = coach;
-    if (this.selectedUser) this.selectedUser.coachId = coach.id;
-  }
-
-  onRoleSelected(role: Role): void {
-    this.selectedRole = role;
-    if (this.selectedUser) this.selectedUser.roleId = role.id;
+    this.selectedUser.coachId = coach.id;
   }
 
   onSave(): void {
     if (this.selectedUser) {
-      this.userService.updateUser(this.selectedUser).subscribe({
+      const rawUser: RawUser = {
+        id: this.selectedUser.id,
+        usernameOrName: this.selectedUser.username,
+        email: this.selectedUser.email,
+        avatarUrl: this.selectedUser.avatarUrl,
+        roles: [], // Role eltávolítva
+        extraFields: {
+          coach_id: this.selectedUser.coachId,
+          age: this.selectedUser.age,
+          weight: this.selectedUser.weight,
+          height: this.selectedUser.height,
+          gender: this.selectedUser.gender,
+          goals: this.selectedUser.goals
+        }
+      };
+
+      this.userService.updateUser(rawUser, []).subscribe({
         next: () => alert('Felhasználó sikeresen frissítve!'),
         error: (err) => alert('Hiba a frissítés során: ' + err.message)
       });
