@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../services/auth/auth.service';
-import { AdminDashboardService } from '../../../../services/admin/admin-dashboard.service';
+import { CoachProfileService } from '../../../../services/coach/coach-profile.service';
 import {USER_MESSAGES } from '../../../../constants/user-messages'
 export interface CoachProfile {
   id?: number;
@@ -39,14 +39,14 @@ export class CoachProfileComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private adminDashboardService: AdminDashboardService
+    private coachProfileService: CoachProfileService
   ) {}
 
   ngOnInit(): void {
     const userId = this.authService.getUserId();
     console.log('[CoachProfileComponent] User ID:', userId);
     if (userId) {
-      this.adminDashboardService.getMemberById(userId).subscribe({
+      this.coachProfileService.getMemberById(userId).subscribe({
         next: (profile: any) => {
           this.profile = {
             id: profile.id,
@@ -88,7 +88,7 @@ export class CoachProfileComponent implements OnInit {
       passwordHash: this.profile.password_hash
     };
 
-    this.adminDashboardService.saveCoachProfile(payload).subscribe({
+    this.coachProfileService.saveCoachProfile(payload).subscribe({
       next: (res: any) => {
         console.log('Profile saved successfully', res);
         this.message = USER_MESSAGES.saveProfileSuccess;

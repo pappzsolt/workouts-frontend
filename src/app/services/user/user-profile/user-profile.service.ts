@@ -1,26 +1,33 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-
-export interface UserProfile {
-  id: number;
-  username: string;
-  email: string;
-  joinDate: string;
-}
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
+import { AuthService } from '../../auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserProfileService {
-  constructor() {}
+  private baseUrl = 'http://localhost:8080/api/members';
 
-  getProfile(): Observable<UserProfile> {
-    // Tesztadat
-    return of({
-      id: 1,
-      username: 'user1',
-      email: 'user1@example.com',
-      joinDate: '2023-01-01'
-    });
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService // 🔹 AuthService injektálva
+  ) {}
+
+  getMemberById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/${id}`).pipe(
+      map(res => res.data) // csak a data rész kell
+    );
+  }
+
+  /** 🔹 Bejelentkezett felhasználó profiljának lekérése */
+  getLoggedInMemberProfile(): Observable<any> {
+    const userId = this.authService.getUserId(); // ID a tokenből
+    if (!userId) throw new Error('Nincs bejelentkezett felhasználó');
+    return this.getMemberById(userId);
+  }
+
+  saveUserProfile(profile: any): Observable<any> {
+    return this.http.post<any>(this.baseUrl, profile);
   }
 }

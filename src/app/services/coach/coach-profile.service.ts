@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { AuthService } from '../../services/auth/auth.service';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AdminDashboardService {
+export class CoachProfileService {
   private baseUrl = 'http://localhost:8080/api/members';
 
   constructor(
