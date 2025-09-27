@@ -35,8 +35,12 @@ export class RoleSelectComponent implements OnInit {
       this.roleService.getRoles().subscribe({
         next: (roles) => {
           this.roles = roles;
+          // 🔹 Ha van kiválasztott role, illeszd az új listához
           if (this.selectedRole) {
-            this.selectedRole = this.roles.find(r => r.id === this.selectedRole?.id);
+            const match = this.roles.find(r => r.id === this.selectedRole?.id);
+            if (match) {
+              this.selectedRole = match;
+            }
           }
         },
         error: (err) => {

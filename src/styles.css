@@ -119,3 +119,6 @@ tr:hover {
     @apply text-sm px-2 py-1;
   }
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
