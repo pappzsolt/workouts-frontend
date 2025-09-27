@@ -7,4 +7,10 @@ export const USER_MESSAGES = {
   notFound: 'Nincs találat',
   notResult: 'A keresés sikertelen.',
   userOrPassFailed: 'Hibás felhasználónév vagy jelszó',
+  noUserId: 'Nincs bejelentkezett felhasználó!',
+  loadProfileError: 'Hiba történt a profil betöltésekor!',
+  saveProfileSuccess: 'Profil sikeresen mentve!',
+  saveProfileNoId: 'Hiba: nincs érvényes felhasználói ID!',
+  saveProfileNetworkError: 'Hálózati hiba! Ellenőrizd a szerver elérhetőségét.',
+  saveProfileUnknownError: 'Ismeretlen hiba történt a profil mentésekor.'
 };

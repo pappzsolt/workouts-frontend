@@ -1,51 +1,56 @@
 <h2 class="text-2xl font-bold mb-6 text-center">Coach Profile</h2>
 
+<!-- 🔹 Üzenet megjelenítése -->
+<div *ngIf="message" class="bg-yellow-100 text-yellow-800 border border-yellow-300 rounded-lg p-3 mb-4 text-center">
+  {{ message }}
+</div>
+
 <form class="bg-white rounded-xl shadow-lg p-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
 
   <div>
     <label class="block text-gray-700 mb-1" for="name">Name</label>
     <input id="name" name="name" type="text" placeholder="Name"
+           [(ngModel)]="profile.name"
            class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
   </div>
 
   <div>
     <label class="block text-gray-700 mb-1" for="email">Email</label>
     <input id="email" name="email" type="email" placeholder="Email"
+           [(ngModel)]="profile.email"
            class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
   </div>
 
   <div>
     <label class="block text-gray-700 mb-1" for="password_hash">Password</label>
     <input id="password_hash" name="password_hash" type="password" placeholder="Password"
+           [(ngModel)]="profile.password_hash"
            class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
   </div>
 
   <div>
     <label class="block text-gray-700 mb-1" for="phone">Phone</label>
     <input id="phone" name="phone" type="text" placeholder="Phone"
+           [(ngModel)]="profile.phone"
            class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
   </div>
 
   <div class="sm:col-span-2 md:col-span-3">
     <label class="block text-gray-700 mb-1" for="specialization">Specialization</label>
     <textarea id="specialization" name="specialization" rows="3" placeholder="Specialization"
+              [(ngModel)]="profile.specialization"
               class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"></textarea>
   </div>
 
   <div class="sm:col-span-2 md:col-span-3">
     <label class="block text-gray-700 mb-1" for="avatar_url">Avatar URL</label>
     <input id="avatar_url" name="avatar_url" type="text" placeholder="Avatar image URL"
-           class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
-  </div>
-
-  <div class="sm:col-span-2 md:col-span-3">
-    <label class="block text-gray-700 mb-1" for="created_at">Created At</label>
-    <input id="created_at" name="created_at" type="date"
+           [(ngModel)]="profile.avatar_url"
            class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
   </div>
 
   <div class="sm:col-span-2 md:col-span-3 text-center mt-4">
-    <button type="submit"
+    <button type="button" (click)="saveProfile()"
             class="bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
       Save
     </button>

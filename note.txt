@@ -23,5 +23,5 @@ edit coacj
 backenden ezt módosítani kell, hogy csak a coachokat kérje le :http://localhost:8080/api/members
 kell egy oylan is ami a usereket külön
 !!!!!!!!!
-el kell http://localhost:4200/coach/dashboard
+el kell http://localhost:4200/coach/profile itt kezdjük
 !!!!!!!!

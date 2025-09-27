@@ -58,6 +58,19 @@ export class AuthService {
       return null;
     }
   }
+  getUserId(): number | null {
+    const token = this.getAccessToken();
+    if (!token) return null;
+
+    try {
+      const decodedToken = jwtDecode<TokenPayload>(token);
+      console.log('[AuthService] Decoded token:', decodedToken);
+      return decodedToken.id; // vagy decodedToken.sub, attól függ melyikben van
+    } catch (e) {
+      console.error('[AuthService] Token dekódolási hiba', e);
+      return null;
+    }
+  }
 
   isAdmin(): boolean {
     return this.getUserRole() === 'ROLE_ADMIN';
