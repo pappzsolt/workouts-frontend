@@ -10,7 +10,7 @@
   <div
     *ngFor="let program of programs$ | async"
     class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
-    (click)="goToWorkouts(program.id)"
+    (click)="goToWorkouts(program.id, program.name)"
   >
     <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">🏋️‍♂️</div>
     <div class="font-semibold text-lg sm:text-xl md:text-2xl">{{ program.name }}</div>
@@ -25,3 +25,4 @@
 >
   Jelenleg nincsenek elérhető programok.
 </div>
+

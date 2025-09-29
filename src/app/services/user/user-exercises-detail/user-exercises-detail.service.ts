@@ -31,11 +31,13 @@ export class UserExercisesDetailService {
 
   constructor(private http: HttpClient) {}
 
-  getExerciseById(exerciseId: number): Observable<Exercise> {
-    return this.http.get<Exercise>(`${this.apiUrl}/detail/${exerciseId}`);
+  // 🔹 JSON body-val lekérdezés a részletekhez
+  getExerciseById(exerciseId: number, workoutId: number): Observable<Exercise> {
+    const body = { exerciseId, workoutId };
+    return this.http.post<Exercise>(`${this.apiUrl}/detail`, body);
   }
 
-  // 🔹 Új updateExerciseDone metódus JSON body-val
+  // 🔹 Update done status JSON body-val
   updateExerciseDone(workoutId: number, exerciseId: number, done: boolean): Observable<ExerciseResponse> {
     const body = { workoutId, exerciseId, done };
     return this.http.patch<ExerciseResponse>(`${this.apiUrl}/done`, body);

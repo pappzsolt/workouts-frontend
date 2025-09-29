@@ -12,6 +12,7 @@ import { Observable } from 'rxjs';
 })
 export class UserExercisesComponent implements OnInit {
   workoutId!: number;
+  workoutName!: string;          // új mező
   exercises$!: Observable<ExerciseDto[]>;
 
   constructor(
@@ -21,13 +22,19 @@ export class UserExercisesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // a paraméter neve a route-ban: workoutId
+    // route paramok
     this.workoutId = Number(this.route.snapshot.paramMap.get('workoutId'));
+
+    // state-ből jön a workoutName
+    this.workoutName = history.state['workoutName'];
+
     this.exercises$ = this.exercisesService.getExercisesByWorkout(this.workoutId);
   }
 
   goToExercise(exerciseId: number) {
-    // navigálunk az exercise detail komponensre a workoutId-t is átadva
-    this.router.navigate(['/user/workouts', this.workoutId, 'exercises', exerciseId]);
+    // továbbnavigálás exercise detail-re – workoutId + workoutName
+    this.router.navigate(['/user/workouts', this.workoutId, 'exercises', exerciseId], {
+      state: { workoutName: this.workoutName }
+    });
   }
 }

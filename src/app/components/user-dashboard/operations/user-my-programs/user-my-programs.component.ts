@@ -38,7 +38,15 @@ export class UserMyProgramsComponent implements OnInit {
     });
   }
 
-  goToWorkouts(programId: number) {
-    this.router.navigate(['/user/programs', programId, 'workouts']);
+  /** Navigáció a workouts oldalára + program név átadása state-ben */
+  /** Navigáció a programhoz tartozó workouts oldalára + programName átadás state-ben */
+  goToWorkouts(programId: number, programName: string): void {
+    this.router.navigate(
+      ['/user/programs', programId, 'workouts'],
+      {
+        state: { programName }
+      }
+    );
   }
+
 }

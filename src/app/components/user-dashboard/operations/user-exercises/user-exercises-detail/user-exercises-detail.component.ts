@@ -23,12 +23,12 @@ export class UserExerciseDetailComponent implements OnInit {
 
   ngOnInit(): void {
     const exerciseId = Number(this.route.snapshot.paramMap.get('exerciseId'));
-    // Például a workoutId-t a route param-ból is kaphatod
     this.workoutId = Number(this.route.snapshot.paramMap.get('workoutId'));
 
-    this.exercise$ = this.exercisesService.getExerciseById(exerciseId);
+    // JSON body-s POST lekérés
+    this.exercise$ = this.exercisesService.getExerciseById(exerciseId, this.workoutId);
 
-    // előfizetés a helyi változóhoz
+    // előfizetés a helyi változóhoz (checkbox frissítéséhez)
     this.exercise$.subscribe(ex => this.exercise = ex);
   }
 
@@ -41,12 +41,11 @@ export class UserExerciseDetailComponent implements OnInit {
   toggleDone(checked: boolean) {
     if (!this.exercise) return;
 
-    this.exercise.done = checked;
     this.exercisesService.updateExerciseDone(this.workoutId, this.exercise.id, checked)
       .subscribe({
         next: (updated: ExerciseResponse) => {
           if (updated.success) {
-            this.exercise.done = checked;
+            this.exercise.done = checked; // frissítés csak sikeres backend válasz esetén
           } else {
             console.error('Hiba a Done frissítésnél:', updated.message);
           }
