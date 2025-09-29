@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
 import { User ,RawUser, Coach} from '../../../../models/user-profil.model';
 import { UserProfilService } from '../../../../services/user/user-profile/user-profile.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-user-edit',
@@ -54,28 +55,15 @@ export class UserProfileComponent implements OnInit {
       return;
     }
 
-    this.userService.getCoaches().subscribe({
-      next: (coaches: Coach[]) => {
+    forkJoin({
+      coaches: this.userService.getCoaches(),
+      roles: this.roleService.getRoles(),
+      profile: this.userService.getMemberById(userId)
+    }).subscribe({
+      next: ({ coaches, roles, profile }) => {
         this.coaches = coaches;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.message = USER_MESSAGES.loadCoachesError;
-      }
-    });
-
-    this.roleService.getRoles().subscribe({
-      next: (roles: Role[]) => {
         this.roles = roles;
-        this.cdr.detectChanges();
-      },
-      error: () => {
-        this.message = USER_MESSAGES.loadRolesError;
-      }
-    });
 
-    this.userService.getMemberById(userId).subscribe({
-      next: (profile: any) => {
         this.selectedUser = {
           id: profile.id,
           username: profile.usernameOrName || '',
@@ -91,9 +79,12 @@ export class UserProfileComponent implements OnInit {
           roleName: undefined
         };
 
+        // Coach neve
         const coach = this.coaches.find(c => c.id === this.selectedUser.coachId);
         this.coachName = coach ? coach.name : '';
 
+        this.selectedCoach = coach;
+        this.cdr.detectChanges();
         this.message = USER_MESSAGES.profileLoaded;
       },
       error: () => {

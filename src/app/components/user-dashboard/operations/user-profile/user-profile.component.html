@@ -60,13 +60,14 @@
            class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
   </div>
 
-  <!-- 🔹 Coach name mező -->
   <div class="sm:col-span-2 md:col-span-3">
-    <label class="block text-gray-700 mb-1" for="coach_name">Coach</label>
-    <input id="coach_name" name="coach_name" type="text" placeholder="Coach"
-           [value]="coachName"
-           class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500" readonly/>
+    <label class="block text-gray-700 mb-1">Coach</label>
+    <div class="border border-gray-300 rounded-lg px-3 py-2 w-full bg-gray-100 text-gray-700">
+      {{ coachName }}
+    </div>
   </div>
+
+
 
   <div class="sm:col-span-2 md:col-span-3 text-center mt-4">
     <button type="button"
