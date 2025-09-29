@@ -12,5 +12,10 @@ export const USER_MESSAGES = {
   saveProfileSuccess: 'Profil sikeresen mentve!',
   saveProfileNoId: 'Hiba: nincs érvényes felhasználói ID!',
   saveProfileNetworkError: 'Hálózati hiba! Ellenőrizd a szerver elérhetőségét.',
-  saveProfileUnknownError: 'Ismeretlen hiba történt a profil mentésekor.'
+  saveProfileUnknownError: 'Ismeretlen hiba történt a profil mentésekor.',
+  networkError: 'Hálózati hiba történt. Ellenőrizd az internetkapcsolatot.',
+  loadPrograms: 'Programok betöltése folyamatban...',
+  loadProgramsError: 'Hiba történt a programok betöltése közben!',
+  noPrograms: 'Jelenleg nincsenek elérhető programok.',
+  programClickError: 'Hiba történt a program kiválasztásakor.'
 };

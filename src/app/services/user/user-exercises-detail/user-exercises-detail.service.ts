@@ -1,10 +1,20 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 export interface Exercise {
   id: number;
   name: string;
   description: string;
+  imageUrl?: string | null;
+  videoUrl?: string | null;
+  muscleGroup?: string | null;
+  equipment?: string | null;
+  difficultyLevel?: string | null;
+  category?: string | null;
+  caloriesBurnedPerMinute?: number | null;
+  durationSeconds?: number | null;
+  done?: boolean;
 }
 
 @Injectable({
@@ -12,15 +22,12 @@ export interface Exercise {
 })
 export class UserExercisesDetailService {
 
-  constructor() {}
+  private apiUrl = 'http://localhost:8080/api/exercises/detail'; // új végpont
 
-  // Tesztadatok user és workout alapján
-  getExercisesByWorkout(workoutId: number): Observable<Exercise[]> {
-    const testData: Exercise[] = [
-      { id: 1, name: `Exercise detail1 (Workout ${workoutId})`, description: 'Bemelegítő gyakorlat' },
-      { id: 2, name: `Exercise detail2 (Workout ${workoutId})`, description: 'Erőfejlesztő gyakorlat' },
-      { id: 3, name: `Exercise detail3 (Workout ${workoutId})`, description: 'Nyújtó gyakorlat' }
-    ];
-    return of(testData);
+  constructor(private http: HttpClient) {}
+
+  // Lekéri az exercise részleteit közvetlenül az exerciseId alapján
+  getExerciseById(exerciseId: number): Observable<Exercise> {
+    return this.http.get<Exercise>(`${this.apiUrl}/${exerciseId}`);
   }
 }

@@ -16,7 +16,7 @@ export class WorkoutsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,  // ⬅ hozzáadva
+    private router: Router,
     private workoutsService: UserWorkoutsService
   ) {}
 
@@ -25,7 +25,7 @@ export class WorkoutsComponent implements OnInit {
     this.workouts$ = this.workoutsService.getWorkoutsByProgram(this.programId);
   }
 
-  // ⬅ hozzáadott navigációs metódus
+  /** Navigáció a workout exercises oldalára */
   goToExercises(workoutId: number) {
     this.router.navigate(['/user/workouts', workoutId, 'exercises']);
   }

@@ -120,8 +120,8 @@ export const routes: Routes = [
       { path: 'my-programs', component: UserMyProgramsComponent },
       { path: 'statistics', component: UserStatisticsComponent },
       { path: 'programs/:id/workouts', component: WorkoutsComponent },
-      { path: 'workouts/:id/exercises', component: UserExercisesComponent },
-      { path: 'exercises/:id', component: UserExerciseDetailComponent },
+      { path: 'workouts/:workoutId/exercises', component: UserExercisesComponent },
+      { path: 'workouts/:workoutId/exercises/:exerciseId', component: UserExerciseDetailComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: '**', redirectTo: 'dashboard' }
     ]
