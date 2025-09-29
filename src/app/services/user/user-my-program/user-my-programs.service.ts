@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, tap, catchError, of } from 'rxjs';
+import { Observable, map, catchError, of } from 'rxjs';
+import { USER_MESSAGES } from '../../../constants/user-messages';
 
 export interface UserProgram {
   id: number;
@@ -21,14 +22,13 @@ export class UserMyProgramsService {
   constructor(private http: HttpClient) {}
 
   getPrograms(): Observable<UserProgram[]> {
-    console.log('getPrograms() called'); // 🔹 ellenőrzés, hogy a service hívódik-e
 
     return this.http.get<any>(this.apiUrl).pipe(
-      tap(res => console.log('🔹 Raw API response:', res)), // nyers válasz
-
       map(res => {
         if (!res || !res.data) {
-          console.warn('⚠️ API response does not have a data property', res);
+          // Hibás API válasz esetén
+          // console.warn helyett:
+          // this.message = USER_MESSAGES.loadProgramsError;
           return [];
         }
         return res.data.map((p: any) => ({
@@ -41,10 +41,9 @@ export class UserMyProgramsService {
           assignedAt: p.assignedAt
         }));
       }),
-
-      tap(programs => console.log('🔹 Mapped programs:', programs)), // feldolgozott adat
-      catchError(err => {
-        console.error('❌ Error fetching programs:', err);
+      catchError(() => {
+        // console.error helyett:
+        // this.message = USER_MESSAGES.loadProgramsError;
         return of([]); // hibánál üres lista
       })
     );

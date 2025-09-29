@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CoachWorkoutsService, Training } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { CommonModule } from '@angular/common';
+import { USER_MESSAGES } from '../../../../constants/user-messages';
 
 @Component({
   selector: 'app-coach-workouts',
@@ -12,6 +13,7 @@ import { CommonModule } from '@angular/common';
 export class CoachWorkoutsComponent implements OnInit {
   programId!: number;
   trainings: Training[] = [];
+  message: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -20,32 +22,68 @@ export class CoachWorkoutsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      const id = Number(params.get('id'));
-      if (id) {
-        this.programId = id;
-        this.loadWorkouts(id);
-      } else {
-        // Ha nincs programId, akkor mindent mutat
-        this.workoutService.getTrainings().subscribe(data => this.trainings = data);
+    try {
+      this.route.paramMap.subscribe(params => {
+        const id = Number(params.get('id'));
+        if (id) {
+          this.programId = id;
+          this.loadWorkouts(id);
+        } else {
+          this.loadAllTrainings();
+        }
+      });
+    } catch (error) {
+      this.message = USER_MESSAGES.loadProgramsError;
+    }
+  }
+
+  private async loadAllTrainings() {
+    try {
+      const data = await this.workoutService.getTrainings().toPromise();
+      if (!data || data.length === 0) {
+        this.message = USER_MESSAGES.noPrograms;
       }
-    });
-  } // <-- itt lezárva a ngOnInit()
-
-  loadWorkouts(programId: number) {
-    this.workoutService.getWorkoutsByProgram(programId).subscribe(data => {
-      this.trainings = data;
-    });
+      this.trainings = data || [];
+    } catch (error) {
+      this.message = USER_MESSAGES.loadProgramsError;
+      this.trainings = [];
+    }
   }
 
-  goToWorkoutDetails(workoutId: number) {
-    this.router.navigate([`/coach/workouts/${workoutId}`]);
+  private async loadWorkouts(programId: number) {
+    try {
+      const data = await this.workoutService.getWorkoutsByProgram(programId).toPromise();
+      if (!data || data.length === 0) {
+        this.message = USER_MESSAGES.noPrograms;
+      }
+      this.trainings = data || [];
+    } catch (error) {
+      this.message = USER_MESSAGES.loadProgramsError;
+      this.trainings = [];
+    }
   }
 
-  editWorkout(workoutId: number) {
-    this.router.navigate([`/coach/workouts/${workoutId}/edit`]);
+  async goToWorkoutDetails(workoutId: number) {
+    try {
+      await this.router.navigate([`/coach/workouts/${workoutId}`]);
+    } catch {
+      this.message = USER_MESSAGES.programClickError;
+    }
   }
-  createNewWorkout() {
-    this.router.navigate(['/coach/workouts/new']); // vagy a megfelelő útvonal
+
+  async editWorkout(workoutId: number) {
+    try {
+      await this.router.navigate([`/coach/workouts/${workoutId}/edit`]);
+    } catch {
+      this.message = USER_MESSAGES.programClickError;
+    }
+  }
+
+  async createNewWorkout() {
+    try {
+      await this.router.navigate(['/coach/workouts/new']);
+    } catch {
+      this.message = USER_MESSAGES.programClickError;
+    }
   }
 }

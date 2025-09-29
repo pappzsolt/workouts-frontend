@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CoachProgramService, Program } from '../../../../services/coach/coach-program/coach-program.service';
 import { CommonModule } from '@angular/common';
+import { catchError, of } from 'rxjs';
+import { USER_MESSAGES } from '../../../../constants/user-messages';
 
 @Component({
   selector: 'app-coach-program-list',
@@ -11,6 +13,7 @@ import { CommonModule } from '@angular/common';
 })
 export class CoachProgramListComponent implements OnInit {
   programs: Program[] = [];
+  message: string = '';
 
   constructor(
     private programService: CoachProgramService,
@@ -22,21 +25,39 @@ export class CoachProgramListComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       const coachId = +params['coachId'];
       if (coachId) {
-        this.programService.getProgramsByCoach(coachId).subscribe(data => {
+        this.programService.getProgramsByCoach(coachId).pipe(
+          catchError(() => {
+            this.message = USER_MESSAGES.loadProgramsError;
+            return of([]);
+          })
+        ).subscribe(data => {
+          if (data.length === 0) {
+            this.message = USER_MESSAGES.noPrograms;
+          }
           this.programs = data;
         });
+      } else {
+        this.message = USER_MESSAGES.noUserId;
       }
     });
   }
 
   goToWorkouts(programId: number) {
-    this.router.navigate([`coach/programs/${programId}/workouts`]);
+    this.router.navigate([`coach/programs/${programId}/workouts`]).catch(() => {
+      this.message = USER_MESSAGES.programClickError;
+    });
   }
 
   editProgram(programId: number) {
-    this.router.navigate([`coach/programs/${programId}/edit`]);
+    this.router.navigate([`coach/programs/${programId}/edit`]).catch(() => {
+      this.message = USER_MESSAGES.programClickError;
+    });
   }
+
   createNewProgram() {
-    this.router.navigate(['/coach/programs/new']); // az út legyen a routodnak megfelelő
+    this.router.navigate(['/coach/programs/new']).catch(() => {
+      this.message = USER_MESSAGES.programClickError;
+    });
   }
 }
+
