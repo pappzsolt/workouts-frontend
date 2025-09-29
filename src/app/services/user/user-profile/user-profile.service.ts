@@ -1,33 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
+import { RawUser, Coach,Role } from '../../../models/user-profil.model';
 
-export interface RawUser {
-  id: number;
-  usernameOrName: string;
-  email: string;
-  password?: string; // opcionális a frissítéshez
-  avatarUrl?: string;
-  roles: string[];
-  extraFields?: {
-    coach_id?: number;
-    age?: number;
-    weight?: number;
-    height?: number;
-    gender?: string;
-    goals?: string;
-  };
-}
-
-export interface Coach {
-  id: number;
-  name: string;
-}
-
-export interface Role {
-  id: number;
-  name: string;
-}
 
 @Injectable({
   providedIn: 'root'
@@ -48,22 +23,24 @@ export class UserProfilService {
 
   getCoaches(): Observable<Coach[]> {
     return this.http.get<any>(this.coachesUrl).pipe(
-      map(res => res.data.map((c: any) => ({ id: c.id, name: c.usernameOrName })))
+      map(res => res.data.map((c: any) => ({ id: c.id, name: c.usernameOrName || c.name })))
     );
   }
+
 
   getRoles(): Observable<Role[]> {
     return this.http.get<any>(this.rolesUrl).pipe(
       map(res => res.data)
     );
   }
+
   getMemberById(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
-      map(res => res.data) // csak a data rész kell
+      map(res => res.data)
     );
   }
+
   updateUser(user: RawUser, roleIds: number[]): Observable<any> {
-    // roleIds-t a komponens adja át
     const payload: any = {
       type: 'user',
       username: user.usernameOrName,

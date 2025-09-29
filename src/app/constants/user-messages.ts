@@ -17,5 +17,10 @@ export const USER_MESSAGES = {
   loadPrograms: 'Programok betöltése folyamatban...',
   loadProgramsError: 'Hiba történt a programok betöltése közben!',
   noPrograms: 'Jelenleg nincsenek elérhető programok.',
-  programClickError: 'Hiba történt a program kiválasztásakor.'
+  programClickError: 'Hiba történt a program kiválasztásakor.',
+  loadCoachesError: 'Hiba történt a coachok betöltésekor!',
+  loadRolesError: 'Hiba történt a szerepkörök betöltésekor!',
+  profileLoaded: 'Profil sikeresen betöltve!',
+  updateSuccess: 'Felhasználó sikeresen frissítve!',
+  updateError: 'Hiba a frissítés során!'
 };

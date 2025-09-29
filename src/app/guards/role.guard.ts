@@ -6,30 +6,31 @@ export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: R
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  // Route data-ban szereplő engedélyezett szerepek (layout szinten)
   const allowedRoles: string[] = route.data['roles'] || [];
-
   const token = auth.getAccessToken();
-
-  // null-safety: ha nincs role, üres string
   const userRole = auth.getUserRole() ?? '';
 
-  // Ha nincs token vagy szerepkör
+  console.log('[roleGuard] token:', token);
+  console.log('[roleGuard] userRole:', userRole);
+  console.log('[roleGuard] allowedRoles:', allowedRoles);
+
   if (!token || !userRole) {
+    console.warn('[roleGuard] no token or role, redirecting to login');
     router.navigate(['/login']);
     return false;
   }
 
-  // Több role kezelése (pl. "ROLE_ADMIN,ROLE_USER")
   const userRoles = userRole.split(',').map(r => r.trim());
-
-  // Ellenőrizzük, hogy van-e közös role az engedélyezettekkel
   const hasAccess = userRoles.some(r => allowedRoles.includes(r));
 
-  if (hasAccess) {
-    return true;
-  } else {
-    router.navigate(['/login']); // layout szintű redirect
+  console.log('[roleGuard] userRoles array:', userRoles);
+  console.log('[roleGuard] hasAccess:', hasAccess);
+
+  if (!hasAccess) {
+    console.warn('[roleGuard] access denied, redirecting to login');
+    router.navigate(['/login']);
     return false;
   }
+
+  return true;
 };

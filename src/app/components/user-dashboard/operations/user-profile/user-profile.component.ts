@@ -1,40 +1,23 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { UserProfilService, RawUser, Coach } from '../../../../services/user/user-profile/user-profile.service';
-
 import { Role, RoleService } from '../../../../services/roles/role.service';
 import { AuthService } from '../../../../services/auth/auth.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
-import {USER_MESSAGES} from '../../../../constants/user-messages';
-
-interface User {
-  id: number;
-  username: string;
-  email: string;
-  password?: string;
-  avatarUrl?: string;
-  age?: number;
-  weight?: number;
-  height?: number;
-  gender?: string;
-  goals?: string;
-  coachId?: number;
-  roleName?: string;
-}
+import { USER_MESSAGES } from '../../../../constants/user-messages';
+import { User ,RawUser, Coach} from '../../../../models/user-profil.model';
+import { UserProfilService } from '../../../../services/user/user-profile/user-profile.service';
 
 @Component({
   selector: 'app-user-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule,MatFormFieldModule,MatSelectModule,MatInputModule],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatInputModule],
   templateUrl: './user-profile.component.html',
 })
 export class UserProfileComponent implements OnInit {
   users: RawUser[] = [];
-
-
   selectedUser: User = {
     id: 0,
     username: '',
@@ -53,8 +36,10 @@ export class UserProfileComponent implements OnInit {
   coaches: Coach[] = [];
   roles: Role[] = [];
   selectedCoach?: Coach;
-  selectedRoles: Role[] = []; // 🔹 Több role kezelése
+  selectedRoles: Role[] = [];
   message: string = '';
+  coachName: string = '';
+
   constructor(
     private userService: UserProfilService,
     private roleService: RoleService,
@@ -63,48 +48,58 @@ export class UserProfileComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Coachok
-    this.userService.getCoaches().subscribe(coaches => {
-      this.coaches = coaches;
-      this.cdr.detectChanges();
-    });
-
-    // Role-ok
-    this.roleService.getRoles().subscribe(roles => {
-      this.roles = roles;
-      this.cdr.detectChanges();
-    });
-
-    // Felhasználók
     const userId = this.authService.getUserId();
-    if (userId) {
-      this.userService.getMemberById(userId).subscribe({
-        next: (profile: any) => {
-          this.selectedUser = {
-            id: profile.id,
-            username: profile.usernameOrName || '',
-            email: profile.email || '',
-            password: '',
-            avatarUrl: profile.avatarUrl || '',
-            age: profile.extraFields?.age,
-            weight: profile.extraFields?.weight,
-            height: profile.extraFields?.height,
-            gender: profile.extraFields?.gender,
-            goals: profile.extraFields?.goals,
-            coachId: profile.extraFields?.coach_id,
-            roleName: undefined
-          };
-          console.log('Profile loaded:', this.selectedUser);
-        },
-        error: (err: any) => {
-          console.error('Profil betöltési hiba', err);
-          this.message = USER_MESSAGES.loadProfileError;
-        }
-      });
-    } else {
-      console.warn('Nincs bejelentkezett user ID');
+    if (!userId) {
       this.message = USER_MESSAGES.noUserId;
+      return;
     }
+
+    this.userService.getCoaches().subscribe({
+      next: (coaches: Coach[]) => {
+        this.coaches = coaches;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.message = USER_MESSAGES.loadCoachesError;
+      }
+    });
+
+    this.roleService.getRoles().subscribe({
+      next: (roles: Role[]) => {
+        this.roles = roles;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.message = USER_MESSAGES.loadRolesError;
+      }
+    });
+
+    this.userService.getMemberById(userId).subscribe({
+      next: (profile: any) => {
+        this.selectedUser = {
+          id: profile.id,
+          username: profile.usernameOrName || '',
+          email: profile.email || '',
+          password: '',
+          avatarUrl: profile.avatarUrl || '',
+          age: profile.extraFields?.age,
+          weight: profile.extraFields?.weight,
+          height: profile.extraFields?.height,
+          gender: profile.extraFields?.gender,
+          goals: profile.extraFields?.goals,
+          coachId: profile.extraFields?.coach_id,
+          roleName: undefined
+        };
+
+        const coach = this.coaches.find(c => c.id === this.selectedUser.coachId);
+        this.coachName = coach ? coach.name : '';
+
+        this.message = USER_MESSAGES.profileLoaded;
+      },
+      error: () => {
+        this.message = USER_MESSAGES.loadProfileError;
+      }
+    });
   }
 
   private patchUserFromRaw(raw: RawUser) {
@@ -124,8 +119,7 @@ export class UserProfileComponent implements OnInit {
     };
 
     this.selectedCoach = this.coaches.find(c => c.id === this.selectedUser.coachId);
-
-    // 🔹 Több role beállítása a felhasználóhoz
+    this.coachName = this.selectedCoach ? this.selectedCoach.name : '';
     this.selectedRoles = this.roles.filter(r => raw.roles?.includes(r.name));
 
     this.cdr.detectChanges();
@@ -134,6 +128,7 @@ export class UserProfileComponent implements OnInit {
   onCoachSelected(coach: Coach) {
     this.selectedCoach = coach;
     this.selectedUser.coachId = coach.id;
+    this.coachName = coach.name;
   }
 
   onRoleSelected(roles: Role[]) {
@@ -147,7 +142,7 @@ export class UserProfileComponent implements OnInit {
         usernameOrName: this.selectedUser.username,
         email: this.selectedUser.email,
         avatarUrl: this.selectedUser.avatarUrl,
-        roles: this.selectedRoles.map(r => r.name), // 🔹 Több role mentése
+        roles: this.selectedRoles.map(r => r.name),
         extraFields: {
           coach_id: this.selectedUser.coachId,
           age: this.selectedUser.age,
@@ -159,8 +154,12 @@ export class UserProfileComponent implements OnInit {
       };
 
       this.userService.updateUser(rawUser, []).subscribe({
-        next: () => alert('Felhasználó sikeresen frissítve!'),
-        error: (err) => alert('Hiba a frissítés során: ' + err.message)
+        next: () => {
+          this.message = USER_MESSAGES.updateSuccess;
+        },
+        error: (err: any) => {
+          this.message = USER_MESSAGES.updateError + (err?.message || '');
+        }
       });
     }
   }
