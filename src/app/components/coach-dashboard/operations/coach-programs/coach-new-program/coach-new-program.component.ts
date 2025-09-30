@@ -2,22 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
-
-// Helyes interface definíció
-export interface Program {
-  id?: number;  // opcionális
-  name: string;
-  description?: string;
-  duration_days?: number;
-  difficulty_level?: string;
-  coach_id?: number;
-}
+import { CoachProgramService, Program } from '../../../../../services/coach/coach-program/coach-program.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-coach-new-program',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './coach-new-program.component.html',
   styleUrls: ['./coach-new-program.component.css']
 })
@@ -38,9 +29,14 @@ export class CoachNewProgramComponent implements OnInit {
   ngOnInit(): void {}
 
   saveProgram() {
-    this.programService.create(this.program).subscribe(() => {
-      this.router.navigate(['/coach/programs']);
+    this.programService.create(this.program).subscribe({
+      next: (response) => {
+        console.log('Program created:', response);
+        this.router.navigate(['/coach/programs']);
+      },
+      error: (err) => {
+        console.error('Error creating program:', err);
+      }
     });
   }
 }
-
