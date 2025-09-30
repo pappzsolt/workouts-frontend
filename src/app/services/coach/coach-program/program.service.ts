@@ -28,7 +28,7 @@ export class ProgramService {
     return this.http.get<Program>(`${this.apiUrl}/${id}`);
   }
 
-  create(program: Program): Observable<Program> {
+  createProgram(program: Program): Observable<Program> {
     return this.http.post<Program>(this.apiUrl, program);
   }
 

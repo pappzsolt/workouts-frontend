@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CoachProgramService, Program } from '../../../../../services/coach/coach-program/coach-program.service';
+import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
+import { Program } from '../../../../../models/program.model';
 @Component({
   selector: 'app-coach-program-edit',
   standalone: true,

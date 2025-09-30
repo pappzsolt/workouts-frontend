@@ -2,33 +2,42 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-// Interface definíció
-export interface Program {
-  id?: number;  // opcionális
-  name: string;
-  description?: string;
-  duration_days?: number;
-  difficulty_level?: string;
-  coach_id?: number;
-}
-
 @Injectable({
   providedIn: 'root'
 })
 export class CoachProgramService {
+  private baseUrl = 'http://localhost:8080/api/programs';
 
-  private apiUrl = 'http://localhost:8080/api/user-programs/create';
+  constructor(private http: HttpClient) {}
 
-  constructor(private http: HttpClient) { }
+  /** 🔹 Összes program lekérése */
+  getAllPrograms(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}`);
+  }
 
-  // Program létrehozása a backendben
-  create(program: Program): Observable<any> {
-    const payload = {
-      programName: program.name,
-      programDescription: program.description,
-      durationDays: program.duration_days,
-      difficultyLevel: program.difficulty_level
-    };
-    return this.http.post<any>(this.apiUrl, payload);
+  /** 🔹 Program lekérése ID alapján */
+  getProgramById(id: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/${id}`);
+  }
+
+  /** 🔹 Program létrehozása */
+  createProgram(program: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}`, program);
+  }
+
+  /** 🔹 Program frissítése */
+  updateProgram(id: number, program: any): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/${id}`, program);
+  }
+
+  /** 🔹 Program törlése */
+  deleteProgram(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/${id}`);
+  }
+
+  /** 🔹 Adott coach összes programja */
+  getProgramsByCoach(coachId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/coach/${coachId}`);
   }
 }
+

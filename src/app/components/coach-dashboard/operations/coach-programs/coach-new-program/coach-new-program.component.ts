@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CoachProgramService, Program } from '../../../../../services/coach/coach-program/coach-program.service';
+import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
 import { HttpClientModule } from '@angular/common/http';
-
+import { Program } from '../../../../../models/program.model';
 @Component({
   selector: 'app-coach-new-program',
   standalone: true,
@@ -29,7 +29,7 @@ export class CoachNewProgramComponent implements OnInit {
   ngOnInit(): void {}
 
   saveProgram() {
-    this.programService.create(this.program).subscribe({
+    this.programService.createProgram(this.program).subscribe({
       next: (response) => {
         console.log('Program created:', response);
         this.router.navigate(['/coach/programs']);
