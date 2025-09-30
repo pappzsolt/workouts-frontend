@@ -19,7 +19,7 @@
   </div>
 
   <!-- 🔹 Nézetváltás gombok -->
-  <div class="w-full max-w-4xl flex justify-end mb-4 space-x-2" *ngIf="members.length >= 1">
+  <div class="w-full max-w-4xl flex justify-end mb-4 space-x-2" *ngIf="displayedMembers.length >= 1">
     <button
       (click)="viewMode='grid'"
       [class]="viewMode === 'grid' ? 'px-4 py-2 rounded-lg bg-blue-500 text-white' : 'px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300'"
@@ -51,8 +51,8 @@
 
   <!-- 🔹 Találatok száma / nincs találat -->
   <div *ngIf="!loading && !errorMessage" class="w-full max-w-6xl mb-4 text-gray-700 text-base font-medium text-center">
-    <span *ngIf="members.length > 0">Találatok száma: {{ members.length }}</span>
-    <span *ngIf="members.length === 0 && keyword">
+    <span *ngIf="displayedMembers.length > 0">Találatok száma: {{ members.length }}</span>
+    <span *ngIf="displayedMembers.length === 0 && keyword">
       <div class="flex flex-col items-center justify-center p-6 rounded-xl bg-white border border-gray-200 shadow-sm">
         <svg class="w-12 h-12 mb-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M16.65 11a5.65 5.65 0 11-11.3 0 5.65 5.65 0 0111.3 0z"/>
@@ -68,7 +68,7 @@
 
     <!-- Grid nézet -->
     <div *ngIf="viewMode==='grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-      <ng-container *ngFor="let member of members">
+      <ng-container *ngFor="let member of displayedMembers">
         <div class="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition flex flex-col items-start border border-gray-100">
           <h3 class="text-xl font-semibold mb-2">{{ member.usernameOrName }}</h3>
           <p class="text-gray-600 text-base mb-1">{{ member.email }}</p>
@@ -103,8 +103,8 @@
       </ng-container>
 
       <!-- Skeleton placeholder -->
-      <ng-container *ngIf="members.length > 0 && members.length < 3">
-        <ng-container *ngFor="let i of [].constructor(3 - members.length)">
+      <ng-container *ngIf="displayedMembers.length > 0 && displayedMembers.length < pageSize">
+        <ng-container *ngFor="let i of [].constructor(pageSize - displayedMembers.length)">
           <div class="bg-gray-100 animate-pulse p-6 rounded-2xl border border-dashed border-gray-300 flex flex-col justify-center items-center">
             <div class="w-20 h-20 bg-gray-200 rounded-full mb-4"></div>
             <div class="w-32 h-4 bg-gray-200 rounded mb-2"></div>
@@ -127,7 +127,7 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let member of members" class="hover:bg-gray-50">
+        <tr *ngFor="let member of displayedMembers" class="hover:bg-gray-50">
           <td class="px-4 py-2 border border-gray-200">{{ member.usernameOrName }}</td>
           <td class="px-4 py-2 border border-gray-200">{{ member.email }}</td>
           <td class="px-4 py-2 border border-gray-200">{{ member.roles.join(', ') }}</td>
@@ -159,5 +159,25 @@
       </table>
     </div>
 
+  </div>
+
+  <!-- 🔹 Pagination controls -->
+  <div *ngIf="totalPages > 1" class="flex justify-center items-center space-x-2 mt-6">
+    <button (click)="prevPage()" [disabled]="currentPage===1"
+            class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100">
+      Előző
+    </button>
+
+    <ng-container *ngFor="let page of [].constructor(totalPages); let i = index">
+      <button (click)="goToPage(i+1)"
+              [class]="currentPage===i+1 ? 'px-3 py-1 rounded bg-blue-500 text-white' : 'px-3 py-1 rounded bg-gray-200 hover:bg-gray-300'">
+        {{ i+1 }}
+      </button>
+    </ng-container>
+
+    <button (click)="nextPage()" [disabled]="currentPage===totalPages"
+            class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100">
+      Következő
+    </button>
   </div>
 </div>

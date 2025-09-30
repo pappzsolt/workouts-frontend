@@ -2,7 +2,10 @@
 
   <!-- Fejléc -->
   <header class="bg-blue-600 text-white p-4 flex flex-col sm:flex-row justify-between items-center">
-    <div class="text-lg font-bold">Dashboard</div>
+    <div class="text-lg font-bold">
+      {{ currentDate | date:'yyyy.MM.dd HH:mm:ss' }}
+    </div>
+
     <div class="flex flex-col sm:flex-row items-center gap-2 mt-2 sm:mt-0">
       <span *ngIf="username">Felhasználó: {{ username }}</span>
       <span *ngIf="role">Jogosultság: {{ role }}</span>

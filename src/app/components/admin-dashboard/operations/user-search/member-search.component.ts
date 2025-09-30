@@ -14,11 +14,17 @@ import { Member } from '../../../../models/member-search-model';
 })
 export class MemberSearchComponent {
   keyword = '';
-  members: (Member & { coach?: any })[] = []; // coach mező opcionális
+  members: (Member & { coach?: any })[] = [];
+  displayedMembers: (Member & { coach?: any })[] = []; // csak a jelenlegi oldal
   message = '';
   errorMessage = '';
   loading = false;
   viewMode: 'grid' | 'table' = 'grid';
+
+  // Pagination
+  currentPage = 1;
+  pageSize = 6; // lap mérete
+  totalPages = 1;
 
   constructor(private memberSearchService: MemberSearchService) {}
 
@@ -32,7 +38,9 @@ export class MemberSearchComponent {
         this.loading = false;
         if (res.success) {
           this.members = res.data;
-
+          this.totalPages = Math.ceil(this.members.length / this.pageSize);
+          this.currentPage = 1;
+          this.updateDisplayedMembers();
 
           if (this.members.length === 0) {
             this.message = USER_MESSAGES.notFound;
@@ -48,5 +56,34 @@ export class MemberSearchComponent {
         this.errorMessage = err;
       }
     });
+  }
+
+  // Frissíti a jelenlegi oldalon látható tagokat
+  updateDisplayedMembers() {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+    this.displayedMembers = this.members.slice(startIndex, endIndex);
+  }
+
+  // Lapozás
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updateDisplayedMembers();
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updateDisplayedMembers();
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updateDisplayedMembers();
+    }
   }
 }

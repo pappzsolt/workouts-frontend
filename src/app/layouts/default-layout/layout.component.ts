@@ -15,6 +15,7 @@ export class LayoutComponent implements OnInit {
   username: string | null = null;
   role: string | null = null;
   currentYear: number = new Date().getFullYear();
+  currentDate: Date = new Date(); // <-- új változó
 
   adminMenuItems = [
     { label: 'Admin Dashboard', path: '/admin/dashboard' },
@@ -39,6 +40,11 @@ export class LayoutComponent implements OnInit {
   ngOnInit(): void {
     this.username = this.authService.getUserName();
     this.role = this.authService.getUserRole();
+
+    // Dátum frissítése másodpercenként
+    setInterval(() => {
+      this.currentDate = new Date();
+    }, 1000);
   }
 
   onLogout() {
@@ -56,3 +62,4 @@ export class LayoutComponent implements OnInit {
     }
   }
 }
+
