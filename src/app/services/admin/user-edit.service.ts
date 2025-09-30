@@ -59,7 +59,6 @@ export class UserEditService {
   }
 
   updateUser(user: RawUser, roleIds: number[]): Observable<any> {
-    // roleIds-t a komponens adja át
     const payload: any = {
       type: 'user',
       username: user.usernameOrName,
@@ -71,7 +70,7 @@ export class UserEditService {
       gender: user.extraFields?.gender,
       goals: user.extraFields?.goals,
       coachId: user.extraFields?.coach_id,
-      roleIds: roleIds || []
+      roleIds: roleIds || []  // ✅ itt a komponens által átadott ID-k
     };
 
     if (user.password && user.password.trim() !== '') {
@@ -84,4 +83,6 @@ export class UserEditService {
 
     return this.http.post(this.apiUrl, payload);
   }
+
+
 }

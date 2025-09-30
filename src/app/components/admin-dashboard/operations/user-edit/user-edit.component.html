@@ -67,15 +67,19 @@
       <app-coach-select [selectedCoachId]="selectedCoach?.id" (coachSelected)="onCoachSelected($event)"></app-coach-select>
     </div>
 
-    <!-- Role select -->
+
     <mat-form-field appearance="fill" class="w-full">
       <mat-label>Roles</mat-label>
-      <mat-select [(value)]="selectedRoles" multiple>
+      <mat-select multiple [value]="selectedRoles" (selectionChange)="onRoleSelected($event.value)">
         <mat-option *ngFor="let role of roles" [value]="role">
           {{ role.name }}
         </mat-option>
       </mat-select>
     </mat-form-field>
+
+
+
+
 
 
     <div class="text-center mt-4">

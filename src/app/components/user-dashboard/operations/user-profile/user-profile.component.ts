@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
-import { User ,RawUser, Coach} from '../../../../models/user-profil.model';
+import { User, RawUser, Coach } from '../../../../models/user-profil.model';
 import { UserProfilService } from '../../../../services/user/user-profile/user-profile.service';
 import { forkJoin } from 'rxjs';
 
@@ -31,7 +31,8 @@ export class UserProfileComponent implements OnInit {
     gender: '',
     goals: '',
     coachId: undefined,
-    roleName: undefined
+    roleName: undefined,
+    roleIds: [] // ✅ hozzáadva
   };
 
   coaches: Coach[] = [];
@@ -76,13 +77,12 @@ export class UserProfileComponent implements OnInit {
           gender: profile.extraFields?.gender,
           goals: profile.extraFields?.goals,
           coachId: profile.extraFields?.coach_id,
-          roleName: undefined
+          roleName: undefined,
+          roleIds: [] // ✅ hozzáadva
         };
 
-        // Coach neve
         const coach = this.coaches.find(c => c.id === this.selectedUser.coachId);
         this.coachName = coach ? coach.name : '';
-
         this.selectedCoach = coach;
         this.cdr.detectChanges();
         this.message = USER_MESSAGES.profileLoaded;
@@ -106,7 +106,8 @@ export class UserProfileComponent implements OnInit {
       gender: raw.extraFields?.gender,
       goals: raw.extraFields?.goals,
       coachId: raw.extraFields?.coach_id,
-      roleName: undefined
+      roleName: undefined,
+      roleIds: [] // ✅ hozzáadva
     };
 
     this.selectedCoach = this.coaches.find(c => c.id === this.selectedUser.coachId);
@@ -124,6 +125,7 @@ export class UserProfileComponent implements OnInit {
 
   onRoleSelected(roles: Role[]) {
     this.selectedRoles = roles;
+    this.selectedUser.roleIds = roles.map(r => r.id); // ✅ frissítve
   }
 
   onSave() {
@@ -144,7 +146,8 @@ export class UserProfileComponent implements OnInit {
         }
       };
 
-      this.userService.updateUser(rawUser, []).subscribe({
+      // ✅ roleIds átadása service-nek
+      this.userService.updateUser(rawUser, this.selectedUser.roleIds || []).subscribe({
         next: () => {
           this.message = USER_MESSAGES.updateSuccess;
         },
