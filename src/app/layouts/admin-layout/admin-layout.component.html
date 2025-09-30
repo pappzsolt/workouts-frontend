@@ -1,7 +1,38 @@
 <!-- src/app/layouts/admin-layout/admin-layout.component.html -->
-<div class="admin-layout">
-  <app-admin-menu></app-admin-menu>
-  <main>
-    <router-outlet></router-outlet>
-  </main>
+<div class="admin-layout flex flex-col min-h-screen">
+
+  <!-- Fejléc -->
+  <header class="bg-gray-800 text-white p-4 flex justify-between items-center">
+    <h1 class="text-lg md:text-xl font-bold">Admin Dashboard</h1>
+    <div class="flex items-center space-x-3">
+      <div class="text-sm md:text-base">
+        <span class="mr-2">👤 {{ username }}</span>
+        <span class="italic">({{ role }})</span>
+      </div>
+      <button
+        class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm md:text-base"
+        (click)="onLogout()"
+      >
+        Kilépés
+      </button>
+    </div>
+  </header>
+
+  <!-- Tartalom -->
+  <div class="flex flex-1 flex-col md:flex-row">
+    <!-- Menü mobilon felül, asztalin bal oldalt -->
+    <app-admin-menu
+      class="bg-gray-100 p-4 md:w-64 border-b md:border-b-0 md:border-r"
+    ></app-admin-menu>
+
+    <!-- Központi tartalom -->
+    <main class="flex-1 p-4 md:p-6 bg-gray-50 overflow-y-auto">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+  <!-- Lábléc -->
+  <footer class="bg-gray-800 text-gray-300 text-center py-3 text-sm md:text-base">
+    © 2025 FitApp Admin Panel – Minden jog fenntartva.
+  </footer>
 </div>

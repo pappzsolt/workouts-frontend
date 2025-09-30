@@ -80,4 +80,18 @@ export class AuthService {
   isUser(): boolean {
     return this.getUserRole() === 'ROLE_USER';
   }
+  getUserName(): string | null {
+    const token = this.getAccessToken();
+    if (!token) return null;
+
+    try {
+      const decodedToken = jwtDecode<TokenPayload>(token);
+      return decodedToken.sub; // itt van a felhasználónév
+    } catch (e) {
+      console.error('[AuthService] Token dekódolási hiba', e);
+      return null;
+    }
+  }
+
+
 }
