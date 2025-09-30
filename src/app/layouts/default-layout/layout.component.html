@@ -6,7 +6,7 @@
     <div class="flex flex-col sm:flex-row items-center gap-2 mt-2 sm:mt-0">
       <span *ngIf="username">Felhasználó: {{ username }}</span>
       <span *ngIf="role">Jogosultság: {{ role }}</span>
-      <button (click)="onLogout()" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
+      <button (click)="onLogout()" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded mt-1 sm:mt-0">
         Kijelentkezés
       </button>
     </div>
@@ -14,16 +14,17 @@
 
   <!-- Menü + tartalom -->
   <div class="flex flex-1 flex-col sm:flex-row">
-    <!-- Role-specifikus Menü -->
-    <ng-container *ngIf="isAdmin()">
-      <app-admin-menu class="sm:w-64 bg-gray-100"></app-admin-menu>
-    </ng-container>
-    <ng-container *ngIf="isCoach()">
-      <app-coach-menu class="sm:w-64 bg-gray-100"></app-coach-menu>
-    </ng-container>
-    <ng-container *ngIf="isUser()">
-      <app-user-menu class="sm:w-64 bg-gray-100"></app-user-menu>
-    </ng-container>
+    <aside class="sm:w-64 bg-gray-100 flex-shrink-0">
+      <ng-container *ngIf="isAdmin()">
+        <app-dynamic-menu [menuItems]="adminMenuItems" (menuAction)="handleMenuAction($event)"></app-dynamic-menu>
+      </ng-container>
+      <ng-container *ngIf="isCoach()">
+        <app-dynamic-menu [menuItems]="coachMenuItems" (menuAction)="handleMenuAction($event)"></app-dynamic-menu>
+      </ng-container>
+      <ng-container *ngIf="isUser()">
+        <app-dynamic-menu [menuItems]="userMenuItems" (menuAction)="handleMenuAction($event)"></app-dynamic-menu>
+      </ng-container>
+    </aside>
 
     <!-- Tartalom -->
     <main class="flex-1 p-4">
