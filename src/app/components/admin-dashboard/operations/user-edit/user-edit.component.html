@@ -1,3 +1,7 @@
+<div *ngIf="message" class="mb-4 p-2 rounded text-white"
+     [ngClass]="{'bg-green-500': message.includes('sikeresen'), 'bg-red-500': message.includes('Hiba')}">
+  {{ message }}
+</div>
 <div class="w-full max-w-3xl mx-auto p-4">
   <h2 class="text-2xl font-bold mb-4">Felhasználó módosítása</h2>
 

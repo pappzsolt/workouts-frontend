@@ -5,7 +5,7 @@ export interface RawUser {
   password?: string;
   avatarUrl?: string;
   roles: string[];
-  //roleIds?: number[];  // 🔹 hozzáadva ???????????????
+  //roleIds?: number[];  // 🔹 nem szükséges, mert a User interface-ben van
   extraFields?: {
     coach_id?: number;
     age?: number;
@@ -25,6 +25,7 @@ export interface Role {
   id: number;
   name: string;
 }
+
 export interface User {
   id: number;
   username: string;
@@ -40,5 +41,3 @@ export interface User {
   roleName?: string;
   roleIds: number[]; // ✅ mindig legyen tömb
 }
-
-

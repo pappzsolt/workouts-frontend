@@ -1,7 +1,6 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { UserEditService, RawUser, Coach } from '../../../../services/admin/user-edit.service';
 import { UserSelectComponent } from '../../../../components/shared/user/user-select.component';
 import { CoachSelectComponent } from '../../../shared/coach/coach-select.component';
 import { Role, RoleService } from '../../../../services/roles/role.service';
@@ -9,22 +8,8 @@ import { UserNameId } from '../../../../services/user/user-name-id.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
-
-interface User {
-  id: number;
-  username: string;
-  email: string;
-  password?: string;
-  avatarUrl?: string;
-  age?: number;
-  weight?: number;
-  height?: number;
-  gender?: string;
-  goals?: string;
-  coachId?: number;
-  roleName?: string;
-  roleIds: number[]; // ✅ kötelező, mindig legyen tömb
-}
+import { User, RawUser, Coach } from '../../../../models/user-profil.model';
+import { UserEditService} from '../../../../services/admin/user-edit.service';
 
 @Component({
   selector: 'app-user-edit',
@@ -98,7 +83,6 @@ export class UserEditComponent implements OnInit {
   }
 
   private patchUserFromRaw(raw: RawUser) {
-    // ✅ Hibás deklaráció javítva: this.selectedUser-t használjuk
     this.selectedUser = {
       id: raw.id,
       username: raw.usernameOrName || '',
@@ -135,38 +119,50 @@ export class UserEditComponent implements OnInit {
     this.selectedUser.roleName = roles.map(r => r.name).join(',');
   }
 
+  message: string = ''; // UI üzenethez
+
+// ...
+
   onSave() {
-    if (!this.selectedRoles || this.selectedRoles.length === 0) {
-      const defaultRole = this.roles.find(r => r.name === 'user');
-      if (defaultRole) {
-        this.selectedRoles = [defaultRole];
-        this.selectedUser.roleIds = [defaultRole.id];
-        this.selectedUser.roleName = defaultRole.name;
-      }
-    }
-
-    if (this.selectedUser) {
-      const rawUser: RawUser = {
-        id: this.selectedUser.id,
-        usernameOrName: this.selectedUser.username,
-        email: this.selectedUser.email,
-        avatarUrl: this.selectedUser.avatarUrl,
-        roles: this.selectedRoles.map(r => r.name),
-        extraFields: {
-          coach_id: this.selectedUser.coachId,
-          age: this.selectedUser.age,
-          weight: this.selectedUser.weight,
-          height: this.selectedUser.height,
-          gender: this.selectedUser.gender,
-          goals: this.selectedUser.goals
+    try {
+      if (!this.selectedRoles || this.selectedRoles.length === 0) {
+        const defaultRole = this.roles.find(r => r.name === 'user');
+        if (defaultRole) {
+          this.selectedRoles = [defaultRole];
+          this.selectedUser.roleIds = [defaultRole.id];
+          this.selectedUser.roleName = defaultRole.name;
         }
-      };
+      }
 
-      // ✅ roleIds mindig tömb, nincs TS2345 hiba
-      this.userService.updateUser(rawUser, this.selectedUser.roleIds || []).subscribe({
-        next: () => alert('Felhasználó sikeresen frissítve!'),
-        error: (err) => alert('Hiba a frissítés során: ' + err.message)
-      });
+      if (this.selectedUser) {
+        const rawUser: RawUser = {
+          id: this.selectedUser.id,
+          usernameOrName: this.selectedUser.username,
+          email: this.selectedUser.email,
+          avatarUrl: this.selectedUser.avatarUrl,
+          roles: this.selectedRoles.map(r => r.name),
+          extraFields: {
+            coach_id: this.selectedUser.coachId,
+            age: this.selectedUser.age,
+            weight: this.selectedUser.weight,
+            height: this.selectedUser.height,
+            gender: this.selectedUser.gender,
+            goals: this.selectedUser.goals
+          }
+        };
+
+        this.userService.updateUser(rawUser, this.selectedUser.roleIds || []).subscribe({
+          next: () => {
+            this.message = 'Felhasználó sikeresen frissítve!';
+          },
+          error: (err) => {
+            this.message = 'Hiba a frissítés során: ' + (err?.message || 'Ismeretlen hiba');
+          }
+        });
+      }
+    } catch (err: any) {
+      this.message = 'Hiba a mentés során: ' + (err?.message || 'Ismeretlen hiba');
     }
   }
+
 }
