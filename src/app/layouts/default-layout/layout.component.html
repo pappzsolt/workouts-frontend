@@ -1,23 +1,38 @@
-<div class="flex flex-col min-h-screen">
+<div class="flex flex-col min-h-screen bg-gray-50">
 
   <!-- Fejléc -->
-  <header class="bg-blue-600 text-white p-4 flex flex-col sm:flex-row justify-between items-center">
-    <div class="text-lg font-bold">
+  <header class="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-4 shadow-md flex justify-between items-center">
+    <div class="text-lg font-semibold">
       {{ currentDate | date:'yyyy.MM.dd HH:mm:ss' }}
     </div>
 
-    <div class="flex flex-col sm:flex-row items-center gap-2 mt-2 sm:mt-0">
-      <span *ngIf="username">Felhasználó: {{ username }}</span>
-      <span *ngIf="role">Jogosultság: {{ role }}</span>
-      <button (click)="onLogout()" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded mt-1 sm:mt-0">
+    <div class="flex items-center gap-3">
+      <!-- Hamburger menü mobilon -->
+      <button (click)="menuOpen = !menuOpen" class="sm:hidden bg-white text-blue-600 p-2 rounded-md shadow-md focus:outline-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
+
+      <span *ngIf="username" class="hidden sm:inline bg-white text-blue-600 px-3 py-1 rounded-full font-medium shadow-sm">
+        Felhasználó: {{ username }}
+      </span>
+      <span *ngIf="role" class="hidden sm:inline bg-white text-blue-600 px-3 py-1 rounded-full font-medium shadow-sm">
+        Jogosultság: {{ role }}
+      </span>
+      <button (click)="onLogout()"
+              class="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-full font-semibold shadow-md transition duration-200">
         Kijelentkezés
       </button>
     </div>
   </header>
 
   <!-- Menü + tartalom -->
-  <div class="flex flex-1 flex-col sm:flex-row">
-    <aside class="sm:w-64 bg-gray-100 flex-shrink-0">
+  <div class="flex flex-1 flex-col sm:flex-row relative">
+
+    <!-- Menüsáv -->
+    <aside [class.hidden]="!menuOpen && isMobile()" class="sm:block sm:w-64 bg-white shadow-inner border-r border-gray-200 flex-shrink-0 absolute sm:relative z-20 top-0 left-0 h-full sm:h-auto transition-transform transform sm:translate-x-0"
+           [class.translate-x-0]="menuOpen" [class.-translate-x-full]="!menuOpen && isMobile()">
       <ng-container *ngIf="isAdmin()">
         <app-dynamic-menu [menuItems]="adminMenuItems" (menuAction)="handleMenuAction($event)"></app-dynamic-menu>
       </ng-container>
@@ -29,14 +44,19 @@
       </ng-container>
     </aside>
 
+    <!-- Overlay mobil menühöz -->
+    <div *ngIf="menuOpen && isMobile()" (click)="menuOpen = false" class="fixed inset-0 bg-black bg-opacity-25 z-10"></div>
+
     <!-- Tartalom -->
-    <main class="flex-1 p-4">
-      <router-outlet></router-outlet>
+    <main class="flex-1 p-6 sm:p-8 bg-gray-50">
+      <div class="bg-white shadow-lg rounded-lg p-6 min-h-[300px] sm:min-h-[400px]">
+        <router-outlet></router-outlet>
+      </div>
     </main>
   </div>
 
   <!-- Lábléc -->
-  <footer class="bg-gray-200 text-gray-700 p-4 text-center mt-auto">
+  <footer class="bg-gray-100 text-gray-600 p-4 text-center mt-auto shadow-inner">
     &copy; {{ currentYear }} Fitness App. Minden jog fenntartva.
   </footer>
 </div>

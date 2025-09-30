@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; // <--- ide
+import { Component, OnInit, HostListener } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { DynamicMenuComponent } from '../../components/dynamic-menu/dynamic-menu.component';
 import { AuthService } from '../../services/auth/auth.service';
@@ -7,7 +7,7 @@ import { AuthService } from '../../services/auth/auth.service';
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, DynamicMenuComponent], // <--- ide
+  imports: [CommonModule, RouterModule, DynamicMenuComponent],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css']
 })
@@ -15,7 +15,9 @@ export class LayoutComponent implements OnInit {
   username: string | null = null;
   role: string | null = null;
   currentYear: number = new Date().getFullYear();
-  currentDate: Date = new Date(); // <-- új változó
+  currentDate: Date = new Date();
+
+  menuOpen = false; // <-- hamburger menü állapota
 
   adminMenuItems = [
     { label: 'Admin Dashboard', path: '/admin/dashboard' },
@@ -61,5 +63,16 @@ export class LayoutComponent implements OnInit {
       this.onLogout();
     }
   }
-}
 
+  // Mobil nézet ellenőrzése
+  isMobile(): boolean {
+    return window.innerWidth < 640; // sm breakpoint
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    if (!this.isMobile()) {
+      this.menuOpen = false;
+    }
+  }
+}
