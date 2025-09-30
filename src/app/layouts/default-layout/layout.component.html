@@ -1,0 +1,38 @@
+<div class="flex flex-col min-h-screen">
+
+  <!-- Fejléc -->
+  <header class="bg-blue-600 text-white p-4 flex flex-col sm:flex-row justify-between items-center">
+    <div class="text-lg font-bold">Dashboard</div>
+    <div class="flex flex-col sm:flex-row items-center gap-2 mt-2 sm:mt-0">
+      <span *ngIf="username">Felhasználó: {{ username }}</span>
+      <span *ngIf="role">Jogosultság: {{ role }}</span>
+      <button (click)="onLogout()" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
+        Kijelentkezés
+      </button>
+    </div>
+  </header>
+
+  <!-- Menü + tartalom -->
+  <div class="flex flex-1 flex-col sm:flex-row">
+    <!-- Role-specifikus Menü -->
+    <ng-container *ngIf="isAdmin()">
+      <app-admin-menu class="sm:w-64 bg-gray-100"></app-admin-menu>
+    </ng-container>
+    <ng-container *ngIf="isCoach()">
+      <app-coach-menu class="sm:w-64 bg-gray-100"></app-coach-menu>
+    </ng-container>
+    <ng-container *ngIf="isUser()">
+      <app-user-menu class="sm:w-64 bg-gray-100"></app-user-menu>
+    </ng-container>
+
+    <!-- Tartalom -->
+    <main class="flex-1 p-4">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+  <!-- Lábléc -->
+  <footer class="bg-gray-200 text-gray-700 p-4 text-center mt-auto">
+    &copy; {{ currentYear }} Fitness App. Minden jog fenntartva.
+  </footer>
+</div>
