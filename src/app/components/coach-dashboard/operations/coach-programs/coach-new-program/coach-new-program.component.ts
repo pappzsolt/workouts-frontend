@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
 import { HttpClientModule } from '@angular/common/http';
 import { Program } from '../../../../../models/program.model';
+
 @Component({
   selector: 'app-coach-new-program',
   standalone: true,
@@ -14,11 +15,11 @@ import { Program } from '../../../../../models/program.model';
 })
 export class CoachNewProgramComponent implements OnInit {
   program: Program = {
-    name: '',
-    description: '',
-    duration_days: 0,
-    difficulty_level: '',
-    coach_id: 0
+    programName: '',
+    programDescription: '',
+    durationDays: 0,
+    difficultyLevel: '',
+    coachId: 0
   };
 
   constructor(

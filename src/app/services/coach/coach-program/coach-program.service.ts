@@ -1,43 +1,50 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Program ,CoachProgramsResponse} from '../../../models/program.model';
+
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class CoachProgramService {
-  private baseUrl = 'http://localhost:8080/api/programs';
+  private baseUrl = 'http://localhost:8080/api/programs'; // backend URL
 
   constructor(private http: HttpClient) {}
 
+  /** 🔹 Lekéri a belépett coach programjait */
+  getProgramsForLoggedInCoach(): Observable<CoachProgramsResponse> {
+    return this.http.get<CoachProgramsResponse>(`${this.baseUrl}/coach/programs`);
+  }
+
   /** 🔹 Összes program lekérése */
-  getAllPrograms(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}`);
+  getAllPrograms(): Observable<Program[]> {
+    return this.http.get<Program[]>(`${this.baseUrl}/all`);
   }
 
   /** 🔹 Program lekérése ID alapján */
-  getProgramById(id: number): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/${id}`);
+  getProgramById(id: number): Observable<Program> {
+    return this.http.get<Program>(`${this.baseUrl}/${id}`);
   }
 
-  /** 🔹 Program létrehozása */
-  createProgram(program: any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}`, program);
+  /** 🔹 Új program létrehozása */
+  createProgram(program: Program): Observable<Program> {
+    return this.http.post<Program>(`${this.baseUrl}`, program);
   }
 
   /** 🔹 Program frissítése */
-  updateProgram(id: number, program: any): Observable<any> {
-    return this.http.put<any>(`${this.baseUrl}/${id}`, program);
+  updateProgram(id: number, program: Program): Observable<Program> {
+    return this.http.put<Program>(`${this.baseUrl}/${id}`, program);
   }
 
   /** 🔹 Program törlése */
-  deleteProgram(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.baseUrl}/${id}`);
+  deleteProgram(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/${id}`);
   }
 
-  /** 🔹 Adott coach összes programja */
-  getProgramsByCoach(coachId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/coach/${coachId}`);
+  /** 🔹 Adott coach összes programja (opcionális) */
+  getProgramsByCoach(coachId: number): Observable<Program[]> {
+    return this.http.get<Program[]>(`${this.baseUrl}/coach/${coachId}`);
   }
 }
-

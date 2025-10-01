@@ -13,13 +13,14 @@ import { Program } from '../../../../../models/program.model';
 })
 export class CoachProgramEditComponent implements OnInit {
   program: Program = {
-    id: 0,
-    name: '',
-    description: '',
-    duration_days: 0,
-    difficulty_level: '',
-    coach_id: 0   // ← kötelező mező
+    programName: '',
+    programDescription: '',
+    durationDays: 0,
+    difficultyLevel: ''
   };
+
+
+  message: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -30,23 +31,34 @@ export class CoachProgramEditComponent implements OnInit {
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (id) {
-      this.programService.getProgramById(id).subscribe(data => {
-        if (data) {           // ← ellenőrzés hozzáadva
-          this.program = data;
-        } else {
-          console.warn(`Program with id ${id} not found`);
-          // opcionálisan navigálhatsz vissza a listára:
-          // this.router.navigate(['/coach/programs']);
+      this.programService.getProgramById(id).subscribe({
+        next: (data) => {
+          if (data) {
+            this.program = data;
+          } else {
+            this.message = `Program with id ${id} not found.`;
+            console.warn(this.message);
+          }
+        },
+        error: (err) => {
+          console.error(err);
+          this.message = 'Hiba történt a program lekérésekor.';
         }
       });
     }
   }
 
+  saveProgram(): void {
+    if (!this.program.id) return;
 
-  saveProgram() {
-    this.programService.updateProgram(this.program.id!, this.program).subscribe(() => {
-      this.router.navigate(['/coach/programs']);
+    this.programService.updateProgram(this.program.id, this.program).subscribe({
+      next: () => {
+        this.router.navigate(['/coach/programs']);
+      },
+      error: (err) => {
+        console.error(err);
+        this.message = 'Hiba történt a program mentésekor.';
+      }
     });
   }
-
 }

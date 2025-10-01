@@ -2,39 +2,38 @@
 
 <form class="bg-white rounded-xl shadow-lg p-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3" (ngSubmit)="saveProgram()">
 
-  <!-- Name -->
+  <!-- Program Name -->
   <div class="sm:col-span-2 md:col-span-3">
     <label class="block text-gray-700 mb-1">Program Name</label>
-    <input type="text" [(ngModel)]="program.name" name="name" required
+    <input type="text" [(ngModel)]="program.programName" name="programName" required
            class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
   </div>
 
   <!-- Description -->
   <div class="sm:col-span-2 md:col-span-3">
     <label class="block text-gray-700 mb-1">Description</label>
-    <textarea [(ngModel)]="program.description" name="description" rows="3"
+    <textarea [(ngModel)]="program.programDescription" name="programDescription" rows="3"
               class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"></textarea>
   </div>
 
   <!-- Duration Days -->
   <div>
     <label class="block text-gray-700 mb-1">Duration (days)</label>
-    <input type="number" [(ngModel)]="program.duration_days" name="duration_days"
+    <input type="number" [(ngModel)]="program.durationDays" name="durationDays"
            class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
   </div>
 
   <!-- Difficulty Level -->
   <div>
     <label class="block text-gray-700 mb-1">Difficulty Level</label>
-    <select [(ngModel)]="program.difficulty_level" name="difficulty_level"
+    <select [(ngModel)]="program.difficultyLevel" name="difficultyLevel"
             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500">
       <option value="">Select</option>
-      <option value="Easy">Easy</option>
-      <option value="Medium">Medium</option>
-      <option value="Hard">Hard</option>
+      <option value="BEGINNER">Beginner</option>
+      <option value="INTERMEDIATE">Intermediate</option>
+      <option value="ADVANCED">Advanced</option>
     </select>
   </div>
-
 
   <!-- Submit Button -->
   <div class="sm:col-span-2 md:col-span-3 text-center mt-4">

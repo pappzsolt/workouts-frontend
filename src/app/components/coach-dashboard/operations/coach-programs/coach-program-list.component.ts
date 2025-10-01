@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { catchError, of } from 'rxjs';
+import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
-import { Program } from '../../../../models/program.model';
-
+import { Program,CoachProgramsResponse } from '../../../../models/program.model';
 @Component({
   selector: 'app-coach-program-list',
   standalone: true,
@@ -18,27 +17,28 @@ export class CoachProgramListComponent implements OnInit {
 
   constructor(
     private programService: CoachProgramService,
-    private route: ActivatedRoute,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
-      const coachId = +params['coachId'];
-      if (coachId) {
-        this.programService.getProgramsByCoach(coachId).pipe(
-          catchError(() => {
-            this.message = USER_MESSAGES.loadProgramsError;
-            return of([]);
-          })
-        ).subscribe(data => {
-          if (data.length === 0) {
-            this.message = USER_MESSAGES.noPrograms;
-          }
-          this.programs = data;
-        });
+    this.loadCoachPrograms();
+  }
+
+  private loadCoachPrograms(): void {
+    this.programService.getProgramsForLoggedInCoach().pipe(
+      catchError((err) => {
+        console.error(err);
+        this.message = USER_MESSAGES.loadProgramsError;
+        return of({ status: 'error', programCount: 0, programs: [] } as CoachProgramsResponse);
+      })
+    ).subscribe((res: CoachProgramsResponse) => {
+      if (res.status === 'success') {
+        if (res.programCount === 0) {
+          this.message = USER_MESSAGES.noPrograms;
+        }
+        this.programs = res.programs;
       } else {
-        this.message = USER_MESSAGES.noUserId;
+        this.message = USER_MESSAGES.loadProgramsError;
       }
     });
   }
@@ -61,4 +61,3 @@ export class CoachProgramListComponent implements OnInit {
     });
   }
 }
-

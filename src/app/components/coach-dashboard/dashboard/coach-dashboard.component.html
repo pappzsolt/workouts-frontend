@@ -1,6 +1,6 @@
 <h2 class="text-3xl font-bold mb-8 text-center">Coach Dashboard</h2>
 
-<div class="flex flex-wrap justify-center gap-6">
+<div class="flex flex-wrap justify-center gap-6 mb-8">
   <!-- Programs -->
   <div
     class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
@@ -26,3 +26,19 @@
     <div class="font-semibold text-lg sm:text-xl md:text-2xl">Exercises</div>
   </div>
 </div>
+
+<!-- Coach programok listázása -->
+<div *ngIf="showProgramsList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+  <div
+    *ngFor="let program of programs"
+    class="p-4 border rounded cursor-pointer hover:bg-gray-100"
+    (click)="program.id && goToProgram(program.id)"
+  >
+    <h3 class="font-semibold">{{ program.programName }}</h3>
+    <p class="text-sm">{{ program.programDescription }}</p>
+    <p class="text-xs">{{ program.durationDays }} days - {{ program.difficultyLevel }}</p>
+  </div>
+</div>
+
+<!-- Hibaüzenet -->
+<div *ngIf="message" class="text-red-500 text-center mt-4">{{ message }}</div>

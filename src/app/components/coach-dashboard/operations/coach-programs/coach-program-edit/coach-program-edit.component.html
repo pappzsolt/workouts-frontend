@@ -4,33 +4,33 @@
 
   <!-- Program Name -->
   <div class="sm:col-span-2 md:col-span-3">
-    <label class="block text-gray-700 mb-1" for="name">Program Name</label>
-    <input id="name" name="name" type="text" placeholder="Program Name"
-           [(ngModel)]="program.name"
+    <label class="block text-gray-700 mb-1" for="programName">Program Name</label>
+    <input id="programName" name="programName" type="text" placeholder="Program Name"
+           [(ngModel)]="program.programName"
            class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
   </div>
 
   <!-- Description -->
   <div class="sm:col-span-2 md:col-span-3">
-    <label class="block text-gray-700 mb-1" for="description">Description</label>
-    <textarea id="description" name="description" rows="3" placeholder="Program Description"
-              [(ngModel)]="program.description"
+    <label class="block text-gray-700 mb-1" for="programDescription">Description</label>
+    <textarea id="programDescription" name="programDescription" rows="3" placeholder="Program Description"
+              [(ngModel)]="program.programDescription"
               class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"></textarea>
   </div>
 
   <!-- Duration -->
   <div>
-    <label class="block text-gray-700 mb-1" for="duration_days">Duration (days)</label>
-    <input id="duration_days" name="duration_days" type="number" placeholder="Duration"
-           [(ngModel)]="program.duration_days"
+    <label class="block text-gray-700 mb-1" for="durationDays">Duration (days)</label>
+    <input id="durationDays" name="durationDays" type="number" placeholder="Duration"
+           [(ngModel)]="program.durationDays"
            class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
   </div>
 
   <!-- Difficulty Level -->
   <div>
-    <label class="block text-gray-700 mb-1" for="difficulty_level">Difficulty Level</label>
-    <select id="difficulty_level" name="difficulty_level"
-            [(ngModel)]="program.difficulty_level"
+    <label class="block text-gray-700 mb-1" for="difficultyLevel">Difficulty Level</label>
+    <select id="difficultyLevel" name="difficultyLevel"
+            [(ngModel)]="program.difficultyLevel"
             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500">
       <option value="">Select</option>
       <option value="Easy">Easy</option>
@@ -41,9 +41,9 @@
 
   <!-- Coach ID -->
   <div>
-    <label class="block text-gray-700 mb-1" for="coach_id">Coach ID</label>
-    <input id="coach_id" name="coach_id" type="number" placeholder="Coach ID"
-           [(ngModel)]="program.coach_id"
+    <label class="block text-gray-700 mb-1" for="coachId">Coach ID</label>
+    <input id="coachId" name="coachId" type="number" placeholder="Coach ID"
+           [(ngModel)]="program.coachId"
            class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
   </div>
 
