@@ -1,9 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Program ,CoachProgramsResponse} from '../../../models/program.model';
-
-
+import { Program, CoachProgramsResponse } from '../../../models/program.model';
 
 @Injectable({
   providedIn: 'root'
@@ -48,3 +46,4 @@ export class CoachProgramService {
     return this.http.get<Program[]>(`${this.baseUrl}/coach/${coachId}`);
   }
 }
+

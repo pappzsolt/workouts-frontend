@@ -1,13 +1,20 @@
 export interface Program {
   id?: number;
-  programName: string;             // backend kötelező mező
-  programDescription?: string;     // backend opcionális
-  coachId?: number;                // opcionális, backendben coachId
-  startDate?: string;              // ISO string, vagy Date ha szeretnéd
-  endDate?: string;                // ISO string, vagy Date
-  durationDays?: number;           // backend opcionális
-  difficultyLevel?: string;        // backend opcionális
-  workouts?: ProgramWorkout[];     // opcionális, a DTO Workout listájához
+
+  // POST-hoz, új program létrehozás
+  programName?: string;
+  programDescription?: string;
+
+  // GET-hez, lekérdezéskor
+  name?: string;
+  description?: string;
+
+  coachId?: number;
+  startDate?: string;
+  endDate?: string;
+  durationDays?: number;
+  difficultyLevel?: string;
+  workouts?: ProgramWorkout[];
 }
 
 export interface ProgramWorkout {
@@ -19,6 +26,7 @@ export interface ProgramExercise {
   exerciseId: number;
   orderIndex?: number;
 }
+
 export interface CoachProgramsResponse {
   status: string;
   programCount: number;

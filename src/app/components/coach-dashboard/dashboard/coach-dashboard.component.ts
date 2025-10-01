@@ -37,12 +37,23 @@ export class CoachDashboardComponent implements OnInit {
   private loadCoachPrograms() {
     this.programService.getProgramsForLoggedInCoach().subscribe({
       next: (res) => {
-        if (res.status === 'success') {
-          this.programs = res.programs;
+        if (res.status === 'success' && res.programs?.length) {
+          // Minden program mezőt inicializálunk, ha hiányzik
+          this.programs = res.programs.map(p => ({
+            id: p.id,
+            programName: p.programName || 'Név hiányzik',
+            programDescription: p.programDescription || '',
+            durationDays: p.durationDays || 0,
+            difficultyLevel: p.difficultyLevel || '',
+            coachId: p.coachId,
+            startDate: p.startDate,
+            endDate: p.endDate,
+            workouts: p.workouts
+          }));
           this.showProgramsList = true;
           this.message = '';
         } else {
-          this.message = 'Hiba történt a programok lekérésekor.';
+          this.message = 'Nincsenek programok a coachhoz.';
           this.showProgramsList = false;
         }
       },
@@ -54,8 +65,8 @@ export class CoachDashboardComponent implements OnInit {
     });
   }
 
-  goToProgram(programId: number) {
+  goToProgram(programId?: number) {
+    if (!programId) return; // opcionális id ellenőrzés
     this.router.navigate([`/coach/programs/${programId}/workouts`]);
   }
 }
-
