@@ -1,67 +1,80 @@
 <h2 class="text-3xl font-bold mb-8 text-center">Coach Dashboard</h2>
-<!-- Új program csempe mindig külön -->
-<div class="flex justify-center mb-6">
-  <div class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52
-              flex flex-col items-center justify-center text-center
-              transform transition duration-300 hover:scale-105 hover:shadow-2xl">
 
-    <div class="text-xl font-semibold mb-2 text-green-700">New Program</div>
-    <div class="text-sm text-gray-500 mb-4">Create a new program</div>
+<!-- Dashboard csempék: New Program + Programs + Workouts + Exercises -->
+<div class="flex flex-wrap justify-center gap-6 mb-8">
 
+  <!-- New Program csempe -->
+  <div
+    class="bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl"
+    (click)="createNewProgram()"
+  >
+    <div class="text-xl sm:text-2xl font-semibold mb-2 text-green-600">New Program</div>
+    <div class="text-sm sm:text-base text-gray-500 mb-4">Create a new program</div>
     <button type="button"
-            class="bg-green-600 text-white font-medium py-2 px-4 rounded-lg shadow
+            class="bg-green-600 text-white font-bold text-lg sm:text-xl py-2 px-5 rounded-full shadow
                    hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500
-                   transition-colors"
-            (click)="createNewProgram()">
+                   transition-colors">
       +
     </button>
   </div>
-</div>
-<div class="flex flex-wrap justify-center gap-6 mb-8">
-  <!-- Programs -->
+
+  <!-- Programs csempe -->
   <div
-    class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+    class="relative bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl"
     (click)="navigateTo('coach/programs')"
   >
-    <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">📋</div>
-    <div class="font-semibold text-lg sm:text-xl md:text-2xl">Programs</div>
+    <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">💪</div> <!-- súlyzós edzés ikon -->
+    <div class="font-semibold text-lg sm:text-xl md:text-2xl text-gray-800">Programs</div>
+
   </div>
 
-  <!-- Workouts -->
+
+
+  <!-- Workouts csempe -->
   <div
-    class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+    class="bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl"
     (click)="navigateTo('coach/workouts')"
   >
     <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">🔥</div>
-    <div class="font-semibold text-lg sm:text-xl md:text-2xl">Workouts</div>
+    <div class="font-semibold text-lg sm:text-xl md:text-2xl text-gray-800">Workouts</div>
   </div>
 
-  <!-- Exercises -->
+  <!-- Exercises csempe -->
   <div
-    class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
+    class="bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl"
     (click)="navigateTo('coach/exercises')"
   >
     <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">🏋️</div>
-    <div class="font-semibold text-lg sm:text-xl md:text-2xl">Exercises</div>
+    <div class="font-semibold text-lg sm:text-xl md:text-2xl text-gray-800">Exercises</div>
   </div>
 </div>
 
-<!-- Coach programok listázása -->
-<div *ngIf="showProgramsList" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+<!-- Coach programok listázása modern kártyákkal -->
+<div *ngIf="showProgramsList" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 justify-items-center">
   <div
     *ngFor="let program of programs"
-    class="p-4 border rounded cursor-pointer hover:bg-gray-100"
-    (click)="program.id ? goToProgram(program.id) : null"
-  >
-    <h3 class="font-semibold">{{ program.name || program.programName }}</h3>
-    <p class="text-sm">{{ program.description || program.programDescription }}</p>
-    <p class="text-xs">
-      {{ program.durationDays }} days - {{ program.difficultyLevel }}
-    </p>
+    class="bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl">
+
+    <!-- Ikon -->
+    <div class="mb-3 text-4xl sm:text-5xl">💪</div>
+
+    <!-- Program név és leírás -->
+    <div class="mb-2 text-lg font-semibold text-gray-800 truncate">{{ program.name || program.programName }}</div>
+    <div class="text-sm text-gray-500 mb-2 truncate">{{ program.description || program.programDescription }}</div>
+    <div class="text-xs text-gray-600">
+      {{ program.durationDays }} days • {{ program.difficultyLevel | titlecase }}
+    </div>
+
+    <!-- Edit gomb -->
+    <button type="button"
+            class="mt-3 bg-blue-600 text-white font-medium py-1 px-3 rounded-lg shadow
+                   hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+            (click)="editProgram(program.id!, $event)">
+      Edit
+    </button>
   </div>
 </div>
-
 
 
 <!-- Hibaüzenet -->
-<div *ngIf="message" class="text-red-500 text-center mt-4">{{ message }}</div>
+<div *ngIf="message" class="text-red-500 text-center mt-4 font-medium">{{ message }}</div>

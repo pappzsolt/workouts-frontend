@@ -75,4 +75,19 @@ export class CoachDashboardComponent implements OnInit {
       this.message = USER_MESSAGES.programClickError;
     });
   }
+  editProgram(programId: number, event: MouseEvent) {
+    // Megakadályozzuk, hogy a teljes csempe click-je is lefusson
+    event.stopPropagation();
+
+    if (!programId) {
+      this.message = USER_MESSAGES.programClickError;
+      return;
+    }
+
+    // Navigáció a program szerkesztő oldalra
+    this.router.navigate([`/coach/programs/${programId}/edit`]).catch(() => {
+      this.message = USER_MESSAGES.programClickError;
+    });
+  }
+
 }

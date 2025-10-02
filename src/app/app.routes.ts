@@ -13,7 +13,6 @@ import { MemberSearchComponent } from './components/admin-dashboard/operations/u
 import { ChoiceUserNewComponent } from './components/admin-dashboard/operations/choice-user-new/choice-user-new.component';
 import { ChoiceUserEditComponent } from './components/admin-dashboard/operations/choice-user-edit/choice-user-edit.component';
 import { CoachExercisesComponent } from './components/coach-dashboard/operations/coach-exercises/coach-exercises.component';
-import { CoachProgramListComponent } from './components/coach-dashboard/operations/coach-programs/coach-program-list.component';
 import { UserProfileComponent } from './components/user-dashboard/operations/user-profile/user-profile.component';
 import { UserMyProgramsComponent } from './components/user-dashboard/operations/user-my-programs/user-my-programs.component';
 import { UserStatisticsComponent } from './components/user-dashboard/operations/user-statistics/user-statistics.component';
@@ -73,7 +72,6 @@ export const routes: Routes = [
       { path: 'dashboard', component: CoachDashboardComponent },
       { path: 'profile', component: CoachProfileComponent },
       { path: 'exercises', component: CoachExercisesComponent },
-      { path: 'programs', component: CoachProgramListComponent },
       { path: 'programs/:id/workouts', component: CoachWorkoutsComponent },
       { path: 'programs/:id/edit', component: CoachProgramEditComponent },
       { path: 'workouts', component: CoachWorkoutsComponent },
