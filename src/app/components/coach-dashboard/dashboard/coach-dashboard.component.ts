@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router ,ActivatedRoute} from '@angular/router';
 import { CoachProgramService } from '../../../services/coach/coach-program/coach-program.service';
 import { Program } from '../../../models/program.model';
 import { CommonModule } from '@angular/common';
 import { NgIf, NgFor } from '@angular/common';
 import {USER_MESSAGES} from '../../../constants/user-messages';
 import { ProgramStateService } from '../../../services/coach/coach-program/ProgramStateService';
+
 
 @Component({
   selector: 'app-coach-dashboard',
@@ -22,20 +23,35 @@ export class CoachDashboardComponent implements OnInit {
   constructor(
     private router: Router,
     private programService: CoachProgramService,
-    private programState: ProgramStateService
+    private programState: ProgramStateService,
+    private route: ActivatedRoute,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      if (params['section'] === 'programs') {
+        this.navigateTo('coach/programs');
+      }
+    });
+  }
+
 
   navigateTo(path: string) {
     if (path === 'coach/programs') {
-      this.loadCoachPrograms();
+      if (this.showProgramsList) {
+        // ha már látszik, akkor elrejtjük
+        this.showProgramsList = false;
+        this.message = '';
+      } else {
+        // ha nem látszik, akkor betöltjük
+        this.loadCoachPrograms();
+      }
     } else {
-      // Workouts és Exercises esetén még nem történik semmi
       this.message = `Navigáció a ${path} oldalra jelenleg nincs implementálva.`;
       this.showProgramsList = false;
     }
   }
+
 
   private loadCoachPrograms() {
     this.programService.getProgramsForLoggedInCoach().subscribe({

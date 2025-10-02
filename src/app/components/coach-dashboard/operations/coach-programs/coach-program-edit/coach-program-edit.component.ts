@@ -67,7 +67,8 @@ export class CoachProgramEditComponent implements OnInit {
 
     this.programService.updateProgram(this.program.id, this.program).subscribe({
       next: () => {
-        this.router.navigate(['/coach/programs']);
+        // Ha a program lista a dashboard része:
+        this.router.navigate(['/coach/dashboard'], { queryParams: { section: 'programs' } });
       },
       error: (err) => {
         console.error(err);
@@ -75,4 +76,5 @@ export class CoachProgramEditComponent implements OnInit {
       }
     });
   }
+
 }
