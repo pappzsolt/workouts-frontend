@@ -1,17 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { Router ,ActivatedRoute} from '@angular/router';
+import { Router ,ActivatedRoute } from '@angular/router';
 import { CoachProgramService } from '../../../services/coach/coach-program/coach-program.service';
 import { Program } from '../../../models/program.model';
 import { CommonModule } from '@angular/common';
 import { NgIf, NgFor } from '@angular/common';
-import {USER_MESSAGES} from '../../../constants/user-messages';
+import { USER_MESSAGES } from '../../../constants/user-messages';
 import { ProgramStateService } from '../../../services/coach/coach-program/ProgramStateService';
-
+import { WorkoutListComponent } from '../operations/coach-workouts/coach-workouts.component';
 
 @Component({
   selector: 'app-coach-dashboard',
   standalone: true,
-  imports: [CommonModule, NgIf, NgFor],
+  imports: [CommonModule, NgIf, NgFor, WorkoutListComponent],
   templateUrl: './coach-dashboard.component.html',
   styleUrls: ['./coach-dashboard.component.css']
 })
@@ -19,6 +19,9 @@ export class CoachDashboardComponent implements OnInit {
   programs: Program[] = [];
   message: string = '';
   showProgramsList: boolean = false;
+  showWorkouts: boolean = false; // 🔹 új: a workout lista megjelenítéséhez
+
+  programIdForWorkouts?: number; // 🔹 tárolja, melyik programhoz mutassuk a workoutokat
 
   constructor(
     private router: Router,
@@ -35,30 +38,31 @@ export class CoachDashboardComponent implements OnInit {
     });
   }
 
-
   navigateTo(path: string) {
     if (path === 'coach/programs') {
       if (this.showProgramsList) {
-        // ha már látszik, akkor elrejtjük
         this.showProgramsList = false;
         this.message = '';
       } else {
-        // ha nem látszik, akkor betöltjük
         this.loadCoachPrograms();
       }
+      this.showWorkouts = false; // workouts mindig eltűnik ha programs-ra kattintunk
+    } else if (path === 'coach/workouts') {
+      this.showWorkouts = !this.showWorkouts; // toggle
+      this.showProgramsList = false;
     } else {
       this.message = `Navigáció a ${path} oldalra jelenleg nincs implementálva.`;
       this.showProgramsList = false;
+      this.showWorkouts = false;
     }
   }
-
 
   private loadCoachPrograms() {
     this.programService.getProgramsForLoggedInCoach().subscribe({
       next: (res) => {
         if (res.status === 'success' && res.programs?.length) {
           this.programs = res.programs.map(p => ({
-            id: (p as any).programId ?? p.id, // backend programId -> frontend id
+            id: (p as any).programId ?? p.id,
             programName: p.programName || 'Név hiányzik',
             programDescription: p.programDescription || '',
             durationDays: p.durationDays || 0,
@@ -83,38 +87,44 @@ export class CoachDashboardComponent implements OnInit {
     });
   }
 
-
-
   goToProgram(programId?: number) {
-    if (!programId) return; // opcionális id ellenőrzés
+    if (!programId) return;
     this.router.navigate([`/coach/programs/${programId}/workouts`]);
   }
+
   createNewProgram() {
     this.router.navigate(['/coach/programs/new']).catch(() => {
       this.message = USER_MESSAGES.programClickError;
     });
   }
+
   editProgram(programId: number, event: MouseEvent) {
     event.stopPropagation();
 
-    console.log('DEBUG: editProgram hívás indult');
-    console.log('DEBUG: kapott programId =', programId);
-
     if (!programId) {
-      console.warn('DEBUG: programId nem érkezett, megszakítom.');
       this.message = USER_MESSAGES.programClickError;
       return;
     }
 
     this.router.navigate([`/coach/programs/${programId}/edit`])
       .then(success => {
-        console.log('DEBUG: router.navigate success?', success);
+        console.log('router.navigate success?', success);
       })
       .catch(err => {
-        console.error('DEBUG: router.navigate hiba:', err);
+        console.error('router.navigate hiba:', err);
         this.message = USER_MESSAGES.programClickError;
       });
   }
 
-
+  // 🔹 új: dashboardon belüli programra kattintva showWorkouts toggle
+  showProgramWorkouts(programId: number) {
+    if (this.programIdForWorkouts === programId && this.showWorkouts) {
+      // ha már látszik ugyanaz a program, eltüntetjük
+      this.showWorkouts = false;
+    } else {
+      this.programIdForWorkouts = programId;
+      this.showWorkouts = true;
+      this.showProgramsList = false;
+    }
+  }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -11,33 +11,43 @@ import { Workout } from '../../../../models/workout.model';
   templateUrl: './coach-workouts.component.html',
   styleUrls: ['./coach-workouts.component.css']  // 🔹 saját CSS hogy tudj üzenetet formázni
 })
-export class WorkoutListComponent implements OnInit {
+export class WorkoutListComponent implements OnInit, OnChanges {
   workouts: Workout[] = [];
   newWorkout: Workout = { workoutName: '', description: '', durationMinutes: 0 };
-  programId: number = 1;
-  userId: number = 1;
+
+  @Input() programId?: number;   // 🔹 most már opcionális
+  @Input() userId: number = 1;   // opcionális userId
+
   message: string = '';
   messageType: 'success' | 'error' | '' = '';   // 🔹 üzenet típus jelzéshez
 
   constructor(private coachWorkoutsService: CoachWorkoutsService) {}
 
   ngOnInit(): void {
-    this.loadWorkouts();
+    if (this.programId) {
+      this.loadWorkouts();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['programId'] && !changes['programId'].firstChange) {
+      this.loadWorkouts(); // új programId esetén újratöltjük a workoutokat
+    }
   }
 
   loadWorkouts() {
+    if (!this.programId) return;
     this.coachWorkoutsService.getProgramWorkouts(this.programId, this.userId).subscribe({
       next: (data) => {
         this.workouts = data;
         this.setMessage('Workoutok betöltve.', 'success');
       },
-      error: (err) => {
-        this.setMessage('Nem sikerült betölteni a workoutokat.', 'error');
-      }
+      error: () => this.setMessage('Nem sikerült betölteni a workoutokat.', 'error')
     });
   }
 
   addWorkout() {
+    if (!this.programId) return;
     this.newWorkout.programId = this.programId;
     this.coachWorkoutsService.addWorkout(this.newWorkout).subscribe({
       next: (res) => {
@@ -49,9 +59,7 @@ export class WorkoutListComponent implements OnInit {
           this.setMessage(res.message, 'error');
         }
       },
-      error: (err) => {
-        this.setMessage('Hiba történt a workout hozzáadásakor.', 'error');
-      }
+      error: () => this.setMessage('Hiba történt a workout hozzáadásakor.', 'error')
     });
   }
 
@@ -62,9 +70,7 @@ export class WorkoutListComponent implements OnInit {
         this.setMessage(res.message, res.status === 'ok' ? 'success' : 'error');
         this.loadWorkouts();
       },
-      error: (err) => {
-        this.setMessage('Hiba történt a törléskor.', 'error');
-      }
+      error: () => this.setMessage('Hiba történt a törléskor.', 'error')
     });
   }
 

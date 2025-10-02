@@ -75,6 +75,8 @@
   </div>
 </div>
 
-
+<div *ngIf="showWorkouts">
+  <app-coach-workouts [programId]="programIdForWorkouts"></app-coach-workouts>
+</div>
 <!-- Hibaüzenet -->
 <div *ngIf="message" class="text-red-500 text-center mt-4 font-medium">{{ message }}</div>
