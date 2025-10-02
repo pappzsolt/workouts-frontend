@@ -4,6 +4,7 @@ import { CoachProgramService } from '../../../services/coach/coach-program/coach
 import { Program } from '../../../models/program.model';
 import { CommonModule } from '@angular/common';
 import { NgIf, NgFor } from '@angular/common';
+import {USER_MESSAGES} from '../../../constants/user-messages';
 
 @Component({
   selector: 'app-coach-dashboard',
@@ -68,5 +69,10 @@ export class CoachDashboardComponent implements OnInit {
   goToProgram(programId?: number) {
     if (!programId) return; // opcionális id ellenőrzés
     this.router.navigate([`/coach/programs/${programId}/workouts`]);
+  }
+  createNewProgram() {
+    this.router.navigate(['/coach/programs/new']).catch(() => {
+      this.message = USER_MESSAGES.programClickError;
+    });
   }
 }
