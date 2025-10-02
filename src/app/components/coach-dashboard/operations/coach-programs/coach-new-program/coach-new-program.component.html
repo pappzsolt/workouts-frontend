@@ -1,5 +1,12 @@
 <h2 class="text-3xl font-bold mb-6 text-center">Create New Program</h2>
 
+<!-- Message box -->
+<div *ngIf="message"
+     [ngClass]="{'bg-green-100 text-green-800': messageType==='success', 'bg-red-100 text-red-800': messageType==='error'}"
+     class="p-3 rounded-lg mb-4 text-center font-semibold border">
+  {{ message }}
+</div>
+
 <form class="bg-white rounded-xl shadow-lg p-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3" (ngSubmit)="saveProgram()">
 
   <!-- Program Name -->

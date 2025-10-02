@@ -22,6 +22,9 @@ export class CoachNewProgramComponent implements OnInit {
     coachId: 0
   };
 
+  message: string = ''; // ide kerülnek a hibák vagy sikerüzenetek
+  messageType: 'success' | 'error' = 'success'; // stílushoz
+
   constructor(
     private programService: CoachProgramService,
     private router: Router
@@ -30,13 +33,23 @@ export class CoachNewProgramComponent implements OnInit {
   ngOnInit(): void {}
 
   saveProgram() {
+    this.message = '';
     this.programService.createProgram(this.program).subscribe({
       next: (response) => {
         console.log('Program created:', response);
-        this.router.navigate(['/coach/programs']);
+        this.messageType = 'success';
+        this.message = 'Program sikeresen létrehozva!';
+        // opcionális: átirányítás 1-2 másodperc után
+        setTimeout(() => this.router.navigate(['/coach/programs']), 1500);
       },
       error: (err) => {
         console.error('Error creating program:', err);
+        this.messageType = 'error';
+        if (err.error?.message) {
+          this.message = `Hiba: ${err.error.message}`;
+        } else {
+          this.message = 'Hiba történt a program létrehozása során.';
+        }
       }
     });
   }
