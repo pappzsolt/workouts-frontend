@@ -7,8 +7,8 @@ import { Program, CoachProgramsResponse } from '../../../models/program.model';
   providedIn: 'root'
 })
 export class CoachProgramService {
-  private baseUrl = 'http://localhost:8080/api/programs'; // backend URL
-
+  private baseUrl = 'http://localhost:8080/api/programs';
+  private baseUrlNew = 'http://localhost:8080/api/user-programs/create';
   constructor(private http: HttpClient) {}
 
   /** 🔹 Lekéri a belépett coach programjait */
@@ -28,7 +28,7 @@ export class CoachProgramService {
 
   /** 🔹 Új program létrehozása */
   createProgram(program: Program): Observable<Program> {
-    return this.http.post<Program>(`${this.baseUrl}`, program);
+    return this.http.post<Program>(`${this.baseUrlNew}`, program);
   }
 
   /** 🔹 Program frissítése */
