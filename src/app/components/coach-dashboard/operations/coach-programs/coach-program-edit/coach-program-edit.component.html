@@ -1,6 +1,6 @@
 <h2 class="text-2xl font-bold mb-6 text-center">Edit Program</h2>
 
-<form class="bg-white rounded-xl shadow-lg p-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+<form (ngSubmit)="saveProgram()" class="bg-white rounded-xl shadow-lg p-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
 
   <!-- Program Name -->
   <div class="sm:col-span-2 md:col-span-3">
@@ -39,14 +39,6 @@
     </select>
   </div>
 
-  <!-- Coach ID -->
-  <div>
-    <label class="block text-gray-700 mb-1" for="coachId">Coach ID</label>
-    <input id="coachId" name="coachId" type="number" placeholder="Coach ID"
-           [(ngModel)]="program.coachId"
-           class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
-  </div>
-
   <!-- Submit Button -->
   <div class="sm:col-span-2 md:col-span-3 text-center mt-4">
     <button type="submit"
@@ -56,3 +48,6 @@
   </div>
 
 </form>
+
+<!-- Hibaüzenet -->
+<div *ngIf="message" class="text-red-500 text-center mt-4 font-medium">{{ message }}</div>

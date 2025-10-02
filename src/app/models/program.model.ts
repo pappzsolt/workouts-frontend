@@ -32,3 +32,12 @@ export interface CoachProgramsResponse {
   programCount: number;
   programs: Program[];
 }
+
+export interface ProgramDto {
+  programId: number;
+  programName: string;
+  programDescription: string;
+  durationDays: number;
+  difficultyLevel: string;
+  workouts?: any[]; // opcionális, ha a frontend nem használja most
+}

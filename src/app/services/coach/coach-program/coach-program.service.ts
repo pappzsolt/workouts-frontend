@@ -22,9 +22,10 @@ export class CoachProgramService {
   }
 
   /** 🔹 Program lekérése ID alapján */
-  getProgramById(id: number): Observable<Program> {
-    return this.http.get<Program>(`${API_ENDPOINTS.programs}/${id}`);
+  getProgramById(id: number): Observable<{ program: Program }> {
+    return this.http.get<{ program: Program }>(`${API_ENDPOINTS.programs}/${id}`);
   }
+
 
   /** 🔹 Új program létrehozása */
   createProgram(program: Program): Observable<Program> {
@@ -41,8 +42,4 @@ export class CoachProgramService {
     return this.http.delete<void>(`${API_ENDPOINTS.programs}/${id}`);
   }
 
-  /** 🔹 Adott coach összes programja (opcionális) */
-  getProgramsByCoach(coachId: number): Observable<Program[]> {
-    return this.http.get<Program[]>(`${API_ENDPOINTS.programs}/coach/${coachId}`);
-  }
 }

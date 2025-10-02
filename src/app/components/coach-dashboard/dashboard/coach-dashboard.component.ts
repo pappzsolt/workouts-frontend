@@ -5,6 +5,7 @@ import { Program } from '../../../models/program.model';
 import { CommonModule } from '@angular/common';
 import { NgIf, NgFor } from '@angular/common';
 import {USER_MESSAGES} from '../../../constants/user-messages';
+import { ProgramStateService } from '../../../services/coach/coach-program/ProgramStateService';
 
 @Component({
   selector: 'app-coach-dashboard',
@@ -20,7 +21,8 @@ export class CoachDashboardComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private programService: CoachProgramService
+    private programService: CoachProgramService,
+    private programState: ProgramStateService
   ) {}
 
   ngOnInit(): void {}
@@ -39,9 +41,8 @@ export class CoachDashboardComponent implements OnInit {
     this.programService.getProgramsForLoggedInCoach().subscribe({
       next: (res) => {
         if (res.status === 'success' && res.programs?.length) {
-          // Minden program mezőt inicializálunk, ha hiányzik
           this.programs = res.programs.map(p => ({
-            id: p.id,
+            id: (p as any).programId ?? p.id, // backend programId -> frontend id
             programName: p.programName || 'Név hiányzik',
             programDescription: p.programDescription || '',
             durationDays: p.durationDays || 0,
@@ -66,6 +67,8 @@ export class CoachDashboardComponent implements OnInit {
     });
   }
 
+
+
   goToProgram(programId?: number) {
     if (!programId) return; // opcionális id ellenőrzés
     this.router.navigate([`/coach/programs/${programId}/workouts`]);
@@ -76,18 +79,26 @@ export class CoachDashboardComponent implements OnInit {
     });
   }
   editProgram(programId: number, event: MouseEvent) {
-    // Megakadályozzuk, hogy a teljes csempe click-je is lefusson
     event.stopPropagation();
 
+    console.log('DEBUG: editProgram hívás indult');
+    console.log('DEBUG: kapott programId =', programId);
+
     if (!programId) {
+      console.warn('DEBUG: programId nem érkezett, megszakítom.');
       this.message = USER_MESSAGES.programClickError;
       return;
     }
 
-    // Navigáció a program szerkesztő oldalra
-    this.router.navigate([`/coach/programs/${programId}/edit`]).catch(() => {
-      this.message = USER_MESSAGES.programClickError;
-    });
+    this.router.navigate([`/coach/programs/${programId}/edit`])
+      .then(success => {
+        console.log('DEBUG: router.navigate success?', success);
+      })
+      .catch(err => {
+        console.error('DEBUG: router.navigate hiba:', err);
+        this.message = USER_MESSAGES.programClickError;
+      });
   }
+
 
 }

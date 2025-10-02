@@ -3,7 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Program } from '../../../../../models/program.model';
+import { Program, ProgramDto } from '../../../../../models/program.model';
+
 @Component({
   selector: 'app-coach-program-edit',
   standalone: true,
@@ -19,7 +20,6 @@ export class CoachProgramEditComponent implements OnInit {
     difficultyLevel: ''
   };
 
-
   message: string = '';
 
   constructor(
@@ -30,23 +30,37 @@ export class CoachProgramEditComponent implements OnInit {
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
-    if (id) {
-      this.programService.getProgramById(id).subscribe({
-        next: (data) => {
-          if (data) {
-            this.program = data;
-          } else {
-            this.message = `Program with id ${id} not found.`;
-            console.warn(this.message);
-          }
-        },
-        error: (err) => {
-          console.error(err);
-          this.message = 'Hiba történt a program lekérésekor.';
-        }
-      });
+    if (!id) {
+      this.message = 'Program ID nem található.';
+      return;
     }
+
+    this.programService.getProgramById(id).subscribe({
+      next: (data) => {
+        if (data && data.program) {
+          // DTO típusát ne kényszerítsük ProgramDto-ra
+          const dto = data.program as any;
+
+          // Explicit mapping: DTO -> frontend Program
+          this.program = {
+            id: dto.programId,                  // DTO programId -> frontend id
+            programName: dto.programName,
+            programDescription: dto.programDescription,
+            durationDays: dto.durationDays,
+            difficultyLevel: dto.difficultyLevel
+          };
+        } else {
+          this.message = `Program with id ${id} not found.`;
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this.message = 'Hiba történt a program lekérésekor.';
+      }
+    });
   }
+
+
 
   saveProgram(): void {
     if (!this.program.id) return;
