@@ -5,7 +5,6 @@ import { LayoutComponent } from './layouts/default-layout/layout.component'; // 
 import { AdminDashboardComponent } from './components/admin-dashboard/dashboard/admin-dashboard.component';
 import { AdminListUsersComponent } from './components/admin-dashboard/operations/admin-list-users/admin-list-users.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/dashboard/coach-dashboard.component';
-import { CoachWorkoutsComponent } from './components/coach-dashboard/operations/coach-workouts/coach-workouts.component';
 import { UserDashboardComponent } from './components/user-dashboard/dashboard/user-dashboard.component';
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
@@ -24,10 +23,8 @@ import { UserEditComponent } from './components/admin-dashboard/operations/user-
 import { WorkoutsComponent } from './components/user-dashboard/operations/user-workouts/workouts.component';
 import { UserExercisesComponent } from './components/user-dashboard/operations/user-exercises/user-exercises.component';
 import { UserExerciseDetailComponent } from './components/user-dashboard/operations/user-exercises/user-exercises-detail/user-exercises-detail.component';
-import { CoachWorkoutEditComponent } from './components/coach-dashboard/operations/coach-workouts/coach-workouts-edit/coach-workout-edit.component';
 import { CoachExerciseEditComponent } from './components/coach-dashboard/operations/coach-exercises/coach-exercise-edit/coach-exercise-edit.component';
 import { CoachNewProgramComponent } from './components/coach-dashboard/operations/coach-programs/coach-new-program/coach-new-program.component';
-import { CoachNewWorkoutComponent } from './components/coach-dashboard/operations/coach-workouts/coach-new-workout/coach-new-workout.component';
 import {
   CoachProgramEditComponent
 } from './components/coach-dashboard/operations/coach-programs/coach-program-edit/coach-program-edit.component';
@@ -74,12 +71,8 @@ export const routes: Routes = [
       { path: 'dashboard', component: CoachDashboardComponent },
       { path: 'profile', component: CoachProfileComponent },
       { path: 'exercises', component: CoachExercisesComponent },
-      { path: 'programs/:id/workouts', component: CoachWorkoutsComponent },
-      { path: 'workouts', component: CoachWorkoutsComponent },
       { path: 'programs/new', component: CoachNewProgramComponent },
-      { path: 'workouts/:id/edit', component: CoachWorkoutEditComponent },
       { path: 'programs/:id/edit', component: CoachProgramEditComponent },
-      { path: 'workouts/new', component: CoachNewWorkoutComponent },
       { path: 'exercises/:id/edit', component: CoachExerciseEditComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: '**', redirectTo: 'dashboard' }

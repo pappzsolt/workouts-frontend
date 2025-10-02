@@ -1,45 +1,25 @@
-<h2 class="text-3xl font-bold mb-8 text-center">Coach Workouts</h2>
-<div class="flex flex-wrap justify-center gap-6">
+<div class="workouts-container">
 
-  <!-- Új workout csempe gombbal -->
-  <div class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52
-              flex flex-col items-center justify-center text-center
-              transform transition duration-300 hover:scale-105 hover:shadow-2xl">
-
-    <div class="text-xl font-semibold mb-2 text-green-700">New Workout</div>
-    <div class="text-sm text-gray-500 mb-4">Create a new workout</div>
-
-    <button type="button"
-            class="bg-green-600 text-white font-medium py-2 px-4 rounded-lg shadow
-                   hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500
-                   transition-colors"
-            (click)="createNewWorkout()">
-      +
-    </button>
+  <!-- 🔹 Üzenetek felhasználónak -->
+  <div *ngIf="message" [ngClass]="{'success-msg': messageType === 'success', 'error-msg': messageType === 'error'}">
+    {{ message }}
   </div>
 
-  <!-- Workouts csempék -->
-  <div *ngFor="let workout of trainings"
-       class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52
-              flex flex-col items-center justify-center text-center cursor-pointer
-              transform transition duration-300 hover:scale-105 hover:shadow-2xl"
-       (click)="goToWorkoutDetails(workout.id)">
+  <!-- Workout lista -->
+  <h2>Workouts</h2>
+  <ul>
+    <li *ngFor="let w of workouts">
+      <strong>{{ w.workoutName }}</strong> - {{ w.durationMinutes }} perc
+      <button (click)="deleteWorkout(w.id)">Törlés</button>
+    </li>
+  </ul>
 
-    <div class="mb-4 text-xl font-semibold">{{ workout.name }}</div>
-    <div class="text-sm text-gray-500 mb-2">{{ workout.workout_date | date }}</div>
-    <div class="text-sm text-gray-700">{{ workout.duration_minutes }} minutes</div>
-
-    <button type="button"
-            class="mt-3 bg-blue-600 text-white font-medium py-1 px-3 rounded-lg shadow
-                   hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500
-                   transition-colors"
-            (click)="editWorkout(workout.id); $event.stopPropagation()">
-      Edit
-    </button>
-  </div>
-
-  <!-- Ha nincs egyetlen workout sem -->
-  <div *ngIf="trainings.length === 0" class="text-gray-500 text-center w-full mt-4">
-    No workouts found.
-  </div>
+  <!-- Új workout hozzáadása -->
+  <h3>Új workout</h3>
+  <form (ngSubmit)="addWorkout()">
+    <label>Név: <input [(ngModel)]="newWorkout.workoutName" name="name"></label><br>
+    <label>Leírás: <input [(ngModel)]="newWorkout.description" name="desc"></label><br>
+    <label>Időtartam (perc): <input type="number" [(ngModel)]="newWorkout.durationMinutes" name="duration"></label><br>
+    <button type="submit">Hozzáadás</button>
+  </form>
 </div>
