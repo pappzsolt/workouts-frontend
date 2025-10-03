@@ -10,7 +10,7 @@ import { USER_MESSAGES } from '../../../../../constants/user-messages';
   standalone: true,
   imports: [CommonModule, NgIf, NgFor],
   templateUrl: './coach-program.component.html',
-  styleUrls: ['./coach-program.component.css']
+  styleUrls: ['./coach-program.component.css'] // ⚡ ha nincs fájl, létre kell hozni vagy törölni
 })
 export class CoachProgramComponent implements OnInit {
   programs: Program[] = [];
@@ -20,7 +20,6 @@ export class CoachProgramComponent implements OnInit {
   constructor(
     private router: Router,
     private programService: CoachProgramService,
-
   ) {}
 
   ngOnInit(): void {
@@ -63,7 +62,7 @@ export class CoachProgramComponent implements OnInit {
     });
   }
 
-  editProgram(programId: number, event: MouseEvent) {
+  editProgram(programId: number | undefined, event: MouseEvent) {
     event.stopPropagation();
     if (!programId) {
       this.message = USER_MESSAGES.programClickError;
@@ -76,7 +75,8 @@ export class CoachProgramComponent implements OnInit {
       });
   }
 
-  goToWorkouts(programId: number) {
+  goToWorkouts(programId: number | undefined) {
+    if (!programId) return;
     this.router.navigate([`/coach/programs/${programId}/workouts`]);
   }
 }

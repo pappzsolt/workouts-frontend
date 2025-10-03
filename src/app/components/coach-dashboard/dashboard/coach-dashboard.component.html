@@ -1,39 +1,21 @@
 <h2 class="text-3xl font-bold mb-8 text-center">Coach Dashboard</h2>
 
-<!-- Dashboard csempék: New Program + Programs + Workouts + Exercises -->
+<!-- Dashboard csempék -->
 <div class="flex flex-wrap justify-center gap-6 mb-8">
-
-  <!-- New Program csempe -->
-  <div
-    class="bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl"
-    (click)="createNewProgram()"
-  >
-    <div class="text-xl sm:text-2xl font-semibold mb-2 text-green-600">New Program</div>
-    <div class="text-sm sm:text-base text-gray-500 mb-4">Create a new program</div>
-    <button type="button"
-            class="bg-green-600 text-white font-bold text-lg sm:text-xl py-2 px-5 rounded-full shadow
-                   hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500
-                   transition-colors">
-      +
-    </button>
-  </div>
 
   <!-- Programs csempe -->
   <div
     class="relative bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl"
-    (click)="navigateTo('coach/programs')"
+    (click)="togglePrograms()"
   >
-    <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">💪</div> <!-- súlyzós edzés ikon -->
+    <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">💪</div>
     <div class="font-semibold text-lg sm:text-xl md:text-2xl text-gray-800">Programs</div>
-
   </div>
-
-
 
   <!-- Workouts csempe -->
   <div
     class="bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl"
-    (click)="navigateTo('coach/workouts')"
+    (click)="toggleWorkouts()"
   >
     <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">🔥</div>
     <div class="font-semibold text-lg sm:text-xl md:text-2xl text-gray-800">Workouts</div>
@@ -49,34 +31,12 @@
   </div>
 </div>
 
-<!-- Coach programok listázása modern kártyákkal -->
-<div *ngIf="showProgramsList" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 justify-items-center">
-  <div
-    *ngFor="let program of programs"
-    class="bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl">
-
-    <!-- Ikon -->
-    <div class="mb-3 text-4xl sm:text-5xl">💪</div>
-
-    <!-- Program név és leírás -->
-    <div class="mb-2 text-lg font-semibold text-gray-800 truncate">{{ program.name || program.programName }}</div>
-    <div class="text-sm text-gray-500 mb-2 truncate">{{ program.description || program.programDescription }}</div>
-    <div class="text-xs text-gray-600">
-      {{ program.durationDays }} days • {{ program.difficultyLevel | titlecase }}
-    </div>
-
-    <!-- Edit gomb -->
-    <button type="button"
-            class="mt-3 bg-blue-600 text-white font-medium py-1 px-3 rounded-lg shadow
-                   hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-            (click)="editProgram(program.id!, $event)">
-      Edit
-    </button>
-  </div>
+<!-- Program lista megjelenítése -->
+<div *ngIf="showPrograms">
+  <app-coach-program></app-coach-program>
 </div>
 
+<!-- Workout lista megjelenítése -->
 <div *ngIf="showWorkouts">
   <app-coach-workouts [programId]="programIdForWorkouts"></app-coach-workouts>
 </div>
-<!-- Hibaüzenet -->
-<div *ngIf="message" class="text-red-500 text-center mt-4 font-medium">{{ message }}</div>
