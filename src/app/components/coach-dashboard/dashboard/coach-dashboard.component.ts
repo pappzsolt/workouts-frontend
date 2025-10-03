@@ -60,8 +60,8 @@ export class CoachDashboardComponent implements OnInit {
   private loadCoachPrograms() {
     this.programService.getProgramsForLoggedInCoach().subscribe({
       next: (res) => {
-        if (res.status === 'success' && res.programs?.length) {
-          this.programs = res.programs.map(p => ({
+        if (res.status === 'success' && res.data?.length) {
+          this.programs = res.data.map(p => ({
             id: (p as any).programId ?? p.id,
             programName: p.programName || 'Név hiányzik',
             programDescription: p.programDescription || '',
@@ -86,6 +86,7 @@ export class CoachDashboardComponent implements OnInit {
       }
     });
   }
+
 
   goToProgram(programId?: number) {
     if (!programId) return;

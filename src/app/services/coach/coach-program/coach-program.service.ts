@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Program, CoachProgramsResponse } from '../../../models/program.model';
+import { Program, CoachProgramsResponse,ApiResponse,ProgramDto } from '../../../models/program.model';
 import { API_ENDPOINTS } from '../../../api-endpoints'; // helyes útvonal
 
 @Injectable({
@@ -22,20 +22,19 @@ export class CoachProgramService {
   }
 
   /** 🔹 Program lekérése ID alapján */
-  getProgramById(id: number): Observable<{ program: Program }> {
-    return this.http.get<{ program: Program }>(`${API_ENDPOINTS.programs}/${id}`);
+  getProgramById(id: number): Observable<ApiResponse<ProgramDto>> {
+    return this.http.get<ApiResponse<ProgramDto>>(`${API_ENDPOINTS.programs}/${id}`);
   }
-
 
   /** 🔹 Új program létrehozása */
   createProgram(program: Program): Observable<Program> {
     return this.http.post<Program>(API_ENDPOINTS.createProgram, program);
   }
 
-  /** 🔹 Program frissítése */
-  updateProgram(id: number, program: Program): Observable<Program> {
-    return this.http.put<Program>(`${API_ENDPOINTS.programs}/${id}`, program);
+  updateProgram(id: number, program: Program): Observable<ApiResponse<ProgramDto>> {
+    return this.http.put<ApiResponse<ProgramDto>>(`${API_ENDPOINTS.programs}/${id}`, program);
   }
+
 
   /** 🔹 Program törlése */
   deleteProgram(id: number): Observable<void> {

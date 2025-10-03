@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Workout, WorkoutResponse } from '../../../models/workout.model';
+import { Workout, WorkoutResponse ,WorkoutListResponse} from '../../../models/workout.model';
 
 
 
@@ -14,19 +14,20 @@ export class CoachWorkoutsService {
 
   constructor(private http: HttpClient) {}
 
-  getProgramWorkouts(programId: number, userId: number): Observable<Workout[]> {
-    return this.http.get<Workout[]>(`${this.apiUrl}/program/${programId}/user/${userId}`);
+  getMyWorkouts(): Observable<WorkoutListResponse> {
+    return this.http.get<WorkoutListResponse>(`${this.apiUrl}/my-workouts`);
   }
 
+
   addWorkout(workout: Workout): Observable<WorkoutResponse> {
-    return this.http.post<WorkoutResponse>(`${this.apiUrl}`, workout);
+    return this.http.post<WorkoutResponse>(`${this.apiUrl}/add`, workout);
   }
 
   updateWorkout(workout: Workout): Observable<WorkoutResponse> {
-    return this.http.put<WorkoutResponse>(`${this.apiUrl}/${workout.id}`, workout);
+    return this.http.put<WorkoutResponse>(`${this.apiUrl}/update`, workout);
   }
 
   deleteWorkout(id: number): Observable<WorkoutResponse> {
-    return this.http.delete<WorkoutResponse>(`${this.apiUrl}/${id}`);
+    return this.http.delete<WorkoutResponse>(`${this.apiUrl}/delete/${id}`);
   }
 }

@@ -24,10 +24,9 @@ export class WorkoutListComponent implements OnInit, OnChanges {
   constructor(private coachWorkoutsService: CoachWorkoutsService) {}
 
   ngOnInit(): void {
-    if (this.programId) {
-      this.loadWorkouts();
-    }
+    this.loadWorkouts();
   }
+
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['programId'] && !changes['programId'].firstChange) {
@@ -36,15 +35,26 @@ export class WorkoutListComponent implements OnInit, OnChanges {
   }
 
   loadWorkouts() {
-    if (!this.programId) return;
-    this.coachWorkoutsService.getProgramWorkouts(this.programId, this.userId).subscribe({
-      next: (data) => {
-        this.workouts = data;
-        this.setMessage('Workoutok betöltve.', 'success');
+    this.coachWorkoutsService.getMyWorkouts().subscribe({
+      next: (res) => {
+        if (res.status === 'success' && res.workouts) {
+          this.workouts = res.workouts.map(w => ({
+            id: w.id,
+            workoutName: w.name,          // backend "name" -> frontend "workoutName"
+            description: w.description,
+            durationMinutes: w.durationMinutes,
+            // programId opcionális, mert a backend nem adja
+          }));
+          this.setMessage('Workoutok betöltve.', 'success');
+        } else {
+          this.setMessage(res.message || 'Nincsenek workoutok.', 'error');
+        }
       },
       error: () => this.setMessage('Nem sikerült betölteni a workoutokat.', 'error')
     });
   }
+
+
 
   addWorkout() {
     if (!this.programId) return;

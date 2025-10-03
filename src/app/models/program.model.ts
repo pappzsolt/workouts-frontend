@@ -29,9 +29,11 @@ export interface ProgramExercise {
 
 export interface CoachProgramsResponse {
   status: string;
-  programCount: number;
-  programs: Program[];
+  data: Program[];      // ← így kell
+  message?: string | null;
+  count: number;
 }
+
 
 export interface ProgramDto {
   programId: number;
@@ -40,4 +42,10 @@ export interface ProgramDto {
   durationDays: number;
   difficultyLevel: string;
   workouts?: any[]; // opcionális, ha a frontend nem használja most
+}
+export interface ApiResponse<T> {
+  status: string;
+  data: T;
+  message?: string | null;
+  count: number;
 }

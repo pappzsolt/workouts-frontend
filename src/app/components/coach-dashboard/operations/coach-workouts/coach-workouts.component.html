@@ -1,8 +1,8 @@
-<div class="workouts-container">
+<div class="workouts-container flex flex-col items-center">
 
   <!-- 🔹 Üzenetek felhasználónak -->
   <div *ngIf="message"
-       class="w-full text-center mb-4 p-2 rounded font-medium"
+       class="w-full max-w-md text-center mb-4 p-2 rounded font-medium"
        [ngClass]="{
          'bg-green-100 text-green-700': messageType === 'success',
          'bg-red-100 text-red-700': messageType === 'error'
@@ -14,11 +14,11 @@
   <h2 class="text-2xl font-bold mb-4 text-center">Workouts</h2>
 
   <!-- Workout lista csempék -->
-  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center">
     <div *ngFor="let w of workouts"
          class="bg-white rounded-2xl shadow-md p-5 flex flex-col justify-between cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl">
 
-      <div class="mb-3">
+      <div class="mb-3 text-center">
         <div class="text-lg font-semibold truncate">{{ w.workoutName }}</div>
         <div class="text-sm text-gray-500 truncate">{{ w.description }}</div>
         <div class="text-xs text-gray-600 mt-1">{{ w.durationMinutes }} perc</div>
@@ -32,33 +32,4 @@
     </div>
   </div>
 
-  <!-- Új workout hozzáadása csempe -->
-  <div class="mt-6 bg-white rounded-2xl shadow-md p-5 w-full sm:w-96 mx-auto flex flex-col items-center">
-    <h3 class="text-xl font-semibold mb-4">Új Workout hozzáadása</h3>
-    <form (ngSubmit)="addWorkout()" class="w-full flex flex-col gap-3">
-      <input type="text"
-             [(ngModel)]="newWorkout.workoutName"
-             name="name"
-             placeholder="Workout név"
-             class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-      <input type="text"
-             [(ngModel)]="newWorkout.description"
-             name="desc"
-             placeholder="Leírás"
-             class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-      <input type="number"
-             [(ngModel)]="newWorkout.durationMinutes"
-             name="duration"
-             placeholder="Időtartam (perc)"
-             class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-
-      <button type="submit"
-              class="bg-blue-600 text-white font-bold py-2 px-4 rounded-full shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
-        Hozzáadás
-      </button>
-    </form>
-  </div>
 </div>
-

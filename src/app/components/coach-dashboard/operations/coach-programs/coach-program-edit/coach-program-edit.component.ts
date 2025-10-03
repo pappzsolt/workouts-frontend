@@ -36,10 +36,9 @@ export class CoachProgramEditComponent implements OnInit {
     }
 
     this.programService.getProgramById(id).subscribe({
-      next: (data) => {
-        if (data && data.program) {
-          // DTO típusát ne kényszerítsük ProgramDto-ra
-          const dto = data.program as any;
+      next: (res) => {
+        if (res && res.status === 'success' && res.data) {
+          const dto = res.data; // backendből jön a ProgramDto
 
           // Explicit mapping: DTO -> frontend Program
           this.program = {
@@ -58,6 +57,7 @@ export class CoachProgramEditComponent implements OnInit {
         this.message = 'Hiba történt a program lekérésekor.';
       }
     });
+
   }
 
 
@@ -66,9 +66,12 @@ export class CoachProgramEditComponent implements OnInit {
     if (!this.program.id) return;
 
     this.programService.updateProgram(this.program.id, this.program).subscribe({
-      next: () => {
-        // Ha a program lista a dashboard része:
-        this.router.navigate(['/coach/dashboard'], { queryParams: { section: 'programs' } });
+      next: (res) => {
+        if (res.status === 'success') {
+          this.router.navigate(['/coach/dashboard'], { queryParams: { section: 'programs' } });
+        } else {
+          this.message = 'Hiba történt a mentés közben.';
+        }
       },
       error: (err) => {
         console.error(err);
@@ -76,5 +79,6 @@ export class CoachProgramEditComponent implements OnInit {
       }
     });
   }
+
 
 }
