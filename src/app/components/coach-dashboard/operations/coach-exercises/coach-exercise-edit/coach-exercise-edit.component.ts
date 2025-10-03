@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ExerciseService, Exercise } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
+import { ExerciseService, Exercise, WorkoutDto, WorkoutExercise} from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 
 @Component({
   selector: 'app-coach-exercise-edit',
@@ -33,7 +33,7 @@ export class CoachExerciseEditComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
+    public router: Router,
     private exerciseService: ExerciseService
   ) {}
 
@@ -44,15 +44,22 @@ export class CoachExerciseEditComponent implements OnInit {
     }
   }
 
-  loadExercise(id: number): void {
+  loadExercise(exerciseId: number): void {
     this.loading = true;
-    this.exerciseService.getWorkoutExercises(id).subscribe({
-      next: (workout) => {
-        // Feltételezzük, hogy a backend a workout-exercises objektumban adja vissza az exercise-t
-        const we = workout.exercises[0]; // vagy a megfelelő kiválasztás
+
+    this.exerciseService.getWorkoutsWithExercises().subscribe({
+      next: (workouts: WorkoutDto[]) => {
+        // Keresés az összes workout-ban
+        const we = workouts
+          .flatMap(w => w.exercises)           // összes WorkoutExercise egy tömbbe
+          .find((we: WorkoutExercise) => we.exercise.id === exerciseId);
+
         if (we && we.exercise) {
           this.exercise = { ...we.exercise };
+        } else {
+          this.errorMessage = 'A kiválasztott exercise nem található';
         }
+
         this.loading = false;
       },
       error: (err) => {
@@ -62,6 +69,8 @@ export class CoachExerciseEditComponent implements OnInit {
       }
     });
   }
+
+
 
   saveExercise(): void {
     this.saving = true;

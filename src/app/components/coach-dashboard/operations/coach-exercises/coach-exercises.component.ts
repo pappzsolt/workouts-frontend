@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 import {
   ExerciseService,
   Exercise,
@@ -19,7 +20,7 @@ export class ExerciseControllerComponent implements OnInit {
   exercises: WorkoutExercise[] = []; // csak a workout-exercises
   loading = false;
 
-  constructor(private exerciseService: ExerciseService) {}
+  constructor(private exerciseService: ExerciseService,public router: Router) {}
 
   ngOnInit(): void {
     this.loadExercises();
@@ -71,6 +72,10 @@ export class ExerciseControllerComponent implements OnInit {
       error: (err) => console.error('Hiba az exercise frissítésénél:', err)
     });
   }
+  editExercise(exerciseId: number): void {
+    this.router.navigate(['/coach/exercises', exerciseId, 'edit']);
+  }
+
 
   // 🔹 Exercise törlése
   deleteExercise(exerciseId: number): void {
@@ -80,18 +85,6 @@ export class ExerciseControllerComponent implements OnInit {
         this.loadExercises();
       },
       error: (err) => console.error('Hiba az exercise törlésénél:', err)
-    });
-  }
-
-  // 🔹 Done státusz módosítása (true/false)
-  toggleDone(workoutId: number, exerciseId: number, done: boolean): void {
-    this.exerciseService.updateWorkoutExerciseDone(workoutId, exerciseId, done).subscribe({
-      next: (res: string) => {
-        console.log('Exercise státusz frissítve:', res);
-        const ex = this.exercises.find(e => e.id === exerciseId);
-        if (ex) ex.done = done;
-      },
-      error: (err) => console.error('Hiba a done módosításnál:', err)
     });
   }
 }
