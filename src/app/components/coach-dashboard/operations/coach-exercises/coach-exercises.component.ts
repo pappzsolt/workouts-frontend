@@ -1,45 +1,97 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import { CoachExercisesService, Exercise } from '../../../../services/coach/coach-exercises/coach-exercises.service';
-import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
-import { USER_MESSAGES } from '../../../../constants/user-messages';
+import {
+  ExerciseService,
+  Exercise,
+  WorkoutDto,
+  WorkoutExercise
+} from '../../../../services/coach/coach-exercises/coach-exercises.service';
 
 @Component({
-  selector: 'app-coach-exercises',
+  selector: 'app-exercise-controller',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './coach-exercises.component.html',
   styleUrls: ['./coach-exercises.component.css']
 })
-export class CoachExercisesComponent implements OnInit {
-  exercises$!: Observable<Exercise[]>;
-  workoutId = 1; // Teszt workout ID
-  message: string = '';
+export class ExerciseControllerComponent implements OnInit {
 
-  constructor(
-    private coachExercisesService: CoachExercisesService,
-    private router: Router
-  ) {}
+  exercises: WorkoutExercise[] = []; // csak a workout-exercises
+  loading = false;
+
+  constructor(private exerciseService: ExerciseService) {}
 
   ngOnInit(): void {
     this.loadExercises();
   }
 
-  loadExercises() {
-    this.exercises$ = this.coachExercisesService.getExercisesByWorkout(this.workoutId).pipe(
-      catchError((err) => {
-        this.message = USER_MESSAGES.loadProgramsError; // Hibakezelés
-        return of([]); // Hibánál üres lista
-      })
-    );
+  // 🔹 Összes exercise betöltése (minden workoutból kilapítva)
+  loadExercises(): void {
+    this.loading = true;
+    this.exerciseService.getWorkoutsWithExercises().subscribe({
+      next: (workouts: WorkoutDto[]) => {
+        this.exercises = workouts.flatMap(w => w.exercises || []);
+        this.loading = false;
+      },
+      error: (err: any) => {
+        console.error('Hiba az exercise-ok betöltésénél:', err);
+        this.loading = false;
+      }
+    });
   }
 
-  goToExercise(exerciseId: number) {
-    this.router.navigate(['/coach/exercises', exerciseId, 'edit']).catch(() => {
-      this.message = USER_MESSAGES.programClickError; // Navigációs hiba üzenet
+  // 🔹 Egy workout exercise lekérdezése (ha pl. részletes nézet kell)
+  loadWorkoutExercises(workoutId: number): void {
+    this.exerciseService.getWorkoutExercises(workoutId).subscribe({
+      next: (workout: WorkoutDto) => {
+        this.exercises = workout.exercises || [];
+      },
+      error: (err) => console.error('Hiba a workout exercise-ok betöltésénél:', err)
+    });
+  }
+
+  // 🔹 Exercise hozzáadása
+  addExercise(newExercise: Exercise): void {
+    this.exerciseService.addExercise(newExercise).subscribe({
+      next: (created: Exercise) => {
+        console.log('Exercise hozzáadva:', created);
+        this.loadExercises(); // újratöltés
+      },
+      error: (err) => console.error('Hiba az exercise hozzáadásánál:', err)
+    });
+  }
+
+  // 🔹 Exercise módosítása
+  updateExercise(exercise: Exercise): void {
+    this.exerciseService.updateExercise(exercise).subscribe({
+      next: (updated: Exercise) => {
+        console.log('Exercise frissítve:', updated);
+        this.loadExercises();
+      },
+      error: (err) => console.error('Hiba az exercise frissítésénél:', err)
+    });
+  }
+
+  // 🔹 Exercise törlése
+  deleteExercise(exerciseId: number): void {
+    this.exerciseService.deleteExercise(exerciseId).subscribe({
+      next: (res: string) => {
+        console.log('Exercise törölve:', res);
+        this.loadExercises();
+      },
+      error: (err) => console.error('Hiba az exercise törlésénél:', err)
+    });
+  }
+
+  // 🔹 Done státusz módosítása (true/false)
+  toggleDone(workoutId: number, exerciseId: number, done: boolean): void {
+    this.exerciseService.updateWorkoutExerciseDone(workoutId, exerciseId, done).subscribe({
+      next: (res: string) => {
+        console.log('Exercise státusz frissítve:', res);
+        const ex = this.exercises.find(e => e.id === exerciseId);
+        if (ex) ex.done = done;
+      },
+      error: (err) => console.error('Hiba a done módosításnál:', err)
     });
   }
 }
-

@@ -24,7 +24,7 @@
   <!-- Exercises csempe -->
   <div
     class="bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl"
-    (click)="navigateTo('coach/exercises')"
+    (click)="toggleExercises()"
   >
     <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">🏋️</div>
     <div class="font-semibold text-lg sm:text-xl md:text-2xl text-gray-800">Exercises</div>
@@ -39,4 +39,9 @@
 <!-- Workout lista megjelenítése -->
 <div *ngIf="showWorkouts">
   <app-coach-workouts [programId]="programIdForWorkouts"></app-coach-workouts>
+</div>
+
+<!-- Exercise lista megjelenítése -->
+<div *ngIf="showExercises">
+  <app-exercise-controller></app-exercise-controller>
 </div>

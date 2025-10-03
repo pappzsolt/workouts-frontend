@@ -11,7 +11,7 @@ import { roleGuard } from './guards/role.guard';
 import { MemberSearchComponent } from './components/admin-dashboard/operations/user-search/member-search.component';
 import { ChoiceUserNewComponent } from './components/admin-dashboard/operations/choice-user-new/choice-user-new.component';
 import { ChoiceUserEditComponent } from './components/admin-dashboard/operations/choice-user-edit/choice-user-edit.component';
-import { CoachExercisesComponent } from './components/coach-dashboard/operations/coach-exercises/coach-exercises.component';
+import { ExerciseControllerComponent } from './components/coach-dashboard/operations/coach-exercises/coach-exercises.component';
 import { UserProfileComponent } from './components/user-dashboard/operations/user-profile/user-profile.component';
 import { UserMyProgramsComponent } from './components/user-dashboard/operations/user-my-programs/user-my-programs.component';
 import { UserStatisticsComponent } from './components/user-dashboard/operations/user-statistics/user-statistics.component';
@@ -70,7 +70,7 @@ export const routes: Routes = [
     children: [
       { path: 'dashboard', component: CoachDashboardComponent },
       { path: 'profile', component: CoachProfileComponent },
-      { path: 'exercises', component: CoachExercisesComponent },
+      { path: 'exercises', component: ExerciseControllerComponent },
       { path: 'programs/new', component: CoachNewProgramComponent },
       { path: 'programs/:id/edit', component: CoachProgramEditComponent },
       { path: 'exercises/:id/edit', component: CoachExerciseEditComponent },
