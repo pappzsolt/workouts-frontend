@@ -69,10 +69,20 @@ export class ExerciseService {
     return this.http.post<Exercise>(`${this.baseUrl}/add`, exercise);
   }
 
-  // Exercise módosítása
+// ExerciseService
   updateExercise(exercise: Exercise): Observable<Exercise> {
-    return this.http.put<Exercise>(`${this.baseUrl}/update`, exercise);
+    const payload = {
+      id: exercise.id,
+      name: exercise.name,
+      description: exercise.description,
+      muscleGroup: exercise.muscleGroup,
+      equipment: exercise.equipment,
+      difficultyLevel: exercise.difficultyLevel,
+      category: exercise.category
+    };
+    return this.http.put<Exercise>(`${this.baseUrl}/update`, payload);
   }
+
 
   // Exercise törlése
   deleteExercise(exerciseId: number): Observable<string> {
