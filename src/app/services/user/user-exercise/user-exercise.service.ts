@@ -18,15 +18,31 @@ export interface ExerciseDto {
   repetitions: number;
   orderIndex: number;
   restSeconds: number;
-  workoutExerciseNotes: string;
+  notes: string | null;
+  done: boolean;
+}
+
+export interface WorkoutExerciseDto {
+  id: number;
   workoutId: number;
-  workoutName: string;
-  workoutDescription: string;
-  workoutDate: string;
-  workoutDurationMinutes: number;
-  workoutIntensityLevel: string;
-  workoutDone: boolean;
-  exerciseDone: boolean;
+  exercise: ExerciseDto;
+  sets: number;
+  repetitions: number;
+  orderIndex: number;
+  restSeconds: number;
+  notes: string | null;
+  done: boolean;
+}
+
+export interface WorkoutDto {
+  id: number;
+  name: string;
+  description: string;
+  workoutDate?: string;
+  durationMinutes?: number;
+  intensityLevel?: string;
+  done?: boolean;
+  exercises: WorkoutExerciseDto[];
 }
 
 @Injectable({
@@ -38,11 +54,11 @@ export class UserExerciseService {
   constructor(private http: HttpClient) {}
 
   /**
-   * Lekéri a megadott workouthoz tartozó exercise-okat.
+   * Lekéri a belépett user adott workout-hoz tartozó exercise-ait
    * @param workoutId A workout ID-je
-   * @returns Observable<ExerciseDto[]>
+   * @returns Observable<WorkoutDto>
    */
-  getExercisesByWorkout(workoutId: number): Observable<ExerciseDto[]> {
-    return this.http.get<ExerciseDto[]>(`${this.apiUrl}/workout/${workoutId}`);
+  getWorkoutExercises(workoutId: number): Observable<WorkoutDto> {
+    return this.http.get<WorkoutDto>(`${this.apiUrl}/my-workout/${workoutId}`);
   }
 }

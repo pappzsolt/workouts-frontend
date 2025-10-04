@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UserExerciseService, ExerciseDto } from '../../../../services/user/user-exercise/user-exercise.service';
-import { Observable } from 'rxjs';
+import { UserExerciseService, WorkoutDto, WorkoutExerciseDto } from '../../../../services/user/user-exercise/user-exercise.service';
+import { Observable, map } from 'rxjs';
 
 @Component({
   standalone: true,
@@ -12,8 +12,8 @@ import { Observable } from 'rxjs';
 })
 export class UserExercisesComponent implements OnInit {
   workoutId!: number;
-  workoutName!: string;          // új mező
-  exercises$!: Observable<ExerciseDto[]>;
+  workoutName!: string;
+  exercises$!: Observable<WorkoutExerciseDto[]>;
 
   constructor(
     private route: ActivatedRoute,
@@ -28,7 +28,10 @@ export class UserExercisesComponent implements OnInit {
     // state-ből jön a workoutName
     this.workoutName = history.state['workoutName'];
 
-    this.exercises$ = this.exercisesService.getExercisesByWorkout(this.workoutId);
+    // Lekérés a backend-től: most WorkoutDto-t kapunk, kivesszük az exercises listát
+    this.exercises$ = this.exercisesService.getWorkoutExercises(this.workoutId).pipe(
+      map((workout: WorkoutDto) => workout.exercises)
+    );
   }
 
   goToExercise(exerciseId: number) {
@@ -38,3 +41,4 @@ export class UserExercisesComponent implements OnInit {
     });
   }
 }
+
