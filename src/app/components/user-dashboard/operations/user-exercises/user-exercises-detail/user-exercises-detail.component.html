@@ -1,63 +1,80 @@
 <h2 class="text-2xl font-bold mb-6 text-center">Exercise Detail</h2>
 
-<div *ngIf="exercise$ | async as exercise; else noExercise"
+<div *ngIf="workoutExercise; else noExercise"
      class="bg-white rounded-xl shadow-lg p-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
 
   <!-- Exercise Name -->
   <div class="sm:col-span-2 md:col-span-3">
     <label class="block text-gray-700 mb-1">Exercise Name</label>
-    <p class="border border-gray-300 rounded-lg px-3 py-2 w-full bg-gray-50">{{ exercise.name }}</p>
+    <p class="border border-gray-300 rounded-lg px-3 py-2 w-full bg-gray-50">
+      {{ workoutExercise.exercise.name || 'N/A' }}
+    </p>
   </div>
 
   <!-- Description -->
   <div class="sm:col-span-2 md:col-span-3">
     <label class="block text-gray-700 mb-1">Description</label>
-    <p class="border border-gray-300 rounded-lg px-3 py-2 w-full bg-gray-50">{{ exercise.description }}</p>
+    <p class="border border-gray-300 rounded-lg px-3 py-2 w-full bg-gray-50">
+      {{ workoutExercise.exercise.description || 'N/A' }}
+    </p>
   </div>
 
   <!-- Muscle Group -->
   <div>
     <label class="block text-gray-700 mb-1">Muscle Group</label>
-    <p class="border border-gray-300 rounded-lg px-3 py-2 bg-gray-50">{{ exercise.muscleGroup }}</p>
+    <p class="border border-gray-300 rounded-lg px-3 py-2 bg-gray-50">
+      {{ workoutExercise.exercise.muscleGroup || 'N/A' }}
+    </p>
   </div>
 
   <!-- Equipment -->
   <div>
     <label class="block text-gray-700 mb-1">Equipment</label>
-    <p class="border border-gray-300 rounded-lg px-3 py-2 bg-gray-50">{{ exercise.equipment }}</p>
+    <p class="border border-gray-300 rounded-lg px-3 py-2 bg-gray-50">
+      {{ workoutExercise.exercise.equipment || 'N/A' }}
+    </p>
   </div>
 
   <!-- Difficulty Level -->
   <div>
     <label class="block text-gray-700 mb-1">Difficulty Level</label>
-    <p class="border border-gray-300 rounded-lg px-3 py-2 bg-gray-50">{{ exercise.difficultyLevel }}</p>
+    <p class="border border-gray-300 rounded-lg px-3 py-2 bg-gray-50">
+      {{ workoutExercise.exercise.difficultyLevel || 'N/A' }}
+    </p>
   </div>
 
   <!-- Category -->
   <div>
     <label class="block text-gray-700 mb-1">Category</label>
-    <p class="border border-gray-300 rounded-lg px-3 py-2 bg-gray-50">{{ exercise.category }}</p>
+    <p class="border border-gray-300 rounded-lg px-3 py-2 bg-gray-50">
+      {{ workoutExercise.exercise.category || 'N/A' }}
+    </p>
   </div>
 
   <!-- Calories Burned per Minute -->
   <div>
     <label class="block text-gray-700 mb-1">Calories Burned / Min</label>
-    <p class="border border-gray-300 rounded-lg px-3 py-2 bg-gray-50">{{ exercise.caloriesBurnedPerMinute ?? 'N/A' }}</p>
+    <p class="border border-gray-300 rounded-lg px-3 py-2 bg-gray-50">
+      {{ workoutExercise.exercise.caloriesBurnedPerMinute ?? 'N/A' }}
+    </p>
   </div>
 
   <!-- Duration -->
   <div>
     <label class="block text-gray-700 mb-1">Duration (seconds)</label>
-    <p class="border border-gray-300 rounded-lg px-3 py-2 bg-gray-50">{{ exercise.durationSeconds }}</p>
+    <p class="border border-gray-300 rounded-lg px-3 py-2 bg-gray-50">
+      {{ workoutExercise.exercise.durationSeconds ?? 'N/A' }}
+    </p>
   </div>
 
+  <!-- Done Checkbox -->
   <div class="sm:col-span-2 md:col-span-3 flex items-center mt-2">
     <label for="done" class="flex items-center cursor-pointer">
       <div class="relative">
         <input type="checkbox"
                id="done"
                class="sr-only peer"
-               [checked]="exercise.done"
+               [checked]="workoutExercise.done"
                (change)="onDoneChange($event)" />
         <div class="w-12 h-6 bg-gray-300 rounded-full peer-checked:bg-blue-600 transition-colors duration-300"></div>
         <div class="absolute left-0 top-0.5 w-5 h-5 bg-white rounded-full shadow transform transition-transform duration-300
@@ -67,19 +84,16 @@
     </label>
   </div>
 
-
-
-
   <!-- Optional: Image -->
-  <div class="sm:col-span-2 md:col-span-3" *ngIf="exercise.imageUrl">
+  <div class="sm:col-span-2 md:col-span-3" *ngIf="workoutExercise.exercise.imageUrl">
     <label class="block text-gray-700 mb-1">Image</label>
-    <img [src]="exercise.imageUrl" alt="{{ exercise.name }}" class="w-full rounded-lg border"/>
+    <img [src]="workoutExercise.exercise.imageUrl" alt="{{ workoutExercise.exercise.name }}" class="w-full rounded-lg border"/>
   </div>
 
   <!-- Optional: Video -->
-  <div class="sm:col-span-2 md:col-span-3" *ngIf="exercise.videoUrl">
+  <div class="sm:col-span-2 md:col-span-3" *ngIf="workoutExercise.exercise.videoUrl">
     <label class="block text-gray-700 mb-1">Video</label>
-    <video [src]="exercise.videoUrl" controls class="w-full rounded-lg border"></video>
+    <video [src]="workoutExercise.exercise.videoUrl" controls class="w-full rounded-lg border"></video>
   </div>
 
 </div>
@@ -89,4 +103,3 @@
     Nincs ilyen gyakorlat.
   </div>
 </ng-template>
-
