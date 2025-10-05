@@ -22,5 +22,6 @@ export const USER_MESSAGES = {
   loadRolesError: 'Hiba történt a szerepkörök betöltésekor!',
   profileLoaded: 'Profil sikeresen betöltve!',
   updateSuccess: 'Felhasználó sikeresen frissítve!',
-  updateError: 'Hiba a frissítés során!'
+  updateError: 'Hiba a frissítés során!',
+  workoutClickError: 'Hiba a wokorut szrekestésnél',
 };

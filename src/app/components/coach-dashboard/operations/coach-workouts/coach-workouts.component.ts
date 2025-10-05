@@ -3,7 +3,8 @@ import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Workout } from '../../../../models/workout.model';
-
+import { USER_MESSAGES } from '../../../../constants/user-messages';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-coach-workouts',
   standalone: true,
@@ -21,7 +22,7 @@ export class WorkoutListComponent implements OnInit, OnChanges {
   message: string = '';
   messageType: 'success' | 'error' | '' = '';   // 🔹 üzenet típus jelzéshez
 
-  constructor(private coachWorkoutsService: CoachWorkoutsService) {}
+  constructor(private coachWorkoutsService: CoachWorkoutsService, private router: Router,) {}
 
   ngOnInit(): void {
     this.loadWorkouts();
@@ -73,16 +74,22 @@ export class WorkoutListComponent implements OnInit, OnChanges {
     });
   }
 
-  deleteWorkout(id?: number) {
-    if (!id) return;
-    this.coachWorkoutsService.deleteWorkout(id).subscribe({
-      next: (res) => {
-        this.setMessage(res.message, res.status === 'ok' ? 'success' : 'error');
-        this.loadWorkouts();
-      },
-      error: () => this.setMessage('Hiba történt a törléskor.', 'error')
-    });
+  editWorkout(workoutId: number | undefined, event: MouseEvent) {
+    event.stopPropagation();
+
+    if (!workoutId) {
+      this.message = USER_MESSAGES.workoutClickError;
+      return;
+    }
+
+    this.router.navigate([`/coach/workouts/${workoutId}/edit`])
+      .catch(err => {
+        console.error('router.navigate hiba:', err);
+        this.message = USER_MESSAGES.workoutClickError;
+      });
   }
+
+
 
   private setMessage(msg: string, type: 'success' | 'error') {
     this.message = msg;

@@ -1,0 +1,105 @@
+<div class="p-6 bg-white rounded-xl shadow-md max-w-2xl mx-auto">
+  <h2 class="text-2xl font-bold mb-4 text-gray-800 text-center">
+    🏋️ Edit Workout
+  </h2>
+
+  <!-- Üzenet (opcionális) -->
+  <div *ngIf="message" class="mb-4 text-center"
+       [ngClass]="messageType === 'success' ? 'text-green-600' : 'text-red-600'">
+    {{ message }}
+  </div>
+
+  <!-- Szerkesztő űrlap -->
+  <form (ngSubmit)="saveWorkout()" #workoutForm="ngForm">
+    <!-- Name -->
+    <div class="mb-4">
+      <label class="block font-semibold mb-1">Workout Name</label>
+      <input
+        type="text"
+        name="name"
+        [(ngModel)]="workout.name"
+        class="border rounded-lg w-full p-2"
+        required
+      />
+    </div>
+
+    <!-- Description -->
+    <div class="mb-4">
+      <label class="block font-semibold mb-1">Description</label>
+      <textarea
+        name="description"
+        [(ngModel)]="workout.description"
+        class="border rounded-lg w-full p-2"
+        rows="3"
+      ></textarea>
+    </div>
+
+    <!-- Workout Date -->
+    <div class="mb-4">
+      <label class="block font-semibold mb-1">Workout Date</label>
+      <input
+        type="date"
+        name="workoutDate"
+        [(ngModel)]="workout.workoutDate"
+        class="border rounded-lg w-full p-2"
+        required
+      />
+    </div>
+
+    <!-- Duration -->
+    <div class="mb-4">
+      <label class="block font-semibold mb-1">Duration (minutes)</label>
+      <input
+        type="number"
+        name="durationMinutes"
+        [(ngModel)]="workout.durationMinutes"
+        class="border rounded-lg w-full p-2"
+        min="0"
+      />
+    </div>
+
+    <!-- Intensity -->
+    <div class="mb-4">
+      <label class="block font-semibold mb-1">Intensity Level</label>
+      <select
+        name="intensityLevel"
+        [(ngModel)]="workout.intensityLevel"
+        class="border rounded-lg w-full p-2"
+      >
+        <option value="">-- Select Intensity --</option>
+        <option value="low">Low</option>
+        <option value="moderate">Moderate</option>
+        <option value="high">High</option>
+      </select>
+    </div>
+
+    <!-- Done -->
+    <div class="mb-4 flex items-center gap-2">
+      <input
+        type="checkbox"
+        name="done"
+        [(ngModel)]="workout.done"
+        id="done"
+        class="h-4 w-4"
+      />
+      <label for="done" class="font-semibold">Workout Completed</label>
+    </div>
+
+    <!-- Buttons -->
+    <div class="flex justify-center gap-4 mt-6">
+      <button
+        type="submit"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg"
+      >
+        Save
+      </button>
+      <button
+        type="button"
+        (click)="cancelEdit()"
+        class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-6 py-2 rounded-lg"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>

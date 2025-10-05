@@ -29,47 +29,22 @@ export class ProgramAssignmentComponent implements OnInit {
   assignedUsers: { programId: number; userIds: number[] }[] = [];
 
   ngOnInit(): void {
-    // 🔹 Például adatok — később API-ból is jöhetnek
-    this.programs = [
-      { id: 1, name: 'Beginner Strength' },
-      { id: 2, name: 'Fat Loss Plan' },
-      { id: 3, name: 'Muscle Gain Advanced' }
-    ];
-
-    this.users = [
-      { id: 101, name: 'Alice' },
-      { id: 102, name: 'Bob' },
-      { id: 103, name: 'Charlie' },
-      { id: 104, name: 'Diana' }
-    ];
+    // későbbi inicializálás (pl. API hívás)
   }
 
   toggleUserSelection(userId: number) {
-    if (this.selectedUserIds.includes(userId)) {
-      this.selectedUserIds = this.selectedUserIds.filter(id => id !== userId);
-    } else {
-      this.selectedUserIds.push(userId);
-    }
+    // user kiválasztás logika ide kerül
   }
 
   assignUsersToProgram() {
-    if (!this.selectedProgramId || this.selectedUserIds.length === 0) return;
-
-    this.assignedUsers.push({
-      programId: this.selectedProgramId,
-      userIds: [...this.selectedUserIds]
-    });
-
-    // Reset választások
-    this.selectedProgramId = null;
-    this.selectedUserIds = [];
+    // programhoz user-ek hozzárendelése ide kerül
   }
 
   getProgramName(programId: number): string {
-    return this.programs.find(p => p.id === programId)?.name || '';
+    return '';
   }
 
   getUserName(userId: number): string {
-    return this.users.find(u => u.id === userId)?.name || '';
+    return '';
   }
 }

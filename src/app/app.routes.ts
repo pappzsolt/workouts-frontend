@@ -28,6 +28,9 @@ import { CoachNewProgramComponent } from './components/coach-dashboard/operation
 import {
   CoachProgramEditComponent
 } from './components/coach-dashboard/operations/coach-programs/coach-program-edit/coach-program-edit.component';
+import {
+  CoachWorkoutEditComponent
+} from './components/coach-dashboard/operations/coach-workouts/coach-workout-edit/coach-workout-edit.component';
 
 export const routes: Routes = [
   // Login layout
@@ -74,6 +77,7 @@ export const routes: Routes = [
       { path: 'programs/new', component: CoachNewProgramComponent },
       { path: 'programs/:id/edit', component: CoachProgramEditComponent },
       { path: 'exercises/:id/edit', component: CoachExerciseEditComponent },
+      { path: 'workouts/:id/edit', component: CoachWorkoutEditComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
       { path: '**', redirectTo: 'dashboard' }
     ]

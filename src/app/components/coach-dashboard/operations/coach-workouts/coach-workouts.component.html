@@ -27,9 +27,9 @@
 
         <div class="mt-4 flex flex-col gap-2 w-full">
           <button
-            class="bg-red-600 text-white px-3 py-1 rounded"
-            (click)="deleteWorkout(w.id)">
-            Törlés
+            class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded transition duration-200"
+            (click)="editWorkout(w.id, $event)">
+            ✏️ Szerkesztés
           </button>
         </div>
       </div>
@@ -43,3 +43,4 @@
   </ng-template>
 
 </div>
+
