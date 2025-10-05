@@ -8,8 +8,8 @@
     class="relative bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl"
     (click)="togglePrograms()"
   >
-    <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">💪</div>
-    <div class="font-semibold text-lg sm:text-xl md:text-2xl text-gray-800">Programs</div>
+    <div class="mb-4 text-6xl">💪</div>
+    <div class="font-semibold text-xl text-gray-800">Programs</div>
   </div>
 
   <!-- Workouts csempe -->
@@ -17,8 +17,8 @@
     class="bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl"
     (click)="toggleWorkouts()"
   >
-    <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">🔥</div>
-    <div class="font-semibold text-lg sm:text-xl md:text-2xl text-gray-800">Workouts</div>
+    <div class="mb-4 text-6xl">🔥</div>
+    <div class="font-semibold text-xl text-gray-800">Workouts</div>
   </div>
 
   <!-- Exercises csempe -->
@@ -26,22 +26,37 @@
     class="bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl"
     (click)="toggleExercises()"
   >
-    <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">🏋️</div>
-    <div class="font-semibold text-lg sm:text-xl md:text-2xl text-gray-800">Exercises</div>
+    <div class="mb-4 text-6xl">🏋️</div>
+    <div class="font-semibold text-xl text-gray-800">Exercises</div>
   </div>
+
+  <!-- Program & User Assignments csempe -->
+  <div
+    class="bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl"
+    (click)="toggleAssignments()"
+  >
+    <div class="mb-4 text-6xl">🧑‍🤝‍🧑</div>
+    <div class="font-semibold text-xl text-gray-800">Assignments</div>
+  </div>
+
 </div>
 
-<!-- Program lista megjelenítése -->
+<!-- Program lista -->
 <div *ngIf="showPrograms">
   <app-coach-program></app-coach-program>
 </div>
 
-<!-- Workout lista megjelenítése -->
+<!-- Workout lista -->
 <div *ngIf="showWorkouts">
   <app-coach-workouts [programId]="programIdForWorkouts"></app-coach-workouts>
 </div>
 
-<!-- Exercise lista megjelenítése -->
+<!-- Exercise lista -->
 <div *ngIf="showExercises">
   <app-exercise-controller></app-exercise-controller>
+</div>
+
+<!-- Program & User Assignments -->
+<div *ngIf="showAssignments">
+  <app-program-assignment></app-program-assignment>
 </div>
