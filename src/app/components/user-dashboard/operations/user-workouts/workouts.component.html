@@ -1,46 +1,42 @@
-<h2 class="text-2xl font-bold mb-6 text-center">
-  Program: {{ programName }}
-</h2>
+<h2 class="programs-title">Program: {{ programName }}</h2>
 
 <!-- 🔹 Workouts lista -->
-<div class="flex flex-wrap justify-center gap-6">
-  <div
-    *ngFor="let workout of workouts$ | async"
-    class="bg-white rounded-xl shadow-lg p-6 w-60 sm:w-64 md:w-72 lg:w-80 flex flex-col items-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
-    (click)="goToExercises(workout.workoutId, workout.workoutName)"
-  >
-    <div class="mb-4 text-4xl sm:text-5xl">🏋️‍♂️</div>
-    <div class="font-semibold text-lg sm:text-xl md:text-2xl">{{ workout.workoutName }}</div>
-    <div class="text-gray-500 text-sm mt-1">
-      {{ workout.workoutDescription }}
-    </div>
-    <div class="text-gray-400 text-xs mt-1">
-      Date: {{ workout.workoutDate | date:'yyyy.MM.dd' }} – Intensity: {{ workout.intensityLevel }}
-    </div>
+<ng-container *ngIf="(workouts$ | async)?.length; else noWorkouts">
+  <div class="programs-grid">
+    <div *ngFor="let workout of workouts$ | async" class="program-card" (click)="goToExercises(workout.workoutId, workout.workoutName)">
+      <!-- Emoji / ikon -->
+      <div class="program-image">
+        <span class="program-emoji">🏋️‍♂️</span>
+      </div>
 
-    <!-- 🔹 Teljesítési státusz -->
-    <div class="text-green-600 font-medium mt-2" *ngIf="workout.completed">Completed ✅</div>
-    <div class="text-red-500 font-medium mt-2" *ngIf="workout.completed === false">Not completed ❌</div>
-    <div class="text-gray-500 font-medium mt-2" *ngIf="workout.completed === null">Pending ⏳</div>
+      <div class="program-content">
+        <!-- Workout név és leírás -->
+        <div class="program-name">{{ workout.workoutName }}</div>
+        <div class="program-description">{{ workout.workoutDescription }}</div>
+        <div class="text-gray-400 text-xs mt-1">
+          Date: {{ workout.workoutDate | date:'yyyy.MM.dd' }} – Intensity: {{ workout.intensityLevel }}
+        </div>
 
-    <!-- 🔹 Részletek, ha van -->
-    <div class="text-gray-600 text-sm mt-1" *ngIf="workout.actualSets || workout.actualRepetitions || workout.weightUsed">
-      <div *ngIf="workout.actualSets">Sets: {{ workout.actualSets }}</div>
-      <div *ngIf="workout.actualRepetitions">Reps: {{ workout.actualRepetitions }}</div>
-      <div *ngIf="workout.weightUsed">Weight: {{ workout.weightUsed }} kg</div>
+        <!-- Teljesítési státusz -->
+        <div class="text-green-600 font-medium mt-2" *ngIf="workout.completed">Completed ✅</div>
+        <div class="text-red-500 font-medium mt-2" *ngIf="workout.completed === false">Not completed ❌</div>
+        <div class="text-gray-500 font-medium mt-2" *ngIf="workout.completed === null">Pending ⏳</div>
+
+        <!-- Részletek, ha van -->
+        <div class="text-gray-600 text-sm mt-1" *ngIf="workout.actualSets || workout.actualRepetitions || workout.weightUsed">
+          <div *ngIf="workout.actualSets">Sets: {{ workout.actualSets }}</div>
+          <div *ngIf="workout.actualRepetitions">Reps: {{ workout.actualRepetitions }}</div>
+          <div *ngIf="workout.weightUsed">Weight: {{ workout.weightUsed }} kg</div>
+        </div>
+
+        <!-- Feedback / Notes -->
+        <div class="text-gray-500 text-xs mt-1" *ngIf="workout.feedback">Feedback: {{ workout.feedback }}</div>
+        <div class="text-gray-500 text-xs mt-1" *ngIf="workout.notes">Notes: {{ workout.notes }}</div>
+      </div>
     </div>
-
-    <!-- 🔹 Feedback / Notes -->
-    <div class="text-gray-500 text-xs mt-1" *ngIf="workout.feedback">Feedback: {{ workout.feedback }}</div>
-    <div class="text-gray-500 text-xs mt-1" *ngIf="workout.notes">Notes: {{ workout.notes }}</div>
   </div>
-</div>
+</ng-container>
 
-<!-- 🔹 Ha nincs workout -->
-<div
-  *ngIf="!(workouts$ | async)?.length"
-  class="text-center text-gray-500 mt-4"
->
-  Nincsenek workoutok ehhez a programhoz.
-</div>
-
+<ng-template #noWorkouts>
+  <div class="no-programs">Nincsenek workoutok ehhez a programhoz.</div>
+</ng-template>

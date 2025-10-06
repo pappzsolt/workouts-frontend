@@ -249,3 +249,135 @@ tr:hover {
 .dashboard-card-title {
   @apply font-semibold text-xl text-gray-900;
 }
+/* === Card form stílus === */
+.card {
+  @apply bg-white rounded-xl shadow-lg;
+}
+
+.card-content {
+  @apply p-6 flex flex-col gap-4;
+}
+
+.card-label {
+  @apply block text-gray-700 mb-1 font-medium;
+}
+
+.card-input {
+  @apply border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-auto
+  focus:outline-none focus:ring-2 focus:ring-blue-500 transition;
+}
+
+.card-button {
+  @apply bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow
+  hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500
+  transition-colors w-full sm:w-auto;
+}
+
+/* === Message box formhoz === */
+.message-box {
+  @apply text-center rounded-lg p-3 mb-4 font-medium shadow-sm;
+}
+
+.message-success {
+  @apply bg-green-100 text-green-700;
+}
+
+.message-error {
+  @apply bg-red-100 text-red-700;
+}
+/* === Form / Page címek === */
+.page-title {
+  @apply text-3xl sm:text-3xl font-bold mb-6 text-center text-gray-800;
+}
+/* Page title */
+.page-title {
+  @apply text-3xl sm:text-3xl font-bold mb-6 text-center text-gray-800;
+}
+
+/* Card form */
+.card {
+  @apply bg-white rounded-xl shadow-lg p-6;
+}
+
+.card-content {
+  @apply flex flex-col gap-4;
+}
+
+.card-label {
+  @apply block text-gray-700 mb-1 font-medium;
+}
+
+.card-input {
+  @apply border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-auto
+  focus:outline-none focus:ring-2 focus:ring-blue-500 transition;
+}
+
+.card-button {
+  @apply bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow
+  hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500
+  transition-colors w-full sm:w-auto;
+}
+
+/* Message box */
+.message-box {
+  @apply text-center rounded-lg p-3 mb-4 font-medium shadow-sm;
+}
+
+.message-success {
+  @apply bg-green-100 text-green-700;
+}
+
+.message-error {
+  @apply bg-red-100 text-red-700;
+}
+/* === Form / Page title === */
+.form-title {
+  @apply text-3xl sm:text-3xl font-bold mb-6 text-center text-gray-800;
+}
+
+/* === Message box === */
+.message-box {
+  @apply text-center rounded-lg p-3 mb-4 font-medium shadow-sm;
+}
+
+.message-success {
+  @apply bg-green-100 text-green-700;
+}
+
+.message-error {
+  @apply bg-red-100 text-red-700;
+}
+
+/* === Form card container === */
+.form-card {
+  @apply bg-white rounded-2xl shadow-md p-6 max-w-2xl w-full mx-auto;
+}
+
+/* === Form sections / content === */
+.form-content {
+  @apply flex flex-col gap-4;
+}
+
+/* === Form labels === */
+.form-label {
+  @apply block text-gray-700 mb-1 font-medium;
+}
+
+/* === Inputs, textarea, select === */
+.form-input {
+  @apply border border-gray-300 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition;
+}
+
+/* === Submit / action button === */
+.form-button {
+  @apply bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors w-full sm:w-auto;
+}
+
+/* === Optional: emoji / icon header for forms === */
+.form-header {
+  @apply bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center h-32 rounded-t-2xl mb-4;
+}
+
+.form-header-emoji {
+  @apply text-6xl;
+}
