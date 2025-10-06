@@ -1,46 +1,49 @@
 <div class="workouts-container">
 
   <!-- 🔹 Üzenetek felhasználónak -->
-  <div *ngIf="message"
-       class="text-center rounded p-2 mb-4 font-medium"
-       [ngClass]="{
-         'bg-green-100 text-green-700': messageType === 'success',
-         'bg-red-100 text-red-700': messageType === 'error'
-       }">
+  <div *ngIf="message" [ngClass]="{
+        'message-box-success': messageType === 'success',
+        'message-box-error': messageType === 'error'
+      }">
     {{ message }}
   </div>
 
   <!-- Workout lista címe -->
-  <h2 class="text-2xl font-bold mb-6 text-center">Workouts</h2>
+  <h2 class="programs-title">Workouts</h2>
 
   <ng-container *ngIf="workouts.length > 0; else noWorkouts">
-    <div class="flex flex-wrap justify-center gap-6">
-      <div *ngFor="let w of workouts"
-           class="bg-white rounded-xl shadow-lg p-6 w-52 flex flex-col items-center text-center cursor-pointer hover:scale-105 hover:shadow-2xl transform transition duration-300">
-
+    <div class="programs-grid">
+      <div *ngFor="let w of workouts" class="program-card">
         <!-- Emoji a tetején -->
-        <div class="mb-3 text-6xl">🔥</div>
+        <div class="program-image">
+          <span class="program-emoji">🔥</span>
+        </div>
 
-        <div class="font-semibold text-lg">{{ w.workoutName }}</div>
-        <div class="text-gray-500 text-sm mt-1">{{ w.description }}</div>
-        <div class="text-gray-400 text-xs mt-1">{{ w.durationMinutes }} perc</div>
+        <div class="program-content">
+          <div class="program-name">{{ w.workoutName }}</div>
+          <div class="program-description">{{ w.description }}</div>
+          <div class="program-progress">
+            <div class="program-progress-label">
+              <span>Időtartam:</span>
+              <span>{{ w.durationMinutes }} perc</span>
+            </div>
+            <div class="program-progress-bar">
+              <div class="program-progress-fill" [style.width.%]="100"></div>
+            </div>
+          </div>
 
-        <div class="mt-4 flex flex-col gap-2 w-full">
-          <button
-            class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded transition duration-200"
-            (click)="editWorkout(w.id, $event)">
-            ✏️ Szerkesztés
-          </button>
+          <div class="program-edit">
+            <button (click)="editWorkout(w.id, $event)">
+              ✏️ Szerkesztés
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </ng-container>
 
   <ng-template #noWorkouts>
-    <div class="text-center text-gray-500 mt-6">
-      Nincsenek workouts.
-    </div>
+    <div class="no-programs">Nincsenek workouts.</div>
   </ng-template>
 
 </div>
-

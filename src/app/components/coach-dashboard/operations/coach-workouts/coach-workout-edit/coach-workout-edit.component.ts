@@ -20,6 +20,7 @@ export class CoachWorkoutEditComponent implements OnInit {
     name: '',
     workoutName: '',
     description: '',
+    workoutDescription: '',
     durationMinutes: 0,
     difficultyLevel: '',
     programId: undefined,
@@ -58,7 +59,35 @@ export class CoachWorkoutEditComponent implements OnInit {
     this.coachWorkoutsService.getWorkoutById(this.workoutId!).subscribe({
       next: (res) => {
         if (res.status === 'success' && res.data) {
-          this.workout = res.data;
+          const w = res.data;
+
+          // Ha a backend ISO stringet ad, vágjuk a dátumot YYYY-MM-DD formátumra
+          const workoutDateFormatted = w.workoutDate
+            ? w.workoutDate.split('T')[0]   // csak az év-hónap-nap rész
+            : undefined;
+
+          this.workout = {
+            ...this.workout,
+            name: w.workoutName || '',
+            workoutName: w.workoutName || '',
+            description: w.workoutDescription || '',
+            workoutDescription: w.workoutDescription || '',
+            durationMinutes: w.durationMinutes || 0,
+            difficultyLevel: w.difficultyLevel || '',
+            programId: w.programId,
+            workoutDate: workoutDateFormatted,
+            intensityLevel: w.intensityLevel,
+            dayIndex: w.dayIndex,
+            completed: w.completed,
+            performedAt: w.performedAt,
+            actualSets: w.actualSets,
+            actualRepetitions: w.actualRepetitions,
+            weightUsed: w.weightUsed,
+            durationSeconds: w.durationSeconds,
+            feedback: w.feedback,
+            notes: w.notes,
+            done: w.done
+          };
         } else {
           this.setMessage(res.message || 'Workout not found.', 'error');
         }
@@ -67,10 +96,20 @@ export class CoachWorkoutEditComponent implements OnInit {
     });
   }
 
+
+
   saveWorkout(): void {
     if (!this.workoutId) return;
 
-    this.coachWorkoutsService.updateWorkout(this.workoutId, this.workout).subscribe({
+    // Alakítsd ISO stringgé, de ha nincs, akkor undefined legyen
+    const payload: Workout = {
+      ...this.workout,
+      workoutDate: this.workout.workoutDate
+        ? new Date(this.workout.workoutDate).toISOString()
+        : undefined
+    };
+
+    this.coachWorkoutsService.updateWorkout(this.workoutId, payload).subscribe({
       next: (res) => {
         if (res.status === 'success') {
           this.setMessage('Workout updated successfully!', 'success');
@@ -84,6 +123,9 @@ export class CoachWorkoutEditComponent implements OnInit {
       error: () => this.setMessage('Failed to save workout.', 'error')
     });
   }
+
+
+
 
   cancelEdit(): void {
     this.router.navigate(['/coach/dashboard']);

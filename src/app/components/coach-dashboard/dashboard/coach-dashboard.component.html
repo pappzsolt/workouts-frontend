@@ -1,62 +1,41 @@
-<h2 class="text-3xl font-bold mb-8 text-center">Coach Dashboard</h2>
+<h2 class="dashboard-title">Coach Dashboard</h2>
 
-<!-- Dashboard csempék -->
-<div class="flex flex-wrap justify-center gap-6 mb-8">
-
+<div class="dashboard-cards-container">
   <!-- Programs csempe -->
-  <div
-    class="relative bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl"
-    (click)="togglePrograms()"
-  >
-    <div class="mb-4 text-6xl">💪</div>
-    <div class="font-semibold text-xl text-gray-800">Programs</div>
+  <div class="dashboard-card" (click)="togglePrograms()">
+    <div class="dashboard-card-emoji">💪</div>
+    <div class="dashboard-card-title">Programs</div>
   </div>
 
   <!-- Workouts csempe -->
-  <div
-    class="bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl"
-    (click)="toggleWorkouts()"
-  >
-    <div class="mb-4 text-6xl">🔥</div>
-    <div class="font-semibold text-xl text-gray-800">Workouts</div>
+  <div class="dashboard-card" (click)="toggleWorkouts()">
+    <div class="dashboard-card-emoji">🔥</div>
+    <div class="dashboard-card-title">Workouts</div>
   </div>
 
   <!-- Exercises csempe -->
-  <div
-    class="bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl"
-    (click)="toggleExercises()"
-  >
-    <div class="mb-4 text-6xl">🏋️</div>
-    <div class="font-semibold text-xl text-gray-800">Exercises</div>
+  <div class="dashboard-card" (click)="toggleExercises()">
+    <div class="dashboard-card-emoji">🏋️</div>
+    <div class="dashboard-card-title">Exercises</div>
   </div>
 
-  <!-- Program & User Assignments csempe -->
-  <div
-    class="bg-white rounded-2xl shadow-md p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-xl"
-    (click)="toggleAssignments()"
-  >
-    <div class="mb-4 text-6xl">🧑‍🤝‍🧑</div>
-    <div class="font-semibold text-xl text-gray-800">Assignments</div>
+  <!-- Program & User Assignments -->
+  <div class="dashboard-card" (click)="toggleAssignments()">
+    <div class="dashboard-card-emoji">🧑‍🤝‍🧑</div>
+    <div class="dashboard-card-title">Assignments</div>
   </div>
-
 </div>
 
-<!-- Program lista -->
+<!-- Dinamikus tartalmak -->
 <div *ngIf="showPrograms">
   <app-coach-program></app-coach-program>
 </div>
-
-<!-- Workout lista -->
 <div *ngIf="showWorkouts">
   <app-coach-workouts [programId]="programIdForWorkouts"></app-coach-workouts>
 </div>
-
-<!-- Exercise lista -->
 <div *ngIf="showExercises">
   <app-exercise-controller></app-exercise-controller>
 </div>
-
-<!-- Program & User Assignments -->
 <div *ngIf="showAssignments">
   <app-program-assignment></app-program-assignment>
 </div>

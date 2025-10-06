@@ -69,16 +69,19 @@ export class ExerciseService {
     return this.http.post<Exercise>(`${this.baseUrl}/add`, exercise);
   }
 
-// ExerciseService
   updateExercise(exercise: Exercise): Observable<Exercise> {
     const payload = {
       id: exercise.id,
       name: exercise.name,
       description: exercise.description,
+      imageUrl: exercise.imageUrl,
+      videoUrl: exercise.videoUrl,
       muscleGroup: exercise.muscleGroup,
       equipment: exercise.equipment,
       difficultyLevel: exercise.difficultyLevel,
-      category: exercise.category
+      category: exercise.category,
+      caloriesBurnedPerMinute: exercise.caloriesBurnedPerMinute,
+      durationSeconds: exercise.durationSeconds
     };
     return this.http.put<Exercise>(`${this.baseUrl}/update`, payload);
   }

@@ -1,45 +1,50 @@
-<h2 class="text-2xl font-bold mb-6 text-center">
-  Programok
-</h2>
+<h2 class="programs-title">Programok</h2>
 
-<div *ngIf="message" class="text-center text-red-700 bg-red-100 rounded p-2 mb-4 font-medium">
+<!-- Üzenet -->
+<div *ngIf="message" class="message-box">
   {{ message }}
 </div>
 
 <ng-container *ngIf="showProgramsList; else noPrograms">
-  <div *ngIf="programs.length > 0; else noPrograms" class="flex flex-wrap justify-center gap-6">
-    <div
-      *ngFor="let program of programs"
-      class="bg-white rounded-xl shadow-lg p-6 w-52 flex flex-col items-center text-center cursor-pointer hover:scale-105 hover:shadow-2xl transform transition duration-300"
-    >
-      <!-- Emoji kép a tetején -->
-      <div class="mb-3 text-5xl">💪</div>
+  <div *ngIf="programs.length > 0; else noPrograms" class="programs-grid">
+    <div *ngFor="let program of programs" class="program-card">
+      <!-- Kép/Emoji -->
+      <div class="program-image">
+        <span class="program-emoji">💪</span>
+      </div>
 
-      <div class="font-semibold text-lg">{{ program.programName }}</div>
-      <div class="text-gray-500 text-sm mt-1">{{ program.programDescription }}</div>
-      <div class="text-gray-400 text-xs mt-1">{{ program.durationDays }} nap</div>
+      <div class="program-content">
+        <!-- Program név és leírás -->
+        <div class="program-name">{{ program.programName }}</div>
+        <div class="program-description">{{ program.programDescription }}</div>
 
-      <div class="mt-4 flex flex-col gap-2 w-full">
-        <button
-          class="bg-yellow-500 text-white px-3 py-1 rounded"
-          (click)="program.id && editProgram(program.id, $event)"
-        >
-          Szerkesztés
-        </button>
+        <!-- Napokhoz progress bar -->
+        <div class="program-progress">
+          <div class="program-progress-label">
+            <span>Napok:</span>
+            <span>{{ program.durationDays }} / {{ program.durationDays }}</span>
+          </div>
+          <div class="program-progress-bar">
+            <div class="program-progress-fill" [style.width.%]="100"></div>
+          </div>
+        </div>
+
+        <!-- Szerkesztés gomb -->
+        <div class="program-edit">
+          <button (click)="program.id && editProgram(program.id, $event)">
+            ✏️ Szerkesztés
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </ng-container>
 
 <ng-template #noPrograms>
-  <div class="text-center text-gray-500 mt-6">
-    Nincsenek programok.
-  </div>
+  <div class="no-programs">Nincsenek programok.</div>
 </ng-template>
 
-<div class="mt-4 text-center">
-  <button class="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
-          (click)="createNewProgram()">
-    Új program létrehozása
-  </button>
-</div>
+<!-- Lebegő "Új program" gomb -->
+<button class="add-program-button" (click)="createNewProgram()" title="Új program létrehozása">
+  ➕
+</button>

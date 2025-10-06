@@ -8,7 +8,7 @@ import { Workout, WorkoutResponse, WorkoutListResponse } from '../../../models/w
 })
 export class CoachWorkoutsService {
 
-  private apiUrl = 'http://localhost:8080/api/workouts'; // állítsd be a backend URL-ednek megfelelően
+  private apiUrl = 'http://localhost:8080/api/workouts';
 
   constructor(private http: HttpClient) {}
 
@@ -29,8 +29,11 @@ export class CoachWorkoutsService {
 
   // 🔹 Workout frissítése ID-vel
   updateWorkout(id: number, workout: Workout): Observable<WorkoutResponse> {
-    return this.http.put<WorkoutResponse>(`${this.apiUrl}/update/${id}`, workout);
+    workout.id = id;
+    return this.http.put<WorkoutResponse>(`${this.apiUrl}/update`, workout);
   }
+
+
 
   // 🔹 Workout törlése
   deleteWorkout(id: number): Observable<WorkoutResponse> {

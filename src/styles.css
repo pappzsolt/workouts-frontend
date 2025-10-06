@@ -11,6 +11,9 @@
 /* --- Body globális stílus --- */
 body {
   @apply bg-gray-50 text-gray-800 font-sans m-0 p-0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  height: 100%;
+  margin: 0;
 }
 
 /* --- Layoutok: admin, coach, user --- */
@@ -48,7 +51,6 @@ button {
   transition-colors w-full sm:w-auto;
 }
 
-/* Letiltott gomb */
 button:disabled {
   @apply bg-gray-400 text-white opacity-80 cursor-not-allowed;
 }
@@ -120,5 +122,130 @@ tr:hover {
   }
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* === Program lista stílus === */
+.programs-title {
+  @apply text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-800;
+}
+
+.message-box {
+  @apply text-center text-red-700 bg-red-100 rounded-lg p-3 mb-4 font-medium shadow-sm;
+}
+
+.programs-grid {
+  @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-24;
+}
+
+.program-card {
+  @apply bg-white/70 backdrop-blur-md border border-gray-100 rounded-2xl shadow-sm overflow-hidden
+  cursor-pointer transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+}
+
+.program-image {
+  @apply bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center h-32;
+}
+
+.program-emoji {
+  @apply text-6xl;
+}
+
+.program-content {
+  @apply p-5 flex flex-col items-center text-center;
+}
+
+.program-name {
+  @apply font-semibold text-lg text-gray-900 mb-1 truncate;
+}
+
+.program-description {
+  @apply text-gray-500 text-sm line-clamp-2;
+}
+
+.program-progress {
+  @apply w-full mt-3;
+}
+
+.program-progress-label {
+  @apply flex justify-between items-center text-xs text-gray-400 mb-1;
+}
+
+.program-progress-bar {
+  @apply w-full h-2 bg-gray-200 rounded-full;
+}
+
+.program-progress-fill {
+  @apply h-2 bg-green-500 rounded-full;
+}
+
+.program-edit {
+  @apply mt-4 w-full;
+}
+
+.program-edit button {
+  @apply w-full bg-green-600 text-white py-2 rounded-xl font-medium shadow hover:bg-green-700 transition;
+}
+
+.no-programs {
+  @apply text-center text-gray-500 mt-6 text-base;
+}
+
+.add-program-button {
+  @apply fixed bottom-6 right-6 bg-green-600 text-white rounded-full shadow-lg w-14 h-14
+  flex items-center justify-center text-3xl hover:bg-green-700 transition transform hover:scale-110;
+}
+
+/* === Dashboard csempe stílus === */
+.dashboard-title {
+  @apply text-3xl font-bold mb-8 text-center text-gray-800;
+}
+
+.dashboard-cards-container {
+  @apply flex flex-wrap justify-center gap-6 mb-8;
+}
+
+.dashboard-card {
+  @apply bg-white/70 backdrop-blur-md border border-gray-100 rounded-2xl shadow-sm
+  p-6 w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center
+  text-center cursor-pointer transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+}
+
+.dashboard-card-emoji {
+  @apply mb-4 text-6xl;
+}
+
+.dashboard-card-title {
+  @apply font-semibold text-xl text-gray-900;
+}
+/* Üzenet stílusok */
+.message-box-success {
+  @apply text-center text-green-700 bg-green-100 rounded-lg p-3 mb-4 font-medium shadow-sm;
+}
+
+.message-box-error {
+  @apply text-center text-red-700 bg-red-100 rounded-lg p-3 mb-4 font-medium shadow-sm;
+}
+/* === Dashboard cím === */
+.dashboard-title {
+  @apply text-3xl font-bold mb-8 text-center text-gray-800;
+}
+
+/* === Dashboard csempék konténer === */
+.dashboard-cards-container {
+  @apply flex flex-wrap justify-center gap-6 mb-8;
+}
+
+/* === Dashboard csempe === */
+.dashboard-card {
+  @apply bg-white/70 backdrop-blur-md border border-gray-100 rounded-2xl shadow-sm p-6
+  w-44 sm:w-48 md:w-52 lg:w-56 flex flex-col items-center justify-center text-center
+  cursor-pointer transform transition-all duration-300 hover:-translate-y-1 hover:shadow-lg;
+}
+
+/* === Csempe emoji === */
+.dashboard-card-emoji {
+  @apply mb-4 text-6xl;
+}
+
+/* === Csempe cím === */
+.dashboard-card-title {
+  @apply font-semibold text-xl text-gray-900;
+}
