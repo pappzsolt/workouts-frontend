@@ -1,21 +1,15 @@
-<h2 class="text-3xl font-bold mb-8 text-center">User Dashboard</h2>
+<h2 class="dashboard-title">User Dashboard</h2>
 
-<div class="flex flex-wrap justify-center gap-6">
+<div class="dashboard-cards-container">
   <!-- My Programs -->
-  <div
-    class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
-    (click)="navigateTo('user/my-programs')"
-  >
-    <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">📚</div>
-    <div class="font-semibold text-lg sm:text-xl md:text-2xl">My Programs</div>
+  <div class="dashboard-card" (click)="navigateTo('user/my-programs')">
+    <div class="dashboard-card-emoji">📚</div>
+    <div class="dashboard-card-title">My Programs</div>
   </div>
 
   <!-- Statistics -->
-  <div
-    class="bg-white rounded-xl shadow-lg p-6 w-40 sm:w-44 md:w-48 lg:w-52 flex flex-col items-center justify-center text-center cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
-    (click)="navigateTo('user/statistics')"
-  >
-    <div class="mb-4 text-5xl sm:text-6xl md:text-7xl lg:text-8xl">📊</div>
-    <div class="font-semibold text-lg sm:text-xl md:text-2xl">Statistics</div>
+  <div class="dashboard-card" (click)="navigateTo('user/statistics')">
+    <div class="dashboard-card-emoji">📊</div>
+    <div class="dashboard-card-title">Statistics</div>
   </div>
 </div>

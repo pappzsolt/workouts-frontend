@@ -1,116 +1,72 @@
-<div class="w-screen min-h-screen bg-gray-50 px-4 sm:px-10 py-6 flex flex-col items-center">
-  <h2 class="text-3xl font-bold mb-8 text-center">Felhasználó keresés</h2>
+<h2 class="programs-title">Felhasználó keresés</h2>
 
-  <!-- 🔹 Keresőmező + gomb -->
-  <div class="w-full max-w-4xl flex flex-col sm:flex-row items-center mb-6 space-y-3 sm:space-y-0 sm:space-x-4">
-    <input
-      type="text"
-      [(ngModel)]="keyword"
-      placeholder="Írj be egy kulcsszót..."
-      class="flex-1 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400"
-    />
-    <button
-      (click)="onSearch()"
-      [disabled]="loading"
-      class="w-full sm:w-auto px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition disabled:bg-gray-300"
-    >
-      Keresés
-    </button>
-  </div>
+<!-- Hiba / info üzenet -->
+<div *ngIf="errorMessage" class="message-box">
+  {{ errorMessage }}
+</div>
+<div *ngIf="message && !errorMessage" class="message-box message-success">
+  {{ message }}
+</div>
 
-  <!-- 🔹 Nézetváltás gombok -->
-  <div class="w-full max-w-4xl flex justify-end mb-4 space-x-2" *ngIf="displayedMembers.length >= 1">
-    <button
-      (click)="viewMode='grid'"
-      [class]="viewMode === 'grid' ? 'px-4 py-2 rounded-lg bg-blue-500 text-white' : 'px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300'"
-    >
-      Kártya nézet
-    </button>
-    <button
-      (click)="viewMode='table'"
-      [class]="viewMode === 'table' ? 'px-4 py-2 rounded-lg bg-blue-500 text-white' : 'px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300'"
-    >
-      Táblázat nézet
-    </button>
-  </div>
+<!-- Keresőmező + gomb -->
+<div class="w-full max-w-4xl flex flex-col sm:flex-row items-center mb-6 space-y-3 sm:space-y-0 sm:space-x-4">
+  <input
+    type="text"
+    [(ngModel)]="keyword"
+    placeholder="Írj be egy kulcsszót..."
+    class="form-input flex-1 w-full"
+  />
+  <button (click)="onSearch()" [disabled]="loading" class="form-button w-full sm:w-auto">
+    Keresés
+  </button>
+</div>
 
-  <!-- 🔹 Loading -->
-  <div *ngIf="loading" class="text-gray-600 mb-4">
-    Keresés folyamatban...
-  </div>
+<!-- Nézetváltás gombok -->
+<div class="w-full max-w-4xl flex justify-end mb-4 space-x-2" *ngIf="displayedMembers.length >= 1">
+  <button
+    (click)="viewMode='grid'"
+    [class]="viewMode === 'grid' ? 'px-4 py-2 rounded-lg bg-blue-500 text-white' : 'px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300'">
+    Kártya nézet
+  </button>
+  <button
+    (click)="viewMode='table'"
+    [class]="viewMode === 'table' ? 'px-4 py-2 rounded-lg bg-blue-500 text-white' : 'px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300'">
+    Táblázat nézet
+  </button>
+</div>
 
-  <!-- 🔹 Hiba info sáv -->
-  <div *ngIf="errorMessage" class="w-full max-w-4xl mb-4 p-4 rounded-md bg-red-100 text-red-700 border border-red-300">
-    {{ errorMessage }}
-  </div>
+<!-- Loading -->
+<div *ngIf="loading" class="text-gray-600 mb-4">Keresés folyamatban...</div>
 
-  <!-- 🔹 Info üzenet -->
-  <div *ngIf="message && !errorMessage" class="w-full max-w-4xl mb-4 p-4 rounded-md bg-green-100 text-green-700 border border-green-300">
-    {{ message }}
-  </div>
-
-  <!-- 🔹 Találatok száma / nincs találat -->
-  <div *ngIf="!loading && !errorMessage" class="w-full max-w-6xl mb-4 text-gray-700 text-base font-medium text-center">
-    <span *ngIf="displayedMembers.length > 0">Találatok száma: {{ members.length }}</span>
-    <span *ngIf="displayedMembers.length === 0 && keyword">
-      <div class="flex flex-col items-center justify-center p-6 rounded-xl bg-white border border-gray-200 shadow-sm">
-        <svg class="w-12 h-12 mb-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M16.65 11a5.65 5.65 0 11-11.3 0 5.65 5.65 0 0111.3 0z"/>
-        </svg>
-        <p class="text-gray-500 text-sm sm:text-base">Nincs találat a megadott kulcsszóra.</p>
-        <p class="text-gray-400 text-xs mt-1">Próbálj meg másik kulcsszót, vagy nézd meg a legnépszerűbb kereséseket.</p>
-      </div>
-    </span>
-  </div>
-
-  <!-- 🔹 Találati lista -->
-  <div class="w-full max-w-6xl mb-6">
-
+<!-- Találatok / nincs találat -->
+<ng-container *ngIf="!loading && !errorMessage">
+  <div *ngIf="displayedMembers.length > 0; else noMembers">
     <!-- Grid nézet -->
-    <div *ngIf="viewMode==='grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div *ngIf="viewMode==='grid'" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full">
       <ng-container *ngFor="let member of displayedMembers">
-        <div class="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition flex flex-col items-start border border-gray-100">
-          <h3 class="text-xl font-semibold mb-2">{{ member.usernameOrName }}</h3>
-          <p class="text-gray-600 text-base mb-1">{{ member.email }}</p>
-          <p class="text-gray-700 mt-2 text-sm">Szerepkör: {{ member.roles.join(', ') }}</p>
-
-          <img *ngIf="member.avatarUrl" [src]="member.avatarUrl" alt="Avatar" class="w-16 h-16 rounded-full mt-2 object-cover border" />
-
-          <div class="mt-3 w-full text-sm text-gray-600 space-y-1">
-            <div *ngFor="let kv of member.extraFields | keyvalue">
-              <ng-container *ngIf="kv.key !== 'coach_id'">
-                <strong>{{ kv.key }}:</strong> {{ kv.value }}
-              </ng-container>
-            </div>
+        <div class="program-card flex flex-col items-start p-6 rounded-2xl shadow-md hover:shadow-xl transition border border-gray-100 w-full">
+          <div class="program-image mb-3 flex justify-center w-full">
+            <span class="program-emoji text-4xl">👤</span>
           </div>
+          <div class="program-content w-full">
+            <div class="program-name font-semibold text-lg mb-1">{{ member.usernameOrName }}</div>
+            <div class="program-description text-gray-600 mb-1">{{ member.email }}</div>
+            <div class="text-gray-500 text-sm mb-2">Szerepkör: {{ member.roles.join(', ') }}</div>
 
-          <!-- Coach adatok -->
-          <div *ngIf="member.coach" class="mt-3 p-2 border-t border-gray-200 w-full text-sm text-gray-700">
-            <h4 class="font-semibold">Coach adatok:</h4>
-            <p><strong>Név:</strong> {{ member.coach.usernameOrName }}</p>
-            <p><strong>Email:</strong> {{ member.coach.email }}</p>
-            <p *ngIf="member.coach.avatarUrl">
-              <strong>Avatar:</strong>
-              <img [src]="member.coach.avatarUrl" alt="Coach Avatar" class="w-12 h-12 inline-block ml-2 rounded-full">
-            </p>
-            <div *ngIf="member.coach.extraFields">
-              <div *ngFor="let kv of member.coach.extraFields | keyvalue">
-                <strong>{{ kv.key }}:</strong> {{ kv.value }}
+            <div *ngIf="member.extraFields && (member.extraFields | keyvalue).length" class="text-gray-600 text-sm mb-2">
+              <div *ngFor="let kv of member.extraFields | keyvalue">
+                <ng-container *ngIf="kv.key !== 'coach_id'">
+                  <strong>{{ kv.key }}:</strong> {{ kv.value }}
+                </ng-container>
               </div>
+            </div>
+
+            <div *ngIf="member.coach" class="text-gray-600 text-sm">
+              <div><strong>Coach:</strong> {{ member.coach.usernameOrName }}</div>
+              <div>{{ member.coach.email }}</div>
             </div>
           </div>
         </div>
-      </ng-container>
-
-      <!-- Skeleton placeholder -->
-      <ng-container *ngIf="displayedMembers.length > 0 && displayedMembers.length < pageSize">
-        <ng-container *ngFor="let i of [].constructor(pageSize - displayedMembers.length)">
-          <div class="bg-gray-100 animate-pulse p-6 rounded-2xl border border-dashed border-gray-300 flex flex-col justify-center items-center">
-            <div class="w-20 h-20 bg-gray-200 rounded-full mb-4"></div>
-            <div class="w-32 h-4 bg-gray-200 rounded mb-2"></div>
-            <div class="w-24 h-4 bg-gray-200 rounded"></div>
-          </div>
-        </ng-container>
       </ng-container>
     </div>
 
@@ -144,40 +100,36 @@
             <ng-container *ngIf="member.coach">
               <p><strong>{{ member.coach.usernameOrName }}</strong></p>
               <p>{{ member.coach.email }}</p>
-              <p *ngIf="member.coach.avatarUrl">
-                <img [src]="member.coach.avatarUrl" alt="Coach Avatar" class="w-12 h-12 rounded-full">
-              </p>
-              <div *ngIf="member.coach.extraFields">
-                <div *ngFor="let kv of member.coach.extraFields | keyvalue">
-                  <strong>{{ kv.key }}:</strong> {{ kv.value }}
-                </div>
-              </div>
             </ng-container>
           </td>
         </tr>
         </tbody>
       </table>
     </div>
-
   </div>
 
-  <!-- 🔹 Pagination controls -->
-  <div *ngIf="totalPages > 1" class="flex justify-center items-center space-x-2 mt-6">
-    <button (click)="prevPage()" [disabled]="currentPage===1"
-            class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100">
-      Előző
-    </button>
+  <!-- Nincs találat -->
+  <ng-template #noMembers>
+    <div class="no-programs">Nincs találat a keresésre.</div>
+  </ng-template>
+</ng-container>
 
-    <ng-container *ngFor="let page of [].constructor(totalPages); let i = index">
-      <button (click)="goToPage(i+1)"
-              [class]="currentPage===i+1 ? 'px-3 py-1 rounded bg-blue-500 text-white' : 'px-3 py-1 rounded bg-gray-200 hover:bg-gray-300'">
-        {{ i+1 }}
-      </button>
-    </ng-container>
+<!-- Lapozás -->
+<div *ngIf="totalPages > 1" class="flex justify-center items-center space-x-2 mt-6">
+  <button (click)="prevPage()" [disabled]="currentPage===1"
+          class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100">
+    Előző
+  </button>
 
-    <button (click)="nextPage()" [disabled]="currentPage===totalPages"
-            class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100">
-      Következő
+  <ng-container *ngFor="let page of [].constructor(totalPages); let i = index">
+    <button (click)="goToPage(i+1)"
+            [class]="currentPage===i+1 ? 'px-3 py-1 rounded bg-blue-500 text-white' : 'px-3 py-1 rounded bg-gray-200 hover:bg-gray-300'">
+      {{ i+1 }}
     </button>
-  </div>
+  </ng-container>
+
+  <button (click)="nextPage()" [disabled]="currentPage===totalPages"
+          class="px-3 py-1 rounded bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100">
+    Következő
+  </button>
 </div>

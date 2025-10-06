@@ -1,33 +1,57 @@
-<div class="w-screen min-h-screen bg-white px-4 sm:px-10 py-6 flex flex-col items-center">
-  <h2 class="text-3xl font-bold mb-8 text-center">Felhasználók listája</h2>
+<h2 class="programs-title">Felhasználók listája</h2>
 
-  <!-- 🔹 Hiba info sáv -->
-  <div *ngIf="errorMessage" class="w-full max-w-6xl mb-4 p-4 rounded-md bg-red-100 text-red-700 border border-red-300">
-    {{ errorMessage }}
-  </div>
+<!-- 🔹 Hiba / Üzenet -->
+<div *ngIf="errorMessage" class="message-box message-error">
+  {{ errorMessage }}
+</div>
 
-  <!-- 🔹 Kártyás megjelenés + lapozás -->
-  <div class="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-    <ng-container *ngFor="let user of paginatedUsers">
-      <div class="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition flex flex-col items-start">
-        <h3 class="text-xl font-semibold mb-2">{{ user.username }}</h3>
-        <p class="text-gray-600 text-base mb-1">{{ user.email }}</p>
-        <p class="text-gray-700 mt-2 text-sm">Szerepkör: {{ user.roles.join(', ') }}</p>
+<!-- 🔹 Felhasználók -->
+<ng-container *ngIf="paginatedUsers.length > 0; else noUsers">
+  <div class="programs-grid">
+    <div *ngFor="let user of paginatedUsers" class="program-card">
+      <!-- Avatar / Emoji -->
+      <div class="program-image">
+        <span class="program-emoji">👤</span>
       </div>
-    </ng-container>
+
+      <!-- Tartalom -->
+      <div class="program-content">
+        <div class="program-name">{{ user.username }}</div>
+        <div class="program-description">{{ user.email }}</div>
+        <div class="text-gray-500 text-sm mt-1">
+          Szerepkör: {{ user.roles.join(', ') }}
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- 🔹 Lapozás -->
-  <div class="flex justify-center mt-8 space-x-2">
-    <button class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300" (click)="prevPage()" [disabled]="currentPage === 1">
+  <div class="flex justify-center items-center space-x-2 mt-6">
+    <button
+      (click)="prevPage()"
+      [disabled]="currentPage === 1"
+      class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 disabled:text-gray-400"
+    >
       Előző
     </button>
-    <span class="px-3 py-2 text-sm sm:text-base">{{currentPage}} / {{totalPages}}</span>
-    <button class="px-5 py-2 rounded-lg bg-gray-200 hover:bg-gray-300" (click)="nextPage()" [disabled]="currentPage === totalPages">
+
+    <span class="px-3 py-2 text-sm sm:text-base font-medium text-gray-700">
+      {{ currentPage }} / {{ totalPages }}
+    </span>
+
+    <button
+      (click)="nextPage()"
+      [disabled]="currentPage === totalPages"
+      class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 disabled:text-gray-400"
+    >
       Következő
     </button>
   </div>
-</div>
+</ng-container>
 
+<!-- 🔹 Üres lista -->
+<ng-template #noUsers>
+  <div class="no-programs">Nincsenek felhasználók.</div>
+</ng-template>
 
 
