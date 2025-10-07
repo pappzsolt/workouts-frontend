@@ -4,7 +4,7 @@ import { CommonModule, NgIf } from '@angular/common';
 import { WorkoutListComponent } from '../operations/coach-workouts/coach-workouts.component';
 import { CoachProgramComponent } from '../operations/coach-programs/coach-program/coach-program.component';
 import { ExerciseControllerComponent } from '../operations/coach-exercises/coach-exercises.component';
-import { ProgramAssignmentComponent } from "../../../components/coach-dashboard/operations/coach-assigments/program-assignment.component"; // 🔹 új import
+import { AssignProgramComponent } from "../../../components/coach-dashboard/operations/assign-program/assignprogram.component"; // 🔹 új import
 
 @Component({
   selector: 'app-coach-dashboard',
@@ -15,7 +15,7 @@ import { ProgramAssignmentComponent } from "../../../components/coach-dashboard/
     WorkoutListComponent,
     CoachProgramComponent,
     ExerciseControllerComponent,
-    ProgramAssignmentComponent // 🔹 új komponens importálva
+    AssignProgramComponent // 🔹 új komponens importálva
   ],
   templateUrl: './coach-dashboard.component.html',
   styleUrls: ['./coach-dashboard.component.css']
