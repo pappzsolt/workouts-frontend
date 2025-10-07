@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ExerciseService, Exercise, WorkoutDto, WorkoutExercise} from '../../../../../services/coach/coach-exercises/coach-exercises.service';
+import { ExerciseService} from '../../../../../services/coach/coach-exercises/coach-exercises.service';
+import { Exercise ,WorkoutDto, WorkoutExercise} from '../../../../../models/exercise.model';
 
 @Component({
   selector: 'app-coach-exercise-edit',

@@ -5,10 +5,12 @@ import { FormsModule } from '@angular/forms';
 import { Workout } from '../../../../models/workout.model';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
 import { Router } from '@angular/router';
+import { NewWorkoutComponent } from '../../operations/coach-workouts/coach-workout-new/new-workout.component'; // 🔹 importáljuk a NewWorkoutComponent-et
+
 @Component({
   selector: 'app-coach-workouts',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, NewWorkoutComponent], // 🔹 hozzáadjuk az imports-hoz
   templateUrl: './coach-workouts.component.html',
   styleUrls: ['./coach-workouts.component.css']  // 🔹 saját CSS hogy tudj üzenetet formázni
 })
@@ -22,12 +24,14 @@ export class WorkoutListComponent implements OnInit, OnChanges {
   message: string = '';
   messageType: 'success' | 'error' | '' = '';   // 🔹 üzenet típus jelzéshez
 
+  // 🔹 új változó a NewWorkoutComponent megjelenítéséhez
+  showNewWorkoutForm: boolean = false;
+
   constructor(private coachWorkoutsService: CoachWorkoutsService, private router: Router,) {}
 
   ngOnInit(): void {
     this.loadWorkouts();
   }
-
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['programId'] && !changes['programId'].firstChange) {
@@ -54,8 +58,6 @@ export class WorkoutListComponent implements OnInit, OnChanges {
       error: () => this.setMessage('Nem sikerült betölteni a workoutokat.', 'error')
     });
   }
-
-
 
   addWorkout() {
     if (!this.programId) return;
@@ -89,7 +91,10 @@ export class WorkoutListComponent implements OnInit, OnChanges {
       });
   }
 
-
+  // 🔹 metódus a lebegő gombhoz
+  toggleNewWorkout() {
+    this.showNewWorkoutForm = !this.showNewWorkoutForm;
+  }
 
   private setMessage(msg: string, type: 'success' | 'error') {
     this.message = msg;
@@ -101,4 +106,8 @@ export class WorkoutListComponent implements OnInit, OnChanges {
       this.messageType = '';
     }, 4000);
   }
+  goToNewWorkout(): void {
+    this.router.navigate(['/coach/workouts/new']);
+  }
+
 }

@@ -1,0 +1,63 @@
+új exercixe
+<form (ngSubmit)="addExercise()" #exerciseForm="ngForm">
+  <div class="form-group">
+    <label for="name">Név:</label>
+    <input type="text" id="name" name="name" [(ngModel)]="newExercise.name" required />
+  </div>
+
+  <div class="form-group">
+    <label for="description">Leírás:</label>
+    <textarea id="description" name="description" [(ngModel)]="newExercise.description"></textarea>
+  </div>
+
+  <div class="form-group">
+    <label for="imageUrl">Kép URL:</label>
+    <input type="text" id="imageUrl" name="imageUrl" [(ngModel)]="newExercise.imageUrl" />
+  </div>
+
+  <div class="form-group">
+    <label for="videoUrl">Videó URL:</label>
+    <input type="text" id="videoUrl" name="videoUrl" [(ngModel)]="newExercise.videoUrl" />
+  </div>
+
+  <div class="form-group">
+    <label for="muscleGroup">Izomcsoport:</label>
+    <input type="text" id="muscleGroup" name="muscleGroup" [(ngModel)]="newExercise.muscleGroup" />
+  </div>
+
+  <div class="form-group">
+    <label for="equipment">Eszköz:</label>
+    <input type="text" id="equipment" name="equipment" [(ngModel)]="newExercise.equipment" />
+  </div>
+
+  <div class="form-group">
+    <label for="difficultyLevel">Nehézség:</label>
+    <select id="difficultyLevel" name="difficultyLevel" [(ngModel)]="newExercise.difficultyLevel">
+      <option value="easy">Könnyű</option>
+      <option value="medium">Közepes</option>
+      <option value="hard">Nehéz</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label for="category">Kategória:</label>
+    <input type="text" id="category" name="category" [(ngModel)]="newExercise.category" />
+  </div>
+
+  <div class="form-group">
+    <label for="caloriesBurnedPerMinute">Kalória/perc:</label>
+    <input type="number" id="caloriesBurnedPerMinute" name="caloriesBurnedPerMinute" [(ngModel)]="newExercise.caloriesBurnedPerMinute" step="0.01" />
+  </div>
+
+  <div class="form-group">
+    <label for="durationSeconds">Időtartam (mp):</label>
+    <input type="number" id="durationSeconds" name="durationSeconds" [(ngModel)]="newExercise.durationSeconds" />
+  </div>
+
+  <div class="form-group">
+    <label for="done">Kész:</label>
+    <input type="checkbox" id="done" name="done" [(ngModel)]="newExercise.done" />
+  </div>
+
+  <button type="submit" [disabled]="!exerciseForm.form.valid">➕ Létrehozás</button>
+</form>

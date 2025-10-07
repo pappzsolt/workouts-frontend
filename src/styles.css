@@ -184,7 +184,7 @@ tr:hover {
   @apply text-center text-gray-500 mt-6 text-base;
 }
 
-.add-program-button {
+.floating-action-button {
   @apply fixed bottom-6 right-6 bg-green-600 text-white rounded-full shadow-lg w-14 h-14
   flex items-center justify-center text-3xl hover:bg-green-700 transition transform hover:scale-110;
 }

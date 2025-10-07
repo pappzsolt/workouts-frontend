@@ -48,20 +48,21 @@ export interface ApiResponse<T> {
 @Injectable({ providedIn: 'root' })
 export class AssignProgramService {
   private http = inject(HttpClient);
-  private baseUrl = '/api/programs';
+  private baseUrl = 'http://localhost:8080/api';
 
   // --- GET metódusok ---
   getAllPrograms(): Observable<ApiResponse<ProgramDto[]>> {
-    return this.http.get<ApiResponse<ProgramDto[]>>(`${this.baseUrl}/all`);
+    return this.http.get<ApiResponse<ProgramDto[]>>(`${this.baseUrl}/programs/all`);
   }
 
   getMyAssignedPrograms(): Observable<ApiResponse<UserProgramDto[]>> {
-    return this.http.get<ApiResponse<UserProgramDto[]>>(`${this.baseUrl}/my/assigned-programs`);
+    return this.http.get<ApiResponse<UserProgramDto[]>>(`${this.baseUrl}/programs/my/assigned-programs`);
   }
 
   // --- POST: program hozzárendelése userhez (JSON body-val) ---
   assignProgramToUser(userId: number, programId: number): Observable<ApiResponse<void>> {
     const body = { userId, programId };
-    return this.http.post<ApiResponse<void>>(`${this.baseUrl}/assign`, body);
+    return this.http.post<ApiResponse<void>>(`${this.baseUrl}/programs/assign`, body);
   }
 }
+

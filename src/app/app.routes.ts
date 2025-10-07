@@ -78,8 +78,24 @@ export const routes: Routes = [
       { path: 'programs/:id/edit', component: CoachProgramEditComponent },
       { path: 'exercises/:id/edit', component: CoachExerciseEditComponent },
       { path: 'workouts/:id/edit', component: CoachWorkoutEditComponent },
+      {
+        path: 'workouts/new',
+        loadComponent: () =>
+          import(
+            './components/coach-dashboard/operations/coach-workouts/coach-workout-new/new-workout.component'
+            ).then((m) => m.NewWorkoutComponent),
+      },
+
+      {
+        path: 'exercises/new',
+        loadComponent: () =>
+          import(
+            './components/coach-dashboard/operations/coach-exercises/coach-exercise-new/new-exercise.component'
+            ).then(m => m.NewExerciseComponent)
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
-      { path: '**', redirectTo: 'dashboard' }
+      { path: '**', redirectTo: 'dashboard' },
+
     ]
   },
 

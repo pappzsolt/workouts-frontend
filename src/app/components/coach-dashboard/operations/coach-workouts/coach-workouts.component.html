@@ -11,6 +11,9 @@
   <!-- Workout lista címe -->
   <h2 class="programs-title">Workouts</h2>
 
+  <!-- 🔹 Új Workout űrlap -->
+  <app-newworkout *ngIf="showNewWorkoutForm"></app-newworkout>
+
   <ng-container *ngIf="workouts.length > 0; else noWorkouts">
     <div class="programs-grid">
       <div *ngFor="let w of workouts" class="program-card">
@@ -47,3 +50,11 @@
   </ng-template>
 
 </div>
+
+<!-- 🔹 Lebegő gomb a New Workout megnyitásához -->
+<!-- 🔹 Lebegő gomb a New Workout oldalra navigáláshoz -->
+<button class="floating-action-button" (click)="goToNewWorkout()" title="Új Workout hozzáadása">
+  ➕
+</button>
+
+

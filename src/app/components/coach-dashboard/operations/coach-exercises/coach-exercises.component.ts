@@ -1,12 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
-import {
-  ExerciseService,
-  Exercise,
-  WorkoutDto,
-  WorkoutExercise
-} from '../../../../services/coach/coach-exercises/coach-exercises.service';
+import { Router,ActivatedRoute } from '@angular/router';
+import {Exercise, WorkoutDto, WorkoutExercise} from '../../../../models/exercise.model';
+import {ExerciseService} from '../../../../services/coach/coach-exercises/coach-exercises.service';
 
 @Component({
   selector: 'app-exercise-controller',
@@ -20,7 +16,8 @@ export class ExerciseControllerComponent implements OnInit {
   exercises: WorkoutExercise[] = []; // csak a workout-exercises
   loading = false;
 
-  constructor(private exerciseService: ExerciseService,public router: Router) {}
+  constructor(private exerciseService: ExerciseService, public router: Router, private route: ActivatedRoute) {}
+
 
   ngOnInit(): void {
     this.loadExercises();
@@ -87,4 +84,9 @@ export class ExerciseControllerComponent implements OnInit {
       error: (err) => console.error('Hiba az exercise törlésénél:', err)
     });
   }
+  goToNewExercise(): void {
+    this.router.navigate(['/coach/exercises/new']);
+  }
+
+
 }

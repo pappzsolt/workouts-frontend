@@ -1,43 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-export interface Exercise {
-  id: number;
-  name: string;
-  description: string;
-  imageUrl?: string;
-  videoUrl?: string;
-  muscleGroup?: string;
-  equipment?: string;
-  difficultyLevel?: string;
-  category?: string;
-  caloriesBurnedPerMinute?: number;
-  durationSeconds?: number;
-}
-
-export interface WorkoutExercise {
-  id: number;
-  workoutId: number;
-  exercise: Exercise;
-  sets: number;
-  repetitions: number;
-  orderIndex: number;
-  restSeconds: number;
-  notes?: string;
-  done: boolean;
-}
-
-export interface WorkoutDto {
-  id: number;
-  name: string;
-  description: string;
-  workoutDate?: string;
-  durationMinutes?: number;
-  intensityLevel?: string;
-  done?: boolean;
-  exercises: WorkoutExercise[];
-}
+import { Exercise ,WorkoutDto} from '../../../models/exercise.model';
 
 @Injectable({
   providedIn: 'root'
