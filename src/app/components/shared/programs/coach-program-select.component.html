@@ -1,0 +1,13 @@
+<div class="mb-3">
+  <label class="block mb-1 font-semibold">Program:</label>
+  <select [(ngModel)]="selectedProgramId" (ngModelChange)="onProgramSelect($event)"
+          class="border p-2 rounded w-full">
+    <option [value]="null" disabled>-- Válassz programot --</option>
+    <option *ngFor="let program of programs" [value]="program.programId">
+      {{ program.programName }}
+    </option>
+  </select>
+</div>
+
+<div *ngIf="loading" class="text-gray-500 mt-2">Betöltés...</div>
+<div *ngIf="message" class="text-red-500 mt-2">{{ message }}</div>

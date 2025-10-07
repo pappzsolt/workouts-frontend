@@ -1,58 +1,33 @@
-<div class="max-w-3xl mx-auto p-6">
-  <h2 class="text-2xl font-semibold mb-4">🏋️ Program hozzárendelés</h2>
+<h3>Program hozzárendelés</h3>
 
-  <!-- Program hozzárendelés -->
-  <section class="border p-4 rounded shadow-sm mb-6">
-    <h3 class="text-lg font-medium mb-3">➕ Hozzárendelés felhasználóhoz</h3>
-
-    <label class="block mb-2 font-medium">Felhasználó ID</label>
-    <input
-      type="number"
-      [(ngModel)]="userId"
-      placeholder="Add meg a user ID-t"
-      class="border p-2 rounded w-full mb-3"
-    />
-
-    <label class="block mb-2 font-medium">Program kiválasztása</label>
-    <select [(ngModel)]="selectedProgramId" class="border p-2 rounded w-full mb-3">
-      <option [ngValue]="null">-- Válassz egy programot --</option>
-      <option *ngFor="let p of programs" [ngValue]="p.programId">{{ p.programName }}</option>
-    </select>
-
-    <button
-      (click)="assignProgram()"
-      class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-      [disabled]="!userId || !selectedProgramId || loading"
-    >
-      {{ loading ? 'Hozzárendelés folyamatban...' : 'Hozzárendelés' }}
-    </button>
-
-    <p
-      *ngIf="message"
-      class="mt-3 font-medium"
-      [ngClass]="{ 'text-green-600': success, 'text-red-600': !success }"
-    >
-      {{ message }}
-    </p>
-  </section>
-
-  <!-- Saját programok -->
-  <section class="border p-4 rounded shadow-sm">
-    <h3 class="text-lg font-medium mb-3">📋 Saját hozzárendelt programok</h3>
-
-    <ul *ngIf="assignedPrograms.length > 0; else noPrograms" class="space-y-2">
-      <li *ngFor="let up of assignedPrograms" class="border rounded p-3 shadow-sm">
-        <div class="font-semibold">{{ up.programName }}</div>
-        <div class="text-sm text-gray-600">{{ up.programDescription }}</div>
-        <div class="text-xs text-gray-500">
-          Állapot: {{ up.status }} |
-          Hozzárendelve: {{ up.assignedAt | date: 'yyyy.MM.dd HH:mm' }}
-        </div>
-      </li>
-    </ul>
-
-    <ng-template #noPrograms>
-      <p class="text-gray-500">Nincs még hozzárendelt program.</p>
-    </ng-template>
-  </section>
+<div class="mb-3">
+  <label class="block mb-1 font-semibold">Felhasználó:</label>
+  <select [(ngModel)]="userId" class="border p-2 rounded w-full mb-3">
+    <option [value]="null" disabled selected>-- Válassz felhasználót --</option>
+    <option *ngFor="let user of users" [value]="user.id">
+      {{ user.username }}
+    </option>
+  </select>
 </div>
+
+<!-- Coach program select komponens -->
+<app-coach-program-select [(selectedProgramId)]="selectedProgramId"></app-coach-program-select>
+
+<button (click)="assignProgram()" class="bg-blue-500 text-white px-4 py-2 rounded mt-2">
+  Hozzárendelés
+</button>
+
+<div *ngIf="loading" class="text-gray-500 mt-2">Betöltés...</div>
+
+<div *ngIf="message" [ngClass]="{'text-green-500': success, 'text-red-500': !success}" class="mt-2">
+  {{ message }}
+</div>
+
+<hr class="my-4">
+
+<h3>Hozzárendelt programok</h3>
+<ul>
+  <li *ngFor="let assigned of assignedPrograms">
+    {{ assigned.programName }} - {{ assigned.status }} ({{ assigned.assignedAt }})
+  </li>
+</ul>

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { CoachProgramSelectComponent } from '../../../shared/programs/coach-program-select.component';
 
 interface Program {
   id: number;
@@ -15,7 +16,7 @@ interface User {
 @Component({
   selector: 'app-program-assignment',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgFor, NgIf],
+  imports: [CommonModule, FormsModule, NgFor, NgIf,CoachProgramSelectComponent],
   templateUrl: './program-assignment.component.html',
   styleUrls: ['./program-assignment.component.css']
 })
