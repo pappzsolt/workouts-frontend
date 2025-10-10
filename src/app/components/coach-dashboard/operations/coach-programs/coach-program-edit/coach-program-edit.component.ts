@@ -21,6 +21,7 @@ export class CoachProgramEditComponent implements OnInit {
   };
 
   message: string = '';
+  messageType: 'success' | 'error' | '' = ''; // <<< hozzáadva
 
   constructor(
     private route: ActivatedRoute,
@@ -31,7 +32,7 @@ export class CoachProgramEditComponent implements OnInit {
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (!id) {
-      this.message = 'Program ID nem található.';
+      this.setMessage('Program ID nem található.', 'error');
       return;
     }
 
@@ -49,18 +50,16 @@ export class CoachProgramEditComponent implements OnInit {
             difficultyLevel: dto.difficultyLevel
           };
         } else {
-          this.message = `Program with id ${id} not found.`;
+          this.setMessage(`Program with id ${id} not found.`, 'error');
         }
       },
       error: (err) => {
         console.error(err);
-        this.message = 'Hiba történt a program lekérésekor.';
+        this.setMessage('Hiba történt a program lekérésekor.', 'error');
       }
     });
 
   }
-
-
 
   saveProgram(): void {
     if (!this.program.id) return;
@@ -68,17 +67,29 @@ export class CoachProgramEditComponent implements OnInit {
     this.programService.updateProgram(this.program.id, this.program).subscribe({
       next: (res) => {
         if (res.status === 'success') {
-          this.router.navigate(['/coach/dashboard'], { queryParams: { section: 'programs' } });
+          this.setMessage('Program sikeresen mentve!', 'success');
+          setTimeout(() => {
+            this.router.navigate(['/coach/dashboard'], { queryParams: { section: 'programs' } });
+          }, 1500);
         } else {
-          this.message = 'Hiba történt a mentés közben.';
+          this.setMessage('Hiba történt a mentés közben.', 'error');
         }
       },
       error: (err) => {
         console.error(err);
-        this.message = 'Hiba történt a program mentésekor.';
+        this.setMessage('Hiba történt a program mentésekor.', 'error');
       }
     });
   }
 
+  // Üzenet beállító metódus
+  private setMessage(msg: string, type: 'success' | 'error') {
+    this.message = msg;
+    this.messageType = type;
 
+    setTimeout(() => {
+      this.message = '';
+      this.messageType = '';
+    }, 4000);
+  }
 }

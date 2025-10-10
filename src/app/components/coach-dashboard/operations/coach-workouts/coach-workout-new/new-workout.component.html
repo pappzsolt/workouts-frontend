@@ -1,65 +1,82 @@
-<div class="new-workout-form">
-  <h2>Létrehozás: Új Workout</h2>
+<div
+  class="program-card bg-white rounded-2xl shadow-lg p-6 sm:p-8 max-w-lg sm:max-w-2xl md:max-w-4xl mx-auto transition-all duration-300"
+>
+  <h2 class="text-2xl font-bold mb-4 text-gray-800 text-center">
+    ➕ Létrehozás: Új Workout
+  </h2>
 
   <!-- Üzenet -->
-  <div *ngIf="message" class="message-box">
+  <div
+    *ngIf="message"
+    class="text-center mb-4 font-medium"
+    [ngClass]="{
+      'text-green-600': messageType === 'success',
+      'text-red-600': messageType !== 'success'
+    }"
+  >
     {{ message }}
   </div>
 
-  <form (ngSubmit)="addWorkout()" #workoutForm="ngForm">
+  <form (ngSubmit)="addWorkout()" #workoutForm="ngForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
     <!-- Workout név -->
-    <div class="form-group">
-      <label for="workoutName">Név:</label>
+    <div class="md:col-span-2">
+      <label class="block font-semibold mb-1 text-gray-700" for="workoutName">Név:</label>
       <input
         type="text"
         id="workoutName"
         name="name"
         [(ngModel)]="newWorkout.name"
         required
+        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
       />
     </div>
 
     <!-- Leírás -->
-    <div class="form-group">
-      <label for="description">Leírás:</label>
+    <div class="md:col-span-2">
+      <label class="block font-semibold mb-1 text-gray-700" for="description">Leírás:</label>
       <textarea
         id="description"
         name="description"
         [(ngModel)]="newWorkout.description"
+        rows="3"
+        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
       ></textarea>
     </div>
 
     <!-- Dátum -->
-    <div class="form-group">
-      <label for="workoutDate">Dátum:</label>
+    <div>
+      <label class="block font-semibold mb-1 text-gray-700" for="workoutDate">Dátum:</label>
       <input
         type="date"
         id="workoutDate"
         name="workoutDate"
         [(ngModel)]="newWorkout.workoutDate"
         required
+        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
       />
     </div>
 
     <!-- Időtartam -->
-    <div class="form-group">
-      <label for="durationMinutes">Időtartam (perc):</label>
+    <div>
+      <label class="block font-semibold mb-1 text-gray-700" for="durationMinutes">Időtartam (perc):</label>
       <input
         type="number"
         id="durationMinutes"
         name="durationMinutes"
         [(ngModel)]="newWorkout.durationMinutes"
+        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
       />
     </div>
 
     <!-- Intenzitás -->
-    <div class="form-group">
-      <label for="intensityLevel">Intenzitás:</label>
+    <div>
+      <label class="block font-semibold mb-1 text-gray-700" for="intensityLevel">Intenzitás:</label>
       <select
         id="intensityLevel"
         name="intensityLevel"
         [(ngModel)]="newWorkout.intensityLevel"
+        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
       >
         <option value="">Válassz...</option>
         <option value="Low">Alacsony</option>
@@ -69,8 +86,14 @@
     </div>
 
     <!-- Kész gomb -->
-    <button type="submit" [disabled]="!workoutForm.form.valid">
-      ➕ Létrehozás
-    </button>
+    <div class="md:col-span-2 text-center mt-4">
+      <button
+        type="submit"
+        [disabled]="!workoutForm.form.valid"
+        class="bg-blue-600 text-white font-medium py-2 px-8 rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+      >
+        ➕ Létrehozás
+      </button>
+    </div>
   </form>
 </div>

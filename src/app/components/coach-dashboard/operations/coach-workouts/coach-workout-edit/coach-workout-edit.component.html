@@ -1,70 +1,78 @@
-<div class="p-6 bg-white rounded-xl shadow-md max-w-2xl mx-auto">
+<div
+  class="program-card bg-white rounded-2xl shadow-lg p-6 sm:p-8 max-w-lg sm:max-w-2xl md:max-w-4xl mx-auto transition-all duration-300"
+>
   <h2 class="text-2xl font-bold mb-4 text-gray-800 text-center">
     🏋️ Edit Workout
   </h2>
 
-  <!-- Üzenet (opcionális) -->
-  <div *ngIf="message" class="mb-4 text-center"
-       [ngClass]="messageType === 'success' ? 'text-green-600' : 'text-red-600'">
+  <!-- Üzenet -->
+  <div
+    *ngIf="message"
+    class="text-center mb-4 font-medium"
+    [ngClass]="{
+      'text-green-600': messageType === 'success',
+      'text-red-600': messageType !== 'success'
+    }"
+  >
     {{ message }}
   </div>
 
   <!-- Szerkesztő űrlap -->
-  <form (ngSubmit)="saveWorkout()" #workoutForm="ngForm">
+  <form (ngSubmit)="saveWorkout()" #workoutForm="ngForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <!-- Name -->
-    <div class="mb-4">
-      <label class="block font-semibold mb-1">Workout Name</label>
+    <div class="md:col-span-2">
+      <label class="block font-semibold mb-1 text-gray-700">Workout Name</label>
       <input
         type="text"
         name="name"
         [(ngModel)]="workout.name"
-        class="border rounded-lg w-full p-2"
         required
+        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
       />
     </div>
 
     <!-- Description -->
-    <div class="mb-4">
-      <label class="block font-semibold mb-1">Description</label>
+    <div class="md:col-span-2">
+      <label class="block font-semibold mb-1 text-gray-700">Description</label>
       <textarea
-        name="workoutDescription"
-        [(ngModel)]="workout.workoutDescription"
-        class="border rounded-lg w-full p-2"
+        name="description"
+        [(ngModel)]="workout.description"
         rows="3"
+        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
       ></textarea>
     </div>
 
     <!-- Workout Date -->
-    <div class="mb-4">
-      <label class="block font-semibold mb-1">Workout Date</label>
+    <div>
+      <label class="block font-semibold mb-1 text-gray-700">Workout Date</label>
       <input
         type="date"
         name="workoutDate"
         [(ngModel)]="workout.workoutDate"
-        class="border rounded-lg w-full p-2"
         required
+        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
       />
     </div>
 
     <!-- Duration -->
-    <div class="mb-4">
-      <label class="block font-semibold mb-1">Duration (minutes)</label>
+    <div>
+      <label class="block font-semibold mb-1 text-gray-700">Duration (minutes)</label>
       <input
         type="number"
         name="durationMinutes"
         [(ngModel)]="workout.durationMinutes"
-        class="border rounded-lg w-full p-2"
         min="0"
+        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
       />
     </div>
 
     <!-- Intensity -->
-    <div class="mb-4">
-      <label class="block font-semibold mb-1">Intensity Level</label>
+    <div>
+      <label class="block font-semibold mb-1 text-gray-700">Intensity Level</label>
       <select
         name="intensityLevel"
         [(ngModel)]="workout.intensityLevel"
-        class="border rounded-lg w-full p-2"
+        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
       >
         <option value="">-- Select Intensity --</option>
         <option value="low">Low</option>
@@ -74,7 +82,7 @@
     </div>
 
     <!-- Done -->
-    <div class="mb-4 flex items-center gap-2">
+    <div class="md:col-span-2 flex items-center gap-2">
       <input
         type="checkbox"
         name="done"
@@ -86,17 +94,17 @@
     </div>
 
     <!-- Buttons -->
-    <div class="flex justify-center gap-4 mt-6">
+    <div class="md:col-span-2 flex justify-center gap-4 mt-4">
       <button
         type="submit"
-        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg"
+        class="bg-blue-600 text-white font-medium py-2 px-8 rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
       >
         Save
       </button>
       <button
         type="button"
         (click)="cancelEdit()"
-        class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold px-6 py-2 rounded-lg"
+        class="bg-gray-300 text-gray-800 font-medium py-2 px-8 rounded-lg shadow hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
       >
         Cancel
       </button>
