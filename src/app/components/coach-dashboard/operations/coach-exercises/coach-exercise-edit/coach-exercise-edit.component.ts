@@ -15,7 +15,7 @@ import { Exercise ,WorkoutDto, WorkoutExercise} from '../../../../../models/exer
 export class CoachExerciseEditComponent implements OnInit {
 
   exercise: Exercise = {
-    id: 0, // kötelező szám, default 0
+    id: 0,
     name: '',
     description: '',
     imageUrl: '',
@@ -31,6 +31,10 @@ export class CoachExerciseEditComponent implements OnInit {
   loading: boolean = false;
   saving: boolean = false;
   errorMessage: string = '';
+
+  // 🔧 Hozzáadva a message változók a template-hez
+  message: string | null = null;
+  messageType: 'success' | 'error' | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -50,9 +54,8 @@ export class CoachExerciseEditComponent implements OnInit {
 
     this.exerciseService.getWorkoutsWithExercises().subscribe({
       next: (workouts: WorkoutDto[]) => {
-        // Keresés az összes workout-ban
         const we = workouts
-          .flatMap(w => w.exercises)           // összes WorkoutExercise egy tömbbe
+          .flatMap(w => w.exercises)
           .find((we: WorkoutExercise) => we.exercise.id === exerciseId);
 
         if (we && we.exercise) {
@@ -71,19 +74,20 @@ export class CoachExerciseEditComponent implements OnInit {
     });
   }
 
-
-
   saveExercise(): void {
     this.saving = true;
     this.exerciseService.updateExercise(this.exercise).subscribe({
       next: (updated) => {
         console.log('Exercise frissítve:', updated);
+        this.message = 'Exercise successfully saved!';
+        this.messageType = 'success';
         this.saving = false;
         this.router.navigate(['/coach/exercises']);
       },
       error: (err) => {
         console.error('Hiba az exercise frissítésénél:', err);
-        this.errorMessage = 'Hiba az exercise mentésénél';
+        this.message = 'Hiba az exercise mentésénél';
+        this.messageType = 'error';
         this.saving = false;
       }
     });

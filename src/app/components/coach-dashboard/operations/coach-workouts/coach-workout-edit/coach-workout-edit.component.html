@@ -1,78 +1,85 @@
-<div
-  class="program-card bg-white rounded-2xl shadow-lg p-6 sm:p-8 max-w-lg sm:max-w-2xl md:max-w-4xl mx-auto transition-all duration-300"
->
-  <h2 class="text-2xl font-bold mb-4 text-gray-800 text-center">
-    🏋️ Edit Workout
-  </h2>
+<h2 class="universal-form-title">
+  🏋️ Edit Workout
+</h2>
 
-  <!-- Üzenet -->
-  <div
-    *ngIf="message"
-    class="text-center mb-4 font-medium"
-    [ngClass]="{
-      'text-green-600': messageType === 'success',
-      'text-red-600': messageType !== 'success'
-    }"
-  >
-    {{ message }}
+<!-- Üzenet -->
+<div
+  *ngIf="message"
+  class="universal-form-message"
+  [ngClass]="{
+    'universal-form-message-success': messageType === 'success',
+    'universal-form-message-error': messageType === 'error'
+  }"
+>
+  {{ message }}
+</div>
+
+<!-- Workout Edit form -->
+<div class="form-card">
+  <div class="form-header">
+    <span class="form-header-emoji">💪</span>
   </div>
 
-  <!-- Szerkesztő űrlap -->
-  <form (ngSubmit)="saveWorkout()" #workoutForm="ngForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <form (ngSubmit)="saveWorkout()" #workoutForm="ngForm" class="universal-form">
     <!-- Name -->
-    <div class="md:col-span-2">
-      <label class="block font-semibold mb-1 text-gray-700">Workout Name</label>
+    <div class="universal-form-group-full">
+      <label for="workoutName" class="universal-form-label">Workout Name</label>
       <input
+        id="workoutName"
         type="text"
         name="name"
         [(ngModel)]="workout.name"
         required
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Description -->
-    <div class="md:col-span-2">
-      <label class="block font-semibold mb-1 text-gray-700">Description</label>
+    <div class="universal-form-group-full">
+      <label for="description" class="universal-form-label">Description</label>
       <textarea
+        id="description"
         name="description"
-        [(ngModel)]="workout.description"
         rows="3"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        [(ngModel)]="workout.description"
+        class="universal-form-textarea"
       ></textarea>
     </div>
 
-    <!-- Workout Date -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700">Workout Date</label>
+    <!-- Date -->
+    <div class="universal-form-group">
+      <label for="workoutDate" class="universal-form-label">Workout Date</label>
       <input
+        id="workoutDate"
         type="date"
         name="workoutDate"
         [(ngModel)]="workout.workoutDate"
         required
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Duration -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700">Duration (minutes)</label>
+    <div class="universal-form-group">
+      <label for="durationMinutes" class="universal-form-label">Duration (minutes)</label>
       <input
+        id="durationMinutes"
         type="number"
         name="durationMinutes"
         [(ngModel)]="workout.durationMinutes"
         min="0"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Intensity -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700">Intensity Level</label>
+    <div class="universal-form-group">
+      <label for="intensityLevel" class="universal-form-label">Intensity Level</label>
       <select
+        id="intensityLevel"
         name="intensityLevel"
         [(ngModel)]="workout.intensityLevel"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-select"
       >
         <option value="">-- Select Intensity --</option>
         <option value="low">Low</option>
@@ -82,31 +89,32 @@
     </div>
 
     <!-- Done -->
-    <div class="md:col-span-2 flex items-center gap-2">
+    <div class="universal-form-group md:col-span-2 flex items-center gap-2">
       <input
         type="checkbox"
         name="done"
-        [(ngModel)]="workout.done"
         id="done"
+        [(ngModel)]="workout.done"
         class="h-4 w-4"
       />
-      <label for="done" class="font-semibold">Workout Completed</label>
+      <label for="done" class="universal-form-label">Workout Completed</label>
     </div>
 
     <!-- Buttons -->
     <div class="md:col-span-2 flex justify-center gap-4 mt-4">
       <button
         type="submit"
-        class="bg-blue-600 text-white font-medium py-2 px-8 rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+        [disabled]="!workoutForm.form.valid"
+        class="universal-form-button"
       >
-        Save
+        💾 Save
       </button>
       <button
         type="button"
         (click)="cancelEdit()"
-        class="bg-gray-300 text-gray-800 font-medium py-2 px-8 rounded-lg shadow hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all"
+        class="universal-form-button bg-gray-300 text-gray-800 hover:bg-gray-400 focus:ring-gray-500"
       >
-        Cancel
+        ❌ Cancel
       </button>
     </div>
   </form>

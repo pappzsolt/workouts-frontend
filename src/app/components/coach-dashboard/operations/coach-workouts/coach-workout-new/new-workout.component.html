@@ -1,98 +1,100 @@
-<div
-  class="program-card bg-white rounded-2xl shadow-lg p-6 sm:p-8 max-w-lg sm:max-w-2xl md:max-w-4xl mx-auto transition-all duration-300"
->
-  <h2 class="text-2xl font-bold mb-4 text-gray-800 text-center">
-    ➕ Létrehozás: Új Workout
-  </h2>
+<h2 class="universal-form-title">
+  ➕ Létrehozás: Új Workout
+</h2>
 
-  <!-- Üzenet -->
-  <div
-    *ngIf="message"
-    class="text-center mb-4 font-medium"
-    [ngClass]="{
-      'text-green-600': messageType === 'success',
-      'text-red-600': messageType !== 'success'
-    }"
-  >
-    {{ message }}
+<!-- Üzenet -->
+<div
+  *ngIf="message"
+  class="universal-form-message"
+  [ngClass]="{
+    'universal-form-message-success': messageType === 'success',
+    'universal-form-message-error': messageType === 'error'
+  }"
+>
+  {{ message }}
+</div>
+
+<!-- Workout form kártya -->
+<div class="form-card">
+  <div class="form-header">
+    <span class="form-header-emoji">🏋️‍♂️</span>
   </div>
 
-  <form (ngSubmit)="addWorkout()" #workoutForm="ngForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
+  <form (ngSubmit)="addWorkout()" #workoutForm="ngForm" class="universal-form">
     <!-- Workout név -->
-    <div class="md:col-span-2">
-      <label class="block font-semibold mb-1 text-gray-700" for="workoutName">Név:</label>
+    <div class="universal-form-group-full">
+      <label for="workoutName" class="universal-form-label">Workout Name</label>
       <input
         type="text"
         id="workoutName"
         name="name"
         [(ngModel)]="newWorkout.name"
         required
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Leírás -->
-    <div class="md:col-span-2">
-      <label class="block font-semibold mb-1 text-gray-700" for="description">Leírás:</label>
+    <div class="universal-form-group-full">
+      <label for="description" class="universal-form-label">Description</label>
       <textarea
         id="description"
         name="description"
-        [(ngModel)]="newWorkout.description"
         rows="3"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        [(ngModel)]="newWorkout.description"
+        class="universal-form-textarea"
       ></textarea>
     </div>
 
     <!-- Dátum -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="workoutDate">Dátum:</label>
+    <div class="universal-form-group">
+      <label for="workoutDate" class="universal-form-label">Date</label>
       <input
         type="date"
         id="workoutDate"
         name="workoutDate"
         [(ngModel)]="newWorkout.workoutDate"
         required
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Időtartam -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="durationMinutes">Időtartam (perc):</label>
+    <div class="universal-form-group">
+      <label for="durationMinutes" class="universal-form-label">Duration (minutes)</label>
       <input
         type="number"
         id="durationMinutes"
         name="durationMinutes"
         [(ngModel)]="newWorkout.durationMinutes"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Intenzitás -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="intensityLevel">Intenzitás:</label>
+    <div class="universal-form-group">
+      <label for="intensityLevel" class="universal-form-label">Intensity Level</label>
       <select
         id="intensityLevel"
         name="intensityLevel"
         [(ngModel)]="newWorkout.intensityLevel"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-select"
       >
-        <option value="">Válassz...</option>
-        <option value="Low">Alacsony</option>
-        <option value="Medium">Közepes</option>
-        <option value="High">Magas</option>
+        <option value="">Select</option>
+        <option value="Low">Low</option>
+        <option value="Medium">Medium</option>
+        <option value="High">High</option>
       </select>
     </div>
 
-    <!-- Kész gomb -->
-    <div class="md:col-span-2 text-center mt-4">
+    <!-- Gomb -->
+    <div class="md:col-span-2 text-center">
       <button
         type="submit"
         [disabled]="!workoutForm.form.valid"
-        class="bg-blue-600 text-white font-medium py-2 px-8 rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+        class="universal-form-button"
       >
-        ➕ Létrehozás
+        ➕ Create Workout
       </button>
     </div>
   </form>

@@ -1,105 +1,105 @@
-<div
-  class="program-card bg-white rounded-2xl shadow-lg p-6 sm:p-8 max-w-lg sm:max-w-2xl md:max-w-4xl mx-auto transition-all duration-300"
->
-  <h2 class="text-2xl font-bold mb-4 text-gray-800 text-center">
-    ➕ Új Gyakorlat
-  </h2>
+<div class="form-card">
+  <div class="form-header">
+    <span class="form-header-emoji">💪</span>
+  </div>
+
+  <h2 class="universal-form-title">➕ Új Gyakorlat</h2>
 
   <!-- Üzenet -->
   <div
     *ngIf="message"
-    class="text-center mb-4 font-medium"
+    class="universal-form-message"
     [ngClass]="{
-      'text-green-600': messageType === 'success',
-      'text-red-600': messageType !== 'success'
+      'universal-form-message-success': messageType === 'success',
+      'universal-form-message-error': messageType !== 'success'
     }"
   >
     {{ message }}
   </div>
 
-  <form (ngSubmit)="addExercise()" #exerciseForm="ngForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
+  <!-- Form -->
+  <form (ngSubmit)="addExercise()" #exerciseForm="ngForm" class="universal-form">
     <!-- Név -->
-    <div class="md:col-span-2">
-      <label class="block font-semibold mb-1 text-gray-700" for="name">Név:</label>
+    <div class="universal-form-group-full">
+      <label for="name" class="universal-form-label">Név:</label>
       <input
         type="text"
         id="name"
         name="name"
         [(ngModel)]="newExercise.name"
         required
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Leírás -->
-    <div class="md:col-span-2">
-      <label class="block font-semibold mb-1 text-gray-700" for="description">Leírás:</label>
+    <div class="universal-form-group-full">
+      <label for="description" class="universal-form-label">Leírás:</label>
       <textarea
         id="description"
         name="description"
         [(ngModel)]="newExercise.description"
         rows="3"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-textarea"
       ></textarea>
     </div>
 
     <!-- Kép URL -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="imageUrl">Kép URL:</label>
+    <div class="universal-form-group">
+      <label for="imageUrl" class="universal-form-label">Kép URL:</label>
       <input
         type="text"
         id="imageUrl"
         name="imageUrl"
         [(ngModel)]="newExercise.imageUrl"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Videó URL -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="videoUrl">Videó URL:</label>
+    <div class="universal-form-group">
+      <label for="videoUrl" class="universal-form-label">Videó URL:</label>
       <input
         type="text"
         id="videoUrl"
         name="videoUrl"
         [(ngModel)]="newExercise.videoUrl"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Izomcsoport -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="muscleGroup">Izomcsoport:</label>
+    <div class="universal-form-group">
+      <label for="muscleGroup" class="universal-form-label">Izomcsoport:</label>
       <input
         type="text"
         id="muscleGroup"
         name="muscleGroup"
         [(ngModel)]="newExercise.muscleGroup"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Eszköz -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="equipment">Eszköz:</label>
+    <div class="universal-form-group">
+      <label for="equipment" class="universal-form-label">Eszköz:</label>
       <input
         type="text"
         id="equipment"
         name="equipment"
         [(ngModel)]="newExercise.equipment"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Nehézség -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="difficultyLevel">Nehézség:</label>
+    <div class="universal-form-group">
+      <label for="difficultyLevel" class="universal-form-label">Nehézség:</label>
       <select
         id="difficultyLevel"
         name="difficultyLevel"
         [(ngModel)]="newExercise.difficultyLevel"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-select"
       >
         <option value="easy">Könnyű</option>
         <option value="medium">Közepes</option>
@@ -108,60 +108,60 @@
     </div>
 
     <!-- Kategória -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="category">Kategória:</label>
+    <div class="universal-form-group">
+      <label for="category" class="universal-form-label">Kategória:</label>
       <input
         type="text"
         id="category"
         name="category"
         [(ngModel)]="newExercise.category"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
-    <!-- Kalória/perc -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="caloriesBurnedPerMinute">Kalória/perc:</label>
+    <!-- Kalória / perc -->
+    <div class="universal-form-group">
+      <label for="caloriesBurnedPerMinute" class="universal-form-label">Kalória/perc:</label>
       <input
         type="number"
         id="caloriesBurnedPerMinute"
         name="caloriesBurnedPerMinute"
         [(ngModel)]="newExercise.caloriesBurnedPerMinute"
         step="0.01"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Időtartam -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="durationSeconds">Időtartam (mp):</label>
+    <div class="universal-form-group">
+      <label for="durationSeconds" class="universal-form-label">Időtartam (mp):</label>
       <input
         type="number"
         id="durationSeconds"
         name="durationSeconds"
         [(ngModel)]="newExercise.durationSeconds"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Kész -->
-    <div class="md:col-span-2 flex items-center gap-2">
+    <div class="universal-form-group-checkbox">
       <input
         type="checkbox"
         id="done"
         name="done"
         [(ngModel)]="newExercise.done"
-        class="h-4 w-4"
+        class="universal-form-checkbox"
       />
-      <label for="done" class="font-semibold">Kész</label>
+      <label for="done" class="universal-form-label-inline">Kész</label>
     </div>
 
     <!-- Submit -->
-    <div class="md:col-span-2 text-center mt-4">
+    <div class="universal-form-actions">
       <button
         type="submit"
         [disabled]="!exerciseForm.form.valid"
-        class="bg-blue-600 text-white font-medium py-2 px-8 rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+        class="universal-form-button"
       >
         ➕ Létrehozás
       </button>

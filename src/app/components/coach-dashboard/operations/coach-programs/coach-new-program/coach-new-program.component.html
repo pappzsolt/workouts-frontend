@@ -1,38 +1,29 @@
-<h2 class="programs-title text-center mb-4 text-2xl font-bold text-gray-800">
+<h2 class="universal-form-title">
   ➕ Create New Program
 </h2>
 
 <!-- Üzenet -->
 <div
   *ngIf="message"
-  class="text-center mb-4 font-medium"
+  class="universal-form-message"
   [ngClass]="{
-    'text-green-600': messageType === 'success',
-    'text-red-500': messageType === 'error'
+    'universal-form-message-success': messageType === 'success',
+    'universal-form-message-error': messageType === 'error'
   }"
 >
   {{ message }}
 </div>
 
-<!-- Program kártya a program-lista stílusában -->
-<div
-  class="program-card bg-white rounded-2xl shadow-lg p-6 sm:p-8 max-w-lg sm:max-w-2xl md:max-w-4xl mx-auto transition-all duration-300"
->
-  <!-- Kép / emoji -->
-  <div class="program-image text-center mb-4">
-    <span class="program-emoji text-4xl sm:text-5xl">💪</span>
+<!-- Program form kártya -->
+<div class="form-card">
+  <div class="form-header">
+    <span class="form-header-emoji">💪</span>
   </div>
 
-  <!-- Form -->
-  <form
-    (ngSubmit)="saveProgram()"
-    class="grid grid-cols-1 md:grid-cols-2 gap-6"
-  >
+  <form (ngSubmit)="saveProgram()" class="universal-form">
     <!-- Program Name -->
-    <div class="md:col-span-2">
-      <label class="block font-semibold mb-1 text-gray-700" for="programName">
-        Program Name
-      </label>
+    <div class="universal-form-group-full">
+      <label for="programName" class="universal-form-label">Program Name</label>
       <input
         type="text"
         id="programName"
@@ -40,51 +31,45 @@
         placeholder="Program Name"
         [(ngModel)]="program.programName"
         required
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Description -->
-    <div class="md:col-span-2">
-      <label class="block font-semibold mb-1 text-gray-700" for="programDescription">
-        Description
-      </label>
+    <div class="universal-form-group-full">
+      <label for="programDescription" class="universal-form-label">Description</label>
       <textarea
         id="programDescription"
         name="programDescription"
         rows="3"
         placeholder="Program Description"
         [(ngModel)]="program.programDescription"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-textarea"
       ></textarea>
     </div>
 
     <!-- Duration -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="durationDays">
-        Duration (days)
-      </label>
+    <div class="universal-form-group">
+      <label for="durationDays" class="universal-form-label">Duration (days)</label>
       <input
         type="number"
         id="durationDays"
         name="durationDays"
         placeholder="Duration"
         [(ngModel)]="program.durationDays"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
         min="1"
       />
     </div>
 
-    <!-- Difficulty Level -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="difficultyLevel">
-        Difficulty Level
-      </label>
+    <!-- Difficulty -->
+    <div class="universal-form-group">
+      <label for="difficultyLevel" class="universal-form-label">Difficulty Level</label>
       <select
         id="difficultyLevel"
         name="difficultyLevel"
         [(ngModel)]="program.difficultyLevel"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-select"
       >
         <option value="">Select</option>
         <option value="Easy">Easy</option>
@@ -93,14 +78,13 @@
       </select>
     </div>
 
-    <!-- Gomb -->
-    <div class="md:col-span-2 text-center mt-4">
-      <button
-        type="submit"
-        class="bg-blue-600 text-white font-medium py-2 px-8 rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-      >
+    <!-- Mentés gomb -->
+    <div class="md:col-span-2 text-center">
+      <button type="submit" class="universal-form-button">
         💾 Save Program
       </button>
     </div>
   </form>
 </div>
+
+

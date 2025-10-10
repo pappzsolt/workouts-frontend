@@ -1,141 +1,156 @@
+<h2 class="universal-form-title">
+  ✏️ Edit Exercise
+</h2>
+
+<!-- Üzenet -->
 <div
-  class="program-card bg-white rounded-2xl shadow-lg p-6 sm:p-8 max-w-lg sm:max-w-2xl md:max-w-4xl mx-auto transition-all duration-300"
+  *ngIf="message"
+  class="universal-form-message"
+  [ngClass]="{
+    'universal-form-message-success': messageType === 'success',
+    'universal-form-message-error': messageType === 'error'
+  }"
 >
-  <h2 class="text-2xl font-bold mb-4 text-gray-800 text-center">
-    ✏️ Edit Exercise
-  </h2>
+  {{ message }}
+</div>
 
-  <form (ngSubmit)="saveExercise()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Exercise Edit Form -->
+<div class="form-card">
+  <div class="form-header">
+    <span class="form-header-emoji">🏋️‍♀️</span>
+  </div>
 
+  <form (ngSubmit)="saveExercise()" #exerciseForm="ngForm" class="universal-form">
     <!-- Name -->
-    <div class="md:col-span-2">
-      <label class="block font-semibold mb-1 text-gray-700" for="name">Name</label>
+    <div class="universal-form-group-full">
+      <label for="name" class="universal-form-label">Exercise Name</label>
       <input
-        type="text"
         id="name"
         name="name"
+        type="text"
         [(ngModel)]="exercise.name"
         required
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Description -->
-    <div class="md:col-span-2">
-      <label class="block font-semibold mb-1 text-gray-700" for="description">Description</label>
+    <div class="universal-form-group-full">
+      <label for="description" class="universal-form-label">Description</label>
       <textarea
         id="description"
         name="description"
-        [(ngModel)]="exercise.description"
         rows="3"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        [(ngModel)]="exercise.description"
+        class="universal-form-textarea"
       ></textarea>
     </div>
 
     <!-- Image URL -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="imageUrl">Image URL</label>
+    <div class="universal-form-group">
+      <label for="imageUrl" class="universal-form-label">Image URL</label>
       <input
-        type="text"
         id="imageUrl"
         name="imageUrl"
+        type="text"
         [(ngModel)]="exercise.imageUrl"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Video URL -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="videoUrl">Video URL</label>
+    <div class="universal-form-group">
+      <label for="videoUrl" class="universal-form-label">Video URL</label>
       <input
-        type="text"
         id="videoUrl"
         name="videoUrl"
+        type="text"
         [(ngModel)]="exercise.videoUrl"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Muscle Group -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="muscleGroup">Muscle Group</label>
+    <div class="universal-form-group">
+      <label for="muscleGroup" class="universal-form-label">Muscle Group</label>
       <input
-        type="text"
         id="muscleGroup"
         name="muscleGroup"
+        type="text"
         [(ngModel)]="exercise.muscleGroup"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Equipment -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="equipment">Equipment</label>
+    <div class="universal-form-group">
+      <label for="equipment" class="universal-form-label">Equipment</label>
       <input
-        type="text"
         id="equipment"
         name="equipment"
+        type="text"
         [(ngModel)]="exercise.equipment"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Difficulty Level -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="difficultyLevel">Difficulty Level</label>
+    <div class="universal-form-group">
+      <label for="difficultyLevel" class="universal-form-label">Difficulty Level</label>
       <input
-        type="text"
         id="difficultyLevel"
         name="difficultyLevel"
+        type="text"
         [(ngModel)]="exercise.difficultyLevel"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Category -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="category">Category</label>
+    <div class="universal-form-group">
+      <label for="category" class="universal-form-label">Category</label>
       <input
-        type="text"
         id="category"
         name="category"
+        type="text"
         [(ngModel)]="exercise.category"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Calories Burned per Minute -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="caloriesBurnedPerMinute">Calories Burned per Minute</label>
+    <div class="universal-form-group">
+      <label for="caloriesBurnedPerMinute" class="universal-form-label">Calories Burned / Minute</label>
       <input
-        type="number"
         id="caloriesBurnedPerMinute"
         name="caloriesBurnedPerMinute"
-        [(ngModel)]="exercise.caloriesBurnedPerMinute"
+        type="number"
         step="0.01"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        [(ngModel)]="exercise.caloriesBurnedPerMinute"
+        class="universal-form-input"
       />
     </div>
 
     <!-- Duration (seconds) -->
-    <div>
-      <label class="block font-semibold mb-1 text-gray-700" for="durationSeconds">Duration (seconds)</label>
+    <div class="universal-form-group">
+      <label for="durationSeconds" class="universal-form-label">Duration (seconds)</label>
       <input
-        type="number"
         id="durationSeconds"
         name="durationSeconds"
+        type="number"
         [(ngModel)]="exercise.durationSeconds"
-        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:outline-none"
+        class="universal-form-input"
       />
     </div>
 
-    <!-- Submit -->
+    <!-- Save Button -->
     <div class="md:col-span-2 text-center mt-4">
       <button
         type="submit"
-        class="bg-blue-600 text-white font-medium py-2 px-8 rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+        [disabled]="!exerciseForm.form.valid"
+        class="universal-form-button"
       >
-        Save Exercise
+        💾 Save Exercise
       </button>
     </div>
   </form>
