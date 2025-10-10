@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 import { Exercise } from '../../../../../models/exercise.model';
 
@@ -41,28 +42,52 @@ export class NewExerciseComponent implements OnInit {
   }
 
   addExercise() {
-    if (!this.workoutId) return;
+    const payload = {
+      name: this.newExercise.name,
+      description: this.newExercise.description,
+      imageUrl: this.newExercise.imageUrl,
+      videoUrl: this.newExercise.videoUrl,
+      muscleGroup: this.newExercise.muscleGroup,
+      equipment: this.newExercise.equipment,
+      difficultyLevel: this.newExercise.difficultyLevel,
+      category: this.newExercise.category,
+      caloriesBurnedPerMinute: this.newExercise.caloriesBurnedPerMinute,
+      durationSeconds: this.newExercise.durationSeconds
+    };
 
-    this.newExercise.workoutId = this.workoutId;
-    this.exercisesService.addExercise(this.newExercise).subscribe({
+    this.exercisesService.addExercise(payload).subscribe({
       next: (res) => {
         this.message = `Gyakorlat "${res.name}" sikeresen hozzáadva!`;
         this.messageType = 'success';
+
+        // Form reset
         this.newExercise = {
           name: '',
           description: '',
-          sets: 0,
-          repetitions: 0,
-          duration_minutes: 0,
-          intensity_level: '',
-          workoutId: this.workoutId,
+          imageUrl: '',
+          videoUrl: '',
+          muscleGroup: '',
+          equipment: '',
+          difficultyLevel: '',
+          category: '',
+          caloriesBurnedPerMinute: 0,
+          durationSeconds: 0,
           done: false
         };
       },
-      error: () => {
-        this.message = 'Hiba történt a gyakorlat hozzáadásakor';
+      error: (err) => {
+        // Hibák kezelése és üzenet a felhasználónak
+        if (err.error && typeof err.error === 'string') {
+          this.message = `Hiba történt: ${err.error}`;
+        } else if (err.error && err.error.message) {
+          this.message = `Hiba történt: ${err.error.message}`;
+        } else {
+          this.message = `Hiba történt (${err.status}): ${err.statusText}`;
+        }
         this.messageType = 'error';
+        console.error('Exercise creation error:', err);
       }
     });
   }
+
 }

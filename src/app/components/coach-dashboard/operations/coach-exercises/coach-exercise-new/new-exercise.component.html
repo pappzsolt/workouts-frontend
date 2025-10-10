@@ -1,4 +1,7 @@
-új exercixe
+<div *ngIf="message" [ngClass]="{'success-message': messageType === 'success', 'error-message': messageType === 'error'}">
+  {{ message }}
+</div>
+
 <form (ngSubmit)="addExercise()" #exerciseForm="ngForm">
   <div class="form-group">
     <label for="name">Név:</label>

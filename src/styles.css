@@ -185,9 +185,19 @@ tr:hover {
 }
 
 .floating-action-button {
-  @apply fixed bottom-6 right-6 bg-green-600 text-white rounded-full shadow-lg w-14 h-14
-  flex items-center justify-center text-3xl hover:bg-green-700 transition transform hover:scale-110;
+  @apply fixed bottom-6 right-6 bg-green-600 text-white rounded-full shadow-lg
+  w-14 h-14 flex items-center justify-center text-3xl hover:bg-green-700
+  transition transform hover:scale-110;
 }
+
+.floating-action-button--danger {
+  @apply bg-red-600 hover:bg-red-700;
+}
+
+.floating-action-button--primary {
+  @apply bg-blue-600 hover:bg-blue-700;
+}
+
 
 /* === Dashboard csempe stílus === */
 .dashboard-title {
