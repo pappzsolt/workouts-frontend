@@ -1,23 +1,19 @@
 <div class="workouts-container">
 
-  <!-- 🔹 Üzenetek felhasználónak -->
   <div *ngIf="message" [ngClass]="{
-        'message-box-success': messageType === 'success',
-        'message-box-error': messageType === 'error'
+        'message-success': messageType === 'success',
+        'error-message': messageType === 'error'
       }">
     {{ message }}
   </div>
 
-  <!-- Workout lista címe -->
   <h2 class="programs-title">Workouts</h2>
 
-  <!-- 🔹 Új Workout űrlap -->
   <app-newworkout *ngIf="showNewWorkoutForm"></app-newworkout>
 
   <ng-container *ngIf="workouts.length > 0; else noWorkouts">
     <div class="programs-grid">
-      <div *ngFor="let w of workouts" class="program-card">
-        <!-- Emoji a tetején -->
+      <div *ngFor="let w of pagedWorkouts" class="program-card">
         <div class="program-image">
           <span class="program-emoji">🔥</span>
         </div>
@@ -43,18 +39,22 @@
         </div>
       </div>
     </div>
+
+    <!-- 🔹 Lapozás gombok -->
+    <div class="pagination-controls">
+      <button (click)="prevPage()" [disabled]="currentPage === 1">◀ Előző</button>
+      <span>Oldal {{currentPage}} / {{totalPages}}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages">Következő ▶</button>
+    </div>
   </ng-container>
 
   <ng-template #noWorkouts>
     <div class="no-programs">Nincsenek workouts.</div>
   </ng-template>
 
+  <button class="floating-action-button" (click)="goToNewWorkout()" title="Új Workout hozzáadása">
+    ➕
+  </button>
+
 </div>
-
-<!-- 🔹 Lebegő gomb a New Workout megnyitásához -->
-<!-- 🔹 Lebegő gomb a New Workout oldalra navigáláshoz -->
-<button class="floating-action-button" (click)="goToNewWorkout()" title="Új Workout hozzáadása">
-  ➕
-</button>
-
-
+itt hozzá kell adni az exercises okat

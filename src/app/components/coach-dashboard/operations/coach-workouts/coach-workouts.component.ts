@@ -5,29 +5,33 @@ import { FormsModule } from '@angular/forms';
 import { Workout } from '../../../../models/workout.model';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
 import { Router } from '@angular/router';
-import { NewWorkoutComponent } from '../../operations/coach-workouts/coach-workout-new/new-workout.component'; // 🔹 importáljuk a NewWorkoutComponent-et
+import { NewWorkoutComponent } from '../../operations/coach-workouts/coach-workout-new/new-workout.component';
 
 @Component({
   selector: 'app-coach-workouts',
   standalone: true,
-  imports: [CommonModule, FormsModule, NewWorkoutComponent], // 🔹 hozzáadjuk az imports-hoz
+  imports: [CommonModule, FormsModule, NewWorkoutComponent],
   templateUrl: './coach-workouts.component.html',
-  styleUrls: ['./coach-workouts.component.css']  // 🔹 saját CSS hogy tudj üzenetet formázni
+  styleUrls: ['./coach-workouts.component.css']
 })
 export class WorkoutListComponent implements OnInit, OnChanges {
   workouts: Workout[] = [];
   newWorkout: Workout = { workoutName: '', description: '', durationMinutes: 0 };
 
-  @Input() programId?: number;   // 🔹 most már opcionális
-  @Input() userId: number = 1;   // opcionális userId
+  @Input() programId?: number;
+  @Input() userId: number = 1;
 
   message: string = '';
-  messageType: 'success' | 'error' | '' = '';   // 🔹 üzenet típus jelzéshez
+  messageType: 'success' | 'error' | '' = '';
 
-  // 🔹 új változó a NewWorkoutComponent megjelenítéséhez
   showNewWorkoutForm: boolean = false;
 
-  constructor(private coachWorkoutsService: CoachWorkoutsService, private router: Router,) {}
+  // 🔹 Lapozáshoz
+  currentPage = 1;
+  itemsPerPage = 4;
+  totalPages = 1;
+
+  constructor(private coachWorkoutsService: CoachWorkoutsService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadWorkouts();
@@ -35,7 +39,7 @@ export class WorkoutListComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['programId'] && !changes['programId'].firstChange) {
-      this.loadWorkouts(); // új programId esetén újratöltjük a workoutokat
+      this.loadWorkouts();
     }
   }
 
@@ -45,11 +49,11 @@ export class WorkoutListComponent implements OnInit, OnChanges {
         if (res.status === 'success' && res.workouts) {
           this.workouts = res.workouts.map(w => ({
             id: w.id,
-            workoutName: w.name,          // backend "name" -> frontend "workoutName"
+            workoutName: w.name,
             description: w.description,
-            durationMinutes: w.durationMinutes,
-            // programId opcionális, mert a backend nem adja
+            durationMinutes: w.durationMinutes
           }));
+          this.totalPages = Math.ceil(this.workouts.length / this.itemsPerPage);
           this.setMessage('Workoutok betöltve.', 'success');
         } else {
           this.setMessage(res.message || 'Nincsenek workoutok.', 'error');
@@ -57,6 +61,20 @@ export class WorkoutListComponent implements OnInit, OnChanges {
       },
       error: () => this.setMessage('Nem sikerült betölteni a workoutokat.', 'error')
     });
+  }
+
+  // 🔹 Getter a lapozott workoutokhoz
+  get pagedWorkouts(): Workout[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return this.workouts.slice(startIndex, startIndex + this.itemsPerPage);
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) this.currentPage++;
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) this.currentPage--;
   }
 
   addWorkout() {
@@ -78,7 +96,6 @@ export class WorkoutListComponent implements OnInit, OnChanges {
 
   editWorkout(workoutId: number | undefined, event: MouseEvent) {
     event.stopPropagation();
-
     if (!workoutId) {
       this.message = USER_MESSAGES.workoutClickError;
       return;
@@ -91,7 +108,6 @@ export class WorkoutListComponent implements OnInit, OnChanges {
       });
   }
 
-  // 🔹 metódus a lebegő gombhoz
   toggleNewWorkout() {
     this.showNewWorkoutForm = !this.showNewWorkoutForm;
   }
@@ -99,15 +115,13 @@ export class WorkoutListComponent implements OnInit, OnChanges {
   private setMessage(msg: string, type: 'success' | 'error') {
     this.message = msg;
     this.messageType = type;
-
-    // 🔹 pár másodperc után automatikusan eltűnik
     setTimeout(() => {
       this.message = '';
       this.messageType = '';
     }, 4000);
   }
+
   goToNewWorkout(): void {
     this.router.navigate(['/coach/workouts/new']);
   }
-
 }

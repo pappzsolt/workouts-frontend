@@ -7,18 +7,15 @@
 
 <ng-container *ngIf="showProgramsList; else noPrograms">
   <div *ngIf="programs.length > 0; else noPrograms" class="programs-grid">
-    <div *ngFor="let program of programs" class="program-card">
-      <!-- Kép/Emoji -->
+    <div *ngFor="let program of pagedPrograms" class="program-card">
       <div class="program-image">
         <span class="program-emoji">💪</span>
       </div>
 
       <div class="program-content">
-        <!-- Program név és leírás -->
         <div class="program-name">{{ program.programName }}</div>
         <div class="program-description">{{ program.programDescription }}</div>
 
-        <!-- Napokhoz progress bar -->
         <div class="program-progress">
           <div class="program-progress-label">
             <span>Napok:</span>
@@ -29,7 +26,6 @@
           </div>
         </div>
 
-        <!-- Szerkesztés gomb -->
         <div class="program-edit">
           <button (click)="program.id && editProgram(program.id, $event)">
             ✏️ Szerkesztés
@@ -38,14 +34,21 @@
       </div>
     </div>
   </div>
+
+  <!-- 🔹 Lapozás gombok -->
+  <div class="pagination-controls">
+    <button (click)="prevPage()" [disabled]="currentPage === 1">◀ Előző</button>
+    <span>Oldal {{currentPage}} / {{totalPages}}</span>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Következő ▶</button>
+  </div>
 </ng-container>
 
 <ng-template #noPrograms>
   <div class="no-programs">Nincsenek programok.</div>
 </ng-template>
 
-<!-- Lebegő "Új program" gomb -->
 <button class="floating-action-button" (click)="createNewProgram()" title="Új program létrehozása">
   ➕
 </button>
 
+itt hozzá kell adni a workoutsokat

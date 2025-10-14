@@ -10,12 +10,17 @@ import { USER_MESSAGES } from '../../../../../constants/user-messages';
   standalone: true,
   imports: [CommonModule, NgIf, NgFor],
   templateUrl: './coach-program.component.html',
-  styleUrls: ['./coach-program.component.css'] // ⚡ ha nincs fájl, létre kell hozni vagy törölni
+  styleUrls: ['./coach-program.component.css']
 })
 export class CoachProgramComponent implements OnInit {
   programs: Program[] = [];
   message: string = '';
   showProgramsList: boolean = false;
+
+  // 🔹 Lapozáshoz
+  currentPage = 1;
+  itemsPerPage = 4;
+  totalPages = 1;
 
   constructor(
     private router: Router,
@@ -41,6 +46,7 @@ export class CoachProgramComponent implements OnInit {
             endDate: p.endDate,
             workouts: p.workouts
           }));
+          this.totalPages = Math.ceil(this.programs.length / this.itemsPerPage);
           this.showProgramsList = true;
           this.message = '';
         } else {
@@ -54,6 +60,20 @@ export class CoachProgramComponent implements OnInit {
         this.showProgramsList = false;
       }
     });
+  }
+
+  // 🔹 Getter a lapozott programokhoz
+  get pagedPrograms(): Program[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return this.programs.slice(startIndex, startIndex + this.itemsPerPage);
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) this.currentPage++;
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) this.currentPage--;
   }
 
   createNewProgram() {

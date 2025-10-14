@@ -327,3 +327,30 @@ tr:hover {
 .universal-form-message-error {
   @apply bg-red-100 text-red-700;
 }
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.pagination-controls button {
+  background-color: #2563eb;
+  color: white;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.pagination-controls button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}

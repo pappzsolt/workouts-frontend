@@ -1,12 +1,13 @@
 <h2 class="programs-title">Exercises</h2>
 
+<!-- Betöltés üzenet -->
 <div *ngIf="loading" class="no-programs">
   Betöltés...
 </div>
 
 <ng-container *ngIf="!loading; else noExercises">
   <div *ngIf="exercises.length > 0; else noExercises" class="programs-grid">
-    <div *ngFor="let we of exercises" class="program-card">
+    <div *ngFor="let we of pagedExercises" class="program-card">
       <!-- Emoji a tetején -->
       <div class="program-image">
         <span class="program-emoji">🏋️‍♂️</span>
@@ -27,12 +28,18 @@
 
         <div class="program-edit">
           <button (click)="editExercise(we.exercise.id!)">
-
-          ✏️ Szerkesztés
+            ✏️ Szerkesztés
           </button>
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- 🔹 Lapozás vezérlők középre igazítva -->
+  <div class="pagination-controls">
+    <button (click)="prevPage()" [disabled]="currentPage === 1">◀ Előző</button>
+    <span>Oldal {{currentPage}} / {{totalPages}}</span>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Következő ▶</button>
   </div>
 </ng-container>
 
@@ -41,5 +48,9 @@
     No exercises found.
   </div>
 </ng-template>
-<button class="floating-action-button" (click)="goToNewExercise()" title="Új Exercise hozzáadása">➕</button>
+
+<!-- 🔹 Lebegő "Új Exercise" gomb -->
+<button class="floating-action-button" (click)="goToNewExercise()" title="Új Exercise hozzáadása">
+  ➕
+</button>
 
