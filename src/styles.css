@@ -354,3 +354,21 @@ tr:hover {
   background-color: #9ca3af;
   cursor: not-allowed;
 }
+
+/* --- CDK Drag & Drop Z-index Fix (végleges, csak ez maradjon) --- */
+.cdk-drag-preview {
+  z-index: 99999 !important;
+  position: fixed !important;
+  pointer-events: none;
+  transform: rotate(2deg) scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 0.5rem;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+
+.cdk-drop-list-dragging {
+  opacity: 0.8;
+}

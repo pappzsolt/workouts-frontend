@@ -1,0 +1,59 @@
+<!-- 🔄 Betöltés állapot -->
+<div *ngIf="loading" class="text-gray-500 p-4 text-center">
+  Betöltés...
+</div>
+
+<!-- ℹ️ Üzenet -->
+<div *ngIf="message && !loading" class="text-gray-500 p-4 text-center">
+  {{ message }}
+</div>
+
+<!-- 🧩 Program oszlopok (Jira-stílus) -->
+<div
+  *ngIf="!loading && programs?.length"
+  class="flex flex-wrap sm:flex-nowrap gap-6 overflow-x-auto pb-6 relative z-0"
+>
+
+  <div
+    *ngFor="let program of programs"
+    class="bg-gray-50 border border-gray-200 p-4 rounded-2xl shadow-md w-full sm:w-72 flex-shrink-0 flex flex-col"
+  >
+    <!-- Program cím -->
+    <h3 class="text-blue-600 font-semibold mb-3 text-center text-lg">
+      {{ program.programName }}
+    </h3>
+
+    <!-- 🧭 Drop zóna -->
+    <div
+      cdkDropList
+      [id]="'program-' + program.programId"
+      [cdkDropListData]="program.workouts"
+      [cdkDropListConnectedTo]="programDropListIds"
+      class="flex-1 min-h-[250px] bg-white rounded-lg border p-3 flex flex-col transition-all duration-200 hover:border-blue-300 relative z-10"
+      (cdkDropListDropped)="dropWorkout($event)"
+    >
+      <!-- Workout elemek -->
+      <div
+        *ngFor="let workout of program.workouts"
+        cdkDrag
+        [cdkDragData]="workout"
+        class="bg-blue-100 text-blue-800 px-3 py-2 mb-2 rounded-lg shadow-sm cursor-move hover:bg-blue-200 transition-all"
+      >
+        {{ workout.name }}
+      </div>
+
+      <!-- Üres állapot -->
+      <div
+        *ngIf="!program.workouts?.length"
+        class="text-gray-400 italic text-sm text-center mt-auto mb-auto select-none"
+      >
+        Ide húzhatod a workoutokat
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 🚫 Nincs program -->
+<div *ngIf="!loading && (!programs || !programs.length)" class="text-gray-400 italic text-center mt-6">
+  Nincsenek programok.
+</div>

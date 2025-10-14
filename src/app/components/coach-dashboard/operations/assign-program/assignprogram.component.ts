@@ -2,9 +2,13 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { AssignProgramService, UserProgramDto } from '../../../../services/coach/assign-program/assignprogram.service';
+
+import { AssignProgramService, UserProgramDto, ProgramDto } from '../../../../services/coach/assign-program/assignprogram.service';
 import { UserNameIdService, UserNameId } from '../../../../services/user/user-name-id.service';
 import { CoachProgramSelectComponent } from '../../../shared/programs/coach-program-select.component';
+import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
+import { CoachProgramBoardComponent } from '../../../shared/coach/coach-program-board/coach-program-board.component'; // ✅ új import
+import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
 
 @Component({
   selector: 'app-assignprogram',
@@ -13,13 +17,16 @@ import { CoachProgramSelectComponent } from '../../../shared/programs/coach-prog
     CommonModule,
     FormsModule,
     HttpClientModule,
-    CoachProgramSelectComponent
+    CoachProgramSelectComponent,
+    CoachProgramBoardComponent,
+    CoachWorkoutBoardComponent,
   ],
   templateUrl: './assignprogram.component.html'
 })
 export class AssignProgramComponent implements OnInit {
   private assignService = inject(AssignProgramService);
   private userNameIdService = inject(UserNameIdService);
+  private programService = inject(CoachProgramService);
 
   userId!: number;
   selectedProgramId!: number;
@@ -29,25 +36,41 @@ export class AssignProgramComponent implements OnInit {
 
   assignedPrograms: UserProgramDto[] = [];
   users: UserNameId[] = [];
+  programs: ProgramDto[] = []; // oszlopos megjelenítéshez
 
   ngOnInit() {
+    console.log('🔹 AssignProgramComponent ngOnInit');
     this.loadAssignedPrograms();
     this.loadUsers();
+
   }
 
   loadAssignedPrograms() {
+    console.log('🔹 loadAssignedPrograms: API call starting...');
     this.assignService.getMyAssignedPrograms().subscribe({
       next: (res: any) => {
-        if (res.data) this.assignedPrograms = res.data;
+        if (res?.data) {
+          this.assignedPrograms = res.data;
+          console.log('✅ Assigned programs loaded:', this.assignedPrograms.length);
+        }
+        this.loading = false;
       },
-      error: () => console.error('❌ Hozzárendelt programok betöltése sikertelen'),
+      error: (err: any) => {
+        console.error('❌ Hozzárendelt programok betöltése sikertelen', err);
+        this.loading = false;
+      },
     });
   }
 
+
   loadUsers() {
     this.userNameIdService.getAllUsers().subscribe({
-      next: (res: UserNameId[]) => this.users = res,
-      error: () => console.error('❌ Felhasználók betöltése sikertelen'),
+      next: (res: UserNameId[]) => {
+        this.users = res;
+      },
+      error: (err: any) => {
+        console.error('❌ Felhasználók betöltése sikertelen', err);
+      },
     });
   }
 
@@ -73,7 +96,7 @@ export class AssignProgramComponent implements OnInit {
         this.loading = false;
         this.success = false;
         this.message = '❌ Hiba történt a hozzárendelés során.';
-        console.error(err);
+        console.error('❌ assignProgram API error:', err);
       },
     });
   }

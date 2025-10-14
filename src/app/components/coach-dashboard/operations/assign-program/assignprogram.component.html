@@ -10,7 +10,6 @@
   </select>
 </div>
 
-<!-- Coach program select komponens -->
 <app-coach-program-select [(selectedProgramId)]="selectedProgramId"></app-coach-program-select>
 
 <button (click)="assignProgram()" class="bg-blue-500 text-white px-4 py-2 rounded mt-2">
@@ -25,10 +24,18 @@
 
 <hr class="my-4">
 
-<h3>Hozzárendelt programok</h3>
-<ul>
-  <li *ngFor="let assigned of assignedPrograms">
-    {{ assigned.programName }} - {{ assigned.status }} ({{ assigned.assignedAt }})
-  </li>
-</ul>
-itt még a többi inset is kell!!!!
+<h3 class="text-xl font-semibold mb-4">Hozzárendelt programok</h3>
+
+<!-- Jira-stílusú oszlopos megjelenítés a programs tömb alapján -->
+<app-coach-program-board></app-coach-program-board>
+
+<hr class="my-4">
+
+<h3 class="text-xl font-semibold mb-4">Saját workoutok</h3>
+<app-coach-workout-board></app-coach-workout-board>
+
+
+<!-- üres állapot -->
+<div *ngIf="programs && programs.length === 0" class="text-gray-400 italic mt-2">
+  Nincsenek hozzárendelt programok.
+</div>
