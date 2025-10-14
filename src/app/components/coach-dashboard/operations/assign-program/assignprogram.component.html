@@ -26,13 +26,15 @@
 
 <h3 class="text-xl font-semibold mb-4">Hozzárendelt programok</h3>
 
-<!-- Jira-stílusú oszlopos megjelenítés a programs tömb alapján -->
-<app-coach-program-board></app-coach-program-board>
+<!-- Workout Board -->
+<app-coach-workout-board
+  [programDropListIds]="programDropListIds">
+</app-coach-workout-board>
 
-<hr class="my-4">
-
-<h3 class="text-xl font-semibold mb-4">Saját workoutok</h3>
-<app-coach-workout-board></app-coach-workout-board>
+<!-- Program Board -->
+<app-coach-program-board
+  [programs]="programs">
+</app-coach-program-board>
 
 
 <!-- üres állapot -->

@@ -7,7 +7,7 @@ import { AssignProgramService, UserProgramDto, ProgramDto } from '../../../../se
 import { UserNameIdService, UserNameId } from '../../../../services/user/user-name-id.service';
 import { CoachProgramSelectComponent } from '../../../shared/programs/coach-program-select.component';
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
-import { CoachProgramBoardComponent } from '../../../shared/coach/coach-program-board/coach-program-board.component'; // ✅ új import
+import { CoachProgramBoardComponent } from '../../../shared/coach/coach-program-board/coach-program-board.component';
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
 
 @Component({
@@ -38,10 +38,16 @@ export class AssignProgramComponent implements OnInit {
   users: UserNameId[] = [];
   programs: ProgramDto[] = []; // oszlopos megjelenítéshez
 
+  // 🔹 Hozzáadva a hiányzó property a template-hez
+  programDropListIds: string[] = [];
+
   ngOnInit() {
     console.log('🔹 AssignProgramComponent ngOnInit');
     this.loadAssignedPrograms();
     this.loadUsers();
+
+    // 🔹 Betöltjük a programDropListIds-t
+    this.programDropListIds = this.programs.map(p => `program-${p.programId}`);
 
   }
 
@@ -61,7 +67,6 @@ export class AssignProgramComponent implements OnInit {
       },
     });
   }
-
 
   loadUsers() {
     this.userNameIdService.getAllUsers().subscribe({

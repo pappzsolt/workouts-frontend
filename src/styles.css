@@ -413,3 +413,12 @@ tr:hover {
 .cdk-drop-list-dragging {
   opacity: 0.9;
 }
+.cdk-drag-preview {
+  z-index: 99999 !important;
+  position: fixed !important;
+  pointer-events: none;
+  transform: rotate(2deg) scale(1.05);
+  background: white;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+  border-radius: 0.75rem;
+}

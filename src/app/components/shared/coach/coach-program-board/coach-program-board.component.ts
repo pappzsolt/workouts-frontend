@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject ,Input} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { CoachProgramService } from '../../../../services/coach/assign-program/coach-program.service';
@@ -23,8 +23,10 @@ export interface CoachProgram {
 export class CoachProgramBoardComponent implements OnInit {
   private programService = inject(CoachProgramService);
 
-  programs: CoachProgram[] = [];
-  programDropListIds: string[] = [];
+// coach-program-board.component.ts
+  @Input() programs: CoachProgram[] = [];
+  @Input() programDropListIds: string[] = [];
+
 
   loading = false;
   message = '';

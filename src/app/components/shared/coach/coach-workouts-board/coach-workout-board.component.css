@@ -1,0 +1,55 @@
+/* Alap layout */
+.coach-board {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 1.5rem;
+  position: relative;
+  z-index: 0;
+}
+
+/* Oszlop stílus */
+.coach-board-column {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  padding: 1rem;
+  width: 18rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease;
+}
+.coach-board-column:hover {
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* 🔹 Drag & Drop fixek */
+.cdk-drag-preview {
+  z-index: 99999 !important;
+  position: fixed !important;
+  pointer-events: none;
+  transform: rotate(2deg) scale(1.05);
+  background: white;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.3;
+  border: 2px dashed #60a5fa;
+  border-radius: 0.75rem;
+}
+
+/* Drop zóna highlight */
+.cdk-drop-list-dragging {
+  border-color: #3b82f6;
+  background: #f0f9ff;
+}
+
+/* Az egész board mindig a felső rétegben legyen */
+.coach-workout-board {
+  position: relative;
+  z-index: 1;
+}
