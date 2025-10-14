@@ -355,7 +355,46 @@ tr:hover {
   cursor: not-allowed;
 }
 
-/* --- CDK Drag & Drop Z-index Fix (végleges, csak ez maradjon) --- */
+/* === Coach Boards – közös layout === */
+.coach-board {
+  @apply flex flex-wrap sm:flex-nowrap gap-6 overflow-x-auto pb-6 relative;
+}
+
+/* Alap oszlop megjelenés */
+.coach-board-column {
+  @apply bg-white border border-gray-200 p-4 rounded-2xl shadow-md
+  w-full sm:w-72 flex-shrink-0 flex flex-col cursor-move
+  hover:shadow-lg transition-all duration-200;
+  z-index: 0;
+}
+
+/* Program board specifikus */
+.coach-program-board .coach-board-column {
+  @apply bg-gray-50;
+  z-index: 1; /* program board alacsonyabb szint */
+}
+
+/* Workout board specifikus */
+.coach-workout-board .coach-board-column {
+  @apply bg-white;
+  z-index: 10; /* workout board mindig felül */
+}
+
+/* Drop zóna stílus */
+.cdk-drop-list {
+  @apply flex-1 min-h-[250px] bg-white rounded-lg border p-3 flex flex-col
+  transition-all duration-200 hover:border-blue-300;
+  z-index: 2;
+}
+
+/* Drag elem */
+.cdk-drag {
+  @apply bg-blue-100 text-blue-800 px-3 py-2 mb-2 rounded-lg shadow-sm cursor-move
+  hover:bg-blue-200 transition-all;
+  z-index: 5;
+}
+
+/* Drag preview – lebegő másolat */
 .cdk-drag-preview {
   z-index: 99999 !important;
   position: fixed !important;
@@ -365,10 +404,12 @@ tr:hover {
   border-radius: 0.5rem;
 }
 
+/* Placeholder */
 .cdk-drag-placeholder {
   opacity: 0.3;
 }
 
+/* Dragging közben */
 .cdk-drop-list-dragging {
-  opacity: 0.8;
+  opacity: 0.9;
 }

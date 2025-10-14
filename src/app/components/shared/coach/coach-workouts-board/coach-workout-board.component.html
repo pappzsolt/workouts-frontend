@@ -9,15 +9,13 @@
 </div>
 
 <!-- 🏋️‍♀️ Workout oszlopok (Jira-stílus) -->
-<div
-  *ngIf="!loading && workouts?.length"
-  class="flex flex-wrap sm:flex-nowrap gap-6 overflow-x-auto pb-6 relative z-0"
->
+<div *ngIf="!loading && workouts?.length" class="coach-board coach-workout-board">
+
   <div
     *ngFor="let workout of workouts"
     cdkDrag
     [cdkDragData]="workout"
-    class="bg-white border border-gray-200 p-4 rounded-2xl shadow-md w-full sm:w-72 flex-shrink-0 cursor-move hover:shadow-lg transition-all duration-200 relative z-10"
+    class="coach-board-column bg-white border border-gray-200 p-4 rounded-2xl shadow-md w-full sm:w-72 flex-shrink-0 cursor-move hover:shadow-lg transition-all duration-200 relative z-10"
   >
     <!-- Workout neve -->
     <h3 class="text-blue-600 font-semibold mb-2 text-center text-lg truncate">

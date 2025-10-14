@@ -8,7 +8,8 @@ import { Workout } from '../../../../models/workout.model';
   selector: 'app-coach-workout-board',
   standalone: true,
   imports: [CommonModule, DragDropModule],
-  templateUrl: './coach-workout-board.component.html'
+  templateUrl: './coach-workout-board.component.html',
+  styleUrls: ['./coach-workout-board.component.css']
 })
 export class CoachWorkoutBoardComponent implements OnInit {
   private workoutService = inject(CoachWorkoutsService);

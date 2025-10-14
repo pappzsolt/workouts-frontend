@@ -17,7 +17,8 @@ export interface CoachProgram {
   selector: 'app-coach-program-board',
   standalone: true,
   imports: [CommonModule, DragDropModule],
-  templateUrl: './coach-program-board.component.html'
+  templateUrl: './coach-program-board.component.html',
+  styleUrls: ['./coach-program-board.component.css']
 })
 export class CoachProgramBoardComponent implements OnInit {
   private programService = inject(CoachProgramService);
