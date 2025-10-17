@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, Input } from '@angular/core';
+import { Component, OnInit, inject, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
@@ -11,18 +11,27 @@ import { Workout } from '../../../../models/workout.model';
   templateUrl: './coach-workout-board.component.html',
   styleUrls: ['./coach-workout-board.component.css']
 })
-export class CoachWorkoutBoardComponent implements OnInit {
+export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
   private workoutService = inject(CoachWorkoutsService);
 
   workouts: Workout[] = [];
   loading = false;
   message = '';
 
-  /** programDropListIds: a programok oszlopainak ID-jait kell ide betölteni a csatlakozáshoz */
   @Input() programDropListIds: string[] = [];
+
+  // 🔹 Dinamikus CDK connectedTo frissítés
+  connectedDropLists: string[] = [];
 
   ngOnInit() {
     this.loadWorkouts();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['programDropListIds'] && this.programDropListIds?.length) {
+      this.connectedDropLists = [...this.programDropListIds];
+      console.log('🔹 connectedDropLists updated:', this.connectedDropLists);
+    }
   }
 
   loadWorkouts() {
@@ -30,9 +39,7 @@ export class CoachWorkoutBoardComponent implements OnInit {
     this.workoutService.getMyWorkouts().subscribe({
       next: (res) => {
         this.loading = false;
-
         if (res.workouts?.length) {
-          // 🔹 ABC sorrendbe rendezés
           this.workouts = res.workouts.sort((a, b) =>
             (a.name ?? '').localeCompare(b.name ?? '')
           );
@@ -48,7 +55,6 @@ export class CoachWorkoutBoardComponent implements OnInit {
     });
   }
 
-  /** Drag & Drop esemény: a workoutokat lehet áthúzni a program oszlopokba */
   drop(event: CdkDragDrop<Workout[]>) {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);

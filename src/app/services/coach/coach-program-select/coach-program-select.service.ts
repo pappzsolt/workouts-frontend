@@ -13,7 +13,7 @@ export interface CoachProgram {
 @Injectable({
   providedIn: 'root'
 })
-export class CoachProgramService {
+export class CoachProgramSelectService {
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:8080/api/programs/my/coach-programs'; // 🔹 javítva
 

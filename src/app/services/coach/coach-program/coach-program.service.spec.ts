@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { CoachProgramService } from './coach-program.service';
 
-describe('CoachProgramService', () => {
+describe('CoachProgramSelectService', () => {
   let service: CoachProgramService;
 
   beforeEach(() => {

@@ -2,6 +2,11 @@
 <div *ngIf="loading" class="text-gray-500 p-4 text-center">
   Betöltés...
 </div>
+<!-- Debug log -->
+<div class="p-2 bg-yellow-100 text-xs mb-2">
+  📝 Debug: programs = {{ programs | json }} <br>
+  📝 Debug: programDropListIds = {{ programDropListIds | json }}
+</div>
 
 <!-- ℹ️ Üzenet -->
 <div *ngIf="message && !loading" class="text-gray-500 p-4 text-center">

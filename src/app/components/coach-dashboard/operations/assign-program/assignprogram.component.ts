@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ViewChild, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
@@ -23,10 +23,12 @@ import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts
   ],
   templateUrl: './assignprogram.component.html'
 })
-export class AssignProgramComponent implements OnInit {
+export class AssignProgramComponent implements OnInit, AfterViewInit {
   private assignService = inject(AssignProgramService);
   private userNameIdService = inject(UserNameIdService);
   private programService = inject(CoachProgramService);
+
+  @ViewChild(CoachProgramBoardComponent) programBoard!: CoachProgramBoardComponent;
 
   userId!: number;
   selectedProgramId!: number;
@@ -36,28 +38,33 @@ export class AssignProgramComponent implements OnInit {
 
   assignedPrograms: UserProgramDto[] = [];
   users: UserNameId[] = [];
-  programs: ProgramDto[] = []; // oszlopos megjelenítéshez
+  programs: ProgramDto[] = [];
 
-  // 🔹 Hozzáadva a hiányzó property a template-hez
   programDropListIds: string[] = [];
 
   ngOnInit() {
-    console.log('🔹 AssignProgramComponent ngOnInit');
     this.loadAssignedPrograms();
     this.loadUsers();
+    this.loadPrograms();
+  }
 
-    // 🔹 Betöltjük a programDropListIds-t
-    this.programDropListIds = this.programs.map(p => `program-${p.programId}`);
+  ngAfterViewInit() {
+    if (this.programBoard) {
+      this.updateProgramDropListIds();
+    }
+  }
 
+  updateProgramDropListIds() {
+    if (this.programBoard?.programDropListIds?.length) {
+      this.programDropListIds = [...this.programBoard.programDropListIds];
+    }
   }
 
   loadAssignedPrograms() {
-    console.log('🔹 loadAssignedPrograms: API call starting...');
     this.assignService.getMyAssignedPrograms().subscribe({
       next: (res: any) => {
         if (res?.data) {
           this.assignedPrograms = res.data;
-          console.log('✅ Assigned programs loaded:', this.assignedPrograms.length);
         }
         this.loading = false;
       },
@@ -67,6 +74,35 @@ export class AssignProgramComponent implements OnInit {
       },
     });
   }
+
+  loadPrograms() {
+    this.programService.getAllPrograms().subscribe({
+      next: (programsFromService: any[]) => {
+        // ✅ minden kötelező mezőt feltöltünk a ProgramDto-ból
+        this.programs = programsFromService.map(p => ({
+          programId: p.programId ?? p.id ?? 0,
+          programName: p.programName ?? p.name ?? '',
+          programDescription: p.programDescription ?? p.description ?? '',
+          durationDays: p.durationDays ?? 0,
+          difficultyLevel: p.difficultyLevel ?? 'unknown',
+          workouts: p.workouts ?? [],
+        })) as ProgramDto[];
+
+        // debug log
+        console.log('📝 Debug: programs =', this.programs);
+
+        // Frissítjük a dropList-eket a template-hez
+        this.programDropListIds = this.programs.map(p => `program-${p.programId}`);
+        console.log('📝 Debug: programDropListIds =', this.programDropListIds);
+      },
+      error: (err: any) => {
+        console.error('❌ Programok betöltése sikertelen', err);
+      },
+    });
+  }
+
+
+
 
   loadUsers() {
     this.userNameIdService.getAllUsers().subscribe({
@@ -96,6 +132,8 @@ export class AssignProgramComponent implements OnInit {
         this.success = res.status === 'success';
         this.message = res.message || '✅ Program sikeresen hozzárendelve!';
         this.loadAssignedPrograms();
+
+        setTimeout(() => this.updateProgramDropListIds(), 200);
       },
       error: (err: any) => {
         this.loading = false;

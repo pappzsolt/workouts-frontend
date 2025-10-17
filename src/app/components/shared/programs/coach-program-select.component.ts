@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CoachProgramService } from '../../../services/coach/assign-program/coach-program.service';
+import { CoachProgramSelectService } from '../../../services/coach/coach-program-select/coach-program-select.service';
 
 export interface CoachProgram {
   programId: number;
@@ -18,7 +18,7 @@ export interface CoachProgram {
   templateUrl: './coach-program-select.component.html'
 })
 export class CoachProgramSelectComponent implements OnInit {
-  private programService = inject(CoachProgramService);
+  private programService = inject(CoachProgramSelectService);
 
   programs: CoachProgram[] = [];
   loading = false;
