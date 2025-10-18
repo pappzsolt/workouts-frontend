@@ -1,12 +1,14 @@
-import { Component, OnInit, inject, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
-import { AssignProgramService, UserProgramDto, ProgramDto } from '../../../../services/coach/assign-program/assignprogram.service';
+import { AssignProgramService, UserProgramDto } from '../../../../services/coach/assign-program/assignprogram.service';
 import { UserNameIdService, UserNameId } from '../../../../services/user/user-name-id.service';
 import { CoachProgramSelectComponent } from '../../../shared/programs/coach-program-select.component';
+import { CoachProgramBoardComponent } from '../../../shared/coach/coach-program-board/coach-program-board.component';
+import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
+import { CoachProgram } from '../../../../models/coach-program.model';
 
 @Component({
   selector: 'app-assignprogram',
@@ -16,6 +18,8 @@ import { CoachProgramService } from '../../../../services/coach/coach-program/co
     FormsModule,
     HttpClientModule,
     CoachProgramSelectComponent,
+    CoachProgramBoardComponent,
+    CoachWorkoutBoardComponent, // ✅ hozzáadva ide is
   ],
   templateUrl: './assignprogram.component.html'
 })
@@ -23,7 +27,6 @@ export class AssignProgramComponent implements OnInit {
   private assignService = inject(AssignProgramService);
   private userNameIdService = inject(UserNameIdService);
   private programService = inject(CoachProgramService);
-  private workoutService = inject(CoachWorkoutsService);
 
   userId!: number;
   selectedProgramId!: number;
@@ -32,9 +35,7 @@ export class AssignProgramComponent implements OnInit {
   success = false;
   assignedPrograms: UserProgramDto[] = [];
   users: UserNameId[] = [];
-  programs: ProgramDto[] = [];
-
-  programDropListIds: string[] = [];
+  programs: CoachProgram[] = [];
 
   ngOnInit() {
     this.loadAssignedPrograms();
@@ -58,8 +59,10 @@ export class AssignProgramComponent implements OnInit {
   }
 
   loadPrograms() {
+    this.loading = true;
     this.programService.getAllPrograms().subscribe({
       next: (programsFromService: any[]) => {
+        this.loading = false;
         this.programs = programsFromService.map(p => ({
           programId: p.programId ?? p.id ?? 0,
           programName: p.programName ?? p.name ?? '',
@@ -67,14 +70,12 @@ export class AssignProgramComponent implements OnInit {
           durationDays: p.durationDays ?? 0,
           difficultyLevel: p.difficultyLevel ?? 'unknown',
           workouts: p.workouts ?? [],
-        })) as ProgramDto[];
-
-        // 🔹 Frissítjük a dropList IDs-t, a child már megkapja a program ID-kat
-        this.programDropListIds = this.programs
-          .map(p => `program-${p.programId}`)
-          .filter(id => !!id); // undefined értékek kiszűrése
+        }));
       },
-      error: (err: any) => console.error('❌ Programok betöltése sikertelen', err),
+      error: (err: any) => {
+        this.loading = false;
+        console.error('❌ Programok betöltése sikertelen', err);
+      }
     });
   }
 
@@ -88,18 +89,6 @@ export class AssignProgramComponent implements OnInit {
       },
     });
   }
-
-  get workoutBoardDropLists(): string[] {
-    if (!this.programDropListIds || !this.programDropListIds.length) {
-      return ['workout-list'];
-    }
-    // csak string-ek
-    return ['workout-list', ...this.programDropListIds.filter((id): id is string => !!id)];
-  }
-
-
-
-
 
   assignProgram() {
     if (!this.userId || !this.selectedProgramId) {

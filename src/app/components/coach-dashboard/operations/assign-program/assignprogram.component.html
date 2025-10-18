@@ -2,28 +2,20 @@
 
   <h3 class="text-2xl font-semibold mb-6 text-center">Program hozzárendelés</h3>
 
-  <!-- Reszponzív grid a felhasználó- és programválasztáshoz -->
+  <!-- Felhasználó és program kiválasztás -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-
-    <!-- Felhasználó választó -->
     <div>
       <label class="block mb-1 font-semibold text-gray-700">Felhasználó:</label>
       <select [(ngModel)]="userId"
               class="border border-gray-300 p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400">
         <option [ngValue]="null">-- Válassz felhasználót --</option>
-        <option *ngFor="let user of users" [ngValue]="user.id">
-          {{ user.username }}
-        </option>
+        <option *ngFor="let user of users" [ngValue]="user.id">{{ user.username }}</option>
       </select>
     </div>
 
-    <!-- Program választó -->
     <div>
-      <app-coach-program-select
-        [(selectedProgramId)]="selectedProgramId">
-      </app-coach-program-select>
+      <app-coach-program-select [(selectedProgramId)]="selectedProgramId"></app-coach-program-select>
     </div>
-
   </div>
 
   <!-- Hozzárendelés gomb -->
@@ -35,12 +27,8 @@
     </button>
   </div>
 
-  <!-- Betöltés jelzés -->
-  <div *ngIf="loading" class="text-gray-500 mt-3 italic text-center">
-    Betöltés...
-  </div>
+  <div *ngIf="loading" class="text-gray-500 mt-3 italic text-center">Betöltés...</div>
 
-  <!-- Üzenet -->
   <div *ngIf="message"
        [ngClass]="{
          'text-green-600 font-semibold': success,
@@ -52,11 +40,18 @@
 
   <hr class="my-6">
 
-  <h3 class="text-xl font-semibold mb-4 text-center">Hozzárendelt programok</h3>
-  <!-- Üres állapot -->
-  <div *ngIf="programs && programs.length === 0"
-       class="text-gray-400 italic mt-3 text-center">
-    Nincsenek hozzárendelt programok.
+  <!-- 🏋️ Workout lista -->
+  <h3 class="text-xl font-semibold mb-4 text-center">Elérhető workoutok</h3>
+  <app-coach-workout-board></app-coach-workout-board>
+
+  <hr class="my-6">
+
+  <!-- 📋 Program lista -->
+  <h3 class="text-xl font-semibold mb-4 text-center">Elérhető programok</h3>
+  <app-coach-program-board [programs]="programs"></app-coach-program-board>
+
+  <div *ngIf="!programs?.length" class="text-gray-400 italic mt-3 text-center">
+    Nincsenek programok.
   </div>
 
 </div>

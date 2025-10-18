@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, OnInit, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 import { CoachProgram } from '../../../../models/coach-program.model';
@@ -13,13 +13,17 @@ import { CoachProgram } from '../../../../models/coach-program.model';
 export class CoachProgramBoardComponent implements OnInit {
   private programService = inject(CoachProgramService);
 
+  // ⚠️ Szülőből érkező vagy lokálisan betöltött programok
   @Input() programs: CoachProgram[] = [];
 
   loading = false;
   message = '';
 
   ngOnInit() {
-    this.loadPrograms();
+    // Ha nincs programs a szülőtől, töltsük be
+    if (!this.programs?.length) {
+      this.loadPrograms();
+    }
   }
 
   loadPrograms() {
@@ -37,30 +41,14 @@ export class CoachProgramBoardComponent implements OnInit {
           difficultyLevel: p.difficultyLevel ?? 'unknown',
           workouts: p.workouts ?? [],
         }));
+
+        console.log('✅ Programok betöltve:', this.programs);
       },
       error: (err: any) => {
-        console.error('❌ Programok betöltése sikertelen', err);
-        this.message = 'Hiba a programok lekérése során';
         this.loading = false;
+        this.message = '❌ Programok betöltése sikertelen';
+        console.error('❌ Programok betöltése sikertelen', err);
       }
-    });
-  }
-
-  saveWorkoutAssignment(programId: number, workoutId: number) {
-    if (!programId || !workoutId) return;
-
-    if (!this.programService.assignWorkoutToProgram) {
-      console.error('❌ assignWorkoutToProgram metódus nem található a service-ben');
-      return;
-    }
-
-    this.programService.assignWorkoutToProgram(programId, workoutId).subscribe({
-      next: (res: any) => {
-        console.log('✅ Workout sikeresen hozzárendelve', res);
-      },
-      error: (err: any) => {
-        console.error('❌ Workout hozzárendelés sikertelen', err);
-      },
     });
   }
 }

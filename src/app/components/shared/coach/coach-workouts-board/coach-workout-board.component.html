@@ -8,45 +8,31 @@
   {{ message }}
 </div>
 
-<!-- 🏋️‍♀️ Workout oszlopok (kompakt, 3 oszlopos, görgethető) -->
-<div *ngIf="!loading && workouts?.length" class="coach-board coach-workout-board">
+<!-- 🏋️‍♀️ Workout lista -->
+<div *ngIf="!loading && workouts?.length" class="coach-board coach-workout-board flex flex-wrap justify-center gap-4 pb-6 max-h-[600px] overflow-y-auto">
   <div
-    cdkDropList
-    id="workout-list"
-    [cdkDropListData]="workouts"
-    [cdkDropListConnectedTo]="programDropListIds"
-    (cdkDropListDropped)="drop($event)"
-    class="flex flex-wrap justify-center gap-4 pb-6 overflow-y-auto max-h-[600px] relative z-10"
+    *ngFor="let workout of workouts"
+    class="bg-white border border-gray-200 p-3 rounded-xl shadow-sm w-[200px] sm:w-[210px] md:w-[220px] flex-shrink-0"
   >
-    <!-- Workout kártyák -->
-    <div
-      *ngFor="let workout of workouts"
-      cdkDrag
-      [cdkDragData]="workout"
-      class="bg-white border border-gray-200 p-3 rounded-xl shadow-sm cursor-move hover:shadow-md transition-all duration-200 w-[200px] sm:w-[210px] md:w-[220px] flex-shrink-0"
-    >
-      <!-- Workout neve -->
-      <h3 class="text-blue-600 font-semibold mb-2 text-center text-base truncate">
-        {{ workout.name }}
-      </h3>
+    <!-- Workout neve -->
+    <h3 class="text-blue-600 font-semibold mb-2 text-center text-base truncate">
+      {{ workout.name }}
+    </h3>
 
-      <!-- Workout leírás -->
-      <p class="text-xs text-gray-600 text-center mb-2 line-clamp-2">
-        {{ workout.description || 'Nincs leírás' }}
-      </p>
+    <!-- Workout leírás -->
+    <p class="text-xs text-gray-600 text-center mb-2 line-clamp-2">
+      {{ workout.description || 'Nincs leírás' }}
+    </p>
 
-      <!-- Workout azonosító -->
-      <div class="text-[11px] text-gray-500 text-center italic">
-        ID: {{ workout.id }}
-      </div>
+    <!-- Workout azonosító -->
+    <div class="text-[11px] text-gray-500 text-center italic">
+      ID: {{ workout.id }}
     </div>
   </div>
 </div>
 
 <!-- 🚫 Üres állapot -->
-<div
-  *ngIf="!loading && (!workouts || !workouts.length)"
-  class="text-gray-400 italic text-center mt-6"
->
+<div *ngIf="!loading && (!workouts || !workouts.length)"
+     class="text-gray-400 italic text-center mt-6">
   Nincsenek elérhető workoutok.
 </div>
