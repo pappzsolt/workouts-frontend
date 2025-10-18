@@ -21,7 +21,7 @@ import { Workout } from '../../../../models/workout.model';
     HttpClientModule,
     CoachProgramSelectComponent,
     CoachProgramBoardComponent,
-    CoachWorkoutBoardComponent, // ⚡ Hozzáadva
+    CoachWorkoutBoardComponent,
   ],
   templateUrl: './assignprogram.component.html'
 })
@@ -39,13 +39,13 @@ export class AssignProgramComponent implements OnInit {
   users: UserNameId[] = [];
   programs: CoachProgram[] = [];
 
-  workouts: Workout[] = []; // ⚡ ide töltjük a Workoutokat
+  workouts: Workout[] = [];
 
   ngOnInit() {
     this.loadAssignedPrograms();
     this.loadUsers();
     this.loadPrograms();
-    this.loadWorkouts(); // ⚡ Workoutok betöltése
+    this.loadWorkouts();
   }
 
   loadAssignedPrograms() {
@@ -61,6 +61,13 @@ export class AssignProgramComponent implements OnInit {
         this.loading = false;
       },
     });
+  }
+  onAddWorkout(workout: Workout) {
+    if (!this.selectedProgramId) {
+      this.message = '❌ Kérlek, válassz programot!';
+      this.success = false;
+      return;
+    }
   }
 
   loadPrograms() {
@@ -134,19 +141,25 @@ export class AssignProgramComponent implements OnInit {
     });
   }
 
-  // ⚡ Új metódus a workout hozzáadásához a kiválasztott programhoz
-  onAddWorkout(workout: Workout) {
-    if (!this.selectedProgramId) {
-      this.message = '❌ Kérlek, válassz programot!';
+  // ⚡ Workout hozzáadása a kiválasztott programkártyához
+  onAddWorkoutToProgram(workout: Workout, programId: number) {
+    if (!programId) {
+      this.message = '❌ Hiba: Program nem lett kiválasztva!';
       this.success = false;
       return;
     }
 
-    this.programService.assignWorkoutToProgram(this.selectedProgramId, workout.id!).subscribe({
+    if (!workout.id) {
+      this.message = '❌ Hiba: Workout ID hiányzik.';
+      this.success = false;
+      return;
+    }
+
+    this.programService.assignWorkoutToProgram(programId, workout.id).subscribe({
       next: (res: any) => {
         this.success = true;
         this.message = `✅ '${workout.name}' hozzáadva a programhoz!`;
-        this.loadPrograms(); // frissítjük a programok listáját
+        this.loadPrograms();
       },
       error: (err: any) => {
         this.success = false;

@@ -1,26 +1,29 @@
-import { Component, OnInit, Input, inject } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms'; // ⚡ szükséges a ngModel-hez
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 import { CoachProgram } from '../../../../models/coach-program.model';
 
 @Component({
   selector: 'app-coach-program-board',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule], // ⚡ FormsModule hozzáadva
   templateUrl: './coach-program-board.component.html',
   styleUrls: ['./coach-program-board.component.css']
 })
 export class CoachProgramBoardComponent implements OnInit {
   private programService = inject(CoachProgramService);
 
-  // ⚠️ Szülőből érkező vagy lokálisan betöltött programok
   @Input() programs: CoachProgram[] = [];
+
+  // ⚡ Kiválasztott program ID a szülővel való kétirányú bindinghoz
+  @Input() selectedProgramId!: number;
+  @Output() selectedProgramIdChange = new EventEmitter<number>();
 
   loading = false;
   message = '';
 
   ngOnInit() {
-    // Ha nincs programs a szülőtől, töltsük be
     if (!this.programs?.length) {
       this.loadPrograms();
     }
@@ -31,17 +34,14 @@ export class CoachProgramBoardComponent implements OnInit {
     this.programService.getProgramsForLoggedInCoach().subscribe({
       next: (res) => {
         this.loading = false;
-
-        // Adapter: Program[] → CoachProgram[]
         this.programs = res.data.map(p => ({
           programId: p.id ?? 0,
           programName: p.programName ?? p.name ?? '',
           programDescription: p.programDescription ?? p.description ?? '',
           durationDays: p.durationDays ?? 0,
           difficultyLevel: p.difficultyLevel ?? 'unknown',
-          workouts: p.workouts ?? [],
+          workouts: [], // ⚡ üres, mert itt nem kell
         }));
-
         console.log('✅ Programok betöltve:', this.programs);
       },
       error: (err: any) => {
@@ -50,5 +50,11 @@ export class CoachProgramBoardComponent implements OnInit {
         console.error('❌ Programok betöltése sikertelen', err);
       }
     });
+  }
+
+  // ⚡ Program kiválasztás kezelése
+  selectProgram(programId: number) {
+    this.selectedProgramId = programId;
+    this.selectedProgramIdChange.emit(programId);
   }
 }
