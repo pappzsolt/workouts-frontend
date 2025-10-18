@@ -1,13 +1,13 @@
-import { Component, OnInit, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Component, OnInit, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // ⚡ szükséges a ngModel-hez
+import { FormsModule } from '@angular/forms'; // ✔ hozzáadva
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 import { CoachProgram } from '../../../../models/coach-program.model';
 
 @Component({
   selector: 'app-coach-program-board',
   standalone: true,
-  imports: [CommonModule, FormsModule], // ⚡ FormsModule hozzáadva
+  imports: [CommonModule, FormsModule], // ✔ FormsModule import
   templateUrl: './coach-program-board.component.html',
   styleUrls: ['./coach-program-board.component.css']
 })
@@ -15,10 +15,7 @@ export class CoachProgramBoardComponent implements OnInit {
   private programService = inject(CoachProgramService);
 
   @Input() programs: CoachProgram[] = [];
-
-  // ⚡ Kiválasztott program ID a szülővel való kétirányú bindinghoz
-  @Input() selectedProgramId!: number;
-  @Output() selectedProgramIdChange = new EventEmitter<number>();
+  selectedProgramId: number | null = null;
 
   loading = false;
   message = '';
@@ -40,21 +37,14 @@ export class CoachProgramBoardComponent implements OnInit {
           programDescription: p.programDescription ?? p.description ?? '',
           durationDays: p.durationDays ?? 0,
           difficultyLevel: p.difficultyLevel ?? 'unknown',
-          workouts: [], // ⚡ üres, mert itt nem kell
+          workouts: p.workouts ?? [],
         }));
-        console.log('✅ Programok betöltve:', this.programs);
       },
-      error: (err: any) => {
+      error: (err) => {
         this.loading = false;
         this.message = '❌ Programok betöltése sikertelen';
         console.error('❌ Programok betöltése sikertelen', err);
       }
     });
-  }
-
-  // ⚡ Program kiválasztás kezelése
-  selectProgram(programId: number) {
-    this.selectedProgramId = programId;
-    this.selectedProgramIdChange.emit(programId);
   }
 }

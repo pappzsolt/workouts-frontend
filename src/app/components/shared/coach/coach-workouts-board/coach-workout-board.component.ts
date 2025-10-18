@@ -1,22 +1,25 @@
-import { Component, OnInit, inject, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { Workout } from '../../../../models/workout.model';
 
 @Component({
   selector: 'app-coach-workout-board',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './coach-workout-board.component.html',
   styleUrls: ['./coach-workout-board.component.css']
 })
 export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
   private workoutService = inject(CoachWorkoutsService);
 
-  @Input() externalWorkouts: Workout[] = [];
+  @Input() externalWorkouts: Workout[] = []; // ✔ biztos Input
   @Input() workouts: Workout[] = [];
 
-  @Output() addWorkoutToProgram = new EventEmitter<Workout>();
+  @Output() addWorkoutsToProgram = new EventEmitter<number[]>(); // ✔ több kiválasztott workout
+
+  selectedWorkoutIds: number[] = [];
 
   loading = false;
   message = '';
@@ -34,13 +37,12 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
   loadWorkouts() {
     this.loading = true;
     this.workoutService.getMyWorkouts().subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.loading = false;
         if (res.workouts?.length) {
-          this.workouts = res.workouts.sort((a, b) =>
+          this.workouts = res.workouts.sort((a: Workout, b: Workout) =>
             (a.name ?? '').localeCompare(b.name ?? '')
           );
-          console.log('✅ Workouts loaded:', this.workouts);
         } else {
           this.message = 'Nincsenek elérhető workoutok.';
         }
@@ -53,7 +55,18 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
     });
   }
 
-  onAddWorkout(workout: Workout) {
-    this.addWorkoutToProgram.emit(workout);
+  toggleWorkoutSelection(id: number, checked: boolean) {
+    if (checked) {
+      if (!this.selectedWorkoutIds.includes(id)) this.selectedWorkoutIds.push(id);
+    } else {
+      this.selectedWorkoutIds = this.selectedWorkoutIds.filter(wid => wid !== id);
+    }
+  }
+
+  onAddSelectedWorkouts() {
+    if (this.selectedWorkoutIds.length) {
+      this.addWorkoutsToProgram.emit(this.selectedWorkoutIds);
+      this.selectedWorkoutIds = [];
+    }
   }
 }

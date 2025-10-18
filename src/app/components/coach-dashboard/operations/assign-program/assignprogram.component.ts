@@ -21,7 +21,7 @@ import { Workout } from '../../../../models/workout.model';
     HttpClientModule,
     CoachProgramSelectComponent,
     CoachProgramBoardComponent,
-    CoachWorkoutBoardComponent,
+    CoachWorkoutBoardComponent, // ✔ Hozzáadva az import listához
   ],
   templateUrl: './assignprogram.component.html'
 })
@@ -29,6 +29,7 @@ export class AssignProgramComponent implements OnInit {
   private assignService = inject(AssignProgramService);
   private userNameIdService = inject(UserNameIdService);
   private programService = inject(CoachProgramService);
+  private workoutService = inject(CoachWorkoutsService); // ✔ Injectálva a komponens szintjén
 
   userId!: number;
   selectedProgramId!: number;
@@ -38,7 +39,6 @@ export class AssignProgramComponent implements OnInit {
   assignedPrograms: UserProgramDto[] = [];
   users: UserNameId[] = [];
   programs: CoachProgram[] = [];
-
   workouts: Workout[] = [];
 
   ngOnInit() {
@@ -61,13 +61,6 @@ export class AssignProgramComponent implements OnInit {
         this.loading = false;
       },
     });
-  }
-  onAddWorkout(workout: Workout) {
-    if (!this.selectedProgramId) {
-      this.message = '❌ Kérlek, válassz programot!';
-      this.success = false;
-      return;
-    }
   }
 
   loadPrograms() {
@@ -103,8 +96,7 @@ export class AssignProgramComponent implements OnInit {
   }
 
   loadWorkouts() {
-    const workoutService = inject(CoachWorkoutsService);
-    workoutService.getMyWorkouts().subscribe({
+    this.workoutService.getMyWorkouts().subscribe({
       next: (res: any) => {
         this.workouts = res.workouts ?? [];
       },
@@ -141,31 +133,26 @@ export class AssignProgramComponent implements OnInit {
     });
   }
 
-  // ⚡ Workout hozzáadása a kiválasztott programkártyához
-  onAddWorkoutToProgram(workout: Workout, programId: number) {
-    if (!programId) {
-      this.message = '❌ Hiba: Program nem lett kiválasztva!';
+  onAddWorkout(selectedWorkoutIds: number[]) {
+    if (!this.selectedProgramId) {
+      this.message = '❌ Kérlek, válassz programot!';
       this.success = false;
       return;
     }
 
-    if (!workout.id) {
-      this.message = '❌ Hiba: Workout ID hiányzik.';
-      this.success = false;
-      return;
-    }
-
-    this.programService.assignWorkoutToProgram(programId, workout.id).subscribe({
-      next: (res: any) => {
-        this.success = true;
-        this.message = `✅ '${workout.name}' hozzáadva a programhoz!`;
-        this.loadPrograms();
-      },
-      error: (err: any) => {
-        this.success = false;
-        this.message = '❌ Hiba történt a workout hozzárendelése során.';
-        console.error('❌ assignWorkoutToProgram API error:', err);
-      }
+    selectedWorkoutIds.forEach(id => {
+      this.programService.assignWorkoutToProgram(this.selectedProgramId, id).subscribe({
+        next: (res: any) => {
+          this.success = true;
+          this.message = `✅ Workout(ok) hozzáadva a programhoz!`;
+          this.loadPrograms();
+        },
+        error: (err: any) => {
+          this.success = false;
+          this.message = '❌ Hiba történt a workout hozzárendelése során.';
+          console.error('❌ assignWorkoutToProgram API error:', err);
+        }
+      });
     });
   }
 }
