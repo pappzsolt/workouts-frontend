@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
+import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { AssignProgramService, UserProgramDto } from '../../../../services/coach/assign-program/assignprogram.service';
 import { UserNameIdService, UserNameId } from '../../../../services/user/user-name-id.service';
 import { CoachProgramSelectComponent } from '../../../shared/programs/coach-program-select.component';
@@ -9,6 +10,7 @@ import { CoachProgramBoardComponent } from '../../../shared/coach/coach-program-
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 import { CoachProgram } from '../../../../models/coach-program.model';
+import { Workout } from '../../../../models/workout.model';
 
 @Component({
   selector: 'app-assignprogram',
@@ -19,7 +21,7 @@ import { CoachProgram } from '../../../../models/coach-program.model';
     HttpClientModule,
     CoachProgramSelectComponent,
     CoachProgramBoardComponent,
-    CoachWorkoutBoardComponent, // ✅ hozzáadva ide is
+    CoachWorkoutBoardComponent, // ⚡ Hozzáadva
   ],
   templateUrl: './assignprogram.component.html'
 })
@@ -37,10 +39,13 @@ export class AssignProgramComponent implements OnInit {
   users: UserNameId[] = [];
   programs: CoachProgram[] = [];
 
+  workouts: Workout[] = []; // ⚡ ide töltjük a Workoutokat
+
   ngOnInit() {
     this.loadAssignedPrograms();
     this.loadUsers();
     this.loadPrograms();
+    this.loadWorkouts(); // ⚡ Workoutok betöltése
   }
 
   loadAssignedPrograms() {
@@ -90,6 +95,18 @@ export class AssignProgramComponent implements OnInit {
     });
   }
 
+  loadWorkouts() {
+    const workoutService = inject(CoachWorkoutsService);
+    workoutService.getMyWorkouts().subscribe({
+      next: (res: any) => {
+        this.workouts = res.workouts ?? [];
+      },
+      error: (err) => {
+        console.error('❌ Workoutok betöltése sikertelen', err);
+      }
+    });
+  }
+
   assignProgram() {
     if (!this.userId || !this.selectedProgramId) {
       this.message = '❌ Kérlek, válassz felhasználót és programot!';
@@ -114,6 +131,28 @@ export class AssignProgramComponent implements OnInit {
         this.message = '❌ Hiba történt a hozzárendelés során.';
         console.error('❌ assignProgram API error:', err);
       },
+    });
+  }
+
+  // ⚡ Új metódus a workout hozzáadásához a kiválasztott programhoz
+  onAddWorkout(workout: Workout) {
+    if (!this.selectedProgramId) {
+      this.message = '❌ Kérlek, válassz programot!';
+      this.success = false;
+      return;
+    }
+
+    this.programService.assignWorkoutToProgram(this.selectedProgramId, workout.id!).subscribe({
+      next: (res: any) => {
+        this.success = true;
+        this.message = `✅ '${workout.name}' hozzáadva a programhoz!`;
+        this.loadPrograms(); // frissítjük a programok listáját
+      },
+      error: (err: any) => {
+        this.success = false;
+        this.message = '❌ Hiba történt a workout hozzárendelése során.';
+        console.error('❌ assignWorkoutToProgram API error:', err);
+      }
     });
   }
 }

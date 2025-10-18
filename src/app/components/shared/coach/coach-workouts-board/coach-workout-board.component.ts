@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, inject, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { Workout } from '../../../../models/workout.model';
@@ -15,6 +15,8 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
 
   @Input() externalWorkouts: Workout[] = [];
   @Input() workouts: Workout[] = [];
+
+  @Output() addWorkoutToProgram = new EventEmitter<Workout>();
 
   loading = false;
   message = '';
@@ -49,5 +51,9 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
         console.error('❌ Workoutok betöltése sikertelen', err);
       }
     });
+  }
+
+  onAddWorkout(workout: Workout) {
+    this.addWorkoutToProgram.emit(workout);
   }
 }
