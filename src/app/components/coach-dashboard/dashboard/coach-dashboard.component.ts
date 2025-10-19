@@ -6,6 +6,9 @@ import { CoachProgramComponent } from '../operations/coach-programs/coach-progra
 import { ExerciseControllerComponent } from '../operations/coach-exercises/coach-exercises.component';
 import { AssignProgramComponent } from '../../../components/coach-dashboard/operations/assign-program/assignprogram.component';
 import {ProgramWorkoutsAssComponent} from '../operations/assign-program-workout/program-workouts-ass.component';
+import {
+  AssignWorkoutsExercisesComponent
+} from '../operations/assign-workouts-exercises/assign-workouts-exercises.component';
 
 @Component({
   selector: 'app-coach-dashboard',
@@ -18,6 +21,7 @@ import {ProgramWorkoutsAssComponent} from '../operations/assign-program-workout/
     ExerciseControllerComponent,
     AssignProgramComponent,
     ProgramWorkoutsAssComponent,
+    AssignWorkoutsExercisesComponent,
   ],
   templateUrl: './coach-dashboard.component.html',
   styleUrls: ['./coach-dashboard.component.css']
@@ -28,9 +32,9 @@ export class CoachDashboardComponent implements OnInit {
   showExercises: boolean = false;
   showAssignments: boolean = false;
   showProgramWorkouts: boolean = false;  // új csempe toggle
-
+  showWorkoutExercises = false;
   programIdForWorkouts?: number;
-  programIdForPrograms?: number;
+
 
   constructor(
     private router: Router,
@@ -88,7 +92,15 @@ export class CoachDashboardComponent implements OnInit {
     this.showAssignments = false;
   }
 
-  navigateTo(path: string) {
-    this.router.navigate([path]);
+  toggleWorkoutExercises() {
+    this.showWorkoutExercises = !this.showWorkoutExercises;
+
+    // opcionálisan a többi panelt is bezárhatjuk, ha csak egyet akarunk mutatni egyszerre
+    this.showPrograms = false;
+    this.showWorkouts = false;
+    this.showExercises = false;
+    this.showAssignments = false;
+    this.showProgramWorkouts = false;
   }
+
 }

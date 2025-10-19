@@ -30,6 +30,12 @@
     <div class="dashboard-card-emoji">📋🔥</div>
     <div class="dashboard-card-title">Program - Workouts ASS</div>
   </div>
+
+  <!-- Új csempe: Workout - Exercises Assignments -->
+  <div class="dashboard-card" (click)="toggleWorkoutExercises()">
+    <div class="dashboard-card-emoji">🔥🏋️</div>
+    <div class="dashboard-card-title">Workout - Exercises ASS</div>
+  </div>
 </div>
 
 <!-- Dinamikus tartalmak -->
@@ -47,4 +53,7 @@
 </div>
 <div *ngIf="showProgramWorkouts">
   <app-program-workouts-ass></app-program-workouts-ass>
+</div>
+<div *ngIf="showWorkoutExercises">
+  <app-assign-workouts-exercises></app-assign-workouts-exercises>
 </div>
