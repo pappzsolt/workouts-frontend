@@ -1,0 +1,41 @@
+<div class="flex flex-col gap-6 max-w-4xl mx-auto p-4">
+
+  <div *ngIf="loading" class="text-gray-500 text-center p-4">Betöltés...</div>
+  <div *ngIf="message && !loading" class="text-gray-500 text-center p-4">{{ message }}</div>
+
+  <div *ngIf="!loading && exercises?.length" class="flex flex-col gap-4">
+    <div *ngFor="let ex of pagedExercises" class="bg-white border border-gray-200 rounded-2xl p-4 shadow-md">
+      <div class="flex justify-between items-center">
+        <h2 class="text-lg font-bold mb-2 text-gray-700">{{ ex.name }}</h2>
+        <input type="checkbox"
+               [checked]="isExerciseSelected(ex)"
+               (change)="onCheckboxChange(ex, $event)">
+      </div>
+
+      <p *ngIf="ex.description" class="text-sm text-gray-500 mb-2">{{ ex.description }}</p>
+
+      <div class="flex flex-wrap gap-2 text-sm text-gray-600">
+        <span *ngIf="ex.muscleGroup" class="bg-gray-100 px-2 py-1 rounded">Izomcsoport: {{ ex.muscleGroup }}</span>
+        <span *ngIf="ex.equipment" class="bg-gray-100 px-2 py-1 rounded">Eszköz: {{ ex.equipment }}</span>
+        <span *ngIf="ex.difficultyLevel" class="bg-gray-100 px-2 py-1 rounded">Nehézség: {{ ex.difficultyLevel }}</span>
+        <span *ngIf="ex.sets !== undefined && ex.repetitions !== undefined" class="bg-gray-100 px-2 py-1 rounded">Sorozat/Reps: {{ ex.sets }}x{{ ex.repetitions }}</span>
+        <span *ngIf="ex.duration_minutes" class="bg-gray-100 px-2 py-1 rounded">Időtartam: {{ ex.duration_minutes }} perc</span>
+        <span *ngIf="ex.intensity_level" class="bg-gray-100 px-2 py-1 rounded">Intenzitás: {{ ex.intensity_level }}</span>
+      </div>
+    </div>
+
+    <!-- Lapozó gombok -->
+    <div class="mt-4 flex justify-between">
+      <button (click)="prevExercisePage()" [disabled]="exercisePage === 1"
+              class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50">
+        ◀ Előző
+      </button>
+      <span class="self-center">Oldal {{ exercisePage }} / {{ totalExercisePages }}</span>
+      <button (click)="nextExercisePage()" [disabled]="exercisePage === totalExercisePages"
+              class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-50">
+        Következő ▶
+      </button>
+    </div>
+  </div>
+
+</div>

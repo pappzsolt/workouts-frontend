@@ -1,8 +1,8 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges, Input, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { Workout } from '../../../../models/workout.model';
+import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 
 @Component({
   selector: 'app-coach-workout-board',
@@ -16,6 +16,7 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
 
   @Input() externalWorkouts: Workout[] = [];
   @Input() selectedWorkoutIds: number[] = []; // Wrapperből kapott kiválasztott ID-k
+  @Input() multiSelect: boolean = true; // alapértelmezett: true
 
   @Output() workoutsChange = new EventEmitter<number[]>(); // Frissített tömb
 
@@ -55,10 +56,14 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
   }
 
   toggleWorkoutSelection(id: number, checked: boolean) {
-    if (checked) {
-      if (!this.selectedWorkoutIds.includes(id)) this.selectedWorkoutIds.push(id);
+    if (this.multiSelect) {
+      if (checked) {
+        if (!this.selectedWorkoutIds.includes(id)) this.selectedWorkoutIds.push(id);
+      } else {
+        this.selectedWorkoutIds = this.selectedWorkoutIds.filter(wid => wid !== id);
+      }
     } else {
-      this.selectedWorkoutIds = this.selectedWorkoutIds.filter(wid => wid !== id);
+      this.selectedWorkoutIds = checked ? [id] : [];
     }
 
     // Minden változást jelez a wrapper felé

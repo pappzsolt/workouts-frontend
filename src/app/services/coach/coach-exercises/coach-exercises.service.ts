@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Exercise ,WorkoutDto} from '../../../models/exercise.model';
+import { Exercise ,WorkoutDto } from '../../../models/exercise.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExerciseService {
 
-  // Javított base URL
   private baseUrl = 'http://localhost:8080/api/exercises';
+  private exercisesUrl = 'http://localhost:8080/api/exercises';
 
   constructor(private http: HttpClient) {}
 
@@ -33,6 +33,7 @@ export class ExerciseService {
     return this.http.post<Exercise>(`${this.baseUrl}/add`, exercise);
   }
 
+  // Exercise frissítése
   updateExercise(exercise: Exercise): Observable<Exercise> {
     const payload = {
       id: exercise.id,
@@ -50,9 +51,13 @@ export class ExerciseService {
     return this.http.put<Exercise>(`${this.baseUrl}/update`, payload);
   }
 
-
   // Exercise törlése
   deleteExercise(exerciseId: number): Observable<string> {
     return this.http.delete<string>(`${this.baseUrl}/delete/${exerciseId}`);
+  }
+
+  // 🔹 Lekéri az összes exercise-t ABC sorrendben
+  getAllExercises(): Observable<Exercise[]> {
+    return this.http.get<Exercise[]>(`${this.exercisesUrl}/all`);
   }
 }
