@@ -30,7 +30,15 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
 
   /** CoachWorkoutBoardComponent változás kezelése */
   onWorkoutsChange(updatedIds: number[]) {
+    const prevSelectedWorkouts = [...this.selectedWorkoutIds];
     this.selectedWorkoutIds = [...updatedIds];
+
+    // Ha változott a kiválasztás, reseteljük az exercise kijelöléseket
+    if (JSON.stringify(prevSelectedWorkouts) !== JSON.stringify(this.selectedWorkoutIds)) {
+      this.selectedExercises = [];
+      this.assignedExercises.emit(this.selectedExercises);
+    }
+
     console.log('Selected workouts:', this.selectedWorkoutIds);
     this.assignedWorkouts.emit(this.selectedWorkoutIds);
   }

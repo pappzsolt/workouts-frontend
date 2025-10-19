@@ -33,7 +33,7 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges {
     if (changes['externalExercises'] && this.externalExercises?.length) {
       this.exercises = [...this.externalExercises];
       this.exercisePage = 1; // reset lapozás
-      this.exercisesChange.emit(this.selectedExercises); // küldjük a kiválasztottakat
+      this.exercisesChange.emit([...this.selectedExercises]); // küldjük a kiválasztottakat
     }
   }
 
@@ -80,12 +80,12 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges {
   toggleExerciseSelection(ex: Exercise, checked: boolean) {
     if (checked) {
       if (!this.selectedExercises.find(e => e.id === ex.id)) {
-        this.selectedExercises.push(ex);
+        this.selectedExercises.push(ex); // hozzáadás
       }
     } else {
-      this.selectedExercises = this.selectedExercises.filter(e => e.id !== ex.id);
+      this.selectedExercises = this.selectedExercises.filter(e => e.id !== ex.id); // eltávolítás
     }
-    this.exercisesChange.emit([...this.selectedExercises]);
+    this.exercisesChange.emit([...this.selectedExercises]); // emitálás
   }
 
   onCheckboxChange(ex: Exercise, event: Event) {
