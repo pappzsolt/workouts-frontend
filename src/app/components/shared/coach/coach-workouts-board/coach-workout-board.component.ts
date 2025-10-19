@@ -14,13 +14,12 @@ import { Workout } from '../../../../models/workout.model';
 export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
   private workoutService = inject(CoachWorkoutsService);
 
-  @Input() externalWorkouts: Workout[] = []; // ✔ biztos Input
-  @Input() workouts: Workout[] = [];
+  @Input() externalWorkouts: Workout[] = [];
+  @Input() selectedWorkoutIds: number[] = []; // Wrapperből kapott kiválasztott ID-k
 
-  @Output() addWorkoutsToProgram = new EventEmitter<number[]>(); // ✔ több kiválasztott workout
+  @Output() workoutsChange = new EventEmitter<number[]>(); // Frissített tömb
 
-  selectedWorkoutIds: number[] = [];
-
+  workouts: Workout[] = [];
   loading = false;
   message = '';
 
@@ -61,12 +60,8 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
     } else {
       this.selectedWorkoutIds = this.selectedWorkoutIds.filter(wid => wid !== id);
     }
-  }
 
-  onAddSelectedWorkouts() {
-    if (this.selectedWorkoutIds.length) {
-      this.addWorkoutsToProgram.emit(this.selectedWorkoutIds);
-      this.selectedWorkoutIds = [];
-    }
+    // Minden változást jelez a wrapper felé
+    this.workoutsChange.emit([...this.selectedWorkoutIds]);
   }
 }

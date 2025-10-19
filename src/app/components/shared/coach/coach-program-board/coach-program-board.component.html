@@ -11,17 +11,18 @@
 <!-- 🧩 Program oszlopok -->
 <div *ngIf="!loading && programs?.length" class="coach-board coach-program-board">
   <div *ngFor="let program of programs" class="coach-board-column border p-2 rounded mb-4">
-    <!-- Program kiválasztása checkbox-szal -->
+    <!-- Program kiválasztása rádiógombbal -->
     <div class="flex items-center justify-center mb-2">
       <input
         type="radio"
         name="selectedProgram"
         [value]="program.programId"
         [(ngModel)]="selectedProgramId"
-        id="program-{{program.programId}}"
+        (change)="onSelectProgram(program.programId)"
+        id="program-{{ program.programId }}"
         class="mr-2"
       />
-      <label for="program-{{program.programId}}" class="font-semibold text-gray-700">
+      <label for="program-{{ program.programId }}" class="font-semibold text-gray-700">
         {{ program.programName }}
       </label>
     </div>

@@ -1,0 +1,48 @@
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+  <!-- Bal oldal: Program lista -->
+  <div>
+    <app-coach-program-board
+      [programs]="programs"
+      (programSelected)="onProgramSelected($event)">
+    </app-coach-program-board>
+  </div>
+
+  <!-- Jobb oldal: Workout lista + kiválasztottak -->
+  <div>
+    <app-coach-workout-board
+      [externalWorkouts]="workouts"
+      [selectedWorkoutIds]="selectedWorkoutIds"
+      (workoutsChange)="onWorkoutsChange($event)">
+    </app-coach-workout-board>
+
+    <!-- Kiválasztott workoutok megjelenítése -->
+    <div *ngIf="selectedWorkoutIds.length" class="mt-4">
+      <h3 class="text-sm font-semibold mb-2">Kiválasztott workoutok:</h3>
+      <div class="flex flex-wrap gap-2">
+        <span *ngFor="let wid of selectedWorkoutIds" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full flex items-center gap-1">
+          ID: {{ wid }}
+          <button
+            (click)="removeWorkout(wid)"
+            class="text-red-500 hover:text-red-700 font-bold ml-1"
+            title="Eltávolítás"
+          >
+            ✕
+          </button>
+        </span>
+      </div>
+    </div>
+
+    <!-- Mentés gomb -->
+    <div *ngIf="selectedWorkoutIds.length" class="mt-4 flex justify-center">
+      <button
+        class="bg-green-500 text-white px-4 py-2 rounded shadow-md hover:bg-green-600 transition"
+        (click)="saveSelectedWorkouts()">
+        Mentés a programhoz
+      </button>
+    </div>
+  </div>
+
+</div>
+
+

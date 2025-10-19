@@ -22,7 +22,13 @@
   <!-- Program & User Assignments -->
   <div class="dashboard-card" (click)="toggleAssignments()">
     <div class="dashboard-card-emoji">🧑‍🤝‍🧑</div>
-    <div class="dashboard-card-title">Assignments</div>
+    <div class="dashboard-card-title">Program - User ASS</div>
+  </div>
+
+  <!-- Program & Workouts Assignments -->
+  <div class="dashboard-card" (click)="toggleProgramWorkouts()">
+    <div class="dashboard-card-emoji">📋🔥</div>
+    <div class="dashboard-card-title">Program - Workouts ASS</div>
   </div>
 </div>
 
@@ -38,4 +44,7 @@
 </div>
 <div *ngIf="showAssignments">
   <app-assignprogram></app-assignprogram>
+</div>
+<div *ngIf="showProgramWorkouts">
+  <app-program-workouts-ass></app-program-workouts-ass>
 </div>

@@ -1,50 +1,27 @@
-<!-- 🔄 Betöltés állapot -->
 <div *ngIf="loading" class="text-gray-500 p-4 text-center">
   Betöltés...
 </div>
 
-<!-- ℹ️ Üzenet -->
 <div *ngIf="message && !loading" class="text-gray-500 p-4 text-center">
   {{ message }}
 </div>
 
-<!-- 🏋️‍♀️ Workout lista -->
-<div *ngIf="!loading && workouts?.length" class="coach-board coach-workout-board flex flex-wrap justify-center gap-4 pb-6 max-h-[600px] overflow-y-auto">
+<div *ngIf="!loading && workouts?.length" class="coach-board flex flex-wrap justify-center gap-4 pb-6 max-h-[600px] overflow-y-auto">
   <div *ngFor="let workout of workouts" class="bg-white border border-gray-200 p-3 rounded-xl shadow-sm w-[200px] sm:w-[210px] md:w-[220px] flex-shrink-0">
-    <!-- Kiválasztás checkbox -->
     <input
       type="checkbox"
-      [value]="workout.id"
+      [checked]="selectedWorkoutIds.includes(workout.id!)"
       (change)="toggleWorkoutSelection(workout.id!, $any($event.target).checked)"
       id="workout-{{workout.id}}"
       class="mr-2"
     />
 
-
-    <!-- Workout leírás -->
     <p class="text-xs text-gray-600 text-center mb-2 line-clamp-2">
       {{ workout.description || 'Nincs leírás' }}
     </p>
 
-    <!-- Workout azonosító -->
     <div class="text-[11px] text-gray-500 text-center italic mb-2">
       ID: {{ workout.id }}
     </div>
   </div>
-</div>
-
-<!-- Hozzáadás gomb -->
-<div *ngIf="!loading && workouts?.length" class="flex justify-center mt-4">
-  <button
-    class="bg-blue-500 text-white px-4 py-2 rounded shadow-md hover:bg-blue-600 transition"
-    (click)="onAddSelectedWorkouts()"
-  >
-    Hozzáadás a kiválasztott programhoz
-  </button>
-</div>
-
-<!-- 🚫 Üres állapot -->
-<div *ngIf="!loading && (!workouts || !workouts.length)"
-     class="text-gray-400 italic text-center mt-6">
-  Nincsenek elérhető workoutok.
 </div>

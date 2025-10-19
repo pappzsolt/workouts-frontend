@@ -2,15 +2,11 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
-import { AssignProgramService, UserProgramDto } from '../../../../services/coach/assign-program/assignprogram.service';
+import { AssignProgramService } from '../../../../services/coach/assign-program/assignprogram.service';
 import { UserNameIdService, UserNameId } from '../../../../services/user/user-name-id.service';
 import { CoachProgramSelectComponent } from '../../../shared/programs/coach-program-select.component';
-import { CoachProgramBoardComponent } from '../../../shared/coach/coach-program-board/coach-program-board.component';
-import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
-import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 import { CoachProgram } from '../../../../models/coach-program.model';
-import { Workout } from '../../../../models/workout.model';
+import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 
 @Component({
   selector: 'app-assignprogram',
@@ -19,9 +15,7 @@ import { Workout } from '../../../../models/workout.model';
     CommonModule,
     FormsModule,
     HttpClientModule,
-    CoachProgramSelectComponent,
-    CoachProgramBoardComponent,
-    CoachWorkoutBoardComponent, // ✔ Hozzáadva az import listához
+    CoachProgramSelectComponent
   ],
   templateUrl: './assignprogram.component.html'
 })
@@ -29,80 +23,40 @@ export class AssignProgramComponent implements OnInit {
   private assignService = inject(AssignProgramService);
   private userNameIdService = inject(UserNameIdService);
   private programService = inject(CoachProgramService);
-  private workoutService = inject(CoachWorkoutsService); // ✔ Injectálva a komponens szintjén
 
   userId!: number;
   selectedProgramId!: number;
   loading = false;
   message = '';
   success = false;
-  assignedPrograms: UserProgramDto[] = [];
   users: UserNameId[] = [];
   programs: CoachProgram[] = [];
-  workouts: Workout[] = [];
 
   ngOnInit() {
-    this.loadAssignedPrograms();
     this.loadUsers();
     this.loadPrograms();
-    this.loadWorkouts();
   }
 
-  loadAssignedPrograms() {
-    this.assignService.getMyAssignedPrograms().subscribe({
-      next: (res: any) => {
-        if (res?.data) {
-          this.assignedPrograms = res.data;
-        }
-        this.loading = false;
-      },
-      error: (err: any) => {
-        console.error('❌ Hozzárendelt programok betöltése sikertelen', err);
-        this.loading = false;
-      },
+  loadUsers() {
+    this.userNameIdService.getAllUsers().subscribe({
+      next: (res: UserNameId[]) => this.users = res,
+      error: (err) => console.error('❌ Felhasználók betöltése sikertelen', err)
     });
   }
 
   loadPrograms() {
-    this.loading = true;
     this.programService.getAllPrograms().subscribe({
       next: (programsFromService: any[]) => {
-        this.loading = false;
         this.programs = programsFromService.map(p => ({
           programId: p.programId ?? p.id ?? 0,
           programName: p.programName ?? p.name ?? '',
           programDescription: p.programDescription ?? p.description ?? '',
           durationDays: p.durationDays ?? 0,
           difficultyLevel: p.difficultyLevel ?? 'unknown',
-          workouts: p.workouts ?? [],
+          workouts: p.workouts ?? []
         }));
       },
-      error: (err: any) => {
-        this.loading = false;
-        console.error('❌ Programok betöltése sikertelen', err);
-      }
-    });
-  }
-
-  loadUsers() {
-    this.userNameIdService.getAllUsers().subscribe({
-      next: (res: UserNameId[]) => {
-        this.users = res;
-      },
-      error: (err: any) => {
-        console.error('❌ Felhasználók betöltése sikertelen', err);
-      },
-    });
-  }
-
-  loadWorkouts() {
-    this.workoutService.getMyWorkouts().subscribe({
-      next: (res: any) => {
-        this.workouts = res.workouts ?? [];
-      },
-      error: (err) => {
-        console.error('❌ Workoutok betöltése sikertelen', err);
-      }
+      error: (err) => console.error('❌ Programok betöltése sikertelen', err)
     });
   }
 
@@ -122,37 +76,18 @@ export class AssignProgramComponent implements OnInit {
         this.loading = false;
         this.success = res.status === 'success';
         this.message = res.message || '✅ Program sikeresen hozzárendelve!';
-        this.loadAssignedPrograms();
       },
       error: (err: any) => {
         this.loading = false;
         this.success = false;
         this.message = '❌ Hiba történt a hozzárendelés során.';
         console.error('❌ assignProgram API error:', err);
-      },
+      }
     });
   }
 
-  onAddWorkout(selectedWorkoutIds: number[]) {
-    if (!this.selectedProgramId) {
-      this.message = '❌ Kérlek, válassz programot!';
-      this.success = false;
-      return;
-    }
-
-    selectedWorkoutIds.forEach(id => {
-      this.programService.assignWorkoutToProgram(this.selectedProgramId, id).subscribe({
-        next: (res: any) => {
-          this.success = true;
-          this.message = `✅ Workout(ok) hozzáadva a programhoz!`;
-          this.loadPrograms();
-        },
-        error: (err: any) => {
-          this.success = false;
-          this.message = '❌ Hiba történt a workout hozzárendelése során.';
-          console.error('❌ assignWorkoutToProgram API error:', err);
-        }
-      });
-    });
+  onProgramSelected(id: number) {
+    console.log('Program selected:', id);
+    this.selectedProgramId = id;
   }
 }
