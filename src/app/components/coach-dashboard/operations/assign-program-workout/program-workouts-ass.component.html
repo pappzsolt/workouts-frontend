@@ -1,48 +1,46 @@
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-6 max-w-4xl mx-auto p-4">
 
-  <!-- Bal oldal: Program lista -->
-  <div>
+  <!-- Program lista -->
+  <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-md">
+    <h2 class="text-lg font-bold mb-4 text-gray-700">Programok</h2>
     <app-coach-program-board
       [programs]="programs"
       (programSelected)="onProgramSelected($event)">
     </app-coach-program-board>
   </div>
 
-  <!-- Jobb oldal: Workout lista + kiválasztottak -->
-  <div>
+  <!-- Workout lista -->
+  <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-md">
+    <h2 class="text-lg font-bold mb-4 text-gray-700">Elérhető workoutok</h2>
     <app-coach-workout-board
       [externalWorkouts]="workouts"
       [selectedWorkoutIds]="selectedWorkoutIds"
       (workoutsChange)="onWorkoutsChange($event)">
     </app-coach-workout-board>
+  </div>
 
-    <!-- Kiválasztott workoutok megjelenítése -->
-    <div *ngIf="selectedWorkoutIds.length" class="mt-4">
-      <h3 class="text-sm font-semibold mb-2">Kiválasztott workoutok:</h3>
-      <div class="flex flex-wrap gap-2">
-        <span *ngFor="let wid of selectedWorkoutIds" class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full flex items-center gap-1">
-          ID: {{ wid }}
-          <button
-            (click)="removeWorkout(wid)"
-            class="text-red-500 hover:text-red-700 font-bold ml-1"
-            title="Eltávolítás"
-          >
-            ✕
-          </button>
-        </span>
+  <!-- Kiválasztott workoutok -->
+  <div *ngIf="selectedWorkoutIds.length" class="bg-white border border-gray-200 rounded-2xl p-4 shadow-md">
+    <h2 class="text-lg font-bold mb-4 text-gray-700">Kiválasztott workoutok</h2>
+    <div class="flex flex-col gap-3">
+      <div *ngFor="let wid of selectedWorkoutIds"
+           class="bg-blue-50 text-blue-800 rounded-xl p-3 flex justify-between items-center shadow-sm">
+        <span class="font-medium">ID: {{ wid }}</span>
+        <button (click)="removeWorkout(wid)"
+                class="text-red-500 hover:text-red-700 font-bold ml-2"
+                title="Eltávolítás">
+          ✕
+        </button>
       </div>
     </div>
 
     <!-- Mentés gomb -->
-    <div *ngIf="selectedWorkoutIds.length" class="mt-4 flex justify-center">
-      <button
-        class="bg-green-500 text-white px-4 py-2 rounded shadow-md hover:bg-green-600 transition"
-        (click)="saveSelectedWorkouts()">
+    <div class="mt-4 flex justify-center">
+      <button (click)="saveSelectedWorkouts()"
+              class="bg-green-500 text-white font-semibold px-6 py-3 rounded-2xl shadow-md hover:bg-green-600 transition">
         Mentés a programhoz
       </button>
     </div>
   </div>
 
 </div>
-
-
