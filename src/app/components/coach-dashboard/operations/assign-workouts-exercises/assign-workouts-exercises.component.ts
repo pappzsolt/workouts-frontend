@@ -40,6 +40,13 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
     }
     console.log('Selected workouts:', this.selectedWorkoutIds);
     this.assignedWorkouts.emit(this.selectedWorkoutIds);
+
+    // Betöltés workoutId alapján
+    if (this.selectedWorkoutIds.length > 0) {
+      this.loadSavedWorkoutExercises(this.selectedWorkoutIds[0]);
+    } else {
+      this.savedWorkoutExercises = [];
+    }
   }
 
   onExercisesChange(updatedExercises: Exercise[]) {
@@ -72,19 +79,16 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
           next: (res: any) => {
             console.log('Mentés sikeres:', res);
 
-            // Backend válaszból objektum létrehozása
             const savedObj: SavedWorkoutExercise = {
-              id: res.id ?? 0,  // ha az id nincs, alapból 0
+              id: res.id ?? 0,
               workoutId: workoutId,
-              exerciseId: exercise.id!,  // a ! jelzi, hogy biztosan nem undefined
+              exerciseId: exercise.id!,
               workoutName: res.workoutName ?? '',
               exerciseName: res.exerciseName ?? '',
               status: res.status,
               message: res.message
             };
 
-
-            // Objektum hozzáadása a listához
             this.savedWorkoutExercises.push(savedObj);
           },
           error: (err) => console.error('Mentés hiba:', err)
@@ -93,19 +97,29 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
     }
   }
 
+  /** 🔹 Betöltés workoutId alapján */
+  loadSavedWorkoutExercises(workoutId: number) {
+    if (!workoutId || workoutId <= 0) return;
+
+    this.workoutExerciseService.getWorkoutExercisesByWorkoutId(workoutId).subscribe({
+      next: (res: any) => {
+        this.savedWorkoutExercises = res || [];
+        console.log('Mentett kapcsolatok betöltve:', this.savedWorkoutExercises);
+      },
+      error: (err) => console.error('Mentett kapcsolatok betöltése hiba:', err)
+    });
+  }
+
   /** 🔹 Törlés ID alapján */
   deleteWorkoutExerciseById(id: number) {
-    // közvetlenül az id-t adjuk át
     this.workoutExerciseService.deleteWorkoutExerciseById(id).subscribe({
       next: (res) => console.log('Törlés sikeres:', res),
       error: (err) => console.error('Törlés hiba:', err)
     });
   }
-  removeSavedWorkoutExercise(id: number) {
-    // 1️⃣ Backend törlés meghívása
-    this.deleteWorkoutExerciseById(id);
 
-    // 2️⃣ Törlés a tömbből és frissítés a felületen
+  removeSavedWorkoutExercise(id: number) {
+    this.deleteWorkoutExerciseById(id);
     this.savedWorkoutExercises = this.savedWorkoutExercises.filter(w => w.id !== id);
   }
 

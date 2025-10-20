@@ -48,8 +48,9 @@ export class WorkoutExerciseService {
     return this.http.delete(`${this.baseUrl}/delete-simple?workoutId=${workoutId}&exerciseId=${exerciseId}`);
   }
 
-  /** 🔹 WorkoutExercise-ek lekérése userId + workoutId alapján */
-  getWorkoutExercisesForUserAndWorkout(userId: number, workoutId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/${userId}/${workoutId}`);
+  /** 🔹 WorkoutExercise-ek lekérése workoutId alapján (userId nélkül) */
+  getWorkoutExercisesByWorkoutId(workoutId: number): Observable<any> {
+    return this.http.get(`${this.baseUrl}/by-workout/${workoutId}`);
   }
+
 }
