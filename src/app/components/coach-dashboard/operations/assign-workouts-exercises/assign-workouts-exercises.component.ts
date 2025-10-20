@@ -101,4 +101,12 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
       error: (err) => console.error('Törlés hiba:', err)
     });
   }
+  removeSavedWorkoutExercise(id: number) {
+    // 1️⃣ Backend törlés meghívása
+    this.deleteWorkoutExerciseById(id);
+
+    // 2️⃣ Törlés a tömbből és frissítés a felületen
+    this.savedWorkoutExercises = this.savedWorkoutExercises.filter(w => w.id !== id);
+  }
+
 }

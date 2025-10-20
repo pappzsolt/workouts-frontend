@@ -59,7 +59,7 @@
 
       <!-- Csak akkor jelenítjük meg a gombot, ha saved.id nem null/undefined -->
       <button *ngIf="saved.id != null"
-              (click)="removeWorkout(saved.id!)"
+              (click)="removeSavedWorkoutExercise(saved.id!)"
               class="text-red-500 hover:text-red-700 font-bold ml-2"
               title="Törlés">
         ✕
