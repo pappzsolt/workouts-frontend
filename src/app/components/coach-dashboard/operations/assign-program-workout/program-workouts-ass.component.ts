@@ -84,8 +84,27 @@ export class ProgramWorkoutsAssComponent implements OnInit {
   }
 
   // Workout eltávolítása a kiválasztott listából
+// Workout eltávolítása a kiválasztott listából és DB-ből
   removeWorkout(wid: number) {
+    if (!this.selectedProgramId) {
+      console.warn('Program nincs kiválasztva!');
+      return;
+    }
+
+    // Először eltávolítjuk a lokális tömbből
     this.selectedWorkoutIds = this.selectedWorkoutIds.filter(id => id !== wid);
-    this.onWorkoutsChange(this.selectedWorkoutIds);
+
+    // Backend hívás: adott program + workout kapcsolat törlése
+    this.programWorkoutService.deleteProgramWorkout(this.selectedProgramId, wid).subscribe({
+      next: res => {
+        console.log(`✅ Workout ${wid} törölve a programból:`, res);
+        // Frissítjük az emitet, hogy a gyermek komponensek is tudjanak róla
+        this.onWorkoutsChange(this.selectedWorkoutIds);
+      },
+      error: err => {
+        console.error(`❌ Workout ${wid} törlése sikertelen:`, err);
+      }
+    });
   }
+
 }
