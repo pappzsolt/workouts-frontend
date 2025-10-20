@@ -5,6 +5,7 @@ import { CoachProgramBoardComponent } from '../../../shared/coach/coach-program-
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
 import { Workout } from '../../../../models/workout.model';
 import { CoachProgram } from '../../../../models/coach-program.model';
+import { ProgramWorkoutService } from '../../../../services/coach/program-workout.service'; // 🔹 IMPORTÁLJUK A SERVICE-T
 
 @Component({
   selector: 'app-program-workouts-ass',
@@ -24,7 +25,7 @@ export class ProgramWorkoutsAssComponent implements OnInit {
 
   @Output() assignedWorkouts = new EventEmitter<{ programId: number, workoutIds: number[] }>();
 
-  constructor() {}
+  constructor(private programWorkoutService: ProgramWorkoutService) {} // ✅ SERVICE INJEKCIÓ
 
   ngOnInit(): void {}
 
@@ -55,10 +56,16 @@ export class ProgramWorkoutsAssComponent implements OnInit {
       workoutIds: this.selectedWorkoutIds
     });
   }
-  // + a save funkció
+
+  // 🔹 Mentés backendhez (Program-Workout kapcsolatok mentése)
   saveSelectedWorkouts() {
     if (!this.selectedProgramId) {
       console.warn('Nincs kiválasztott program!');
+      return;
+    }
+
+    if (this.selectedWorkoutIds.length === 0) {
+      console.warn('Nincsenek kiválasztott workoutok!');
       return;
     }
 
@@ -67,15 +74,18 @@ export class ProgramWorkoutsAssComponent implements OnInit {
       workoutIds: this.selectedWorkoutIds
     });
 
-    // Itt lehet a backend hívás
-    // this.programService.assignWorkoutsToProgram(this.selectedProgramId, this.selectedWorkoutIds).subscribe(...)
+    // 🔹 Backend hívás: minden workout mentése a kiválasztott programhoz
+    this.selectedWorkoutIds.forEach((workoutId, index) => {
+      this.programWorkoutService.addWorkoutToProgram(this.selectedProgramId!, workoutId, index).subscribe({
+        next: res => console.log(`✅ Workout ${workoutId} mentve:`, res),
+        error: err => console.error(`❌ Workout ${workoutId} mentése sikertelen:`, err)
+      });
+    });
   }
-  removeWorkout(wid: number) {
-    // eltávolítás
-    this.selectedWorkoutIds = this.selectedWorkoutIds.filter(id => id !== wid);
 
-    // jelezzük a változást
+  // Workout eltávolítása a kiválasztott listából
+  removeWorkout(wid: number) {
+    this.selectedWorkoutIds = this.selectedWorkoutIds.filter(id => id !== wid);
     this.onWorkoutsChange(this.selectedWorkoutIds);
   }
-
 }

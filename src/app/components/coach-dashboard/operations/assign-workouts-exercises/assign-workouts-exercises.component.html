@@ -35,6 +35,7 @@
     <h2 class="text-lg font-bold mb-4 text-gray-700">Elérhető exercise-ek</h2>
     <app-coach-exercises-board
       [externalExercises]="exercises"
+      [externalSelectedExercises]="selectedExercises"
       (exercisesChange)="onExercisesChange($event)">
     </app-coach-exercises-board>
   </div>

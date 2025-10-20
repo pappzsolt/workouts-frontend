@@ -5,10 +5,8 @@ import { WorkoutListComponent } from '../operations/coach-workouts/coach-workout
 import { CoachProgramComponent } from '../operations/coach-programs/coach-program/coach-program.component';
 import { ExerciseControllerComponent } from '../operations/coach-exercises/coach-exercises.component';
 import { AssignProgramComponent } from '../../../components/coach-dashboard/operations/assign-program/assignprogram.component';
-import {ProgramWorkoutsAssComponent} from '../operations/assign-program-workout/program-workouts-ass.component';
-import {
-  AssignWorkoutsExercisesComponent
-} from '../operations/assign-workouts-exercises/assign-workouts-exercises.component';
+import { ProgramWorkoutsAssComponent } from '../operations/assign-program-workout/program-workouts-ass.component';
+import { AssignWorkoutsExercisesComponent } from '../operations/assign-workouts-exercises/assign-workouts-exercises.component';
 
 @Component({
   selector: 'app-coach-dashboard',
@@ -35,7 +33,6 @@ export class CoachDashboardComponent implements OnInit {
   showWorkoutExercises = false;
   programIdForWorkouts?: number;
 
-
   constructor(
     private router: Router,
     private route: ActivatedRoute
@@ -51,56 +48,43 @@ export class CoachDashboardComponent implements OnInit {
     });
   }
 
-  toggleWorkouts() {
-    this.showWorkouts = !this.showWorkouts;
+  // 🔹 Segédfüggvény: minden panelt bezár
+  private closeAllPanels() {
     this.showPrograms = false;
+    this.showWorkouts = false;
     this.showExercises = false;
     this.showAssignments = false;
     this.showProgramWorkouts = false;
+    this.showWorkoutExercises = false;
+  }
+
+  toggleWorkouts() {
+    this.closeAllPanels();
+    this.showWorkouts = !this.showWorkouts;
   }
 
   togglePrograms() {
+    this.closeAllPanels();
     this.showPrograms = !this.showPrograms;
-    this.showWorkouts = false;
-    this.showExercises = false;
-    this.showAssignments = false;
-    this.showProgramWorkouts = false;
   }
 
   toggleExercises() {
+    this.closeAllPanels();
     this.showExercises = !this.showExercises;
-    this.showWorkouts = false;
-    this.showPrograms = false;
-    this.showAssignments = false;
-    this.showProgramWorkouts = false;
   }
 
   toggleAssignments() {
+    this.closeAllPanels();
     this.showAssignments = !this.showAssignments;
-    this.showPrograms = false;
-    this.showWorkouts = false;
-    this.showExercises = false;
-    this.showProgramWorkouts = false;
   }
 
-  // 🔹 Üres toggle függvény a Program-Workouts ASS csempéhez
   toggleProgramWorkouts() {
+    this.closeAllPanels();
     this.showProgramWorkouts = !this.showProgramWorkouts;
-    this.showPrograms = false;
-    this.showWorkouts = false;
-    this.showExercises = false;
-    this.showAssignments = false;
   }
 
   toggleWorkoutExercises() {
+    this.closeAllPanels();
     this.showWorkoutExercises = !this.showWorkoutExercises;
-
-    // opcionálisan a többi panelt is bezárhatjuk, ha csak egyet akarunk mutatni egyszerre
-    this.showPrograms = false;
-    this.showWorkouts = false;
-    this.showExercises = false;
-    this.showAssignments = false;
-    this.showProgramWorkouts = false;
   }
-
 }

@@ -14,6 +14,7 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges {
   private exerciseService = inject(ExerciseService);
 
   @Input() externalExercises: Exercise[] = [];
+  @Input() externalSelectedExercises: Exercise[] = []; // ✅ új bemenet a szülő selectedExercises tükrözéséhez
   @Output() exercisesChange = new EventEmitter<Exercise[]>();  // teljes Exercise tömb
 
   exercises: Exercise[] = [];
@@ -30,6 +31,15 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    // ✅ ha a szülő selectedExercises tömbje változik (pl. reset esetén)
+    if (changes['externalSelectedExercises']) {
+      if (this.externalSelectedExercises?.length) {
+        this.selectedExercises = [...this.externalSelectedExercises];
+      } else {
+        this.selectedExercises = []; // reset
+      }
+    }
+
     if (changes['externalExercises'] && this.externalExercises?.length) {
       this.exercises = [...this.externalExercises];
       this.exercisePage = 1; // reset lapozás
