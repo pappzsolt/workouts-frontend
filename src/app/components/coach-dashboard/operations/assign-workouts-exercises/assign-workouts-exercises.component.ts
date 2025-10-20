@@ -5,6 +5,8 @@ import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts
 import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exercises-board/coach-exercises-board.component';
 import { Workout } from '../../../../models/workout.model';
 import { Exercise } from '../../../../models/exercise.model';
+import { WorkoutExerciseService } from '../../../../services/coach/workout-exercises.service';
+import { SavedWorkoutExercise } from '../../../../models/workout-exercise.model';
 
 @Component({
   selector: 'app-assign-workouts-exercises',
@@ -17,40 +19,35 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
   workouts: Workout[] = [];
   exercises: Exercise[] = [];
 
-  // Wrapper szinten tárolt kiválasztott workoutok / exercise-ek
   selectedWorkoutIds: number[] = [];
   selectedExercises: Exercise[] = [];
+
+  savedWorkoutExercises: SavedWorkoutExercise[] = [];
 
   @Output() assignedWorkouts = new EventEmitter<number[]>();
   @Output() assignedExercises = new EventEmitter<Exercise[]>();
 
-  constructor() {}
+  constructor(private workoutExerciseService: WorkoutExerciseService) {}
 
   ngOnInit(): void {}
 
-  /** CoachWorkoutBoardComponent változás kezelése */
   onWorkoutsChange(updatedIds: number[]) {
     const prevSelectedWorkouts = [...this.selectedWorkoutIds];
     this.selectedWorkoutIds = [...updatedIds];
-
-    // Ha változott a kiválasztás, reseteljük az exercise kijelöléseket
     if (JSON.stringify(prevSelectedWorkouts) !== JSON.stringify(this.selectedWorkoutIds)) {
       this.selectedExercises = [];
       this.assignedExercises.emit(this.selectedExercises);
     }
-
     console.log('Selected workouts:', this.selectedWorkoutIds);
     this.assignedWorkouts.emit(this.selectedWorkoutIds);
   }
 
-  /** CoachExercisesBoardComponent változás kezelése */
   onExercisesChange(updatedExercises: Exercise[]) {
     this.selectedExercises = [...updatedExercises];
     console.log('Selected exercises:', this.selectedExercises);
     this.assignedExercises.emit(this.selectedExercises);
   }
 
-  // Manuális eltávolítás gombhoz
   removeWorkout(wid: number) {
     this.selectedWorkoutIds = this.selectedWorkoutIds.filter(id => id !== wid);
     this.onWorkoutsChange(this.selectedWorkoutIds);
@@ -61,12 +58,47 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
     this.onExercisesChange(this.selectedExercises);
   }
 
-  // Mentés (backend hívás majd később)
   saveSelectedWorkoutsAndExercises() {
     console.log('🚀 Mentés backendhez:', {
       workouts: this.selectedWorkoutIds,
       exercises: this.selectedExercises
     });
-    // TODO: ide jön a backend hívás
+
+    for (const workoutId of this.selectedWorkoutIds) {
+      for (const exercise of this.selectedExercises) {
+        if (exercise.id == null) continue;
+
+        this.workoutExerciseService.addWorkoutExerciseSimple(workoutId, exercise.id).subscribe({
+          next: (res: any) => {
+            console.log('Mentés sikeres:', res);
+
+            // Backend válaszból objektum létrehozása
+            const savedObj: SavedWorkoutExercise = {
+              id: res.id ?? 0,  // ha az id nincs, alapból 0
+              workoutId: workoutId,
+              exerciseId: exercise.id!,  // a ! jelzi, hogy biztosan nem undefined
+              workoutName: res.workoutName ?? '',
+              exerciseName: res.exerciseName ?? '',
+              status: res.status,
+              message: res.message
+            };
+
+
+            // Objektum hozzáadása a listához
+            this.savedWorkoutExercises.push(savedObj);
+          },
+          error: (err) => console.error('Mentés hiba:', err)
+        });
+      }
+    }
+  }
+
+  /** 🔹 Törlés ID alapján */
+  deleteWorkoutExerciseById(id: number) {
+    // közvetlenül az id-t adjuk át
+    this.workoutExerciseService.deleteWorkoutExerciseById(id).subscribe({
+      next: (res) => console.log('Törlés sikeres:', res),
+      error: (err) => console.error('Törlés hiba:', err)
+    });
   }
 }
