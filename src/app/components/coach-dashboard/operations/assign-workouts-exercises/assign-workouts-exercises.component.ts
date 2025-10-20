@@ -34,20 +34,25 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
   onWorkoutsChange(updatedIds: number[]) {
     const prevSelectedWorkouts = [...this.selectedWorkoutIds];
     this.selectedWorkoutIds = [...updatedIds];
+
     if (JSON.stringify(prevSelectedWorkouts) !== JSON.stringify(this.selectedWorkoutIds)) {
       this.selectedExercises = [];
       this.assignedExercises.emit(this.selectedExercises);
     }
+
     console.log('Selected workouts:', this.selectedWorkoutIds);
     this.assignedWorkouts.emit(this.selectedWorkoutIds);
 
-    // Betöltés workoutId alapján
+    // 🔹 Ha van kiválasztott workout, betöltjük a mentett kapcsolatokat
     if (this.selectedWorkoutIds.length > 0) {
       this.loadSavedWorkoutExercises(this.selectedWorkoutIds[0]);
     } else {
       this.savedWorkoutExercises = [];
     }
   }
+
+
+
 
   onExercisesChange(updatedExercises: Exercise[]) {
     this.selectedExercises = [...updatedExercises];
