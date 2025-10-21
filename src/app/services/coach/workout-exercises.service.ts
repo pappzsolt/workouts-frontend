@@ -29,6 +29,21 @@ export class WorkoutExerciseService {
     return this.http.put(`${this.baseUrl}/update`, workoutExercise);
   }
 
+  /** 🔹 🔥 ÚJ: Rekord frissítése workoutId + exerciseId alapján → userId és többi mező update */
+  updateByWorkoutAndExercise(
+    workoutId: number,
+    exerciseId: number,
+    userId: number,
+    data: Partial<WorkoutExerciseModel>
+  ): Observable<any> {
+    return this.http.put(`${this.baseUrl}/update-by-workout-exercise`, {
+      workoutId,
+      exerciseId,
+      userId,
+      ...data
+    });
+  }
+
   /** 🔹 Rekord törlése ID alapján */
   deleteWorkoutExerciseById(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/delete/${id}`);
@@ -52,5 +67,4 @@ export class WorkoutExerciseService {
   getWorkoutExercisesByWorkoutId(workoutId: number): Observable<any> {
     return this.http.get(`${this.baseUrl}/by-workout/${workoutId}`);
   }
-
 }

@@ -1,0 +1,70 @@
+<div class="max-w-6xl mx-auto p-6 flex flex-col gap-6">
+
+  <!-- Felhasználó és Workout kiválasztása -->
+  <div class="flex flex-wrap gap-4 items-center bg-white p-4 rounded-2xl shadow">
+    <input type="number" placeholder="User ID" [(ngModel)]="selectedUserId"
+           class="border border-gray-300 p-2 rounded w-28 focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+    <input type="number" placeholder="Workout ID" [(ngModel)]="selectedWorkoutId"
+           class="border border-gray-300 p-2 rounded w-28 focus:outline-none focus:ring-2 focus:ring-blue-400"/>
+    <button (click)="loadWorkoutExercises()"
+            class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">Betöltés</button>
+  </div>
+
+  <!-- Új WorkoutExercise hozzáadása -->
+  <div class="bg-white p-6 rounded-2xl shadow flex flex-col gap-4">
+    <h2 class="text-xl font-semibold text-gray-700">Új WorkoutExercise hozzáadása</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+      <input type="number" placeholder="Exercise ID" [(ngModel)]="newWorkoutExercise.exerciseId"
+             class="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"/>
+      <input type="number" placeholder="Sets" [(ngModel)]="newWorkoutExercise.sets"
+             class="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"/>
+      <input type="number" placeholder="Reps" [(ngModel)]="newWorkoutExercise.repetitions"
+             class="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"/>
+      <input type="number" placeholder="Order Index" [(ngModel)]="newWorkoutExercise.orderIndex"
+             class="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"/>
+      <input type="number" placeholder="Rest Seconds" [(ngModel)]="newWorkoutExercise.restSeconds"
+             class="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"/>
+      <input type="text" placeholder="Notes" [(ngModel)]="newWorkoutExercise.notes"
+             class="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"/>
+      <input type="date" [(ngModel)]="newWorkoutExercise.workoutDate"
+             class="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"/>
+      <input type="number" placeholder="Weight Used" [(ngModel)]="newWorkoutExercise.weightUsed"
+             class="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"/>
+      <label class="flex items-center gap-2">
+        <input type="checkbox" [(ngModel)]="newWorkoutExercise.done" class="w-5 h-5"/>
+        Done
+      </label>
+      <button (click)="addWorkoutExercise()"
+              class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition col-span-full sm:col-span-1">Hozzáadás</button>
+    </div>
+  </div>
+
+  <!-- Lista: Workout Exercises -->
+  <div class="bg-white p-6 rounded-2xl shadow flex flex-col gap-3">
+    <h2 class="text-xl font-semibold text-gray-700">Workout Exercises</h2>
+    <div *ngFor="let we of workoutExercises" class="flex flex-wrap gap-2 items-center p-3 border-b border-gray-200">
+      <span class="flex-1 flex flex-wrap gap-3 items-center">
+        <span class="text-gray-500">ID: {{we.id}}</span>
+        <input type="number" [(ngModel)]="we.exerciseId" class="border p-2 rounded w-24"/>
+        <input type="number" [(ngModel)]="we.sets" class="border p-2 rounded w-16"/>
+        <input type="number" [(ngModel)]="we.repetitions" class="border p-2 rounded w-16"/>
+        <input type="number" [(ngModel)]="we.orderIndex" class="border p-2 rounded w-16"/>
+        <input type="number" [(ngModel)]="we.restSeconds" class="border p-2 rounded w-20"/>
+        <input type="text" [(ngModel)]="we.notes" class="border p-2 rounded w-40"/>
+        <input type="date" [(ngModel)]="we.workoutDate" class="border p-2 rounded w-36"/>
+        <input type="number" [(ngModel)]="we.weightUsed" class="border p-2 rounded w-24"/>
+        <label class="flex items-center gap-1">
+          <input type="checkbox" [(ngModel)]="we.done" class="w-5 h-5"/>
+          Done
+        </label>
+      </span>
+      <div class="flex gap-2">
+        <button (click)="updateWorkoutExercise(we)"
+                class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 transition">Frissít</button>
+        <button (click)="deleteWorkoutExercise(we.id)"
+                class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">Törlés</button>
+      </div>
+    </div>
+  </div>
+
+</div>

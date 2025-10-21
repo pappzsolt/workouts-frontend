@@ -5,7 +5,7 @@ import { CoachProgramBoardComponent } from '../../../shared/coach/coach-program-
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
 import { Workout } from '../../../../models/workout.model';
 import { CoachProgram } from '../../../../models/coach-program.model';
-import { ProgramWorkoutService } from '../../../../services/coach/program-workout.service'; // 🔹 IMPORTÁLJUK A SERVICE-T
+import { ProgramWorkoutService } from '../../../../services/coach/program-workout.service';
 
 @Component({
   selector: 'app-program-workouts-ass',
@@ -20,44 +20,39 @@ export class ProgramWorkoutsAssComponent implements OnInit {
 
   selectedProgramId?: number;
 
-  // Wrapper szinten tárolt kiválasztott workoutok
   selectedWorkoutIds: number[] = [];
+
+  message: string | null = null;
+  messageStatus: 'success' | 'error' | null = null;
 
   @Output() assignedWorkouts = new EventEmitter<{ programId: number, workoutIds: number[] }>();
 
-  constructor(private programWorkoutService: ProgramWorkoutService) {} // ✅ SERVICE INJEKCIÓ
+  constructor(private programWorkoutService: ProgramWorkoutService) {}
 
   ngOnInit(): void {}
 
-  // Program kiválasztás
   onProgramSelected(programId: number) {
     this.selectedProgramId = programId;
     console.log('Selected program in wrapper:', programId);
-
-    // 🔹 Új program kiválasztásakor töröljük a korábbi kiválasztott workoutokat
     this.selectedWorkoutIds = [];
   }
 
-  // Workout hozzáadása/törlése
   onWorkoutsChange(updatedIds: number[]) {
     if (!this.selectedProgramId) {
       console.warn('Program nincs kiválasztva!');
       return;
     }
 
-    // Frissítjük a teljes tömböt a checkbox állapot alapján
     this.selectedWorkoutIds = [...updatedIds];
 
     console.log('Current assigned workouts for program', this.selectedProgramId, this.selectedWorkoutIds);
 
-    // Küldjük a kiválasztott programhoz tartozó workoutokat
     this.assignedWorkouts.emit({
       programId: this.selectedProgramId,
       workoutIds: this.selectedWorkoutIds
     });
   }
 
-  // 🔹 Mentés backendhez (Program-Workout kapcsolatok mentése)
   saveSelectedWorkouts() {
     if (!this.selectedProgramId) {
       console.warn('Nincs kiválasztott program!');
@@ -74,35 +69,46 @@ export class ProgramWorkoutsAssComponent implements OnInit {
       workoutIds: this.selectedWorkoutIds
     });
 
-    // 🔹 Backend hívás: minden workout mentése a kiválasztott programhoz
     this.selectedWorkoutIds.forEach((workoutId, index) => {
       this.programWorkoutService.addWorkoutToProgram(this.selectedProgramId!, workoutId, index).subscribe({
-        next: res => console.log(`✅ Workout ${workoutId} mentve:`, res),
-        error: err => console.error(`❌ Workout ${workoutId} mentése sikertelen:`, err)
+        next: res => {
+          console.log(`✅ Workout ${workoutId} mentve:`, res);
+          this.message = res.message;
+          this.messageStatus = res.status === 'success' ? 'success' : 'error';
+          setTimeout(() => { this.message = null; this.messageStatus = null; }, 5000);
+        },
+        error: err => {
+          console.error(`❌ Workout ${workoutId} mentése sikertelen:`, err);
+          this.message = err.error?.message || 'Ismeretlen hiba';
+          this.messageStatus = 'error';
+          setTimeout(() => { this.message = null; this.messageStatus = null; }, 5000);
+        }
       });
     });
   }
 
-  // Workout eltávolítása a kiválasztott listából
-// Workout eltávolítása a kiválasztott listából és DB-ből
   removeWorkout(wid: number) {
     if (!this.selectedProgramId) {
       console.warn('Program nincs kiválasztva!');
       return;
     }
 
-    // Először eltávolítjuk a lokális tömbből
     this.selectedWorkoutIds = this.selectedWorkoutIds.filter(id => id !== wid);
 
-    // Backend hívás: adott program + workout kapcsolat törlése
     this.programWorkoutService.deleteProgramWorkout(this.selectedProgramId, wid).subscribe({
       next: res => {
         console.log(`✅ Workout ${wid} törölve a programból:`, res);
-        // Frissítjük az emitet, hogy a gyermek komponensek is tudjanak róla
+        this.message = res.message;
+        this.messageStatus = res.status === 'success' ? 'success' : 'error';
+        setTimeout(() => { this.message = null; this.messageStatus = null; }, 5000);
+
         this.onWorkoutsChange(this.selectedWorkoutIds);
       },
       error: err => {
         console.error(`❌ Workout ${wid} törlése sikertelen:`, err);
+        this.message = err.error?.message || 'Ismeretlen hiba';
+        this.messageStatus = 'error';
+        setTimeout(() => { this.message = null; this.messageStatus = null; }, 5000);
       }
     });
   }

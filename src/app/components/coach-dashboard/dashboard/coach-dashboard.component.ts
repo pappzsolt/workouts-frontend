@@ -7,6 +7,7 @@ import { ExerciseControllerComponent } from '../operations/coach-exercises/coach
 import { AssignProgramComponent } from '../../../components/coach-dashboard/operations/assign-program/assignprogram.component';
 import { ProgramWorkoutsAssComponent } from '../operations/assign-program-workout/program-workouts-ass.component';
 import { AssignWorkoutsExercisesComponent } from '../operations/assign-workouts-exercises/assign-workouts-exercises.component';
+import { WorkoutExerciseManagerComponent } from "../../../components/coach-dashboard/operations/user-workout-exercise-manager/workout-exercise-manager.component";
 
 @Component({
   selector: 'app-coach-dashboard',
@@ -20,6 +21,7 @@ import { AssignWorkoutsExercisesComponent } from '../operations/assign-workouts-
     AssignProgramComponent,
     ProgramWorkoutsAssComponent,
     AssignWorkoutsExercisesComponent,
+    WorkoutExerciseManagerComponent,
   ],
   templateUrl: './coach-dashboard.component.html',
   styleUrls: ['./coach-dashboard.component.css']
@@ -29,8 +31,9 @@ export class CoachDashboardComponent implements OnInit {
   showPrograms: boolean = false;
   showExercises: boolean = false;
   showAssignments: boolean = false;
-  showProgramWorkouts: boolean = false;  // új csempe toggle
-  showWorkoutExercises = false;
+  showProgramWorkouts: boolean = false;
+  showWorkoutExercises: boolean = false;
+  showWorkoutExerciseManager: boolean = false; // ✅ új toggle
   programIdForWorkouts?: number;
 
   constructor(
@@ -45,6 +48,7 @@ export class CoachDashboardComponent implements OnInit {
       if (params['section'] === 'exercises') this.showExercises = true;
       if (params['section'] === 'assignments') this.showAssignments = true;
       if (params['section'] === 'program-workouts') this.showProgramWorkouts = true;
+      if (params['section'] === 'workout-exercise-manager') this.showWorkoutExerciseManager = true; // ✅ query param alapján nyitható
     });
   }
 
@@ -56,6 +60,7 @@ export class CoachDashboardComponent implements OnInit {
     this.showAssignments = false;
     this.showProgramWorkouts = false;
     this.showWorkoutExercises = false;
+    this.showWorkoutExerciseManager = false; // ✅ bezárás
   }
 
   toggleWorkouts() {
@@ -86,5 +91,11 @@ export class CoachDashboardComponent implements OnInit {
   toggleWorkoutExercises() {
     this.closeAllPanels();
     this.showWorkoutExercises = !this.showWorkoutExercises;
+  }
+
+  // ✅ Új toggle: WorkoutExerciseManager
+  toggleWorkoutExerciseManager() {
+    this.closeAllPanels();
+    this.showWorkoutExerciseManager = !this.showWorkoutExerciseManager;
   }
 }
