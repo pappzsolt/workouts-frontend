@@ -1,5 +1,5 @@
 <div class="max-w-6xl mx-auto p-6 flex flex-col gap-6">
-
+  <h2 class="text-xl font-semibold text-gray-700">Manager</h2>
   <!-- Felhasználó és Workout kiválasztása -->
   <div class="flex flex-wrap gap-4 items-center bg-white p-4 rounded-2xl shadow">
     <input type="number" placeholder="User ID" [(ngModel)]="selectedUserId"
@@ -12,7 +12,7 @@
 
   <!-- Új WorkoutExercise hozzáadása -->
   <div class="bg-white p-6 rounded-2xl shadow flex flex-col gap-4">
-    <h2 class="text-xl font-semibold text-gray-700">Manager</h2>
+
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
       <input type="number" placeholder="Exercise ID" [(ngModel)]="newWorkoutExercise.exerciseId"
              class="border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-400"/>
@@ -39,6 +39,8 @@
     </div>
   </div>
 
+  Workout - Exercises ASS itt hozzáaadom a workoutshoz az exercises at utána , a userhez , itt már caak be kell tölteni a workouts_exrecises táblát és lehet szerkeszteni, hozzá kell adni a usert és kell választani hogymelyik userhez tartozzon
+tehát itt már csak 1 lista kell ami tartalmazza az id -t, ez alapján tudjuk szerkeszteni
 
-
+  itt ugxanazt többször is hozz álehet adni , mivel a kulcs csak a user_id workouts_id , exercicse_id
 </div>
