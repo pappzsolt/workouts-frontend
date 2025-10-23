@@ -5,6 +5,6 @@ export const API_ENDPOINTS = {
   memberSearch: `${environment.apiUrl}/members/search`,
   coach: `${environment.apiUrl}/coach`,
   programs: `${environment.apiUrl}/programs`,
-  createProgram: `${environment.apiUrl}/user-programs/create`,
+  createProgram: `${environment.apiUrl}/programs/create`,
 };
 

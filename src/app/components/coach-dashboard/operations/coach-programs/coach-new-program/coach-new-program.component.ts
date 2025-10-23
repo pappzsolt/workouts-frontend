@@ -34,12 +34,20 @@ export class CoachNewProgramComponent implements OnInit {
 
   saveProgram() {
     this.message = '';
-    this.programService.createProgram(this.program).subscribe({
+
+    // 🔹 Alakítsuk át a frontend Program objektumot a backend CreateProgramRequest DTO-ra
+    const requestBody = {
+      name: this.program.programName,
+      description: this.program.programDescription,
+      durationDays: this.program.durationDays,
+      difficultyLevel: this.program.difficultyLevel
+    };
+
+    this.programService.createProgram(requestBody).subscribe({
       next: (response) => {
         console.log('Program created:', response);
         this.messageType = 'success';
         this.message = 'Program sikeresen létrehozva!';
-        // opcionális: átirányítás 1-2 másodperc után
         setTimeout(() => this.router.navigate(['/coach/programs']), 1500);
       },
       error: (err) => {
@@ -53,4 +61,5 @@ export class CoachNewProgramComponent implements OnInit {
       }
     });
   }
+
 }
