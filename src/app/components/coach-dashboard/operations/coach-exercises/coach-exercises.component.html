@@ -7,27 +7,31 @@
 
 <ng-container *ngIf="!loading; else noExercises">
   <div *ngIf="exercises.length > 0; else noExercises" class="programs-grid">
-    <div *ngFor="let we of pagedExercises" class="program-card">
+    <div *ngFor="let ex of pagedExercises" class="program-card">
       <!-- Emoji a tetején -->
       <div class="program-image">
         <span class="program-emoji">🏋️‍♂️</span>
       </div>
 
       <div class="program-content">
-        <div class="program-name">{{ we.exercise.name }}</div>
-        <div class="program-description">{{ we.exercise.description }}</div>
+        <div class="program-name">{{ ex.name }}</div>
+        <div class="program-description">{{ ex.description }}</div>
+
+        <!-- Ha van sets/reps meződ a DTO-ban, itt meg lehet jeleníteni -->
+        <!--
         <div class="program-progress">
           <div class="program-progress-label">
             <span>Sets/Reps:</span>
-            <span>{{ we.sets }} / {{ we.repetitions }}</span>
+            <span>{{ ex.sets }} / {{ ex.repetitions }}</span>
           </div>
           <div class="program-progress-bar">
             <div class="program-progress-fill" [style.width.%]="100"></div>
           </div>
         </div>
+        -->
 
         <div class="program-edit">
-          <button (click)="editExercise(we.exercise.id!)">
+          <button (click)="editExercise(ex.id!)">
             ✏️ Szerkesztés
           </button>
         </div>
@@ -53,4 +57,3 @@
 <button class="floating-action-button" (click)="goToNewExercise()" title="Új Exercise hozzáadása">
   ➕
 </button>
-

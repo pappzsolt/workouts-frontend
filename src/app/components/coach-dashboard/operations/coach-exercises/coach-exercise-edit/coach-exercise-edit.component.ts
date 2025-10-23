@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ExerciseService} from '../../../../../services/coach/coach-exercises/coach-exercises.service';
-import { Exercise ,WorkoutDto, WorkoutExercise} from '../../../../../models/exercise.model';
+import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
+import { Exercise } from '../../../../../models/exercise.model';
 
 @Component({
   selector: 'app-coach-exercise-edit',
@@ -52,14 +52,12 @@ export class CoachExerciseEditComponent implements OnInit {
   loadExercise(exerciseId: number): void {
     this.loading = true;
 
-    this.exerciseService.getWorkoutsWithExercises().subscribe({
-      next: (workouts: WorkoutDto[]) => {
-        const we = workouts
-          .flatMap(w => w.exercises)
-          .find((we: WorkoutExercise) => we.exercise.id === exerciseId);
+    this.exerciseService.getAllExercises().subscribe({
+      next: (exercises: Exercise[]) => {
+        const ex = exercises.find(e => e.id === exerciseId);
 
-        if (we && we.exercise) {
-          this.exercise = { ...we.exercise };
+        if (ex) {
+          this.exercise = { ...ex };
         } else {
           this.errorMessage = 'A kiválasztott exercise nem található';
         }

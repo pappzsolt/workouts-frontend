@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Exercise, WorkoutDto, WorkoutExercise } from '../../../../models/exercise.model';
+import { Exercise } from '../../../../models/exercise.model';
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
 
 @Component({
@@ -12,7 +12,7 @@ import { ExerciseService } from '../../../../services/coach/coach-exercises/coac
   styleUrls: ['./coach-exercises.component.css']
 })
 export class ExerciseControllerComponent implements OnInit {
-  exercises: WorkoutExercise[] = [];
+  exercises: Exercise[] = [];
   loading = false;
 
   // 🔹 Lapozáshoz
@@ -32,9 +32,9 @@ export class ExerciseControllerComponent implements OnInit {
 
   loadExercises(): void {
     this.loading = true;
-    this.exerciseService.getWorkoutsWithExercises().subscribe({
-      next: (workouts: WorkoutDto[]) => {
-        this.exercises = workouts.flatMap(w => w.exercises || []);
+    this.exerciseService.getAllExercises().subscribe({
+      next: (exercises: Exercise[]) => {
+        this.exercises = exercises; // a backend tömbjét közvetlenül használjuk
         this.totalPages = Math.ceil(this.exercises.length / this.itemsPerPage);
         this.loading = false;
       },
@@ -46,7 +46,7 @@ export class ExerciseControllerComponent implements OnInit {
   }
 
   // 🔹 Lapozáshoz szükséges getter
-  get pagedExercises(): WorkoutExercise[] {
+  get pagedExercises(): Exercise[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     return this.exercises.slice(startIndex, startIndex + this.itemsPerPage);
   }
