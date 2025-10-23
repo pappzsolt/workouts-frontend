@@ -64,7 +64,9 @@ export class WorkoutExerciseService {
   }
 
   /** 🔹 WorkoutExercise-ek lekérése workoutId alapján (userId nélkül) */
+  /** 🔹 WorkoutExercise-ek lekérése workoutId alapján (userId nélkül) */
   getWorkoutExercisesByWorkoutId(workoutId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/by-workout/${workoutId}`);
+    return this.http.get(`${this.baseUrl}/workout/${workoutId}`);
   }
+
 }

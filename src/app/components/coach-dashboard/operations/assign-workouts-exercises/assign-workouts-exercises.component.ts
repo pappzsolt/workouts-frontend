@@ -43,11 +43,15 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
     console.log('Selected workouts:', this.selectedWorkoutIds);
     this.assignedWorkouts.emit(this.selectedWorkoutIds);
 
-    // 🔹 Ha van kiválasztott workout, betöltjük a mentett kapcsolatokat
     if (this.selectedWorkoutIds.length > 0) {
-      this.loadSavedWorkoutExercises(this.selectedWorkoutIds[0]);
+      const workoutId = this.selectedWorkoutIds[0];
+
+      // 🔹 Betöltjük a mentett kapcsolatokat
+      this.loadSavedWorkoutExercises(workoutId);
     } else {
       this.savedWorkoutExercises = [];
+      this.selectedExercises = [];
+      this.assignedExercises.emit(this.selectedExercises);
     }
   }
 
@@ -108,12 +112,22 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
 
     this.workoutExerciseService.getWorkoutExercisesByWorkoutId(workoutId).subscribe({
       next: (res: any) => {
-        this.savedWorkoutExercises = res || [];
+        // 🔹 Csak a data tömb kell
+        this.savedWorkoutExercises = res.data || [];
         console.log('Mentett kapcsolatok betöltve:', this.savedWorkoutExercises);
+
+        // 🔹 Frissítjük a selectedExercises-t a pipákhoz
+        this.selectedExercises = this.exercises.filter(e =>
+          this.savedWorkoutExercises.some((s: any) => s.exerciseId === e.id)
+        );
+
+        // 🔹 Frissítjük az Output eseményt
+        this.assignedExercises.emit(this.selectedExercises);
       },
       error: (err) => console.error('Mentett kapcsolatok betöltése hiba:', err)
     });
   }
+
 
   /** 🔹 Törlés ID alapján */
   deleteWorkoutExerciseById(id: number) {
