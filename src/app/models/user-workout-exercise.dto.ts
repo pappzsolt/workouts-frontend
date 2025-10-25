@@ -9,4 +9,10 @@ export interface UserWorkoutExerciseDto {
   feedback?: string | null;
   notes?: string | null;
   performedAt?: Date | null; // backend java.util.Date -> JS Date
+
+  // 🔹 Új mezők a user_workout létrehozáshoz
+  userId?: number;
+  workoutId?: number;
+  scheduledAt?: string | null; // ISO string formátumban
 }
+

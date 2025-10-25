@@ -9,6 +9,7 @@ import { UserWorkoutExerciseDto } from '../../models/user-workout-exercise.dto';
 export class WorkoutExercisesManagerService {
 
   private readonly baseUrl = '/api/user-workout-exercises';
+  private readonly userWorkoutsBaseUrl = '/api/user-workouts'; // új endpoint
 
   constructor(private http: HttpClient) {}
 
@@ -43,5 +44,11 @@ export class WorkoutExercisesManagerService {
     if (notes != null) params = params.set('notes', notes);
 
     return this.http.patch<void>(`${this.baseUrl}/${id}/details`, null, { params });
+  }
+
+  /** 🔹 Új user_workout létrehozása és automatikus exercise feltöltés a workout_id alapján */
+  addUserWorkout(userId: number, workoutId: number, scheduledAt?: string): Observable<UserWorkoutExerciseDto[]> {
+    const body = { userId, workoutId, scheduledAt };
+    return this.http.post<UserWorkoutExerciseDto[]>(`${this.userWorkoutsBaseUrl}`, body);
   }
 }

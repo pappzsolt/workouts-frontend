@@ -33,7 +33,10 @@ export class CoachWorkoutsService {
     return this.http.put<WorkoutResponse>(`${this.apiUrl}/update`, workout);
   }
 
-
+  // 🔹 Saját workoutok lekérése select komponenshez
+  getMyWorkoutsForSelect(): Observable<WorkoutListResponse> {
+    return this.http.get<WorkoutListResponse>(`${this.apiUrl}/my-workouts-select`);
+  }
 
   // 🔹 Workout törlése
   deleteWorkout(id: number): Observable<WorkoutResponse> {
