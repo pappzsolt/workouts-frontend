@@ -11,43 +11,6 @@
     <button (click)="loadExercises()" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Load</button>
   </div>
 
-  <!-- 🔹 Exercises Table -->
-  <table class="w-full border-collapse border border-gray-300">
-    <thead>
-    <tr class="bg-gray-200">
-      <th class="border px-2 py-1">ID</th>
-      <th class="border px-2 py-1">Workout Exercise ID</th>
-      <th class="border px-2 py-1">Completed</th>
-      <th class="border px-2 py-1">Sets Done</th>
-      <th class="border px-2 py-1">Feedback</th>
-      <th class="border px-2 py-1">Notes</th>
-      <th class="border px-2 py-1">Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let we of exercises" class="border-t">
-      <td class="border px-2 py-1">{{ we.id }}</td>
-      <td class="border px-2 py-1">{{ we.workoutExerciseId }}</td>
-      <td class="border px-2 py-1 text-center">
-        <input type="checkbox" [(ngModel)]="we.completed" (change)="updateCompleted(we)"/>
-      </td>
-      <td class="border px-2 py-1">
-        <input type="number" [(ngModel)]="we.setsDone" class="w-16 border rounded px-1 py-0.5"/>
-      </td>
-      <td class="border px-2 py-1">
-        <input type="text" [(ngModel)]="we.feedback" class="border rounded px-1 py-0.5"/>
-      </td>
-      <td class="border px-2 py-1">
-        <input type="text" [(ngModel)]="we.notes" class="border rounded px-1 py-0.5"/>
-      </td>
-      <td class="border px-2 py-1 flex space-x-1">
-        <button (click)="updateDetails(we)" class="px-2 py-1 bg-green-500 text-white rounded hover:bg-green-600">Save</button>
-        <button (click)="deleteExercise(we.id)" class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600">Delete</button>
-      </td>
-    </tr>
-    </tbody>
-  </table>
-
   <!-- 🔹 Add New User Workout -->
   <div class="space-y-2">
     <h3 class="font-bold">Add New User Workout</h3>
@@ -61,9 +24,15 @@
         <app-workout-select [(selectedWorkoutId)]="selectedWorkoutId"></app-workout-select>
       </label>
 
+      <!-- 🔹 ScheduledAt mező hozzáadása -->
+      <label class="flex items-center space-x-1">
+        <span>Date:</span>
+        <input type="date" [(ngModel)]="scheduledAt" class="border rounded px-2 py-1"/>
+      </label>
 
-      <button (click)="addExercise()" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Add</button>
+      <button (click)="addUserWorkouts()" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Add</button>
     </div>
   </div>
 
 </div>
+

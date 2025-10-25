@@ -50,17 +50,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
   }
 
   /** 🔹 Új user_workout + exercise hozzáadása egyszerre */
-  addExercise() {
-    // Ha már létezik a user_workout ID
-    if (this.selectedUserWorkoutId && this.newWorkoutExerciseId) {
-      this.service.addUserWorkoutExercise(this.selectedUserWorkoutId, this.newWorkoutExerciseId)
-        .subscribe(res => {
-          this.exercises.push(res);
-          this.newWorkoutExerciseId = undefined;
-        });
-      return;
-    }
-
+  addUserWorkouts() {
     // Ha új user_workout-ot kell létrehozni
     if (!this.selectedUserId || !this.selectedWorkoutId) {
       alert('Hiányzó adatok: userId vagy workoutId!');
@@ -70,15 +60,12 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
     // új user_workout létrehozása backendhez
     this.service.addUserWorkout(this.selectedUserId, this.selectedWorkoutId, this.scheduledAt)
       .subscribe(res => {
-        this.exercises = res; // az összes új exercise-t visszaadja
-        this.selectedUserWorkoutId = res.length > 0 ? res[0].userWorkoutId : undefined;
+        // 🔹 Backend most csak { userWorkoutId: number }-t ad vissza
+        this.selectedUserWorkoutId = res.userWorkoutId;
         this.newWorkoutExerciseId = undefined;
+
+        // mivel még nem kell az új exercise-ok listája, exercises marad változatlan
       });
   }
 
-  deleteExercise(id?: number) {
-    if (!id) return;
-    // Delete metódus implementálása a service-ben szükséges
-    console.warn('Delete not implemented yet for id:', id);
-  }
 }

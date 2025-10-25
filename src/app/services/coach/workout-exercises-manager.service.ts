@@ -9,21 +9,14 @@ import { UserWorkoutExerciseDto } from '../../models/user-workout-exercise.dto';
 export class WorkoutExercisesManagerService {
 
   private readonly baseUrl = '/api/user-workout-exercises';
-  private readonly userWorkoutsBaseUrl = '/api/user-workouts'; // új endpoint
+  private readonly userWorkoutsBaseUrl = 'http://localhost:8080/api/user-workout-exercises/create-with-exercises';
+
 
   constructor(private http: HttpClient) {}
 
   /** 🔹 Lekéri egy user workout összes exercise-át */
   getExercisesForUserWorkout(userWorkoutId: number): Observable<UserWorkoutExerciseDto[]> {
     return this.http.get<UserWorkoutExerciseDto[]>(`${this.baseUrl}/workout/${userWorkoutId}`);
-  }
-
-  /** 🔹 Új user workout exercise létrehozása */
-  addUserWorkoutExercise(userWorkoutId: number, workoutExerciseId: number): Observable<UserWorkoutExerciseDto> {
-    const params = new HttpParams()
-      .set('userWorkoutId', userWorkoutId)
-      .set('workoutExerciseId', workoutExerciseId);
-    return this.http.post<UserWorkoutExerciseDto>(this.baseUrl, null, { params });
   }
 
   /** 🔹 Completed mező frissítése */
@@ -47,8 +40,10 @@ export class WorkoutExercisesManagerService {
   }
 
   /** 🔹 Új user_workout létrehozása és automatikus exercise feltöltés a workout_id alapján */
-  addUserWorkout(userId: number, workoutId: number, scheduledAt?: string): Observable<UserWorkoutExerciseDto[]> {
-    const body = { userId, workoutId, scheduledAt };
-    return this.http.post<UserWorkoutExerciseDto[]>(`${this.userWorkoutsBaseUrl}`, body);
+  addUserWorkout(userId: number, workoutId: number, scheduledAt?: string): Observable<{ userWorkoutId: number }> {
+    const body: any = { userId, workoutId };
+    if (scheduledAt) body.scheduledAt = scheduledAt; // opcionális
+    return this.http.post<{ userWorkoutId: number }>(this.userWorkoutsBaseUrl, body);
   }
+
 }
