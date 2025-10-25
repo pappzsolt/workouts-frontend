@@ -7,7 +7,7 @@ import { ExerciseControllerComponent } from '../operations/coach-exercises/coach
 import { AssignProgramComponent } from '../../../components/coach-dashboard/operations/assign-program/assignprogram.component';
 import { ProgramWorkoutsAssComponent } from '../operations/assign-program-workout/program-workouts-ass.component';
 import { AssignWorkoutsExercisesComponent } from '../operations/assign-workouts-exercises/assign-workouts-exercises.component';
-import { WorkoutExerciseManagerComponent } from "../../../components/coach-dashboard/operations/user-workout-exercise-manager/workout-exercise-manager.component";
+import { UserWorkoutExerciseManagerComponent } from '../operations/user-workout-exercise-manager/user-workout-exercise-manager';
 
 @Component({
   selector: 'app-coach-dashboard',
@@ -21,7 +21,7 @@ import { WorkoutExerciseManagerComponent } from "../../../components/coach-dashb
     AssignProgramComponent,
     ProgramWorkoutsAssComponent,
     AssignWorkoutsExercisesComponent,
-    WorkoutExerciseManagerComponent,
+    UserWorkoutExerciseManagerComponent,
   ],
   templateUrl: './coach-dashboard.component.html',
   styleUrls: ['./coach-dashboard.component.css']
