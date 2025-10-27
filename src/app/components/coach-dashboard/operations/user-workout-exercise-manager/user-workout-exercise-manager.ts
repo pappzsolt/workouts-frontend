@@ -4,13 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { WorkoutExercisesManagerService } from '../../../../services/coach/workout-exercises-manager.service';
 import { UserWorkoutExerciseDto } from '../../../../models/user-workout-exercise.dto';
 import { UserSelectComponent } from '../../../shared/user/user-select.component';
-import {WorkoutSelectComponent} from '../../../shared/workout/workout-select.component';
-
+import { CoachProgramSelectComponent } from '../../../shared/programs/coach-program-select.component';
 
 @Component({
   selector: 'app-user-workout-exercise-manager',
   standalone: true,
-  imports: [CommonModule, FormsModule,UserSelectComponent,WorkoutSelectComponent],
+  imports: [CommonModule, FormsModule, UserSelectComponent, CoachProgramSelectComponent],
   templateUrl: './user-workout-exercise-manager.component.html'
 })
 export class UserWorkoutExerciseManagerComponent implements OnInit {
@@ -20,7 +19,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
 
   // 🔹 Új mezők a user_workout létrehozásához
   selectedUserId?: number;
-  selectedWorkoutId?: number;
+  selectedProgramId?: number;  // programId küldése a backendnek
   scheduledAt?: string; // ISO string
 
   constructor(private service: WorkoutExercisesManagerService) {}
@@ -51,21 +50,16 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
 
   /** 🔹 Új user_workout + exercise hozzáadása egyszerre */
   addUserWorkouts() {
-    // Ha új user_workout-ot kell létrehozni
-    if (!this.selectedUserId || !this.selectedWorkoutId) {
-      alert('Hiányzó adatok: userId vagy workoutId!');
+    if (!this.selectedUserId || !this.selectedProgramId) {
+      alert('Hiányzó adatok: userId vagy programId!');
       return;
     }
 
-    // új user_workout létrehozása backendhez
-    this.service.addUserWorkout(this.selectedUserId, this.selectedWorkoutId, this.scheduledAt)
+    // új user_workout létrehozása program_id alapján
+    this.service.addUserWorkout(this.selectedUserId, this.selectedProgramId, this.scheduledAt)
       .subscribe(res => {
-        // 🔹 Backend most csak { userWorkoutId: number }-t ad vissza
         this.selectedUserWorkoutId = res.userWorkoutId;
         this.newWorkoutExerciseId = undefined;
-
-        // mivel még nem kell az új exercise-ok listája, exercises marad változatlan
       });
   }
-
 }

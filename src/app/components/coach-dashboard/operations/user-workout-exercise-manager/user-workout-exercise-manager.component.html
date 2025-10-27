@@ -16,15 +16,13 @@
     <h3 class="font-bold">Add New User Workout</h3>
 
     <div class="flex items-center space-x-2">
-      <!-- 🔹 UserSelectComponent használata -->
       <app-user-select [(selectedUserId)]="selectedUserId"></app-user-select>
 
       <label class="flex items-center space-x-1">
-        <span>Workout:</span>
-        <app-workout-select [(selectedWorkoutId)]="selectedWorkoutId"></app-workout-select>
+        <span>Program:</span>
+        <app-coach-program-select [(selectedProgramId)]="selectedProgramId"></app-coach-program-select>
       </label>
 
-      <!-- 🔹 ScheduledAt mező hozzáadása -->
       <label class="flex items-center space-x-1">
         <span>Date:</span>
         <input type="date" [(ngModel)]="scheduledAt" class="border rounded px-2 py-1"/>
@@ -35,4 +33,3 @@
   </div>
 
 </div>
-
