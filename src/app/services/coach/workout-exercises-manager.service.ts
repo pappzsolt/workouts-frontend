@@ -8,7 +8,7 @@ import { UserWorkoutExerciseDto } from '../../models/user-workout-exercise.dto';
 })
 export class WorkoutExercisesManagerService {
 
-  private readonly baseUrl = '/api/user-workout-exercises';
+  private readonly baseUrl = 'http://localhost:8080/api/user-workout-exercises';
   private readonly userWorkoutsBaseUrl = 'http://localhost:8080/api/user-workout-exercises/create-with-exercises';
 
   constructor(private http: HttpClient) {}

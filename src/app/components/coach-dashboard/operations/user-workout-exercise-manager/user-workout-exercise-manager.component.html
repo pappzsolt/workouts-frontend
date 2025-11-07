@@ -2,20 +2,11 @@
 
   <h2 class="text-xl font-bold mb-2">User Workout Exercises</h2>
 
-  <!-- 🔹 Load Exercises Panel -->
-  <div class="flex items-center space-x-2">
-    <label class="flex items-center space-x-1">
-      <span>User Workout ID:</span>
-      <input type="number" [(ngModel)]="selectedUserWorkoutId" class="border rounded px-2 py-1 w-24"/>
-    </label>
-    <button (click)="loadExercises()" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Load</button>
-  </div>
-
   <!-- 🔹 Add New User Workout -->
   <div class="space-y-2">
     <h3 class="font-bold">Add New User Workout</h3>
 
-    <div class="flex items-center space-x-2">
+    <div class="flex items-center space-x-2 flex-wrap gap-2">
       <app-user-select [(selectedUserId)]="selectedUserId"></app-user-select>
 
       <label class="flex items-center space-x-1">
@@ -28,8 +19,86 @@
         <input type="date" [(ngModel)]="scheduledAt" class="border rounded px-2 py-1"/>
       </label>
 
-      <button (click)="addUserWorkouts()" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">Add</button>
+      <button
+        (click)="addUserWorkouts()"
+        class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
+        Add
+      </button>
+
+      <button
+        (click)="loadUserProgramWithExercises()"
+        class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+        [disabled]="!selectedUserId || !selectedProgramId">
+        Load Program Data
+      </button>
     </div>
+  </div>
+
+  <!-- 🔹 ÚJ: nap → workout → feladatok nézet -->
+  <div *ngIf="dayGroups?.length" class="space-y-4">
+    <h3 class="text-lg font-semibold">Program overview (grouped)</h3>
+
+    <div *ngFor="let day of dayGroups" class="border rounded bg-white shadow-sm">
+      <div class="px-3 py-2 flex items-center justify-between border-b bg-gray-50">
+        <div>
+          <div class="font-semibold text-gray-800">
+            {{ day.date || 'Unscheduled day' }}
+          </div>
+          <div class="text-xs text-gray-500">
+            Program day: {{ day.programDayIndex }}
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 space-y-3">
+        <div *ngFor="let w of day.workouts" class="border rounded p-3 bg-gray-50">
+          <div class="flex items-center justify-between mb-2">
+            <div class="font-semibold text-gray-800">
+              {{ w.workoutName }}
+            </div>
+            <div>
+              <span
+                class="text-xs px-2 py-1 rounded"
+                [ngClass]="w.workoutCompleted ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'">
+                {{ w.workoutCompleted ? 'Workout done' : 'Not done' }}
+              </span>
+            </div>
+          </div>
+
+          <table class="min-w-full text-sm">
+            <thead>
+            <tr class="border-b bg-gray-100">
+              <th class="text-left py-1 px-2">#</th>
+              <th class="text-left py-1 px-2">Exercise</th>
+              <th class="text-left py-1 px-2">Done</th>
+              <th class="text-left py-1 px-2">Sets</th>
+              <th class="text-left py-1 px-2">Feedback</th>
+              <th class="text-left py-1 px-2">Notes</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let ex of w.exercises" class="border-b hover:bg-gray-50">
+              <td class="py-1 px-2">{{ ex.order }}</td>
+              <td class="py-1 px-2">{{ ex.exerciseName }}</td>
+              <td class="py-1 px-2">
+                <span *ngIf="ex.exerciseCompleted" class="text-green-600">✔</span>
+                <span *ngIf="!ex.exerciseCompleted" class="text-gray-400">✖</span>
+              </td>
+              <td class="py-1 px-2">{{ ex.setsDone }}</td>
+              <td class="py-1 px-2">{{ ex.feedback }}</td>
+              <td class="py-1 px-2">{{ ex.notes }}</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 🔹 Ha nincs adat -->
+  <div *ngIf="userProgramData && !userProgramData.length" class="text-gray-500 italic">
+    No data available for this user/program.
   </div>
 
 </div>
