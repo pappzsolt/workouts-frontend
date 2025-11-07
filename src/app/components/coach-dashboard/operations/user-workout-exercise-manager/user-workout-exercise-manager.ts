@@ -19,8 +19,11 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
 
   // 🔹 Új mezők a user_workout létrehozásához
   selectedUserId?: number;
-  selectedProgramId?: number;  // programId küldése a backendnek
+  selectedProgramId?: number;  // ezt küldjük az új lekérdezéshez is
   scheduledAt?: string; // ISO string
+
+  // 🔹 az új JOIN-os végpont eredménye ide kerül
+  userProgramData: any[] = [];
 
   constructor(private service: WorkoutExercisesManagerService) {}
 
@@ -55,11 +58,30 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       return;
     }
 
-    // új user_workout létrehozása program_id alapján
+    // a backend most a programId-t várja workoutId néven, ezt már így használod
     this.service.addUserWorkout(this.selectedUserId, this.selectedProgramId, this.scheduledAt)
       .subscribe(res => {
         this.selectedUserWorkoutId = res.userWorkoutId;
         this.newWorkoutExerciseId = undefined;
+      });
+  }
+
+  /** 🔹 Az új backend végpont meghívása: /api/user-workout-exercises/user-program/{userId}/{programId} */
+  loadUserProgramWithExercises() {
+    if (!this.selectedUserId || !this.selectedProgramId) {
+      alert('Előbb válassz usert és programot!');
+      return;
+    }
+
+    this.service.getUserProgramWithExercises(this.selectedUserId, this.selectedProgramId)
+      .subscribe({
+        next: data => {
+          this.userProgramData = data;
+        },
+        error: err => {
+          console.error('Hiba a program + exercises lekérésekor', err);
+          this.userProgramData = [];
+        }
       });
   }
 }

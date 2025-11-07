@@ -11,7 +11,6 @@ export class WorkoutExercisesManagerService {
   private readonly baseUrl = '/api/user-workout-exercises';
   private readonly userWorkoutsBaseUrl = 'http://localhost:8080/api/user-workout-exercises/create-with-exercises';
 
-
   constructor(private http: HttpClient) {}
 
   /** 🔹 Lekéri egy user workout összes exercise-át */
@@ -44,6 +43,11 @@ export class WorkoutExercisesManagerService {
     const body: any = { userId, workoutId };
     if (scheduledAt) body.scheduledAt = scheduledAt; // opcionális
     return this.http.post<{ userWorkoutId: number }>(this.userWorkoutsBaseUrl, body);
+  }
+
+  /** 🔹 Teljes program + workout + exercise + user adatok lekérése (backend JOIN lekérdezés alapján) */
+  getUserProgramWithExercises(userId: number, programId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/user-program/${userId}/${programId}`);
   }
 
 }
