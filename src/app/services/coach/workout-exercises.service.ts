@@ -1,72 +1,105 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { WorkoutExerciseModel } from '../../models/workout-exercise.model';
+import { API_ENDPOINTS } from '../../api-endpoints';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WorkoutExerciseService {
-  private baseUrl = 'http://localhost:8080/api/workout-exercises'; // backend API
+
+  private readonly baseUrl = API_ENDPOINTS.workoutExercises;
 
   constructor(private http: HttpClient) {}
 
-  /** 🔹 Új WorkoutExercise rekord hozzáadása (teljes objektum) */
-  addWorkoutExercise(workoutExercise: WorkoutExerciseModel): Observable<any> {
-    return this.http.post(`${this.baseUrl}/add`, workoutExercise);
-  }
-
-  /** 🔹 Új WorkoutExercise rekord hozzáadása csak workoutId és exerciseId */
-  addWorkoutExerciseSimple(workoutId: number, exerciseId: number): Observable<any> {
-    return this.http.post(
-      `${this.baseUrl}/add-simple?workoutId=${workoutId}&exerciseId=${exerciseId}`,
-      null
-    );
-  }
-
-  /** 🔹 Rekord frissítése (id alapján, a többi mező opcionális) */
-  updateWorkoutExercise(workoutExercise: WorkoutExerciseModel): Observable<any> {
-    return this.http.put(`${this.baseUrl}/update`, workoutExercise);
-  }
-
-  /** 🔹 🔥 ÚJ: Rekord frissítése workoutId + exerciseId alapján → userId és többi mező update */
-  updateByWorkoutAndExercise(
-    workoutId: number,
-    exerciseId: number,
-    userId: number,
-    data: Partial<WorkoutExerciseModel>
-  ): Observable<any> {
-    return this.http.put(`${this.baseUrl}/update-by-workout-exercise`, {
-      workoutId,
-      exerciseId,
-      userId,
-      ...data
-    });
-  }
-
-  /** 🔹 Rekord törlése ID alapján */
-  deleteWorkoutExerciseById(id: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/delete/${id}`);
-  }
-
-  /** 🔹 Rekord törlése userId + workoutId + exerciseId alapján */
-  deleteWorkoutExerciseByUserWorkoutExercise(
-    userId: number,
+  /**
+   * Exercise hozzárendelése egy workouthoz.
+   *
+   * POST:
+   * /api/workout-exercises/assign?workoutId=226&exerciseId=1004
+   */
+  assignExerciseToWorkout(
     workoutId: number,
     exerciseId: number
   ): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/${userId}/${workoutId}/${exerciseId}`);
+
+    const params = new HttpParams()
+      .set('workoutId', workoutId)
+      .set('exerciseId', exerciseId);
+
+    return this.http.post<any>(
+      `${this.baseUrl}/assign`,
+      null,
+      { params }
+    );
   }
 
-  /** 🔹 Rekord törlése user nélküli változat: csak workoutId + exerciseId */
-  deleteWorkoutExerciseSimple(workoutId: number, exerciseId: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/delete-simple?workoutId=${workoutId}&exerciseId=${exerciseId}`);
+  /**
+   * Régi metódus kompatibilitás miatt.
+   *
+   * Az új backend endpoint már /assign.
+   */
+  addWorkoutExerciseSimple(
+    workoutId: number,
+    exerciseId: number
+  ): Observable<any> {
+    return this.assignExerciseToWorkout(workoutId, exerciseId);
   }
 
-  /** 🔹 WorkoutExercise-ek lekérése workoutId alapján (userId nélkül) */
-  /** 🔹 WorkoutExercise-ek lekérése workoutId alapján (userId nélkül) */
-  getWorkoutExercisesByWorkoutId(workoutId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/workout/${workoutId}`);
+  /**
+   * WorkoutExercise-ek lekérése workoutId alapján.
+   *
+   * FIGYELEM:
+   * Ehhez jelenleg nincs megmutatva a Java controller endpointja.
+   */
+  getWorkoutExercisesByWorkoutId(
+    workoutId: number
+  ): Observable<any> {
+    return this.http.get<any>(
+      `${this.baseUrl}/workout/${workoutId}`
+    );
   }
 
+  /**
+   * WorkoutExercise törlése ID alapján.
+   *
+   * FIGYELEM:
+   * Ehhez jelenleg nincs megmutatva a Java controller endpointja.
+   */
+  deleteWorkoutExerciseById(
+    id: number
+  ): Observable<any> {
+    return this.http.delete<any>(
+      `${this.baseUrl}/delete/${id}`
+    );
+  }
+
+  /**
+   * Teljes WorkoutExercise objektum hozzáadása.
+   *
+   * Csak akkor használható, ha a backendben van /add endpoint.
+   */
+  addWorkoutExercise(
+    workoutExercise: WorkoutExerciseModel
+  ): Observable<any> {
+    return this.http.post<any>(
+      `${this.baseUrl}/add`,
+      workoutExercise
+    );
+  }
+
+  /**
+   * WorkoutExercise frissítése.
+   *
+   * Csak akkor használható, ha a backendben van /update endpoint.
+   */
+  updateWorkoutExercise(
+    workoutExercise: WorkoutExerciseModel
+  ): Observable<any> {
+    return this.http.put<any>(
+      `${this.baseUrl}/update`,
+      workoutExercise
+    );
+  }
 }

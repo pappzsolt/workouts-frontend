@@ -1,11 +1,9 @@
 export interface Program {
   id?: number;
 
-  // POST-hoz, új program létrehozás
   programName?: string;
   programDescription?: string;
 
-  // GET-hez, lekérdezéskor
   name?: string;
   description?: string;
 
@@ -29,11 +27,10 @@ export interface ProgramExercise {
 
 export interface CoachProgramsResponse {
   status: string;
-  data: Program[];      // ← így kell
+  data: Program[];
   message?: string | null;
   count: number;
 }
-
 
 export interface ProgramDto {
   programId: number;
@@ -41,11 +38,36 @@ export interface ProgramDto {
   programDescription: string;
   durationDays: number;
   difficultyLevel: string;
-  workouts?: any[]; // opcionális, ha a frontend nem használja most
+  workouts?: any[];
 }
+
 export interface ApiResponse<T> {
   status: string;
   data: T;
   message?: string | null;
   count: number;
+}
+
+/**
+ * Backend:
+ *
+ * private String programName;
+ * private String programDescription;
+ * private Integer durationDays;
+ * private String difficultyLevel;
+ */
+export interface ProgramCreationRequest {
+  programName: string;
+  programDescription?: string;
+  durationDays?: number;
+  difficultyLevel?: string;
+}
+
+/**
+ * Backend ProgramCreationResponse
+ */
+export interface ProgramCreationResponse {
+  success: boolean;
+  message: string;
+  programId: number | null;
 }
