@@ -6,7 +6,7 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import { Program, ProgramService } from '../../../../services/coach/coach-program/program.service';
+import {ProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 import { HttpClientModule } from '@angular/common/http';
 import { catchError, of } from 'rxjs';
 import { USER_MESSAGES } from '../../../../constants/user-messages';

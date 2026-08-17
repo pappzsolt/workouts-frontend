@@ -46,8 +46,10 @@ export class AssignProgramComponent implements OnInit {
 
   loadPrograms() {
     this.programService.getAllPrograms().subscribe({
-      next: (programsFromService: any[]) => {
-        this.programs = programsFromService.map(p => ({
+      next: (response: any) => {
+        const programsFromService = response.data ?? [];
+
+        this.programs = programsFromService.map((p: any) => ({
           programId: p.programId ?? p.id ?? 0,
           programName: p.programName ?? p.name ?? '',
           programDescription: p.programDescription ?? p.description ?? '',
@@ -55,8 +57,12 @@ export class AssignProgramComponent implements OnInit {
           difficultyLevel: p.difficultyLevel ?? 'unknown',
           workouts: p.workouts ?? []
         }));
+
+        console.log('Programok betöltve:', this.programs);
       },
-      error: (err) => console.error('❌ Programok betöltése sikertelen', err)
+      error: (err: any) => {
+        console.error('❌ Programok betöltése sikertelen', err);
+      }
     });
   }
 
