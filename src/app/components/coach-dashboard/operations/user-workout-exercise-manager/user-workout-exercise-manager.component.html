@@ -7,16 +7,27 @@
     <h3 class="font-bold">Add New User Workout</h3>
 
     <div class="flex items-center space-x-2 flex-wrap gap-2">
-      <app-user-select [(selectedUserId)]="selectedUserId"></app-user-select>
+
+      <app-user-select
+        [(selectedUserId)]="selectedUserId">
+      </app-user-select>
 
       <label class="flex items-center space-x-1">
         <span>Program:</span>
-        <app-coach-program-select [(selectedProgramId)]="selectedProgramId"></app-coach-program-select>
+
+        <app-coach-program-select
+          [(selectedProgramId)]="selectedProgramId">
+        </app-coach-program-select>
       </label>
 
       <label class="flex items-center space-x-1">
         <span>Date:</span>
-        <input type="date" [(ngModel)]="scheduledAt" class="border rounded px-2 py-1"/>
+
+        <input
+          type="date"
+          [(ngModel)]="scheduledAt"
+          class="border rounded px-2 py-1"
+        />
       </label>
 
       <button
@@ -31,74 +42,326 @@
         [disabled]="!selectedUserId || !selectedProgramId">
         Load Program Data
       </button>
+
     </div>
   </div>
 
-  <!-- 🔹 ÚJ: nap → workout → feladatok nézet -->
-  <div *ngIf="dayGroups?.length" class="space-y-4">
-    <h3 class="text-lg font-semibold">Program overview (grouped)</h3>
 
-    <div *ngFor="let day of dayGroups" class="border rounded bg-white shadow-sm">
-      <div class="px-3 py-2 flex items-center justify-between border-b bg-gray-50">
+  <!-- 🔹 Program overview -->
+  <div
+    *ngIf="dayGroups?.length"
+    class="space-y-4">
+
+    <h3 class="text-lg font-semibold">
+      Program overview (grouped)
+    </h3>
+
+
+    <!-- DAY -->
+    <div
+      *ngFor="let day of dayGroups"
+      class="border rounded bg-white shadow-sm">
+
+      <!-- Day header -->
+      <div
+        class="px-3 py-2 flex items-center justify-between border-b bg-gray-50">
+
         <div>
+
           <div class="font-semibold text-gray-800">
             {{ day.date || 'Unscheduled day' }}
           </div>
+
           <div class="text-xs text-gray-500">
             Program day: {{ day.programDayIndex }}
           </div>
+
         </div>
+
       </div>
 
+
+      <!-- WORKOUTS -->
       <div class="p-3 space-y-3">
-        <div *ngFor="let w of day.workouts" class="border rounded p-3 bg-gray-50">
-          <div class="flex items-center justify-between mb-2">
+
+        <div
+          *ngFor="let w of day.workouts"
+          class="border rounded p-3 bg-gray-50">
+
+          <!-- Workout header -->
+          <div
+            class="flex items-center justify-between mb-2">
+
             <div class="font-semibold text-gray-800">
               {{ w.workoutName }}
             </div>
+
             <div>
+
               <span
                 class="text-xs px-2 py-1 rounded"
-                [ngClass]="w.workoutCompleted ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'">
+                [ngClass]="
+                  w.workoutCompleted
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-gray-100 text-gray-500'
+                ">
+
                 {{ w.workoutCompleted ? 'Workout done' : 'Not done' }}
+
               </span>
+
             </div>
+
           </div>
 
+
+          <!-- EXERCISES -->
           <table class="min-w-full text-sm">
+
             <thead>
+
             <tr class="border-b bg-gray-100">
-              <th class="text-left py-1 px-2">#</th>
-              <th class="text-left py-1 px-2">Exercise</th>
-              <th class="text-left py-1 px-2">Done</th>
-              <th class="text-left py-1 px-2">Sets</th>
-              <th class="text-left py-1 px-2">Feedback</th>
-              <th class="text-left py-1 px-2">Notes</th>
+
+              <th class="text-left py-1 px-2">
+                #
+              </th>
+
+              <th class="text-left py-1 px-2">
+                Exercise
+              </th>
+
+              <th class="text-left py-1 px-2">
+                Done
+              </th>
+
+              <th class="text-left py-1 px-2">
+                Sets
+              </th>
+
+              <th class="text-left py-1 px-2">
+                Feedback
+              </th>
+
+              <th class="text-left py-1 px-2">
+                Notes
+              </th>
+
+              <th class="text-left py-1 px-2">
+                Set-ek
+              </th>
+
             </tr>
+
             </thead>
+
+
             <tbody>
-            <tr *ngFor="let ex of w.exercises" class="border-b hover:bg-gray-50">
-              <td class="py-1 px-2">{{ ex.order }}</td>
-              <td class="py-1 px-2">{{ ex.exerciseName }}</td>
-              <td class="py-1 px-2">
-                <span *ngIf="ex.exerciseCompleted" class="text-green-600">✔</span>
-                <span *ngIf="!ex.exerciseCompleted" class="text-gray-400">✖</span>
-              </td>
-              <td class="py-1 px-2">{{ ex.setsDone }}</td>
-              <td class="py-1 px-2">{{ ex.feedback }}</td>
-              <td class="py-1 px-2">{{ ex.notes }}</td>
-            </tr>
+
+            <ng-container
+              *ngFor="let ex of w.exercises">
+
+              <!-- Exercise row -->
+              <tr
+                class="border-b hover:bg-gray-50">
+
+                <td class="py-1 px-2">
+                  {{ ex.order }}
+                </td>
+
+                <td class="py-1 px-2 font-medium">
+                  {{ ex.exerciseName }}
+                </td>
+
+                <td class="py-1 px-2">
+
+                  <span
+                    *ngIf="ex.exerciseCompleted"
+                    class="text-green-600">
+                    ✔
+                  </span>
+
+                  <span
+                    *ngIf="!ex.exerciseCompleted"
+                    class="text-gray-400">
+                    ✖
+                  </span>
+
+                </td>
+
+                <td class="py-1 px-2">
+                  {{ ex.setsDone }}
+                </td>
+
+                <td class="py-1 px-2">
+                  {{ ex.feedback }}
+                </td>
+
+                <td class="py-1 px-2">
+                  {{ ex.notes }}
+                </td>
+
+                <!-- Sets button -->
+                <td class="py-1 px-2">
+
+                  <button
+                    type="button"
+                    (click)="loadSets(ex.userWorkoutExerciseId)"
+                    class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">
+
+                    Sets
+
+                  </button>
+
+                </td>
+
+              </tr>
+
+
+              <!-- 🔹 SETS -->
+              <tr
+                *ngIf="
+                  selectedUserWorkoutExerciseId ===
+                  ex.userWorkoutExerciseId
+                ">
+
+                <td
+                  colspan="7"
+                  class="p-3 bg-gray-50">
+
+                  <div
+                    *ngIf="selectedSets.length"
+                    class="border rounded bg-white">
+
+                    <div
+                      class="px-3 py-2 font-semibold border-b bg-gray-100">
+
+                      Exercise sets
+
+                    </div>
+
+
+                    <table
+                      class="min-w-full text-sm">
+
+                      <thead>
+
+                      <tr class="border-b">
+
+                        <th class="text-left px-3 py-2">
+                          Set
+                        </th>
+
+                        <th class="text-left px-3 py-2">
+                          Target reps
+                        </th>
+
+                        <th class="text-left px-3 py-2">
+                          Target weight
+                        </th>
+
+                        <th class="text-left px-3 py-2">
+                          Actual reps
+                        </th>
+
+                        <th class="text-left px-3 py-2">
+                          Actual weight
+                        </th>
+
+                        <th class="text-left px-3 py-2">
+                          Completed
+                        </th>
+
+                      </tr>
+
+                      </thead>
+
+
+                      <tbody>
+
+                      <tr
+                        *ngFor="let set of selectedSets"
+                        class="border-b">
+
+                        <td class="px-3 py-2">
+                          {{ set.setNumber }}
+                        </td>
+
+                        <td class="px-3 py-2">
+                          {{ set.targetRepetitions }}
+                        </td>
+
+                        <td class="px-3 py-2">
+                          {{ set.targetWeightKg ?? '-' }}
+                        </td>
+
+                        <td class="px-3 py-2">
+                          {{ set.actualRepetitions ?? '-' }}
+                        </td>
+
+                        <td class="px-3 py-2">
+                          {{ set.actualWeightKg ?? '-' }}
+                        </td>
+
+                        <td class="px-3 py-2">
+
+                          <span
+                            *ngIf="set.completed"
+                            class="text-green-600">
+                            ✔
+                          </span>
+
+                          <span
+                            *ngIf="!set.completed"
+                            class="text-gray-400">
+                            ✖
+                          </span>
+
+                        </td>
+
+                      </tr>
+
+                      </tbody>
+
+                    </table>
+
+                  </div>
+
+
+                  <!-- No sets -->
+                  <div
+                    *ngIf="!selectedSets.length"
+                    class="text-gray-500 italic">
+
+                    Nincs set ehhez az exercise-hoz.
+
+                  </div>
+
+                </td>
+
+              </tr>
+
+            </ng-container>
+
             </tbody>
+
           </table>
+
         </div>
+
       </div>
 
     </div>
+
   </div>
 
+
   <!-- 🔹 Ha nincs adat -->
-  <div *ngIf="userProgramData && !userProgramData.length" class="text-gray-500 italic">
+  <div
+    *ngIf="userProgramData && !userProgramData.length"
+    class="text-gray-500 italic">
+
     No data available for this user/program.
+
   </div>
 
 </div>
