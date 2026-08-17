@@ -158,21 +158,42 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       set
     );
 
-    if (!set.id) {
+    // Az ID kötelező a PUT kéréshez
+    if (set.id == null) {
+
       console.error(
         'A set ID hiányzik, a módosítás nem hajtható végre.'
       );
+
+      alert(
+        'A set azonosítója hiányzik.'
+      );
+
       return;
     }
 
     const data: Partial<UserWorkoutExerciseSetModel> = {
-      setNumber: set.setNumber,
-      targetRepetitions: set.targetRepetitions,
-      targetWeightKg: set.targetWeightKg,
-      actualRepetitions: set.actualRepetitions,
-      actualWeightKg: set.actualWeightKg,
-      completed: set.completed,
-      notes: set.notes
+
+      setNumber:
+      set.setNumber,
+
+      targetRepetitions:
+      set.targetRepetitions,
+
+      targetWeightKg:
+      set.targetWeightKg,
+
+      actualRepetitions:
+      set.actualRepetitions,
+
+      actualWeightKg:
+      set.actualWeightKg,
+
+      completed:
+      set.completed,
+
+      notes:
+      set.notes
     };
 
     console.log(
@@ -181,7 +202,10 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
     );
 
     this.setService
-      .updateSet(set.id, data)
+      .updateSet(
+        set.id,
+        data
+      )
       .subscribe({
 
         next: (response) => {
@@ -231,6 +255,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       alert(
         'Hiányzó adatok: userId vagy programId!'
       );
+
       return;
     }
 
@@ -278,6 +303,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       alert(
         'Előbb válassz usert és programot!'
       );
+
       return;
     }
 
@@ -395,9 +421,12 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       if (!map.has(dateKey)) {
 
         map.set(dateKey, {
-          date: row.scheduled_date,
+          date:
+          row.scheduled_date,
+
           programDayIndex:
           row.program_day_index,
+
           workouts: []
         });
       }
@@ -485,6 +514,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
         .sort((a, b) => {
 
           if (a.date && b.date) {
+
             return a.date.localeCompare(
               b.date
             );
