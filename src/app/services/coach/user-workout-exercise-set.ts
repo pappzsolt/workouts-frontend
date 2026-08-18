@@ -16,9 +16,6 @@ export class UserWorkoutExerciseSetService {
 
   /**
    * Egy user_workout_exercise összes set-jének lekérése.
-   *
-   * GET:
-   * /api/user-workout-exercise-sets/{userWorkoutExerciseId}
    */
   getSetsByUserWorkoutExerciseId(
     userWorkoutExerciseId: number
@@ -30,10 +27,21 @@ export class UserWorkoutExerciseSetService {
   }
 
   /**
+   * Új set hozzáadása.
+   */
+  addSet(
+    userWorkoutExerciseId: number,
+    data: Partial<UserWorkoutExerciseSetModel>
+  ): Observable<UserWorkoutExerciseSetModel> {
+
+    return this.http.post<UserWorkoutExerciseSetModel>(
+      `${this.baseUrl}/${userWorkoutExerciseId}`,
+      data
+    );
+  }
+
+  /**
    * Egy set módosítása.
-   *
-   * PUT:
-   * /api/user-workout-exercise-sets/{id}
    */
   updateSet(
     id: number,
@@ -43,6 +51,16 @@ export class UserWorkoutExerciseSetService {
     return this.http.put(
       `${this.baseUrl}/${id}`,
       data
+    );
+  }
+
+  /**
+   * Set törlése ID alapján.
+   */
+  deleteSet(id: number): Observable<any> {
+
+    return this.http.delete(
+      `${this.baseUrl}/${id}`
     );
   }
 }
