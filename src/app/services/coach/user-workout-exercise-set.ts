@@ -30,13 +30,12 @@ export class UserWorkoutExerciseSetService {
    * Új set hozzáadása.
    */
   addSet(
-    userWorkoutExerciseId: number,
-    data: Partial<UserWorkoutExerciseSetModel>
-  ): Observable<UserWorkoutExerciseSetModel> {
+    userWorkoutExerciseId: number
+  ): Observable<any> {
 
-    return this.http.post<UserWorkoutExerciseSetModel>(
-      `${this.baseUrl}/${userWorkoutExerciseId}`,
-      data
+    return this.http.post(
+      `${this.baseUrl}/${userWorkoutExerciseId}/add`,
+      {}
     );
   }
 

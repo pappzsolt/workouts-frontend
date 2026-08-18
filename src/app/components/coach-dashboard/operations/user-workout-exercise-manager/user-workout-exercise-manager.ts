@@ -144,6 +144,56 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
   // SET MÓDOSÍTÁSA
   // ============================
 
+  // ============================
+// ÚJ SET HOZZÁADÁSA
+// ============================
+
+  addSet(): void {
+
+    if (!this.selectedUserWorkoutExerciseId) {
+      alert('Nincs kiválasztva user workout exercise.');
+      return;
+    }
+
+    console.log(
+      'Új set hozzáadása:',
+      this.selectedUserWorkoutExerciseId
+    );
+
+    this.setService
+      .addSet(this.selectedUserWorkoutExerciseId)
+      .subscribe({
+
+        next: (response: any) => {
+
+          console.log(
+            'Új set sikeresen létrehozva:',
+            response
+          );
+
+          // Újratöltjük a set-eket,
+          // így a frontend azonnal megkapja az új rekordot.
+          this.loadSets(
+            this.selectedUserWorkoutExerciseId!
+          );
+        },
+
+        error: (err: any) => {
+
+          console.error(
+            'Hiba az új set létrehozásakor:',
+            err
+          );
+
+          alert(
+            err?.error?.message ||
+            'Hiba történt az új set hozzáadásakor.'
+          );
+        }
+      });
+  }
+
+
   updateSet(set: UserWorkoutExerciseSetModel): void {
 
     console.log('=== UPDATE SET ===');
@@ -555,5 +605,66 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
     );
 
     return result;
+  }
+  // ============================
+// SET TÖRLÉSE
+// ============================
+
+  deleteSet(set: UserWorkoutExerciseSetModel): void {
+
+    if (set.id == null) {
+      alert('A set azonosítója hiányzik.');
+      return;
+    }
+
+    if (!confirm(`Biztosan törölni szeretnéd a ${set.setNumber}. set-et?`)) {
+      return;
+    }
+
+    console.log(
+      'Set törlése:',
+      set.id
+    );
+
+    this.setService
+      .deleteSet(set.id)
+      .subscribe({
+
+        next: (response: any) => {
+
+          console.log(
+            'Set sikeresen törölve:',
+            response
+          );
+
+          // Frontend lista frissítése
+          this.selectedSets =
+            this.selectedSets.filter(
+              s => s.id !== set.id
+            );
+
+          // Újratöltjük a backendből,
+          // hogy biztosan a DB aktuális állapotát lássuk.
+          if (this.selectedUserWorkoutExerciseId) {
+
+            this.loadSets(
+              this.selectedUserWorkoutExerciseId
+            );
+          }
+        },
+
+        error: (err: any) => {
+
+          console.error(
+            'Hiba a set törlésekor:',
+            err
+          );
+
+          alert(
+            err?.error?.message ||
+            'Hiba történt a set törlésekor.'
+          );
+        }
+      });
   }
 }

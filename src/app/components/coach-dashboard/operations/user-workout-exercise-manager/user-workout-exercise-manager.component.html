@@ -288,9 +288,18 @@
 
 
                     <div
-                      class="px-3 py-2 font-semibold border-b bg-gray-100">
+                      class="px-3 py-2 font-semibold border-b bg-gray-100 flex items-center justify-between">
 
-                      Exercise sets
+                      <span>Exercise sets</span>
+
+                      <button
+                        type="button"
+                        (click)="addSet()"
+                        class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">
+
+                        + Új set
+
+                      </button>
 
                     </div>
 
