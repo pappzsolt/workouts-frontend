@@ -5,7 +5,7 @@
     <div
       *ngFor="let exercise of exercises$ | async"
       class="program-card"
-      (click)="goToExercise(exercise.exercise.id)"
+      (click)="goToExercise(exercise.exercise.id!)"
     >
       <!-- Emoji / ikon -->
       <div class="program-image">
@@ -14,7 +14,9 @@
 
       <div class="program-content">
         <!-- Exercise name -->
-        <div class="program-name">{{ exercise.exercise.name }}</div>
+        <div class="program-name">
+          {{ exercise.exercise.name }}
+        </div>
 
         <!-- Exercise description -->
         <div class="program-description">
@@ -47,5 +49,7 @@
 </ng-container>
 
 <ng-template #noExercises>
-  <div class="no-programs">Nincsenek gyakorlatok ehhez a workouthoz.</div>
+  <div class="no-programs">
+    Nincsenek gyakorlatok ehhez a workouthoz.
+  </div>
 </ng-template>

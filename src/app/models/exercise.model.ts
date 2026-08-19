@@ -1,4 +1,5 @@
 // src/app/models/exercise.model.ts
+
 export interface Exercise {
   id?: number;
   name: string;
@@ -12,15 +13,14 @@ export interface Exercise {
   caloriesBurnedPerMinute?: number;
   durationSeconds?: number;
 
-  // 👇 ADD THESE FIELDS (used in your component)
+  // A meglévő coach felület használja
   sets?: number;
   repetitions?: number;
   duration_minutes?: number;
   intensity_level?: string;
-  workoutId?: number;
+
   done?: boolean;
 }
-
 
 export interface WorkoutExercise {
   id: number;

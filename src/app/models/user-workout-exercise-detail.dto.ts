@@ -12,6 +12,26 @@ export interface ExerciseDetailDto {
   durationSeconds: number;
 }
 
+export interface UserWorkoutExerciseSetDto {
+  id: number;
+  userWorkoutExerciseId: number;
+
+  setNumber: number;
+
+  targetRepetitions: number;
+  targetWeightKg: number | null;
+
+  actualRepetitions: number | null;
+  actualWeightKg: number | null;
+
+  startedAt: string | null;
+  completedAt: string | null;
+
+  completed: boolean;
+
+  notes: string | null;
+}
+
 export interface UserWorkoutExerciseDetailDto {
   id: number;
   workoutId: number;
@@ -25,6 +45,11 @@ export interface UserWorkoutExerciseDetailDto {
 
   notes: string | null;
   done: boolean;
+
+  /**
+   * A user saját sorozatai.
+   */
+  exerciseSets: UserWorkoutExerciseSetDto[];
 }
 
 export interface UserWorkoutDetailDto {
