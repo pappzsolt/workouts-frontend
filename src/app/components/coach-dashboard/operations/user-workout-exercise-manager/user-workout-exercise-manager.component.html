@@ -4,6 +4,7 @@
     User Workout Exercises
   </h2>
 
+
   <!-- ============================ -->
   <!-- ADD NEW USER WORKOUT -->
   <!-- ============================ -->
@@ -115,26 +116,28 @@
           class="border rounded p-3 bg-gray-50">
 
 
+          <!-- ============================ -->
           <!-- WORKOUT HEADER -->
+          <!-- ============================ -->
 
-          <div
-            class="flex items-center justify-between mb-2">
+          <div class="space-y-3 mb-3">
 
-            <div class="font-semibold text-gray-800">
+            <!-- Workout name + status -->
 
-              {{ w.workoutName }}
+            <div class="flex items-center justify-between gap-2">
 
-            </div>
-
-            <div>
+              <div class="font-semibold text-gray-800">
+                {{ w.workoutName }}
+              </div>
 
               <span
-                class="text-xs px-2 py-1 rounded"
+                class="text-xs px-2 py-1 rounded whitespace-nowrap"
                 [ngClass]="
                   w.workoutCompleted
                     ? 'bg-green-100 text-green-700'
                     : 'bg-gray-100 text-gray-500'
-                ">
+                "
+              >
 
                 {{ w.workoutCompleted
                 ? 'Workout done'
@@ -142,6 +145,38 @@
                 }}
 
               </span>
+
+            </div>
+
+
+            <!-- Scheduled date -->
+
+            <div
+              class="flex items-center gap-2 flex-wrap">
+
+              <label
+                class="text-sm font-medium text-gray-700">
+
+                Scheduled date:
+
+              </label>
+
+              <input
+                type="date"
+                [ngModel]="w.scheduledAt"
+                (ngModelChange)="w.scheduledAt = $event"
+                class="border border-gray-300 rounded-lg px-2 py-1 text-sm"
+              />
+
+              <button
+                type="button"
+                (click)="updateScheduledDate(w, w.scheduledAt)"
+                class="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm"
+              >
+
+                Save date
+
+              </button>
 
             </div>
 
@@ -214,21 +249,21 @@
 
                 <td class="py-1 px-2">
 
-                  <span
-                    *ngIf="ex.exerciseCompleted"
-                    class="text-green-600">
+                    <span
+                      *ngIf="ex.exerciseCompleted"
+                      class="text-green-600">
 
-                    ✔
+                      ✔
 
-                  </span>
+                    </span>
 
                   <span
                     *ngIf="!ex.exerciseCompleted"
                     class="text-gray-400">
 
-                    ✖
+                      ✖
 
-                  </span>
+                    </span>
 
                 </td>
 
@@ -269,9 +304,9 @@
 
               <tr
                 *ngIf="
-                  selectedUserWorkoutExerciseId ===
-                  ex.userWorkoutExerciseId
-                ">
+                    selectedUserWorkoutExerciseId ===
+                    ex.userWorkoutExerciseId
+                  ">
 
                 <td
                   colspan="7"
@@ -290,7 +325,9 @@
                     <div
                       class="px-3 py-2 font-semibold border-b bg-gray-100 flex items-center justify-between">
 
-                      <span>Exercise sets</span>
+                        <span>
+                          Exercise sets
+                        </span>
 
                       <button
                         type="button"
@@ -468,7 +505,9 @@
                               Save
 
                             </button>
+
                             <!-- DELETE -->
+
                             <button
                               type="button"
                               (click)="deleteSet(set)"

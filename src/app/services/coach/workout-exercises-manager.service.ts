@@ -116,4 +116,21 @@ export class WorkoutExercisesManagerService {
       `${this.baseUrl}/user-program/${userId}/${programId}`
     );
   }
+
+  /**
+   * Egy már létező user workout ütemezett dátumának módosítása.
+   */
+  updateUserWorkoutScheduledDate(
+    userWorkoutId: number,
+    scheduledAt: string
+  ): Observable<void> {
+
+    return this.http.patch<void>(
+      `${this.baseUrl}/reschedule-user-workout`,
+      {
+        userWorkoutId,
+        scheduledAt
+      }
+    );
+  }
 }

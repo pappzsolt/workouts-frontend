@@ -358,10 +358,15 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       if (!workout) {
 
         workout = {
+          userWorkoutId: row.user_workout_id,
           workoutId: row.workout_id,
           workoutName: row.workout_name,
+
+          scheduledAt: row.scheduled_date,
+
           workoutCompleted:
             row.workout_completed === true,
+
           exercises: []
         };
 
@@ -433,7 +438,61 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
         return day;
       });
   }
+  /**
+   * Egy már létező user workout scheduled dátumának módosítása.
+   */
+  updateScheduledDate(
+    workout: any,
+    scheduledAt: string
+  ): void {
 
+    if (!workout.userWorkoutId) {
+      alert('A user workout azonosítója hiányzik.');
+      return;
+    }
+
+    if (!scheduledAt) {
+      alert('A scheduled date megadása kötelező.');
+      return;
+    }
+
+    this.service
+      .updateUserWorkoutScheduledDate(
+        workout.userWorkoutId,
+        scheduledAt
+      )
+      .subscribe({
+
+        next: () => {
+
+          workout.scheduledAt = scheduledAt;
+
+          console.log(
+            'Scheduled date frissítve:',
+            {
+              userWorkoutId: workout.userWorkoutId,
+              scheduledAt
+            }
+          );
+
+          // Az aktuális napstruktúrát is frissítjük.
+          this.loadUserProgramWithExercises();
+        },
+
+        error: (err: any) => {
+
+          console.error(
+            'Hiba a scheduled date frissítésekor:',
+            err
+          );
+
+          alert(
+            err?.error?.message ||
+            'Hiba történt a scheduled date módosításakor.'
+          );
+        }
+      });
+  }
   // ============================
   // ANGULAR TRACK BY
   // ============================
