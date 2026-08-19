@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { WorkoutExercisesManagerService } from '../../../../services/coach/workout-exercises-manager.service';
-import { UserWorkoutExerciseSetService } from '../../../../services/coach/user-workout-exercise-set.service';
-
+import { UserWorkoutExerciseSetService } from '../../../../services/coach/user-workout-exercise-set';
 import { UserWorkoutExerciseSetModel } from '../../../../models/user-workout-exercise-set.model';
 
 @Component({
