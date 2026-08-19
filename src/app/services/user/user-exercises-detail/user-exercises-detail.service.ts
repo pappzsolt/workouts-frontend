@@ -25,4 +25,25 @@ export class UserExerciseDetailService {
       `${API_ENDPOINTS.exercises}/my-workout/${workoutId}`
     );
   }
+
+  /**
+   * Egy konkrét set completed állapotának módosítása.
+   */
+  updateSetCompleted(
+    workoutId: number,
+    exerciseId: number,
+    setId: number,
+    completed: boolean
+  ): Observable<void> {
+
+    return this.http.patch<void>(
+      `${API_ENDPOINTS.exercises}/set-completed`,
+      {
+        workoutId,
+        exerciseId,
+        setId,
+        completed
+      }
+    );
+  }
 }

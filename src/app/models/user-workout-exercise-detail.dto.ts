@@ -46,10 +46,10 @@ export interface UserWorkoutExerciseDetailDto {
   notes: string | null;
   done: boolean;
 
-  /**
-   * A user saját sorozatai.
-   */
-  exerciseSets: UserWorkoutExerciseSetDto[];
+  userWorkoutExerciseId: number | null;
+
+  // EZ A BACKEND MEZŐNEVE
+  userWorkoutExerciseSets: UserWorkoutExerciseSetDto[];
 }
 
 export interface UserWorkoutDetailDto {
