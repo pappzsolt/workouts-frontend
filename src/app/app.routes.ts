@@ -31,6 +31,9 @@ import {
 import {
   CoachWorkoutEditComponent
 } from './components/coach-dashboard/operations/coach-workouts/coach-workout-edit/coach-workout-edit.component';
+import {
+  UserWorkoutsCalendarComponent
+} from './components/user-dashboard/operations/user-workouts-calendar/user-workouts-calendar.component';
 
 export const routes: Routes = [
   // Login layout
@@ -101,6 +104,8 @@ export const routes: Routes = [
 
   // User routes using common LayoutComponent
   {
+// User routes using common LayoutComponent
+
     path: 'user',
     component: LayoutComponent,
     canActivate: [authGuard, roleGuard],
@@ -110,6 +115,10 @@ export const routes: Routes = [
       { path: 'profile', component: UserProfileComponent },
       { path: 'my-programs', component: UserMyProgramsComponent },
       { path: 'statistics', component: UserStatisticsComponent },
+
+      // ÚJ: User workout naptár
+      { path: 'workouts', component: UserWorkoutsCalendarComponent },
+
       { path: 'programs/:id/workouts', component: WorkoutsComponent },
       { path: 'workouts/:workoutId/exercises', component: UserExercisesComponent },
       { path: 'workouts/:workoutId/exercises/:exerciseId', component: UserExerciseDetailComponent },

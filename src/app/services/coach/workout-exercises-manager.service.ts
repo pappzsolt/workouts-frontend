@@ -133,4 +133,13 @@ export class WorkoutExercisesManagerService {
       }
     );
   }
+  /**
+   * A belépett user számára ütemezett workoutok lekérése.
+   */
+  getScheduledWorkouts(): Observable<any[]> {
+
+    return this.http.get<any[]>(
+      `${this.baseUrl}/scheduled-workouts`
+    );
+  }
 }

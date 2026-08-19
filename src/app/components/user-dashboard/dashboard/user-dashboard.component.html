@@ -1,6 +1,7 @@
 <h2 class="dashboard-title">User Dashboard</h2>
 
 <div class="dashboard-cards-container">
+
   <!-- My Programs -->
   <div class="dashboard-card" (click)="navigateTo('user/my-programs')">
     <div class="dashboard-card-emoji">📚</div>
@@ -12,4 +13,11 @@
     <div class="dashboard-card-emoji">📊</div>
     <div class="dashboard-card-title">Statistics</div>
   </div>
+
+  <!-- My Workouts -->
+  <div class="dashboard-card" (click)="navigateTo('user/workouts')">
+    <div class="dashboard-card-emoji">📅</div>
+    <div class="dashboard-card-title">My Workouts</div>
+  </div>
+
 </div>
