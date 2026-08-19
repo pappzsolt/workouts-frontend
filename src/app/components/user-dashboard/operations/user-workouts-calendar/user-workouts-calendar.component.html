@@ -1,0 +1,62 @@
+<div class="workouts-calendar">
+
+  <div class="calendar-header">
+    <button type="button" (click)="previousMonth()">‹</button>
+
+    <h2>{{ monthNames[currentMonth] }} {{ currentYear }}</h2>
+
+    <button type="button" (click)="nextMonth()">›</button>
+  </div>
+
+  <div class="calendar-weekdays">
+    <div>H</div>
+    <div>K</div>
+    <div>Sze</div>
+    <div>Cs</div>
+    <div>P</div>
+    <div>Szo</div>
+    <div>V</div>
+  </div>
+
+  <div class="calendar-days">
+
+    <div
+      class="calendar-day"
+      *ngFor="let day of calendarDays"
+      [class.other-month]="!day.currentMonth"
+      [class.today]="day.isToday"
+    >
+
+      <div class="day-number">
+        {{ day.date.getDate() }}
+      </div>
+
+      <div
+        *ngFor="let workout of getWorkoutsForDay(day.date)"
+        class="workout-item"
+        [class.completed]="workout.completed"
+      >
+        🏋️ {{ workout.workout_name }}
+      </div>
+
+    </div>
+
+  </div>
+
+  <div
+    class="unscheduled-workouts"
+    *ngIf="getUnscheduledWorkouts().length > 0"
+  >
+
+    <h3>Dátum nélküli workoutok</h3>
+
+    <div
+      *ngFor="let workout of getUnscheduledWorkouts()"
+      class="unscheduled-workout"
+    >
+      🏋️ {{ workout.workout_name }}
+    </div>
+
+  </div>
+
+</div>
