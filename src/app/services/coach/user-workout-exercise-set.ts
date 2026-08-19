@@ -2,15 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+import { API_ENDPOINTS } from '../../api-endpoints';
 import { UserWorkoutExerciseSetModel } from '../../models/user-workout-exercise-set.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserWorkoutExerciseSetService {
-
-  private readonly baseUrl =
-    'http://localhost:8080/api/user-workout-exercise-sets';
 
   constructor(private http: HttpClient) {}
 
@@ -22,7 +20,7 @@ export class UserWorkoutExerciseSetService {
   ): Observable<UserWorkoutExerciseSetModel[]> {
 
     return this.http.get<UserWorkoutExerciseSetModel[]>(
-      `${this.baseUrl}/${userWorkoutExerciseId}`
+      `${API_ENDPOINTS.userWorkoutExerciseSets}/${userWorkoutExerciseId}`
     );
   }
 
@@ -34,7 +32,7 @@ export class UserWorkoutExerciseSetService {
   ): Observable<any> {
 
     return this.http.post(
-      `${this.baseUrl}/${userWorkoutExerciseId}/add`,
+      `${API_ENDPOINTS.userWorkoutExerciseSets}/${userWorkoutExerciseId}/add`,
       {}
     );
   }
@@ -48,7 +46,7 @@ export class UserWorkoutExerciseSetService {
   ): Observable<any> {
 
     return this.http.put(
-      `${this.baseUrl}/${id}`,
+      `${API_ENDPOINTS.userWorkoutExerciseSets}/${id}`,
       data
     );
   }
@@ -59,7 +57,7 @@ export class UserWorkoutExerciseSetService {
   deleteSet(id: number): Observable<any> {
 
     return this.http.delete(
-      `${this.baseUrl}/${id}`
+      `${API_ENDPOINTS.userWorkoutExerciseSets}/${id}`
     );
   }
 }

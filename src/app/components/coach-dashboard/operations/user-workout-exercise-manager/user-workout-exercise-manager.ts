@@ -46,7 +46,6 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
   // ============================
 
   selectedUserWorkoutExerciseId?: number;
-
   selectedSets: UserWorkoutExerciseSetModel[] = [];
 
   constructor(
@@ -62,74 +61,23 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
 
   loadSets(userWorkoutExerciseId: number): void {
 
-    console.log('=== LOAD SETS ===');
+    if (!userWorkoutExerciseId || userWorkoutExerciseId <= 0) {
+      this.selectedSets = [];
+      this.selectedUserWorkoutExerciseId = undefined;
+      return;
+    }
 
-    console.log(
-      'Kapott userWorkoutExerciseId:',
-      userWorkoutExerciseId
-    );
-
-    this.selectedUserWorkoutExerciseId =
-      userWorkoutExerciseId;
-
-    console.log(
-      'selectedUserWorkoutExerciseId:',
-      this.selectedUserWorkoutExerciseId
-    );
-
+    this.selectedUserWorkoutExerciseId = userWorkoutExerciseId;
     this.selectedSets = [];
-
-    console.log(
-      'Backend GET indítása:',
-      `/api/user-workout-exercise-sets/${userWorkoutExerciseId}`
-    );
 
     this.setService
       .getSetsByUserWorkoutExerciseId(userWorkoutExerciseId)
       .subscribe({
         next: (sets: UserWorkoutExerciseSetModel[]) => {
-
-          console.log('=== BACKEND RESPONSE ===');
-
-          console.log(
-            'Kapott sets:',
-            sets
-          );
-
-          console.log(
-            'Kapott sets JSON:',
-            JSON.stringify(sets, null, 2)
-          );
-
-          console.log(
-            'Kapott sets darabszáma:',
-            sets?.length ?? 0
-          );
-
-          this.selectedSets =
-            sets ?? [];
-
-          console.log(
-            'selectedSets:',
-            this.selectedSets
-          );
-
-          console.log(
-            'selectedSets JSON:',
-            JSON.stringify(
-              this.selectedSets,
-              null,
-              2
-            )
-          );
+          this.selectedSets = sets ?? [];
         },
 
         error: (err: any) => {
-
-          console.error(
-            '=== BACKEND ERROR ==='
-          );
-
           console.error(
             'Hiba a set-ek lekérésekor:',
             err
@@ -141,41 +89,27 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
   }
 
   // ============================
-  // SET MÓDOSÍTÁSA
+  // ÚJ SET HOZZÁADÁSA
   // ============================
-
-  // ============================
-// ÚJ SET HOZZÁADÁSA
-// ============================
 
   addSet(): void {
 
-    if (!this.selectedUserWorkoutExerciseId) {
+    const userWorkoutExerciseId =
+      this.selectedUserWorkoutExerciseId;
+
+    if (!userWorkoutExerciseId) {
       alert('Nincs kiválasztva user workout exercise.');
       return;
     }
 
-    console.log(
-      'Új set hozzáadása:',
-      this.selectedUserWorkoutExerciseId
-    );
-
     this.setService
-      .addSet(this.selectedUserWorkoutExerciseId)
+      .addSet(userWorkoutExerciseId)
       .subscribe({
+        next: () => {
 
-        next: (response: any) => {
-
-          console.log(
-            'Új set sikeresen létrehozva:',
-            response
-          );
-
-          // Újratöltjük a set-eket,
-          // így a frontend azonnal megkapja az új rekordot.
-          this.loadSets(
-            this.selectedUserWorkoutExerciseId!
-          );
+          // Backend után újra lekérjük a set-eket,
+          // így a frontend mindig a DB aktuális állapotát mutatja.
+          this.loadSets(userWorkoutExerciseId);
         },
 
         error: (err: any) => {
@@ -193,82 +127,31 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       });
   }
 
+  // ============================
+  // SET MÓDOSÍTÁSA
+  // ============================
 
   updateSet(set: UserWorkoutExerciseSetModel): void {
 
-    console.log('=== UPDATE SET ===');
-
-    console.log(
-      'Set ID:',
-      set.id
-    );
-
-    console.log(
-      'Módosítandó set:',
-      set
-    );
-
-    // Az ID kötelező a PUT kéréshez
     if (set.id == null) {
-
-      console.error(
-        'A set ID hiányzik, a módosítás nem hajtható végre.'
-      );
-
-      alert(
-        'A set azonosítója hiányzik.'
-      );
-
+      alert('A set azonosítója hiányzik.');
       return;
     }
 
     const data: Partial<UserWorkoutExerciseSetModel> = {
-
-      setNumber:
-      set.setNumber,
-
-      targetRepetitions:
-      set.targetRepetitions,
-
-      targetWeightKg:
-      set.targetWeightKg,
-
-      actualRepetitions:
-      set.actualRepetitions,
-
-      actualWeightKg:
-      set.actualWeightKg,
-
-      completed:
-      set.completed,
-
-      notes:
-      set.notes
+      setNumber: set.setNumber,
+      targetRepetitions: set.targetRepetitions,
+      targetWeightKg: set.targetWeightKg,
+      actualRepetitions: set.actualRepetitions,
+      actualWeightKg: set.actualWeightKg,
+      completed: set.completed,
+      notes: set.notes
     };
 
-    console.log(
-      'PUT data:',
-      data
-    );
-
     this.setService
-      .updateSet(
-        set.id,
-        data
-      )
+      .updateSet(set.id, data)
       .subscribe({
-
-        next: (response) => {
-
-          console.log(
-            '=== SET UPDATE SUCCESS ==='
-          );
-
-          console.log(
-            'Backend response:',
-            response
-          );
-
+        next: () => {
           alert(
             `Set #${set.setNumber} sikeresen módosítva.`
           );
@@ -277,16 +160,73 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
         error: (err: any) => {
 
           console.error(
-            '=== SET UPDATE ERROR ==='
-          );
-
-          console.error(
             'Hiba a set módosításakor:',
             err
           );
 
           alert(
+            err?.error?.message ||
             'Hiba történt a set módosításakor.'
+          );
+        }
+      });
+  }
+
+  // ============================
+  // SET TÖRLÉSE
+  // ============================
+
+  deleteSet(set: UserWorkoutExerciseSetModel): void {
+
+    if (set.id == null) {
+      alert('A set azonosítója hiányzik.');
+      return;
+    }
+
+    if (
+      !confirm(
+        `Biztosan törölni szeretnéd a ${set.setNumber}. set-et?`
+      )
+    ) {
+      return;
+    }
+
+    const userWorkoutExerciseId =
+      this.selectedUserWorkoutExerciseId;
+
+    this.setService
+      .deleteSet(set.id)
+      .subscribe({
+        next: () => {
+
+          /*
+           * Először azonnal frissítjük a lokális listát,
+           * hogy a UI ne várjon a GET-re.
+           */
+          this.selectedSets =
+            this.selectedSets.filter(
+              s => s.id !== set.id
+            );
+
+          /*
+           * A backend újraszámozza a set-eket,
+           * ezért utána lekérjük az aktuális állapotot.
+           */
+          if (userWorkoutExerciseId) {
+            this.loadSets(userWorkoutExerciseId);
+          }
+        },
+
+        error: (err: any) => {
+
+          console.error(
+            'Hiba a set törlésekor:',
+            err
+          );
+
+          alert(
+            err?.error?.message ||
+            'Hiba történt a set törlésekor.'
           );
         }
       });
@@ -317,11 +257,6 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       )
       .subscribe({
         next: res => {
-
-          console.log(
-            'Létrehozott user workout:',
-            res
-          );
 
           this.selectedUserWorkoutId =
             res.userWorkoutId;
@@ -357,20 +292,6 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       return;
     }
 
-    console.log(
-      '=== LOAD USER PROGRAM ==='
-    );
-
-    console.log(
-      'userId:',
-      this.selectedUserId
-    );
-
-    console.log(
-      'programId:',
-      this.selectedProgramId
-    );
-
     this.service
       .getUserProgramWithExercises(
         this.selectedUserId,
@@ -379,21 +300,6 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       .subscribe({
         next: data => {
 
-          console.log(
-            'raw user-program data:',
-            data
-          );
-
-          console.log(
-            'raw user-program data JSON:',
-            JSON.stringify(data, null, 2)
-          );
-
-          console.log(
-            'raw user-program data darabszáma:',
-            data?.length ?? 0
-          );
-
           this.userProgramData =
             data ?? [];
 
@@ -401,27 +307,9 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
             this.groupByDayAndWorkout(
               this.userProgramData
             );
-
-          console.log(
-            'grouped:',
-            this.dayGroups
-          );
-
-          console.log(
-            'grouped JSON:',
-            JSON.stringify(
-              this.dayGroups,
-              null,
-              2
-            )
-          );
         },
 
         error: (err: any) => {
-
-          console.error(
-            '=== USER PROGRAM BACKEND ERROR ==='
-          );
 
           console.error(
             'Hiba a program + exercises lekérésekor:',
@@ -442,28 +330,9 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
     rows: any[]
   ): any[] {
 
-    console.log(
-      '=== GROUP BY DAY / WORKOUT / EXERCISE ==='
-    );
-
-    console.log(
-      'Kapott rows:',
-      rows
-    );
-
     const map = new Map<string, any>();
 
     for (const row of rows) {
-
-      console.log(
-        'Feldolgozott row:',
-        row
-      );
-
-      console.log(
-        'user_workout_exercise_id:',
-        row.user_workout_exercise_id
-      );
 
       const dateKey =
         row.scheduled_date ?? 'nincs_datum';
@@ -471,12 +340,8 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       if (!map.has(dateKey)) {
 
         map.set(dateKey, {
-          date:
-          row.scheduled_date,
-
-          programDayIndex:
-          row.program_day_index,
-
+          date: row.scheduled_date,
+          programDayIndex: row.program_day_index,
           workouts: []
         });
       }
@@ -493,26 +358,17 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       if (!workout) {
 
         workout = {
-
-          workoutId:
-          row.workout_id,
-
-          workoutName:
-          row.workout_name,
-
+          workoutId: row.workout_id,
+          workoutName: row.workout_name,
           workoutCompleted:
             row.workout_completed === true,
-
           exercises: []
         };
 
-        dayObj.workouts.push(
-          workout
-        );
+        dayObj.workouts.push(workout);
       }
 
-      const exercise = {
-
+      workout.exercises.push({
         userWorkoutExerciseId:
         row.user_workout_exercise_id,
 
@@ -542,129 +398,71 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
 
         performedAt:
         row.performed_at
-      };
-
-      console.log(
-        'Létrehozott exercise objektum:',
-        exercise
-      );
-
-      console.log(
-        'Exercise → userWorkoutExerciseId:',
-        exercise.userWorkoutExerciseId
-      );
-
-      workout.exercises.push(
-        exercise
-      );
-    }
-
-    const result =
-      Array.from(map.values())
-        .sort((a, b) => {
-
-          if (a.date && b.date) {
-
-            return a.date.localeCompare(
-              b.date
-            );
-          }
-
-          return (
-            (a.programDayIndex ?? 0) -
-            (b.programDayIndex ?? 0)
-          );
-        })
-        .map(day => {
-
-          day.workouts =
-            day.workouts.map(
-              (w: any) => {
-
-                w.exercises =
-                  w.exercises.sort(
-                    (e1: any, e2: any) =>
-                      (e1.order ?? 0) -
-                      (e2.order ?? 0)
-                  );
-
-                return w;
-              }
-            );
-
-          return day;
-        });
-
-    console.log(
-      '=== GROUP BY RESULT ==='
-    );
-
-    console.log(
-      'Végeredmény:',
-      result
-    );
-
-    return result;
-  }
-  // ============================
-// SET TÖRLÉSE
-// ============================
-
-  deleteSet(set: UserWorkoutExerciseSetModel): void {
-
-    if (set.id == null) {
-      alert('A set azonosítója hiányzik.');
-      return;
-    }
-
-    if (!confirm(`Biztosan törölni szeretnéd a ${set.setNumber}. set-et?`)) {
-      return;
-    }
-
-    console.log(
-      'Set törlése:',
-      set.id
-    );
-
-    this.setService
-      .deleteSet(set.id)
-      .subscribe({
-
-        next: (response: any) => {
-
-          console.log(
-            'Set sikeresen törölve:',
-            response
-          );
-
-          // Frontend lista frissítése
-          this.selectedSets =
-            this.selectedSets.filter(
-              s => s.id !== set.id
-            );
-
-          // Újratöltjük a backendből,
-          // hogy biztosan a DB aktuális állapotát lássuk.
-          if (this.selectedUserWorkoutExerciseId) {
-
-            this.loadSets(
-              this.selectedUserWorkoutExerciseId
-            );
-          }
-        },
-
-        error: (err: any) => {
-
-          console.error(
-            'Hiba a set törlésekor:',
-            err
-          );
-
-          alert(
-            err?.error?.message ||
-            'Hiba történt a set törlésekor.'
-          );
-        }
       });
+    }
+
+    return Array.from(map.values())
+      .sort((a, b) => {
+
+        if (a.date && b.date) {
+          return a.date.localeCompare(b.date);
+        }
+
+        return (
+          (a.programDayIndex ?? 0) -
+          (b.programDayIndex ?? 0)
+        );
+      })
+      .map(day => {
+
+        day.workouts =
+          day.workouts.map(
+            (workout: any) => {
+
+              workout.exercises =
+                workout.exercises.sort(
+                  (a: any, b: any) =>
+                    (a.order ?? 0) -
+                    (b.order ?? 0)
+                );
+
+              return workout;
+            }
+          );
+
+        return day;
+      });
+  }
+
+  // ============================
+  // ANGULAR TRACK BY
+  // ============================
+
+  trackByDay(
+    index: number,
+    day: any
+  ): any {
+    return day.programDayIndex ?? index;
+  }
+
+  trackByWorkout(
+    index: number,
+    workout: any
+  ): any {
+    return workout.workoutId ?? index;
+  }
+
+  trackByExercise(
+    index: number,
+    exercise: any
+  ): any {
+    return exercise.userWorkoutExerciseId ?? index;
+  }
+
+  trackBySet(
+    index: number,
+    set: UserWorkoutExerciseSetModel
+  ): any {
+    return set.id ?? index;
   }
 }

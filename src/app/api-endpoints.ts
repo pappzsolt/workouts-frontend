@@ -7,5 +7,7 @@ export const API_ENDPOINTS = {
   programs: `${environment.apiUrl}/programs`,
   createProgram: `${environment.apiUrl}/user-programs/create`,
   workoutExercises: `${environment.apiUrl}/workout-exercises`,
+  userWorkoutExerciseSets:
+    `${environment.apiUrl}/user-workout-exercise-sets`,
 };
 
