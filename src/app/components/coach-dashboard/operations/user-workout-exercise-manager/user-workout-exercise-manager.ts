@@ -524,4 +524,96 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
   ): any {
     return set.id ?? index;
   }
+  /**
+   * ============================
+   * WORKOUT EXERCISE SORREND
+   * ============================
+   *
+   * Workout exercise sorrendjének módosítása.
+   */
+  updateExerciseOrderIndex(
+    workoutId: number,
+    exerciseId: number,
+    orderIndex: number
+  ): void {
+
+    if (!workoutId) {
+      alert('A workout azonosítója hiányzik.');
+      return;
+    }
+
+    if (!exerciseId) {
+      alert('Az exercise azonosítója hiányzik.');
+      return;
+    }
+
+    if (orderIndex == null) {
+      alert('Az order index megadása kötelező.');
+      return;
+    }
+
+    this.service
+      .updateExerciseOrderIndex(
+        workoutId,
+        exerciseId,
+        orderIndex
+      )
+      .subscribe({
+
+        next: () => {
+
+          console.log(
+            'Exercise sorrendje frissítve:',
+            {
+              workoutId,
+              exerciseId,
+              orderIndex
+            }
+          );
+
+          // A lokális adatban is frissítjük az értéket.
+          const workout =
+            this.dayGroups
+              .flatMap(day => day.workouts)
+              .find(
+                (w: any) =>
+                  w.workoutId === workoutId
+              );
+
+          if (workout) {
+
+            const exercise =
+              workout.exercises.find(
+                (e: any) =>
+                  e.exerciseId === exerciseId
+              );
+
+            if (exercise) {
+              exercise.order = orderIndex;
+            }
+
+            // Újrarendezzük az exercise-eket.
+            workout.exercises =
+              workout.exercises.sort(
+                (a: any, b: any) =>
+                  (a.order ?? 0) -
+                  (b.order ?? 0)
+              );
+          }
+        },
+
+        error: (err: any) => {
+
+          console.error(
+            'Hiba az exercise sorrendjének frissítésekor:',
+            err
+          );
+
+          alert(
+            err?.error?.message ||
+            'Hiba történt az exercise sorrendjének módosításakor.'
+          );
+        }
+      });
+  }
 }

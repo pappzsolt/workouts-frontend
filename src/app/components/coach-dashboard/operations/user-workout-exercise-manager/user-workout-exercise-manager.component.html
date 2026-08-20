@@ -239,41 +239,83 @@
               <tr
                 class="border-b hover:bg-gray-50">
 
+
+                <!-- ORDER INDEX -->
+
                 <td class="py-1 px-2">
-                  {{ ex.order }}
+
+                  <div class="flex items-center gap-1">
+
+                    <input
+                      type="number"
+                      min="1"
+                      [(ngModel)]="ex.order"
+                      class="border rounded px-2 py-1 w-16"
+                    />
+
+                    <button
+                      type="button"
+                      (click)="updateExerciseOrderIndex(
+                        w.workoutId,
+                        ex.exerciseId,
+                        ex.order
+                      )"
+                      class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">
+
+                      Save
+
+                    </button>
+
+                  </div>
+
                 </td>
+
+
+                <!-- EXERCISE -->
 
                 <td class="py-1 px-2 font-medium">
                   {{ ex.exerciseName }}
                 </td>
 
+
+                <!-- DONE -->
+
                 <td class="py-1 px-2">
 
-                    <span
-                      *ngIf="ex.exerciseCompleted"
-                      class="text-green-600">
+                  <span
+                    *ngIf="ex.exerciseCompleted"
+                    class="text-green-600">
 
-                      ✔
+                    ✔
 
-                    </span>
+                  </span>
 
                   <span
                     *ngIf="!ex.exerciseCompleted"
                     class="text-gray-400">
 
-                      ✖
+                    ✖
 
-                    </span>
+                  </span>
 
                 </td>
+
+
+                <!-- SETS -->
 
                 <td class="py-1 px-2">
                   {{ ex.setsDone }}
                 </td>
 
+
+                <!-- FEEDBACK -->
+
                 <td class="py-1 px-2">
                   {{ ex.feedback }}
                 </td>
+
+
+                <!-- NOTES -->
 
                 <td class="py-1 px-2">
                   {{ ex.notes }}
@@ -325,9 +367,9 @@
                     <div
                       class="px-3 py-2 font-semibold border-b bg-gray-100 flex items-center justify-between">
 
-                        <span>
-                          Exercise sets
-                        </span>
+                      <span>
+                        Exercise sets
+                      </span>
 
                       <button
                         type="button"
@@ -345,7 +387,6 @@
 
                       <table
                         class="min-w-full text-sm">
-
 
                         <thead>
 
@@ -403,9 +444,7 @@
                           <!-- SET NUMBER -->
 
                           <td class="px-3 py-2">
-
                             {{ set.setNumber }}
-
                           </td>
 
 
@@ -505,6 +544,7 @@
                               Save
 
                             </button>
+
 
                             <!-- DELETE -->
 

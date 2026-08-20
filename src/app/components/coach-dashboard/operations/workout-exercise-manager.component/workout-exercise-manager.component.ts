@@ -46,4 +46,35 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
         }
       });
   }
+
+  /**
+   * Workout exercise sorrendjének módosítása.
+   */
+  updateExerciseOrderIndex(
+    workoutId: number,
+    exerciseId: number,
+    orderIndex: number
+  ): void {
+
+    this.service
+      .updateExerciseOrderIndex(
+        workoutId,
+        exerciseId,
+        orderIndex
+      )
+      .subscribe({
+        next: () => {
+          console.log(
+            'Exercise sorrendje frissítve:',
+            orderIndex
+          );
+        },
+        error: err => {
+          console.error(
+            'Hiba az exercise sorrendjének frissítésekor:',
+            err
+          );
+        }
+      });
+  }
 }

@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
 import { UserWorkoutExerciseDto } from '../../models/user-workout-exercise.dto';
+import { API_ENDPOINTS } from '../../api-endpoints';
 
 @Injectable({
   providedIn: 'root'
@@ -9,23 +11,30 @@ import { UserWorkoutExerciseDto } from '../../models/user-workout-exercise.dto';
 export class WorkoutExercisesManagerService {
 
   private readonly baseUrl =
-    'http://localhost:8080/api/user-workout-exercises';
+    API_ENDPOINTS.userWorkoutExercises;
 
   private readonly userWorkoutsBaseUrl =
-    'http://localhost:8080/api/user-workout-exercises/create-with-exercises';
+    API_ENDPOINTS.createUserWorkoutWithExercises;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient
+  ) {}
 
-  /** Lekéri egy user workout összes exercise-át */
+  /**
+   * Lekéri egy user workout összes exercise-át.
+   */
   getExercisesForUserWorkout(
     userWorkoutId: number
   ): Observable<UserWorkoutExerciseDto[]> {
+
     return this.http.get<UserWorkoutExerciseDto[]>(
       `${this.baseUrl}/workout/${userWorkoutId}`
     );
   }
 
-  /** Completed mező frissítése */
+  /**
+   * Completed mező frissítése.
+   */
   updateCompleted(
     id: number,
     completed: boolean
@@ -41,7 +50,9 @@ export class WorkoutExercisesManagerService {
     );
   }
 
-  /** Részletek frissítése */
+  /**
+   * Részletek frissítése.
+   */
   updateDetails(
     id: number,
     setsDone: number,
@@ -69,15 +80,6 @@ export class WorkoutExercisesManagerService {
 
   /**
    * Program hozzárendelése userhez.
-   *
-   * A coach a felületen:
-   * - usert választ
-   * - programot választ
-   * - dátumot választ
-   *
-   * A backend ezek alapján létrehozza:
-   * user_workouts
-   * user_workout_exercises
    */
   addUserWorkout(
     userId: number,
@@ -118,7 +120,8 @@ export class WorkoutExercisesManagerService {
   }
 
   /**
-   * Egy már létező user workout ütemezett dátumának módosítása.
+   * Egy már létező user workout
+   * ütemezett dátumának módosítása.
    */
   updateUserWorkoutScheduledDate(
     userWorkoutId: number,
@@ -133,6 +136,7 @@ export class WorkoutExercisesManagerService {
       }
     );
   }
+
   /**
    * A belépett user számára ütemezett workoutok lekérése.
    */
@@ -143,4 +147,24 @@ export class WorkoutExercisesManagerService {
     );
   }
 
+  /**
+   * Workout exercise sorrendjének módosítása.
+   */
+  updateExerciseOrderIndex(
+    workoutId: number,
+    exerciseId: number,
+    orderIndex: number
+  ): Observable<void> {
+
+    const params = new HttpParams()
+      .set('workoutId', workoutId)
+      .set('exerciseId', exerciseId)
+      .set('orderIndex', orderIndex);
+
+    return this.http.put<void>(
+      `${API_ENDPOINTS.workoutExercises}/order-index`,
+      null,
+      { params }
+    );
+  }
 }
