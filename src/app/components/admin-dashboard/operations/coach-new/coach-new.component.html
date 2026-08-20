@@ -1,80 +1,180 @@
-<div class="w-full min-h-screen bg-white px-4 sm:px-10 py-6 flex flex-col items-center">
-  <h2 class="text-2xl font-bold mb-6 text-center">Új Edző</h2>
+<div class="coach-new">
 
-  <form #userForm="ngForm" (ngSubmit)="onSubmit(userForm)"
-        class="w-full max-w-6xl bg-white rounded-xl shadow-lg p-6 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+  <h2 class="coach-new__title">
+    Új Edző
+  </h2>
+
+  <form
+    #coachForm="ngForm"
+    (ngSubmit)="onSubmit(coachForm)"
+    class="coach-form"
+  >
 
     <!-- Név -->
-    <div>
-      <label for="name" class="block text-gray-700 mb-1">Név*</label>
-      <input id="name" name="name" type="text" [(ngModel)]="user.name" required
-             #nameModel="ngModel"
-             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
-      <div *ngIf="nameModel.invalid && (nameModel.dirty || nameModel.touched)" class="text-red-600 text-sm mt-1">
+    <div class="form-field">
+
+      <label for="name">
+        Név*
+      </label>
+
+      <input
+        id="name"
+        name="name"
+        type="text"
+        [(ngModel)]="coach.name"
+        required
+        #nameModel="ngModel"
+      />
+
+      <div
+        *ngIf="nameModel.invalid && (nameModel.dirty || nameModel.touched)"
+        class="validation-error"
+      >
         Név megadása kötelező
       </div>
+
     </div>
+
 
     <!-- Email -->
-    <div>
-      <label for="email" class="block text-gray-700 mb-1">Email*</label>
-      <input id="email" name="email" type="email" [(ngModel)]="user.email" required email
-             #emailModel="ngModel"
-             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
-      <div *ngIf="emailModel.invalid && (emailModel.dirty || emailModel.touched)" class="text-red-600 text-sm mt-1">
+    <div class="form-field">
+
+      <label for="email">
+        Email*
+      </label>
+
+      <input
+        id="email"
+        name="email"
+        type="email"
+        [(ngModel)]="coach.email"
+        required
+        email
+        #emailModel="ngModel"
+      />
+
+      <div
+        *ngIf="emailModel.invalid && (emailModel.dirty || emailModel.touched)"
+        class="validation-error"
+      >
         Érvényes email cím szükséges
       </div>
+
     </div>
+
 
     <!-- Jelszó -->
-    <div>
-      <label for="passwordHash" class="block text-gray-700 mb-1">Jelszó*</label>
-      <input id="passwordHash" name="passwordHash" type="password" [(ngModel)]="user.passwordHash" required minlength="6"
-             #passwordModel="ngModel"
-             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
-      <div *ngIf="passwordModel.invalid && (passwordModel.dirty || passwordModel.touched)" class="text-red-600 text-sm mt-1">
+    <div class="form-field">
+
+      <label for="passwordHash">
+        Jelszó*
+      </label>
+
+      <input
+        id="passwordHash"
+        name="passwordHash"
+        type="password"
+        [(ngModel)]="coach.passwordHash"
+        required
+        minlength="6"
+        #passwordModel="ngModel"
+      />
+
+      <div
+        *ngIf="passwordModel.invalid && (passwordModel.dirty || passwordModel.touched)"
+        class="validation-error"
+      >
         Minimum 6 karakter
       </div>
+
     </div>
+
 
     <!-- Telefon -->
-    <div>
-      <label for="phone" class="block text-gray-700 mb-1">Telefon*</label>
-      <input id="phone" name="phone" type="text" [(ngModel)]="user.phone" required
-             pattern="^\+36\d{9}$"
-             #phoneModel="ngModel"
-             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
-      <div *ngIf="phoneModel.invalid && (phoneModel.dirty || phoneModel.touched)" class="text-red-600 text-sm mt-1">
+    <div class="form-field">
+
+      <label for="phone">
+        Telefon*
+      </label>
+
+      <input
+        id="phone"
+        name="phone"
+        type="text"
+        [(ngModel)]="coach.phone"
+        required
+        pattern="^\+36\d{9}$"
+        #phoneModel="ngModel"
+      />
+
+      <div
+        *ngIf="phoneModel.invalid && (phoneModel.dirty || phoneModel.touched)"
+        class="validation-error"
+      >
         Érvényes magyar telefonszám szükséges (+36xxxxxxxxx)
       </div>
+
     </div>
+
 
     <!-- Szakterület -->
-    <div class="sm:col-span-2 md:col-span-3">
-      <label for="specialization" class="block text-gray-700 mb-1">Szakterület</label>
-      <textarea id="specialization" name="specialization" rows="3" placeholder="Szakterület"
-                [(ngModel)]="user.specialization"
-                class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"></textarea>
+    <div class="form-field form-field--full">
+
+      <label for="specialization">
+        Szakterület
+      </label>
+
+      <textarea
+        id="specialization"
+        name="specialization"
+        rows="3"
+        placeholder="Szakterület"
+        [(ngModel)]="coach.specialization"
+      ></textarea>
+
     </div>
+
 
     <!-- Avatar URL -->
-    <div class="sm:col-span-2 md:col-span-3">
-      <label for="avatarUrl" class="block text-gray-700 mb-1">Avatar URL</label>
-      <input id="avatarUrl" name="avatarUrl" type="text" [(ngModel)]="user.avatarUrl"
-             class="border border-gray-300 rounded-lg px-3 py-2 w-full focus:ring-2 focus:ring-blue-500"/>
+    <div class="form-field form-field--full">
+
+      <label for="avatarUrl">
+        Avatar URL
+      </label>
+
+      <input
+        id="avatarUrl"
+        name="avatarUrl"
+        type="text"
+        [(ngModel)]="coach.avatarUrl"
+      />
+
     </div>
 
-    <!-- Submit Button -->
-    <div class="sm:col-span-2 md:col-span-3 text-center mt-4">
-      <button type="submit"
-              class="bg-blue-600 text-white font-medium py-2 px-4 rounded-lg shadow hover:bg-blue-700 w-36">
-        Edző létrehozása
+
+    <!-- Submit -->
+    <div class="form-actions">
+
+      <button
+        type="submit"
+        [disabled]="loading"
+      >
+        {{ loading ? 'Mentés...' : 'Edző létrehozása' }}
       </button>
+
     </div>
 
   </form>
 
-  <div *ngIf="message" [ngClass]="{'text-red-600': isError, 'text-green-600': !isError}" class="mt-4 font-medium">
+
+  <!-- Üzenet -->
+  <div
+    *ngIf="message"
+    [class.error-message]="isError"
+    [class.success-message]="!isError"
+    class="form-message"
+  >
     {{ message }}
   </div>
+
 </div>

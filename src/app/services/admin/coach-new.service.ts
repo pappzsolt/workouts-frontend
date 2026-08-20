@@ -1,23 +1,58 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import {
+  HttpClient,
+  HttpErrorResponse
+} from '@angular/common/http';
+
+import {
+  Observable,
+  catchError,
+  throwError
+} from 'rxjs';
+
+import { API_ENDPOINTS } from '../../api-endpoints';
+
+import {
+  CreateCoachRequest,
+  CreateCoachResponse
+} from '../../models/create-coach-request.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CoachNewService {
-  private apiUrl = 'http://localhost:8080/api/members';
 
-  constructor(private http: HttpClient) {}
+  private readonly apiUrl = API_ENDPOINTS.members;
 
-  // Új coach létrehozása
-  createCoach(coachData: any): Observable<any> {
-    return this.http.post<any>(this.apiUrl, coachData)
-      .pipe(catchError(this.handleError));
-  }
+  constructor(
+    private readonly http: HttpClient
+  ) {}
 
-  private handleError(error: HttpErrorResponse) {
-    return throwError(() => error);
+  /**
+   * Új edző létrehozása.
+   */
+  createCoach(
+    coachData: CreateCoachRequest
+  ): Observable<CreateCoachResponse> {
+
+    return this.http
+      .post<CreateCoachResponse>(
+        this.apiUrl,
+        coachData
+      )
+      .pipe(
+        catchError(
+          (error: HttpErrorResponse) => {
+
+            const message =
+              error.error?.message ??
+              'Az edző létrehozása nem sikerült.';
+
+            return throwError(
+              () => new Error(message)
+            );
+          }
+        )
+      );
   }
 }

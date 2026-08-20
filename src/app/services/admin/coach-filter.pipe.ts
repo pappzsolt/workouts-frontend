@@ -1,18 +1,32 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Coach } from './coach-edit.service'; // vagy ahonnan az interfész jön
+import { Coach } from '../../models/coach.model';
 
 @Pipe({
   name: 'coachFilter',
-  standalone: true, // nem kell külön module
+  standalone: true
 })
 export class CoachFilterPipe implements PipeTransform {
-  transform(coaches: Coach[], search: string): Coach[] {
-    if (!coaches) return [];
-    if (!search) return coaches;
-    search = search.toLowerCase();
-    return coaches.filter(c =>
-      c.name.toLowerCase().includes(search) ||
-      c.email.toLowerCase().includes(search)
+
+  transform(
+    coaches: Coach[],
+    search: string
+  ): Coach[] {
+
+    if (!coaches) {
+      return [];
+    }
+
+    if (!search || !search.trim()) {
+      return coaches;
+    }
+
+    const searchTerm = search
+      .toLowerCase()
+      .trim();
+
+    return coaches.filter(coach =>
+      coach.name.toLowerCase().includes(searchTerm) ||
+      coach.email.toLowerCase().includes(searchTerm)
     );
   }
 }

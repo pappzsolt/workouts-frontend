@@ -1,0 +1,240 @@
+.coach-new {
+  width: 100%;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 24px 40px;
+  background: #ffffff;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.coach-new__title {
+  margin: 0 0 24px;
+  text-align: center;
+
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+}
+
+
+/* =========================
+   Form
+   ========================= */
+
+.coach-form {
+  width: 100%;
+  max-width: 1200px;
+  box-sizing: border-box;
+
+  padding: 24px;
+
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+
+  background: #ffffff;
+
+  border-radius: 12px;
+
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================
+   Mezők
+   ========================= */
+
+.form-field {
+  min-width: 0;
+}
+
+.form-field--full {
+  grid-column: 1 / -1;
+}
+
+.form-field label {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #374151;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+
+/* =========================
+   Input / textarea
+   ========================= */
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 10px 12px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  font-size: 14px;
+  color: #111827;
+
+  outline: none;
+
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.form-field input {
+  height: 42px;
+}
+
+.form-field textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  border-color: #2563eb;
+
+  box-shadow:
+    0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+
+/* =========================
+   Validációs hiba
+   ========================= */
+
+.validation-error {
+  margin-top: 5px;
+
+  color: #dc2626;
+
+  font-size: 13px;
+}
+
+
+/* =========================
+   Gomb
+   ========================= */
+
+.form-actions {
+  grid-column: 1 / -1;
+
+  display: flex;
+  justify-content: center;
+
+  margin-top: 8px;
+}
+
+.form-actions button {
+  width: 160px;
+
+  padding: 10px 16px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 2px 5px rgba(0, 0, 0, 0.12);
+
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
+}
+
+.form-actions button:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.form-actions button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.form-actions button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+/* =========================
+   Üzenet
+   ========================= */
+
+.form-message {
+  margin-top: 16px;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.success-message {
+  color: #16a34a;
+}
+
+.error-message {
+  color: #dc2626;
+}
+
+
+/* =========================
+   Tablet
+   ========================= */
+
+@media (max-width: 900px) {
+
+  .coach-new {
+    padding: 20px;
+  }
+
+  .coach-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+/* =========================
+   Mobil
+   ========================= */
+
+@media (max-width: 600px) {
+
+  .coach-new {
+    padding: 16px 10px;
+  }
+
+  .coach-new__title {
+    font-size: 22px;
+  }
+
+  .coach-form {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+
+  .form-field--full {
+    grid-column: auto;
+  }
+
+  .form-actions {
+    grid-column: auto;
+  }
+}

@@ -1,60 +1,133 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, NgForm, NgModel } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
+
 import { CoachNewService } from '../../../../services/admin/coach-new.service';
+
+import {
+  CreateCoachRequest
+} from '../../../../models/create-coach-request.model';
 
 @Component({
   selector: 'app-coach-new',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule
+  ],
   templateUrl: './coach-new.component.html',
   styleUrls: ['./coach-new.component.css']
 })
 export class CoachNewComponent {
-  user: any = {
-    name: '',
-    email: '',
-    passwordHash: '',
-    phone: '',
-    specialization: '',
-    avatarUrl: ''
-  };
+
+  coach: CreateCoachRequest = this.createEmptyCoach();
 
   message = '';
   isError = false;
+  loading = false;
 
-  constructor(private coachNewService: CoachNewService) {}
+  constructor(
+    private readonly coachNewService: CoachNewService
+  ) {}
 
-  onSubmit(form: NgForm) {
+  /**
+   * Új edző létrehozása.
+   */
+  onSubmit(form: NgForm): void {
+
     if (!form.valid) {
-      this.message = 'Kérlek töltsd ki az összes kötelező mezőt és adj meg érvényes adatokat!';
-      this.isError = true;
+
+      this.showError(
+        'Kérlek töltsd ki az összes kötelező mezőt és adj meg érvényes adatokat.'
+      );
+
       return;
     }
 
-    const payload = {
-      type: 'coach',
-      name: this.user.name,
-      email: this.user.email,
-      passwordHash: this.user.passwordHash,
-      avatarUrl: this.user.avatarUrl,
-      phone: this.user.phone,
-      specialization: this.user.specialization,
-      roleIds: [3] // fix roleId a coach
-    };
-    this.coachNewService.createCoach(payload).subscribe({
-      next: (res) => {
-        this.message = res.message || 'Sikeres létrehozás';
-        this.isError = !res.success;
-        if (res.success) {
+    this.loading = true;
+    this.clearMessage();
 
-          form.resetForm();
+    this.coachNewService
+      .createCoach(this.coach)
+      .subscribe({
+
+        next: response => {
+
+          this.loading = false;
+
+          if (response.success) {
+
+            this.showSuccess(
+              response.message ||
+              'Az edző sikeresen létrejött.'
+            );
+
+            form.resetForm();
+
+            this.coach = this.createEmptyCoach();
+
+          } else {
+
+            this.showError(
+              response.message ||
+              'Az edző létrehozása nem sikerült.'
+            );
+          }
+        },
+
+        error: (error: Error) => {
+
+          this.loading = false;
+
+          this.showError(
+            error.message ||
+            'Az edző létrehozása nem sikerült.'
+          );
         }
-      },
-      error: (err) => {
-        this.message = err.error?.message || 'Hiba a mentésnél';
-        this.isError = true;
-      }
-    });
+      });
+  }
+
+  /**
+   * Üres coach modell létrehozása.
+   */
+  private createEmptyCoach(): CreateCoachRequest {
+
+    return {
+      type: 'coach',
+      name: '',
+      email: '',
+      passwordHash: '',
+      phone: '',
+      specialization: '',
+      avatarUrl: '',
+      roleIds: [3]
+    };
+  }
+
+  /**
+   * Sikeres üzenet megjelenítése.
+   */
+  private showSuccess(message: string): void {
+
+    this.message = message;
+    this.isError = false;
+  }
+
+  /**
+   * Hibaüzenet megjelenítése.
+   */
+  private showError(message: string): void {
+
+    this.message = message;
+    this.isError = true;
+  }
+
+  /**
+   * Üzenet törlése.
+   */
+  private clearMessage(): void {
+
+    this.message = '';
+    this.isError = false;
   }
 }
