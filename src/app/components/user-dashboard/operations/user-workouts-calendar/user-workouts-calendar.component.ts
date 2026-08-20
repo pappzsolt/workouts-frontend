@@ -299,12 +299,6 @@ export class UserWorkoutsCalendarComponent implements OnInit {
   // Dátum nélküli workoutok
   // =========================================================
 
-  getUnscheduledWorkouts(): any[] {
-
-    return this.scheduledWorkouts.filter(
-      workout => !workout.scheduled_at
-    );
-  }
 
 
   // =========================================================
@@ -394,4 +388,5 @@ export class UserWorkoutsCalendarComponent implements OnInit {
       date.getDate() === today.getDate()
     );
   }
+
 }

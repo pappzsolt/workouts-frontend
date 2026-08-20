@@ -1,19 +1,40 @@
 <div class="workouts-calendar">
 
-  <!-- Naptár fejléc -->
+  <!-- ===================================================== -->
+  <!-- NAPTÁR FEJLÉC -->
+  <!-- ===================================================== -->
+
   <div class="calendar-header">
-    <button type="button" (click)="previousMonth()">‹</button>
+
+    <button
+      type="button"
+      class="month-button"
+      (click)="previousMonth()"
+    >
+      ‹
+    </button>
 
     <h2>
       {{ monthNames[currentMonth] }} {{ currentYear }}
     </h2>
 
-    <button type="button" (click)="nextMonth()">›</button>
+    <button
+      type="button"
+      class="month-button"
+      (click)="nextMonth()"
+    >
+      ›
+    </button>
+
   </div>
 
 
-  <!-- Hét napjai -->
+  <!-- ===================================================== -->
+  <!-- HÉT NAPJAI -->
+  <!-- ===================================================== -->
+
   <div class="calendar-weekdays">
+
     <div>H</div>
     <div>K</div>
     <div>Sze</div>
@@ -21,10 +42,14 @@
     <div>P</div>
     <div>Szo</div>
     <div>V</div>
+
   </div>
 
 
-  <!-- Naptár -->
+  <!-- ===================================================== -->
+  <!-- NAPTÁR -->
+  <!-- ===================================================== -->
+
   <div class="calendar-days">
 
     <div
@@ -34,19 +59,28 @@
       [class.today]="day.isToday"
     >
 
+      <!-- Dátum -->
+
       <div class="day-number">
         {{ day.date.getDate() }}
       </div>
 
 
-      <!-- Workoutok az adott napon -->
+      <!-- Workoutok -->
+
       <div
         *ngFor="let workout of getWorkoutsForDay(day.date)"
         class="workout-item"
         [class.completed]="workout.completed"
         (click)="selectWorkout(workout)"
       >
-        🏋️ {{ workout.workout_name }}
+
+        <span class="workout-icon">🏋️</span>
+
+        <span class="workout-name">
+          {{ workout.workout_name }}
+        </span>
+
       </div>
 
     </div>
@@ -54,98 +88,90 @@
   </div>
 
 
-  <!-- Dátum nélküli workoutok -->
-  <div
-    class="unscheduled-workouts"
-    *ngIf="getUnscheduledWorkouts().length > 0"
-  >
 
-    <h3>Dátum nélküli workoutok</h3>
-
-    <div
-      *ngFor="let workout of getUnscheduledWorkouts()"
-      class="unscheduled-workout"
-      (click)="selectWorkout(workout)"
-    >
-      🏋️ {{ workout.workout_name }}
-    </div>
-
-  </div>
-
-
-  <!-- Kiválasztott workout részletei -->
   <div
     class="selected-workout"
     *ngIf="selectedWorkout"
   >
 
     <!-- Fejléc -->
+
     <div class="selected-workout-header">
 
       <div>
-        <h3>
+
+        <div class="selected-workout-title">
           🏋️ {{ selectedWorkout.workout_name }}
-        </h3>
+        </div>
 
         <div
           class="selected-workout-date"
           *ngIf="selectedWorkout.scheduled_at"
         >
-          {{ selectedWorkout.scheduled_at }}
+          📅 {{ selectedWorkout.scheduled_at }}
         </div>
 
         <div
           class="selected-workout-date"
           *ngIf="!selectedWorkout.scheduled_at"
         >
-          Nincs tervezett dátum
+          📅 Nincs tervezett dátum
         </div>
+
       </div>
+
 
       <button
         type="button"
         class="close-button"
         (click)="closeWorkoutDetails()"
       >
-        ✕
+        ×
       </button>
 
     </div>
 
 
+    <!-- Elválasztó -->
+
+    <div class="selected-workout-divider"></div>
+
+
     <!-- Exercise lista -->
-    <div class="selected-workout-content">
+
+    <div class="exercises-section">
 
       <h4>Gyakorlatok</h4>
+
+
+      <!-- Nincs exercise -->
 
       <div
         *ngIf="selectedExercises.length === 0"
         class="no-exercises"
       >
-        Nincs exercise ehhez a workouthoz.
+        Ehhez a workouthoz nincs gyakorlat.
       </div>
 
 
+      <!-- Exercise-ok -->
+
       <div
-        *ngFor="let exercise of selectedExercises; let i = index"
-        class="exercise-item"
+        *ngFor="
+          let exercise of selectedExercises;
+          let i = index
+        "
+        class="exercise-card"
       >
 
         <div class="exercise-number">
           {{ i + 1 }}
         </div>
 
-        <div class="exercise-info">
+        <div class="exercise-content">
 
           <div class="exercise-name">
             {{ exercise.exercise_name }}
-          </div>
-
-          <div
-            class="exercise-sets"
-            *ngIf="exercise.sets_done !== null && exercise.sets_done !== undefined"
-          >
-            {{ exercise.sets_done }} sorozat
           </div>
 
         </div>

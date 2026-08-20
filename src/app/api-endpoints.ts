@@ -2,6 +2,7 @@ import { environment } from '../environments/environment';
 
 export const API_ENDPOINTS = {
   members: `${environment.apiUrl}/members`,
+  allCoaches: `${environment.apiUrl}/members/all-coaches`,
   memberSearch: `${environment.apiUrl}/members/search`,
   coach: `${environment.apiUrl}/coach`,
 

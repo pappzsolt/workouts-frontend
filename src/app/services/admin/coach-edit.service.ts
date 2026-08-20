@@ -1,66 +1,92 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, catchError, throwError } from 'rxjs';
+import {
+  Observable,
+  map,
+  catchError,
+  throwError
+} from 'rxjs';
 
-export interface Coach {
-  id: number;
-  name: string;
-  email: string;
-  phone: string;
-  specialization?: string;
-  avatarUrl?: string;
-  password?: string; // opcionális, csak update-hez
-}
+import { API_ENDPOINTS } from '../../api-endpoints';
+
+import { Coach } from '../../models/coach.model';
+import {
+  CoachResponse,
+  CoachesResponse
+} from '../../models/coach-response.model';
+
+import { UpdateCoachRequest } from '../../models/update-coach-request.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CoachEditService {
-  private apiUrl = 'http://localhost:8080/api/members/all-coaches';
 
-  constructor(private http: HttpClient) {}
+  private readonly coachesUrl = API_ENDPOINTS.allCoaches;
+  private readonly membersUrl = API_ENDPOINTS.members;
 
+  constructor(
+    private readonly http: HttpClient
+  ) {}
+
+  /**
+   * Összes edző lekérése.
+   */
   getCoaches(): Observable<Coach[]> {
-    return this.http.get<any>(this.apiUrl).pipe(
-      map(res =>
-        res.data.map((item: any) => ({
-          id: item.id,
-          name: item.usernameOrName,
-          email: item.email,
-          phone: item.extraFields?.phone || '',
-          specialization: item.extraFields?.specialization || '',
-          avatarUrl: item.avatarUrl || '',
-          password: ''
-        }))
-      ),
-      catchError(err => {
-        console.error('Hiba az edzők lekérésekor:', err);
-        return throwError(() => err);
-      })
-    );
+
+    return this.http
+      .get<CoachesResponse>(this.coachesUrl)
+      .pipe(
+        map(response =>
+          response.data.map(item =>
+            this.mapCoach(item)
+          )
+        ),
+
+        catchError(() =>
+          throwError(() =>
+            new Error(
+              'Az edzők listájának betöltése nem sikerült.'
+            )
+          )
+        )
+      );
   }
 
+  /**
+   * Egy edző lekérése.
+   */
   getCoach(id: number): Observable<Coach> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
-      map(item => ({
-        id: item.id,
-        name: item.usernameOrName,
-        email: item.email,
-        phone: item.extraFields?.phone || '',
-        specialization: item.extraFields?.specialization || '',
-        avatarUrl: item.avatarUrl || '',
-        password: ''
-      })),
-      catchError(err => {
-        console.error(`Hiba az edző lekérésekor (id=${id}):`, err);
-        return throwError(() => err);
-      })
-    );
+
+    return this.http
+      .get<CoachResponse>(
+        `${this.coachesUrl}/${id}`
+      )
+      .pipe(
+        map(item =>
+          this.mapCoach(item)
+        ),
+
+        catchError(() =>
+          throwError(() =>
+            new Error(
+              'Az edző adatainak betöltése nem sikerült.'
+            )
+          )
+        )
+      );
   }
 
-  updateCoach(id: number, coach: Coach): Observable<Coach> {
-    const payload: any = {
-      id: id,
+  /**
+   * Edző adatainak frissítése.
+   */
+  updateCoach(
+    id: number,
+    coach: Coach
+  ): Observable<Coach> {
+
+    const payload: UpdateCoachRequest = {
+      id,
       type: 'coach',
       name: coach.name,
       email: coach.email,
@@ -70,15 +96,45 @@ export class CoachEditService {
       roleIds: [3]
     };
 
-    if (coach.password && coach.password.trim() !== '') {
+    if (
+      coach.password &&
+      coach.password.trim() !== ''
+    ) {
       payload.passwordHash = coach.password;
     }
 
-    return this.http.post<Coach>('http://localhost:8080/api/members', payload).pipe(
-      catchError(err => {
-        console.error(`Hiba az edző frissítésekor (id=${id}):`, err);
-        return throwError(() => err);
-      })
-    );
+    return this.http
+      .post<Coach>(
+        this.membersUrl,
+        payload
+      )
+      .pipe(
+        catchError(() =>
+          throwError(() =>
+            new Error(
+              'Az edző adatainak mentése nem sikerült.'
+            )
+          )
+        )
+      );
+  }
+
+  /**
+   * Backend CoachResponse → frontend Coach modell.
+   */
+  private mapCoach(
+    item: CoachResponse
+  ): Coach {
+
+    return {
+      id: item.id,
+      name: item.usernameOrName,
+      email: item.email,
+      phone: item.extraFields?.phone ?? '',
+      specialization:
+        item.extraFields?.specialization ?? '',
+      avatarUrl: item.avatarUrl ?? '',
+      password: ''
+    };
   }
 }
