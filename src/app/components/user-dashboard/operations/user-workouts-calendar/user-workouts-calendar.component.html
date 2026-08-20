@@ -1,13 +1,18 @@
 <div class="workouts-calendar">
 
+  <!-- Naptár fejléc -->
   <div class="calendar-header">
     <button type="button" (click)="previousMonth()">‹</button>
 
-    <h2>{{ monthNames[currentMonth] }} {{ currentYear }}</h2>
+    <h2>
+      {{ monthNames[currentMonth] }} {{ currentYear }}
+    </h2>
 
     <button type="button" (click)="nextMonth()">›</button>
   </div>
 
+
+  <!-- Hét napjai -->
   <div class="calendar-weekdays">
     <div>H</div>
     <div>K</div>
@@ -18,6 +23,8 @@
     <div>V</div>
   </div>
 
+
+  <!-- Naptár -->
   <div class="calendar-days">
 
     <div
@@ -31,10 +38,13 @@
         {{ day.date.getDate() }}
       </div>
 
+
+      <!-- Workoutok az adott napon -->
       <div
         *ngFor="let workout of getWorkoutsForDay(day.date)"
         class="workout-item"
         [class.completed]="workout.completed"
+        (click)="selectWorkout(workout)"
       >
         🏋️ {{ workout.workout_name }}
       </div>
@@ -43,6 +53,8 @@
 
   </div>
 
+
+  <!-- Dátum nélküli workoutok -->
   <div
     class="unscheduled-workouts"
     *ngIf="getUnscheduledWorkouts().length > 0"
@@ -53,8 +65,93 @@
     <div
       *ngFor="let workout of getUnscheduledWorkouts()"
       class="unscheduled-workout"
+      (click)="selectWorkout(workout)"
     >
       🏋️ {{ workout.workout_name }}
+    </div>
+
+  </div>
+
+
+  <!-- Kiválasztott workout részletei -->
+  <div
+    class="selected-workout"
+    *ngIf="selectedWorkout"
+  >
+
+    <!-- Fejléc -->
+    <div class="selected-workout-header">
+
+      <div>
+        <h3>
+          🏋️ {{ selectedWorkout.workout_name }}
+        </h3>
+
+        <div
+          class="selected-workout-date"
+          *ngIf="selectedWorkout.scheduled_at"
+        >
+          {{ selectedWorkout.scheduled_at }}
+        </div>
+
+        <div
+          class="selected-workout-date"
+          *ngIf="!selectedWorkout.scheduled_at"
+        >
+          Nincs tervezett dátum
+        </div>
+      </div>
+
+      <button
+        type="button"
+        class="close-button"
+        (click)="closeWorkoutDetails()"
+      >
+        ✕
+      </button>
+
+    </div>
+
+
+    <!-- Exercise lista -->
+    <div class="selected-workout-content">
+
+      <h4>Gyakorlatok</h4>
+
+      <div
+        *ngIf="selectedExercises.length === 0"
+        class="no-exercises"
+      >
+        Nincs exercise ehhez a workouthoz.
+      </div>
+
+
+      <div
+        *ngFor="let exercise of selectedExercises; let i = index"
+        class="exercise-item"
+      >
+
+        <div class="exercise-number">
+          {{ i + 1 }}
+        </div>
+
+        <div class="exercise-info">
+
+          <div class="exercise-name">
+            {{ exercise.exercise_name }}
+          </div>
+
+          <div
+            class="exercise-sets"
+            *ngIf="exercise.sets_done !== null && exercise.sets_done !== undefined"
+          >
+            {{ exercise.sets_done }} sorozat
+          </div>
+
+        </div>
+
+      </div>
+
     </div>
 
   </div>

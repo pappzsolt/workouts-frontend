@@ -142,4 +142,5 @@ export class WorkoutExercisesManagerService {
       `${this.baseUrl}/scheduled-workouts`
     );
   }
+
 }
