@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { jwtDecode } from 'jwt-decode'; // ✅ ESM modul helyes import
+import { jwtDecode } from 'jwt-decode';
+
+import { API_ENDPOINTS } from '../../api-endpoints';
 
 interface LoginResponse {
   accessToken: string;
@@ -20,12 +22,17 @@ interface TokenPayload {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/auth';
+
+  private apiUrl = API_ENDPOINTS.auth;
 
   constructor(private http: HttpClient) {}
 
   login(username: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password })
+    return this.http
+      .post<LoginResponse>(
+        `${this.apiUrl}/login`,
+        { username, password }
+      )
       .pipe(
         tap(res => {
           localStorage.setItem('accessToken', res.accessToken);
@@ -45,7 +52,10 @@ export class AuthService {
 
   getUserRole(): string | null {
     const token = this.getAccessToken();
-    if (!token) return null;
+
+    if (!token) {
+      return null;
+    }
 
     try {
       const decodedToken = jwtDecode<TokenPayload>(token);
@@ -58,11 +68,14 @@ export class AuthService {
 
   getUserId(): number | null {
     const token = this.getAccessToken();
-    if (!token) return null;
+
+    if (!token) {
+      return null;
+    }
 
     try {
       const decodedToken = jwtDecode<TokenPayload>(token);
-      return decodedToken.id; // vagy decodedToken.sub, attól függ melyikben van
+      return decodedToken.id;
     } catch (e) {
       console.error('[AuthService] Token dekódolási hiba', e);
       return null;
@@ -80,18 +93,20 @@ export class AuthService {
   isUser(): boolean {
     return this.getUserRole() === 'ROLE_USER';
   }
+
   getUserName(): string | null {
     const token = this.getAccessToken();
-    if (!token) return null;
+
+    if (!token) {
+      return null;
+    }
 
     try {
       const decodedToken = jwtDecode<TokenPayload>(token);
-      return decodedToken.sub; // itt van a felhasználónév
+      return decodedToken.sub;
     } catch (e) {
       console.error('[AuthService] Token dekódolási hiba', e);
       return null;
     }
   }
-
-
 }

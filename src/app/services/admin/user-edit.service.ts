@@ -2,11 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
+import { API_ENDPOINTS } from '../../api-endpoints';
+
 export interface RawUser {
   id: number;
   usernameOrName: string;
   email: string;
-  password?: string; // opcionális a frissítéshez
+  password?: string;
   avatarUrl?: string;
   roles: string[];
   extraFields?: {
@@ -33,10 +35,11 @@ export interface Role {
   providedIn: 'root'
 })
 export class UserEditService {
-  private apiUrl = 'http://localhost:8080/api/members';
+
+  private apiUrl = API_ENDPOINTS.members;
   private coachesUrl = `${this.apiUrl}/all-coaches`;
   private usersUrl = `${this.apiUrl}/all-users`;
-  private rolesUrl = 'http://localhost:8080/api/roles';
+  private rolesUrl = API_ENDPOINTS.roles;
 
   constructor(private http: HttpClient) {}
 
@@ -48,7 +51,12 @@ export class UserEditService {
 
   getCoaches(): Observable<Coach[]> {
     return this.http.get<any>(this.coachesUrl).pipe(
-      map(res => res.data.map((c: any) => ({ id: c.id, name: c.usernameOrName })))
+      map(res =>
+        res.data.map((c: any) => ({
+          id: c.id,
+          name: c.usernameOrName
+        }))
+      )
     );
   }
 
@@ -59,6 +67,7 @@ export class UserEditService {
   }
 
   updateUser(user: RawUser, roleIds: number[]): Observable<any> {
+
     const payload: any = {
       type: 'user',
       username: user.usernameOrName,
@@ -70,7 +79,7 @@ export class UserEditService {
       gender: user.extraFields?.gender,
       goals: user.extraFields?.goals,
       coachId: user.extraFields?.coach_id,
-      roleIds: roleIds || []  // ✅ itt a komponens által átadott ID-k
+      roleIds: roleIds || []
     };
 
     if (user.password && user.password.trim() !== '') {
@@ -83,6 +92,4 @@ export class UserEditService {
 
     return this.http.post(this.apiUrl, payload);
   }
-
-
 }

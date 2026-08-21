@@ -3,6 +3,13 @@ import { environment } from '../environments/environment';
 export const API_ENDPOINTS = {
 
   // ============================================================
+  // AUTHENTICATION
+  // ============================================================
+
+  auth:
+    `${environment.apiUrl.replace('/api', '')}/auth`,
+
+  // ============================================================
   // MEMBERS
   // ============================================================
 
@@ -15,8 +22,20 @@ export const API_ENDPOINTS = {
   memberSearch:
     `${environment.apiUrl}/members/search`,
 
+  usersWithRoles:
+    `${environment.apiUrl}/members/users-with-roles`,
+
   coach:
     `${environment.apiUrl}/coach`,
+
+  usersNameId:
+    `${environment.apiUrl}/users-name-id`,
+
+  coachesNameId:
+    `${environment.apiUrl}/coaches-name-id`,
+
+  roles:
+    `${environment.apiUrl}/roles`,
 
   // ============================================================
   // PROGRAMS
@@ -24,6 +43,12 @@ export const API_ENDPOINTS = {
 
   programs:
     `${environment.apiUrl}/programs`,
+
+  assignedPrograms:
+    `${environment.apiUrl}/programs/my/assigned-programs`,
+
+  coachPrograms:
+    `${environment.apiUrl}/programs/my/coach-programs`,
 
   createProgram:
     `${environment.apiUrl}/user-programs/create`,
@@ -34,6 +59,20 @@ export const API_ENDPOINTS = {
 
   exercises:
     `${environment.apiUrl}/exercises`,
+
+  // ============================================================
+  // WORKOUTS
+  // ============================================================
+
+  workouts:
+    `${environment.apiUrl}/workouts`,
+
+  // ============================================================
+  // PROGRAM WORKOUTS
+  // ============================================================
+
+  programWorkouts:
+    `${environment.apiUrl}/program-workouts`,
 
   // ============================================================
   // WORKOUT EXERCISES
@@ -58,4 +97,11 @@ export const API_ENDPOINTS = {
 
   userWorkoutExerciseSets:
     `${environment.apiUrl}/user-workout-exercise-sets`,
+
+  // ============================================================
+  // GENERAL API
+  // ============================================================
+
+  api:
+  environment.apiUrl
 };
