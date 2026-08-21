@@ -3,10 +3,15 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
+
 import {
   RawUser,
   Coach,
-  Role
+  Role,
+  UserListResponse,
+  CoachListResponse,
+  RoleListResponse,
+  UpdateUserRequest
 } from '../../models/user-edit-model';
 
 @Injectable({
@@ -22,31 +27,34 @@ export class UserEditService {
   constructor(private http: HttpClient) {}
 
   getUsers(): Observable<RawUser[]> {
-    return this.http.get<any>(this.usersUrl).pipe(
-      map(res => res.data)
+    return this.http.get<UserListResponse>(this.usersUrl).pipe(
+      map(response => response.data)
     );
   }
 
   getCoaches(): Observable<Coach[]> {
-    return this.http.get<any>(this.coachesUrl).pipe(
-      map(res =>
-        res.data.map((c: any) => ({
-          id: c.id,
-          name: c.usernameOrName
+    return this.http.get<CoachListResponse>(this.coachesUrl).pipe(
+      map(response =>
+        response.data.map(coach => ({
+          id: coach.id,
+          name: coach.usernameOrName
         }))
       )
     );
   }
 
   getRoles(): Observable<Role[]> {
-    return this.http.get<any>(this.rolesUrl).pipe(
-      map(res => res.data)
+    return this.http.get<RoleListResponse>(this.rolesUrl).pipe(
+      map(response => response.data)
     );
   }
 
-  updateUser(user: RawUser, roleIds: number[]): Observable<any> {
+  updateUser(
+    user: RawUser,
+    roleIds: number[]
+  ): Observable<void> {
 
-    const payload: any = {
+    const payload: UpdateUserRequest = {
       type: 'user',
       username: user.usernameOrName,
       email: user.email,
@@ -68,6 +76,6 @@ export class UserEditService {
       payload.id = user.id;
     }
 
-    return this.http.post(this.apiUrl, payload);
+    return this.http.post<void>(this.apiUrl, payload);
   }
 }
