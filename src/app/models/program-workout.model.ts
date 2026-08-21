@@ -4,3 +4,9 @@ export interface ProgramWorkout {
   workoutId: number;
   dayIndex: number;
 }
+
+
+export interface ProgramWorkoutResponse {
+  status: string;
+  message: string;
+}

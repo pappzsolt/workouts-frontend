@@ -1,63 +1,89 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
 import { ProgramWorkout } from '../../models/program-workout.model';
 import { API_ENDPOINTS } from '../../api-endpoints';
+
+export interface ProgramWorkoutResponse {
+  status: string;
+  message: string;
+  data?: ProgramWorkout;
+}
+
+export interface ProgramWorkoutListResponse {
+  status: string;
+  message: string;
+  data: ProgramWorkout[];
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProgramWorkoutService {
 
+  private http = inject(HttpClient);
   private baseUrl = API_ENDPOINTS.programWorkouts;
 
-  constructor(private http: HttpClient) {}
-
-  /** 🔹 Új kapcsolat mentése (program + workout + nap index) */
   addWorkoutToProgram(
     programId: number,
     workoutId: number,
     dayIndex: number = 0
-  ): Observable<any> {
+  ): Observable<ProgramWorkoutResponse> {
+
     const payload: ProgramWorkout = {
       programId,
       workoutId,
       dayIndex
     };
 
-    return this.http.post(`${this.baseUrl}/add`, payload);
+    return this.http.post<ProgramWorkoutResponse>(
+      `${this.baseUrl}/add`,
+      payload
+    );
   }
 
-  /** 🔹 Programhoz tartozó workoutok lekérése */
-  getWorkoutsForProgram(programId: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/${programId}`);
+  getWorkoutsForProgram(
+    programId: number
+  ): Observable<ProgramWorkoutListResponse> {
+
+    return this.http.get<ProgramWorkoutListResponse>(
+      `${this.baseUrl}/${programId}`
+    );
   }
 
-  /** 🔹 Összes kapcsolat törlése egy adott programhoz */
-  deleteProgramWorkouts(programId: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}/${programId}`);
+  deleteProgramWorkouts(
+    programId: number
+  ): Observable<ProgramWorkoutResponse> {
+
+    return this.http.delete<ProgramWorkoutResponse>(
+      `${this.baseUrl}/${programId}`
+    );
   }
 
-  /** 🔹 Adott program + workout kapcsolat törlése */
   deleteProgramWorkout(
     programId: number,
     workoutId: number
-  ): Observable<any> {
-    return this.http.delete(
+  ): Observable<ProgramWorkoutResponse> {
+
+    return this.http.delete<ProgramWorkoutResponse>(
       `${this.baseUrl}/${programId}/${workoutId}`
     );
   }
 
-  /** 🔹 Program-Workout kapcsolat frissítése */
   updateProgramWorkout(
     id: number,
     dayIndex: number
-  ): Observable<any> {
+  ): Observable<ProgramWorkoutResponse> {
+
     const payload = {
       id,
       dayIndex
     };
 
-    return this.http.put(`${this.baseUrl}/update`, payload);
+    return this.http.put<ProgramWorkoutResponse>(
+      `${this.baseUrl}/update`,
+      payload
+    );
   }
 }

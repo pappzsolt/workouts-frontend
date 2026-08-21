@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
+
 import { AuthService } from '../auth/auth.service';
 import { API_ENDPOINTS } from '../../api-endpoints';
 
@@ -9,20 +10,17 @@ import { API_ENDPOINTS } from '../../api-endpoints';
 })
 export class CoachProfileService {
 
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService
-  ) {}
+  private http = inject(HttpClient);
+  private authService = inject(AuthService);
 
   getMemberById(id: number): Observable<any> {
     return this.http.get<any>(
       `${API_ENDPOINTS.members}/${id}`
     ).pipe(
-      map(res => res.data)
+      map(response => response.data)
     );
   }
 
-  /** Bejelentkezett felhasználó profiljának lekérése */
   getLoggedInMemberProfile(): Observable<any> {
     const userId = this.authService.getUserId();
 

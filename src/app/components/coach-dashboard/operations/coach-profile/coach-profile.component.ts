@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { AuthService } from '../../../../services/auth/auth.service';
 import { CoachProfileService } from '../../../../services/coach/coach-profile.service';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
@@ -24,6 +25,10 @@ export interface CoachProfile {
   styleUrls: ['./coach-profile.component.css']
 })
 export class CoachProfileComponent implements OnInit {
+
+  private authService = inject(AuthService);
+  private coachProfileService = inject(CoachProfileService);
+
   profile: CoachProfile = {
     name: '',
     email: '',
@@ -34,40 +39,43 @@ export class CoachProfileComponent implements OnInit {
     created_at: ''
   };
 
-  message: string = '';
-
-  constructor(
-    private authService: AuthService,
-    private coachProfileService: CoachProfileService
-  ) {}
+  message = '';
 
   ngOnInit(): void {
-    const userId = this.authService.getUserId();
-    if (userId) {
-      this.coachProfileService.getMemberById(userId).subscribe({
-        next: (profile: any) => {
-          this.profile = {
-            id: profile.id,
-            name: profile.usernameOrName,
-            email: profile.email,
-            password_hash: '',
-            phone: profile.extraFields?.phone,
-            specialization: profile.extraFields?.specialization,
-            avatar_url: profile.avatarUrl,
-            created_at: profile.createdAt
-          };
-          this.message = USER_MESSAGES.profileLoaded;
-        },
-        error: () => {
-          this.message = USER_MESSAGES.loadProfileError;
-        }
-      });
-    } else {
-      this.message = USER_MESSAGES.noUserId;
-    }
+    this.loadProfile();
   }
 
-  saveProfile() {
+  private loadProfile(): void {
+    const userId = this.authService.getUserId();
+
+    if (!userId) {
+      this.message = USER_MESSAGES.noUserId;
+      return;
+    }
+
+    this.coachProfileService.getMemberById(userId).subscribe({
+      next: (profile) => {
+        this.profile = {
+          id: profile.id,
+          name: profile.usernameOrName ?? '',
+          email: profile.email ?? '',
+          password_hash: '',
+          phone: profile.extraFields?.phone ?? '',
+          specialization: profile.extraFields?.specialization ?? '',
+          avatar_url: profile.avatarUrl ?? '',
+          created_at: profile.createdAt ?? ''
+        };
+
+        this.message = USER_MESSAGES.profileLoaded;
+      },
+
+      error: () => {
+        this.message = USER_MESSAGES.loadProfileError;
+      }
+    });
+  }
+
+  saveProfile(): void {
     if (!this.profile.id) {
       this.message = USER_MESSAGES.saveProfileNoId;
       return;
@@ -89,11 +97,13 @@ export class CoachProfileComponent implements OnInit {
         this.message = USER_MESSAGES.saveProfileSuccess;
         this.profile.password_hash = '';
       },
-      error: (err: any) => {
-        if (err.status === 0) {
+
+      error: (error) => {
+        if (error.status === 0) {
           this.message = USER_MESSAGES.saveProfileNetworkError;
-        } else if (err.error && err.error.message) {
-          this.message = `${USER_MESSAGES.serverError}: ${err.error.message}`;
+        } else if (error.error?.message) {
+          this.message =
+            `${USER_MESSAGES.serverError}: ${error.error.message}`;
         } else {
           this.message = USER_MESSAGES.saveProfileUnknownError;
         }
