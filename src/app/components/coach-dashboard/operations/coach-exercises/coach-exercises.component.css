@@ -1,0 +1,135 @@
+.programs-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.programs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.program-card {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.program-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+.program-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 140px;
+  background: #f3f4f6;
+}
+
+.program-emoji {
+  font-size: 4rem;
+}
+
+.program-content {
+  padding: 1rem;
+}
+
+.program-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.program-description {
+  color: #6b7280;
+  line-height: 1.5;
+  min-height: 3rem;
+}
+
+.program-edit {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.program-edit button {
+  border: none;
+  background: #2563eb;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.program-edit button:hover {
+  background: #1d4ed8;
+}
+
+.no-programs {
+  text-align: center;
+  margin: 2rem 0;
+  color: #6b7280;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.pagination-controls button {
+  border: none;
+  background: #2563eb;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.pagination-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.floating-action-button {
+  position: fixed;
+  right: 2rem;
+  bottom: 2rem;
+
+  width: 3.5rem;
+  height: 3.5rem;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #2563eb;
+  color: white;
+
+  font-size: 1.5rem;
+
+  cursor: pointer;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+  transition: background-color 0.2s ease,
+  transform 0.2s ease;
+}
+
+.floating-action-button:hover {
+  background: #1d4ed8;
+  transform: scale(1.05);
+}

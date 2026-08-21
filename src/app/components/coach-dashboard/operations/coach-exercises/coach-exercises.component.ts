@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
+
 import { Exercise } from '../../../../models/exercise.model';
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
 
@@ -12,17 +13,18 @@ import { ExerciseService } from '../../../../services/coach/coach-exercises/coac
   styleUrls: ['./coach-exercises.component.css']
 })
 export class ExerciseControllerComponent implements OnInit {
+
   exercises: Exercise[] = [];
+
   loading = false;
 
-  // 🔹 Lapozáshoz
   currentPage = 1;
-  itemsPerPage = 4; // egy oldalon hány exercise legyen
+  itemsPerPage = 4;
   totalPages = 1;
 
   constructor(
     private exerciseService: ExerciseService,
-    public router: Router,
+    private router: Router,
     private route: ActivatedRoute
   ) {}
 
@@ -32,26 +34,37 @@ export class ExerciseControllerComponent implements OnInit {
 
   loadExercises(): void {
     this.loading = true;
+
     this.exerciseService.getAllExercises().subscribe({
       next: (exercises: Exercise[]) => {
-        this.exercises = exercises; // a backend tömbjét közvetlenül használjuk
-        this.totalPages = Math.ceil(this.exercises.length / this.itemsPerPage);
+        this.exercises = exercises;
+
+        this.currentPage = 1;
+
+        this.totalPages = Math.max(
+          1,
+          Math.ceil(this.exercises.length / this.itemsPerPage)
+        );
+
         this.loading = false;
       },
-      error: (err: any) => {
-        console.error('Hiba az exercise-ok betöltésénél:', err);
+
+      error: () => {
         this.loading = false;
       }
     });
   }
 
-  // 🔹 Lapozáshoz szükséges getter
   get pagedExercises(): Exercise[] {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    return this.exercises.slice(startIndex, startIndex + this.itemsPerPage);
+    const startIndex =
+      (this.currentPage - 1) * this.itemsPerPage;
+
+    return this.exercises.slice(
+      startIndex,
+      startIndex + this.itemsPerPage
+    );
   }
 
-  // 🔹 Lapozás vezérlők
   nextPage(): void {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
@@ -65,10 +78,16 @@ export class ExerciseControllerComponent implements OnInit {
   }
 
   editExercise(exerciseId: number): void {
-    this.router.navigate(['/coach/exercises', exerciseId, 'edit']);
+    this.router.navigate([
+      '/coach/exercises',
+      exerciseId,
+      'edit'
+    ]);
   }
 
   goToNewExercise(): void {
-    this.router.navigate(['/coach/exercises/new']);
+    this.router.navigate([
+      '/coach/exercises/new'
+    ]);
   }
 }
