@@ -1,6 +1,16 @@
 WORKOUTS FRONTEND – DOCKERIZÁLÁS
 ===================================
 
+docker run -d \
+  --name workouts-frontend \
+  -p 8087:80 \
+  workouts-frontend:1.0.0
+
+
+
+
+
+
 Ez a jegyzet kizárólag a Workouts Angular frontend Dockerizálását foglalja össze.
 
 1. A FRONTEND PROJEKT
