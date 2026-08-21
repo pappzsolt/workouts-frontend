@@ -1,5 +1,5 @@
 # =========================
-# 1. Build stage
+# 1. Angular build
 # =========================
 FROM node:22-alpine AS build
 
@@ -15,11 +15,11 @@ RUN npm run build
 
 
 # =========================
-# 2. Nginx stage
+# 2. Nginx
 # =========================
 FROM nginx:alpine
 
-COPY --from=build /app/dist/ /usr/share/nginx/html/
+COPY --from=build /app/dist/workouts-frontend/ /usr/share/nginx/html/
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
