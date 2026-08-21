@@ -1,0 +1,217 @@
+.workouts-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.programs-title {
+  text-align: center;
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.programs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.program-card {
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.program-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.18);
+}
+
+.program-image {
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+}
+
+.program-emoji {
+  font-size: 52px;
+}
+
+.program-content {
+  padding: 16px;
+}
+
+.program-name {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.program-description {
+  color: #666;
+  min-height: 45px;
+  margin-bottom: 16px;
+}
+
+.program-progress {
+  margin-bottom: 16px;
+}
+
+.program-progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+
+.program-progress-bar {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.program-progress-fill {
+  height: 100%;
+  background: #3b82f6;
+  border-radius: 4px;
+}
+
+.program-edit {
+  text-align: center;
+}
+
+.program-edit button {
+  border: none;
+  background: #3b82f6;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.program-edit button:hover {
+  background: #2563eb;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.pagination-controls button {
+  border: none;
+  background: #3b82f6;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.pagination-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.no-programs {
+  text-align: center;
+  padding: 30px;
+  color: #666;
+}
+
+.message-success,
+.error-message {
+  text-align: center;
+  padding: 10px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+}
+
+.message-success {
+  color: #15803d;
+  background: #dcfce7;
+}
+
+.error-message {
+  color: #dc2626;
+  background: #fee2e2;
+}
+
+.floating-action-button {
+  position: fixed;
+  right: 30px;
+  bottom: 30px;
+  width: 55px;
+  height: 55px;
+  border: none;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: white;
+  font-size: 26px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.floating-action-button:hover {
+  background: #2563eb;
+}
+
+@media (max-width: 1000px) {
+  .programs-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .workouts-container {
+    padding: 12px;
+  }
+
+  .programs-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.workout-exercises {
+  margin-top: 16px;
+  margin-bottom: 16px;
+}
+
+.workout-exercises-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.workout-exercise {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.workout-exercise-name {
+  font-weight: 500;
+}
+
+.workout-exercise-details {
+  color: #666;
+  font-size: 14px;
+}
+
+.no-exercises {
+  color: #888;
+  font-size: 14px;
+  font-style: italic;
+}

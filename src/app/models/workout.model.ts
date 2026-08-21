@@ -1,19 +1,20 @@
+import { WorkoutExercise } from './exercise.model';
+
 export interface Workout {
   id?: number;
   workoutName?: string;
-  name?: string;          // backend name mező, más helyeken használva
+  name?: string;
   description?: string;
   durationMinutes?: number;
   difficultyLevel?: string;
   programId?: number;
 
-  // Új mezők a WorkoutDto alapján, opcionálisan
   workoutDescription?: string;
-  workoutDate?: string;       // ISO string
+  workoutDate?: string;
   intensityLevel?: string;
   dayIndex?: number;
   completed?: boolean;
-  performedAt?: string;       // ISO string
+  performedAt?: string;
   actualSets?: number;
   actualRepetitions?: number;
   weightUsed?: number;
@@ -21,12 +22,15 @@ export interface Workout {
   feedback?: string;
   notes?: string;
   done?: boolean;
+
+  // Workouthoz tartozó gyakorlatok
+  exercises?: WorkoutExercise[];
 }
 
 export interface WorkoutResponse {
   status: string;
   message: string;
-  data?: Workout; // 🔹 hozzáadva a backend "data" mezőhöz, kompatibilis a régi kóddal
+  data?: Workout;
 }
 
 export interface WorkoutListResponse {

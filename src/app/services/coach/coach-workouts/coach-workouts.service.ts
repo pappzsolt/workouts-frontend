@@ -1,7 +1,13 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Workout, WorkoutResponse, WorkoutListResponse } from '../../../models/workout.model';
+
+import {
+  Workout,
+  WorkoutResponse,
+  WorkoutListResponse
+} from '../../../models/workout.model';
+
 import { API_ENDPOINTS } from '../../../api-endpoints';
 
 @Injectable({
@@ -9,18 +15,15 @@ import { API_ENDPOINTS } from '../../../api-endpoints';
 })
 export class CoachWorkoutsService {
 
+  private http = inject(HttpClient);
   private apiUrl = API_ENDPOINTS.workouts;
 
-  constructor(private http: HttpClient) {}
-
-  // 🔹 Saját workoutok lekérése
   getMyWorkouts(): Observable<WorkoutListResponse> {
     return this.http.get<WorkoutListResponse>(
       `${this.apiUrl}/my-workouts`
     );
   }
 
-  // 🔹 Új workout hozzáadása
   addWorkout(workout: Workout): Observable<WorkoutResponse> {
     return this.http.post<WorkoutResponse>(
       `${this.apiUrl}/add`,
@@ -28,31 +31,34 @@ export class CoachWorkoutsService {
     );
   }
 
-  // 🔹 Workout betöltése ID alapján
   getWorkoutById(id: number): Observable<WorkoutResponse> {
     return this.http.get<WorkoutResponse>(
       `${this.apiUrl}/${id}`
     );
   }
 
-  // 🔹 Workout frissítése ID-vel
-  updateWorkout(id: number, workout: Workout): Observable<WorkoutResponse> {
-    workout.id = id;
+  updateWorkout(
+    id: number,
+    workout: Workout
+  ): Observable<WorkoutResponse> {
+
+    const payload: Workout = {
+      ...workout,
+      id
+    };
 
     return this.http.put<WorkoutResponse>(
       `${this.apiUrl}/update`,
-      workout
+      payload
     );
   }
 
-  // 🔹 Saját workoutok lekérése select komponenshez
   getMyWorkoutsForSelect(): Observable<WorkoutListResponse> {
     return this.http.get<WorkoutListResponse>(
       `${this.apiUrl}/my-workouts-select`
     );
   }
 
-  // 🔹 Workout törlése
   deleteWorkout(id: number): Observable<WorkoutResponse> {
     return this.http.delete<WorkoutResponse>(
       `${this.apiUrl}/delete/${id}`

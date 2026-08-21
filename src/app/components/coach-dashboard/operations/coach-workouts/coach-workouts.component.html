@@ -1,9 +1,10 @@
 <div class="workouts-container">
 
-  <div *ngIf="message" [ngClass]="{
-        'message-success': messageType === 'success',
-        'error-message': messageType === 'error'
-      }">
+  <div *ngIf="message"
+       [ngClass]="{
+         'message-success': messageType === 'success',
+         'error-message': messageType === 'error'
+       }">
     {{ message }}
   </div>
 
@@ -12,49 +13,124 @@
   <app-newworkout *ngIf="showNewWorkoutForm"></app-newworkout>
 
   <ng-container *ngIf="workouts.length > 0; else noWorkouts">
+
     <div class="programs-grid">
+
       <div *ngFor="let w of pagedWorkouts" class="program-card">
+
         <div class="program-image">
           <span class="program-emoji">🔥</span>
         </div>
 
         <div class="program-content">
-          <div class="program-name">{{ w.workoutName }}</div>
-          <div class="program-description">{{ w.description }}</div>
+
+          <div class="program-name">
+            {{ w.workoutName }}
+          </div>
+
+          <div class="program-description">
+            {{ w.description }}
+          </div>
+
+          <!-- Időtartam -->
           <div class="program-progress">
+
             <div class="program-progress-label">
               <span>Időtartam:</span>
               <span>{{ w.durationMinutes }} perc</span>
             </div>
+
             <div class="program-progress-bar">
-              <div class="program-progress-fill" [style.width.%]="100"></div>
+              <div
+                class="program-progress-fill"
+                [style.width.%]="100">
+              </div>
             </div>
+
           </div>
 
+          <!-- Exercises -->
+          <div class="workout-exercises">
+
+            <div class="workout-exercises-title">
+              Exercises ({{ w.exercises?.length || 0 }})
+            </div>
+
+            <div
+              *ngFor="let workoutExercise of w.exercises"
+              class="workout-exercise">
+
+              <span class="workout-exercise-name">
+                {{ workoutExercise.exercise.name }}
+              </span>
+
+              <span class="workout-exercise-details">
+                {{ workoutExercise.sets }} ×
+                {{ workoutExercise.repetitions }}
+              </span>
+
+            </div>
+
+            <div
+              *ngIf="!w.exercises?.length"
+              class="no-exercises">
+              Nincsenek exercises.
+            </div>
+
+          </div>
+
+          <!-- Szerkesztés -->
           <div class="program-edit">
-            <button (click)="editWorkout(w.id, $event)">
+
+            <button
+              (click)="editWorkout(w.id, $event)">
               ✏️ Szerkesztés
             </button>
+
           </div>
+
         </div>
+
       </div>
+
     </div>
 
-    <!-- 🔹 Lapozás gombok -->
+    <!-- Lapozás -->
     <div class="pagination-controls">
-      <button (click)="prevPage()" [disabled]="currentPage === 1">◀ Előző</button>
-      <span>Oldal {{currentPage}} / {{totalPages}}</span>
-      <button (click)="nextPage()" [disabled]="currentPage === totalPages">Következő ▶</button>
+
+      <button
+        (click)="prevPage()"
+        [disabled]="currentPage === 1">
+        ◀ Előző
+      </button>
+
+      <span>
+        Oldal {{ currentPage }} / {{ totalPages }}
+      </span>
+
+      <button
+        (click)="nextPage()"
+        [disabled]="currentPage === totalPages">
+        Következő ▶
+      </button>
+
     </div>
+
   </ng-container>
 
   <ng-template #noWorkouts>
-    <div class="no-programs">Nincsenek workouts.</div>
+
+    <div class="no-programs">
+      Nincsenek workouts.
+    </div>
+
   </ng-template>
 
-  <button class="floating-action-button" (click)="goToNewWorkout()" title="Új Workout hozzáadása">
+  <button
+    class="floating-action-button"
+    (click)="goToNewWorkout()"
+    title="Új Workout hozzáadása">
     ➕
   </button>
 
 </div>
-itt hozzá kell adni az exercises okat
