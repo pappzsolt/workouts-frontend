@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_ENDPOINTS } from '../../../api-endpoints';
 
 export interface ExerciseDto {
   exerciseId: number;
@@ -47,22 +48,35 @@ export interface ApiResponse<T> {
 
 @Injectable({ providedIn: 'root' })
 export class AssignProgramService {
+
   private http = inject(HttpClient);
-  private baseUrl = 'http://localhost:8080/api';
 
   // --- GET metódusok ---
+
   getAllPrograms(): Observable<ApiResponse<ProgramDto[]>> {
-    return this.http.get<ApiResponse<ProgramDto[]>>(`${this.baseUrl}/programs/all`);
+    return this.http.get<ApiResponse<ProgramDto[]>>(
+      API_ENDPOINTS.allPrograms
+    );
   }
 
   getMyAssignedPrograms(): Observable<ApiResponse<UserProgramDto[]>> {
-    return this.http.get<ApiResponse<UserProgramDto[]>>(`${this.baseUrl}/programs/my/assigned-programs`);
+    return this.http.get<ApiResponse<UserProgramDto[]>>(
+      API_ENDPOINTS.assignedPrograms
+    );
   }
 
-  // --- POST: program hozzárendelése userhez (JSON body-val) ---
-  assignProgramToUser(userId: number, programId: number): Observable<ApiResponse<void>> {
+  // --- POST: program hozzárendelése userhez ---
+
+  assignProgramToUser(
+    userId: number,
+    programId: number
+  ): Observable<ApiResponse<void>> {
+
     const body = { userId, programId };
-    return this.http.post<ApiResponse<void>>(`${this.baseUrl}/programs/assign`, body);
+
+    return this.http.post<ApiResponse<void>>(
+      API_ENDPOINTS.assignProgram,
+      body
+    );
   }
 }
-

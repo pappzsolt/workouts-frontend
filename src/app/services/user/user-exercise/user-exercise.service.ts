@@ -9,8 +9,6 @@ import { WorkoutDto } from '../../../models/exercise.model';
 })
 export class UserExerciseService {
 
-  private apiUrl = 'http://localhost:8080/api/exercises';
-
   constructor(private http: HttpClient) {}
 
   /**

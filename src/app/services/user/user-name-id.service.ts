@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_ENDPOINTS } from '../../../api-endpoints';
 
 export interface UserNameId {
   id: number;
@@ -11,7 +12,8 @@ export interface UserNameId {
   providedIn: 'root'
 })
 export class UserNameIdService {
-  private apiUrl = 'http://localhost:8080/api/users-name-id';
+
+  private apiUrl = API_ENDPOINTS.usersNameId;
 
   constructor(private http: HttpClient) {}
 

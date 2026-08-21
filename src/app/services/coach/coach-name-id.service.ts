@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_ENDPOINTS } from '../../api-endpoints';
 
 export interface CoachNameId {
   id: number;
@@ -11,8 +12,8 @@ export interface CoachNameId {
   providedIn: 'root'
 })
 export class CoachNameIdService {
-  // Javítva: teljes backend URL
-  private apiUrl = 'http://localhost:8080/api/coaches-name-id';
+
+  private apiUrl = API_ENDPOINTS.coachesNameId;
 
   constructor(private http: HttpClient) {}
 

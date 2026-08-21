@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { API_ENDPOINTS } from '../../../api-endpoints';
 
 export interface Workout {
   workoutId: number;
@@ -24,12 +25,15 @@ export interface Workout {
   providedIn: 'root'
 })
 export class UserWorkoutsService {
-  private apiUrl = 'http://localhost:8080/api/workouts'; // backend API alap URL
+
+  private apiUrl = API_ENDPOINTS.workouts;
 
   constructor(private http: HttpClient) {}
 
   /** Backend hívás – Workouts by program */
   getWorkoutsByProgram(programId: number): Observable<Workout[]> {
-    return this.http.get<Workout[]>(`${this.apiUrl}/program/${programId}`);
+    return this.http.get<Workout[]>(
+      `${this.apiUrl}/program/${programId}`
+    );
   }
 }

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, catchError, of } from 'rxjs';
 import { USER_MESSAGES } from '../../../constants/user-messages';
+import { API_ENDPOINTS } from '../../../api-endpoints';
 
 export interface UserProgram {
   id: number;
@@ -17,7 +18,8 @@ export interface UserProgram {
   providedIn: 'root'
 })
 export class UserMyProgramsService {
-  private apiUrl = 'http://localhost:8080/api/programs/my/assigned-programs';
+
+  private apiUrl = API_ENDPOINTS.assignedPrograms;
 
   constructor(private http: HttpClient) {}
 
@@ -26,11 +28,9 @@ export class UserMyProgramsService {
     return this.http.get<any>(this.apiUrl).pipe(
       map(res => {
         if (!res || !res.data) {
-          // Hibás API válasz esetén
-          // console.warn helyett:
-          // this.message = USER_MESSAGES.loadProgramsError;
           return [];
         }
+
         return res.data.map((p: any) => ({
           id: p.id,
           name: p.name,
@@ -42,9 +42,7 @@ export class UserMyProgramsService {
         }));
       }),
       catchError(() => {
-        // console.error helyett:
-        // this.message = USER_MESSAGES.loadProgramsError;
-        return of([]); // hibánál üres lista
+        return of([]);
       })
     );
   }

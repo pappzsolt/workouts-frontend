@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { RawUser, Coach,Role } from '../../../models/user-profil.model';
-
+import { RawUser, Coach, Role } from '../../../models/user-profil.model';
+import { API_ENDPOINTS } from '../../../api-endpoints';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserProfilService {
-  private apiUrl = 'http://localhost:8080/api/members';
-  private coachesUrl = `${this.apiUrl}/all-coaches`;
+
+  private apiUrl = API_ENDPOINTS.members;
+  private coachesUrl = API_ENDPOINTS.allCoaches;
   private usersUrl = `${this.apiUrl}/all-users`;
-  private rolesUrl = 'http://localhost:8080/api/roles';
+  private rolesUrl = API_ENDPOINTS.roles;
 
   constructor(private http: HttpClient) {}
 
@@ -23,10 +24,14 @@ export class UserProfilService {
 
   getCoaches(): Observable<Coach[]> {
     return this.http.get<any>(this.coachesUrl).pipe(
-      map(res => res.data.map((c: any) => ({ id: c.id, name: c.usernameOrName || c.name })))
+      map(res =>
+        res.data.map((c: any) => ({
+          id: c.id,
+          name: c.usernameOrName || c.name
+        }))
+      )
     );
   }
-
 
   getRoles(): Observable<Role[]> {
     return this.http.get<any>(this.rolesUrl).pipe(
