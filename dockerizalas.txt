@@ -1,0 +1,226 @@
+DOCKERIZÁLÁS – WORKOUTS PROJEKT
+================================
+
+1. Mi a Dockerizálás célja?
+----------------------------
+Az alkalmazást Docker image-be csomagoljuk, majd ebből containert indítunk.
+Így az alkalmazás a szükséges futtatási környezettel együtt, elkülönítve fut.
+
+A projektünkben két külön alkalmazás van:
+- workouts backend – Spring Boot / Java 21
+- workouts frontend – Angular 19 + Nginx
+
+Mindkettő külön Docker containerben fut.
+
+2. BACKEND – Spring Boot
+------------------------
+Projekt:
+    workouts
+
+A backend Docker image elkészítése:
+    docker build -t workouts-api:1.0.0 .
+
+Image ellenőrzése:
+    docker images | grep workouts-api
+
+Container indítása:
+    docker run -d       --name workouts-api       -p 8089:8080       workouts-api:1.0.0
+
+Jelentése:
+- a containeren belül az alkalmazás a 8080-as porton fut
+- a hoston a 8089-es portot használjuk
+- kívülről: http://HOST:8089
+- containeren belül: http://localhost:8080
+
+Ellenőrzés:
+    docker ps -a
+    docker logs --tail 100 workouts-api
+
+Teszt:
+    curl -i http://localhost:8089/
+
+A backend PostgreSQL adatbázishoz csatlakozik.
+A jelenlegi application.properties alapján az adatbázis:
+    jdbc:postgresql://192.168.1.37:5432/workouts
+
+Fontos:
+A későbbiekben az adatbázis-jelszót nem célszerű az image-be vagy Git repositoryba tenni.
+Erre környezeti változó, Docker Compose secret vagy más titokkezelés használható.
+
+3. FRONTEND – Angular + Nginx
+----------------------------
+Az Angular alkalmazást először le kell buildelni, majd a létrejött statikus fájlokat Nginx szolgálja ki.
+
+A Dockerfile kétlépcsős buildet használ:
+
+1. Build stage:
+   - Node 22 Alpine
+   - npm ci
+   - npm run build
+
+2. Runtime stage:
+   - nginx:alpine
+   - az Angular dist könyvtár bekerül az Nginx webrootjába
+
+Image elkészítése:
+    docker build -t workouts-frontend:1.0.0 .
+
+Image ellenőrzése:
+    docker images | grep workouts-frontend
+
+Container indítása például:
+    docker run -d       --name workouts-frontend       -p 8086:80       workouts-frontend:1.0.0
+
+Jelentése:
+- Nginx a containerben a 80-as porton figyel
+- a hoston a 8086-os portot használjuk
+- böngészőből: http://HOST:8086
+
+4. GIT ÉS BRANCHEK
+------------------
+A Dockerfile csak akkor kerül a szerverre, ha a megfelelő Git branch van checkoutolva.
+
+Ellenőrzés:
+    git branch
+
+Branch váltása:
+    git fetch origin
+    git checkout MemberSearchServiceRefactor
+
+Dockerfile ellenőrzése:
+    ls -la Dockerfile .dockerignore
+
+Ha a Dockerfile nincs a main branchben, de a fejlesztési branchben igen,
+akkor a Docker buildet azon a branchen kell elvégezni.
+
+5. FONTOS DOCKER PARANCSOK
+--------------------------
+Futó containerek:
+    docker ps
+
+Minden container:
+    docker ps -a
+
+Image-ek:
+    docker images
+
+Logok:
+    docker logs workouts-api
+    docker logs --tail 100 workouts-api
+
+Container leállítása:
+    docker stop workouts-api
+
+Container törlése:
+    docker rm workouts-api
+
+Image törlése:
+    docker rmi workouts-api:1.0.0
+
+Container újraindítása:
+    docker restart workouts-api
+
+6. PORTOK
+---------
+A Docker port mapping formája:
+
+    -p HOST_PORT:CONTAINER_PORT
+
+Példa:
+    -p 8089:8080
+
+Ez azt jelenti:
+    HOST 8089  -->  CONTAINER 8080
+
+Ha a host port foglalt:
+    docker run ... -p 8089:8080 ...
+
+Ha ez is foglalt, másik host portot kell választani.
+
+Port ellenőrzése Linuxon:
+    ss -ltnp | grep ':8089'
+
+Docker által használt portok:
+    docker ps --format 'table {{.Names}}	{{.Ports}}'
+
+7. HIBAKERESÉS
+--------------
+Ha a container nem indul:
+    docker ps -a
+    docker logs <container>
+
+Ha portütközés van:
+    ss -ltnp | grep ':PORT'
+    docker ps --format 'table {{.Names}}	{{.Ports}}'
+
+Ha az image nem található:
+    docker images
+
+Ha a Dockerfile hiányzik:
+    ls -la Dockerfile
+    git branch
+    git status
+
+Ha az alkalmazás elindul, de nem érhető el:
+    docker logs <container>
+    docker exec -it <container> sh
+
+8. A JELENLEGI WORKOUTS ARCHITEKTÚRA
+------------------------------------
+Angular frontend
+      |
+      | HTTP/HTTPS
+      v
+Nginx / reverse proxy
+      |
+      v
+Spring Boot backend
+      |
+      v
+PostgreSQL
+
+A frontend és backend külön Docker containerben fut.
+
+Példa:
+    workouts-frontend
+        Nginx :80
+            |
+            v
+    workouts-api
+        Spring Boot :8080
+            |
+            v
+    PostgreSQL :5432
+
+9. KÖVETKEZŐ FEJLESZTÉSI LÉPÉS
+------------------------------
+Ha a két container külön-külön már működik, érdemes Docker Compose-ra áttérni.
+
+A Compose segítségével egy konfigurációból lehet kezelni:
+- frontend containert
+- backend containert
+- környezeti változókat
+- hálózatot
+- portokat
+- restart policy-t
+
+Tipikusan:
+    docker compose up -d
+
+Leállítás:
+    docker compose down
+
+10. FONTOS MEGJEGYZÉS
+---------------------
+A jelenlegi setupban a backend és frontend host portokon keresztül érhető el.
+Később célszerű lehet egy közös Docker network + reverse proxy használata,
+és a frontend API URL-jét ehhez igazítani.
+
+A Dockerizálás első célja most:
+1. backend image elkészítése
+2. backend container indítása
+3. frontend image elkészítése
+4. frontend container indítása
+5. a két alkalmazás kommunikációjának ellenőrzése
+6. ezután Docker Compose kialakítása
+
