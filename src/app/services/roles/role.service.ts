@@ -1,60 +1,56 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, throwError, map } from 'rxjs';
+import { Observable, catchError, map, throwError } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
-
-export interface Role {
-  id: number;
-  name: string;
-  description?: string;
-}
-
-interface UserWithRolesDto {
-  id: number;
-  username: string;
-  roles: Role[];
-}
-
-interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data: T;
-}
+import {
+  Role,
+  RoleApiResponse,
+  UserWithRolesDto
+} from '../../models/role.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoleService {
 
-  private apiUrl = API_ENDPOINTS.usersWithRoles;
+  private readonly apiUrl = API_ENDPOINTS.usersWithRoles;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private readonly http: HttpClient
+  ) {}
 
   getRoles(): Observable<Role[]> {
+
     return this.http
-      .get<ApiResponse<UserWithRolesDto[]>>(this.apiUrl)
+      .get<RoleApiResponse>(this.apiUrl)
       .pipe(
-        map(response => {
-          const rolesMap: { [key: number]: Role } = {};
+        map(response => this.extractUniqueRoles(response.data)),
 
-          response.data.forEach(user => {
-            user.roles.forEach(role => {
-              rolesMap[role.id] = role;
-            });
-          });
-
-          return Object.values(rolesMap);
-        }),
-        catchError((err) => {
-          console.error('Hiba a role-ok lekérésekor', err);
+        catchError(error => {
+          console.error('Hiba a role-ok lekérésekor:', error);
 
           return throwError(
             () => new Error(
-              err.message || 'Hiba a role-ok lekérésekor'
+              error?.message || 'Hiba a role-ok lekérésekor'
             )
           );
         })
       );
+  }
+
+  private extractUniqueRoles(
+    users: UserWithRolesDto[]
+  ): Role[] {
+
+    const rolesMap = new Map<number, Role>();
+
+    users.forEach(user => {
+      user.roles?.forEach(role => {
+        rolesMap.set(role.id, role);
+      });
+    });
+
+    return Array.from(rolesMap.values());
   }
 }

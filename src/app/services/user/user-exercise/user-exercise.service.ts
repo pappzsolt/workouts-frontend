@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
 import { API_ENDPOINTS } from '../../../api-endpoints';
 import { WorkoutDto } from '../../../models/exercise.model';
 
@@ -9,14 +10,19 @@ import { WorkoutDto } from '../../../models/exercise.model';
 })
 export class UserExerciseService {
 
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
+
+  private readonly baseUrl = API_ENDPOINTS.exercises;
 
   /**
    * Lekéri a belépett user adott workoutjához tartozó exercise-okat.
    */
-  getWorkoutExercises(workoutId: number): Observable<WorkoutDto> {
+  getWorkoutExercises(
+    workoutId: number
+  ): Observable<WorkoutDto> {
+
     return this.http.get<WorkoutDto>(
-      `${API_ENDPOINTS.exercises}/my-workout/${workoutId}`
+      `${this.baseUrl}/my-workout/${workoutId}`
     );
   }
 }

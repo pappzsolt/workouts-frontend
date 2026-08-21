@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -10,15 +10,13 @@ import { API_ENDPOINTS } from '../../api-endpoints';
 })
 export class WorkoutExercisesManagerService {
 
+  private readonly http = inject(HttpClient);
+
   private readonly baseUrl =
     API_ENDPOINTS.userWorkoutExercises;
 
   private readonly userWorkoutsBaseUrl =
     API_ENDPOINTS.createUserWorkoutWithExercises;
-
-  constructor(
-    private readonly http: HttpClient
-  ) {}
 
   /**
    * Lekéri egy user workout összes exercise-át.
