@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, catchError, of } from 'rxjs';
+
 import { USER_MESSAGES } from '../../../constants/user-messages';
 import { API_ENDPOINTS } from '../../../api-endpoints';
 
@@ -19,15 +20,16 @@ export interface UserProgram {
 })
 export class UserMyProgramsService {
 
-  private apiUrl = API_ENDPOINTS.assignedPrograms;
-
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = API_ENDPOINTS.assignedPrograms;
 
   getPrograms(): Observable<UserProgram[]> {
 
     return this.http.get<any>(this.apiUrl).pipe(
+
       map(res => {
-        if (!res || !res.data) {
+
+        if (!res?.data) {
           return [];
         }
 
@@ -41,9 +43,8 @@ export class UserMyProgramsService {
           assignedAt: p.assignedAt
         }));
       }),
-      catchError(() => {
-        return of([]);
-      })
+
+      catchError(() => of([]))
     );
   }
 }

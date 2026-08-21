@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
+
 import { RawUser, Coach, Role } from '../../../models/user-profil.model';
 import { API_ENDPOINTS } from '../../../api-endpoints';
 
@@ -9,12 +10,12 @@ import { API_ENDPOINTS } from '../../../api-endpoints';
 })
 export class UserProfilService {
 
-  private apiUrl = API_ENDPOINTS.members;
-  private coachesUrl = API_ENDPOINTS.allCoaches;
-  private usersUrl = `${this.apiUrl}/all-users`;
-  private rolesUrl = API_ENDPOINTS.roles;
+  private readonly http = inject(HttpClient);
 
-  constructor(private http: HttpClient) {}
+  private readonly apiUrl = API_ENDPOINTS.members;
+  private readonly coachesUrl = API_ENDPOINTS.allCoaches;
+  private readonly usersUrl = `${this.apiUrl}/all-users`;
+  private readonly rolesUrl = API_ENDPOINTS.roles;
 
   getUsers(): Observable<RawUser[]> {
     return this.http.get<any>(this.usersUrl).pipe(
@@ -40,12 +41,18 @@ export class UserProfilService {
   }
 
   getMemberById(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(
+    return this.http.get<any>(
+      `${this.apiUrl}/${id}`
+    ).pipe(
       map(res => res.data)
     );
   }
 
-  updateUser(user: RawUser, roleIds: number[]): Observable<any> {
+  updateUser(
+    user: RawUser,
+    roleIds: number[]
+  ): Observable<any> {
+
     const payload: any = {
       type: 'user',
       username: user.usernameOrName,
@@ -68,6 +75,9 @@ export class UserProfilService {
       payload.id = user.id;
     }
 
-    return this.http.post(this.apiUrl, payload);
+    return this.http.post(
+      this.apiUrl,
+      payload
+    );
   }
 }

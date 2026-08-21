@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
 import { API_ENDPOINTS } from '../../api-endpoints';
 
 export interface UserNameId {
@@ -13,9 +14,8 @@ export interface UserNameId {
 })
 export class UserNameIdService {
 
-  private apiUrl = API_ENDPOINTS.usersNameId;
-
-  constructor(private http: HttpClient) {}
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = API_ENDPOINTS.usersNameId;
 
   getAllUsers(): Observable<UserNameId[]> {
     return this.http.get<UserNameId[]>(this.apiUrl);
