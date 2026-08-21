@@ -2,20 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { ProgramWorkout } from '../../models/program-workout.model';
+import {
+  ProgramWorkout,
+  ProgramWorkoutResponse,
+  ProgramWorkoutListResponse
+} from '../../models/program-workout.model';
+
 import { API_ENDPOINTS } from '../../api-endpoints';
-
-export interface ProgramWorkoutResponse {
-  status: string;
-  message: string;
-  data?: ProgramWorkout;
-}
-
-export interface ProgramWorkoutListResponse {
-  status: string;
-  message: string;
-  data: ProgramWorkout[];
-}
 
 @Injectable({
   providedIn: 'root'

@@ -5,8 +5,12 @@ export interface ProgramWorkout {
   dayIndex: number;
 }
 
-
 export interface ProgramWorkoutResponse {
   status: string;
   message: string;
+}
+
+export interface ProgramWorkoutListResponse {
+  status: string;
+  data: ProgramWorkout[];
 }
