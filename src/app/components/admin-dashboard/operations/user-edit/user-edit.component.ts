@@ -10,18 +10,20 @@ import { FormsModule } from '@angular/forms';
 import { UserSelectComponent } from '../../../../components/shared/user/user-select.component';
 import { CoachSelectComponent } from '../../../shared/coach/coach-select.component';
 
-import { Role, RoleService } from '../../../../services/roles/role.service';
+import { RoleService } from '../../../../services/roles/role.service';
 import { UserNameId } from '../../../../services/user/user-name-id.service';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 
+import { User } from '../../../../models/user-profil.model';
+
 import {
-  User,
   RawUser,
-  Coach
-} from '../../../../models/user-profil.model';
+  Coach,
+  Role
+} from '../../../../models/user-edit-model';
 
 import { UserEditService } from '../../../../services/admin/user-edit.service';
 
@@ -40,7 +42,9 @@ import { UserEditService } from '../../../../services/admin/user-edit.service';
   templateUrl: './user-edit.component.html',
 })
 export class UserEditComponent implements OnInit {
+
   users: RawUser[] = [];
+
   selectedUserId?: number;
 
   selectedUser: User = {
@@ -56,13 +60,16 @@ export class UserEditComponent implements OnInit {
     goals: '',
     coachId: undefined,
     roleName: undefined,
-    roleIds: [] // ✅ inicializálva
+    roleIds: []
   };
 
   coaches: Coach[] = [];
   roles: Role[] = [];
+
   selectedCoach?: Coach;
   selectedRoles: Role[] = [];
+
+  message = '';
 
   constructor(
     private userService: UserEditService,
@@ -71,6 +78,7 @@ export class UserEditComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+
     this.userService.getCoaches().subscribe(coaches => {
       this.coaches = coaches;
       this.cdr.detectChanges();
@@ -83,6 +91,7 @@ export class UserEditComponent implements OnInit {
 
     this.userService.getUsers().subscribe(users => {
       this.users = users;
+
       if (this.users.length > 0) {
         this.selectedUserId = this.users[0].id;
         this.patchUserFromRaw(this.users[0]);
@@ -90,13 +99,19 @@ export class UserEditComponent implements OnInit {
     });
   }
 
-  onUserSelected(user: UserNameId) {
+  onUserSelected(user: UserNameId): void {
+
     this.selectedUserId = user.id;
+
     const found = this.users.find(u => u.id === user.id);
-    if (found) this.patchUserFromRaw(found);
+
+    if (found) {
+      this.patchUserFromRaw(found);
+    }
   }
 
-  private patchUserFromRaw(raw: RawUser) {
+  private patchUserFromRaw(raw: RawUser): void {
+
     this.selectedUser = {
       id: raw.id,
       username: raw.usernameOrName || '',
@@ -110,73 +125,108 @@ export class UserEditComponent implements OnInit {
       goals: raw.extraFields?.goals,
       coachId: raw.extraFields?.coach_id,
       roleName: undefined,
-      roleIds: [] // ✅ inicializálva
+      roleIds: []
     };
 
-    this.selectedCoach = this.coaches.find(c => c.id === this.selectedUser.coachId);
+    this.selectedCoach = this.coaches.find(
+      coach => coach.id === this.selectedUser.coachId
+    );
 
-    this.selectedRoles = this.roles.filter(r => raw.roles?.includes(r.name));
-    this.selectedUser.roleIds = this.selectedRoles.map(r => r.id);
-    this.selectedUser.roleName = this.selectedRoles.map(r => r.name).join(',');
+    this.selectedRoles = this.roles.filter(
+      role => raw.roles?.includes(role.name)
+    );
+
+    this.selectedUser.roleIds = this.selectedRoles.map(
+      role => role.id
+    );
+
+    this.selectedUser.roleName = this.selectedRoles
+      .map(role => role.name)
+      .join(',');
 
     this.cdr.detectChanges();
   }
 
-  onCoachSelected(coach: Coach) {
+  onCoachSelected(coach: Coach): void {
+
     this.selectedCoach = coach;
     this.selectedUser.coachId = coach.id;
   }
 
-  onRoleSelected(roles: Role[]) {
+  onRoleSelected(roles: Role[]): void {
+
     this.selectedRoles = roles;
-    this.selectedUser.roleIds = roles.map(r => r.id);
-    this.selectedUser.roleName = roles.map(r => r.name).join(',');
+
+    this.selectedUser.roleIds = roles.map(
+      role => role.id
+    );
+
+    this.selectedUser.roleName = roles
+      .map(role => role.name)
+      .join(',');
   }
 
-  message: string = ''; // UI üzenethez
+  onSave(): void {
 
-// ...
-
-  onSave() {
     try {
+
       if (!this.selectedRoles || this.selectedRoles.length === 0) {
-        const defaultRole = this.roles.find(r => r.name === 'user');
+
+        const defaultRole = this.roles.find(
+          role => role.name === 'user'
+        );
+
         if (defaultRole) {
+
           this.selectedRoles = [defaultRole];
+
           this.selectedUser.roleIds = [defaultRole.id];
+
           this.selectedUser.roleName = defaultRole.name;
         }
       }
 
-      if (this.selectedUser) {
-        const rawUser: RawUser = {
-          id: this.selectedUser.id,
-          usernameOrName: this.selectedUser.username,
-          email: this.selectedUser.email,
-          avatarUrl: this.selectedUser.avatarUrl,
-          roles: this.selectedRoles.map(r => r.name),
-          extraFields: {
-            coach_id: this.selectedUser.coachId,
-            age: this.selectedUser.age,
-            weight: this.selectedUser.weight,
-            height: this.selectedUser.height,
-            gender: this.selectedUser.gender,
-            goals: this.selectedUser.goals
-          }
-        };
+      const rawUser: RawUser = {
+        id: this.selectedUser.id,
+        usernameOrName: this.selectedUser.username,
+        email: this.selectedUser.email,
+        avatarUrl: this.selectedUser.avatarUrl,
+        roles: this.selectedRoles.map(role => role.name),
 
-        this.userService.updateUser(rawUser, this.selectedUser.roleIds || []).subscribe({
+        extraFields: {
+          coach_id: this.selectedUser.coachId,
+          age: this.selectedUser.age,
+          weight: this.selectedUser.weight,
+          height: this.selectedUser.height,
+          gender: this.selectedUser.gender,
+          goals: this.selectedUser.goals
+        }
+      };
+
+      this.userService
+        .updateUser(
+          rawUser,
+          this.selectedUser.roleIds || []
+        )
+        .subscribe({
+
           next: () => {
             this.message = 'Felhasználó sikeresen frissítve!';
           },
+
           error: (err) => {
-            this.message = 'Hiba a frissítés során: ' + (err?.message || 'Ismeretlen hiba');
+            this.message =
+              'Hiba a frissítés során: ' +
+              (err?.message || 'Ismeretlen hiba');
           }
+
         });
-      }
+
     } catch (err: any) {
-      this.message = 'Hiba a mentés során: ' + (err?.message || 'Ismeretlen hiba');
+
+      this.message =
+        'Hiba a mentés során: ' +
+        (err?.message || 'Ismeretlen hiba');
     }
   }
-
 }

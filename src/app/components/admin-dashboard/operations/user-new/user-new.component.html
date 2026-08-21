@@ -1,107 +1,180 @@
-<div class="w-screen min-h-screen bg-white px-4 sm:px-6 lg:px-8 py-6 flex flex-col items-center">
-  <h2 class="text-2xl font-bold mb-6 text-center">Új Felhasználó</h2>
+<div class="user-new-container">
+
+  <h2 class="user-new-title">
+    Új Felhasználó
+  </h2>
 
   <!-- Üzenet -->
-  <div *ngIf="message"
-       [ngClass]="{'text-red-600': isError, 'text-green-600': !isError}"
-       class="mb-4 font-medium">
+  <div
+    *ngIf="message"
+    [ngClass]="{
+      'message-error': isError,
+      'message-success': !isError
+    }"
+    class="message">
     {{ message }}
   </div>
 
-  <form #userForm="ngForm" (ngSubmit)="onSubmit(userForm)"
-        class="w-full max-w-7xl bg-white rounded-xl shadow-lg p-6 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+  <form
+    #userForm="ngForm"
+    (ngSubmit)="onSubmit(userForm)"
+    class="user-form">
 
-    <div>
+    <div class="form-group">
       <label for="username">Felhasználónév</label>
-      <input id="username" name="username" type="text" required
-             [(ngModel)]="user.username"
-             class="border px-3 py-2 rounded-lg w-full"/>
+      <input
+        id="username"
+        name="username"
+        type="text"
+        required
+        [(ngModel)]="user.username"
+        class="form-input"/>
     </div>
 
-    <div>
+    <div class="form-group">
       <label for="email">Email cím</label>
-      <input id="email" name="email" type="email" required
-             [(ngModel)]="user.email"
-             class="border px-3 py-2 rounded-lg w-full"/>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        required
+        [(ngModel)]="user.email"
+        class="form-input"/>
     </div>
 
-    <div>
+    <div class="form-group">
       <label for="password">Jelszó</label>
-      <input id="password" name="password" type="password" required
-             [(ngModel)]="user.passwordHash"
-             class="border px-3 py-2 rounded-lg w-full"/>
+      <input
+        id="password"
+        name="password"
+        type="password"
+        required
+        [(ngModel)]="user.passwordHash"
+        class="form-input"/>
     </div>
 
-    <!-- Hiányzó mezők -->
-    <div>
+    <div class="form-group">
       <label for="age">Életkor</label>
-      <input id="age" name="age" type="number"
-             [(ngModel)]="user.age"
-             class="border px-3 py-2 rounded-lg w-full"/>
+      <input
+        id="age"
+        name="age"
+        type="number"
+        [(ngModel)]="user.age"
+        class="form-input"/>
     </div>
 
-    <div>
+    <div class="form-group">
       <label for="weight">Súly (kg)</label>
-      <input id="weight" name="weight" type="number" step="0.01"
-             [(ngModel)]="user.weight"
-             class="border px-3 py-2 rounded-lg w-full"/>
+      <input
+        id="weight"
+        name="weight"
+        type="number"
+        step="0.01"
+        [(ngModel)]="user.weight"
+        class="form-input"/>
     </div>
 
-    <div>
+    <div class="form-group">
       <label for="height">Magasság (cm)</label>
-      <input id="height" name="height" type="number" step="0.01"
-             [(ngModel)]="user.height"
-             class="border px-3 py-2 rounded-lg w-full"/>
+      <input
+        id="height"
+        name="height"
+        type="number"
+        step="0.01"
+        [(ngModel)]="user.height"
+        class="form-input"/>
     </div>
 
-    <div>
+    <div class="form-group">
       <label for="gender">Nem</label>
-      <select id="gender" name="gender" [(ngModel)]="user.gender"
-              class="border px-3 py-2 rounded-lg w-full">
+      <select
+        id="gender"
+        name="gender"
+        [(ngModel)]="user.gender"
+        class="form-input">
+
         <option value="Férfi">Férfi</option>
         <option value="Nő">Nő</option>
+
       </select>
     </div>
 
-    <div class="sm:col-span-2 md:col-span-3 lg:col-span-4">
+    <div class="form-group form-group-full">
       <label for="goals">Célok</label>
-      <textarea id="goals" name="goals"
-                [(ngModel)]="user.goals"
-                class="border px-3 py-2 rounded-lg w-full"></textarea>
+
+      <textarea
+        id="goals"
+        name="goals"
+        [(ngModel)]="user.goals"
+        class="form-input form-textarea">
+      </textarea>
     </div>
 
-    <div>
+    <div class="form-group">
       <label for="avatarUrl">Avatar URL</label>
-      <input id="avatarUrl" name="avatarUrl" type="text"
-             [(ngModel)]="user.avatarUrl"
-             class="border px-3 py-2 rounded-lg w-full"/>
+
+      <input
+        id="avatarUrl"
+        name="avatarUrl"
+        type="text"
+        [(ngModel)]="user.avatarUrl"
+        class="form-input"/>
     </div>
 
-    <!-- Coach select (combobox) -->
-    <div class="sm:col-span-2 md:col-span-3 lg:col-span-4">
-      <label class="block mb-1">Edző hozzárendelése</label>
-      <app-coach-select [(selectedCoachId)]="user.coachId" (coachSelected)="onCoachSelected($event)"></app-coach-select>
+    <!-- Coach select -->
+    <div class="form-group form-group-full">
+      <label class="form-label">
+        Edző hozzárendelése
+      </label>
+
+      <app-coach-select
+        [(selectedCoachId)]="user.coachId"
+        (coachSelected)="onCoachSelected($event)">
+      </app-coach-select>
     </div>
 
     <!-- Role kiválasztás -->
-    <div class="sm:col-span-2 md:col-span-3 lg:col-span-4">
-      <label class="block mb-1">Szerepkörök*</label>
-      <app-role-select [roles]="roles" (roleSelected)="onRoleSelected($event)"></app-role-select>
-      <div class="mt-2">
-        <span *ngFor="let r of user.roleIds"
-              class="inline-block bg-blue-200 text-blue-800 px-2 py-1 rounded mr-1 mb-1 cursor-pointer"
-              (click)="onRemoveRole(r)">
-          {{ r.name }} <span class="font-bold ml-1">x</span>
+    <div class="form-group form-group-full">
+
+      <label class="form-label">
+        Szerepkörök*
+      </label>
+
+      <app-role-select
+        [roles]="roles"
+        (roleSelected)="onRoleSelected($event)">
+      </app-role-select>
+
+      <div class="selected-roles">
+
+        <span
+          *ngFor="let r of user.roleIds"
+          class="selected-role"
+          (click)="onRemoveRole(r)">
+
+          {{ r.name }}
+
+          <span class="remove-role">
+            x
+          </span>
+
         </span>
+
       </div>
+
     </div>
 
     <!-- Submit -->
-    <div class="sm:col-span-2 md:col-span-3 lg:col-span-4 text-center mt-4">
-      <button type="submit"
-              class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">
+    <div class="form-submit">
+
+      <button
+        type="submit"
+        class="submit-button">
         Létrehozás
       </button>
+
     </div>
+
   </form>
+
 </div>

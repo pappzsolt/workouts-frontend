@@ -1,22 +1,48 @@
-// Eltávolítjuk a helyi interface Role-t
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
+
 import { UserNewService } from '../../../../services/admin/user-new.service';
+
 import { RoleSelectComponent } from '../../../shared/roles/role-select.component';
-import { CoachSelectComponent } from '../../../shared/coach/coach-select.component'; // 🔹 importáljuk a coach selectet
-import { Role } from '../../../../services/roles/role.service'; // 🔹 ide importáljuk a service-ből
-import { CoachNameId } from '../../../../services/coach/coach-name-id.service'; // 🔹 szükséges a típus
+import { CoachSelectComponent } from '../../../shared/coach/coach-select.component';
+
+import { Role } from '../../../../services/roles/role.service';
+import { CoachNameId } from '../../../../services/coach/coach-name-id.service';
+
+import {
+  CreateUserRequest,
+  CreateUserResponse
+} from '../../../../models/user-new-model';
 
 @Component({
   selector: 'app-user-new',
   standalone: true,
-  imports: [CommonModule, FormsModule, RoleSelectComponent, CoachSelectComponent], // 🔹 hozzáadva a CoachSelectComponent
+  imports: [
+    CommonModule,
+    FormsModule,
+    RoleSelectComponent,
+    CoachSelectComponent
+  ],
   templateUrl: './user-new.component.html',
   styleUrls: ['./user-new.component.css']
 })
 export class UserNewComponent {
-  user: any = {
+
+  user: {
+    username: string;
+    email: string;
+    passwordHash: string;
+    avatarUrl: string;
+    age: number | null;
+    weight: number | null;
+    height: number | null;
+    gender: string;
+    goals: string;
+    coachId?: number;
+    coachName: string;
+    roleIds: Role[];
+  } = {
     username: '',
     email: '',
     passwordHash: '',
@@ -26,67 +52,83 @@ export class UserNewComponent {
     height: null,
     gender: '',
     goals: '',
-    coachId: null, // kiválasztott coach id
-    coachName: '', // 🔹 új mező a kiválasztott coach nevének tárolására
-    roleIds: [] as Role[] // Role objektumokat tartalmaz
+    coachName: '',
+    roleIds: []
   };
 
-  roles: Role[] = []; // ide tölthető a RoleSelectComponent által használt role lista
+  roles: Role[] = [];
 
   message = '';
   isError = false;
 
-  constructor(private userNewService: UserNewService) {}
+  constructor(
+    private userNewService: UserNewService
+  ) {}
 
-  // 🔹 explicit Role típus használata
-  onRoleSelected(role: Role) {
-    if (!this.user.roleIds.some((r: Role) => r.id === role.id)) {
+  onRoleSelected(role: Role): void {
+    if (!this.user.roleIds.some(r => r.id === role.id)) {
       this.user.roleIds.push(role);
     }
   }
 
-  onRemoveRole(role: Role) {
-    this.user.roleIds = this.user.roleIds.filter((r: Role) => r.id !== role.id);
+  onRemoveRole(role: Role): void {
+    this.user.roleIds = this.user.roleIds.filter(
+      r => r.id !== role.id
+    );
   }
 
-  // 🔹 callback a coach selectból
-  onCoachSelected(coach: CoachNameId) {
+  onCoachSelected(coach: CoachNameId): void {
     this.user.coachId = coach.id;
-    this.user.coachName = coach.name; // 🔹 tároljuk a kiválasztott coach nevét is
+    this.user.coachName = coach.name;
   }
 
-  onSubmit(form: NgForm) {
+  onSubmit(form: NgForm): void {
+
     if (!form.valid || this.user.roleIds.length === 0) {
-      this.message = 'Kérlek töltsd ki az összes kötelező mezőt és válassz legalább egy szerepkört!';
+      this.message =
+        'Kérlek töltsd ki az összes kötelező mezőt és válassz legalább egy szerepkört!';
       this.isError = true;
       return;
     }
 
-    const payload = {
+    const payload: CreateUserRequest = {
       type: 'user',
       username: this.user.username,
       email: this.user.email,
       passwordHash: this.user.passwordHash,
       avatarUrl: this.user.avatarUrl,
-      age: this.user.age,
-      weight: this.user.weight,
-      height: this.user.height,
+      age: this.user.age ?? undefined,
+      weight: this.user.weight ?? undefined,
+      height: this.user.height ?? undefined,
       gender: this.user.gender,
       goals: this.user.goals,
       coachId: this.user.coachId,
-      roleIds: this.user.roleIds.map((r: Role) => r.id) // 🔹 explicit típus
+      roleIds: this.user.roleIds.map(role => role.id)
     };
 
     this.userNewService.createUser(payload).subscribe({
-      next: (res) => {
+
+      next: (res: CreateUserResponse) => {
+
         this.message = res.message || 'Sikeres létrehozás';
         this.isError = !res.success;
-        if (res.success) form.resetForm();
+
+        if (res.success) {
+          form.resetForm();
+
+          this.user.roleIds = [];
+          this.user.coachId = undefined;
+          this.user.coachName = '';
+        }
       },
+
       error: (err) => {
-        this.message = err.error?.message || 'Hiba a mentésnél';
+        this.message =
+          err.error?.message || 'Hiba a mentésnél';
+
         this.isError = true;
       }
+
     });
   }
 }
