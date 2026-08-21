@@ -1,0 +1,202 @@
+.programs-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.message-box {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #374151;
+}
+
+.programs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.program-card {
+  background: #ffffff;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.program-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+.program-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 140px;
+  background: #f3f4f6;
+}
+
+.program-emoji {
+  font-size: 4rem;
+}
+
+.program-content {
+  padding: 1rem;
+}
+
+.program-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.program-description {
+  color: #6b7280;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.program-progress {
+  margin-bottom: 1rem;
+}
+
+.program-progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+.program-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.program-progress-fill {
+  height: 100%;
+  background: #2563eb;
+  border-radius: 999px;
+}
+
+/* Workoutok */
+
+.program-workouts {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.workouts-title {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.workout-item {
+  padding: 0.6rem 0.75rem;
+  margin-bottom: 0.5rem;
+  background: #f9fafb;
+  border-radius: 0.5rem;
+}
+
+.workout-name {
+  font-weight: 500;
+}
+
+.workout-exercises {
+  margin-top: 0.25rem;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.no-workouts {
+  margin-top: 1rem;
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+.program-edit {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.program-edit button {
+  border: none;
+  background: #2563eb;
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.program-edit button:hover {
+  background: #1d4ed8;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.pagination-controls button {
+  border: none;
+  background: #2563eb;
+  color: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.pagination-controls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.no-programs {
+  text-align: center;
+  margin: 2rem 0;
+  color: #6b7280;
+}
+
+.floating-action-button {
+  position: fixed;
+  right: 2rem;
+  bottom: 2rem;
+
+  width: 3.5rem;
+  height: 3.5rem;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 1.5rem;
+  cursor: pointer;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.floating-action-button:hover {
+  background: #1d4ed8;
+  transform: scale(1.05);
+}

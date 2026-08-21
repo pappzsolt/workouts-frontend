@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -18,30 +18,26 @@ import { API_ENDPOINTS } from '../../../api-endpoints';
 })
 export class CoachProgramService {
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
 
-  /** 🔹 Lekéri a belépett coach programjait */
   getProgramsForLoggedInCoach(): Observable<CoachProgramsResponse> {
     return this.http.get<CoachProgramsResponse>(
       `${API_ENDPOINTS.programs}/coach/programs`
     );
   }
 
-  /** 🔹 Összes program lekérése */
   getAllPrograms(): Observable<Program[]> {
     return this.http.get<Program[]>(
       `${API_ENDPOINTS.programs}/all`
     );
   }
 
-  /** 🔹 Program lekérése ID alapján */
   getProgramById(id: number): Observable<ApiResponse<ProgramDto>> {
     return this.http.get<ApiResponse<ProgramDto>>(
       `${API_ENDPOINTS.programs}/${id}`
     );
   }
 
-  /** 🔹 Új program létrehozása */
   createProgram(
     request: ProgramCreationRequest
   ): Observable<ProgramCreationResponse> {
@@ -51,7 +47,6 @@ export class CoachProgramService {
     );
   }
 
-  /** 🔹 Program módosítása */
   updateProgram(
     id: number,
     program: Program
@@ -62,14 +57,12 @@ export class CoachProgramService {
     );
   }
 
-  /** 🔹 Program törlése */
   deleteProgram(id: number): Observable<void> {
     return this.http.delete<void>(
       `${API_ENDPOINTS.programs}/${id}`
     );
   }
 
-  /** 🔹 Workout hozzárendelése programhoz */
   assignWorkoutToProgram(
     programId: number,
     workoutId: number
