@@ -1,55 +1,59 @@
-<h2 class="programs-title">{{ workoutName }} – Exercises</h2>
+<h2 class="exercises-title">
+  {{ workoutName }} – Exercises
+</h2>
 
 <ng-container *ngIf="(exercises$ | async)?.length; else noExercises">
-  <div class="programs-grid">
+  <div class="exercises-grid">
+
     <div
       *ngFor="let exercise of exercises$ | async"
-      class="program-card"
+      class="exercise-card"
       (click)="goToExercise(exercise.exercise.id!)"
     >
       <!-- Emoji / ikon -->
-      <div class="program-image">
-        <span class="program-emoji">🏋️‍♂️</span>
+      <div class="exercise-image">
+        <span class="exercise-emoji">🏋️‍♂️</span>
       </div>
 
-      <div class="program-content">
+      <div class="exercise-content">
+
         <!-- Exercise name -->
-        <div class="program-name">
+        <div class="exercise-name">
           {{ exercise.exercise.name }}
         </div>
 
         <!-- Exercise description -->
-        <div class="program-description">
+        <div class="exercise-description">
           {{ exercise.exercise.description || 'No description' }}
         </div>
 
         <!-- Sets / Reps -->
-        <div class="text-gray-700 text-sm mt-1">
+        <div class="exercise-detail">
           Sets: {{ exercise.sets }}, Reps: {{ exercise.repetitions }}
         </div>
 
         <!-- Rest -->
-        <div class="text-gray-700 text-sm mt-1">
+        <div class="exercise-detail">
           Rest: {{ exercise.restSeconds }} sec
         </div>
 
         <!-- Done status -->
         <div
-          class="text-sm font-medium mt-2"
-          [ngClass]="{
-            'text-green-600': exercise.done,
-            'text-red-500': !exercise.done
-          }"
+          class="exercise-status"
+          [class.exercise-status-completed]="exercise.done"
+          [class.exercise-status-pending]="!exercise.done"
         >
           {{ exercise.done ? 'Completed ✅' : 'Pending ⏳' }}
         </div>
+
       </div>
     </div>
+
   </div>
 </ng-container>
 
 <ng-template #noExercises>
-  <div class="no-programs">
+  <div class="no-exercises">
     Nincsenek gyakorlatok ehhez a workouthoz.
   </div>
 </ng-template>

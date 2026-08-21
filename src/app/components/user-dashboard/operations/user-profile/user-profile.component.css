@@ -1,0 +1,121 @@
+.profile-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.profile-message {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  color: white;
+  background-color: #ef4444;
+  text-align: center;
+}
+
+.profile-form {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+
+  display: grid;
+  gap: 1rem;
+
+  grid-template-columns: 1fr;
+}
+
+.profile-form-group {
+  min-width: 0;
+}
+
+.profile-form-group-full {
+  grid-column: 1;
+}
+
+.profile-label {
+  display: block;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+
+.profile-input,
+.profile-textarea {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profile-input:focus,
+.profile-textarea:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.profile-textarea {
+  resize: vertical;
+}
+
+.profile-coach {
+  box-sizing: border-box;
+  width: 100%;
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.profile-submit {
+  grid-column: 1;
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.profile-save-button {
+  background-color: #2563eb;
+  color: white;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.profile-save-button:hover {
+  background-color: #1d4ed8;
+}
+
+.profile-save-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+@media (min-width: 640px) {
+  .profile-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .profile-form-group-full,
+  .profile-submit {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 768px) {
+  .profile-form {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .profile-form-group-full,
+  .profile-submit {
+    grid-column: span 3;
+  }
+}

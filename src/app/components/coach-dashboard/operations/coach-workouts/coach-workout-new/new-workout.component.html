@@ -20,10 +20,21 @@
     <span class="form-header-emoji">🏋️‍♂️</span>
   </div>
 
-  <form (ngSubmit)="addWorkout()" #workoutForm="ngForm" class="universal-form">
+  <form
+    (ngSubmit)="addWorkout()"
+    #workoutForm="ngForm"
+    class="universal-form"
+  >
+
     <!-- Workout név -->
     <div class="universal-form-group-full">
-      <label for="workoutName" class="universal-form-label">Workout Name</label>
+      <label
+        for="workoutName"
+        class="universal-form-label"
+      >
+        Workout Name
+      </label>
+
       <input
         type="text"
         id="workoutName"
@@ -36,7 +47,13 @@
 
     <!-- Leírás -->
     <div class="universal-form-group-full">
-      <label for="description" class="universal-form-label">Description</label>
+      <label
+        for="description"
+        class="universal-form-label"
+      >
+        Description
+      </label>
+
       <textarea
         id="description"
         name="description"
@@ -48,7 +65,13 @@
 
     <!-- Dátum -->
     <div class="universal-form-group">
-      <label for="workoutDate" class="universal-form-label">Date</label>
+      <label
+        for="workoutDate"
+        class="universal-form-label"
+      >
+        Date
+      </label>
+
       <input
         type="date"
         id="workoutDate"
@@ -61,7 +84,13 @@
 
     <!-- Időtartam -->
     <div class="universal-form-group">
-      <label for="durationMinutes" class="universal-form-label">Duration (minutes)</label>
+      <label
+        for="durationMinutes"
+        class="universal-form-label"
+      >
+        Duration (minutes)
+      </label>
+
       <input
         type="number"
         id="durationMinutes"
@@ -73,7 +102,13 @@
 
     <!-- Intenzitás -->
     <div class="universal-form-group">
-      <label for="intensityLevel" class="universal-form-label">Intensity Level</label>
+      <label
+        for="intensityLevel"
+        class="universal-form-label"
+      >
+        Intensity Level
+      </label>
+
       <select
         id="intensityLevel"
         name="intensityLevel"
@@ -88,7 +123,7 @@
     </div>
 
     <!-- Gomb -->
-    <div class="md:col-span-2 text-center">
+    <div class="universal-form-actions">
       <button
         type="submit"
         [disabled]="!workoutForm.form.valid"
@@ -97,5 +132,6 @@
         ➕ Create Workout
       </button>
     </div>
+
   </form>
 </div>

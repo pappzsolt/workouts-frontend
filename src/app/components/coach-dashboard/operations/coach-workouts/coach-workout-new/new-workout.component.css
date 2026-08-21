@@ -1,0 +1,127 @@
+.universal-form-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.universal-form-message {
+  text-align: center;
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+}
+
+.universal-form-message-success {
+  color: #166534;
+  background-color: #dcfce7;
+}
+
+.universal-form-message-error {
+  color: #b91c1c;
+  background-color: #fee2e2;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 56rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background-color: #ffffff;
+  border-radius: 1rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+.form-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.form-header-emoji {
+  font-size: 3rem;
+}
+
+.universal-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.universal-form-group,
+.universal-form-group-full {
+  width: 100%;
+}
+
+.universal-form-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.universal-form-input,
+.universal-form-textarea,
+.universal-form-select {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  color: #111827;
+}
+
+.universal-form-input:focus,
+.universal-form-textarea:focus,
+.universal-form-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 0.25);
+}
+
+.universal-form-textarea {
+  resize: vertical;
+}
+
+.universal-form-actions {
+  text-align: center;
+}
+
+.universal-form-button {
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.universal-form-button:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.universal-form-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (min-width: 768px) {
+  .universal-form {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .universal-form-group-full {
+    grid-column: span 2;
+  }
+
+  .universal-form-actions {
+    grid-column: span 2;
+  }
+
+  .form-card {
+    padding: 2rem;
+  }
+}

@@ -1,38 +1,53 @@
-<nav class="bg-gray-800 text-white w-64 min-h-screen p-4">
-  <ul>
+<nav class="sidebar">
+  <ul class="sidebar-menu">
     <ng-container *ngFor="let item of menuItems">
-      <li>
+      <li class="sidebar-item">
+
         <!-- Normál link -->
-        <a *ngIf="!item.children && !item.action"
-           [routerLink]="item.path"
-           class="block px-3 py-2 rounded hover:bg-gray-700 transition">
+        <a
+          *ngIf="!item.children && !item.action"
+          [routerLink]="item.path"
+          class="sidebar-link"
+        >
           {{ item.label }}
         </a>
 
         <!-- Action (logout) -->
-        <span *ngIf="item.action"
-              class="block px-3 py-2 rounded hover:bg-gray-700 transition cursor-pointer"
-              (click)="onAction(item)">
+        <span
+          *ngIf="item.action"
+          class="sidebar-link sidebar-action"
+          (click)="onAction(item)"
+        >
           {{ item.label }}
         </span>
 
         <!-- Dropdown -->
         <div *ngIf="item.children">
-          <span class="block px-3 py-2 rounded hover:bg-gray-700 transition cursor-pointer"
-                (click)="toggle(item)">
+
+          <span
+            class="sidebar-link sidebar-dropdown-toggle"
+            (click)="toggle(item)"
+          >
             {{ item.label }}
           </span>
-          <ul *ngIf="isOpen(item)" class="pl-4">
+
+          <ul
+            *ngIf="isOpen(item)"
+            class="sidebar-submenu"
+          >
             <li *ngFor="let child of item.children">
-              <a [routerLink]="child.path"
-                 class="block px-3 py-2 rounded hover:bg-gray-700 transition">
+              <a
+                [routerLink]="child.path"
+                class="sidebar-link sidebar-submenu-link"
+              >
                 {{ child.label }}
               </a>
             </li>
           </ul>
+
         </div>
+
       </li>
     </ng-container>
   </ul>
 </nav>
-

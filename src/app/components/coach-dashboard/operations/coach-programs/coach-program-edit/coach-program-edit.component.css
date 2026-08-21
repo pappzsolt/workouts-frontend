@@ -1,0 +1,158 @@
+.programs-title {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.form-message {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.form-message-success {
+  color: #16a34a;
+}
+
+.form-message-error {
+  color: #ef4444;
+}
+
+.program-card {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+
+  transition: all 0.3s ease;
+}
+
+.program-image {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.program-emoji {
+  font-size: 3rem;
+}
+
+.program-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.form-group,
+.form-group-full {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #374151;
+}
+
+.form-input {
+  width: 100%;
+  box-sizing: border-box;
+
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+
+  padding: 0.5rem 1rem;
+
+  font-size: 1rem;
+  background-color: #ffffff;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 0.2);
+}
+
+.form-textarea {
+  resize: vertical;
+}
+
+.form-submit {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.form-button {
+  background-color: #2563eb;
+  color: #ffffff;
+
+  font-weight: 500;
+
+  padding: 0.5rem 2rem;
+
+  border: none;
+  border-radius: 0.5rem;
+
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1);
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.form-button:hover {
+  background-color: #1d4ed8;
+}
+
+.form-button:focus {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgb(59 130 246 / 0.5);
+}
+
+/* Tablet / desktop */
+@media (min-width: 768px) {
+
+  .programs-title {
+    font-size: 1.5rem;
+  }
+
+  .program-card {
+    padding: 2rem;
+  }
+
+  .program-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .form-group-full,
+  .form-submit {
+    grid-column: span 2;
+  }
+}
+
+/* Nagyobb képernyő */
+@media (min-width: 1024px) {
+
+  .program-card {
+    max-width: 64rem;
+  }
+
+}

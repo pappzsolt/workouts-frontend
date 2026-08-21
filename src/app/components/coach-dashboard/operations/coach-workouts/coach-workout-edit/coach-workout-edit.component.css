@@ -1,0 +1,188 @@
+.universal-form-title {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.universal-form-message {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.universal-form-message-success {
+  color: #16a34a;
+}
+
+.universal-form-message-error {
+  color: #ef4444;
+}
+
+.form-card {
+  background-color: #ffffff;
+  border-radius: 1rem;
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+}
+
+.form-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.form-header-emoji {
+  font-size: 3.5rem;
+}
+
+.universal-form {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.universal-form-group,
+.universal-form-group-full {
+  display: flex;
+  flex-direction: column;
+}
+
+.universal-form-group-full {
+  grid-column: 1 / -1;
+}
+
+.universal-form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  color: #374151;
+}
+
+.universal-form-input,
+.universal-form-textarea,
+.universal-form-select {
+  width: 100%;
+  box-sizing: border-box;
+
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+
+  padding: 0.5rem 1rem;
+
+  font-size: 1rem;
+  background-color: #ffffff;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.universal-form-input:focus,
+.universal-form-textarea:focus,
+.universal-form-select:focus {
+  outline: none;
+  border-color: #3b82f6;
+
+  box-shadow:
+    0 0 0 2px rgb(59 130 246 / 0.2);
+}
+
+.universal-form-textarea {
+  resize: vertical;
+}
+
+.checkbox-group {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-checkbox {
+  width: 1rem;
+  height: 1rem;
+  cursor: pointer;
+}
+
+.checkbox-label {
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+.form-buttons {
+  grid-column: 1 / -1;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.universal-form-button,
+.cancel-button {
+  font-weight: 500;
+
+  padding: 0.5rem 1.5rem;
+
+  border: none;
+  border-radius: 0.5rem;
+
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1);
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.universal-form-button {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.universal-form-button:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.universal-form-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cancel-button {
+  background-color: #d1d5db;
+  color: #1f2937;
+}
+
+.cancel-button:hover {
+  background-color: #9ca3af;
+}
+
+.universal-form-button:focus,
+.cancel-button:focus {
+  outline: none;
+  box-shadow:
+    0 0 0 2px rgb(59 130 246 / 0.5);
+}
+
+@media (min-width: 768px) {
+
+  .form-card {
+    padding: 2rem;
+  }
+
+  .universal-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

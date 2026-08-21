@@ -22,3 +22,49 @@ ul {
     width: 100%;
   }
 }
+.sidebar {
+  background-color: #1f2937;
+  color: #ffffff;
+  width: 16rem;
+  min-height: 100vh;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+.sidebar-menu,
+.sidebar-submenu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-item {
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-link {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.sidebar-link:hover {
+  background-color: #374151;
+}
+
+.sidebar-action,
+.sidebar-dropdown-toggle {
+  cursor: pointer;
+}
+
+.sidebar-submenu {
+  padding-left: 1rem;
+}
+
+.sidebar-submenu-link {
+  font-size: 0.95rem;
+}

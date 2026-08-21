@@ -1,0 +1,42 @@
+.coach-board-message {
+  color: #6b7280;
+  padding: 1rem;
+  text-align: center;
+}
+
+.coach-program-board {
+  display: flex;
+  flex-direction: column;
+}
+
+.coach-board-column {
+  border: 1px solid #d1d5db;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.coach-program-select {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.coach-program-radio {
+  margin-right: 0.5rem;
+  cursor: pointer;
+}
+
+.coach-program-label {
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+}
+
+.coach-board-empty {
+  color: #9ca3af;
+  font-style: italic;
+  text-align: center;
+  margin-top: 1.5rem;
+}

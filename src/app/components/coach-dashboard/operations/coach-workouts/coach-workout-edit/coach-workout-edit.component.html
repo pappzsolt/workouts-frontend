@@ -16,14 +16,26 @@
 
 <!-- Workout Edit form -->
 <div class="form-card">
+
   <div class="form-header">
     <span class="form-header-emoji">💪</span>
   </div>
 
-  <form (ngSubmit)="saveWorkout()" #workoutForm="ngForm" class="universal-form">
+  <form
+    (ngSubmit)="saveWorkout()"
+    #workoutForm="ngForm"
+    class="universal-form"
+  >
+
     <!-- Name -->
     <div class="universal-form-group-full">
-      <label for="workoutName" class="universal-form-label">Workout Name</label>
+      <label
+        for="workoutName"
+        class="universal-form-label"
+      >
+        Workout Name
+      </label>
+
       <input
         id="workoutName"
         type="text"
@@ -36,7 +48,13 @@
 
     <!-- Description -->
     <div class="universal-form-group-full">
-      <label for="description" class="universal-form-label">Description</label>
+      <label
+        for="description"
+        class="universal-form-label"
+      >
+        Description
+      </label>
+
       <textarea
         id="description"
         name="description"
@@ -48,7 +66,13 @@
 
     <!-- Date -->
     <div class="universal-form-group">
-      <label for="workoutDate" class="universal-form-label">Workout Date</label>
+      <label
+        for="workoutDate"
+        class="universal-form-label"
+      >
+        Workout Date
+      </label>
+
       <input
         id="workoutDate"
         type="date"
@@ -61,7 +85,13 @@
 
     <!-- Duration -->
     <div class="universal-form-group">
-      <label for="durationMinutes" class="universal-form-label">Duration (minutes)</label>
+      <label
+        for="durationMinutes"
+        class="universal-form-label"
+      >
+        Duration (minutes)
+      </label>
+
       <input
         id="durationMinutes"
         type="number"
@@ -74,7 +104,13 @@
 
     <!-- Intensity -->
     <div class="universal-form-group">
-      <label for="intensityLevel" class="universal-form-label">Intensity Level</label>
+      <label
+        for="intensityLevel"
+        class="universal-form-label"
+      >
+        Intensity Level
+      </label>
+
       <select
         id="intensityLevel"
         name="intensityLevel"
@@ -89,19 +125,26 @@
     </div>
 
     <!-- Done -->
-    <div class="universal-form-group md:col-span-2 flex items-center gap-2">
+    <div class="universal-form-group checkbox-group">
       <input
         type="checkbox"
         name="done"
         id="done"
         [(ngModel)]="workout.done"
-        class="h-4 w-4"
+        class="form-checkbox"
       />
-      <label for="done" class="universal-form-label">Workout Completed</label>
+
+      <label
+        for="done"
+        class="universal-form-label checkbox-label"
+      >
+        Workout Completed
+      </label>
     </div>
 
     <!-- Buttons -->
-    <div class="md:col-span-2 flex justify-center gap-4 mt-4">
+    <div class="form-buttons">
+
       <button
         type="submit"
         [disabled]="!workoutForm.form.valid"
@@ -109,13 +152,16 @@
       >
         💾 Save
       </button>
+
       <button
         type="button"
         (click)="cancelEdit()"
-        class="universal-form-button bg-gray-300 text-gray-800 hover:bg-gray-400 focus:ring-gray-500"
+        class="cancel-button"
       >
         ❌ Cancel
       </button>
+
     </div>
+
   </form>
 </div>

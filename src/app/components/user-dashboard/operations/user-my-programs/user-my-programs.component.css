@@ -1,0 +1,107 @@
+.programs-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #1f2937;
+}
+
+.message-box {
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background-color: #f3f4f6;
+  color: #374151;
+  text-align: center;
+}
+
+.programs-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.program-card {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.program-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
+}
+
+.program-image {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1.5rem;
+}
+
+.program-emoji {
+  font-size: 3rem;
+}
+
+.program-content {
+  padding: 1rem;
+}
+
+.program-name {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #374151;
+}
+
+.program-description {
+  margin-top: 0.5rem;
+  color: #6b7280;
+}
+
+.program-progress {
+  margin-top: 1rem;
+}
+
+.program-progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.program-progress-bar {
+  width: 100%;
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background-color: #e5e7eb;
+}
+
+.program-progress-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background-color: #2563eb;
+  transition: width 0.3s ease;
+}
+
+.no-programs {
+  padding: 1.5rem;
+  text-align: center;
+  color: #9ca3af;
+}
+
+@media (min-width: 640px) {
+  .programs-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .programs-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

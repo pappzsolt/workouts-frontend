@@ -1,39 +1,63 @@
 <h2 class="programs-title">My Programs</h2>
 
-<!-- 🔹 Üzenet megjelenítése, ha van -->
+<!-- Üzenet -->
 <div *ngIf="message" class="message-box">
   {{ message }}
 </div>
 
-<!-- 🔹 Program lista -->
+<!-- Program lista -->
 <ng-container *ngIf="(programs$ | async)?.length; else noPrograms">
   <div class="programs-grid">
-    <div *ngFor="let program of programs$ | async" class="program-card" (click)="goToWorkouts(program.id, program.name)">
+
+    <div
+      *ngFor="let program of programs$ | async"
+      class="program-card"
+      (click)="goToWorkouts(program.id, program.name)"
+    >
+
       <!-- Emoji / ikon -->
       <div class="program-image">
         <span class="program-emoji">🏋️‍♂️</span>
       </div>
 
       <div class="program-content">
-        <!-- Program név és leírás -->
-        <div class="program-name">{{ program.name }}</div>
-        <div class="program-description">Duration: {{ program.durationWeeks }} weeks</div>
 
-        <!-- Ha szeretnél progress bar-t -->
+        <!-- Program név -->
+        <div class="program-name">
+          {{ program.name }}
+        </div>
+
+        <!-- Időtartam -->
+        <div class="program-description">
+          Duration: {{ program.durationWeeks }} weeks
+        </div>
+
+        <!-- Progress -->
         <div class="program-progress">
+
           <div class="program-progress-label">
             <span>Napok:</span>
-            <span>{{ program.durationWeeks }} / {{ program.durationWeeks }}</span>
+            <span>
+              {{ program.durationWeeks }} / {{ program.durationWeeks }}
+            </span>
           </div>
+
           <div class="program-progress-bar">
-            <div class="program-progress-fill" [style.width.%]="100"></div>
+            <div
+              class="program-progress-fill"
+              [style.width.%]="100"
+            ></div>
           </div>
+
         </div>
       </div>
     </div>
+
   </div>
 </ng-container>
 
 <ng-template #noPrograms>
-  <div class="no-programs">Jelenleg nincsenek elérhető programok.</div>
+  <div class="no-programs">
+    Jelenleg nincsenek elérhető programok.
+  </div>
 </ng-template>

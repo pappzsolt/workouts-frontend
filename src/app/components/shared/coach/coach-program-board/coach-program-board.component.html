@@ -1,18 +1,25 @@
 <!-- 🔄 Betöltés állapot -->
-<div *ngIf="loading" class="text-gray-500 p-4 text-center">
+<div *ngIf="loading" class="coach-board-message">
   Betöltés...
 </div>
 
 <!-- ℹ️ Üzenet -->
-<div *ngIf="message && !loading" class="text-gray-500 p-4 text-center">
+<div *ngIf="message && !loading" class="coach-board-message">
   {{ message }}
 </div>
 
 <!-- 🧩 Program oszlopok -->
-<div *ngIf="!loading && programs?.length" class="coach-board coach-program-board">
-  <div *ngFor="let program of programs" class="coach-board-column border p-2 rounded mb-4">
+<div
+  *ngIf="!loading && programs?.length"
+  class="coach-board coach-program-board"
+>
+  <div
+    *ngFor="let program of programs"
+    class="coach-board-column"
+  >
+
     <!-- Program kiválasztása rádiógombbal -->
-    <div class="flex items-center justify-center mb-2">
+    <div class="coach-program-select">
       <input
         type="radio"
         name="selectedProgram"
@@ -20,16 +27,24 @@
         [(ngModel)]="selectedProgramId"
         (change)="onSelectProgram(program.programId)"
         id="program-{{ program.programId }}"
-        class="mr-2"
+        class="coach-program-radio"
       />
-      <label for="program-{{ program.programId }}" class="font-semibold text-gray-700">
+
+      <label
+        for="program-{{ program.programId }}"
+        class="coach-program-label"
+      >
         {{ program.programName }}
       </label>
     </div>
+
   </div>
 </div>
 
 <!-- 🚫 Nincs program -->
-<div *ngIf="!loading && (!programs || !programs.length)" class="text-gray-400 italic text-center mt-6">
+<div
+  *ngIf="!loading && (!programs || !programs.length)"
+  class="coach-board-empty"
+>
   Nincsenek programok.
 </div>
