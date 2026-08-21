@@ -1,27 +1,41 @@
 <h2 class="dashboard-title">Admin Dashboard</h2>
 
 <div class="dashboard-cards-container">
+
   <!-- Felhasználók listája -->
-  <div class="dashboard-card" (click)="navigateTo('admin/users')">
+  <div
+    class="dashboard-card"
+    (click)="navigateTo('admin/users')"
+  >
     <div class="dashboard-card-emoji">👥</div>
     <div class="dashboard-card-title">Felhasználók listája</div>
   </div>
 
   <!-- Felhasználó keresés -->
-  <div class="dashboard-card" (click)="navigateTo('admin/users/search')">
+  <div
+    class="dashboard-card"
+    (click)="navigateTo('admin/users/search')"
+  >
     <div class="dashboard-card-emoji">🔍</div>
     <div class="dashboard-card-title">Felhasználó keresés</div>
   </div>
 
   <!-- Új felhasználó -->
-  <div class="dashboard-card" (click)="navigateTo('admin/choice-users/new')">
+  <div
+    class="dashboard-card"
+    (click)="navigateTo('admin/choice-users/new')"
+  >
     <div class="dashboard-card-emoji">➕</div>
     <div class="dashboard-card-title">Új felhasználó</div>
   </div>
 
   <!-- Felhasználó módosítás -->
-  <div class="dashboard-card" (click)="navigateTo('admin/choice-users/edit')">
+  <div
+    class="dashboard-card"
+    (click)="navigateTo('admin/choice-users/edit')"
+  >
     <div class="dashboard-card-emoji">✏️</div>
     <div class="dashboard-card-title">Felhasználó módosítás</div>
   </div>
+
 </div>

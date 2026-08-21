@@ -1,19 +1,20 @@
 <h2 class="dashboard-title">Coach Dashboard</h2>
 
 <div class="dashboard-cards-container">
-  <!-- Programs csempe -->
+
+  <!-- Programs -->
   <div class="dashboard-card" (click)="togglePrograms()">
     <div class="dashboard-card-emoji">💪</div>
     <div class="dashboard-card-title">Programs</div>
   </div>
 
-  <!-- Workouts csempe -->
+  <!-- Workouts -->
   <div class="dashboard-card" (click)="toggleWorkouts()">
     <div class="dashboard-card-emoji">🔥</div>
     <div class="dashboard-card-title">Workouts</div>
   </div>
 
-  <!-- Exercises csempe -->
+  <!-- Exercises -->
   <div class="dashboard-card" (click)="toggleExercises()">
     <div class="dashboard-card-emoji">🏋️</div>
     <div class="dashboard-card-title">Exercises</div>
@@ -37,33 +38,42 @@
     <div class="dashboard-card-title">Workout - Exercises ASS</div>
   </div>
 
-  <!-- Új csempe: WorkoutExerciseManager -->
+  <!-- Workout Exercise Manager -->
   <div class="dashboard-card" (click)="toggleWorkoutExerciseManager()">
     <div class="dashboard-card-emoji">📊🏋️</div>
     <div class="dashboard-card-title">Workout Exercise Manager</div>
   </div>
+
 </div>
 
 <!-- Dinamikus tartalmak -->
+
 <div *ngIf="showPrograms">
   <app-coach-program></app-coach-program>
 </div>
+
 <div *ngIf="showWorkouts">
-  <app-coach-workouts [programId]="programIdForWorkouts"></app-coach-workouts>
+  <app-coach-workouts
+    [programId]="programIdForWorkouts">
+  </app-coach-workouts>
 </div>
+
 <div *ngIf="showExercises">
   <app-exercise-controller></app-exercise-controller>
 </div>
+
 <div *ngIf="showAssignments">
   <app-assignprogram></app-assignprogram>
 </div>
+
 <div *ngIf="showProgramWorkouts">
   <app-program-workouts-ass></app-program-workouts-ass>
 </div>
+
 <div *ngIf="showWorkoutExercises">
   <app-assign-workouts-exercises></app-assign-workouts-exercises>
 </div>
-<div *ngIf="showWorkoutExerciseManager">
-  <<app-user-workout-exercise-manager></app-user-workout-exercise-manager>
 
+<div *ngIf="showWorkoutExerciseManager">
+  <app-user-workout-exercise-manager></app-user-workout-exercise-manager>
 </div>

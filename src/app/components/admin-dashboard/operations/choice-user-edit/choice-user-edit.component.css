@@ -1,0 +1,92 @@
+.page-title {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.entries-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.entry-card {
+  background-color: white;
+  border-radius: 0.75rem;
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  padding: 1.5rem;
+  width: 10rem;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+
+  cursor: pointer;
+
+  transform: scale(1);
+  transition:
+    transform 300ms ease,
+    box-shadow 300ms ease;
+}
+
+.entry-card:hover {
+  transform: scale(1.05);
+
+  box-shadow:
+    0 25px 50px -12px rgb(0 0 0 / 0.25);
+}
+
+.entry-icon {
+  margin-bottom: 1rem;
+  font-size: 3rem;
+}
+
+.entry-title {
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+@media (min-width: 640px) {
+  .entry-card {
+    width: 11rem;
+  }
+
+  .entry-icon {
+    font-size: 3.75rem;
+  }
+
+  .entry-title {
+    font-size: 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .entry-card {
+    width: 12rem;
+  }
+
+  .entry-icon {
+    font-size: 4.375rem;
+  }
+
+  .entry-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .entry-card {
+    width: 13rem;
+  }
+
+  .entry-icon {
+    font-size: 5rem;
+  }
+}

@@ -1,38 +1,50 @@
-<div class="flex flex-col gap-6 max-w-4xl mx-auto p-4">
+<div class="page-container">
 
   <!-- Workout lista -->
-  <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-md">
-    <h2 class="text-lg font-bold mb-4 text-gray-700">Elérhető workoutok</h2>
+  <div class="content-card">
+    <h2 class="section-title">Elérhető workoutok</h2>
+
     <app-coach-workout-board
       [externalWorkouts]="workouts"
       [selectedWorkoutIds]="selectedWorkoutIds"
       [multiSelect]="false"
       (workoutsChange)="onWorkoutsChange($event)">
     </app-coach-workout-board>
-
   </div>
 
   <!-- Kiválasztott workoutok -->
-  <div *ngIf="selectedWorkoutIds.length" class="bg-white border border-gray-200 rounded-2xl p-4 shadow-md">
-    <h2 class="text-lg font-bold mb-4 text-gray-700">Kiválasztott workoutok</h2>
-    <div class="flex flex-col gap-3">
-      <div *ngFor="let wid of selectedWorkoutIds"
-           class="bg-blue-50 text-blue-800 rounded-xl p-3 flex justify-between items-center shadow-sm">
-        <span class="font-medium">ID: {{ wid }}</span>
-        <button (click)="removeWorkout(wid)"
-                class="text-red-500 hover:text-red-700 font-bold ml-2"
-                title="Eltávolítás">
+  <div
+    *ngIf="selectedWorkoutIds.length"
+    class="content-card"
+  >
+    <h2 class="section-title">Kiválasztott workoutok</h2>
+
+    <div class="items-list">
+
+      <div
+        *ngFor="let wid of selectedWorkoutIds"
+        class="selected-workout"
+      >
+        <span class="item-text">
+          ID: {{ wid }}
+        </span>
+
+        <button
+          (click)="removeWorkout(wid)"
+          class="remove-button"
+          title="Eltávolítás"
+        >
           ✕
         </button>
       </div>
+
     </div>
-
-
   </div>
 
   <!-- Exercises lista -->
-  <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-md">
-    <h2 class="text-lg font-bold mb-4 text-gray-700">Elérhető exercise-ek</h2>
+  <div class="content-card">
+    <h2 class="section-title">Elérhető exercise-ek</h2>
+
     <app-coach-exercises-board
       [externalExercises]="exercises"
       [externalSelectedExercises]="selectedExercises"
@@ -41,30 +53,48 @@
   </div>
 
   <!-- Mentés gomb -->
-  <div class="mt-4 flex justify-center">
-    <button (click)="saveSelectedWorkoutsAndExercises()"
-            class="bg-green-500 text-white font-semibold px-6 py-3 rounded-2xl shadow-md hover:bg-green-600 transition">
+  <div class="save-container">
+    <button
+      (click)="saveSelectedWorkoutsAndExercises()"
+      class="save-button"
+    >
       Mentés a kiválasztott workoutokhoz és exercise-ekhez
     </button>
   </div>
 
 </div>
-<!-- Mentett workout-exercise kapcsolatok -->
-<div *ngIf="savedWorkoutExercises.length" class="bg-white border border-gray-200 rounded-2xl p-4 shadow-md mt-6">
-  <h2 class="text-lg font-bold mb-4 text-gray-700">Mentett kapcsolatok</h2>
-  <div class="flex flex-col gap-3">
-    <div *ngFor="let saved of savedWorkoutExercises"
-         class="bg-gray-50 text-gray-800 rounded-xl p-3 flex justify-between items-center shadow-sm">
-      <span>{{ saved.workoutName }} - {{ saved.exerciseName }} (ID: {{ saved.id }})</span>
 
-      <!-- Csak akkor jelenítjük meg a gombot, ha saved.id nem null/undefined -->
-      <button *ngIf="saved.id != null"
-              (click)="removeSavedWorkoutExercise(saved.id!)"
-              class="text-red-500 hover:text-red-700 font-bold ml-2"
-              title="Törlés">
+<!-- Mentett workout-exercise kapcsolatok -->
+<div
+  *ngIf="savedWorkoutExercises.length"
+  class="saved-container"
+>
+  <h2 class="section-title">Mentett kapcsolatok</h2>
+
+  <div class="items-list">
+
+    <div
+      *ngFor="let saved of savedWorkoutExercises"
+      class="saved-item"
+    >
+      <span class="item-text">
+        {{ saved.workoutName }} -
+        {{ saved.exerciseName }}
+        (ID: {{ saved.id }})
+      </span>
+
+      <!-- Csak akkor jelenítjük meg a gombot,
+           ha saved.id nem null/undefined -->
+      <button
+        *ngIf="saved.id != null"
+        (click)="removeSavedWorkoutExercise(saved.id!)"
+        class="remove-button"
+        title="Törlés"
+      >
         ✕
       </button>
+
     </div>
+
   </div>
 </div>
-

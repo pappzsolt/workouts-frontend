@@ -1,14 +1,17 @@
 <h2 class="programs-title">Felhasználók listája</h2>
 
-<!-- 🔹 Hiba / Üzenet -->
+<!-- Hiba / Üzenet -->
 <div *ngIf="errorMessage" class="message-box message-error">
   {{ errorMessage }}
 </div>
 
-<!-- 🔹 Felhasználók -->
+<!-- Felhasználók -->
 <ng-container *ngIf="paginatedUsers.length > 0; else noUsers">
+
   <div class="programs-grid">
+
     <div *ngFor="let user of paginatedUsers" class="program-card">
+
       <!-- Avatar / Emoji -->
       <div class="program-image">
         <span class="program-emoji">👤</span>
@@ -16,42 +19,53 @@
 
       <!-- Tartalom -->
       <div class="program-content">
-        <div class="program-name">{{ user.username }}</div>
-        <div class="program-description">{{ user.email }}</div>
-        <div class="text-gray-500 text-sm mt-1">
+        <div class="program-name">
+          {{ user.username }}
+        </div>
+
+        <div class="program-description">
+          {{ user.email }}
+        </div>
+
+        <div class="user-roles">
           Szerepkör: {{ user.roles.join(', ') }}
         </div>
       </div>
+
     </div>
+
   </div>
 
-  <!-- 🔹 Lapozás -->
-  <div class="flex justify-center items-center space-x-2 mt-6">
+  <!-- Lapozás -->
+  <div class="pagination">
+
     <button
       (click)="prevPage()"
       [disabled]="currentPage === 1"
-      class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 disabled:text-gray-400"
+      class="pagination-button"
     >
       Előző
     </button>
 
-    <span class="px-3 py-2 text-sm sm:text-base font-medium text-gray-700">
+    <span class="pagination-page">
       {{ currentPage }} / {{ totalPages }}
     </span>
 
     <button
       (click)="nextPage()"
       [disabled]="currentPage === totalPages"
-      class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 disabled:bg-gray-100 disabled:text-gray-400"
+      class="pagination-button"
     >
       Következő
     </button>
+
   </div>
+
 </ng-container>
 
-<!-- 🔹 Üres lista -->
+<!-- Üres lista -->
 <ng-template #noUsers>
-  <div class="no-programs">Nincsenek felhasználók.</div>
+  <div class="no-programs">
+    Nincsenek felhasználók.
+  </div>
 </ng-template>
-
-
