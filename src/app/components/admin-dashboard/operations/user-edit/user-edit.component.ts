@@ -1,15 +1,29 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
 import { UserSelectComponent } from '../../../../components/shared/user/user-select.component';
 import { CoachSelectComponent } from '../../../shared/coach/coach-select.component';
+
 import { Role, RoleService } from '../../../../services/roles/role.service';
 import { UserNameId } from '../../../../services/user/user-name-id.service';
+
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
-import { User, RawUser, Coach } from '../../../../models/user-profil.model';
-import { UserEditService} from '../../../../services/admin/user-edit.service';
+
+import {
+  User,
+  RawUser,
+  Coach
+} from '../../../../models/user-profil.model';
+
+import { UserEditService } from '../../../../services/admin/user-edit.service';
 
 @Component({
   selector: 'app-user-edit',
