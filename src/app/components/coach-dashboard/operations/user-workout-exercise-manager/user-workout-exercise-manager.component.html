@@ -1,181 +1,137 @@
-<div class="p-4 space-y-6">
+<div class="user-workout-exercises">
 
-  <h2 class="text-xl font-bold mb-2">
+  <h2 class="page-title">
     User Workout Exercises
   </h2>
 
+  <div class="add-workout-section">
 
-  <!-- ============================ -->
-  <!-- ADD NEW USER WORKOUT -->
-  <!-- ============================ -->
-
-  <div class="space-y-2">
-
-    <h3 class="font-bold">
+    <h3 class="section-title">
       Add New User Workout
     </h3>
 
-    <div class="flex items-center space-x-2 flex-wrap gap-2">
+    <div class="add-workout-controls">
 
       <app-user-select
         [(selectedUserId)]="selectedUserId">
       </app-user-select>
 
-      <label class="flex items-center space-x-1">
-
+      <label class="form-field">
         <span>Program:</span>
 
         <app-coach-program-select
           [(selectedProgramId)]="selectedProgramId">
         </app-coach-program-select>
-
       </label>
 
-      <label class="flex items-center space-x-1">
-
+      <label class="form-field">
         <span>Date:</span>
 
         <input
           type="date"
           [(ngModel)]="scheduledAt"
-          class="border rounded px-2 py-1"
+          class="form-input"
         />
-
       </label>
 
       <button
+        type="button"
         (click)="addUserWorkouts()"
-        class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
-
+        class="btn btn-primary">
         Add
-
       </button>
 
       <button
+        type="button"
         (click)="loadUserProgramWithExercises()"
-        class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+        class="btn btn-success"
         [disabled]="!selectedUserId || !selectedProgramId">
-
         Load Program Data
-
       </button>
 
     </div>
-
   </div>
 
 
-  <!-- ============================ -->
   <!-- PROGRAM OVERVIEW -->
-  <!-- ============================ -->
 
   <div
     *ngIf="dayGroups?.length"
-    class="space-y-4">
+    class="program-overview">
 
-    <h3 class="text-lg font-semibold">
+    <h3 class="section-title">
       Program overview (grouped)
     </h3>
 
-
-    <!-- DAY -->
-
     <div
       *ngFor="let day of dayGroups"
-      class="border rounded bg-white shadow-sm">
+      class="day-card">
 
-
-      <!-- DAY HEADER -->
-
-      <div
-        class="px-3 py-2 flex items-center justify-between border-b bg-gray-50">
+      <div class="day-header">
 
         <div>
-
-          <div class="font-semibold text-gray-800">
+          <div class="day-title">
             {{ day.date || 'Unscheduled day' }}
           </div>
 
-          <div class="text-xs text-gray-500">
+          <div class="day-index">
             Program day: {{ day.programDayIndex }}
           </div>
-
         </div>
 
       </div>
 
 
-      <!-- ============================ -->
       <!-- WORKOUTS -->
-      <!-- ============================ -->
 
-      <div class="p-3 space-y-3">
+      <div class="workouts-list">
 
         <div
           *ngFor="let w of day.workouts"
-          class="border rounded p-3 bg-gray-50">
+          class="workout-card">
 
+          <div class="workout-header">
 
-          <!-- ============================ -->
-          <!-- WORKOUT HEADER -->
-          <!-- ============================ -->
+            <div class="workout-title-row">
 
-          <div class="space-y-3 mb-3">
-
-            <!-- Workout name + status -->
-
-            <div class="flex items-center justify-between gap-2">
-
-              <div class="font-semibold text-gray-800">
+              <div class="workout-name">
                 {{ w.workoutName }}
               </div>
 
               <span
-                class="text-xs px-2 py-1 rounded whitespace-nowrap"
+                class="workout-status"
                 [ngClass]="
                   w.workoutCompleted
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-gray-100 text-gray-500'
-                "
-              >
-
+                    ? 'status-done'
+                    : 'status-not-done'
+                ">
                 {{ w.workoutCompleted
                 ? 'Workout done'
                 : 'Not done'
                 }}
-
               </span>
 
             </div>
 
 
-            <!-- Scheduled date -->
+            <div class="scheduled-date">
 
-            <div
-              class="flex items-center gap-2 flex-wrap">
-
-              <label
-                class="text-sm font-medium text-gray-700">
-
+              <label class="field-label">
                 Scheduled date:
-
               </label>
 
               <input
                 type="date"
                 [ngModel]="w.scheduledAt"
                 (ngModelChange)="w.scheduledAt = $event"
-                class="border border-gray-300 rounded-lg px-2 py-1 text-sm"
+                class="form-input form-input-small"
               />
 
               <button
                 type="button"
                 (click)="updateScheduledDate(w, w.scheduledAt)"
-                class="px-3 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm"
-              >
-
+                class="btn btn-primary btn-small">
                 Save date
-
               </button>
 
             </div>
@@ -183,414 +139,256 @@
           </div>
 
 
-          <!-- ============================ -->
           <!-- EXERCISES -->
-          <!-- ============================ -->
 
-          <table class="min-w-full text-sm">
+          <div class="exercise-table-wrapper">
 
-            <thead>
+            <table class="exercise-table">
 
-            <tr class="border-b bg-gray-100">
+              <thead>
+              <tr>
+                <th>#</th>
+                <th>Exercise</th>
+                <th>Done</th>
+                <th>Sets</th>
+                <th>Feedback</th>
+                <th>Notes</th>
+                <th>Set-ek</th>
+              </tr>
+              </thead>
 
-              <th class="text-left py-1 px-2">
-                #
-              </th>
+              <tbody>
 
-              <th class="text-left py-1 px-2">
-                Exercise
-              </th>
+              <ng-container
+                *ngFor="let ex of w.exercises">
 
-              <th class="text-left py-1 px-2">
-                Done
-              </th>
+                <tr class="exercise-row">
 
-              <th class="text-left py-1 px-2">
-                Sets
-              </th>
+                  <td>
+                    <div class="order-controls">
 
-              <th class="text-left py-1 px-2">
-                Feedback
-              </th>
+                      <input
+                        type="number"
+                        min="1"
+                        [(ngModel)]="ex.order"
+                        class="number-input"
+                      />
 
-              <th class="text-left py-1 px-2">
-                Notes
-              </th>
+                      <button
+                        type="button"
+                        (click)="updateExerciseOrderIndex(
+                            w.workoutId,
+                            ex.exerciseId,
+                            ex.order
+                          )"
+                        class="btn btn-primary btn-small">
+                        Save
+                      </button>
 
-              <th class="text-left py-1 px-2">
-                Set-ek
-              </th>
+                    </div>
+                  </td>
 
-            </tr>
+                  <td class="exercise-name">
+                    {{ ex.exerciseName }}
+                  </td>
 
-            </thead>
+                  <td>
+                      <span
+                        *ngIf="ex.exerciseCompleted"
+                        class="exercise-done">
+                        ✔
+                      </span>
 
+                    <span
+                      *ngIf="!ex.exerciseCompleted"
+                      class="exercise-not-done">
+                        ✖
+                      </span>
+                  </td>
 
-            <tbody>
+                  <td>
+                    {{ ex.setsDone }}
+                  </td>
 
-            <ng-container
-              *ngFor="let ex of w.exercises">
+                  <td>
+                    {{ ex.feedback }}
+                  </td>
 
+                  <td>
+                    {{ ex.notes }}
+                  </td>
 
-              <!-- ============================ -->
-              <!-- EXERCISE ROW -->
-              <!-- ============================ -->
-
-              <tr
-                class="border-b hover:bg-gray-50">
-
-
-                <!-- ORDER INDEX -->
-
-                <td class="py-1 px-2">
-
-                  <div class="flex items-center gap-1">
-
-                    <input
-                      type="number"
-                      min="1"
-                      [(ngModel)]="ex.order"
-                      class="border rounded px-2 py-1 w-16"
-                    />
-
+                  <td>
                     <button
                       type="button"
-                      (click)="updateExerciseOrderIndex(
-                        w.workoutId,
-                        ex.exerciseId,
-                        ex.order
-                      )"
-                      class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">
-
-                      Save
-
+                      (click)="loadSets(ex.userWorkoutExerciseId)"
+                      class="btn btn-primary btn-small">
+                      Sets
                     </button>
+                  </td>
 
-                  </div>
-
-                </td>
-
-
-                <!-- EXERCISE -->
-
-                <td class="py-1 px-2 font-medium">
-                  {{ ex.exerciseName }}
-                </td>
-
-
-                <!-- DONE -->
-
-                <td class="py-1 px-2">
-
-                  <span
-                    *ngIf="ex.exerciseCompleted"
-                    class="text-green-600">
-
-                    ✔
-
-                  </span>
-
-                  <span
-                    *ngIf="!ex.exerciseCompleted"
-                    class="text-gray-400">
-
-                    ✖
-
-                  </span>
-
-                </td>
+                </tr>
 
 
                 <!-- SETS -->
 
-                <td class="py-1 px-2">
-                  {{ ex.setsDone }}
-                </td>
+                <tr
+                  *ngIf="
+                      selectedUserWorkoutExerciseId ===
+                      ex.userWorkoutExerciseId
+                    ">
+
+                  <td
+                    colspan="7"
+                    class="sets-container">
+
+                    <div
+                      *ngIf="selectedSets.length"
+                      class="sets-panel">
+
+                      <div class="sets-header">
+
+                          <span>
+                            Exercise sets
+                          </span>
+
+                        <button
+                          type="button"
+                          (click)="addSet()"
+                          class="btn btn-primary btn-small">
+                          + Új set
+                        </button>
+
+                      </div>
 
 
-                <!-- FEEDBACK -->
+                      <div class="sets-table-wrapper">
 
-                <td class="py-1 px-2">
-                  {{ ex.feedback }}
-                </td>
+                        <table class="sets-table">
 
+                          <thead>
+                          <tr>
+                            <th>Set</th>
+                            <th>Target reps</th>
+                            <th>Target weight</th>
+                            <th>Actual reps</th>
+                            <th>Actual weight</th>
+                            <th>Completed</th>
+                            <th>Notes</th>
+                            <th>Action</th>
+                          </tr>
+                          </thead>
 
-                <!-- NOTES -->
+                          <tbody>
 
-                <td class="py-1 px-2">
-                  {{ ex.notes }}
-                </td>
+                          <tr
+                            *ngFor="let set of selectedSets"
+                            class="set-row">
 
+                            <td>
+                              {{ set.setNumber }}
+                            </td>
 
-                <!-- SETS BUTTON -->
+                            <td>
+                              <input
+                                type="number"
+                                [(ngModel)]="set.targetRepetitions"
+                                class="number-input reps-input"
+                              />
+                            </td>
 
-                <td class="py-1 px-2">
+                            <td>
+                              <input
+                                type="number"
+                                step="0.5"
+                                [(ngModel)]="set.targetWeightKg"
+                                class="number-input weight-input"
+                                placeholder="-"
+                              />
+                            </td>
 
-                  <button
-                    type="button"
-                    (click)="loadSets(ex.userWorkoutExerciseId)"
-                    class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">
+                            <td>
+                              <input
+                                type="number"
+                                [(ngModel)]="set.actualRepetitions"
+                                class="number-input reps-input"
+                                placeholder="-"
+                              />
+                            </td>
 
-                    Sets
+                            <td>
+                              <input
+                                type="number"
+                                step="0.5"
+                                [(ngModel)]="set.actualWeightKg"
+                                class="number-input weight-input"
+                                placeholder="-"
+                              />
+                            </td>
 
-                  </button>
+                            <td>
+                              <input
+                                type="checkbox"
+                                [(ngModel)]="set.completed"
+                                class="checkbox-input"
+                              />
+                            </td>
 
-                </td>
+                            <td>
+                              <input
+                                type="text"
+                                [(ngModel)]="set.notes"
+                                class="form-input notes-input"
+                                placeholder="Notes"
+                              />
+                            </td>
 
-              </tr>
+                            <td class="action-buttons">
 
+                              <button
+                                type="button"
+                                (click)="updateSet(set)"
+                                class="btn btn-success btn-small">
+                                Save
+                              </button>
 
-              <!-- ============================ -->
-              <!-- SETS -->
-              <!-- ============================ -->
+                              <button
+                                type="button"
+                                (click)="deleteSet(set)"
+                                class="btn btn-danger btn-small">
+                                Törlés
+                              </button>
 
-              <tr
-                *ngIf="
-                    selectedUserWorkoutExerciseId ===
-                    ex.userWorkoutExerciseId
-                  ">
+                            </td>
 
-                <td
-                  colspan="7"
-                  class="p-3 bg-gray-50">
+                          </tr>
 
+                          </tbody>
 
-                  <!-- ============================ -->
-                  <!-- SET TABLE -->
-                  <!-- ============================ -->
+                        </table>
 
-                  <div
-                    *ngIf="selectedSets.length"
-                    class="border rounded bg-white">
+                      </div>
+
+                    </div>
 
 
                     <div
-                      class="px-3 py-2 font-semibold border-b bg-gray-100 flex items-center justify-between">
-
-                      <span>
-                        Exercise sets
-                      </span>
-
-                      <button
-                        type="button"
-                        (click)="addSet()"
-                        class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs">
-
-                        + Új set
-
-                      </button>
-
+                      *ngIf="!selectedSets.length"
+                      class="no-sets">
+                      Nincs set ehhez az exercise-hoz.
                     </div>
 
+                  </td>
 
-                    <div class="overflow-x-auto">
+                </tr>
 
-                      <table
-                        class="min-w-full text-sm">
+              </ng-container>
 
-                        <thead>
+              </tbody>
 
-                        <tr class="border-b bg-gray-50">
+            </table>
 
-                          <th class="text-left px-3 py-2">
-                            Set
-                          </th>
-
-                          <th class="text-left px-3 py-2">
-                            Target reps
-                          </th>
-
-                          <th class="text-left px-3 py-2">
-                            Target weight
-                          </th>
-
-                          <th class="text-left px-3 py-2">
-                            Actual reps
-                          </th>
-
-                          <th class="text-left px-3 py-2">
-                            Actual weight
-                          </th>
-
-                          <th class="text-left px-3 py-2">
-                            Completed
-                          </th>
-
-                          <th class="text-left px-3 py-2">
-                            Notes
-                          </th>
-
-                          <th class="text-left px-3 py-2">
-                            Action
-                          </th>
-
-                        </tr>
-
-                        </thead>
-
-
-                        <tbody>
-
-
-                        <!-- ============================ -->
-                        <!-- ONE SET -->
-                        <!-- ============================ -->
-
-                        <tr
-                          *ngFor="let set of selectedSets"
-                          class="border-b">
-
-
-                          <!-- SET NUMBER -->
-
-                          <td class="px-3 py-2">
-                            {{ set.setNumber }}
-                          </td>
-
-
-                          <!-- TARGET REPS -->
-
-                          <td class="px-3 py-2">
-
-                            <input
-                              type="number"
-                              [(ngModel)]="set.targetRepetitions"
-                              class="border rounded px-2 py-1 w-20"
-                            />
-
-                          </td>
-
-
-                          <!-- TARGET WEIGHT -->
-
-                          <td class="px-3 py-2">
-
-                            <input
-                              type="number"
-                              step="0.5"
-                              [(ngModel)]="set.targetWeightKg"
-                              class="border rounded px-2 py-1 w-24"
-                              placeholder="-"
-                            />
-
-                          </td>
-
-
-                          <!-- ACTUAL REPS -->
-
-                          <td class="px-3 py-2">
-
-                            <input
-                              type="number"
-                              [(ngModel)]="set.actualRepetitions"
-                              class="border rounded px-2 py-1 w-20"
-                              placeholder="-"
-                            />
-
-                          </td>
-
-
-                          <!-- ACTUAL WEIGHT -->
-
-                          <td class="px-3 py-2">
-
-                            <input
-                              type="number"
-                              step="0.5"
-                              [(ngModel)]="set.actualWeightKg"
-                              class="border rounded px-2 py-1 w-24"
-                              placeholder="-"
-                            />
-
-                          </td>
-
-
-                          <!-- COMPLETED -->
-
-                          <td class="px-3 py-2">
-
-                            <input
-                              type="checkbox"
-                              [(ngModel)]="set.completed"
-                              class="w-4 h-4"
-                            />
-
-                          </td>
-
-
-                          <!-- NOTES -->
-
-                          <td class="px-3 py-2">
-
-                            <input
-                              type="text"
-                              [(ngModel)]="set.notes"
-                              class="border rounded px-2 py-1 w-40"
-                              placeholder="Notes"
-                            />
-
-                          </td>
-
-
-                          <!-- SAVE -->
-
-                          <td class="px-3 py-2">
-
-                            <button
-                              type="button"
-                              (click)="updateSet(set)"
-                              class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 text-xs">
-
-                              Save
-
-                            </button>
-
-
-                            <!-- DELETE -->
-
-                            <button
-                              type="button"
-                              (click)="deleteSet(set)"
-                              class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-xs">
-
-                              Törlés
-
-                            </button>
-
-                          </td>
-
-                        </tr>
-
-                        </tbody>
-
-                      </table>
-
-                    </div>
-
-                  </div>
-
-
-                  <!-- ============================ -->
-                  <!-- NO SETS -->
-                  <!-- ============================ -->
-
-                  <div
-                    *ngIf="!selectedSets.length"
-                    class="text-gray-500 italic">
-
-                    Nincs set ehhez az exercise-hoz.
-
-                  </div>
-
-                </td>
-
-              </tr>
-
-            </ng-container>
-
-            </tbody>
-
-          </table>
+          </div>
 
         </div>
 
@@ -601,16 +399,12 @@
   </div>
 
 
-  <!-- ============================ -->
   <!-- NO DATA -->
-  <!-- ============================ -->
 
   <div
     *ngIf="userProgramData && !userProgramData.length"
-    class="text-gray-500 italic">
-
+    class="no-data">
     No data available for this user/program.
-
   </div>
 
 </div>

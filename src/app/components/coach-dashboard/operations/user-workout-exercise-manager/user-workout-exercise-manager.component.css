@@ -1,0 +1,293 @@
+.user-workout-exercises {
+  padding: 1rem;
+}
+
+.page-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.add-workout-section {
+  margin-bottom: 1.5rem;
+}
+
+.add-workout-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.form-field {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.form-input {
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.form-input-small {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #3b82f6;
+}
+
+.btn {
+  border: none;
+  color: white;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: #3b82f6;
+  padding: 0.5rem 0.75rem;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.btn-success {
+  background: #22c55e;
+  padding: 0.5rem 0.75rem;
+}
+
+.btn-success:hover:not(:disabled) {
+  background: #16a34a;
+}
+
+.btn-danger {
+  background: #ef4444;
+  padding: 0.5rem 0.75rem;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #dc2626;
+}
+
+.btn-small {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+.program-overview {
+  margin-top: 1.5rem;
+}
+
+.day-card {
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  background: white;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 5%);
+  margin-bottom: 1rem;
+}
+
+.day-header {
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+
+.day-title {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.day-index {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.workouts-list {
+  padding: 0.75rem;
+}
+
+.workout-card {
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  padding: 0.75rem;
+  background: #f9fafb;
+  margin-bottom: 0.75rem;
+}
+
+.workout-header {
+  margin-bottom: 0.75rem;
+}
+
+.workout-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.workout-name {
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.workout-status {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  white-space: nowrap;
+}
+
+.status-done {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status-not-done {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.scheduled-date {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: 0.75rem;
+}
+
+.field-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.exercise-table-wrapper,
+.sets-table-wrapper {
+  overflow-x: auto;
+}
+
+.exercise-table,
+.sets-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.exercise-table th,
+.sets-table th {
+  text-align: left;
+  padding: 0.5rem;
+  background: #f3f4f6;
+  border-bottom: 1px solid #d1d5db;
+}
+
+.exercise-table td,
+.sets-table td {
+  padding: 0.25rem 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.exercise-row:hover {
+  background: #f9fafb;
+}
+
+.exercise-name {
+  font-weight: 500;
+}
+
+.order-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.number-input {
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.reps-input {
+  width: 5rem;
+}
+
+.weight-input {
+  width: 6rem;
+}
+
+.checkbox-input {
+  width: 1rem;
+  height: 1rem;
+}
+
+.exercise-done {
+  color: #16a34a;
+}
+
+.exercise-not-done {
+  color: #9ca3af;
+}
+
+.sets-container {
+  padding: 0.75rem;
+  background: #f9fafb;
+}
+
+.sets-panel {
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  background: white;
+}
+
+.sets-header {
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  border-bottom: 1px solid #d1d5db;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.set-row {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.notes-input {
+  width: 10rem;
+}
+
+.action-buttons {
+  white-space: nowrap;
+}
+
+.no-sets,
+.no-data {
+  color: #6b7280;
+  font-style: italic;
+}
+
+.no-data {
+  margin-top: 1rem;
+}

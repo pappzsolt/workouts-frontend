@@ -19,7 +19,8 @@ import { CoachProgramSelectComponent } from '../../../shared/programs/coach-prog
     UserSelectComponent,
     CoachProgramSelectComponent
   ],
-  templateUrl: './user-workout-exercise-manager.component.html'
+  templateUrl: './user-workout-exercise-manager.component.html',
+  styleUrls: ['./user-workout-exercise-manager.component.css']
 })
 export class UserWorkoutExerciseManagerComponent implements OnInit {
 
@@ -76,13 +77,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
         next: (sets: UserWorkoutExerciseSetModel[]) => {
           this.selectedSets = sets ?? [];
         },
-
-        error: (err: any) => {
-          console.error(
-            'Hiba a set-ek lekérésekor:',
-            err
-          );
-
+        error: () => {
           this.selectedSets = [];
         }
       });
@@ -106,19 +101,10 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       .addSet(userWorkoutExerciseId)
       .subscribe({
         next: () => {
-
-          // Backend után újra lekérjük a set-eket,
-          // így a frontend mindig a DB aktuális állapotát mutatja.
+          // A backend után újra lekérjük az aktuális set-eket.
           this.loadSets(userWorkoutExerciseId);
         },
-
         error: (err: any) => {
-
-          console.error(
-            'Hiba az új set létrehozásakor:',
-            err
-          );
-
           alert(
             err?.error?.message ||
             'Hiba történt az új set hozzáadásakor.'
@@ -156,14 +142,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
             `Set #${set.setNumber} sikeresen módosítva.`
           );
         },
-
         error: (err: any) => {
-
-          console.error(
-            'Hiba a set módosításakor:',
-            err
-          );
-
           alert(
             err?.error?.message ||
             'Hiba történt a set módosításakor.'
@@ -199,31 +178,19 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       .subscribe({
         next: () => {
 
-          /*
-           * Először azonnal frissítjük a lokális listát,
-           * hogy a UI ne várjon a GET-re.
-           */
+          // Azonnal frissítjük a lokális listát.
           this.selectedSets =
             this.selectedSets.filter(
-              s => s.id !== set.id
+              currentSet => currentSet.id !== set.id
             );
 
-          /*
-           * A backend újraszámozza a set-eket,
-           * ezért utána lekérjük az aktuális állapotot.
-           */
+          // A backend újraszámozhatja a set-eket,
+          // ezért újra lekérjük az aktuális állapotot.
           if (userWorkoutExerciseId) {
             this.loadSets(userWorkoutExerciseId);
           }
         },
-
         error: (err: any) => {
-
-          console.error(
-            'Hiba a set törlésekor:',
-            err
-          );
-
           alert(
             err?.error?.message ||
             'Hiba történt a set törlésekor.'
@@ -245,7 +212,6 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       alert(
         'Hiányzó adatok: userId vagy programId!'
       );
-
       return;
     }
 
@@ -257,20 +223,15 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       )
       .subscribe({
         next: res => {
-
           this.selectedUserWorkoutId =
             res.userWorkoutId;
 
           this.newWorkoutExerciseId =
             undefined;
         },
-
-        error: (err: any) => {
-
-          console.error(
-            'Hiba a user workout létrehozásakor:',
-            err
-          );
+        error: () => {
+          // A hiba itt nem kerül kiírásra.
+          // A komponens jelenlegi működését megtartjuk.
         }
       });
   }
@@ -288,7 +249,6 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       alert(
         'Előbb válassz usert és programot!'
       );
-
       return;
     }
 
@@ -299,7 +259,6 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       )
       .subscribe({
         next: data => {
-
           this.userProgramData =
             data ?? [];
 
@@ -308,14 +267,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
               this.userProgramData
             );
         },
-
-        error: (err: any) => {
-
-          console.error(
-            'Hiba a program + exercises lekérésekor:',
-            err
-          );
-
+        error: () => {
           this.userProgramData = [];
           this.dayGroups = [];
         }
@@ -330,29 +282,29 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
     rows: any[]
   ): any[] {
 
-    const map = new Map<string, any>();
+    const groupedDays = new Map<string, any>();
 
     for (const row of rows) {
 
       const dateKey =
         row.scheduled_date ?? 'nincs_datum';
 
-      if (!map.has(dateKey)) {
+      if (!groupedDays.has(dateKey)) {
 
-        map.set(dateKey, {
+        groupedDays.set(dateKey, {
           date: row.scheduled_date,
           programDayIndex: row.program_day_index,
           workouts: []
         });
       }
 
-      const dayObj =
-        map.get(dateKey);
+      const day =
+        groupedDays.get(dateKey);
 
       let workout =
-        dayObj.workouts.find(
-          (w: any) =>
-            w.workoutId === row.workout_id
+        day.workouts.find(
+          (currentWorkout: any) =>
+            currentWorkout.workoutId === row.workout_id
         );
 
       if (!workout) {
@@ -361,16 +313,13 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
           userWorkoutId: row.user_workout_id,
           workoutId: row.workout_id,
           workoutName: row.workout_name,
-
           scheduledAt: row.scheduled_date,
-
           workoutCompleted:
             row.workout_completed === true,
-
           exercises: []
         };
 
-        dayObj.workouts.push(workout);
+        day.workouts.push(workout);
       }
 
       workout.exercises.push({
@@ -406,7 +355,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       });
     }
 
-    return Array.from(map.values())
+    return Array.from(groupedDays.values())
       .sort((a, b) => {
 
         if (a.date && b.date) {
@@ -438,9 +387,11 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
         return day;
       });
   }
-  /**
-   * Egy már létező user workout scheduled dátumának módosítása.
-   */
+
+  // ============================
+  // SCHEDULED DATE FRISSÍTÉSE
+  // ============================
+
   updateScheduledDate(
     workout: any,
     scheduledAt: string
@@ -462,30 +413,14 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
         scheduledAt
       )
       .subscribe({
-
         next: () => {
 
           workout.scheduledAt = scheduledAt;
 
-          console.log(
-            'Scheduled date frissítve:',
-            {
-              userWorkoutId: workout.userWorkoutId,
-              scheduledAt
-            }
-          );
-
-          // Az aktuális napstruktúrát is frissítjük.
+          // Az aktuális napstruktúrát újratöltjük.
           this.loadUserProgramWithExercises();
         },
-
         error: (err: any) => {
-
-          console.error(
-            'Hiba a scheduled date frissítésekor:',
-            err
-          );
-
           alert(
             err?.error?.message ||
             'Hiba történt a scheduled date módosításakor.'
@@ -493,6 +428,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
         }
       });
   }
+
   // ============================
   // ANGULAR TRACK BY
   // ============================
@@ -524,13 +460,11 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
   ): any {
     return set.id ?? index;
   }
-  /**
-   * ============================
-   * WORKOUT EXERCISE SORREND
-   * ============================
-   *
-   * Workout exercise sorrendjének módosítása.
-   */
+
+  // ============================
+  // WORKOUT EXERCISE SORREND
+  // ============================
+
   updateExerciseOrderIndex(
     workoutId: number,
     exerciseId: number,
@@ -559,56 +493,44 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
         orderIndex
       )
       .subscribe({
-
         next: () => {
 
-          console.log(
-            'Exercise sorrendje frissítve:',
-            {
-              workoutId,
-              exerciseId,
-              orderIndex
-            }
-          );
-
-          // A lokális adatban is frissítjük az értéket.
+          // Megkeressük az érintett workoutot.
           const workout =
             this.dayGroups
               .flatMap(day => day.workouts)
               .find(
-                (w: any) =>
-                  w.workoutId === workoutId
+                (currentWorkout: any) =>
+                  currentWorkout.workoutId === workoutId
               );
 
-          if (workout) {
-
-            const exercise =
-              workout.exercises.find(
-                (e: any) =>
-                  e.exerciseId === exerciseId
-              );
-
-            if (exercise) {
-              exercise.order = orderIndex;
-            }
-
-            // Újrarendezzük az exercise-eket.
-            workout.exercises =
-              workout.exercises.sort(
-                (a: any, b: any) =>
-                  (a.order ?? 0) -
-                  (b.order ?? 0)
-              );
+          if (!workout) {
+            return;
           }
+
+          // Megkeressük az érintett exercise-t.
+          const exercise =
+            workout.exercises.find(
+              (currentExercise: any) =>
+                currentExercise.exerciseId === exerciseId
+            );
+
+          if (!exercise) {
+            return;
+          }
+
+          // Frissítjük a lokális sorrendet.
+          exercise.order = orderIndex;
+
+          // Újrarendezzük az exercise-eket.
+          workout.exercises =
+            workout.exercises.sort(
+              (a: any, b: any) =>
+                (a.order ?? 0) -
+                (b.order ?? 0)
+            );
         },
-
         error: (err: any) => {
-
-          console.error(
-            'Hiba az exercise sorrendjének frissítésekor:',
-            err
-          );
-
           alert(
             err?.error?.message ||
             'Hiba történt az exercise sorrendjének módosításakor.'
