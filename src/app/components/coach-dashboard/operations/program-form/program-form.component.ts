@@ -6,10 +6,10 @@ import {
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import {ProgramService } from '../../../../services/coach/coach-program/coach-program.service';
-
-import { HttpClientModule } from '@angular/common/http';
 import { catchError, of } from 'rxjs';
+
+import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
+import { Program } from '../../../../models/program.model';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
 
 @Component({
@@ -17,10 +17,10 @@ import { USER_MESSAGES } from '../../../../constants/user-messages';
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule,
-    HttpClientModule
+    ReactiveFormsModule
   ],
   templateUrl: './program-form.component.html',
+  styleUrls: ['./program-form.component.css']
 })
 export class ProgramFormComponent implements OnInit {
 
@@ -32,10 +32,11 @@ export class ProgramFormComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private programService: ProgramService
+    private programService: CoachProgramService
   ) {}
 
   ngOnInit(): void {
+
     this.form = this.fb.group({
       programName: ['', Validators.required],
       programDescription: [''],
@@ -45,17 +46,20 @@ export class ProgramFormComponent implements OnInit {
 
     // Szerkesztési mód
     if (this.programId) {
+
       this.isEditMode = true;
 
-      this.programService.getById(this.programId).pipe(
-        catchError(error => {
-          console.error('Error loading program:', error);
+      this.programService.getProgramById(this.programId).pipe(
+        catchError(() => {
           this.message = USER_MESSAGES.loadProgramsError;
           return of(null);
         })
-      ).subscribe(program => {
+      ).subscribe(response => {
 
-        if (program) {
+        if (response?.data) {
+
+          const program = response.data;
+
           this.form.patchValue({
             programName: program.programName,
             programDescription: program.programDescription,
@@ -84,47 +88,49 @@ export class ProgramFormComponent implements OnInit {
       difficultyLevel: this.form.value.difficultyLevel
     };
 
-    console.log('Program being sent:', program);
-
-    // -----------------------------
     // PROGRAM MÓDOSÍTÁSA
-    // -----------------------------
     if (this.isEditMode && this.programId) {
 
-      this.programService.update(this.programId, program).pipe(
-        catchError(error => {
-          console.error('Error updating program:', error);
-          this.message = USER_MESSAGES.updateError;
-          return of(null);
-        })
-      ).subscribe(res => {
+      this.programService
+        .updateProgram(this.programId, program)
+        .pipe(
+          catchError(() => {
+            this.message = USER_MESSAGES.updateError;
+            return of(null);
+          })
+        )
+        .subscribe(response => {
 
-        if (res) {
-          this.message = USER_MESSAGES.updateSuccess;
-        }
-
-      });
+          if (response?.status === 'success') {
+            this.message = USER_MESSAGES.updateSuccess;
+          }
+        });
 
       return;
     }
 
-    // -----------------------------
     // ÚJ PROGRAM LÉTREHOZÁSA
-    // -----------------------------
-    this.programService.create(program).pipe(
-      catchError(error => {
-        console.error('Error creating program:', error);
-        this.message = USER_MESSAGES.updateError;
-        return of(null);
-      })
-    ).subscribe(res => {
+    const request = {
+      programName: program.programName ?? '',
+      programDescription: program.programDescription,
+      durationDays: program.durationDays,
+      difficultyLevel: program.difficultyLevel
+    };
 
-      if (res) {
-        console.log('Program created:', res);
-        this.message = USER_MESSAGES.updateSuccess;
-        this.form.reset();
-      }
+    this.programService
+      .createProgram(request)
+      .pipe(
+        catchError(() => {
+          this.message = USER_MESSAGES.updateError;
+          return of(null);
+        })
+      )
+      .subscribe(response => {
 
-    });
+        if (response?.success) {
+          this.message = USER_MESSAGES.updateSuccess;
+          this.form.reset();
+        }
+      });
   }
 }
