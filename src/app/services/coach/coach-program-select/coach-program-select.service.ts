@@ -1,20 +1,15 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { API_ENDPOINTS } from '../../../api-endpoints';
 
-export interface CoachProgram {
-  programId: number;
-  programName: string;
-  programDescription?: string;
-  durationDays?: number;
-  difficultyLevel?: string;
-}
+import { API_ENDPOINTS } from '../../../api-endpoints';
+import { CoachProgram } from '../../../models/coach-program-select-model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CoachProgramSelectService {
+
   private http = inject(HttpClient);
 
   getMyPrograms(): Observable<CoachProgram[]> {

@@ -1,23 +1,29 @@
-import { Component, OnInit, Input, Output, EventEmitter, inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter,
+  inject
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CoachProgramSelectService } from '../../../services/coach/coach-program-select/coach-program-select.service';
 
-export interface CoachProgram {
-  programId: number;
-  programName: string;
-  programDescription?: string;
-  durationDays?: number;
-  difficultyLevel?: string;
-}
+import { CoachProgramSelectService } from '../../../services/coach/coach-program-select/coach-program-select.service';
+import { CoachProgram } from '../../../models/coach-program-select-model';
 
 @Component({
   selector: 'app-coach-program-select',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule
+  ],
   templateUrl: './coach-program-select.component.html'
 })
 export class CoachProgramSelectComponent implements OnInit {
+
   private programService = inject(CoachProgramSelectService);
 
   programs: CoachProgram[] = [];
@@ -27,26 +33,26 @@ export class CoachProgramSelectComponent implements OnInit {
   @Input() selectedProgramId?: number;
   @Output() selectedProgramIdChange = new EventEmitter<number>();
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadPrograms();
   }
 
-  loadPrograms() {
+  loadPrograms(): void {
     this.loading = true;
+
     this.programService.getMyPrograms().subscribe({
-      next: (res: CoachProgram[]) => {
-        this.programs = res;
+      next: (programs: CoachProgram[]) => {
+        this.programs = programs;
         this.loading = false;
       },
-      error: (err: any) => {
-        console.error('❌ Programok betöltése sikertelen', err);
+      error: () => {
         this.message = 'Hiba a programok lekérése során';
         this.loading = false;
       }
     });
   }
 
-  onProgramSelect(programId: number) {
+  onProgramSelect(programId: number): void {
     this.selectedProgramId = programId;
     this.selectedProgramIdChange.emit(programId);
   }
