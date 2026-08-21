@@ -1,42 +1,104 @@
-<h2 class="programs-title">Program: {{ programName }}</h2>
+<h2 class="workouts-title">
+  Program: {{ programName }}
+</h2>
 
-<!-- 🔹 Workouts lista -->
+<!-- Workouts lista -->
 <ng-container *ngIf="(workouts$ | async)?.length; else noWorkouts">
-  <div class="programs-grid">
-    <div *ngFor="let workout of workouts$ | async" class="program-card" (click)="goToExercises(workout.workoutId, workout.workoutName)">
+  <div class="workouts-grid">
+
+    <div
+      *ngFor="let workout of workouts$ | async"
+      class="workout-card"
+      (click)="goToExercises(workout.workoutId, workout.workoutName)"
+    >
       <!-- Emoji / ikon -->
-      <div class="program-image">
-        <span class="program-emoji">🏋️‍♂️</span>
+      <div class="workout-image">
+        <span class="workout-emoji">🏋️‍♂️</span>
       </div>
 
-      <div class="program-content">
+      <div class="workout-content">
+
         <!-- Workout név és leírás -->
-        <div class="program-name">{{ workout.workoutName }}</div>
-        <div class="program-description">{{ workout.workoutDescription }}</div>
-        <div class="text-gray-400 text-xs mt-1">
-          Date: {{ workout.workoutDate | date:'yyyy.MM.dd' }} – Intensity: {{ workout.intensityLevel }}
+        <div class="workout-name">
+          {{ workout.workoutName }}
+        </div>
+
+        <div class="workout-description">
+          {{ workout.workoutDescription }}
+        </div>
+
+        <div class="workout-meta">
+          Date: {{ workout.workoutDate | date:'yyyy.MM.dd' }}
+          – Intensity: {{ workout.intensityLevel }}
         </div>
 
         <!-- Teljesítési státusz -->
-        <div class="text-green-600 font-medium mt-2" *ngIf="workout.completed">Completed ✅</div>
-        <div class="text-red-500 font-medium mt-2" *ngIf="workout.completed === false">Not completed ❌</div>
-        <div class="text-gray-500 font-medium mt-2" *ngIf="workout.completed === null">Pending ⏳</div>
+        <div
+          *ngIf="workout.completed"
+          class="workout-status workout-status-completed"
+        >
+          Completed ✅
+        </div>
 
-        <!-- Részletek, ha van -->
-        <div class="text-gray-600 text-sm mt-1" *ngIf="workout.actualSets || workout.actualRepetitions || workout.weightUsed">
-          <div *ngIf="workout.actualSets">Sets: {{ workout.actualSets }}</div>
-          <div *ngIf="workout.actualRepetitions">Reps: {{ workout.actualRepetitions }}</div>
-          <div *ngIf="workout.weightUsed">Weight: {{ workout.weightUsed }} kg</div>
+        <div
+          *ngIf="workout.completed === false"
+          class="workout-status workout-status-not-completed"
+        >
+          Not completed ❌
+        </div>
+
+        <div
+          *ngIf="workout.completed === null"
+          class="workout-status workout-status-pending"
+        >
+          Pending ⏳
+        </div>
+
+        <!-- Részletek -->
+        <div
+          *ngIf="
+            workout.actualSets ||
+            workout.actualRepetitions ||
+            workout.weightUsed
+          "
+          class="workout-details"
+        >
+          <div *ngIf="workout.actualSets">
+            Sets: {{ workout.actualSets }}
+          </div>
+
+          <div *ngIf="workout.actualRepetitions">
+            Reps: {{ workout.actualRepetitions }}
+          </div>
+
+          <div *ngIf="workout.weightUsed">
+            Weight: {{ workout.weightUsed }} kg
+          </div>
         </div>
 
         <!-- Feedback / Notes -->
-        <div class="text-gray-500 text-xs mt-1" *ngIf="workout.feedback">Feedback: {{ workout.feedback }}</div>
-        <div class="text-gray-500 text-xs mt-1" *ngIf="workout.notes">Notes: {{ workout.notes }}</div>
+        <div
+          *ngIf="workout.feedback"
+          class="workout-extra"
+        >
+          Feedback: {{ workout.feedback }}
+        </div>
+
+        <div
+          *ngIf="workout.notes"
+          class="workout-extra"
+        >
+          Notes: {{ workout.notes }}
+        </div>
+
       </div>
     </div>
+
   </div>
 </ng-container>
 
 <ng-template #noWorkouts>
-  <div class="no-programs">Nincsenek workoutok ehhez a programhoz.</div>
+  <div class="no-workouts">
+    Nincsenek workoutok ehhez a programhoz.
+  </div>
 </ng-template>
