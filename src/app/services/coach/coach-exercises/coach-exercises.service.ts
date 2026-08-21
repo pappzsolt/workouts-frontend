@@ -1,36 +1,48 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Exercise ,WorkoutDto } from '../../../models/exercise.model';
+import { Exercise, WorkoutDto } from '../../../models/exercise.model';
+import { API_ENDPOINTS } from '../../../api-endpoints';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExerciseService {
 
-  private baseUrl = 'http://localhost:8080/api/exercises';
-  private exercisesUrl = 'http://localhost:8080/api/exercises';
-
   constructor(private http: HttpClient) {}
 
   // Lekérdezi az összes workoutot a belépett coach-hoz tartozó exercise-ekkel
   getWorkoutsWithExercises(): Observable<WorkoutDto[]> {
-    return this.http.get<WorkoutDto[]>(`${this.baseUrl}/workouts`);
+    return this.http.get<WorkoutDto[]>(
+      `${API_ENDPOINTS.exercises}/workouts`
+    );
   }
 
   // Lekérdezi egy adott workout exercise-eit
   getWorkoutExercises(workoutId: number): Observable<WorkoutDto> {
-    return this.http.get<WorkoutDto>(`${this.baseUrl}/workout/${workoutId}`);
+    return this.http.get<WorkoutDto>(
+      `${API_ENDPOINTS.exercises}/workout/${workoutId}`
+    );
   }
 
   // Frissíti a workout_exercises.done mezőt
-  updateWorkoutExerciseDone(workoutId: number, exerciseId: number, done: boolean): Observable<string> {
-    return this.http.patch<string>(`${this.baseUrl}/done`, { workoutId, exerciseId, done });
+  updateWorkoutExerciseDone(
+    workoutId: number,
+    exerciseId: number,
+    done: boolean
+  ): Observable<string> {
+    return this.http.patch<string>(
+      `${API_ENDPOINTS.exercises}/done`,
+      { workoutId, exerciseId, done }
+    );
   }
 
   // Új exercise felvitele
   addExercise(exercise: Exercise): Observable<Exercise> {
-    return this.http.post<Exercise>(`${this.baseUrl}/add`, exercise);
+    return this.http.post<Exercise>(
+      `${API_ENDPOINTS.exercises}/add`,
+      exercise
+    );
   }
 
   // Exercise frissítése
@@ -48,16 +60,24 @@ export class ExerciseService {
       caloriesBurnedPerMinute: exercise.caloriesBurnedPerMinute,
       durationSeconds: exercise.durationSeconds
     };
-    return this.http.put<Exercise>(`${this.baseUrl}/update`, payload);
+
+    return this.http.put<Exercise>(
+      `${API_ENDPOINTS.exercises}/update`,
+      payload
+    );
   }
 
   // Exercise törlése
   deleteExercise(exerciseId: number): Observable<string> {
-    return this.http.delete<string>(`${this.baseUrl}/delete/${exerciseId}`);
+    return this.http.delete<string>(
+      `${API_ENDPOINTS.exercises}/delete/${exerciseId}`
+    );
   }
 
-  // 🔹 Lekéri az összes exercise-t ABC sorrendben
+  // Lekéri az összes exercise-t ABC sorrendben
   getAllExercises(): Observable<Exercise[]> {
-    return this.http.get<Exercise[]>(`${this.exercisesUrl}/all`);
+    return this.http.get<Exercise[]>(
+      `${API_ENDPOINTS.exercises}/all`
+    );
   }
 }
