@@ -1,0 +1,13 @@
+services:
+  workouts-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    image: workouts-frontend:1.0.0
+    container_name: workouts-frontend
+
+    ports:
+      - "8087:80"
+
+    restart: unless-stopped
