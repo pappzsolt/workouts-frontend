@@ -8,6 +8,7 @@ import { Exercise } from '../../../../models/exercise.model';
   selector: 'app-coach-exercises-board',
   standalone: true,
   imports: [CommonModule, FormsModule],
+  styleUrl: './coach-exercises-board.component.css',
   templateUrl: './coach-exercises-board.component.html'
 })
 export class CoachExercisesBoardComponent implements OnInit, OnChanges {

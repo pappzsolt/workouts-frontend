@@ -20,6 +20,7 @@ import { SavedWorkoutExercise } from '../../../../models/workout-exercise.model'
     CoachWorkoutBoardComponent,
     CoachExercisesBoardComponent
   ],
+  styleUrl: './assign-workouts-exercises.component.css',
   templateUrl: './assign-workouts-exercises.component.html',
 })
 export class AssignWorkoutsExercisesComponent implements OnInit {

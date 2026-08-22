@@ -12,6 +12,7 @@ import { RouterOutlet } from '@angular/router'; // ← kell
         <router-outlet></router-outlet>
       </div>
     </div>
-  `
+  `,
+  styleUrl: './login-layout.component.css'
 })
 export class LoginLayoutComponent {}

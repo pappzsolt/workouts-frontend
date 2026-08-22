@@ -13,6 +13,7 @@ import {
   standalone: true,
   selector: 'app-user-exercises',
   imports: [CommonModule],
+  styleUrl: './user-exercises.component.css',
   templateUrl: './user-exercises.component.html'
 })
 export class UserExercisesComponent implements OnInit {
