@@ -34,6 +34,7 @@ import { forkJoin } from 'rxjs';
     MatInputModule
   ],
   templateUrl: './user-profile.component.html',
+  styleUrl: './user-profile.component.css',
 })
 export class UserProfileComponent implements OnInit {
 

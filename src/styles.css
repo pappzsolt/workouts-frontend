@@ -57,7 +57,7 @@ button:disabled {
 
 /* --- Input mezők, select, textarea --- */
 input, select, textarea {
-  @apply border border-gray-300 rounded-lg px-3 py-2 w-full sm:w-auto
+  @apply border border-gray-300 rounded-lg px-3 py-2 w-full
   focus:outline-none focus:ring-2 focus:ring-blue-500 transition;
 }
 
@@ -277,6 +277,7 @@ tr:hover {
 .form-header-emoji {
   @apply text-6xl;
 }
+
 /* === Universal Form Stílusok (Program / Workout / Exercise formokhoz) === */
 
 .universal-form {
@@ -327,6 +328,7 @@ tr:hover {
 .universal-form-message-error {
   @apply bg-red-100 text-red-700;
 }
+
 .pagination-controls {
   display: flex;
   justify-content: center;
@@ -371,13 +373,13 @@ tr:hover {
 /* Program board specifikus */
 .coach-program-board .coach-board-column {
   @apply bg-gray-50;
-  z-index: 1; /* program board alacsonyabb szint */
+  z-index: 1;
 }
 
 /* Workout board specifikus */
 .coach-workout-board .coach-board-column {
   @apply bg-white;
-  z-index: 10; /* workout board mindig felül */
+  z-index: 10;
 }
 
 /* Drop zóna stílus */
@@ -413,6 +415,7 @@ tr:hover {
 .cdk-drop-list-dragging {
   opacity: 0.9;
 }
+
 .cdk-drag-preview {
   z-index: 99999 !important;
   position: fixed !important;
