@@ -25,3 +25,9 @@ kell egy oylan is ami a usereket külön
 !!!!!!!!!
 el kell http://localhost:4200/coach/profile itt kezdjük
 !!!!!!!!
+
+
+
+git pull
+docker compose down
+docker compose up -d --build

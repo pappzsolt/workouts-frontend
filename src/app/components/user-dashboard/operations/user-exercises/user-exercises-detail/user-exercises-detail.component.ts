@@ -18,6 +18,8 @@ import {
 })
 export class UserExerciseDetailComponent implements OnInit {
 
+  workout?: UserWorkoutDetailDto;
+
   workoutExercise?: UserWorkoutDetailDto['exercises'][number];
 
   workoutId!: number;
@@ -40,6 +42,8 @@ export class UserExerciseDetailComponent implements OnInit {
     this.exercisesService.getWorkoutExercises(this.workoutId).subscribe({
 
       next: workout => {
+
+        this.workout = workout;
 
         if (!workout?.exercises || workout.exercises.length === 0) {
 
@@ -66,8 +70,8 @@ export class UserExerciseDetailComponent implements OnInit {
 
         this.workoutExercise = found;
 
-        // Az exercise done állapotát
-        // a saját setek completed állapotából számoljuk.
+        // Az exercise done állapotának kiszámítása
+        // a saját setek completed állapotából.
         this.updateExerciseDone();
 
         console.log(
@@ -137,6 +141,8 @@ export class UserExerciseDetailComponent implements OnInit {
         set.completed = completed;
 
         // Exercise done újraszámolása.
+        // Ez automatikusan újraszámolja a workout
+        // completed állapotát is.
         this.updateExerciseDone();
 
         console.log(
@@ -175,6 +181,8 @@ export class UserExerciseDetailComponent implements OnInit {
 
       this.workoutExercise.done = false;
 
+      this.updateWorkoutDone();
+
       return;
     }
 
@@ -183,5 +191,64 @@ export class UserExerciseDetailComponent implements OnInit {
         (set: UserWorkoutExerciseSetDto) =>
           set.completed === true
       );
+
+    // Workout állapot újraszámolása.
+    this.updateWorkoutDone();
+  }
+
+  /**
+   * A workout akkor completed,
+   * ha az összes exercise completed.
+   *
+   * Ez csak frontend állapot.
+   * A backend workout completed mezőjét
+   * nem módosítjuk.
+   */
+  updateWorkoutDone(): void {
+
+    if (!this.workout) {
+      return;
+    }
+
+    if (!this.workout.exercises?.length) {
+
+      this.workout.done = false;
+
+      return;
+    }
+
+    this.workout.done =
+      this.workout.exercises.every(
+        exercise => exercise.done === true
+      );
+
+    console.log(
+      'Workout frontend completed:',
+      {
+        workoutId: this.workoutId,
+        completed: this.workout.done
+      }
+    );
+
+    if (this.workout.done) {
+
+      localStorage.setItem(
+        `workout-completed-${this.workoutId}`,
+        'true'
+      );
+
+      console.log(
+        'Workout frontend completed elmentve:',
+        this.workoutId
+      );
+
+    } else {
+
+      // Ha valamelyik exercise újra incomplete,
+      // töröljük a frontend completed állapotot.
+      localStorage.removeItem(
+        `workout-completed-${this.workoutId}`
+      );
+    }
   }
 }
