@@ -13,12 +13,13 @@ import { ActivatedRoute, Router } from '@angular/router';
   imports: [CommonModule, FormsModule],
 })
 export class NewWorkoutComponent implements OnInit {
+
   workouts: Workout[] = [];
 
   newWorkout = {
     name: '',
     description: '',
-    workoutDate: '',       // string formátumú, pl. yyyy-mm-dd
+    workoutDate: '',
     durationMinutes: 0,
     intensityLevel: '',
     done: false
@@ -32,13 +33,18 @@ export class NewWorkoutComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router
   ) {}
+
   ngOnInit(): void {
 
     const fromProgramBuilder =
-      this.route.snapshot.queryParamMap.get('fromProgramBuilder');
+      this.route.snapshot.queryParamMap.get(
+        'fromProgramBuilder'
+      );
 
     const programId =
-      this.route.snapshot.queryParamMap.get('programId');
+      this.route.snapshot.queryParamMap.get(
+        'programId'
+      );
 
     console.log(
       'Program Builderből érkezett:',
@@ -53,14 +59,32 @@ export class NewWorkoutComponent implements OnInit {
     this.loadWorkouts();
   }
 
+
   loadWorkouts(): void {
-    this.coachWorkoutsService.getMyWorkouts().subscribe({
-      next: (res) => {
-        this.workouts = res.workouts || [];
-      },
-      error: (err) => console.error('Hiba a workoutok betöltésekor', err),
-    });
+
+    this.coachWorkoutsService
+      .getMyWorkouts()
+      .subscribe({
+
+        next: (res) => {
+
+          this.workouts =
+            res.workouts || [];
+
+        },
+
+        error: (err) => {
+
+          console.error(
+            'Hiba a workoutok betöltésekor',
+            err
+          );
+
+        }
+
+      });
   }
+
 
   addWorkout(): void {
 
@@ -70,31 +94,67 @@ export class NewWorkoutComponent implements OnInit {
 
         next: (res) => {
 
-          this.message = 'Workout létrehozva!';
-          this.messageType = 'success';
+          this.message =
+            'Workout létrehozva!';
 
-          // Megnézzük, hogy a Program Builderből érkeztünk-e.
+          this.messageType =
+            'success';
+
+
+          // Megnézzük, hogy a Program Builderből
+          // érkeztünk-e.
           const fromProgramBuilder =
             this.route.snapshot.queryParamMap.get(
               'fromProgramBuilder'
             );
 
-          if (fromProgramBuilder === 'true') {
 
-            // Új workout létrejött,
-            // visszamegyünk a Program Builderbe.
+          // Az aktuális program ID-ja.
+          const programId =
+            this.route.snapshot.queryParamMap.get(
+              'programId'
+            );
+
+
+          // ==================================================
+          // PROGRAM BUILDERBŐL ÉRKEZTÜNK
+          // ==================================================
+
+          if (
+            fromProgramBuilder === 'true' &&
+            programId
+          ) {
+
+            console.log(
+              'Új workout létrehozva.',
+              'Visszatérés a Program Builderbe.',
+              'Program ID:',
+              programId
+            );
+
             this.router.navigate(
-              ['/coach/program-builder']
+              ['/coach/program-builder'],
+              {
+                queryParams: {
+                  programId: programId
+                }
+              }
             );
 
             return;
           }
 
-          // Normál új workout létrehozás esetén
-          // marad a jelenlegi működés.
+
+          // ==================================================
+          // NORMÁL WORKOUT LÉTREHOZÁS
+          // ==================================================
+
           this.resetForm();
+
           this.loadWorkouts();
+
         },
+
 
         error: (err) => {
 
@@ -106,20 +166,28 @@ export class NewWorkoutComponent implements OnInit {
           this.message =
             'Hiba a workout létrehozásakor!';
 
-          this.messageType = 'error';
+          this.messageType =
+            'error';
+
         }
 
       });
   }
 
+
   private resetForm(): void {
+
     this.newWorkout = {
+
       name: '',
       description: '',
       workoutDate: '',
       durationMinutes: 0,
       intensityLevel: '',
       done: false
+
     };
+
   }
+
 }
