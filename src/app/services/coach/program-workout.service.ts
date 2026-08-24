@@ -18,6 +18,11 @@ export class ProgramWorkoutService {
   private http = inject(HttpClient);
   private baseUrl = API_ENDPOINTS.programWorkouts;
 
+
+  // ==========================================================
+  // WORKOUT HOZZÁADÁSA PROGRAMHOZ
+  // ==========================================================
+
   addWorkoutToProgram(
     programId: number,
     workoutId: number,
@@ -36,6 +41,11 @@ export class ProgramWorkoutService {
     );
   }
 
+
+  // ==========================================================
+  // PROGRAM WORKOUTJAINAK LEKÉRÉSE
+  // ==========================================================
+
   getWorkoutsForProgram(
     programId: number
   ): Observable<ProgramWorkoutListResponse> {
@@ -45,14 +55,17 @@ export class ProgramWorkoutService {
     );
   }
 
-  deleteProgramWorkouts(
+  getWorkoutsForProgramByQuery(
     programId: number
-  ): Observable<ProgramWorkoutResponse> {
+  ): Observable<ProgramWorkoutListResponse> {
 
-    return this.http.delete<ProgramWorkoutResponse>(
-      `${this.baseUrl}/${programId}`
+    return this.http.get<ProgramWorkoutListResponse>(
+      `${this.baseUrl}?programId=${programId}`
     );
   }
+  // ==========================================================
+  // EGY WORKOUT TÖRLÉSE A PROGRAMBÓL
+  // ==========================================================
 
   deleteProgramWorkout(
     programId: number,
@@ -63,6 +76,25 @@ export class ProgramWorkoutService {
       `${this.baseUrl}/${programId}/${workoutId}`
     );
   }
+
+
+  // ==========================================================
+  // A PROGRAM ÖSSZES WORKOUTJÁNAK TÖRLÉSE
+  // ==========================================================
+
+  deleteProgramWorkouts(
+    programId: number
+  ): Observable<ProgramWorkoutResponse> {
+
+    return this.http.delete<ProgramWorkoutResponse>(
+      `${this.baseUrl}/${programId}`
+    );
+  }
+
+
+  // ==========================================================
+  // WORKOUT POZÍCIÓ / DAY INDEX FRISSÍTÉSE
+  // ==========================================================
 
   updateProgramWorkout(
     id: number,
@@ -79,4 +111,5 @@ export class ProgramWorkoutService {
       payload
     );
   }
+
 }
