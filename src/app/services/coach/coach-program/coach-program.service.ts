@@ -57,19 +57,5 @@ export class CoachProgramService {
     );
   }
 
-  deleteProgram(id: number): Observable<void> {
-    return this.http.delete<void>(
-      `${API_ENDPOINTS.programs}/${id}`
-    );
-  }
 
-  assignWorkoutToProgram(
-    programId: number,
-    workoutId: number
-  ): Observable<any> {
-    return this.http.post(
-      `/api/programs/${programId}/assign-workout/`,
-      { workoutId }
-    );
-  }
 }

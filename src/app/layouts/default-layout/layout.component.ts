@@ -28,6 +28,7 @@ export class LayoutComponent implements OnInit {
   coachMenuItems = [
     { label: 'Coach Dashboard', path: '/coach/dashboard' },
     { label: 'Profile', path: '/coach/profile' },
+    { label: 'Program Builder', path: '/coach/program-builder' },
     { label: 'Kijelentkezés', action: 'logout' }
   ];
 
