@@ -3,6 +3,7 @@ import { CoachWorkoutsService } from '../../../../../services/coach/coach-workou
 import { Workout } from '../../../../../models/workout.model';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-newworkout',
@@ -26,9 +27,29 @@ export class NewWorkoutComponent implements OnInit {
   message: string = '';
   messageType: 'success' | 'error' | '' = '';
 
-  constructor(private coachWorkoutsService: CoachWorkoutsService) {}
-
+  constructor(
+    private coachWorkoutsService: CoachWorkoutsService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
   ngOnInit(): void {
+
+    const fromProgramBuilder =
+      this.route.snapshot.queryParamMap.get('fromProgramBuilder');
+
+    const programId =
+      this.route.snapshot.queryParamMap.get('programId');
+
+    console.log(
+      'Program Builderből érkezett:',
+      fromProgramBuilder
+    );
+
+    console.log(
+      'Program ID:',
+      programId
+    );
+
     this.loadWorkouts();
   }
 
@@ -42,19 +63,53 @@ export class NewWorkoutComponent implements OnInit {
   }
 
   addWorkout(): void {
-    this.coachWorkoutsService.addWorkout(this.newWorkout).subscribe({
-      next: (res) => {
-        this.message = 'Workout létrehozva!';
-        this.messageType = 'success';
-        this.resetForm();
-        this.loadWorkouts();
-      },
-      error: (err) => {
-        console.error(err);
-        this.message = 'Hiba a workout létrehozásakor!';
-        this.messageType = 'error';
-      },
-    });
+
+    this.coachWorkoutsService
+      .addWorkout(this.newWorkout)
+      .subscribe({
+
+        next: (res) => {
+
+          this.message = 'Workout létrehozva!';
+          this.messageType = 'success';
+
+          // Megnézzük, hogy a Program Builderből érkeztünk-e.
+          const fromProgramBuilder =
+            this.route.snapshot.queryParamMap.get(
+              'fromProgramBuilder'
+            );
+
+          if (fromProgramBuilder === 'true') {
+
+            // Új workout létrejött,
+            // visszamegyünk a Program Builderbe.
+            this.router.navigate(
+              ['/coach/program-builder']
+            );
+
+            return;
+          }
+
+          // Normál új workout létrehozás esetén
+          // marad a jelenlegi működés.
+          this.resetForm();
+          this.loadWorkouts();
+        },
+
+        error: (err) => {
+
+          console.error(
+            'Hiba a workout létrehozásakor:',
+            err
+          );
+
+          this.message =
+            'Hiba a workout létrehozásakor!';
+
+          this.messageType = 'error';
+        }
+
+      });
   }
 
   private resetForm(): void {
