@@ -1,8 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-
+import { Component, OnInit, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AssignProgramService } from '../../../../services/coach/assign-program/assignprogram.service';
 
 import {
@@ -28,7 +28,7 @@ export class AssignProgramComponent implements OnInit {
 
   private assignService = inject(AssignProgramService);
   private userNameIdService = inject(UserNameIdService);
-
+  private route = inject(ActivatedRoute);
   userId!: number;
   selectedProgramId!: number;
 
@@ -39,9 +39,24 @@ export class AssignProgramComponent implements OnInit {
   users: UserNameId[] = [];
 
   ngOnInit(): void {
+
+    this.route.queryParams.subscribe(params => {
+
+      const programId = params['programId'];
+
+      if (programId) {
+        this.selectedProgramId = Number(programId);
+
+        console.log(
+          'Automatikusan kiválasztott program ID:',
+          this.selectedProgramId
+        );
+      }
+
+    });
+
     this.loadUsers();
   }
-
   loadUsers(): void {
     this.userNameIdService.getAllUsers().subscribe({
       next: (users: UserNameId[]) => {
