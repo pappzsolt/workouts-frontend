@@ -1,0 +1,543 @@
+<div class="program-builder">
+
+  <div class="program-builder-header">
+    <h2>Program Builder</h2>
+    <p>Új edzésprogram létrehozása</p>
+  </div>
+
+
+  <!-- ====================================================== -->
+  <!-- 1. LÉPÉS - PROGRAM -->
+  <!-- ====================================================== -->
+
+  <div
+    class="builder-card"
+    *ngIf="currentStep === 1"
+  >
+
+    <h3>1. Program létrehozása</h3>
+
+    <!-- PROGRAM NÉV -->
+
+    <div class="form-group">
+
+      <label for="programName">
+        Program neve
+      </label>
+
+      <input
+        id="programName"
+        type="text"
+        [(ngModel)]="programName"
+        placeholder="Pl. Erőemelő kezdő program"
+      />
+
+    </div>
+
+
+    <!-- PROGRAM LEÍRÁS -->
+
+    <div class="form-group">
+
+      <label for="programDescription">
+        Program leírása
+      </label>
+
+      <textarea
+        id="programDescription"
+        rows="5"
+        [(ngModel)]="programDescription"
+        placeholder="Írd le röviden a program célját..."
+      ></textarea>
+
+    </div>
+
+
+    <!-- PROGRAM IDŐTARTAMA -->
+
+    <div class="form-group">
+
+      <label for="durationDays">
+        Program időtartama (nap)
+      </label>
+
+      <input
+        id="durationDays"
+        type="number"
+        min="1"
+        [(ngModel)]="durationDays"
+        placeholder="Pl. 30"
+      />
+
+    </div>
+
+
+    <!-- NEHÉZSÉGI SZINT -->
+
+    <div class="form-group">
+
+      <label for="difficultyLevel">
+        Nehézségi szint
+      </label>
+
+      <select
+        id="difficultyLevel"
+        [(ngModel)]="difficultyLevel"
+      >
+
+        <option value="">
+          Válassz nehézségi szintet
+        </option>
+
+        <option value="BEGINNER">
+          Kezdő
+        </option>
+
+        <option value="INTERMEDIATE">
+          Középhaladó
+        </option>
+
+        <option value="ADVANCED">
+          Haladó
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <!-- PROGRAM LÉTREHOZÁSA -->
+
+    <div class="builder-actions">
+
+      <button
+        type="button"
+        class="next-button"
+        [disabled]="
+          creatingProgram ||
+          !programName.trim() ||
+          durationDays === null ||
+          durationDays <= 0 ||
+          !difficultyLevel
+        "
+        (click)="nextStep()"
+      >
+
+        {{
+          creatingProgram
+            ? 'Program létrehozása...'
+            : 'Program létrehozása →'
+        }}
+
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- ====================================================== -->
+  <!-- 2. LÉPÉS - WORKOUTOK -->
+  <!-- ====================================================== -->
+
+  <div
+    class="builder-card"
+    *ngIf="currentStep === 2"
+  >
+
+    <h3>2. Workoutok</h3>
+
+    <p class="step-description">
+      Válassz egy meglévő workoutot, vagy hozz létre egy újat.
+    </p>
+
+
+    <!-- ================================================== -->
+    <!-- WORKOUT OPCIÓK -->
+    <!-- ================================================== -->
+
+    <div class="workout-options">
+
+      <button
+        type="button"
+        class="builder-option"
+      >
+        <span class="option-icon">📋</span>
+
+        <span>
+          <strong>Meglévő workout hozzáadása</strong>
+
+          <small>
+            Válassz a már létrehozott workoutok közül.
+          </small>
+        </span>
+
+      </button>
+
+
+      <button
+        type="button"
+        class="builder-option"
+        (click)="goToCreateWorkout()"
+      >
+
+        <span class="option-icon">➕</span>
+
+        <span>
+
+          <strong>Új workout létrehozása</strong>
+
+          <small>
+            Hozz létre egy új workoutot a programhoz.
+          </small>
+
+        </span>
+
+      </button>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- ELÉRHETŐ WORKOUTOK -->
+    <!-- ================================================== -->
+
+    <div class="existing-workouts">
+
+      <h4>Elérhető workoutok</h4>
+
+
+      <!-- Loading -->
+
+      <div
+        *ngIf="loadingWorkouts"
+        class="loading-message"
+      >
+        Workoutok betöltése...
+      </div>
+
+
+      <!-- Nincs workout -->
+
+      <div
+        *ngIf="
+          !loadingWorkouts &&
+          workouts.length === 0
+        "
+        class="empty-message"
+      >
+        Nincs elérhető workout.
+      </div>
+
+
+      <!-- ================================================= -->
+      <!-- WORKOUT KÁRTYÁK -->
+      <!-- ================================================= -->
+
+      <div
+        *ngFor="let workout of workouts"
+        class="workout-card"
+        [class.workout-card-selected]="
+          selectedWorkoutId === workout.id
+        "
+      >
+
+        <!-- Workout fejléc -->
+
+        <div
+          class="workout-card-header"
+          (click)="selectWorkout(workout.id)"
+        >
+
+          <div class="workout-info">
+
+            <h5>
+              {{ workout.name }}
+            </h5>
+
+            <p>
+              {{ workout.description || 'Nincs leírás' }}
+            </p>
+
+            <div class="workout-meta">
+
+              <span>
+                {{ workout.exercises?.length || 0 }}
+                exercise
+              </span>
+
+              <span
+                *ngIf="workout.durationMinutes"
+              >
+                {{ workout.durationMinutes }} perc
+              </span>
+
+              <span
+                *ngIf="workout.intensityLevel"
+              >
+                {{ workout.intensityLevel }}
+              </span>
+
+            </div>
+
+          </div>
+
+
+          <div class="workout-arrow">
+
+            {{
+              selectedWorkoutId === workout.id
+                ? '▲'
+                : '▼'
+            }}
+
+          </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- KIVÁLASZTOTT WORKOUT RÉSZLETEI -->
+        <!-- ================================================= -->
+
+        <div
+          *ngIf="
+            selectedWorkoutId === workout.id
+          "
+          class="workout-details"
+        >
+
+          <!-- Exercise loading -->
+
+          <div
+            *ngIf="loadingExercises"
+            class="loading-message"
+          >
+            Exercise-ok betöltése...
+          </div>
+
+
+          <!-- ================================================= -->
+          <!-- EXERCISE KIVÁLASZTÓ -->
+          <!-- ================================================= -->
+
+          <div class="builder-exercises">
+
+            <h4>
+              Exercise-ok hozzáadása a workouthoz
+            </h4>
+
+            <app-coach-exercises-board
+              [externalExercises]="exercises"
+              [externalSelectedExercises]="selectedExercises"
+              (exercisesChange)="onExercisesChange($event)"
+            >
+            </app-coach-exercises-board>
+
+          </div>
+
+
+          <!-- ================================================= -->
+          <!-- MÁR KIVÁLASZTOTT EXERCISE-OK -->
+          <!-- ================================================= -->
+
+          <div
+            *ngIf="
+              !loadingExercises &&
+              selectedExercises.length === 0
+            "
+            class="empty-message"
+          >
+            Ehhez a workouthoz nincs exercise hozzáadva.
+          </div>
+
+
+          <div
+            *ngIf="
+              !loadingExercises &&
+              selectedExercises.length > 0
+            "
+            class="exercise-list"
+          >
+
+            <div
+              *ngFor="
+                let exercise
+                of selectedExercises
+              "
+              class="exercise-card"
+            >
+
+              <div class="exercise-card-header">
+
+                <strong>
+                  {{ exercise.name }}
+                </strong>
+
+              </div>
+
+
+              <div class="exercise-details">
+
+                <span
+                  *ngIf="exercise.muscleGroup"
+                >
+                  <strong>Izomcsoport:</strong>
+                  {{ exercise.muscleGroup }}
+                </span>
+
+
+                <span
+                  *ngIf="exercise.equipment"
+                >
+                  <strong>Eszköz:</strong>
+                  {{ exercise.equipment }}
+                </span>
+
+
+                <span
+                  *ngIf="exercise.difficultyLevel"
+                >
+                  <strong>Nehézség:</strong>
+                  {{ exercise.difficultyLevel }}
+                </span>
+
+
+                <span
+                  *ngIf="exercise.category"
+                >
+                  <strong>Kategória:</strong>
+                  {{ exercise.category }}
+                </span>
+
+              </div>
+
+
+              <div
+                *ngIf="exercise.description"
+                class="exercise-notes"
+              >
+                {{ exercise.description }}
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- ================================================= -->
+          <!-- WORKOUT HOZZÁADÁSA -->
+          <!-- ================================================= -->
+
+          <div class="workout-add-action">
+
+            <button
+              type="button"
+              class="add-workout-button"
+              [disabled]="isWorkoutSelected(workout.id)"
+              (click)="addSelectedWorkout()"
+            >
+
+              {{
+                isWorkoutSelected(workout.id)
+                  ? '✓ Hozzáadva a programhoz'
+                  : '+ Hozzáadás a programhoz'
+              }}
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- PROGRAMHOZ HOZZÁADOTT WORKOUTOK -->
+    <!-- ================================================== -->
+
+    <div
+      class="selected-workouts"
+      *ngIf="selectedWorkouts.length > 0"
+    >
+
+      <h4>
+        Programhoz hozzáadott workoutok
+      </h4>
+
+
+      <div
+        *ngFor="
+          let workout of selectedWorkouts;
+          let i = index
+        "
+        class="selected-workout-item"
+      >
+
+        <div class="selected-workout-number">
+          {{ i + 1 }}
+        </div>
+
+
+        <div class="selected-workout-info">
+
+          <strong>
+            {{ workout.name }}
+          </strong>
+
+          <small>
+            {{ workout.exercises?.length || 0 }}
+            exercise
+          </small>
+
+        </div>
+
+
+        <button
+          type="button"
+          class="remove-workout-button"
+          (click)="removeWorkout(workout.id)"
+        >
+          ✕
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- NAVIGÁCIÓ -->
+    <!-- ================================================== -->
+
+    <div class="builder-actions">
+
+      <button
+        type="button"
+        class="back-button"
+        (click)="previousStep()"
+      >
+        ← Vissza
+      </button>
+
+      <app-user-select
+        [(selectedUserId)]="selectedUserId">
+      </app-user-select>
+
+      <button
+        type="button"
+        class="next-button"
+        [disabled]="programId === null"
+        (click)="finishProgram()"
+      >
+        Program befejezése →
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
