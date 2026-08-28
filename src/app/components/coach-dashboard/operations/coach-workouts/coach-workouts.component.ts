@@ -2,7 +2,9 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/cor
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { Workout } from '../../../../models/workout.model';
+
 import { USER_MESSAGES } from '../../../../constants/user-messages';
 import { Router } from '@angular/router';
 import { NewWorkoutComponent } from '../../operations/coach-workouts/coach-workout-new/new-workout.component';
@@ -43,23 +45,51 @@ export class WorkoutListComponent implements OnInit, OnChanges {
     }
   }
 
-  loadWorkouts() {
+  loadWorkouts(): void {
+    console.log('[CoachWorkouts] loadWorkouts()');
+
     this.coachWorkoutsService.getMyWorkouts().subscribe({
-      next: (res) => {
-        if (res.status === 'success' && res.workouts) {
-          this.workouts = res.workouts.map(w => ({
-            id: w.id,
-            workoutName: w.name,
-            description: w.description,
-            durationMinutes: w.durationMinutes
-          }));
-          this.totalPages = Math.ceil(this.workouts.length / this.itemsPerPage);
-          this.setMessage('Workoutok betöltve.', 'success');
-        } else {
-          this.setMessage(res.message || 'Nincsenek workoutok.', 'error');
-        }
+      next: (res: Workout[]) => {
+
+        console.log('[CoachWorkouts] response:', res);
+
+        this.workouts = res.map((w: Workout) => ({
+          id: w.id,
+          workoutName: w.workoutName ?? w.name,
+          description: w.description ?? w.workoutDescription,
+          durationMinutes: w.durationMinutes,
+          difficultyLevel: w.difficultyLevel,
+          exercises: w.exercises ?? []
+        }));
+
+        this.currentPage = 1;
+
+        this.totalPages = Math.max(
+          1,
+          Math.ceil(this.workouts.length / this.itemsPerPage)
+        );
+
+        console.log(
+          '[CoachWorkouts] betöltött workoutok:',
+          this.workouts
+        );
       },
-      error: () => this.setMessage('Nem sikerült betölteni a workoutokat.', 'error')
+
+      error: (error) => {
+        console.error(
+          '[CoachWorkouts] workout betöltési hiba:',
+          error
+        );
+
+        this.workouts = [];
+        this.currentPage = 1;
+        this.totalPages = 1;
+
+        this.setMessage(
+          'Nem sikerült betölteni a workoutokat.',
+          'error'
+        );
+      }
     });
   }
 

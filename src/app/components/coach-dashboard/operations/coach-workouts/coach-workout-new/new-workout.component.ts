@@ -68,8 +68,7 @@ export class NewWorkoutComponent implements OnInit {
 
         next: (res) => {
 
-          this.workouts =
-            res.workouts || [];
+          this.workouts = res || [];
 
         },
 

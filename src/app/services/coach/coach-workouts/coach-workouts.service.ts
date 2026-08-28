@@ -15,15 +15,25 @@ import { API_ENDPOINTS } from '../../../api-endpoints';
 })
 export class CoachWorkoutsService {
 
-  private http = inject(HttpClient);
-  private apiUrl = API_ENDPOINTS.workouts;
+  private readonly http = inject(HttpClient);
+  private readonly apiUrl = API_ENDPOINTS.workouts;
 
-  getMyWorkouts(): Observable<WorkoutListResponse> {
-    return this.http.get<WorkoutListResponse>(
+  /**
+   * A bejelentkezett coach által létrehozott
+   * összes workout lekérése.
+   *
+   * GET /api/workouts/my-workouts
+   */
+  getMyWorkouts(): Observable<Workout[]> {
+    return this.http.get<Workout[]>(
       `${this.apiUrl}/my-workouts`
     );
   }
-
+  /**
+   * Új workout létrehozása.
+   * A coach azonosítóját a backend határozza meg
+   * a bejelentkezett felhasználó alapján.
+   */
   addWorkout(workout: Workout): Observable<WorkoutResponse> {
     return this.http.post<WorkoutResponse>(
       `${this.apiUrl}/add`,
@@ -31,12 +41,18 @@ export class CoachWorkoutsService {
     );
   }
 
+  /**
+   * Workout lekérése ID alapján.
+   */
   getWorkoutById(id: number): Observable<WorkoutResponse> {
     return this.http.get<WorkoutResponse>(
       `${this.apiUrl}/${id}`
     );
   }
 
+  /**
+   * Workout módosítása.
+   */
   updateWorkout(
     id: number,
     workout: Workout
@@ -53,12 +69,9 @@ export class CoachWorkoutsService {
     );
   }
 
-  getMyWorkoutsForSelect(): Observable<WorkoutListResponse> {
-    return this.http.get<WorkoutListResponse>(
-      `${this.apiUrl}/my-workouts-select`
-    );
-  }
-
+  /**
+   * Workout törlése.
+   */
   deleteWorkout(id: number): Observable<WorkoutResponse> {
     return this.http.delete<WorkoutResponse>(
       `${this.apiUrl}/delete/${id}`
