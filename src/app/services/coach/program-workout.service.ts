@@ -51,7 +51,7 @@ export class ProgramWorkoutService {
   ): Observable<ProgramWorkoutListResponse> {
 
     return this.http.get<ProgramWorkoutListResponse>(
-      `${this.baseUrl}/${programId}`
+      `${this.baseUrl}?programId=${programId}`
     );
   }
 

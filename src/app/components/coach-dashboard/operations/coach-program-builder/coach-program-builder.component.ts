@@ -780,13 +780,8 @@ export class CoachProgramBuilderComponent implements OnInit {
           );
 
           /**
-           * Új kapcsolat létrehozása
-           * a frontend állapotban.
-           *
-           * Az ID-t a backend válaszból
-           * jelenleg nem kapjuk vissza,
-           * ezért ezt csak az újonnan létrehozott
-           * kapcsolat reprezentációjaként használjuk.
+           * Új program-workout kapcsolat
+           * létrehozása a frontend állapotban.
            */
           this.programWorkouts.push({
             programId: this.programId!,
@@ -800,23 +795,15 @@ export class CoachProgramBuilderComponent implements OnInit {
           );
 
           /**
-           * Ha új workoutot adtunk hozzá,
-           * a már meglévő exercise-eket
-           * ismerjük a selectedWorkout alapján.
+           * A kiválasztott exercise-ek mentése
+           * az aktuális workouthoz.
+           *
+           * FONTOS:
+           * Ezt még azelőtt hívjuk meg,
+           * hogy bármi felülírná
+           * a selectedExercises tömböt.
            */
-          this.selectedWorkoutExercises =
-            workout.exercises || [];
-
-          this.selectedExercises =
-            this.selectedWorkoutExercises
-              .map(
-                workoutExercise =>
-                  workoutExercise.exercise
-              )
-              .filter(
-                (exercise): exercise is Exercise =>
-                  exercise != null
-              );
+          this.saveSelectedExercises();
         },
 
         error: (error: any) => {
