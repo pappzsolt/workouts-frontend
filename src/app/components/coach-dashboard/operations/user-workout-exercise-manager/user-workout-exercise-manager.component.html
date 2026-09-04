@@ -1,14 +1,10 @@
 <div class="user-workout-exercises">
 
   <h2 class="page-title">
-    User Workout Exercises
+    Edzés és sorozatok beállítása
   </h2>
 
   <div class="add-workout-section">
-
-    <h3 class="section-title">
-      Add New User Workout
-    </h3>
 
     <div class="add-workout-controls">
 
@@ -23,23 +19,6 @@
           [(selectedProgramId)]="selectedProgramId">
         </app-coach-program-select>
       </label>
-
-      <label class="form-field">
-        <span>Date:</span>
-
-        <input
-          type="date"
-          [(ngModel)]="scheduledAt"
-          class="form-input"
-        />
-      </label>
-
-      <button
-        type="button"
-        (click)="addUserWorkouts()"
-        class="btn btn-primary">
-        Add
-      </button>
 
       <button
         type="button"

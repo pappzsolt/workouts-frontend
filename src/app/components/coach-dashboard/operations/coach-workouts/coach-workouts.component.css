@@ -1,217 +1,546 @@
+/* ============================================================
+   EDZÉSEK
+   ============================================================ */
+
 .workouts-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
+  width: min(1200px, calc(100% - 32px));
+  margin: 2rem auto;
+  padding: 1.5rem;
 
-.programs-title {
-  text-align: center;
-  font-size: 28px;
-  font-weight: 600;
-  margin-bottom: 24px;
-}
+  box-sizing: border-box;
 
-.programs-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-
-.program-card {
   background: #ffffff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 0.75rem;
+
+  box-shadow:
+    0 4px 16px rgb(0 0 0 / 8%);
 }
 
-.program-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.18);
-}
 
-.program-image {
-  height: 130px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f3f4f6;
-}
-
-.program-emoji {
-  font-size: 52px;
-}
-
-.program-content {
-  padding: 16px;
-}
-
-.program-name {
-  font-size: 20px;
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.program-description {
-  color: #666;
-  min-height: 45px;
-  margin-bottom: 16px;
-}
-
-.program-progress {
-  margin-bottom: 16px;
-}
-
-.program-progress-label {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 6px;
-  font-size: 14px;
-}
-
-.program-progress-bar {
-  height: 8px;
-  background: #e5e7eb;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.program-progress-fill {
-  height: 100%;
-  background: #3b82f6;
-  border-radius: 4px;
-}
-
-.program-edit {
-  text-align: center;
-}
-
-.program-edit button {
-  border: none;
-  background: #3b82f6;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.program-edit button:hover {
-  background: #2563eb;
-}
-
-.pagination-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-  margin-top: 24px;
-}
-
-.pagination-controls button {
-  border: none;
-  background: #3b82f6;
-  color: white;
-  padding: 8px 14px;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.pagination-controls button:hover:not(:disabled) {
-  background: #2563eb;
-}
-
-.pagination-controls button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.no-programs {
-  text-align: center;
-  padding: 30px;
-  color: #666;
-}
+/* ============================================================
+   ÜZENETEK
+   ============================================================ */
 
 .message-success,
 .error-message {
+  width: min(900px, 100%);
+  margin: 0 auto 1rem;
+  padding: 0.75rem 1rem;
+
+  box-sizing: border-box;
+
   text-align: center;
-  padding: 10px;
-  margin-bottom: 16px;
-  border-radius: 6px;
+
+  border-radius: 0.5rem;
+
+  font-size: 0.9rem;
 }
 
 .message-success {
   color: #15803d;
   background: #dcfce7;
+  border: 1px solid #bbf7d0;
 }
 
 .error-message {
   color: #dc2626;
   background: #fee2e2;
+  border: 1px solid #fecaca;
 }
 
-.floating-action-button {
-  position: fixed;
-  right: 30px;
-  bottom: 30px;
-  width: 55px;
-  height: 55px;
-  border: none;
-  border-radius: 50%;
-  background: #3b82f6;
-  color: white;
-  font-size: 26px;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+/* ============================================================
+   CÍM
+   ============================================================ */
+
+.workouts-title {
+  margin: 0 0 1.5rem;
+
+  text-align: center;
+
+  font-size: 1.6rem;
+  font-weight: 700;
+
+  color: #1f2937;
 }
 
-.floating-action-button:hover {
-  background: #2563eb;
+
+/* ============================================================
+   EDZÉS GRID
+   ============================================================ */
+
+.workouts-grid {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(280px, 1fr));
+
+  gap: 1.25rem;
+
+  padding: 0.5rem 0;
+
+  box-sizing: border-box;
 }
 
-@media (max-width: 1000px) {
-  .programs-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
 
-@media (max-width: 600px) {
-  .workouts-container {
-    padding: 12px;
-  }
+/* ============================================================
+   EDZÉS KÁRTYA
+   ============================================================ */
 
-  .programs-grid {
-    grid-template-columns: 1fr;
-  }
-}
-.workout-exercises {
-  margin-top: 16px;
-  margin-bottom: 16px;
-}
+.workout-card {
+  min-width: 0;
 
-.workout-exercises-title {
-  font-weight: 600;
-  margin-bottom: 8px;
-}
-
-.workout-exercise {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+
+  overflow: hidden;
+
+  box-shadow:
+    0 2px 8px rgb(0 0 0 / 6%);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.workout-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 6px 18px rgb(0 0 0 / 10%);
+}
+
+
+/* ============================================================
+   FEJLÉC / IKON
+   ============================================================ */
+
+.workout-image {
+  display: flex;
   align-items: center;
-  padding: 6px 0;
+  justify-content: center;
+
+  height: 110px;
+
+  background: #f3f4f6;
+
   border-bottom: 1px solid #e5e7eb;
 }
 
-.workout-exercise-name {
-  font-weight: 500;
+.workout-emoji {
+  font-size: 3.25rem;
 }
 
-.workout-exercise-details {
-  color: #666;
-  font-size: 14px;
+
+/* ============================================================
+   TARTALOM
+   ============================================================ */
+
+.workout-content {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+
+  padding: 1rem;
 }
+
+.workout-name {
+  margin: 0 0 0.5rem;
+
+  font-size: 1.1rem;
+  font-weight: 700;
+
+  color: #1f2937;
+
+  overflow-wrap: anywhere;
+}
+
+.workout-description {
+  margin: 0 0 1rem;
+
+  color: #6b7280;
+
+  line-height: 1.5;
+
+  overflow-wrap: anywhere;
+}
+
+
+/* ============================================================
+   EDZÉS ADATOK
+   ============================================================ */
+
+.workout-meta {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 0.75rem;
+
+  margin-bottom: 1rem;
+}
+
+.workout-meta-item {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.2rem;
+
+  padding: 0.65rem;
+
+  background: #f8fafc;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+}
+
+.workout-meta-label {
+  font-size: 0.75rem;
+
+  color: #6b7280;
+}
+
+.workout-meta-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+
+  color: #1f2937;
+}
+
+
+/* ============================================================
+   NINCS GYAKORLAT
+   ============================================================ */
 
 .no-exercises {
-  color: #888;
-  font-size: 14px;
-  font-style: italic;
+  margin-top: 0.25rem;
+
+  padding: 0.75rem;
+
+  font-size: 0.85rem;
+
+  color: #9ca3af;
+
+  background: #f9fafb;
+
+  border: 1px dashed #d1d5db;
+
+  border-radius: 0.5rem;
+}
+
+
+/* ============================================================
+   SZERKESZTÉS
+   ============================================================ */
+
+.workout-edit {
+  display: flex;
+  justify-content: flex-end;
+
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.edit-button,
+.workout-edit button {
+  width: 100%;
+
+  border: none;
+
+  padding: 0.55rem 0.9rem;
+
+  border-radius: 0.5rem;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.edit-button:hover,
+.workout-edit button:hover {
+  background: #1d4ed8;
+
+  transform: translateY(-1px);
+}
+
+
+/* ============================================================
+   LAPOZÁS
+   ============================================================ */
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 1rem;
+
+  margin: 1.75rem 0;
+
+  padding: 0.5rem;
+
+  flex-wrap: wrap;
+}
+
+.pagination-button,
+.pagination-controls button {
+  min-height: 2.25rem;
+
+  border: none;
+
+  padding: 0.5rem 0.9rem;
+
+  border-radius: 0.5rem;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition: background-color 0.2s ease;
+}
+
+.pagination-button:hover:not(:disabled),
+.pagination-controls button:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.pagination-button:disabled,
+.pagination-controls button:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  min-width: 70px;
+
+  text-align: center;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  color: #374151;
+}
+
+
+/* ============================================================
+   NINCS EDZÉS
+   ============================================================ */
+
+.no-workouts {
+  width: min(600px, calc(100% - 2rem));
+
+  margin: 2rem auto;
+
+  padding: 1rem;
+
+  box-sizing: border-box;
+
+  text-align: center;
+
+  color: #6b7280;
+
+  background: #f9fafb;
+
+  border: 1px dashed #d1d5db;
+
+  border-radius: 0.5rem;
+}
+
+
+/* ============================================================
+   FLOATING ACTION BUTTON
+   ============================================================ */
+
+.floating-action-button {
+  position: fixed;
+
+  right: 1.5rem;
+  bottom: 1.5rem;
+
+  width: 3.5rem;
+  height: 3.5rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  border-radius: 50%;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 1.4rem;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 4px 12px rgb(0 0 0 / 18%);
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  z-index: 100;
+}
+
+.floating-action-button:hover {
+  background: #1d4ed8;
+
+  transform: scale(1.05);
+
+  box-shadow:
+    0 6px 16px rgb(0 0 0 / 22%);
+}
+
+
+/* ============================================================
+   TABLET
+   ============================================================ */
+
+@media (max-width: 900px) {
+
+  .workouts-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+
+/* ============================================================
+   MOBIL
+   ============================================================ */
+
+@media (max-width: 640px) {
+
+  .workouts-container {
+    width: calc(100% - 1rem);
+
+    margin: 1rem auto;
+
+    padding: 1rem;
+  }
+
+  .workouts-title {
+    font-size: 1.35rem;
+
+    margin-bottom: 1rem;
+  }
+
+  .workouts-grid {
+    grid-template-columns: 1fr;
+
+    gap: 0.9rem;
+
+    padding: 0;
+  }
+
+  .workout-card {
+    width: 100%;
+  }
+
+  .workout-image {
+    height: 90px;
+  }
+
+  .workout-emoji {
+    font-size: 2.75rem;
+  }
+
+  .workout-content {
+    padding: 0.9rem;
+  }
+
+  .workout-name {
+    font-size: 1rem;
+  }
+
+  .workout-description {
+    font-size: 0.9rem;
+  }
+
+  .workout-meta {
+    grid-template-columns:
+      1fr 1fr;
+
+    gap: 0.5rem;
+  }
+
+  .workout-meta-item {
+    padding: 0.55rem;
+  }
+
+  .pagination-controls {
+    gap: 0.5rem;
+
+    margin: 1.25rem 0;
+  }
+
+  .pagination-info {
+    order: -1;
+
+    width: 100%;
+  }
+
+  .pagination-button,
+  .pagination-controls button {
+    flex: 1;
+
+    min-width: 110px;
+  }
+
+  .floating-action-button {
+    right: 1rem;
+    bottom: 1rem;
+
+    width: 3.25rem;
+    height: 3.25rem;
+  }
+
+}
+
+
+/* ============================================================
+   KIS MOBIL
+   ============================================================ */
+
+@media (max-width: 400px) {
+
+  .workout-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .pagination-controls {
+    flex-direction: column;
+  }
+
+  .pagination-button,
+  .pagination-controls button {
+    width: 100%;
+  }
+
 }

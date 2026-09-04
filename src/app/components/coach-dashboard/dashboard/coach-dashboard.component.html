@@ -5,43 +5,25 @@
   <!-- Programs -->
   <div class="dashboard-card" (click)="togglePrograms()">
     <div class="dashboard-card-emoji">💪</div>
-    <div class="dashboard-card-title">Programs</div>
+    <div class="dashboard-card-title">Programok</div>
   </div>
 
   <!-- Workouts -->
   <div class="dashboard-card" (click)="toggleWorkouts()">
     <div class="dashboard-card-emoji">🔥</div>
-    <div class="dashboard-card-title">Workouts</div>
+    <div class="dashboard-card-title">Edzések</div>
   </div>
 
   <!-- Exercises -->
   <div class="dashboard-card" (click)="toggleExercises()">
     <div class="dashboard-card-emoji">🏋️</div>
-    <div class="dashboard-card-title">Exercises</div>
-  </div>
-
-  <!-- Program & User Assignments -->
-  <div class="dashboard-card" (click)="toggleAssignments()">
-    <div class="dashboard-card-emoji">🧑‍🤝‍🧑</div>
-    <div class="dashboard-card-title">Program - User ASS</div>
-  </div>
-
-  <!-- Program & Workouts Assignments -->
-  <div class="dashboard-card" (click)="toggleProgramWorkouts()">
-    <div class="dashboard-card-emoji">📋🔥</div>
-    <div class="dashboard-card-title">Program - Workouts ASS</div>
-  </div>
-
-  <!-- Workout - Exercises Assignments -->
-  <div class="dashboard-card" (click)="toggleWorkoutExercises()">
-    <div class="dashboard-card-emoji">🔥🏋️</div>
-    <div class="dashboard-card-title">Workout - Exercises ASS</div>
+    <div class="dashboard-card-title">Gyakorlatok</div>
   </div>
 
   <!-- Workout Exercise Manager -->
   <div class="dashboard-card" (click)="toggleWorkoutExerciseManager()">
     <div class="dashboard-card-emoji">📊🏋️</div>
-    <div class="dashboard-card-title">Workout Exercise Manager</div>
+    <div class="dashboard-card-title">Edzés és sorozatok beállítása </div>
   </div>
 
 </div>
@@ -60,18 +42,6 @@
 
 <div *ngIf="showExercises">
   <app-exercise-controller></app-exercise-controller>
-</div>
-
-<div *ngIf="showAssignments">
-  <app-assignprogram></app-assignprogram>
-</div>
-
-<div *ngIf="showProgramWorkouts">
-  <app-program-workouts-ass></app-program-workouts-ass>
-</div>
-
-<div *ngIf="showWorkoutExercises">
-  <app-assign-workouts-exercises></app-assign-workouts-exercises>
 </div>
 
 <div *ngIf="showWorkoutExerciseManager">

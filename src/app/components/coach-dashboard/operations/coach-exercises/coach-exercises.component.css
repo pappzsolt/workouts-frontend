@@ -1,135 +1,412 @@
-.programs-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 1.5rem;
+/* ============================================================
+   GYAKORLATOK
+   ============================================================ */
+
+:host {
+  display: block;
+}
+
+.exercises-title {
+  margin: 0 0 1.5rem;
+
   text-align: center;
+
+  font-size: 1.6rem;
+  font-weight: 700;
+
+  color: #1f2937;
 }
 
-.programs-grid {
+
+/* ============================================================
+   GRID
+   ============================================================ */
+
+.exercises-grid {
+  width: 100%;
+
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-  padding: 1rem;
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(280px, 1fr));
+
+  gap: 1.25rem;
+
+  padding: 0.5rem 0;
+
+  box-sizing: border-box;
 }
 
-.program-card {
+
+/* ============================================================
+   KÁRTYA
+   ============================================================ */
+
+.exercise-card {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
   background: #ffffff;
+
+  border: 1px solid #e5e7eb;
   border-radius: 0.75rem;
+
   overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  box-shadow:
+    0 2px 8px rgb(0 0 0 / 6%);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.program-card:hover {
+.exercise-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+
+  box-shadow:
+    0 6px 18px rgb(0 0 0 / 10%);
 }
 
-.program-image {
+
+/* ============================================================
+   FEJLÉC / IKON
+   ============================================================ */
+
+.exercise-image {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 140px;
+
+  height: 110px;
+
   background: #f3f4f6;
+
+  border-bottom: 1px solid #e5e7eb;
 }
 
-.program-emoji {
-  font-size: 4rem;
+.exercise-emoji {
+  font-size: 3.25rem;
 }
 
-.program-content {
+
+/* ============================================================
+   TARTALOM
+   ============================================================ */
+
+.exercise-content {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+
+  flex: 1;
+
   padding: 1rem;
 }
 
-.program-name {
+.exercise-name {
+  margin: 0 0 0.5rem;
+
   font-size: 1.1rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  font-weight: 700;
+
+  color: #1f2937;
+
+  overflow-wrap: anywhere;
 }
 
-.program-description {
+.exercise-description {
+  margin: 0;
+
   color: #6b7280;
+
   line-height: 1.5;
-  min-height: 3rem;
+
+  overflow-wrap: anywhere;
 }
 
-.program-edit {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: flex-end;
+
+/* ============================================================
+   SZERKESZTÉS
+   ============================================================ */
+
+.exercise-edit {
+  margin-top: auto;
+  padding-top: 1rem;
 }
 
-.program-edit button {
+.edit-button,
+.exercise-edit button {
+  width: 100%;
+
   border: none;
-  background: #2563eb;
-  color: white;
-  padding: 0.5rem 1rem;
+
+  padding: 0.55rem 0.9rem;
+
   border-radius: 0.5rem;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 0.85rem;
+  font-weight: 600;
+
   cursor: pointer;
-  transition: background-color 0.2s ease;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
 }
 
-.program-edit button:hover {
+.edit-button:hover,
+.exercise-edit button:hover {
   background: #1d4ed8;
+
+  transform: translateY(-1px);
 }
 
-.no-programs {
+
+/* ============================================================
+   NINCS GYAKORLAT / BETÖLTÉS
+   ============================================================ */
+
+.no-exercises {
+  width: min(600px, calc(100% - 2rem));
+
+  margin: 2rem auto;
+
+  padding: 1rem;
+
+  box-sizing: border-box;
+
   text-align: center;
-  margin: 2rem 0;
+
   color: #6b7280;
+
+  background: #f9fafb;
+
+  border: 1px dashed #d1d5db;
+
+  border-radius: 0.5rem;
 }
+
+
+/* ============================================================
+   LAPOZÁS
+   ============================================================ */
 
 .pagination-controls {
   display: flex;
   align-items: center;
   justify-content: center;
+
   gap: 1rem;
-  margin: 2rem 0;
+
+  margin: 1.75rem 0;
+
+  padding: 0.5rem;
+
+  flex-wrap: wrap;
 }
 
+.pagination-button,
 .pagination-controls button {
+  min-height: 2.25rem;
+
   border: none;
-  background: #2563eb;
-  color: white;
-  padding: 0.5rem 1rem;
+
+  padding: 0.5rem 0.9rem;
+
   border-radius: 0.5rem;
+
+  background: #2563eb;
+  color: #ffffff;
+
+  font-size: 0.85rem;
+  font-weight: 600;
+
   cursor: pointer;
+
+  transition:
+    background-color 0.2s ease;
 }
 
+.pagination-button:hover:not(:disabled),
 .pagination-controls button:hover:not(:disabled) {
   background: #1d4ed8;
 }
 
+.pagination-button:disabled,
 .pagination-controls button:disabled {
   opacity: 0.5;
+
   cursor: not-allowed;
 }
 
+.pagination-info {
+  min-width: 70px;
+
+  text-align: center;
+
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  color: #374151;
+}
+
+
+/* ============================================================
+   ÚJ GYAKORLAT
+   ============================================================ */
+
 .floating-action-button {
   position: fixed;
-  right: 2rem;
-  bottom: 2rem;
+
+  right: 1.5rem;
+  bottom: 1.5rem;
 
   width: 3.5rem;
   height: 3.5rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   border: none;
   border-radius: 50%;
 
   background: #2563eb;
-  color: white;
+  color: #ffffff;
 
-  font-size: 1.5rem;
+  font-size: 1.4rem;
 
   cursor: pointer;
 
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 4px 12px rgb(0 0 0 / 18%);
 
-  transition: background-color 0.2s ease,
-  transform 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  z-index: 100;
 }
 
 .floating-action-button:hover {
   background: #1d4ed8;
+
   transform: scale(1.05);
+
+  box-shadow:
+    0 6px 16px rgb(0 0 0 / 22%);
+}
+
+
+/* ============================================================
+   TABLET
+   ============================================================ */
+
+@media (max-width: 900px) {
+
+  .exercises-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+
+/* ============================================================
+   MOBIL
+   ============================================================ */
+
+@media (max-width: 640px) {
+
+  .exercises-title {
+    font-size: 1.35rem;
+
+    margin-bottom: 1rem;
+  }
+
+  .exercises-grid {
+    grid-template-columns: 1fr;
+
+    gap: 0.9rem;
+
+    padding: 0;
+  }
+
+  .exercise-card {
+    width: 100%;
+  }
+
+  .exercise-image {
+    height: 90px;
+  }
+
+  .exercise-emoji {
+    font-size: 2.75rem;
+  }
+
+  .exercise-content {
+    padding: 0.9rem;
+  }
+
+  .exercise-name {
+    font-size: 1rem;
+  }
+
+  .exercise-description {
+    font-size: 0.9rem;
+  }
+
+  .pagination-controls {
+    gap: 0.5rem;
+
+    margin: 1.25rem 0;
+  }
+
+  .pagination-info {
+    order: -1;
+
+    width: 100%;
+  }
+
+  .pagination-button,
+  .pagination-controls button {
+    flex: 1;
+
+    min-width: 110px;
+  }
+
+  .floating-action-button {
+    right: 1rem;
+    bottom: 1rem;
+
+    width: 3.25rem;
+    height: 3.25rem;
+  }
+
+}
+
+
+/* ============================================================
+   KIS MOBIL
+   ============================================================ */
+
+@media (max-width: 400px) {
+
+  .pagination-controls {
+    flex-direction: column;
+  }
+
+  .pagination-button,
+  .pagination-controls button {
+    width: 100%;
+  }
+
 }
