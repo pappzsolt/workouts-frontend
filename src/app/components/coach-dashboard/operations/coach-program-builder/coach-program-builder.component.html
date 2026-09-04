@@ -14,7 +14,14 @@
 
       <div>
         <h2>Program Builder</h2>
-        <p>Új edzésprogram létrehozása</p>
+
+        <p>
+          {{
+            programId !== null
+              ? 'Meglévő edzésprogram módosítása'
+              : 'Új edzésprogram létrehozása'
+          }}
+        </p>
       </div>
 
     </div>
@@ -40,11 +47,19 @@
       <div>
 
         <h3>
-          Program létrehozása
+          {{
+            programId !== null
+              ? 'Program módosítása'
+              : 'Program létrehozása'
+          }}
         </h3>
 
         <p>
-          Állítsd be az edzésprogram alapadatait.
+          {{
+            programId !== null
+              ? 'Módosítsd az edzésprogram alapadatait.'
+              : 'Állítsd be az edzésprogram alapadatait.'
+          }}
         </p>
 
       </div>
@@ -149,7 +164,9 @@
     </div>
 
 
-    <!-- PROGRAM LÉTREHOZÁSA -->
+    <!-- ================================================== -->
+    <!-- PROGRAM MENTÉSE / MÓDOSÍTÁSA -->
+    <!-- ================================================== -->
 
     <div class="builder-actions">
 
@@ -169,8 +186,16 @@
         <span>
           {{
             creatingProgram
-              ? 'Program létrehozása...'
-              : 'Program létrehozása'
+              ? (
+                programId !== null
+                  ? 'Program módosítása...'
+                  : 'Program létrehozása...'
+              )
+              : (
+                programId !== null
+                  ? 'Program módosítása'
+                  : 'Program létrehozása'
+              )
           }}
         </span>
 

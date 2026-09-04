@@ -49,13 +49,11 @@ export class CoachProgramService {
 
   updateProgram(
     id: number,
-    program: Program
-  ): Observable<ApiResponse<ProgramDto>> {
-    return this.http.put<ApiResponse<ProgramDto>>(
-      `${API_ENDPOINTS.programs}/${id}`,
-      program
+    request: ProgramCreationRequest
+  ): Observable<ProgramCreationResponse> {
+    return this.http.put<ProgramCreationResponse>(
+      `${API_ENDPOINTS.updateProgram}?programId=${id}`,
+      request
     );
   }
-
-
 }

@@ -44,6 +44,9 @@ export const API_ENDPOINTS = {
   programs:
     `${environment.apiUrl}/programs`,
 
+  updateProgram:
+    `${environment.apiUrl}/user-programs/update`,
+
   allPrograms:
     `${environment.apiUrl}/programs/all`,
 

@@ -34,40 +34,135 @@ export class CoachProgramComponent implements OnInit {
   }
 
   private loadCoachPrograms(): void {
-    this.programService.getProgramsForLoggedInCoach().subscribe({
-      next: (response) => {
 
-        if (response.status === 'success' && response.data?.length) {
+    this.programService
+      .getProgramsForLoggedInCoach()
+      .subscribe({
 
-          this.programs = response.data;
+        next: (response) => {
 
-          this.totalPages = Math.ceil(
-            this.programs.length / this.itemsPerPage
+          console.log(
+            'Coach program response:',
+            response
           );
 
-          this.showProgramsList = true;
-          this.message = '';
+          if (
+            response.status === 'success' &&
+            response.data?.length
+          ) {
 
-        } else {
+            /**
+             * Backend:
+             *
+             * programId
+             *
+             * Frontend Program:
+             *
+             * id
+             *
+             * Ezért itt átalakítjuk a backend
+             * response-t a frontend modellre.
+             */
+            this.programs = response.data.map(
+              (program: any): Program => ({
+
+                id:
+                program.programId,
+
+                programName:
+                program.programName,
+
+                programDescription:
+                program.programDescription,
+
+                name:
+                program.name,
+
+                description:
+                program.description,
+
+                coachId:
+                program.coachId,
+
+                startDate:
+                program.startDate,
+
+                endDate:
+                program.endDate,
+
+                durationDays:
+                program.durationDays,
+
+                difficultyLevel:
+                program.difficultyLevel,
+
+                workouts:
+                program.workouts
+
+              })
+            );
+
+
+            console.log(
+              'Programok frontend modellként:',
+              this.programs
+            );
+
+            console.log(
+              'Első program:',
+              this.programs[0]
+            );
+
+            console.log(
+              'Első program ID:',
+              this.programs[0]?.id
+            );
+
+
+            this.totalPages = Math.ceil(
+              this.programs.length /
+              this.itemsPerPage
+            );
+
+            this.showProgramsList = true;
+            this.message = '';
+
+          } else {
+
+            this.programs = [];
+            this.totalPages = 1;
+            this.showProgramsList = false;
+
+            this.message =
+              'Nincsenek programok a coachhoz.';
+          }
+
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Hiba a coach programok betöltésekor:',
+            error
+          );
+
           this.programs = [];
           this.totalPages = 1;
           this.showProgramsList = false;
-          this.message = 'Nincsenek programok a coachhoz.';
-        }
-      },
 
-      error: () => {
-        this.programs = [];
-        this.totalPages = 1;
-        this.showProgramsList = false;
-        this.message = 'Nem sikerült lekérni a programokat.';
-      }
-    });
+          this.message =
+            'Nem sikerült lekérni a programokat.';
+        }
+
+      });
   }
 
+
   get pagedPrograms(): Program[] {
+
     const startIndex =
-      (this.currentPage - 1) * this.itemsPerPage;
+      (this.currentPage - 1) *
+      this.itemsPerPage;
 
     return this.programs.slice(
       startIndex,
@@ -75,23 +170,46 @@ export class CoachProgramComponent implements OnInit {
     );
   }
 
+
   nextPage(): void {
-    if (this.currentPage < this.totalPages) {
+
+    if (
+      this.currentPage <
+      this.totalPages
+    ) {
+
       this.currentPage++;
     }
   }
 
+
   prevPage(): void {
+
     if (this.currentPage > 1) {
+
       this.currentPage--;
     }
   }
 
+
   createNewProgram(): void {
-    this.router.navigate(['/coach/programs/new']).catch(() => {
-      this.message = USER_MESSAGES.programClickError;
-    });
+
+    this.router
+      .navigate([
+        '/coach/programs/new'
+      ])
+      .catch((error) => {
+
+        console.error(
+          'Hiba az új program oldal megnyitásakor:',
+          error
+        );
+
+        this.message =
+          USER_MESSAGES.programClickError;
+      });
   }
+
 
   editProgram(
     programId: number | undefined,
@@ -100,21 +218,80 @@ export class CoachProgramComponent implements OnInit {
 
     event.stopPropagation();
 
-    if (!programId) {
-      this.message = USER_MESSAGES.programClickError;
+    console.log(
+      'Szerkesztés gomb megnyomva. programId =',
+      programId
+    );
+
+
+    if (
+      programId === undefined ||
+      programId === null ||
+      programId <= 0
+    ) {
+
+      console.error(
+        'Érvénytelen program ID:',
+        programId
+      );
+
+      this.message =
+        USER_MESSAGES.programClickError;
+
       return;
     }
 
+
+    /**
+     * Meglévő program szerkesztése.
+     *
+     * A program ID query paraméterként
+     * kerül a Program Builderhez.
+     *
+     * Példa:
+     *
+     * /coach/program-builder?programId=205
+     */
     this.router
-      .navigate(['/coach/programs', programId, 'edit'])
-      .catch(() => {
-        this.message = USER_MESSAGES.programClickError;
+      .navigate(
+        ['/coach/program-builder'],
+        {
+          queryParams: {
+            programId: programId
+          }
+        }
+      )
+      .then((success) => {
+
+        console.log(
+          'Program Builder navigáció eredménye:',
+          success
+        );
+
+      })
+      .catch((error) => {
+
+        console.error(
+          'Hiba a Program Builder megnyitásakor:',
+          error
+        );
+
+        this.message =
+          USER_MESSAGES.programClickError;
       });
   }
 
-  goToWorkouts(programId: number | undefined): void {
 
-    if (!programId) {
+  goToWorkouts(
+    programId: number | undefined
+  ): void {
+
+    if (
+      programId === undefined ||
+      programId === null ||
+      programId <= 0
+    ) {
+
       return;
     }
 
@@ -124,4 +301,5 @@ export class CoachProgramComponent implements OnInit {
       'workouts'
     ]);
   }
+
 }

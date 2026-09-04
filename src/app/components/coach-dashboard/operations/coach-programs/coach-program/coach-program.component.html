@@ -6,11 +6,15 @@
 
 <ng-container *ngIf="showProgramsList; else noPrograms">
 
-  <div *ngIf="programs.length > 0; else noPrograms"
-       class="programs-grid">
+  <div
+    *ngIf="programs.length > 0; else noPrograms"
+    class="programs-grid"
+  >
 
-    <div *ngFor="let program of pagedPrograms"
-         class="program-card">
+    <div
+      *ngFor="let program of pagedPrograms"
+      class="program-card"
+    >
 
       <div class="program-image">
         <span class="program-emoji">💪</span>
@@ -27,24 +31,39 @@
         </div>
 
         <div class="program-progress">
+
           <div class="program-progress-label">
-            <span>Napok:</span>
+
+            <span>
+              Napok:
+            </span>
+
             <span>
               {{ program.durationDays }} / {{ program.durationDays }}
             </span>
+
           </div>
 
           <div class="program-progress-bar">
+
             <div
               class="program-progress-fill"
               [style.width.%]="100">
             </div>
+
           </div>
+
         </div>
 
-        <!-- Workoutok -->
-        <div class="program-workouts"
-             *ngIf="program.workouts?.length">
+
+        <!-- ================================================== -->
+        <!-- WORKOUTOK -->
+        <!-- ================================================== -->
+
+        <div
+          class="program-workouts"
+          *ngIf="program.workouts?.length"
+        >
 
           <div class="workouts-title">
             Workoutok
@@ -52,7 +71,8 @@
 
           <div
             *ngFor="let workout of program.workouts"
-            class="workout-item">
+            class="workout-item"
+          >
 
             <div class="workout-name">
               Workout #{{ workout.workoutId }}
@@ -60,7 +80,8 @@
 
             <div
               *ngIf="workout.exercises?.length"
-              class="workout-exercises">
+              class="workout-exercises"
+            >
 
               <span>
                 {{ workout.exercises?.length }} exercise
@@ -72,17 +93,32 @@
 
         </div>
 
+
+        <!-- ================================================== -->
+        <!-- NINCS WORKOUT -->
+        <!-- ================================================== -->
+
         <div
           *ngIf="!program.workouts?.length"
-          class="no-workouts">
+          class="no-workouts"
+        >
           Nincs workout hozzárendelve.
         </div>
 
+
+        <!-- ================================================== -->
+        <!-- PROGRAM SZERKESZTÉSE -->
+        <!-- ================================================== -->
+
         <div class="program-edit">
+
           <button
-            (click)="program.id && editProgram(program.id, $event)">
+            type="button"
+            (click)="editProgram(program.id, $event)"
+          >
             ✏️ Szerkesztés
           </button>
+
         </div>
 
       </div>
@@ -91,11 +127,18 @@
 
   </div>
 
+
+  <!-- ====================================================== -->
+  <!-- LAPOZÁS -->
+  <!-- ====================================================== -->
+
   <div class="pagination-controls">
 
     <button
+      type="button"
       (click)="prevPage()"
-      [disabled]="currentPage === 1">
+      [disabled]="currentPage === 1"
+    >
       ◀ Előző
     </button>
 
@@ -104,8 +147,10 @@
     </span>
 
     <button
+      type="button"
       (click)="nextPage()"
-      [disabled]="currentPage === totalPages">
+      [disabled]="currentPage === totalPages"
+    >
       Következő ▶
     </button>
 
@@ -113,15 +158,29 @@
 
 </ng-container>
 
+
+<!-- ====================================================== -->
+<!-- NINCS PROGRAM -->
+<!-- ====================================================== -->
+
 <ng-template #noPrograms>
+
   <div class="no-programs">
     Nincsenek programok.
   </div>
+
 </ng-template>
 
+
+<!-- ====================================================== -->
+<!-- ÚJ PROGRAM -->
+<!-- ====================================================== -->
+
 <button
+  type="button"
   class="floating-action-button"
   (click)="createNewProgram()"
-  title="Új program létrehozása">
+  title="Új program létrehozása"
+>
   ➕
 </button>
