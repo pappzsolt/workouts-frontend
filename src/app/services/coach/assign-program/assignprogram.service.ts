@@ -29,6 +29,18 @@ export class AssignProgramService {
     );
   }
 
+  /**
+   * Lekéri, hogy az adott program melyik userhez van rendelve.
+   */
+  getAssignedUserId(
+    programId: number
+  ): Observable<ApiResponse<number | null>> {
+
+    return this.http.get<ApiResponse<number | null>>(
+      `${API_ENDPOINTS.programs}/${programId}/assigned-user`
+    );
+  }
+
   assignProgramToUser(
     userId: number,
     programId: number

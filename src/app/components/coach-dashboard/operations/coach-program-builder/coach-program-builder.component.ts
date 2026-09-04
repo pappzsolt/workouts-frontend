@@ -342,13 +342,52 @@ export class CoachProgramBuilderComponent implements OnInit {
               }
             );
 
+            // ======================================================
+            // PROGRAMHOZ RENDELT USER BETÖLTÉSE
+            // ======================================================
+
+            this.assignProgramService
+              .getAssignedUserId(this.programId!)
+              .subscribe({
+
+                next: (userResponse) => {
+
+                  console.log(
+                    'Programhoz rendelt user:',
+                    userResponse
+                  );
+
+                  this.selectedUserId =
+                    userResponse.data ?? undefined;
+
+                  console.log(
+                    'selectedUserId:',
+                    this.selectedUserId
+                  );
+                },
+
+                error: (error: any) => {
+
+                  console.error(
+                    'Hiba a programhoz rendelt user betöltésekor:',
+                    error
+                  );
+
+                  this.selectedUserId =
+                    undefined;
+                }
+
+              });
+
           } else {
 
             console.error(
               'A program nem tölthető be:',
               response
             );
+
           }
+
         },
 
         error: (error: any) => {
@@ -359,6 +398,7 @@ export class CoachProgramBuilderComponent implements OnInit {
           );
 
         }
+
       });
   }
 
