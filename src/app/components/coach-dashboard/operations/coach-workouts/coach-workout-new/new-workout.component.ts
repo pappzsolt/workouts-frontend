@@ -93,6 +93,14 @@ export class NewWorkoutComponent implements OnInit {
 
         next: (res) => {
 
+          console.log(
+            'Workout létrehozás válasz:',
+            res
+          );
+          console.log(
+            'Workout response.data:',
+            res.data
+          );
           this.message =
             'Workout létrehozva!';
 
@@ -124,18 +132,50 @@ export class NewWorkoutComponent implements OnInit {
             programId
           ) {
 
+            /**
+             * A WorkoutResponse modell alapján
+             * az új workout azonosítója:
+             *
+             * res.data.id
+             */
+            const workoutId =
+              res.data?.id;
+
+
             console.log(
               'Új workout létrehozva.',
-              'Visszatérés a Program Builderbe.',
+              'Workout ID:',
+              workoutId,
               'Program ID:',
               programId
             );
+
+
+            if (
+              workoutId === undefined ||
+              workoutId === null
+            ) {
+
+              console.error(
+                'A workout létrejött, de a backend válaszában nincs workout ID.',
+                res
+              );
+
+              return;
+            }
+
+
+            console.log(
+              'Visszatérés a Program Builderbe az új workout ID-jával.'
+            );
+
 
             this.router.navigate(
               ['/coach/program-builder'],
               {
                 queryParams: {
-                  programId: programId
+                  programId: programId,
+                  newWorkoutId: workoutId
                 }
               }
             );

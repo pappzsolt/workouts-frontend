@@ -25,6 +25,7 @@
     >
 
       <div class="exercise-header">
+
         <h2 class="exercise-name">
           {{ ex.name }}
         </h2>
@@ -32,10 +33,13 @@
         <input
           type="checkbox"
           [checked]="isExerciseSelected(ex)"
+          [disabled]="lockSelectedExercises"
           (change)="onCheckboxChange(ex, $event)"
           class="exercise-checkbox"
         />
+
       </div>
+
 
       <p
         *ngIf="ex.description"
@@ -43,6 +47,7 @@
       >
         {{ ex.description }}
       </p>
+
 
       <div class="exercise-details">
 
@@ -68,31 +73,41 @@
         </span>
 
         <span
-          *ngIf="ex.sets !== undefined && ex.repetitions !== undefined"
+          *ngIf="
+            ex.sets !== undefined &&
+            ex.repetitions !== undefined
+          "
           class="exercise-detail"
         >
-          Sorozat/Reps: {{ ex.sets }}x{{ ex.repetitions }}
+          Sorozat/Reps:
+          {{ ex.sets }}x{{ ex.repetitions }}
         </span>
 
         <span
           *ngIf="ex.duration_minutes"
           class="exercise-detail"
         >
-          Időtartam: {{ ex.duration_minutes }} perc
+          Időtartam:
+          {{ ex.duration_minutes }} perc
         </span>
 
         <span
           *ngIf="ex.intensity_level"
           class="exercise-detail"
         >
-          Intenzitás: {{ ex.intensity_level }}
+          Intenzitás:
+          {{ ex.intensity_level }}
         </span>
 
       </div>
 
     </div>
 
-    <!-- Lapozó -->
+
+    <!-- ====================================================== -->
+    <!-- LAPOZÓ -->
+    <!-- ====================================================== -->
+
     <div class="exercise-pagination">
 
       <button
@@ -104,7 +119,10 @@
       </button>
 
       <span class="exercise-page-info">
-        Oldal {{ exercisePage }} / {{ totalExercisePages }}
+        Oldal
+        {{ exercisePage }}
+        /
+        {{ totalExercisePages }}
       </span>
 
       <button
