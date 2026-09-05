@@ -1,6 +1,14 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import {
   UserNameIdService,
   UserNameId
@@ -9,7 +17,10 @@ import {
 @Component({
   selector: 'app-user-select',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule
+  ],
   template: `
     <label
       for="userSelect"
@@ -22,8 +33,10 @@ import {
       id="userSelect"
       [(ngModel)]="selectedUserId"
       (ngModelChange)="onChange($event)"
+      [disabled]="disabled"
       class="user-select-control"
     >
+
       <option [ngValue]="undefined">
         -- Válassz felhasználót --
       </option>
@@ -34,15 +47,23 @@ import {
       >
         {{ u.username }}
       </option>
+
     </select>
   `,
-  styleUrls: ['./user-select.component.css']
+  styleUrls: [
+    './user-select.component.css'
+  ]
 })
-export class UserSelectComponent implements OnInit {
+export class UserSelectComponent
+  implements OnInit {
 
   users: UserNameId[] = [];
 
-  @Input() selectedUserId?: number;
+  @Input()
+  selectedUserId?: number;
+
+  @Input()
+  disabled = false;
 
   @Output()
   selectedUserIdChange =
@@ -58,29 +79,32 @@ export class UserSelectComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.userService.getAllUsers().subscribe({
+    this.userService
+      .getAllUsers()
+      .subscribe({
 
-      next: users => {
-        this.users = users;
-      },
+        next: users => {
+          this.users = users;
+        },
 
-      error: err => {
-        console.error(
-          'Hiba a felhasználók lekérésekor:',
-          err
-        );
-      }
+        error: err => {
+          console.error(
+            'Hiba a felhasználók lekérésekor:',
+            err
+          );
+        }
 
-    });
+      });
   }
 
   onChange(id?: number): void {
 
     this.selectedUserIdChange.emit(id);
 
-    const user = this.users.find(
-      u => u.id === id
-    );
+    const user =
+      this.users.find(
+        u => u.id === id
+      );
 
     if (user) {
       this.userSelected.emit(user);

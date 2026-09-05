@@ -774,7 +774,8 @@
       <div class="user-select-wrapper">
 
         <app-user-select
-          [(selectedUserId)]="selectedUserId">
+          [(selectedUserId)]="selectedUserId"
+          [disabled]="programId !== null">
         </app-user-select>
 
       </div>

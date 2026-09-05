@@ -4,12 +4,15 @@
 
 .workouts-container {
   width: min(1200px, calc(100% - 32px));
+
   margin: 2rem auto;
+
   padding: 1.5rem;
 
   box-sizing: border-box;
 
   background: #ffffff;
+
   border-radius: 0.75rem;
 
   box-shadow:
@@ -24,7 +27,9 @@
 .message-success,
 .error-message {
   width: min(900px, 100%);
+
   margin: 0 auto 1rem;
+
   padding: 0.75rem 1rem;
 
   box-sizing: border-box;
@@ -38,13 +43,17 @@
 
 .message-success {
   color: #15803d;
+
   background: #dcfce7;
+
   border: 1px solid #bbf7d0;
 }
 
 .error-message {
   color: #dc2626;
+
   background: #fee2e2;
+
   border: 1px solid #fecaca;
 }
 
@@ -59,9 +68,149 @@
   text-align: center;
 
   font-size: 1.6rem;
+
   font-weight: 700;
 
   color: #1f2937;
+}
+
+
+/* ============================================================
+   KERESÉS ÉS RENDEZÉS
+   ============================================================ */
+
+.workout-controls {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  display: flex;
+
+  align-items: flex-end;
+
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  margin: 0 0 1.25rem;
+
+  padding: 1rem;
+
+  background: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 0.75rem;
+
+  box-shadow:
+    0 2px 8px rgb(0 0 0 / 5%);
+}
+
+
+/* ============================================================
+   KERESÉS
+   ============================================================ */
+
+.workout-search {
+  flex: 1;
+
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.4rem;
+}
+
+.workout-search-label {
+  font-size: 0.8rem;
+
+  font-weight: 600;
+
+  color: #4b5563;
+}
+
+.workout-search-input {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  min-height: 2.5rem;
+
+  padding: 0.55rem 0.75rem;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 0.5rem;
+
+  background: #ffffff;
+
+  color: #1f2937;
+
+  font-size: 0.9rem;
+
+  outline: none;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.workout-search-input:focus {
+  border-color: #2563eb;
+
+  box-shadow:
+    0 0 0 3px rgb(37 99 235 / 12%);
+}
+
+.workout-search-input::placeholder {
+  color: #9ca3af;
+}
+
+
+/* ============================================================
+   RENDEZÉS
+   ============================================================ */
+
+.workout-sort-button {
+  min-height: 2.5rem;
+
+  padding: 0.55rem 0.9rem;
+
+  border: none;
+
+  border-radius: 0.5rem;
+
+  background: #2563eb;
+
+  color: #ffffff;
+
+  font-size: 0.85rem;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.workout-sort-button:hover {
+  background: #1d4ed8;
+
+  transform: translateY(-1px);
+}
+
+.sort-icon {
+  margin-left: 0.35rem;
+
+  font-size: 1rem;
+
+  font-weight: 700;
 }
 
 
@@ -75,7 +224,10 @@
   display: grid;
 
   grid-template-columns:
-    repeat(auto-fit, minmax(280px, 1fr));
+    repeat(
+      auto-fit,
+      minmax(280px, 1fr)
+    );
 
   gap: 1.25rem;
 
@@ -93,11 +245,13 @@
   min-width: 0;
 
   display: flex;
+
   flex-direction: column;
 
   background: #ffffff;
 
   border: 1px solid #e5e7eb;
+
   border-radius: 0.75rem;
 
   overflow: hidden;
@@ -124,7 +278,9 @@
 
 .workout-image {
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
   height: 110px;
@@ -145,6 +301,7 @@
 
 .workout-content {
   display: flex;
+
   flex-direction: column;
 
   min-width: 0;
@@ -156,6 +313,7 @@
   margin: 0 0 0.5rem;
 
   font-size: 1.1rem;
+
   font-weight: 700;
 
   color: #1f2937;
@@ -182,7 +340,10 @@
   display: grid;
 
   grid-template-columns:
-    repeat(2, minmax(0, 1fr));
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
 
   gap: 0.75rem;
 
@@ -191,6 +352,7 @@
 
 .workout-meta-item {
   display: flex;
+
   flex-direction: column;
 
   gap: 0.2rem;
@@ -200,6 +362,7 @@
   background: #f8fafc;
 
   border: 1px solid #e5e7eb;
+
   border-radius: 0.5rem;
 }
 
@@ -211,6 +374,7 @@
 
 .workout-meta-value {
   font-size: 0.95rem;
+
   font-weight: 600;
 
   color: #1f2937;
@@ -244,9 +408,11 @@
 
 .workout-edit {
   display: flex;
+
   justify-content: flex-end;
 
   margin-top: auto;
+
   padding-top: 1rem;
 }
 
@@ -261,9 +427,11 @@
   border-radius: 0.5rem;
 
   background: #2563eb;
+
   color: #ffffff;
 
   font-size: 0.85rem;
+
   font-weight: 600;
 
   cursor: pointer;
@@ -287,7 +455,9 @@
 
 .pagination-controls {
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
   gap: 1rem;
@@ -310,14 +480,17 @@
   border-radius: 0.5rem;
 
   background: #2563eb;
+
   color: #ffffff;
 
   font-size: 0.85rem;
+
   font-weight: 600;
 
   cursor: pointer;
 
-  transition: background-color 0.2s ease;
+  transition:
+    background-color 0.2s ease;
 }
 
 .pagination-button:hover:not(:disabled),
@@ -338,6 +511,7 @@
   text-align: center;
 
   font-size: 0.9rem;
+
   font-weight: 600;
 
   color: #374151;
@@ -349,7 +523,10 @@
    ============================================================ */
 
 .no-workouts {
-  width: min(600px, calc(100% - 2rem));
+  width: min(
+    600px,
+    calc(100% - 2rem)
+  );
 
   margin: 2rem auto;
 
@@ -377,19 +554,25 @@
   position: fixed;
 
   right: 1.5rem;
+
   bottom: 1.5rem;
 
   width: 3.5rem;
+
   height: 3.5rem;
 
   display: flex;
+
   align-items: center;
+
   justify-content: center;
 
   border: none;
+
   border-radius: 50%;
 
   background: #2563eb;
+
   color: #ffffff;
 
   font-size: 1.4rem;
@@ -425,7 +608,10 @@
 
   .workouts-grid {
     grid-template-columns:
-      repeat(2, minmax(0, 1fr));
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
   }
 
 }
@@ -445,11 +631,29 @@
     padding: 1rem;
   }
 
+
   .workouts-title {
     font-size: 1.35rem;
 
     margin-bottom: 1rem;
   }
+
+
+  .workout-controls {
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 0.75rem;
+
+    padding: 0.9rem;
+  }
+
+
+  .workout-sort-button {
+    width: 100%;
+  }
+
 
   .workouts-grid {
     grid-template-columns: 1fr;
@@ -459,29 +663,36 @@
     padding: 0;
   }
 
+
   .workout-card {
     width: 100%;
   }
+
 
   .workout-image {
     height: 90px;
   }
 
+
   .workout-emoji {
     font-size: 2.75rem;
   }
+
 
   .workout-content {
     padding: 0.9rem;
   }
 
+
   .workout-name {
     font-size: 1rem;
   }
 
+
   .workout-description {
     font-size: 0.9rem;
   }
+
 
   .workout-meta {
     grid-template-columns:
@@ -490,9 +701,11 @@
     gap: 0.5rem;
   }
 
+
   .workout-meta-item {
     padding: 0.55rem;
   }
+
 
   .pagination-controls {
     gap: 0.5rem;
@@ -500,11 +713,13 @@
     margin: 1.25rem 0;
   }
 
+
   .pagination-info {
     order: -1;
 
     width: 100%;
   }
+
 
   .pagination-button,
   .pagination-controls button {
@@ -513,11 +728,14 @@
     min-width: 110px;
   }
 
+
   .floating-action-button {
     right: 1rem;
+
     bottom: 1rem;
 
     width: 3.25rem;
+
     height: 3.25rem;
   }
 
@@ -534,9 +752,11 @@
     grid-template-columns: 1fr;
   }
 
+
   .pagination-controls {
     flex-direction: column;
   }
+
 
   .pagination-button,
   .pagination-controls button {

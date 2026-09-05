@@ -26,6 +26,59 @@
 
 
   <!-- ======================================================
+       KERESÉS ÉS RENDEZÉS
+       ====================================================== -->
+
+  <div class="workout-controls">
+
+    <!-- ====================================================
+         KERESÉS
+         ==================================================== -->
+
+    <div class="workout-search">
+
+      <label
+        for="workoutSearch"
+        class="workout-search-label">
+
+        Workout keresése
+
+      </label>
+
+      <input
+        id="workoutSearch"
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
+        class="workout-search-input"
+        placeholder="Workout neve..."
+        autocomplete="off"
+      />
+
+    </div>
+
+
+    <!-- ====================================================
+         RENDEZÉS
+         ==================================================== -->
+
+    <button
+      type="button"
+      class="workout-sort-button"
+      (click)="toggleSort()">
+
+      Workout neve
+
+      <span class="sort-icon">
+        {{ sortDirection === 'asc' ? '↑' : '↓' }}
+      </span>
+
+    </button>
+
+  </div>
+
+
+  <!-- ======================================================
        ÚJ EDZÉS FORM
        ====================================================== -->
 
@@ -38,7 +91,11 @@
        EDZÉSEK
        ====================================================== -->
 
-  <ng-container *ngIf="workouts.length > 0; else noWorkouts">
+  <ng-container
+    *ngIf="
+      filteredWorkouts.length > 0;
+      else noWorkouts
+    ">
 
     <div class="workouts-grid">
 
@@ -66,7 +123,8 @@
 
         <div class="workout-content">
 
-          <!-- EDZÉS NEVE -->
+
+          <!-- WORKOUT NÉV -->
 
           <h3 class="workout-name">
             {{ w.workoutName }}
@@ -85,10 +143,11 @@
 
 
           <!-- ==================================================
-               EDZÉS ADATOK
+               WORKOUT ADATOK
                ================================================== -->
 
           <div class="workout-meta">
+
 
             <!-- IDŐTARTAM -->
 
@@ -179,7 +238,9 @@
 
 
       <span class="pagination-info">
+
         {{ currentPage }} / {{ totalPages }}
+
       </span>
 
 
@@ -199,13 +260,30 @@
 
 
   <!-- ======================================================
-       NINCS EDZÉS
+       NINCS EDZÉS / NINCS TALÁLAT
        ====================================================== -->
 
   <ng-template #noWorkouts>
 
     <div class="no-workouts">
-      Nincsenek edzések.
+
+      <span
+        *ngIf="
+          searchTerm;
+          else noWorkoutsAtAll
+        ">
+
+        Nincs a keresésnek megfelelő workout.
+
+      </span>
+
+
+      <ng-template #noWorkoutsAtAll>
+
+        Nincsenek edzések.
+
+      </ng-template>
+
     </div>
 
   </ng-template>
