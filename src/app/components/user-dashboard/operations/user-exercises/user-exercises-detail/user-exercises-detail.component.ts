@@ -23,6 +23,7 @@ export class UserExerciseDetailComponent implements OnInit {
   workoutExercise?: UserWorkoutDetailDto['exercises'][number];
 
   workoutId!: number;
+  programId!: number;
 
   constructor(
     private route: ActivatedRoute,
@@ -39,60 +40,70 @@ export class UserExerciseDetailComponent implements OnInit {
       this.route.snapshot.paramMap.get('exerciseId')
     );
 
-    this.exercisesService.getWorkoutExercises(this.workoutId).subscribe({
+    const navState = history.state;
 
-      next: workout => {
+    this.programId =
+      Number(navState['programId']);
 
-        this.workout = workout;
+    this.exercisesService
+      .getWorkoutExercises(
+        this.programId,
+        this.workoutId
+      )
+      .subscribe({
 
-        if (!workout?.exercises || workout.exercises.length === 0) {
+        next: workout => {
 
-          console.error(
-            'Nincs exercise a workout-ban'
+          this.workout = workout;
+
+          if (!workout?.exercises || workout.exercises.length === 0) {
+
+            console.error(
+              'Nincs exercise a workout-ban'
+            );
+
+            return;
+          }
+
+          const found = workout.exercises.find(
+            we => we.exercise.id === exerciseId
           );
 
-          return;
-        }
+          if (!found) {
 
-        const found = workout.exercises.find(
-          we => we.exercise.id === exerciseId
-        );
+            console.error(
+              'Exercise nem található a workout-ban:',
+              exerciseId
+            );
 
-        if (!found) {
+            return;
+          }
 
-          console.error(
-            'Exercise nem található a workout-ban:',
-            exerciseId
+          this.workoutExercise = found;
+
+          // Az exercise done állapotának kiszámítása
+          // a saját setek completed állapotából.
+          this.updateExerciseDone();
+
+          console.log(
+            'Talált workoutExercise:',
+            this.workoutExercise
           );
 
-          return;
+          console.log(
+            'User workout exercise sets:',
+            this.workoutExercise.userWorkoutExerciseSets
+          );
+        },
+
+        error: err => {
+
+          console.error(
+            'Hiba a workout lekérésekor:',
+            err
+          );
         }
-
-        this.workoutExercise = found;
-
-        // Az exercise done állapotának kiszámítása
-        // a saját setek completed állapotából.
-        this.updateExerciseDone();
-
-        console.log(
-          'Talált workoutExercise:',
-          this.workoutExercise
-        );
-
-        console.log(
-          'User workout exercise sets:',
-          this.workoutExercise.userWorkoutExerciseSets
-        );
-      },
-
-      error: err => {
-
-        console.error(
-          'Hiba a workout lekérésekor:',
-          err
-        );
-      }
-    });
+      });
   }
 
   /**
@@ -128,6 +139,7 @@ export class UserExerciseDetailComponent implements OnInit {
       this.workoutExercise.exercise.id;
 
     this.exercisesService.updateSetCompleted(
+      this.programId,
       this.workoutId,
       exerciseId,
       set.id,
@@ -148,6 +160,8 @@ export class UserExerciseDetailComponent implements OnInit {
         console.log(
           'Set completed állapot frissítve:',
           {
+            programId: this.programId,
+            workoutId: this.workoutId,
             setId: set.id,
             completed
           }

@@ -19,6 +19,7 @@ import {
 export class UserExercisesComponent implements OnInit {
 
   workoutId!: number;
+  programId!: number;
   workoutName!: string;
   exercises$!: Observable<WorkoutExercise[]>;
 
@@ -34,13 +35,22 @@ export class UserExercisesComponent implements OnInit {
       this.route.snapshot.paramMap.get('workoutId')
     );
 
-    // A workout neve a navigation state-ből érkezik
-    this.workoutName = history.state['workoutName'];
+    // A workout neve és a program ID a navigation state-ből érkezik
+    const navState = history.state;
+
+    this.workoutName =
+      navState['workoutName'] || 'Unknown Workout';
+
+    this.programId =
+      Number(navState['programId']);
 
     // Workout lekérése a backendről,
     // majd az exercise lista kivétele
     this.exercises$ = this.exercisesService
-      .getWorkoutExercises(this.workoutId)
+      .getWorkoutExercises(
+        this.programId,
+        this.workoutId
+      )
       .pipe(
         map((workout: WorkoutDto) => workout.exercises)
       );
@@ -51,7 +61,8 @@ export class UserExercisesComponent implements OnInit {
       ['/user/workouts', this.workoutId, 'exercises', exerciseId],
       {
         state: {
-          workoutName: this.workoutName
+          workoutName: this.workoutName,
+          programId: this.programId
         }
       }
     );

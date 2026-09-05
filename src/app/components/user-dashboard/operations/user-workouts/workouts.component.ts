@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UserWorkoutsService, Workout } from '../../../../services/user/user-workouts/user-workouts.service';
+import {
+  UserWorkoutsService,
+  Workout
+} from '../../../../services/user/user-workouts/user-workouts.service';
 import { Observable, map } from 'rxjs';
 
 @Component({
@@ -75,7 +78,8 @@ export class WorkoutsComponent implements OnInit {
       ['/user/workouts', workoutId, 'exercises'],
       {
         state: {
-          workoutName
+          workoutName,
+          programId: this.programId
         }
       }
     );

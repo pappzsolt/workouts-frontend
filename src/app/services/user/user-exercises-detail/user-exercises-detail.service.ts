@@ -13,15 +13,16 @@ export class UserExerciseDetailService {
   private readonly http = inject(HttpClient);
 
   /**
-   * Lekéri a belépett user adott workoutját
+   * Lekéri a belépett user adott programjához tartozó workoutját
    * az exercise-ekkel és azok saját setjeivel.
    */
   getWorkoutExercises(
+    programId: number,
     workoutId: number
   ): Observable<UserWorkoutDetailDto> {
 
     return this.http.get<UserWorkoutDetailDto>(
-      `${API_ENDPOINTS.exercises}/my-workout/${workoutId}`
+      `${API_ENDPOINTS.exercises}/my-workout/${programId}/${workoutId}`
     );
   }
 
@@ -29,6 +30,7 @@ export class UserExerciseDetailService {
    * Egy konkrét set completed állapotának módosítása.
    */
   updateSetCompleted(
+    programId: number,
     workoutId: number,
     exerciseId: number,
     setId: number,
@@ -38,6 +40,7 @@ export class UserExerciseDetailService {
     return this.http.patch<void>(
       `${API_ENDPOINTS.exercises}/set-completed`,
       {
+        programId,
         workoutId,
         exerciseId,
         setId,
