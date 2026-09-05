@@ -1,180 +1,1409 @@
+/* ==========================================================
+   PAGE TITLE
+   ========================================================== */
+
 .universal-form-title {
   font-size: 1.875rem;
   line-height: 2.25rem;
   font-weight: 700;
-  margin-bottom: 2rem;
+
+  margin: 0 0 2rem;
+
   text-align: center;
+
+  color: #111827;
 }
 
+
+/* ==========================================================
+   MESSAGES
+   ========================================================== */
+
 .universal-form-message {
+  width: 100%;
+  max-width: 48rem;
+
+  margin: 0 auto 1.25rem;
+
+  padding: 0.875rem 1rem;
+
+  border-radius: 0.75rem;
+
   text-align: center;
-  margin-bottom: 1rem;
-  font-weight: 500;
+
+  font-weight: 600;
+  font-size: 0.95rem;
+
+  box-sizing: border-box;
 }
 
 .universal-form-message-success {
-  color: #16a34a;
+  color: #166534;
+
+  background-color: #f0fdf4;
+
+  border: 1px solid #bbf7d0;
 }
 
 .universal-form-message-error {
-  color: #ef4444;
+  color: #991b1b;
+
+  background-color: #fef2f2;
+
+  border: 1px solid #fecaca;
 }
+
+
+/* ==========================================================
+   MAIN CARD
+   ========================================================== */
 
 .form-card {
-  background-color: #ffffff;
-  border-radius: 1rem;
-  box-shadow:
-    0 10px 15px -3px rgb(0 0 0 / 0.1),
-    0 4px 6px -4px rgb(0 0 0 / 0.1);
+  width: 100%;
+  max-width: 52rem;
+
+  margin: 0 auto;
 
   padding: 1.5rem;
-  width: 100%;
-  max-width: 48rem;
-  margin: 0 auto;
+
+  box-sizing: border-box;
+
+  background-color: #ffffff;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 1.25rem;
+
+  box-shadow:
+    0 10px 30px rgb(0 0 0 / 0.08);
+
+  overflow: hidden;
 }
+
+
+/* ==========================================================
+   FORM HEADER
+   ========================================================== */
 
 .form-header {
   display: flex;
+
   justify-content: center;
+  align-items: center;
+
   margin-bottom: 1.5rem;
+
+  padding-bottom: 1rem;
+
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .form-header-emoji {
-  font-size: 3.5rem;
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 4.5rem;
+  height: 4.5rem;
+
+  border-radius: 1.25rem;
+
+  background: linear-gradient(
+    135deg,
+    #eff6ff,
+    #dbeafe
+  );
+
+  font-size: 2.5rem;
+
+  box-shadow:
+    0 8px 20px rgb(37 99 235 / 0.12);
 }
+
+
+/* ==========================================================
+   FORM
+   ========================================================== */
 
 .universal-form {
   display: grid;
+
   grid-template-columns: 1fr;
-  gap: 1.5rem;
+
+  gap: 1.25rem;
 }
+
+
+/* ==========================================================
+   FORM GROUPS
+   ========================================================== */
 
 .universal-form-group,
 .universal-form-group-full {
   display: flex;
+
   flex-direction: column;
+
+  min-width: 0;
 }
 
 .universal-form-group-full {
   grid-column: 1 / -1;
 }
 
+
+/* ==========================================================
+   LABEL
+   ========================================================== */
+
 .universal-form-label {
   display: block;
-  font-weight: 600;
-  margin-bottom: 0.25rem;
+
+  margin-bottom: 0.5rem;
+
   color: #374151;
+
+  font-size: 0.9rem;
+  font-weight: 600;
 }
+
+
+/* ==========================================================
+   INPUT / TEXTAREA / SELECT
+   ========================================================== */
 
 .universal-form-input,
 .universal-form-textarea,
 .universal-form-select {
   width: 100%;
+
+  min-height: 2.75rem;
+
   box-sizing: border-box;
 
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
+  padding: 0.7rem 0.9rem;
 
-  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+
+  border-radius: 0.7rem;
+
+  background-color: #ffffff;
+
+  color: #111827;
 
   font-size: 1rem;
-  background-color: #ffffff;
 
   transition:
     border-color 0.2s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.universal-form-input::placeholder,
+.universal-form-textarea::placeholder {
+  color: #9ca3af;
+}
+
+.universal-form-input:hover,
+.universal-form-textarea:hover,
+.universal-form-select:hover {
+  border-color: #9ca3af;
 }
 
 .universal-form-input:focus,
 .universal-form-textarea:focus,
 .universal-form-select:focus {
   outline: none;
-  border-color: #3b82f6;
+
+  border-color: #2563eb;
 
   box-shadow:
-    0 0 0 2px rgb(59 130 246 / 0.2);
+    0 0 0 3px rgb(37 99 235 / 0.12);
 }
 
 .universal-form-textarea {
+  min-height: 7rem;
+
   resize: vertical;
 }
 
+
+/* ==========================================================
+   SELECT
+   ========================================================== */
+
+.universal-form-select {
+  cursor: pointer;
+}
+
+.universal-form-select:disabled {
+  background-color: #f3f4f6;
+
+  color: #9ca3af;
+
+  cursor: not-allowed;
+}
+
+
+/* ==========================================================
+   CHECKBOX
+   ========================================================== */
+
 .checkbox-group {
   flex-direction: row;
+
   align-items: center;
-  gap: 0.5rem;
+
+  gap: 0.6rem;
+
+  padding: 0.5rem 0;
 }
 
 .form-checkbox {
-  width: 1rem;
-  height: 1rem;
+  width: 1.15rem;
+  height: 1.15rem;
+
+  margin: 0;
+
   cursor: pointer;
+
+  accent-color: #2563eb;
 }
 
 .checkbox-label {
   margin-bottom: 0;
+
   cursor: pointer;
 }
+
+
+/* ==========================================================
+   EXERCISE SECTION
+   ========================================================== */
+
+.exercise-section {
+  grid-column: 1 / -1;
+
+  margin-top: 0.5rem;
+
+  padding: 1.25rem;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 1rem;
+
+  background:
+    linear-gradient(
+      180deg,
+      #fafafa 0%,
+      #ffffff 100%
+    );
+}
+
+
+/* ==========================================================
+   EXERCISE SECTION HEADER
+   ========================================================== */
+
+.exercise-section-header {
+  margin-bottom: 1.25rem;
+}
+
+.exercise-section-header h3 {
+  margin: 0 0 0.35rem;
+
+  color: #111827;
+
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.exercise-section-header p {
+  margin: 0;
+
+  color: #6b7280;
+
+  font-size: 0.9rem;
+
+  line-height: 1.5;
+}
+
+
+/* ==========================================================
+   EXERCISE ADD BOX
+   ========================================================== */
+
+.exercise-add-box {
+  padding: 1rem;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 1rem;
+
+  background-color: #f8fafc;
+}
+
+
+/* ==========================================================
+   EXERCISE ADD TITLE
+   ========================================================== */
+
+.exercise-add-title {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.75rem;
+
+  margin-bottom: 1rem;
+}
+
+.exercise-add-icon {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 2.5rem;
+  height: 2.5rem;
+
+  flex: 0 0 auto;
+
+  border-radius: 0.75rem;
+
+  background-color: #dbeafe;
+
+  color: #2563eb;
+
+  font-size: 1.1rem;
+}
+
+.exercise-add-title > div {
+  display: flex;
+
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+.exercise-add-title strong {
+  color: #1f2937;
+
+  font-size: 1rem;
+
+  font-weight: 700;
+}
+
+.exercise-add-title small {
+  margin-top: 0.15rem;
+
+  color: #6b7280;
+
+  font-size: 0.8rem;
+}
+
+
+/* ==========================================================
+   SEARCH WRAPPER
+   ========================================================== */
+
+.exercise-search-wrapper {
+  margin-bottom: 1rem;
+}
+
+
+/* ==========================================================
+   SEARCH INPUT
+   ========================================================== */
+
+.exercise-search-input-wrapper {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  width: 100%;
+}
+
+.exercise-search-icon {
+  position: absolute;
+
+  left: 0.9rem;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  pointer-events: none;
+
+  font-size: 1rem;
+}
+
+.exercise-search-input {
+  padding-left: 2.65rem;
+
+  padding-right: 3.1rem;
+}
+
+.exercise-search-clear {
+  position: absolute;
+
+  right: 0.45rem;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 2rem;
+  height: 2rem;
+
+  border: none;
+
+  border-radius: 0.55rem;
+
+  background-color: #2563eb;
+
+  color: #ffffff;
+
+  font-size: 0.8rem;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.18s ease,
+    transform 0.15s ease;
+}
+
+.exercise-search-clear:hover {
+  background-color: #1d4ed8;
+
+  transform: scale(1.04);
+}
+
+
+/* ==========================================================
+   EXERCISE RESULTS
+   ========================================================== */
+
+.exercise-results {
+  width: 100%;
+
+  margin-top: 0.75rem;
+}
+
+
+/* ==========================================================
+   RESULTS HEADER
+   ========================================================== */
+
+.exercise-results-header {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 0.75rem;
+
+  margin-bottom: 0.55rem;
+
+  color: #374151;
+
+  font-size: 0.85rem;
+
+  font-weight: 700;
+}
+
+.exercise-results-count {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-width: 1.8rem;
+  height: 1.8rem;
+
+  padding: 0 0.45rem;
+
+  box-sizing: border-box;
+
+  border-radius: 999px;
+
+  background-color: #dbeafe;
+
+  color: #1d4ed8;
+
+  font-size: 0.75rem;
+
+  font-weight: 700;
+}
+
+
+/* ==========================================================
+   RESULTS LIST
+   ========================================================== */
+
+.exercise-results-list {
+  display: flex;
+
+  flex-direction: column;
+
+  width: 100%;
+
+  max-height: 22rem;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  border: 1px solid #e2e8f0;
+
+  border-radius: 0.85rem;
+
+  background-color: #ffffff;
+
+  box-shadow:
+    0 4px 14px rgb(15 23 42 / 0.05);
+
+  scrollbar-width: thin;
+}
+
+
+/* ==========================================================
+   RESULT ITEM
+   ========================================================== */
+
+.exercise-result-item {
+  display: flex;
+
+  align-items: center;
+
+  width: 100%;
+
+  min-height: 3.25rem;
+
+  padding: 0.7rem 0.85rem;
+
+  box-sizing: border-box;
+
+  border: none;
+
+  border-bottom: 1px solid #f1f5f9;
+
+  background-color: #ffffff;
+
+  color: #1f2937;
+
+  text-align: left;
+
+  font-family: inherit;
+
+  font-size: 0.92rem;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.18s ease,
+    padding-left 0.18s ease;
+}
+
+.exercise-result-item:last-child {
+  border-bottom: none;
+}
+
+.exercise-result-item:hover {
+  background-color: #f8fafc;
+
+  padding-left: 1rem;
+}
+
+.exercise-result-item:focus-visible {
+  outline: none;
+
+  background-color: #eff6ff;
+
+  box-shadow:
+    inset 0 0 0 2px #93c5fd;
+}
+
+.exercise-result-item.exercise-result-selected {
+  background-color: #eff6ff;
+
+  color: #1d4ed8;
+}
+
+
+/* ==========================================================
+   RESULT ICON
+   ========================================================== */
+
+.exercise-result-icon {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  width: 2rem;
+  height: 2rem;
+
+  margin-right: 0.7rem;
+
+  border-radius: 0.6rem;
+
+  background-color: #f1f5f9;
+
+  font-size: 0.9rem;
+}
+
+.exercise-result-item:hover
+.exercise-result-icon {
+  background-color: #e0f2fe;
+}
+
+.exercise-result-item.exercise-result-selected
+.exercise-result-icon {
+  background-color: #dbeafe;
+}
+
+
+/* ==========================================================
+   RESULT NAME
+   ========================================================== */
+
+.exercise-result-name {
+  flex: 1;
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* ==========================================================
+   RESULT ACTION
+   ========================================================== */
+
+.exercise-result-action {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  width: 2rem;
+  height: 2rem;
+
+  margin-left: 0.5rem;
+
+  border-radius: 0.55rem;
+
+  background-color: #f1f5f9;
+
+  color: #64748b;
+
+  font-size: 1rem;
+
+  font-weight: 700;
+}
+
+.exercise-result-item:hover
+.exercise-result-action {
+  background-color: #dbeafe;
+
+  color: #2563eb;
+}
+
+.exercise-result-item.exercise-result-selected
+.exercise-result-action {
+  background-color: #2563eb;
+
+  color: #ffffff;
+}
+
+
+/* ==========================================================
+   SELECTED EXERCISE PREVIEW
+   ========================================================== */
+
+.selected-exercise-preview {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  margin-top: 0.9rem;
+
+  padding: 0.85rem 1rem;
+
+  border: 1px solid #bfdbfe;
+
+  border-radius: 0.9rem;
+
+  background-color: #eff6ff;
+}
+
+.selected-exercise-preview-info {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.75rem;
+
+  min-width: 0;
+
+  flex: 1;
+}
+
+.selected-exercise-preview-icon {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  width: 2.25rem;
+  height: 2.25rem;
+
+  border-radius: 0.7rem;
+
+  background-color: #2563eb;
+
+  color: #ffffff;
+
+  font-weight: 700;
+}
+
+.selected-exercise-preview-info > div {
+  display: flex;
+
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+.selected-exercise-preview-info small {
+  margin-bottom: 0.15rem;
+
+  color: #64748b;
+
+  font-size: 0.72rem;
+
+  font-weight: 600;
+
+  text-transform: uppercase;
+
+  letter-spacing: 0.04em;
+}
+
+.selected-exercise-preview-info strong {
+  overflow: hidden;
+
+  color: #1e3a8a;
+
+  font-size: 0.92rem;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* ==========================================================
+   ADD EXERCISE BUTTON
+   ========================================================== */
+
+.exercise-add-button {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 0.45rem;
+
+  min-height: 2.7rem;
+
+  padding: 0.65rem 1rem;
+
+  flex: 0 0 auto;
+
+  border: none;
+
+  border-radius: 0.7rem;
+
+  background-color: #2563eb;
+
+  color: #ffffff;
+
+  font-family: inherit;
+
+  font-size: 0.9rem;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 4px 10px rgb(37 99 235 / 0.16);
+
+  transition:
+    background-color 0.18s ease,
+    transform 0.15s ease,
+    box-shadow 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.exercise-add-button:hover:not(:disabled) {
+  background-color: #1d4ed8;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 6px 14px rgb(37 99 235 / 0.22);
+}
+
+.exercise-add-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.exercise-add-button:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+
+  box-shadow: none;
+}
+
+
+/* ==========================================================
+   EXERCISE INFO MESSAGE
+   ========================================================== */
+
+.exercise-info-message {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.6rem;
+
+  margin-top: 0.75rem;
+
+  padding: 0.85rem 1rem;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 0.75rem;
+
+  background-color: #f9fafb;
+
+  color: #6b7280;
+
+  font-size: 0.9rem;
+
+  line-height: 1.45;
+}
+
+.exercise-info-icon {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  flex: 0 0 auto;
+}
+
+
+/* ==========================================================
+   LOADING
+   ========================================================== */
+
+.exercise-loading {
+  color: #475569;
+}
+
+.exercise-loading-spinner {
+  width: 1rem;
+  height: 1rem;
+
+  flex: 0 0 auto;
+
+  border: 2px solid #dbeafe;
+
+  border-top-color: #2563eb;
+
+  border-radius: 50%;
+
+  animation:
+    exercise-spin 0.8s linear infinite;
+}
+
+@keyframes exercise-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* ==========================================================
+   CURRENT EXERCISES
+   ========================================================== */
+
+.existing-exercises {
+  margin-top: 1.5rem;
+}
+
+
+/* ==========================================================
+   CURRENT EXERCISES HEADER
+   ========================================================== */
+
+.existing-exercises-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 1rem;
+
+  margin-bottom: 0.85rem;
+}
+
+.existing-exercises-header > div {
+  min-width: 0;
+}
+
+.existing-exercises-header h4 {
+  margin: 0;
+
+  color: #111827;
+
+  font-size: 1rem;
+
+  font-weight: 700;
+}
+
+.existing-exercises-header p {
+  margin: 0.2rem 0 0;
+
+  color: #6b7280;
+
+  font-size: 0.82rem;
+
+  line-height: 1.4;
+}
+
+
+/* ==========================================================
+   EXERCISE COUNT
+   ========================================================== */
+
+.exercise-count {
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  min-width: 1.8rem;
+  height: 1.8rem;
+
+  padding: 0 0.5rem;
+
+  box-sizing: border-box;
+
+  border-radius: 999px;
+
+  background-color: #dbeafe;
+
+  color: #1d4ed8;
+
+  font-size: 0.8rem;
+
+  font-weight: 700;
+}
+
+
+/* ==========================================================
+   CURRENT EXERCISE LIST
+   ========================================================== */
+
+.existing-exercise-list {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.6rem;
+}
+
+
+/* ==========================================================
+   CURRENT EXERCISE ITEM
+   ========================================================== */
+
+.existing-exercise-item {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.75rem;
+
+  min-height: 3rem;
+
+  padding: 0.7rem 0.8rem;
+
+  box-sizing: border-box;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 0.8rem;
+
+  background-color: #ffffff;
+
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.15s ease;
+}
+
+.existing-exercise-item:hover {
+  border-color: #bfdbfe;
+
+  box-shadow:
+    0 4px 12px rgb(15 23 42 / 0.05);
+
+  transform: translateY(-1px);
+}
+
+
+/* ==========================================================
+   EXERCISE NUMBER
+   ========================================================== */
+
+.existing-exercise-number {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  width: 2rem;
+  height: 2rem;
+
+  border-radius: 0.65rem;
+
+  background-color: #eff6ff;
+
+  color: #2563eb;
+
+  font-size: 0.8rem;
+
+  font-weight: 700;
+}
+
+
+/* ==========================================================
+   EXERCISE CONTENT
+   ========================================================== */
+
+.existing-exercise-content {
+  min-width: 0;
+
+  flex: 1;
+}
+
+.existing-exercise-content strong {
+  display: block;
+
+  overflow: hidden;
+
+  color: #1f2937;
+
+  font-size: 0.95rem;
+
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* ==========================================================
+   CURRENT EXERCISE CHECK
+   ========================================================== */
+
+.existing-exercise-check {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  flex: 0 0 auto;
+
+  width: 1.8rem;
+  height: 1.8rem;
+
+  border-radius: 50%;
+
+  background-color: #dcfce7;
+
+  color: #16a34a;
+
+  font-size: 0.8rem;
+
+  font-weight: 700;
+}
+
+
+/* ==========================================================
+   EMPTY STATE
+   ========================================================== */
+
+.exercise-empty-state {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 0.35rem;
+
+  padding: 1.5rem 1rem;
+
+  border: 1px dashed #d1d5db;
+
+  border-radius: 0.9rem;
+
+  background-color: #fafafa;
+
+  text-align: center;
+
+  color: #6b7280;
+}
+
+.exercise-empty-icon {
+  margin-bottom: 0.25rem;
+
+  font-size: 1.5rem;
+}
+
+.exercise-empty-state strong {
+  color: #374151;
+
+  font-size: 0.95rem;
+}
+
+.exercise-empty-state span:last-child {
+  max-width: 28rem;
+
+  font-size: 0.82rem;
+
+  line-height: 1.45;
+}
+
+
+/* ==========================================================
+   EXERCISE ADD ROW
+   ========================================================== */
+
+.exercise-add-row {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  gap: 0.875rem;
+
+  align-items: end;
+}
+
+
+/* ==========================================================
+   EXERCISE SELECT WRAPPER
+   ========================================================== */
+
+.exercise-select-wrapper {
+  min-width: 0;
+}
+
+.exercise-select-wrapper .universal-form-label {
+  margin-bottom: 0.45rem;
+}
+
+.exercise-select-hint {
+  display: block;
+
+  margin-top: 0.4rem;
+
+  color: #64748b;
+
+  font-size: 0.75rem;
+}
+
+
+/* ==========================================================
+   EXERCISE ADD BUTTON WRAPPER
+   ========================================================== */
+
+.exercise-add-button-wrapper {
+  display: flex;
+
+  align-items: flex-end;
+}
+
+
+/* ==========================================================
+   FORM BUTTONS
+   ========================================================== */
 
 .form-buttons {
   grid-column: 1 / -1;
 
   display: flex;
+
   justify-content: center;
+
   align-items: center;
 
-  gap: 1rem;
-  margin-top: 1rem;
+  flex-wrap: wrap;
+
+  gap: 0.75rem;
+
+  margin-top: 0.5rem;
 }
+
+
+/* ==========================================================
+   PRIMARY BUTTON
+   ========================================================== */
 
 .universal-form-button,
 .cancel-button {
-  font-weight: 500;
+  min-height: 2.75rem;
 
-  padding: 0.5rem 1.5rem;
+  padding: 0.65rem 1.25rem;
 
   border: none;
-  border-radius: 0.5rem;
 
-  box-shadow:
-    0 4px 6px -1px rgb(0 0 0 / 0.1);
+  border-radius: 0.7rem;
+
+  font-family: inherit;
+
+  font-size: 0.95rem;
+
+  font-weight: 600;
 
   cursor: pointer;
 
   transition:
     background-color 0.2s ease,
-    box-shadow 0.2s ease;
+    box-shadow 0.2s ease,
+    transform 0.15s ease,
+    opacity 0.2s ease;
+
+  -webkit-tap-highlight-color: transparent;
 }
 
 .universal-form-button {
   background-color: #2563eb;
+
   color: #ffffff;
+
+  box-shadow:
+    0 4px 10px rgb(37 99 235 / 0.18);
 }
 
 .universal-form-button:hover:not(:disabled) {
   background-color: #1d4ed8;
+
+  box-shadow:
+    0 6px 15px rgb(37 99 235 / 0.22);
+
+  transform: translateY(-1px);
+}
+
+.universal-form-button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .universal-form-button:disabled {
   opacity: 0.5;
+
   cursor: not-allowed;
+
+  box-shadow: none;
 }
 
+
+/* ==========================================================
+   CANCEL BUTTON
+   ========================================================== */
+
 .cancel-button {
-  background-color: #d1d5db;
-  color: #1f2937;
+  background-color: #f3f4f6;
+
+  color: #374151;
+
+  border: 1px solid #d1d5db;
 }
 
 .cancel-button:hover {
-  background-color: #9ca3af;
+  background-color: #e5e7eb;
+
+  transform: translateY(-1px);
 }
 
-.universal-form-button:focus,
-.cancel-button:focus {
-  outline: none;
-  box-shadow:
-    0 0 0 2px rgb(59 130 246 / 0.5);
+.cancel-button:active {
+  transform: translateY(0);
 }
+
+
+/* ==========================================================
+   FOCUS
+   ========================================================== */
+
+.universal-form-button:focus-visible,
+.cancel-button:focus-visible,
+.exercise-add-button:focus-visible,
+.exercise-search-clear:focus-visible {
+  outline: none;
+
+  box-shadow:
+    0 0 0 3px rgb(59 130 246 / 0.22);
+}
+
+
+/* ==========================================================
+   TABLET / DESKTOP
+   ========================================================== */
 
 @media (min-width: 768px) {
 
@@ -182,7 +1411,272 @@
     padding: 2rem;
   }
 
+
   .universal-form {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+
+    gap: 1.5rem;
   }
+
+}
+
+
+/* ==========================================================
+   MOBILE
+   ========================================================== */
+
+@media (max-width: 767px) {
+
+  .universal-form-title {
+    font-size: 1.5rem;
+
+    line-height: 2rem;
+
+    margin-bottom: 1.25rem;
+  }
+
+
+  .form-card {
+    padding: 1rem;
+
+    border-radius: 1rem;
+  }
+
+
+  .form-header {
+    margin-bottom: 1.25rem;
+  }
+
+
+  .form-header-emoji {
+    width: 4rem;
+    height: 4rem;
+
+    font-size: 2.25rem;
+  }
+
+
+  .universal-form {
+    gap: 1rem;
+  }
+
+
+  .universal-form-label {
+    font-size: 0.85rem;
+  }
+
+
+  .universal-form-input,
+  .universal-form-textarea,
+  .universal-form-select {
+    min-height: 2.9rem;
+
+    font-size: 1rem;
+  }
+
+
+  .exercise-section {
+    padding: 1rem;
+
+    border-radius: 0.9rem;
+  }
+
+
+  .exercise-section-header h3 {
+    font-size: 1.1rem;
+  }
+
+
+  .exercise-add-box {
+    padding: 0.85rem;
+  }
+
+
+  .exercise-add-row {
+    grid-template-columns: 1fr;
+
+    gap: 0.85rem;
+  }
+
+
+  .exercise-add-button-wrapper {
+    width: 100%;
+  }
+
+
+  .exercise-add-button-wrapper
+  .exercise-add-button {
+    width: 100%;
+  }
+
+
+  .exercise-results-list {
+    max-height: 18rem;
+  }
+
+
+  .exercise-result-item {
+    min-height: 3.5rem;
+
+    padding: 0.8rem;
+  }
+
+
+  .exercise-result-item:hover {
+    padding-left: 0.85rem;
+  }
+
+
+  .exercise-result-name {
+    font-size: 0.9rem;
+  }
+
+
+  .selected-exercise-preview {
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 0.75rem;
+  }
+
+
+  .selected-exercise-preview-info {
+    width: 100%;
+  }
+
+
+  .selected-exercise-preview-info strong {
+    font-size: 0.9rem;
+  }
+
+
+  .selected-exercise-preview
+  .exercise-add-button {
+    width: 100%;
+  }
+
+
+  .existing-exercises-header {
+    align-items: flex-start;
+  }
+
+
+  .existing-exercises-header p {
+    font-size: 0.78rem;
+  }
+
+
+  .existing-exercise-item {
+    padding: 0.75rem;
+
+    gap: 0.65rem;
+  }
+
+
+  .existing-exercise-number {
+    width: 1.9rem;
+    height: 1.9rem;
+  }
+
+
+  .existing-exercise-content strong {
+    font-size: 0.9rem;
+  }
+
+
+  .form-buttons {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+
+  .form-buttons
+  .universal-form-button,
+  .form-buttons
+  .cancel-button {
+    width: 100%;
+  }
+
+}
+
+
+/* ==========================================================
+   SMALL MOBILE
+   ========================================================== */
+
+@media (max-width: 420px) {
+
+  .universal-form-title {
+    font-size: 1.35rem;
+  }
+
+
+  .form-card {
+    padding: 0.8rem;
+  }
+
+
+  .exercise-section {
+    padding: 0.8rem;
+  }
+
+
+  .exercise-add-box {
+    padding: 0.75rem;
+  }
+
+
+  .exercise-add-title {
+    gap: 0.6rem;
+  }
+
+
+  .exercise-add-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+
+  .universal-form-input,
+  .universal-form-textarea,
+  .universal-form-select {
+    padding-left: 0.75rem;
+
+    padding-right: 0.75rem;
+  }
+
+
+  .exercise-result-item {
+    padding: 0.75rem;
+  }
+
+
+  .exercise-result-icon {
+    width: 1.8rem;
+    height: 1.8rem;
+
+    margin-right: 0.6rem;
+
+    font-size: 0.85rem;
+  }
+
+
+  .exercise-result-action {
+    width: 1.8rem;
+    height: 1.8rem;
+
+    margin-left: 0.4rem;
+  }
+
+
+  .exercise-result-name {
+    font-size: 0.85rem;
+  }
+
 }

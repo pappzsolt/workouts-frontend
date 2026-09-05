@@ -2,7 +2,11 @@
   🏋️ Edit Workout
 </h2>
 
-<!-- Üzenet -->
+
+<!-- ====================================================== -->
+<!-- ÜZENET -->
+<!-- ====================================================== -->
+
 <div
   *ngIf="message"
   class="universal-form-message"
@@ -14,12 +18,19 @@
   {{ message }}
 </div>
 
-<!-- Workout Edit form -->
+
+<!-- ====================================================== -->
+<!-- WORKOUT EDIT FORM -->
+<!-- ====================================================== -->
+
 <div class="form-card">
 
   <div class="form-header">
-    <span class="form-header-emoji">💪</span>
+    <span class="form-header-emoji">
+      💪
+    </span>
   </div>
+
 
   <form
     (ngSubmit)="saveWorkout()"
@@ -27,8 +38,12 @@
     class="universal-form"
   >
 
-    <!-- Name -->
+    <!-- ================================================== -->
+    <!-- NAME -->
+    <!-- ================================================== -->
+
     <div class="universal-form-group-full">
+
       <label
         for="workoutName"
         class="universal-form-label"
@@ -44,10 +59,16 @@
         required
         class="universal-form-input"
       />
+
     </div>
 
-    <!-- Description -->
+
+    <!-- ================================================== -->
+    <!-- DESCRIPTION -->
+    <!-- ================================================== -->
+
     <div class="universal-form-group-full">
+
       <label
         for="description"
         class="universal-form-label"
@@ -62,10 +83,16 @@
         [(ngModel)]="workout.description"
         class="universal-form-textarea"
       ></textarea>
+
     </div>
 
-    <!-- Date -->
+
+    <!-- ================================================== -->
+    <!-- DATE -->
+    <!-- ================================================== -->
+
     <div class="universal-form-group">
+
       <label
         for="workoutDate"
         class="universal-form-label"
@@ -81,10 +108,16 @@
         required
         class="universal-form-input"
       />
+
     </div>
 
-    <!-- Duration -->
+
+    <!-- ================================================== -->
+    <!-- DURATION -->
+    <!-- ================================================== -->
+
     <div class="universal-form-group">
+
       <label
         for="durationMinutes"
         class="universal-form-label"
@@ -100,10 +133,16 @@
         min="0"
         class="universal-form-input"
       />
+
     </div>
 
-    <!-- Intensity -->
+
+    <!-- ================================================== -->
+    <!-- INTENSITY -->
+    <!-- ================================================== -->
+
     <div class="universal-form-group">
+
       <label
         for="intensityLevel"
         class="universal-form-label"
@@ -117,15 +156,34 @@
         [(ngModel)]="workout.intensityLevel"
         class="universal-form-select"
       >
-        <option value="">-- Select Intensity --</option>
-        <option value="low">Low</option>
-        <option value="moderate">Moderate</option>
-        <option value="high">High</option>
+
+        <option value="">
+          -- Select Intensity --
+        </option>
+
+        <option value="low">
+          Low
+        </option>
+
+        <option value="moderate">
+          Moderate
+        </option>
+
+        <option value="high">
+          High
+        </option>
+
       </select>
+
     </div>
 
-    <!-- Done -->
+
+    <!-- ================================================== -->
+    <!-- DONE -->
+    <!-- ================================================== -->
+
     <div class="universal-form-group checkbox-group">
+
       <input
         type="checkbox"
         name="done"
@@ -140,9 +198,427 @@
       >
         Workout Completed
       </label>
+
     </div>
 
-    <!-- Buttons -->
+
+    <!-- ================================================== -->
+    <!-- EXERCISE-EK -->
+    <!-- ================================================== -->
+
+    <div class="exercise-section">
+
+      <!-- ================================================== -->
+      <!-- HEADER -->
+      <!-- ================================================== -->
+
+      <div class="exercise-section-header">
+
+        <div>
+
+          <h3>
+            🏋️ Exercises
+          </h3>
+
+          <p>
+            Search for an exercise and add it to this workout.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================================== -->
+      <!-- EXERCISE HOZZÁADÁS -->
+      <!-- ================================================== -->
+
+      <div class="exercise-add-box">
+
+        <!-- HEADER -->
+
+        <div class="exercise-add-title">
+
+          <span class="exercise-add-icon">
+            ➕
+          </span>
+
+          <div>
+
+            <strong>
+              Add Exercise
+            </strong>
+
+            <small>
+              Search by exercise name.
+            </small>
+
+          </div>
+
+        </div>
+
+
+        <!-- ================================================== -->
+        <!-- KERESÉS -->
+        <!-- ================================================== -->
+
+        <div class="exercise-search-wrapper">
+
+          <label
+            for="exerciseSearch"
+            class="universal-form-label"
+          >
+            Search exercise
+          </label>
+
+
+          <div class="exercise-search-input-wrapper">
+
+            <span class="exercise-search-icon">
+              🔎
+            </span>
+
+
+            <input
+              id="exerciseSearch"
+              type="text"
+              name="exerciseSearchTerm"
+              [(ngModel)]="exerciseSearchTerm"
+              class="universal-form-input exercise-search-input"
+              placeholder="Search exercise..."
+              autocomplete="off"
+            />
+
+
+            <button
+              *ngIf="exerciseSearchTerm"
+              type="button"
+              class="exercise-search-clear"
+              aria-label="Clear search"
+              (click)="exerciseSearchTerm = ''; selectedExerciseId = null"
+            >
+              ✕
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- ================================================== -->
+        <!-- TALÁLATOK -->
+        <!-- ================================================== -->
+
+        <div class="exercise-results">
+
+          <!-- TALÁLATOK FEJLÉCE -->
+
+          <div
+            *ngIf="
+              !loadingExercises &&
+              availableExercises.length > 0
+            "
+            class="exercise-results-header"
+          >
+
+            <span>
+              Exercises
+            </span>
+
+            <span class="exercise-results-count">
+              {{ availableExercises.length }}
+            </span>
+
+          </div>
+
+
+          <!-- ================================================== -->
+          <!-- TALÁLATI LISTA -->
+          <!-- ================================================== -->
+
+          <div
+            *ngIf="
+              !loadingExercises &&
+              availableExercises.length > 0
+            "
+            class="exercise-results-list"
+          >
+
+            <button
+              type="button"
+              *ngFor="let exercise of availableExercises"
+              class="exercise-result-item"
+              [class.exercise-result-selected]="
+                selectedExerciseId === exercise.id
+              "
+              (click)="selectExercise(exercise.id)"
+            >
+
+              <span class="exercise-result-icon">
+                🏋️
+              </span>
+
+
+              <span class="exercise-result-name">
+                {{ exercise.name }}
+              </span>
+
+
+              <span
+                class="exercise-result-action"
+              >
+                {{
+                  selectedExerciseId === exercise.id
+                    ? '✓'
+                    : '+'
+                }}
+              </span>
+
+            </button>
+
+          </div>
+
+
+          <!-- ================================================== -->
+          <!-- LOADING -->
+          <!-- ================================================== -->
+
+          <div
+            *ngIf="loadingExercises"
+            class="exercise-info-message exercise-loading"
+          >
+
+            <span class="exercise-loading-spinner"></span>
+
+            <span>
+              Exercise-ek betöltése...
+            </span>
+
+          </div>
+
+
+          <!-- ================================================== -->
+          <!-- NINCS TALÁLAT -->
+          <!-- ================================================== -->
+
+          <div
+            *ngIf="
+              !loadingExercises &&
+              exerciseSearchTerm.trim() &&
+              availableExercises.length === 0 &&
+              exercises.length > 0
+            "
+            class="exercise-info-message"
+          >
+
+            <span class="exercise-info-icon">
+              🔎
+            </span>
+
+            <span>
+              Nincs találat erre:
+
+              <strong>
+                "{{ exerciseSearchTerm }}"
+              </strong>
+            </span>
+
+          </div>
+
+
+          <!-- ================================================== -->
+          <!-- MINDEN EXERCISE HOZZÁADVA -->
+          <!-- ================================================== -->
+
+          <div
+            *ngIf="
+              !loadingExercises &&
+              !exerciseSearchTerm.trim() &&
+              availableExercises.length === 0 &&
+              exercises.length > 0
+            "
+            class="exercise-info-message"
+          >
+
+            <span class="exercise-info-icon">
+              ✓
+            </span>
+
+            <span>
+              Minden elérhető exercise hozzá van adva
+              ehhez a workouthoz.
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <!-- ================================================== -->
+        <!-- KIVÁLASZTOTT EXERCISE -->
+        <!-- ================================================== -->
+
+        <div
+          *ngIf="selectedExerciseId !== null"
+          class="selected-exercise-preview"
+        >
+
+          <div class="selected-exercise-preview-info">
+
+            <span class="selected-exercise-preview-icon">
+              ✓
+            </span>
+
+
+            <div>
+
+              <small>
+                Selected exercise
+              </small>
+
+              <strong>
+                {{ getSelectedExerciseName() }}
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <button
+            type="button"
+            class="exercise-add-button"
+            [disabled]="
+              !selectedExerciseId ||
+              loadingExercises ||
+              addingExercise
+            "
+            (click)="addExerciseToWorkout()"
+          >
+
+            <span
+              *ngIf="!addingExercise"
+            >
+              ➕
+            </span>
+
+            <span>
+              {{
+                addingExercise
+                  ? 'Adding...'
+                  : 'Add Exercise'
+              }}
+            </span>
+
+          </button>
+
+        </div>
+
+      </div>
+
+
+      <!-- ================================================== -->
+      <!-- JELENLEGI EXERCISE-EK -->
+      <!-- ================================================== -->
+
+      <div class="existing-exercises">
+
+        <div class="existing-exercises-header">
+
+          <div>
+
+            <h4>
+              Current Exercises
+            </h4>
+
+            <p>
+              Exercises currently assigned to this workout.
+            </p>
+
+          </div>
+
+
+          <span class="exercise-count">
+            {{ workoutExercises.length }}
+          </span>
+
+        </div>
+
+
+        <!-- NINCS EXERCISE -->
+
+        <div
+          *ngIf="workoutExercises.length === 0"
+          class="exercise-empty-state"
+        >
+
+          <span class="exercise-empty-icon">
+            🏋️
+          </span>
+
+          <strong>
+            No exercises yet
+          </strong>
+
+          <span>
+            Search for an exercise above to add it.
+          </span>
+
+        </div>
+
+
+        <!-- ================================================== -->
+        <!-- EXERCISE LISTA -->
+        <!-- ================================================== -->
+
+        <div
+          *ngIf="workoutExercises.length > 0"
+          class="existing-exercise-list"
+        >
+
+          <div
+            *ngFor="
+              let workoutExercise of workoutExercises;
+              let i = index
+            "
+            class="existing-exercise-item"
+          >
+
+            <div class="existing-exercise-number">
+              {{ i + 1 }}
+            </div>
+
+
+            <div class="existing-exercise-content">
+
+              <strong>
+                {{
+                  workoutExercise.exercise?.name ||
+                  workoutExercise.name ||
+                  'Exercise'
+                }}
+              </strong>
+
+            </div>
+
+
+            <div class="existing-exercise-check">
+              ✓
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- ================================================== -->
+    <!-- BUTTONS -->
+    <!-- ================================================== -->
+
     <div class="form-buttons">
 
       <button
@@ -152,6 +628,7 @@
       >
         💾 Save
       </button>
+
 
       <button
         type="button"
@@ -164,4 +641,5 @@
     </div>
 
   </form>
+
 </div>
