@@ -786,7 +786,7 @@
 
         <app-user-select
           [(selectedUserId)]="selectedUserId"
-          [disabled]="isEditMode"
+          [disabled]="isEditMode && selectedUserId !== undefined"
         >
         </app-user-select>
 

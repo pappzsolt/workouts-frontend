@@ -353,57 +353,24 @@ export class CoachWorkoutEditComponent implements OnInit {
     }
 
 
-    this.workoutExerciseService
-      .getWorkoutExercisesByWorkoutId(
-        this.workoutId
-      )
+    this.exerciseService
+      .getWorkoutExercises(this.workoutId)
       .subscribe({
 
-        next: (res: any) => {
+        next: (workout: any) => {
 
           console.log(
             'Workout exercise-ek:',
-            res
+            workout
           );
 
 
           /**
-           * Több lehetséges backend response
-           * formátum kezelése.
+           * A backend a teljes workoutot adja vissza,
+           * benne az exercises listával.
            */
-          if (Array.isArray(res)) {
-
-            this.workoutExercises =
-              res;
-
-          } else if (
-            Array.isArray(res?.data)
-          ) {
-
-            this.workoutExercises =
-              res.data;
-
-          } else if (
-            Array.isArray(
-              res?.data?.exercises
-            )
-          ) {
-
-            this.workoutExercises =
-              res.data.exercises;
-
-          } else if (
-            Array.isArray(res?.exercises)
-          ) {
-
-            this.workoutExercises =
-              res.exercises;
-
-          } else {
-
-            this.workoutExercises = [];
-
-          }
+          this.workoutExercises =
+            workout?.exercises || [];
 
 
           console.log(
@@ -413,7 +380,7 @@ export class CoachWorkoutEditComponent implements OnInit {
 
         },
 
-        error: (error) => {
+        error: (error: any) => {
 
           console.error(
             'Hiba a workout exercise-ek betöltésekor:',
