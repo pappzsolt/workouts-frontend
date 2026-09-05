@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
@@ -9,7 +10,10 @@ import { USER_MESSAGES } from '../../../../../constants/user-messages';
 @Component({
   selector: 'app-coach-program',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    FormsModule
+  ],
   templateUrl: './coach-program.component.html',
   styleUrls: ['./coach-program.component.css']
 })
@@ -23,6 +27,12 @@ export class CoachProgramComponent implements OnInit {
   currentPage = 1;
   itemsPerPage = 4;
   totalPages = 1;
+
+  // Keresés
+  searchTerm = '';
+
+  // Rendezés
+  sortDirection: 'asc' | 'desc' = 'asc';
 
   constructor(
     private router: Router,
@@ -51,18 +61,6 @@ export class CoachProgramComponent implements OnInit {
             response.data?.length
           ) {
 
-            /**
-             * Backend:
-             *
-             * programId
-             *
-             * Frontend Program:
-             *
-             * id
-             *
-             * Ezért itt átalakítjuk a backend
-             * response-t a frontend modellre.
-             */
             this.programs = response.data.map(
               (program: any): Program => ({
 
@@ -102,7 +100,6 @@ export class CoachProgramComponent implements OnInit {
               })
             );
 
-
             console.log(
               'Programok frontend modellként:',
               this.programs
@@ -118,11 +115,7 @@ export class CoachProgramComponent implements OnInit {
               this.programs[0]?.id
             );
 
-
-            this.totalPages = Math.ceil(
-              this.programs.length /
-              this.itemsPerPage
-            );
+            this.updatePagination();
 
             this.showProgramsList = true;
             this.message = '';
@@ -131,6 +124,7 @@ export class CoachProgramComponent implements OnInit {
 
             this.programs = [];
             this.totalPages = 1;
+            this.currentPage = 1;
             this.showProgramsList = false;
 
             this.message =
@@ -148,6 +142,7 @@ export class CoachProgramComponent implements OnInit {
 
           this.programs = [];
           this.totalPages = 1;
+          this.currentPage = 1;
           this.showProgramsList = false;
 
           this.message =
@@ -157,19 +152,117 @@ export class CoachProgramComponent implements OnInit {
       });
   }
 
+  /**
+   * Keresett és rendezett programok.
+   */
+  get filteredPrograms(): Program[] {
 
+    const search = this.searchTerm
+      .trim()
+      .toLowerCase();
+
+    let result = this.programs.filter(
+      (program) => {
+
+        const programName =
+          program.programName
+            ?.toLowerCase() ?? '';
+
+        return programName.includes(search);
+      }
+    );
+
+    result.sort((a, b) => {
+
+      const nameA =
+        a.programName
+          ?.toLowerCase() ?? '';
+
+      const nameB =
+        b.programName
+          ?.toLowerCase() ?? '';
+
+      const comparison =
+        nameA.localeCompare(
+          nameB,
+          'hu',
+          {
+            sensitivity: 'base'
+          }
+        );
+
+      return this.sortDirection === 'asc'
+        ? comparison
+        : -comparison;
+    });
+
+    return result;
+  }
+
+  /**
+   * Lapozás előtt frissítjük az oldalak számát.
+   */
+  private updatePagination(): void {
+
+    const count =
+      this.filteredPrograms.length;
+
+    this.totalPages =
+      Math.max(
+        1,
+        Math.ceil(
+          count / this.itemsPerPage
+        )
+      );
+
+    if (
+      this.currentPage >
+      this.totalPages
+    ) {
+      this.currentPage =
+        this.totalPages;
+    }
+  }
+
+  /**
+   * Keresés megváltozott.
+   */
+  onSearchChange(): void {
+
+    this.currentPage = 1;
+
+    this.updatePagination();
+  }
+
+  /**
+   * Rendezés megfordítása.
+   */
+  toggleSort(): void {
+
+    this.sortDirection =
+      this.sortDirection === 'asc'
+        ? 'desc'
+        : 'asc';
+
+    this.currentPage = 1;
+
+    this.updatePagination();
+  }
+
+  /**
+   * Aktuális oldal programjai.
+   */
   get pagedPrograms(): Program[] {
 
     const startIndex =
       (this.currentPage - 1) *
       this.itemsPerPage;
 
-    return this.programs.slice(
+    return this.filteredPrograms.slice(
       startIndex,
       startIndex + this.itemsPerPage
     );
   }
-
 
   nextPage(): void {
 
@@ -182,7 +275,6 @@ export class CoachProgramComponent implements OnInit {
     }
   }
 
-
   prevPage(): void {
 
     if (this.currentPage > 1) {
@@ -190,7 +282,6 @@ export class CoachProgramComponent implements OnInit {
       this.currentPage--;
     }
   }
-
 
   createNewProgram(): void {
 
@@ -210,7 +301,6 @@ export class CoachProgramComponent implements OnInit {
       });
   }
 
-
   editProgram(
     programId: number | undefined,
     event: MouseEvent
@@ -222,7 +312,6 @@ export class CoachProgramComponent implements OnInit {
       'Szerkesztés gomb megnyomva. programId =',
       programId
     );
-
 
     if (
       programId === undefined ||
@@ -241,17 +330,6 @@ export class CoachProgramComponent implements OnInit {
       return;
     }
 
-
-    /**
-     * Meglévő program szerkesztése.
-     *
-     * A program ID query paraméterként
-     * kerül a Program Builderhez.
-     *
-     * Példa:
-     *
-     * /coach/program-builder?programId=205
-     */
     this.router
       .navigate(
         ['/coach/program-builder'],
@@ -280,7 +358,6 @@ export class CoachProgramComponent implements OnInit {
           USER_MESSAGES.programClickError;
       });
   }
-
 
   goToWorkouts(
     programId: number | undefined

@@ -1,5 +1,10 @@
 <h2 class="programs-title">Programok</h2>
 
+
+<!-- ============================================================
+     ÜZENET
+     ============================================================ -->
+
 <div
   *ngIf="message"
   class="message-box">
@@ -9,50 +14,114 @@
 
 <ng-container *ngIf="showProgramsList; else noPrograms">
 
-  <!-- ======================================================
+
+  <!-- ============================================================
+       KERESÉS ÉS RENDEZÉS
+       ============================================================ -->
+
+  <div class="program-controls">
+
+    <!-- KERESÉS -->
+
+    <div class="program-search">
+
+      <label
+        for="programSearch"
+        class="program-search-label">
+        Program keresése
+      </label>
+
+      <input
+        id="programSearch"
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
+        class="program-search-input"
+        placeholder="Program neve..."
+        autocomplete="off"
+      />
+
+    </div>
+
+
+    <!-- RENDEZÉS -->
+
+    <button
+      type="button"
+      class="program-sort-button"
+      (click)="toggleSort()">
+
+      Program neve
+
+      <span
+        class="sort-icon">
+
+        {{ sortDirection === 'asc' ? '↑' : '↓' }}
+
+      </span>
+
+    </button>
+
+  </div>
+
+
+  <!-- ============================================================
        PROGRAMOK
-       ====================================================== -->
+       ============================================================ -->
 
   <div
-    *ngIf="programs.length > 0; else noPrograms"
+    *ngIf="filteredPrograms.length > 0; else noSearchResults"
     class="programs-grid">
 
     <div
       *ngFor="let program of pagedPrograms"
       class="program-card">
 
-      <!-- ==================================================
+
+      <!-- ========================================================
            PROGRAM FEJLÉC
-           ================================================== -->
+           ======================================================== -->
 
       <div class="program-image">
-        <span class="program-emoji">💪</span>
+
+        <span class="program-emoji">
+          💪
+        </span>
+
       </div>
 
 
-      <!-- ==================================================
+      <!-- ========================================================
            PROGRAM TARTALOM
-           ================================================== -->
+           ======================================================== -->
 
       <div class="program-content">
+
+
+        <!-- PROGRAM NÉV -->
 
         <h3 class="program-name">
           {{ program.programName }}
         </h3>
 
 
+        <!-- PROGRAM LEÍRÁS -->
+
         <p
           *ngIf="program.programDescription"
           class="program-description">
+
           {{ program.programDescription }}
+
         </p>
 
 
-        <!-- ==================================================
+        <!-- ======================================================
              PROGRAM ADATOK
-             ================================================== -->
+             ====================================================== -->
 
         <div class="program-meta">
+
 
           <!-- IDŐTARTAM -->
 
@@ -86,9 +155,9 @@
         </div>
 
 
-        <!-- ==================================================
+        <!-- ======================================================
              PROGRAM SZERKESZTÉSE
-             ================================================== -->
+             ====================================================== -->
 
         <div class="program-edit">
 
@@ -110,13 +179,29 @@
   </div>
 
 
-  <!-- ======================================================
+  <!-- ============================================================
+       NINCS TALÁLAT KERESÉS UTÁN
+       ============================================================ -->
+
+  <ng-template #noSearchResults>
+
+    <div class="no-programs">
+
+      Nincs a keresésnek megfelelő program.
+
+    </div>
+
+  </ng-template>
+
+
+  <!-- ============================================================
        LAPOZÁS
-       ====================================================== -->
+       ============================================================ -->
 
   <div
     *ngIf="totalPages > 1"
     class="pagination-controls">
+
 
     <button
       type="button"
@@ -130,7 +215,9 @@
 
 
     <span class="pagination-info">
+
       {{ currentPage }} / {{ totalPages }}
+
     </span>
 
 
@@ -149,22 +236,24 @@
 </ng-container>
 
 
-<!-- ======================================================
+<!-- ============================================================
      NINCS PROGRAM
-     ====================================================== -->
+     ============================================================ -->
 
 <ng-template #noPrograms>
 
   <div class="no-programs">
+
     Nincsenek programok.
+
   </div>
 
 </ng-template>
 
 
-<!-- ======================================================
+<!-- ============================================================
      ÚJ PROGRAM
-     ====================================================== -->
+     ============================================================ -->
 
 <button
   type="button"
