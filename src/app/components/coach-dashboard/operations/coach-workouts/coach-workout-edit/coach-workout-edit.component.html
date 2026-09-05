@@ -230,10 +230,56 @@
 
 
       <!-- ================================================== -->
+      <!-- PROGRAMHOZ ZÁROLT WORKOUT -->
+      <!-- ================================================== -->
+
+      <div
+        *ngIf="checkingProgramAssignment"
+        class="exercise-info-message"
+      >
+
+        <span class="exercise-info-icon">
+          ⏳
+        </span>
+
+        <span>
+          Workout állapotának ellenőrzése...
+        </span>
+
+      </div>
+
+
+      <div
+        *ngIf="
+          !checkingProgramAssignment &&
+          workoutAssignedToProgram
+        "
+        class="exercise-info-message"
+      >
+
+        <span class="exercise-info-icon">
+          🔒
+        </span>
+
+        <span>
+          Ez a workout már programhoz van rendelve,
+          ezért új exercise nem adható hozzá.
+        </span>
+
+      </div>
+
+
+      <!-- ================================================== -->
       <!-- EXERCISE HOZZÁADÁS -->
       <!-- ================================================== -->
 
-      <div class="exercise-add-box">
+      <div
+        *ngIf="
+          !checkingProgramAssignment &&
+          !workoutAssignedToProgram
+        "
+        class="exercise-add-box"
+      >
 
         <!-- HEADER -->
 
@@ -491,7 +537,9 @@
             [disabled]="
               !selectedExerciseId ||
               loadingExercises ||
-              addingExercise
+              addingExercise ||
+              checkingProgramAssignment ||
+              workoutAssignedToProgram
             "
             (click)="addExerciseToWorkout()"
           >
@@ -560,8 +608,16 @@
             No exercises yet
           </strong>
 
-          <span>
+          <span
+            *ngIf="!workoutAssignedToProgram"
+          >
             Search for an exercise above to add it.
+          </span>
+
+          <span
+            *ngIf="workoutAssignedToProgram"
+          >
+            This workout is assigned to a program.
           </span>
 
         </div>

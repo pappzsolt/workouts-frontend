@@ -9,6 +9,8 @@ import { WorkoutExerciseService } from '../../../../../services/coach/workout-ex
 
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 
+import { ProgramWorkoutService } from '../../../../../services/coach/program-workout.service';
+
 import { USER_MESSAGES } from '../../../../../constants/user-messages';
 
 import { Workout } from '../../../../../models/workout.model';
@@ -72,6 +74,23 @@ export class CoachWorkoutEditComponent implements OnInit {
 
 
   // ==========================================================
+  // PROGRAMHOZ TARTOZÁS
+  // ==========================================================
+
+  /**
+   * Igaz, ha a workout már legalább egy programban szerepel.
+   *
+   * Ilyen esetben új exercise hozzáadása nem engedélyezett.
+   */
+  workoutAssignedToProgram: boolean = false;
+
+  /**
+   * A program-hozzárendelés ellenőrzésének állapota.
+   */
+  checkingProgramAssignment: boolean = false;
+
+
+  // ==========================================================
   // EXERCISE-EK
   // ==========================================================
 
@@ -121,7 +140,8 @@ export class CoachWorkoutEditComponent implements OnInit {
     private router: Router,
     private coachWorkoutsService: CoachWorkoutsService,
     private workoutExerciseService: WorkoutExerciseService,
-    private exerciseService: ExerciseService
+    private exerciseService: ExerciseService,
+    private programWorkoutService: ProgramWorkoutService
   ) {}
 
 
@@ -160,6 +180,57 @@ export class CoachWorkoutEditComponent implements OnInit {
 
     // Workout jelenlegi exercise-einek betöltése
     this.loadWorkoutExercises();
+
+
+    // Ellenőrizzük, hogy a workout programban van-e
+    this.checkProgramAssignment();
+
+  }
+
+
+  // ==========================================================
+  // PROGRAMHOZ TARTOZÁS ELLENŐRZÉSE
+  // ==========================================================
+
+  checkProgramAssignment(): void {
+
+    if (!this.workoutId) {
+      return;
+    }
+
+    this.checkingProgramAssignment = true;
+
+    this.programWorkoutService
+      .isWorkoutAssignedToAnyProgram(this.workoutId)
+      .subscribe({
+
+        next: (response) => {
+
+          this.workoutAssignedToProgram =
+            response?.assigned === true;
+
+          this.checkingProgramAssignment = false;
+
+          console.log(
+            'Workout programhoz tartozik:',
+            this.workoutAssignedToProgram
+          );
+
+        },
+
+        error: (error: any) => {
+
+          console.error(
+            'Hiba a workout programhoz tartozásának ellenőrzésekor:',
+            error
+          );
+
+          this.workoutAssignedToProgram = false;
+          this.checkingProgramAssignment = false;
+
+        }
+
+      });
 
   }
 
@@ -518,6 +589,17 @@ export class CoachWorkoutEditComponent implements OnInit {
     }
 
 
+    if (this.workoutAssignedToProgram) {
+
+      this.setMessage(
+        'Ez a workout már programhoz van rendelve, ezért új exercise nem adható hozzá.',
+        'error'
+      );
+
+      return;
+    }
+
+
     this.selectedExerciseId =
       exerciseId;
 
@@ -560,6 +642,15 @@ export class CoachWorkoutEditComponent implements OnInit {
       this.exerciseSearchTerm
         .trim()
         .toLocaleLowerCase('hu-HU');
+
+
+    /*
+     * Ha a workout már programban van,
+     * nincs hozzáadható exercise.
+     */
+    if (this.workoutAssignedToProgram) {
+      return [];
+    }
 
 
     return this.exercises
@@ -643,6 +734,22 @@ export class CoachWorkoutEditComponent implements OnInit {
 
       return;
 
+    }
+
+
+    /*
+     * Frontend oldali védelem.
+     *
+     * A backend védelem ettől függetlenül megmarad.
+     */
+    if (this.workoutAssignedToProgram) {
+
+      this.setMessage(
+        'Ez a workout már programhoz van rendelve, ezért új exercise nem adható hozzá.',
+        'error'
+      );
+
+      return;
     }
 
 

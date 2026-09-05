@@ -43,6 +43,26 @@ export class ProgramWorkoutService {
 
 
   // ==========================================================
+  // ELLENŐRZÉS: WORKOUT SZEREPEL-E MÁR PROGRAMBAN
+  // ==========================================================
+
+  isWorkoutAssignedToAnyProgram(
+    workoutId: number
+  ): Observable<{
+    status: string;
+    assigned: boolean;
+  }> {
+
+    return this.http.get<{
+      status: string;
+      assigned: boolean;
+    }>(
+      `${this.baseUrl}/workout/${workoutId}/assigned`
+    );
+  }
+
+
+  // ==========================================================
   // PROGRAM WORKOUTJAINAK LEKÉRÉSE
   // ==========================================================
 
@@ -55,6 +75,7 @@ export class ProgramWorkoutService {
     );
   }
 
+
   getWorkoutsForProgramByQuery(
     programId: number
   ): Observable<ProgramWorkoutListResponse> {
@@ -63,6 +84,8 @@ export class ProgramWorkoutService {
       `${this.baseUrl}?programId=${programId}`
     );
   }
+
+
   // ==========================================================
   // EGY WORKOUT TÖRLÉSE A PROGRAMBÓL
   // ==========================================================
