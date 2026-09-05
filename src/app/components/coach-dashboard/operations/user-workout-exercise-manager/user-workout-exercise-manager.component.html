@@ -221,9 +221,8 @@
                     colspan="7"
                     class="sets-container">
 
-                    <div
-                      *ngIf="selectedSets.length"
-                      class="sets-panel">
+                    <!-- SETS PANEL -->
+                    <div class="sets-panel">
 
                       <div class="sets-header">
 
@@ -241,7 +240,10 @@
                       </div>
 
 
-                      <div class="sets-table-wrapper">
+                      <!-- SETS TABLE -->
+                      <div
+                        *ngIf="selectedSets.length"
+                        class="sets-table-wrapper">
 
                         <table class="sets-table">
 
@@ -348,13 +350,14 @@
 
                       </div>
 
-                    </div>
 
+                      <!-- NO SETS -->
+                      <div
+                        *ngIf="!selectedSets.length"
+                        class="no-sets">
+                        Nincs set ehhez az exercise-hoz.
+                      </div>
 
-                    <div
-                      *ngIf="!selectedSets.length"
-                      class="no-sets">
-                      Nincs set ehhez az exercise-hoz.
                     </div>
 
                   </td>

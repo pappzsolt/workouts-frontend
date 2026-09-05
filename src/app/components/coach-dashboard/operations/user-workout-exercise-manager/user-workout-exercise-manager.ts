@@ -188,6 +188,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
           // ezért újra lekérjük az aktuális állapotot.
           if (userWorkoutExerciseId) {
             this.loadSets(userWorkoutExerciseId);
+            this.loadUserProgramWithExercises();
           }
         },
         error: (err: any) => {
