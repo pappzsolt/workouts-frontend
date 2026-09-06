@@ -5,10 +5,9 @@ import { WorkoutExerciseModel } from '../../models/workout-exercise.model';
 import { API_ENDPOINTS } from '../../api-endpoints';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WorkoutExerciseService {
-
   private readonly baseUrl = API_ENDPOINTS.workoutExercises;
 
   constructor(private http: HttpClient) {}
@@ -19,20 +18,10 @@ export class WorkoutExerciseService {
    * POST:
    * /api/workout-exercises/assign?workoutId=226&exerciseId=1004
    */
-  assignExerciseToWorkout(
-    workoutId: number,
-    exerciseId: number
-  ): Observable<any> {
+  assignExerciseToWorkout(workoutId: number, exerciseId: number): Observable<any> {
+    const params = new HttpParams().set('workoutId', workoutId).set('exerciseId', exerciseId);
 
-    const params = new HttpParams()
-      .set('workoutId', workoutId)
-      .set('exerciseId', exerciseId);
-
-    return this.http.post<any>(
-      `${this.baseUrl}/assign`,
-      null,
-      { params }
-    );
+    return this.http.post<any>(`${this.baseUrl}/assign`, null, { params });
   }
 
   /**
@@ -40,10 +29,7 @@ export class WorkoutExerciseService {
    *
    * Az új backend endpoint már /assign.
    */
-  addWorkoutExerciseSimple(
-    workoutId: number,
-    exerciseId: number
-  ): Observable<any> {
+  addWorkoutExerciseSimple(workoutId: number, exerciseId: number): Observable<any> {
     return this.assignExerciseToWorkout(workoutId, exerciseId);
   }
 
@@ -53,12 +39,8 @@ export class WorkoutExerciseService {
    * FIGYELEM:
    * Ehhez jelenleg nincs megmutatva a Java controller endpointja.
    */
-  getWorkoutExercisesByWorkoutId(
-    workoutId: number
-  ): Observable<any> {
-    return this.http.get<any>(
-      `${this.baseUrl}/workout/${workoutId}`
-    );
+  getWorkoutExercisesByWorkoutId(workoutId: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/workout/${workoutId}`);
   }
 
   /**
@@ -67,12 +49,8 @@ export class WorkoutExerciseService {
    * FIGYELEM:
    * Ehhez jelenleg nincs megmutatva a Java controller endpointja.
    */
-  deleteWorkoutExerciseById(
-    id: number
-  ): Observable<any> {
-    return this.http.delete<any>(
-      `${this.baseUrl}/delete/${id}`
-    );
+  deleteWorkoutExerciseById(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/delete/${id}`);
   }
 
   /**
@@ -80,13 +58,8 @@ export class WorkoutExerciseService {
    *
    * Csak akkor használható, ha a backendben van /add endpoint.
    */
-  addWorkoutExercise(
-    workoutExercise: WorkoutExerciseModel
-  ): Observable<any> {
-    return this.http.post<any>(
-      `${this.baseUrl}/add`,
-      workoutExercise
-    );
+  addWorkoutExercise(workoutExercise: WorkoutExerciseModel): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/add`, workoutExercise);
   }
 
   /**
@@ -94,12 +67,7 @@ export class WorkoutExerciseService {
    *
    * Csak akkor használható, ha a backendben van /update endpoint.
    */
-  updateWorkoutExercise(
-    workoutExercise: WorkoutExerciseModel
-  ): Observable<any> {
-    return this.http.put<any>(
-      `${this.baseUrl}/update`,
-      workoutExercise
-    );
+  updateWorkoutExercise(workoutExercise: WorkoutExerciseModel): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/update`, workoutExercise);
   }
 }

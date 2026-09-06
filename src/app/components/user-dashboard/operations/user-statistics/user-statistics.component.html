@@ -1,16 +1,9 @@
 <h2 class="statistics-title">Statistics</h2>
 
-<div
-  *ngIf="stats$ | async as stats"
-  class="statistics-card"
->
+<div *ngIf="stats$ | async as stats" class="statistics-card">
   <div class="statistics-icon">📊</div>
 
-  <div class="statistics-completed">
-    Workouts Completed: {{ stats.workoutCompleted }}
-  </div>
+  <div class="statistics-completed">Workouts Completed: {{ stats.workoutCompleted }}</div>
 
-  <div class="statistics-hours">
-    Total Hours: {{ stats.totalHours }}
-  </div>
+  <div class="statistics-hours">Total Hours: {{ stats.totalHours }}</div>
 </div>

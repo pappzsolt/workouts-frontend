@@ -3,15 +3,10 @@ import { Coach } from '../../models/coach.model';
 
 @Pipe({
   name: 'coachFilter',
-  standalone: true
+  standalone: true,
 })
 export class CoachFilterPipe implements PipeTransform {
-
-  transform(
-    coaches: Coach[],
-    search: string
-  ): Coach[] {
-
+  transform(coaches: Coach[], search: string): Coach[] {
     if (!coaches) {
       return [];
     }
@@ -20,13 +15,12 @@ export class CoachFilterPipe implements PipeTransform {
       return coaches;
     }
 
-    const searchTerm = search
-      .toLowerCase()
-      .trim();
+    const searchTerm = search.toLowerCase().trim();
 
-    return coaches.filter(coach =>
-      coach.name.toLowerCase().includes(searchTerm) ||
-      coach.email.toLowerCase().includes(searchTerm)
+    return coaches.filter(
+      (coach) =>
+        coach.name.toLowerCase().includes(searchTerm) ||
+        coach.email.toLowerCase().includes(searchTerm),
     );
   }
 }

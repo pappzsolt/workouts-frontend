@@ -11,7 +11,7 @@
     class="universal-form-message"
     [ngClass]="{
       'universal-form-message-success': messageType === 'success',
-      'universal-form-message-error': messageType !== 'success'
+      'universal-form-message-error': messageType !== 'success',
     }"
   >
     {{ message }}
@@ -158,11 +158,7 @@
 
     <!-- Submit -->
     <div class="universal-form-actions">
-      <button
-        type="submit"
-        [disabled]="!exerciseForm.form.valid"
-        class="universal-form-button"
-      >
+      <button type="submit" [disabled]="!exerciseForm.form.valid" class="universal-form-button">
         ➕ Létrehozás
       </button>
     </div>

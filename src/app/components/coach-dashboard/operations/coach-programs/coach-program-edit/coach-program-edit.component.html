@@ -1,6 +1,4 @@
-<h2 class="programs-title">
-  ✏️ Edit Program
-</h2>
+<h2 class="programs-title">✏️ Edit Program</h2>
 
 <!-- Üzenet -->
 <div
@@ -8,7 +6,7 @@
   class="form-message"
   [ngClass]="{
     'form-message-success': messageType === 'success',
-    'form-message-error': messageType === 'error'
+    'form-message-error': messageType === 'error',
   }"
 >
   {{ message }}
@@ -16,25 +14,15 @@
 
 <!-- Kártyás form -->
 <div class="program-card">
-
   <!-- Ikon -->
   <div class="program-image">
     <span class="program-emoji">🛠️</span>
   </div>
 
-  <form
-    (ngSubmit)="saveProgram()"
-    class="program-form"
-  >
-
+  <form (ngSubmit)="saveProgram()" class="program-form">
     <!-- Program Name -->
     <div class="form-group-full">
-      <label
-        class="form-label"
-        for="programName"
-      >
-        Program Name
-      </label>
+      <label class="form-label" for="programName"> Program Name </label>
 
       <input
         type="text"
@@ -49,12 +37,7 @@
 
     <!-- Description -->
     <div class="form-group-full">
-      <label
-        class="form-label"
-        for="programDescription"
-      >
-        Description
-      </label>
+      <label class="form-label" for="programDescription"> Description </label>
 
       <textarea
         id="programDescription"
@@ -68,12 +51,7 @@
 
     <!-- Duration -->
     <div class="form-group">
-      <label
-        class="form-label"
-        for="durationDays"
-      >
-        Duration (days)
-      </label>
+      <label class="form-label" for="durationDays"> Duration (days) </label>
 
       <input
         type="number"
@@ -88,12 +66,7 @@
 
     <!-- Difficulty -->
     <div class="form-group">
-      <label
-        class="form-label"
-        for="difficultyLevel"
-      >
-        Difficulty Level
-      </label>
+      <label class="form-label" for="difficultyLevel"> Difficulty Level </label>
 
       <select
         id="difficultyLevel"
@@ -110,13 +83,7 @@
 
     <!-- Gomb -->
     <div class="form-submit">
-      <button
-        type="submit"
-        class="form-button"
-      >
-        💾 Save Program
-      </button>
+      <button type="submit" class="form-button">💾 Save Program</button>
     </div>
-
   </form>
 </div>

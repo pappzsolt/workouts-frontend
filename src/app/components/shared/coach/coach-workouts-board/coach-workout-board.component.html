@@ -1,6 +1,4 @@
-<div *ngIf="loading" class="text-gray-500 p-4 text-center">
-  Betöltés...
-</div>
+<div *ngIf="loading" class="text-gray-500 p-4 text-center">Betöltés...</div>
 
 <div *ngIf="message && !loading" class="text-gray-500 p-4 text-center">
   {{ message }}
@@ -26,8 +24,6 @@
       {{ workout.name || 'Nincs név' }}
     </p>
 
-    <div class="text-[11px] text-gray-500 text-center italic mb-2">
-      ID: {{ workout.id }}
-    </div>
+    <div class="text-[11px] text-gray-500 text-center italic mb-2">ID: {{ workout.id }}</div>
   </div>
 </div>

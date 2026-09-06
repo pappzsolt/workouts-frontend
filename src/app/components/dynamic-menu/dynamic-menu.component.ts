@@ -15,7 +15,7 @@ export interface MenuItem {
   standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './dynamic-menu.component.html',
-  styleUrls: ['./dynamic-menu.component.css']
+  styleUrls: ['./dynamic-menu.component.css'],
 })
 export class DynamicMenuComponent {
   @Input() menuItems: MenuItem[] = [];
@@ -35,4 +35,3 @@ export class DynamicMenuComponent {
     }
   }
 }
-

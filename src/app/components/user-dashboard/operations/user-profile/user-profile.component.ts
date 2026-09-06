@@ -13,11 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { USER_MESSAGES } from '../../../../constants/user-messages';
 
-import {
-  User,
-  RawUser,
-  Coach
-} from '../../../../models/user-profil.model';
+import { User, RawUser, Coach } from '../../../../models/user-profil.model';
 
 import { UserProfilService } from '../../../../services/user/user-profile/user-profile.service';
 
@@ -26,18 +22,11 @@ import { forkJoin } from 'rxjs';
 @Component({
   selector: 'app-user-edit',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatInputModule
-  ],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatSelectModule, MatInputModule],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css',
 })
 export class UserProfileComponent implements OnInit {
-
   users: RawUser[] = [];
 
   selectedUser: User = {
@@ -53,7 +42,7 @@ export class UserProfileComponent implements OnInit {
     goals: '',
     coachId: undefined,
     roleName: undefined,
-    roleIds: []
+    roleIds: [],
   };
 
   coaches: Coach[] = [];
@@ -69,11 +58,10 @@ export class UserProfileComponent implements OnInit {
     private userService: UserProfilService,
     private roleService: RoleService,
     private cdr: ChangeDetectorRef,
-    private authService: AuthService
+    private authService: AuthService,
   ) {}
 
   ngOnInit(): void {
-
     const userId = this.authService.getUserId();
 
     if (!userId) {
@@ -84,11 +72,9 @@ export class UserProfileComponent implements OnInit {
     forkJoin({
       coaches: this.userService.getCoaches(),
       roles: this.roleService.getRoles(),
-      profile: this.userService.getMemberById(userId)
+      profile: this.userService.getMemberById(userId),
     }).subscribe({
-
       next: ({ coaches, roles, profile }) => {
-
         this.coaches = coaches;
         this.roles = roles;
 
@@ -105,12 +91,10 @@ export class UserProfileComponent implements OnInit {
           goals: profile.extraFields?.goals,
           coachId: profile.extraFields?.coach_id,
           roleName: undefined,
-          roleIds: []
+          roleIds: [],
         };
 
-        const coach = this.coaches.find(
-          c => c.id === this.selectedUser.coachId
-        );
+        const coach = this.coaches.find((c) => c.id === this.selectedUser.coachId);
 
         this.coachName = coach ? coach.name : '';
         this.selectedCoach = coach;
@@ -122,12 +106,11 @@ export class UserProfileComponent implements OnInit {
 
       error: () => {
         this.message = USER_MESSAGES.loadProfileError;
-      }
+      },
     });
   }
 
   private patchUserFromRaw(raw: RawUser): void {
-
     this.selectedUser = {
       id: raw.id,
       username: raw.usernameOrName || '',
@@ -141,42 +124,31 @@ export class UserProfileComponent implements OnInit {
       goals: raw.extraFields?.goals,
       coachId: raw.extraFields?.coach_id,
       roleName: undefined,
-      roleIds: []
+      roleIds: [],
     };
 
-    this.selectedCoach = this.coaches.find(
-      c => c.id === this.selectedUser.coachId
-    );
+    this.selectedCoach = this.coaches.find((c) => c.id === this.selectedUser.coachId);
 
-    this.coachName = this.selectedCoach
-      ? this.selectedCoach.name
-      : '';
+    this.coachName = this.selectedCoach ? this.selectedCoach.name : '';
 
-    this.selectedRoles = this.roles.filter(
-      r => raw.roles?.includes(r.name)
-    );
+    this.selectedRoles = this.roles.filter((r) => raw.roles?.includes(r.name));
 
     this.cdr.detectChanges();
   }
 
   onCoachSelected(coach: Coach): void {
-
     this.selectedCoach = coach;
     this.selectedUser.coachId = coach.id;
     this.coachName = coach.name;
   }
 
   onRoleSelected(roles: Role[]): void {
-
     this.selectedRoles = roles;
 
-    this.selectedUser.roleIds = roles.map(
-      r => r.id
-    );
+    this.selectedUser.roleIds = roles.map((r) => r.id);
   }
 
   onSave(): void {
-
     if (!this.selectedUser) {
       return;
     }
@@ -186,7 +158,7 @@ export class UserProfileComponent implements OnInit {
       usernameOrName: this.selectedUser.username,
       email: this.selectedUser.email,
       avatarUrl: this.selectedUser.avatarUrl,
-      roles: this.selectedRoles.map(r => r.name),
+      roles: this.selectedRoles.map((r) => r.name),
 
       extraFields: {
         coach_id: this.selectedUser.coachId,
@@ -194,26 +166,18 @@ export class UserProfileComponent implements OnInit {
         weight: this.selectedUser.weight,
         height: this.selectedUser.height,
         gender: this.selectedUser.gender,
-        goals: this.selectedUser.goals
-      }
+        goals: this.selectedUser.goals,
+      },
     };
 
-    this.userService
-      .updateUser(
-        rawUser,
-        this.selectedUser.roleIds || []
-      )
-      .subscribe({
+    this.userService.updateUser(rawUser, this.selectedUser.roleIds || []).subscribe({
+      next: () => {
+        this.message = USER_MESSAGES.updateSuccess;
+      },
 
-        next: () => {
-          this.message = USER_MESSAGES.updateSuccess;
-        },
-
-        error: (err: any) => {
-          this.message =
-            USER_MESSAGES.updateError +
-            (err?.message || '');
-        }
-      });
+      error: (err: any) => {
+        this.message = USER_MESSAGES.updateError + (err?.message || '');
+      },
+    });
   }
 }

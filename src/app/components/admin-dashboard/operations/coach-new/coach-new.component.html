@@ -1,21 +1,10 @@
 <div class="coach-new">
+  <h2 class="coach-new__title">Új Edző</h2>
 
-  <h2 class="coach-new__title">
-    Új Edző
-  </h2>
-
-  <form
-    #coachForm="ngForm"
-    (ngSubmit)="onSubmit(coachForm)"
-    class="coach-form"
-  >
-
+  <form #coachForm="ngForm" (ngSubmit)="onSubmit(coachForm)" class="coach-form">
     <!-- Név -->
     <div class="form-field">
-
-      <label for="name">
-        Név*
-      </label>
+      <label for="name"> Név* </label>
 
       <input
         id="name"
@@ -32,16 +21,11 @@
       >
         Név megadása kötelező
       </div>
-
     </div>
-
 
     <!-- Email -->
     <div class="form-field">
-
-      <label for="email">
-        Email*
-      </label>
+      <label for="email"> Email* </label>
 
       <input
         id="email"
@@ -59,16 +43,11 @@
       >
         Érvényes email cím szükséges
       </div>
-
     </div>
-
 
     <!-- Jelszó -->
     <div class="form-field">
-
-      <label for="passwordHash">
-        Jelszó*
-      </label>
+      <label for="passwordHash"> Jelszó* </label>
 
       <input
         id="passwordHash"
@@ -86,16 +65,11 @@
       >
         Minimum 6 karakter
       </div>
-
     </div>
-
 
     <!-- Telefon -->
     <div class="form-field">
-
-      <label for="phone">
-        Telefon*
-      </label>
+      <label for="phone"> Telefon* </label>
 
       <input
         id="phone"
@@ -113,16 +87,11 @@
       >
         Érvényes magyar telefonszám szükséges (+36xxxxxxxxx)
       </div>
-
     </div>
-
 
     <!-- Szakterület -->
     <div class="form-field form-field--full">
-
-      <label for="specialization">
-        Szakterület
-      </label>
+      <label for="specialization"> Szakterület </label>
 
       <textarea
         id="specialization"
@@ -131,41 +100,22 @@
         placeholder="Szakterület"
         [(ngModel)]="coach.specialization"
       ></textarea>
-
     </div>
-
 
     <!-- Avatar URL -->
     <div class="form-field form-field--full">
+      <label for="avatarUrl"> Avatar URL </label>
 
-      <label for="avatarUrl">
-        Avatar URL
-      </label>
-
-      <input
-        id="avatarUrl"
-        name="avatarUrl"
-        type="text"
-        [(ngModel)]="coach.avatarUrl"
-      />
-
+      <input id="avatarUrl" name="avatarUrl" type="text" [(ngModel)]="coach.avatarUrl" />
     </div>
-
 
     <!-- Submit -->
     <div class="form-actions">
-
-      <button
-        type="submit"
-        [disabled]="loading"
-      >
+      <button type="submit" [disabled]="loading">
         {{ loading ? 'Mentés...' : 'Edző létrehozása' }}
       </button>
-
     </div>
-
   </form>
-
 
   <!-- Üzenet -->
   <div
@@ -176,5 +126,4 @@
   >
     {{ message }}
   </div>
-
 </div>

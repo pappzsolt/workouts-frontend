@@ -10,10 +10,9 @@ import { Exercise } from '../../../../../models/exercise.model';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './coach-exercise-edit.component.html',
-  styleUrls: ['./coach-exercise-edit.component.css']
+  styleUrls: ['./coach-exercise-edit.component.css'],
 })
 export class CoachExerciseEditComponent implements OnInit {
-
   exercise: Exercise = {
     id: 0,
     name: '',
@@ -25,7 +24,7 @@ export class CoachExerciseEditComponent implements OnInit {
     difficultyLevel: '',
     category: '',
     caloriesBurnedPerMinute: 0,
-    durationSeconds: 0
+    durationSeconds: 0,
   };
 
   loading: boolean = false;
@@ -39,7 +38,7 @@ export class CoachExerciseEditComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     public router: Router,
-    private exerciseService: ExerciseService
+    private exerciseService: ExerciseService,
   ) {}
 
   ngOnInit(): void {
@@ -54,7 +53,7 @@ export class CoachExerciseEditComponent implements OnInit {
 
     this.exerciseService.getAllExercises().subscribe({
       next: (exercises: Exercise[]) => {
-        const ex = exercises.find(e => e.id === exerciseId);
+        const ex = exercises.find((e) => e.id === exerciseId);
 
         if (ex) {
           this.exercise = { ...ex };
@@ -68,7 +67,7 @@ export class CoachExerciseEditComponent implements OnInit {
         console.error('Hiba az exercise betöltésénél:', err);
         this.errorMessage = 'Hiba az exercise betöltésénél';
         this.loading = false;
-      }
+      },
     });
   }
 
@@ -87,7 +86,7 @@ export class CoachExerciseEditComponent implements OnInit {
         this.message = 'Hiba az exercise mentésénél';
         this.messageType = 'error';
         this.saving = false;
-      }
+      },
     });
   }
 }

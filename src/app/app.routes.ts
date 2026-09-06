@@ -36,7 +36,6 @@ import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
-
   // ============================================================
   // LOGIN
   // ============================================================
@@ -46,14 +45,14 @@ export const routes: Routes = [
     children: [
       {
         path: 'login',
-        component: LoginComponent
+        component: LoginComponent,
       },
       {
         path: '',
         redirectTo: 'login',
-        pathMatch: 'full'
-      }
-    ]
+        pathMatch: 'full',
+      },
+    ],
   },
 
   // ============================================================
@@ -64,66 +63,65 @@ export const routes: Routes = [
     component: LayoutComponent,
     canActivate: [authGuard, roleGuard],
     data: {
-      roles: ['ROLE_ADMIN']
+      roles: ['ROLE_ADMIN'],
     },
     children: [
-
       {
         path: 'dashboard',
-        component: AdminDashboardComponent
+        component: AdminDashboardComponent,
       },
 
       {
         path: 'users',
-        component: AdminListUsersComponent
+        component: AdminListUsersComponent,
       },
 
       {
         path: 'users/search',
-        component: MemberSearchComponent
+        component: MemberSearchComponent,
       },
 
       {
         path: 'choice-users/edit',
-        component: ChoiceUserEditComponent
+        component: ChoiceUserEditComponent,
       },
 
       {
         path: 'choice-users/new',
-        component: ChoiceUserNewComponent
+        component: ChoiceUserNewComponent,
       },
 
       {
         path: 'users/new',
-        component: UserNewComponent
+        component: UserNewComponent,
       },
 
       {
         path: 'coach/new',
-        component: CoachNewComponent
+        component: CoachNewComponent,
       },
 
       {
         path: 'coach/edit',
-        component: CoachEditComponent
+        component: CoachEditComponent,
       },
 
       {
         path: 'users/edit',
-        component: UserEditComponent
+        component: UserEditComponent,
       },
 
       {
         path: '',
         redirectTo: 'dashboard',
-        pathMatch: 'full'
+        pathMatch: 'full',
       },
 
       {
         path: '**',
-        redirectTo: 'dashboard'
-      }
-    ]
+        redirectTo: 'dashboard',
+      },
+    ],
   },
 
   // ============================================================
@@ -134,82 +132,77 @@ export const routes: Routes = [
     component: LayoutComponent,
     canActivate: [authGuard, roleGuard],
     data: {
-      roles: ['ROLE_COACH']
+      roles: ['ROLE_COACH'],
     },
     children: [
-
       {
         path: 'dashboard',
-        component: CoachDashboardComponent
+        component: CoachDashboardComponent,
       },
 
       {
         path: 'profile',
-        component: CoachProfileComponent
+        component: CoachProfileComponent,
       },
 
       {
         path: 'exercises',
-        component: ExerciseControllerComponent
+        component: ExerciseControllerComponent,
       },
 
       // ÚJ PROGRAM BUILDER
       {
         path: 'program-builder',
-        component: CoachProgramBuilderComponent
+        component: CoachProgramBuilderComponent,
       },
 
       {
         path: 'programs/new',
-        component: CoachNewProgramComponent
+        component: CoachNewProgramComponent,
       },
 
       {
         path: 'programs/:id/edit',
-        component: CoachProgramEditComponent
+        component: CoachProgramEditComponent,
       },
 
       {
         path: 'exercises/:id/edit',
-        component: CoachExerciseEditComponent
+        component: CoachExerciseEditComponent,
       },
 
       {
         path: 'workouts/:id/edit',
-        component: CoachWorkoutEditComponent
+        component: CoachWorkoutEditComponent,
       },
 
       {
         path: 'workouts/new',
         loadComponent: () =>
-          import(
-            './components/coach-dashboard/operations/coach-workouts/coach-workout-new/new-workout.component'
-            ).then(
-            (m) => m.NewWorkoutComponent
-          )
+          import('./components/coach-dashboard/operations/coach-workouts/coach-workout-new/new-workout.component').then(
+            (m) => m.NewWorkoutComponent,
+          ),
       },
 
       {
         path: 'exercises/new',
         loadComponent: () =>
-          import(
-            './components/coach-dashboard/operations/coach-exercises/coach-exercise-new/new-exercise.component'
-            ).then(
-            (m) => m.NewExerciseComponent
-          )
+          import('./components/coach-dashboard/operations/coach-exercises/coach-exercise-new/new-exercise.component').then(
+            (m) => m.NewExerciseComponent,
+          ),
       },
 
       {
         path: '',
         redirectTo: 'dashboard',
-        pathMatch: 'full'
+        pathMatch: 'full',
       },
 
       {
         path: '**',
-        redirectTo: 'dashboard'
-      }
-    ]
+        redirectTo: 'dashboard',
+      },
+    ],
   },
 
   // ============================================================
@@ -220,61 +213,60 @@ export const routes: Routes = [
     component: LayoutComponent,
     canActivate: [authGuard, roleGuard],
     data: {
-      roles: ['ROLE_USER']
+      roles: ['ROLE_USER'],
     },
     children: [
-
       {
         path: 'dashboard',
-        component: UserDashboardComponent
+        component: UserDashboardComponent,
       },
 
       {
         path: 'profile',
-        component: UserProfileComponent
+        component: UserProfileComponent,
       },
 
       {
         path: 'my-programs',
-        component: UserMyProgramsComponent
+        component: UserMyProgramsComponent,
       },
 
       {
         path: 'statistics',
-        component: UserStatisticsComponent
+        component: UserStatisticsComponent,
       },
 
       {
         path: 'workouts',
-        component: UserWorkoutsCalendarComponent
+        component: UserWorkoutsCalendarComponent,
       },
 
       {
         path: 'programs/:id/workouts',
-        component: WorkoutsComponent
+        component: WorkoutsComponent,
       },
 
       {
         path: 'workouts/:workoutId/exercises',
-        component: UserExercisesComponent
+        component: UserExercisesComponent,
       },
 
       {
         path: 'workouts/:workoutId/exercises/:exerciseId',
-        component: UserExerciseDetailComponent
+        component: UserExerciseDetailComponent,
       },
 
       {
         path: '',
         redirectTo: 'dashboard',
-        pathMatch: 'full'
+        pathMatch: 'full',
       },
 
       {
         path: '**',
-        redirectTo: 'dashboard'
-      }
-    ]
+        redirectTo: 'dashboard',
+      },
+    ],
   },
 
   // ============================================================
@@ -282,6 +274,6 @@ export const routes: Routes = [
   // ============================================================
   {
     path: '**',
-    redirectTo: 'login'
-  }
+    redirectTo: 'login',
+  },
 ];

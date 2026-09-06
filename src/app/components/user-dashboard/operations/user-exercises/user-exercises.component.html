@@ -1,10 +1,7 @@
-<h2 class="exercises-title">
-  {{ workoutName }} – Exercises
-</h2>
+<h2 class="exercises-title">{{ workoutName }} – Exercises</h2>
 
 <ng-container *ngIf="(exercises$ | async)?.length; else noExercises">
   <div class="exercises-grid">
-
     <div
       *ngFor="let exercise of exercises$ | async"
       class="exercise-card"
@@ -16,7 +13,6 @@
       </div>
 
       <div class="exercise-content">
-
         <!-- Exercise name -->
         <div class="exercise-name">
           {{ exercise.exercise.name }}
@@ -33,9 +29,7 @@
         </div>
 
         <!-- Rest -->
-        <div class="exercise-detail">
-          Rest: {{ exercise.restSeconds }} sec
-        </div>
+        <div class="exercise-detail">Rest: {{ exercise.restSeconds }} sec</div>
 
         <!-- Done status -->
         <div
@@ -45,15 +39,11 @@
         >
           {{ exercise.done ? 'Completed ✅' : 'Pending ⏳' }}
         </div>
-
       </div>
     </div>
-
   </div>
 </ng-container>
 
 <ng-template #noExercises>
-  <div class="no-exercises">
-    Nincsenek gyakorlatok ehhez a workouthoz.
-  </div>
+  <div class="no-exercises">Nincsenek gyakorlatok ehhez a workouthoz.</div>
 </ng-template>

@@ -10,25 +10,16 @@ import { CoachSelectComponent } from '../../../shared/coach/coach-select.compone
 import { Role } from '../../../../models/role.model';
 import { CoachNameId } from '../../../../services/coach/coach-name-id.service';
 
-import {
-  CreateUserRequest,
-  CreateUserResponse
-} from '../../../../models/user-new-model';
+import { CreateUserRequest, CreateUserResponse } from '../../../../models/user-new-model';
 
 @Component({
   selector: 'app-user-new',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    RoleSelectComponent,
-    CoachSelectComponent
-  ],
+  imports: [CommonModule, FormsModule, RoleSelectComponent, CoachSelectComponent],
   templateUrl: './user-new.component.html',
-  styleUrls: ['./user-new.component.css']
+  styleUrls: ['./user-new.component.css'],
 })
 export class UserNewComponent {
-
   user: {
     username: string;
     email: string;
@@ -53,7 +44,7 @@ export class UserNewComponent {
     gender: '',
     goals: '',
     coachName: '',
-    roleIds: []
+    roleIds: [],
   };
 
   roles: Role[] = [];
@@ -61,20 +52,16 @@ export class UserNewComponent {
   message = '';
   isError = false;
 
-  constructor(
-    private userNewService: UserNewService
-  ) {}
+  constructor(private userNewService: UserNewService) {}
 
   onRoleSelected(role: Role): void {
-    if (!this.user.roleIds.some(r => r.id === role.id)) {
+    if (!this.user.roleIds.some((r) => r.id === role.id)) {
       this.user.roleIds.push(role);
     }
   }
 
   onRemoveRole(role: Role): void {
-    this.user.roleIds = this.user.roleIds.filter(
-      r => r.id !== role.id
-    );
+    this.user.roleIds = this.user.roleIds.filter((r) => r.id !== role.id);
   }
 
   onCoachSelected(coach: CoachNameId): void {
@@ -83,7 +70,6 @@ export class UserNewComponent {
   }
 
   onSubmit(form: NgForm): void {
-
     if (!form.valid || this.user.roleIds.length === 0) {
       this.message =
         'Kérlek töltsd ki az összes kötelező mezőt és válassz legalább egy szerepkört!';
@@ -103,13 +89,11 @@ export class UserNewComponent {
       gender: this.user.gender,
       goals: this.user.goals,
       coachId: this.user.coachId,
-      roleIds: this.user.roleIds.map(role => role.id)
+      roleIds: this.user.roleIds.map((role) => role.id),
     };
 
     this.userNewService.createUser(payload).subscribe({
-
       next: (res: CreateUserResponse) => {
-
         this.message = res.message || 'Sikeres létrehozás';
         this.isError = !res.success;
 
@@ -123,12 +107,10 @@ export class UserNewComponent {
       },
 
       error: (err) => {
-        this.message =
-          err.error?.message || 'Hiba a mentésnél';
+        this.message = err.error?.message || 'Hiba a mentésnél';
 
         this.isError = true;
-      }
-
+      },
     });
   }
 }

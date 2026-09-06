@@ -8,9 +8,8 @@ describe('DynamicMenuComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DynamicMenuComponent]
-    })
-    .compileComponents();
+      imports: [DynamicMenuComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DynamicMenuComponent);
     component = fixture.componentInstance;

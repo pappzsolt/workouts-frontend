@@ -1,5 +1,4 @@
 <div class="workouts-container">
-
   <!-- ======================================================
        ÜZENET
        ====================================================== -->
@@ -8,42 +7,29 @@
     *ngIf="message"
     [ngClass]="{
       'message-success': messageType === 'success',
-      'error-message': messageType === 'error'
-    }">
-
+      'error-message': messageType === 'error',
+    }"
+  >
     {{ message }}
-
   </div>
-
 
   <!-- ======================================================
        CÍM
        ====================================================== -->
 
-  <h2 class="workouts-title">
-    Edzések
-  </h2>
-
+  <h2 class="workouts-title">Edzések</h2>
 
   <!-- ======================================================
        KERESÉS ÉS RENDEZÉS
        ====================================================== -->
 
   <div class="workout-controls">
-
     <!-- ====================================================
          KERESÉS
          ==================================================== -->
 
     <div class="workout-search">
-
-      <label
-        for="workoutSearch"
-        class="workout-search-label">
-
-        Workout keresése
-
-      </label>
+      <label for="workoutSearch" class="workout-search-label"> Workout keresése </label>
 
       <input
         id="workoutSearch"
@@ -54,240 +40,142 @@
         placeholder="Workout neve..."
         autocomplete="off"
       />
-
     </div>
-
 
     <!-- ====================================================
          RENDEZÉS
          ==================================================== -->
 
-    <button
-      type="button"
-      class="workout-sort-button"
-      (click)="toggleSort()">
-
+    <button type="button" class="workout-sort-button" (click)="toggleSort()">
       Workout neve
 
       <span class="sort-icon">
         {{ sortDirection === 'asc' ? '↑' : '↓' }}
       </span>
-
     </button>
-
   </div>
-
 
   <!-- ======================================================
        ÚJ EDZÉS FORM
        ====================================================== -->
 
-  <app-newworkout
-    *ngIf="showNewWorkoutForm">
-  </app-newworkout>
-
+  <app-newworkout *ngIf="showNewWorkoutForm"> </app-newworkout>
 
   <!-- ======================================================
        EDZÉSEK
        ====================================================== -->
 
-  <ng-container
-    *ngIf="
-      filteredWorkouts.length > 0;
-      else noWorkouts
-    ">
-
+  <ng-container *ngIf="filteredWorkouts.length > 0; else noWorkouts">
     <div class="workouts-grid">
-
-      <div
-        *ngFor="let w of pagedWorkouts"
-        class="workout-card">
-
-
+      <div *ngFor="let w of pagedWorkouts" class="workout-card">
         <!-- ==================================================
              FEJLÉC
              ================================================== -->
 
         <div class="workout-image">
-
-          <span class="workout-emoji">
-            🔥
-          </span>
-
+          <span class="workout-emoji"> 🔥 </span>
         </div>
-
 
         <!-- ==================================================
              TARTALOM
              ================================================== -->
 
         <div class="workout-content">
-
-
           <!-- WORKOUT NÉV -->
 
           <h3 class="workout-name">
             {{ w.workoutName }}
           </h3>
 
-
           <!-- LEÍRÁS -->
 
-          <p
-            *ngIf="w.description"
-            class="workout-description">
-
+          <p *ngIf="w.description" class="workout-description">
             {{ w.description }}
-
           </p>
-
 
           <!-- ==================================================
                WORKOUT ADATOK
                ================================================== -->
 
           <div class="workout-meta">
-
-
             <!-- IDŐTARTAM -->
 
             <div class="workout-meta-item">
+              <span class="workout-meta-label"> Időtartam </span>
 
-              <span class="workout-meta-label">
-                Időtartam
-              </span>
-
-              <span class="workout-meta-value">
-                {{ w.durationMinutes }} perc
-              </span>
-
+              <span class="workout-meta-value"> {{ w.durationMinutes }} perc </span>
             </div>
-
 
             <!-- GYAKORLATOK -->
 
             <div class="workout-meta-item">
-
-              <span class="workout-meta-label">
-                Gyakorlatok
-              </span>
+              <span class="workout-meta-label"> Gyakorlatok </span>
 
               <span class="workout-meta-value">
                 {{ w.exercises?.length || 0 }}
               </span>
-
             </div>
-
           </div>
-
 
           <!-- ==================================================
                NINCS GYAKORLAT
                ================================================== -->
 
-          <div
-            *ngIf="!w.exercises?.length"
-            class="no-exercises">
-
+          <div *ngIf="!w.exercises?.length" class="no-exercises">
             Nincs gyakorlat hozzárendelve.
-
           </div>
-
 
           <!-- ==================================================
                SZERKESZTÉS
                ================================================== -->
 
           <div class="workout-edit">
-
-            <button
-              type="button"
-              class="edit-button"
-              (click)="editWorkout(w.id, $event)">
-
+            <button type="button" class="edit-button" (click)="editWorkout(w.id, $event)">
               ✏️ Szerkesztés
-
             </button>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
-
 
     <!-- ======================================================
          LAPOZÁS
          ====================================================== -->
 
-    <div
-      *ngIf="totalPages > 1"
-      class="pagination-controls">
-
+    <div *ngIf="totalPages > 1" class="pagination-controls">
       <button
         type="button"
         class="pagination-button"
         (click)="prevPage()"
-        [disabled]="currentPage === 1">
-
+        [disabled]="currentPage === 1"
+      >
         ◀ Előző
-
       </button>
 
-
-      <span class="pagination-info">
-
-        {{ currentPage }} / {{ totalPages }}
-
-      </span>
-
+      <span class="pagination-info"> {{ currentPage }} / {{ totalPages }} </span>
 
       <button
         type="button"
         class="pagination-button"
         (click)="nextPage()"
-        [disabled]="currentPage === totalPages">
-
+        [disabled]="currentPage === totalPages"
+      >
         Következő ▶
-
       </button>
-
     </div>
-
   </ng-container>
-
 
   <!-- ======================================================
        NINCS EDZÉS / NINCS TALÁLAT
        ====================================================== -->
 
   <ng-template #noWorkouts>
-
     <div class="no-workouts">
+      <span *ngIf="searchTerm; else noWorkoutsAtAll"> Nincs a keresésnek megfelelő workout. </span>
 
-      <span
-        *ngIf="
-          searchTerm;
-          else noWorkoutsAtAll
-        ">
-
-        Nincs a keresésnek megfelelő workout.
-
-      </span>
-
-
-      <ng-template #noWorkoutsAtAll>
-
-        Nincsenek edzések.
-
-      </ng-template>
-
+      <ng-template #noWorkoutsAtAll> Nincsenek edzések. </ng-template>
     </div>
-
   </ng-template>
-
 
   <!-- ======================================================
        ÚJ EDZÉS
@@ -297,10 +185,8 @@
     type="button"
     class="floating-action-button"
     (click)="goToNewWorkout()"
-    title="Új edzés hozzáadása">
-
+    title="Új edzés hozzáadása"
+  >
     ➕
-
   </button>
-
 </div>

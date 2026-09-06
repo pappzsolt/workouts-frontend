@@ -6,29 +6,21 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
 
-import {
-  Program,
-  ProgramCreationRequest
-} from '../../../../../models/program.model';
+import { Program, ProgramCreationRequest } from '../../../../../models/program.model';
 
 @Component({
   selector: 'app-coach-new-program',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    HttpClientModule
-  ],
+  imports: [CommonModule, FormsModule, HttpClientModule],
   templateUrl: './coach-new-program.component.html',
-  styleUrls: ['./coach-new-program.component.css']
+  styleUrls: ['./coach-new-program.component.css'],
 })
 export class CoachNewProgramComponent implements OnInit {
-
   program: Program = {
     programName: '',
     programDescription: '',
     durationDays: 0,
-    difficultyLevel: ''
+    difficultyLevel: '',
   };
 
   message = '';
@@ -36,7 +28,7 @@ export class CoachNewProgramComponent implements OnInit {
 
   constructor(
     private programService: CoachProgramService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {}
@@ -59,7 +51,7 @@ export class CoachNewProgramComponent implements OnInit {
       programName: this.program.programName ?? '',
       programDescription: this.program.programDescription ?? '',
       durationDays: this.program.durationDays,
-      difficultyLevel: this.program.difficultyLevel ?? ''
+      difficultyLevel: this.program.difficultyLevel ?? '',
     };
 
     console.log('Program request:', requestBody);
@@ -75,7 +67,6 @@ export class CoachNewProgramComponent implements OnInit {
           setTimeout(() => {
             this.router.navigate(['/coach/programs']);
           }, 1500);
-
         } else {
           this.messageType = 'error';
           this.message = `Hiba: ${response.message}`;
@@ -92,7 +83,7 @@ export class CoachNewProgramComponent implements OnInit {
         } else {
           this.message = 'Hiba történt a program létrehozása során.';
         }
-      }
+      },
     });
   }
 }

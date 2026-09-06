@@ -4,20 +4,16 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, map } from 'rxjs';
 
 import { UserExerciseService } from '../../../../services/user/user-exercise/user-exercise.service';
-import {
-  WorkoutDto,
-  WorkoutExercise
-} from '../../../../models/exercise.model';
+import { WorkoutDto, WorkoutExercise } from '../../../../models/exercise.model';
 
 @Component({
   standalone: true,
   selector: 'app-user-exercises',
   imports: [CommonModule],
   styleUrl: './user-exercises.component.css',
-  templateUrl: './user-exercises.component.html'
+  templateUrl: './user-exercises.component.html',
 })
 export class UserExercisesComponent implements OnInit {
-
   workoutId!: number;
   programId!: number;
   workoutName!: string;
@@ -26,45 +22,33 @@ export class UserExercisesComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private exercisesService: UserExerciseService
+    private exercisesService: UserExerciseService,
   ) {}
 
   ngOnInit(): void {
     // Route paraméterek
-    this.workoutId = Number(
-      this.route.snapshot.paramMap.get('workoutId')
-    );
+    this.workoutId = Number(this.route.snapshot.paramMap.get('workoutId'));
 
     // A workout neve és a program ID a navigation state-ből érkezik
     const navState = history.state;
 
-    this.workoutName =
-      navState['workoutName'] || 'Unknown Workout';
+    this.workoutName = navState['workoutName'] || 'Unknown Workout';
 
-    this.programId =
-      Number(navState['programId']);
+    this.programId = Number(navState['programId']);
 
     // Workout lekérése a backendről,
     // majd az exercise lista kivétele
     this.exercises$ = this.exercisesService
-      .getWorkoutExercises(
-        this.programId,
-        this.workoutId
-      )
-      .pipe(
-        map((workout: WorkoutDto) => workout.exercises)
-      );
+      .getWorkoutExercises(this.programId, this.workoutId)
+      .pipe(map((workout: WorkoutDto) => workout.exercises));
   }
 
   goToExercise(exerciseId: number): void {
-    this.router.navigate(
-      ['/user/workouts', this.workoutId, 'exercises', exerciseId],
-      {
-        state: {
-          workoutName: this.workoutName,
-          programId: this.programId
-        }
-      }
-    );
+    this.router.navigate(['/user/workouts', this.workoutId, 'exercises', exerciseId], {
+      state: {
+        workoutName: this.workoutName,
+        programId: this.programId,
+      },
+    });
   }
 }

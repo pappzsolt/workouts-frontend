@@ -7,10 +7,9 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './choice-user-new.component.html',
-  styleUrls: ['./choice-user-new.component.css']
+  styleUrls: ['./choice-user-new.component.css'],
 })
 export class ChoiceUserNewComponent {
-
   constructor(private router: Router) {}
 
   // A navigateTo metódus

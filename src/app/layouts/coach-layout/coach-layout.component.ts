@@ -8,17 +8,20 @@ import { AuthService } from '../../services/auth/auth.service';
   standalone: true,
   imports: [RouterModule, CoachMenuComponent],
   templateUrl: './coach-layout.component.html',
-  styleUrls: ['./coach-layout.component.css']
+  styleUrls: ['./coach-layout.component.css'],
 })
 export class CoachLayoutComponent implements OnInit {
   username: string | null = null;
   role: string | null = null;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.username = this.authService.getUserName(); // sub-ból jön
-    this.role = this.authService.getUserRole();     // roles-ból jön
+    this.role = this.authService.getUserRole(); // roles-ból jön
   }
 
   onLogout() {

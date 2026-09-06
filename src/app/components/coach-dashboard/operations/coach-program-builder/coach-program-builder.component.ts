@@ -3,59 +3,35 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { ExerciseService } from
-    '../../../../services/coach/coach-exercises/coach-exercises.service';
+import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
 
-import { CoachExercisesBoardComponent } from
-    '../../../shared/coach/coach-exercises-board/coach-exercises-board.component';
+import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exercises-board/coach-exercises-board.component';
 
-import { CoachProgramService } from
-    '../../../../services/coach/coach-program/coach-program.service';
+import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 
-import { ProgramWorkoutService } from
-    '../../../../services/coach/program-workout.service';
+import { ProgramWorkoutService } from '../../../../services/coach/program-workout.service';
 
-import { WorkoutExerciseService } from
-    '../../../../services/coach/workout-exercises.service';
+import { WorkoutExerciseService } from '../../../../services/coach/workout-exercises.service';
 
-import { AssignProgramService } from
-    '../../../../services/coach/assign-program/assignprogram.service';
+import { AssignProgramService } from '../../../../services/coach/assign-program/assignprogram.service';
 
-import { UserSelectComponent } from
-    '../../../shared/user/user-select.component';
+import { UserSelectComponent } from '../../../shared/user/user-select.component';
 
-import {
-  Exercise,
-  WorkoutDto,
-  WorkoutExercise
-} from '../../../../models/exercise.model';
+import { Exercise, WorkoutDto, WorkoutExercise } from '../../../../models/exercise.model';
 
-import {
-  ProgramCreationRequest
-} from '../../../../models/program.model';
+import { ProgramCreationRequest } from '../../../../models/program.model';
 
-import {
-  ProgramWorkout
-} from '../../../../models/program-workout.model';
-
+import { ProgramWorkout } from '../../../../models/program-workout.model';
 
 @Component({
   selector: 'app-coach-program-builder',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    CoachExercisesBoardComponent,
-    UserSelectComponent
-  ],
+  imports: [CommonModule, FormsModule, CoachExercisesBoardComponent, UserSelectComponent],
   templateUrl: './coach-program-builder.component.html',
-  styleUrl: './coach-program-builder.component.css'
+  styleUrl: './coach-program-builder.component.css',
 })
-export class CoachProgramBuilderComponent
-  implements OnInit {
-
+export class CoachProgramBuilderComponent implements OnInit {
   currentStep = 1;
-
 
   // ==========================================================
   // PROGRAM ADATOK
@@ -84,18 +60,13 @@ export class CoachProgramBuilderComponent
 
   creatingProgram = false;
 
-
   // ==========================================================
   // ÜZENETEK
   // ==========================================================
 
   message: string = '';
 
-  messageType:
-    'success' |
-    'error' |
-    '' = '';
-
+  messageType: 'success' | 'error' | '' = '';
 
   // ==========================================================
   // WORKOUTOK
@@ -134,7 +105,6 @@ export class CoachProgramBuilderComponent
    */
   isNewWorkout = false;
 
-
   // ==========================================================
   // PROGRAM WORKOUT KAPCSOLATOK
   // ==========================================================
@@ -151,7 +121,6 @@ export class CoachProgramBuilderComponent
    */
   programWorkouts: ProgramWorkout[] = [];
 
-
   constructor(
     private exerciseService: ExerciseService,
     private coachProgramService: CoachProgramService,
@@ -159,77 +128,48 @@ export class CoachProgramBuilderComponent
     private workoutExerciseService: WorkoutExerciseService,
     private route: ActivatedRoute,
     private router: Router,
-    private assignProgramService: AssignProgramService
+    private assignProgramService: AssignProgramService,
   ) {}
-
 
   // ==========================================================
   // INIT
   // ==========================================================
 
   ngOnInit(): void {
-
     // Alapértelmezés:
     // nincs programId -> új program
     this.isEditMode = false;
-
 
     // Exercise-ok betöltése
 
     this.loadExercises();
 
+    const programId = this.route.snapshot.queryParamMap.get('programId');
 
-    const programId =
-      this.route.snapshot.queryParamMap.get(
-        'programId'
-      );
-
-    const newWorkoutId =
-      this.route.snapshot.queryParamMap.get(
-        'newWorkoutId'
-      );
-
+    const newWorkoutId = this.route.snapshot.queryParamMap.get('newWorkoutId');
 
     // ----------------------------------------------------------
     // MEGLÉVŐ PROGRAM
     // ----------------------------------------------------------
 
     if (programId) {
-
       // FONTOS:
       // Query paraméteres programId esetén
       // ténylegesen meglévő programot szerkesztünk.
 
       this.isEditMode = true;
 
+      const parsedProgramId = Number(programId);
 
-      const parsedProgramId =
-        Number(programId);
-
-
-      if (
-        Number.isNaN(parsedProgramId) ||
-        parsedProgramId <= 0
-      ) {
-
-        console.error(
-          'Érvénytelen program ID:',
-          programId
-        );
+      if (Number.isNaN(parsedProgramId) || parsedProgramId <= 0) {
+        console.error('Érvénytelen program ID:', programId);
 
         return;
       }
 
+      this.programId = parsedProgramId;
 
-      this.programId =
-        parsedProgramId;
-
-
-      console.log(
-        'Meglévő program betöltése:',
-        this.programId
-      );
-
+      console.log('Meglévő program betöltése:', this.programId);
 
       /**
        * Betöltjük a meglévő program adatait:
@@ -246,7 +186,6 @@ export class CoachProgramBuilderComponent
 
       this.loadProgram();
 
-
       /**
        * Ha új workout létrehozása után érkeztünk vissza,
        * akkor közvetlenül a 2. lépésre kell menni.
@@ -259,46 +198,25 @@ export class CoachProgramBuilderComponent
        */
 
       if (newWorkoutId) {
+        const workoutId = Number(newWorkoutId);
 
-        const workoutId =
-          Number(newWorkoutId);
-
-
-        if (
-          !Number.isNaN(workoutId) &&
-          workoutId > 0
-        ) {
-
-          console.log(
-            'Újonnan létrehozott workout ID:',
-            workoutId
-          );
-
+        if (!Number.isNaN(workoutId) && workoutId > 0) {
+          console.log('Újonnan létrehozott workout ID:', workoutId);
 
           this.isNewWorkout = true;
-
 
           // Közvetlenül a workout lépésre megyünk.
 
           this.currentStep = 2;
-
         } else {
-
-          console.error(
-            'Érvénytelen newWorkoutId:',
-            newWorkoutId
-          );
-
+          console.error('Érvénytelen newWorkoutId:', newWorkoutId);
 
           // Hibás newWorkoutId esetén
           // normál program-szerkesztési mód.
 
           this.currentStep = 1;
-
         }
-
       } else {
-
         /**
          * Sima meglévő program szerkesztése.
          *
@@ -310,9 +228,7 @@ export class CoachProgramBuilderComponent
          */
 
         this.currentStep = 1;
-
       }
-
 
       // A programhoz tartozó workoutokat is betöltjük.
 
@@ -320,7 +236,6 @@ export class CoachProgramBuilderComponent
 
       return;
     }
-
 
     // ----------------------------------------------------------
     // NORMÁL BELÉPÉS / ÚJ PROGRAM
@@ -331,904 +246,481 @@ export class CoachProgramBuilderComponent
     this.currentStep = 1;
 
     this.loadWorkouts();
-
   }
-
 
   // ==========================================================
   // PROGRAM BETÖLTÉSE
   // ==========================================================
 
   loadProgram(): void {
-
     if (this.programId === null) {
-
-      console.error(
-        'Nincs program ID.'
-      );
+      console.error('Nincs program ID.');
 
       return;
     }
 
+    this.coachProgramService.getProgramById(this.programId).subscribe({
+      next: (response) => {
+        console.log('Program betöltve:', response);
 
-    this.coachProgramService
-      .getProgramById(this.programId)
-      .subscribe({
+        if (response && response.status === 'success' && response.data) {
+          const program = response.data;
 
-        next: (response) => {
+          this.programName = program.programName ?? '';
 
-          console.log(
-            'Program betöltve:',
-            response
-          );
+          this.programDescription = program.programDescription ?? '';
 
+          this.durationDays = program.durationDays ?? null;
 
-          if (
-            response &&
-            response.status === 'success' &&
-            response.data
-          ) {
+          this.difficultyLevel = program.difficultyLevel ?? '';
 
-            const program =
-              response.data;
+          console.log('Program adatok betöltve:', {
+            programName: this.programName,
 
+            programDescription: this.programDescription,
 
-            this.programName =
-              program.programName ?? '';
+            durationDays: this.durationDays,
 
+            difficultyLevel: this.difficultyLevel,
+          });
 
-            this.programDescription =
-              program.programDescription ?? '';
+          // ==================================================
+          // PROGRAMHOZ RENDELT USER BETÖLTÉSE
+          // ==================================================
 
+          this.assignProgramService.getAssignedUserId(this.programId!).subscribe({
+            next: (userResponse) => {
+              console.log('Programhoz rendelt user:', userResponse);
 
-            this.durationDays =
-              program.durationDays ?? null;
+              this.selectedUserId = userResponse.data ?? undefined;
 
+              console.log('selectedUserId:', this.selectedUserId);
+            },
 
-            this.difficultyLevel =
-              program.difficultyLevel ?? '';
+            error: (error: any) => {
+              console.error('Hiba a programhoz rendelt user betöltésekor:', error);
 
-
-            console.log(
-              'Program adatok betöltve:',
-              {
-                programName:
-                this.programName,
-
-                programDescription:
-                this.programDescription,
-
-                durationDays:
-                this.durationDays,
-
-                difficultyLevel:
-                this.difficultyLevel
-              }
-            );
-
-
-            // ==================================================
-            // PROGRAMHOZ RENDELT USER BETÖLTÉSE
-            // ==================================================
-
-            this.assignProgramService
-              .getAssignedUserId(
-                this.programId!
-              )
-              .subscribe({
-
-                next: (userResponse) => {
-
-                  console.log(
-                    'Programhoz rendelt user:',
-                    userResponse
-                  );
-
-
-                  this.selectedUserId =
-                    userResponse.data ??
-                    undefined;
-
-
-                  console.log(
-                    'selectedUserId:',
-                    this.selectedUserId
-                  );
-
-                },
-
-
-                error: (error: any) => {
-
-                  console.error(
-                    'Hiba a programhoz rendelt user betöltésekor:',
-                    error
-                  );
-
-
-                  this.selectedUserId =
-                    undefined;
-
-                }
-
-              });
-
-          } else {
-
-            console.error(
-              'A program nem tölthető be:',
-              response
-            );
-
-          }
-
-        },
-
-
-        error: (error: any) => {
-
-          console.error(
-            'Hiba a program betöltésekor:',
-            error
-          );
-
+              this.selectedUserId = undefined;
+            },
+          });
+        } else {
+          console.error('A program nem tölthető be:', response);
         }
+      },
 
-      });
-
+      error: (error: any) => {
+        console.error('Hiba a program betöltésekor:', error);
+      },
+    });
   }
-
 
   // ==========================================================
   // ÚJ WORKOUT LÉTREHOZÁSA
   // ==========================================================
 
   goToCreateWorkout(): void {
-
     if (this.programId === null) {
-
-      console.error(
-        'Nincs program ID.'
-      );
+      console.error('Nincs program ID.');
 
       return;
     }
 
-
-    this.router.navigate(
-      ['/coach/workouts/new'],
-      {
-        queryParams: {
-          fromProgramBuilder: 'true',
-          programId: this.programId
-        }
-      }
-    );
-
+    this.router.navigate(['/coach/workouts/new'], {
+      queryParams: {
+        fromProgramBuilder: 'true',
+        programId: this.programId,
+      },
+    });
   }
-
 
   // ==========================================================
   // PROGRAM BEFEJEZÉSE
   // ==========================================================
 
   finishProgram(): void {
-
     if (this.programId === null) {
-
-      console.error(
-        'Nincs program ID.'
-      );
+      console.error('Nincs program ID.');
 
       return;
     }
 
-
     if (!this.selectedUserId) {
+      console.error('Nincs kiválasztott felhasználó.');
 
-      console.error(
-        'Nincs kiválasztott felhasználó.'
-      );
-
-
-      this.message =
-        'Nincs kiválasztott felhasználó.';
+      this.message = 'Nincs kiválasztott felhasználó.';
 
       this.messageType = 'error';
 
       return;
     }
 
+    this.assignProgramService.assignProgramToUser(this.selectedUserId, this.programId).subscribe({
+      next: () => {
+        this.router.navigate(['/coach/dashboard'], {
+          queryParams: {
+            section: 'assignments',
+            programId: this.programId,
+          },
+        });
+      },
 
-    this.assignProgramService
-      .assignProgramToUser(
-        this.selectedUserId,
-        this.programId
-      )
-      .subscribe({
+      error: (err: any) => {
+        console.error('Program hozzárendelése sikertelen:', err);
 
-        next: () => {
+        // Backend által visszaadott üzenet
 
-          this.router.navigate(
-            ['/coach/dashboard'],
-            {
-              queryParams: {
-                section: 'assignments',
-                programId: this.programId
-              }
-            }
-          );
+        const backendMessage = err?.error?.message ?? err?.message;
 
-        },
+        this.message = backendMessage || 'A program hozzárendelése sikertelen.';
 
-
-        error: (err: any) => {
-
-          console.error(
-            'Program hozzárendelése sikertelen:',
-            err
-          );
-
-
-          // Backend által visszaadott üzenet
-
-          const backendMessage =
-            err?.error?.message ??
-            err?.message;
-
-
-          this.message =
-            backendMessage ||
-            'A program hozzárendelése sikertelen.';
-
-
-          this.messageType = 'error';
-
-        }
-
-      });
-
+        this.messageType = 'error';
+      },
+    });
   }
-
 
   // ==========================================================
   // WORKOUTOK BETÖLTÉSE
   // ==========================================================
 
   loadWorkouts(): void {
-
     this.loadingWorkouts = true;
 
+    this.exerciseService.getWorkoutsWithExercises().subscribe({
+      next: (workouts: WorkoutDto[]) => {
+        this.workouts = workouts || [];
 
-    this.exerciseService
-      .getWorkoutsWithExercises()
-      .subscribe({
+        this.loadingWorkouts = false;
 
-        next: (workouts: WorkoutDto[]) => {
+        console.log('Coach workouts:', this.workouts);
 
-          this.workouts =
-            workouts || [];
+        // Ha már van program ID,
+        // töltsük be a hozzá tartozó workoutokat is.
 
-
-          this.loadingWorkouts = false;
-
-
-          console.log(
-            'Coach workouts:',
-            this.workouts
-          );
-
-
-          // Ha már van program ID,
-          // töltsük be a hozzá tartozó workoutokat is.
-
-          if (this.programId !== null) {
-
-            this.loadProgramWorkouts();
-
-          }
-
-        },
-
-
-        error: (error: any) => {
-
-          console.error(
-            'Hiba a workoutok betöltésekor:',
-            error
-          );
-
-
-          this.loadingWorkouts = false;
-
+        if (this.programId !== null) {
+          this.loadProgramWorkouts();
         }
+      },
 
-      });
+      error: (error: any) => {
+        console.error('Hiba a workoutok betöltésekor:', error);
 
+        this.loadingWorkouts = false;
+      },
+    });
   }
-
 
   // ==========================================================
   // EXERCISE-EK BETÖLTÉSE
   // ==========================================================
 
   loadExercises(): void {
-
     this.loadingExercises = true;
 
+    this.exerciseService.getAllExercises().subscribe({
+      next: (exercises: Exercise[]) => {
+        this.exercises = exercises || [];
 
-    this.exerciseService
-      .getAllExercises()
-      .subscribe({
+        this.loadingExercises = false;
 
-        next: (exercises: Exercise[]) => {
+        console.log('Coach exercise-ok betöltve:', this.exercises);
+      },
 
-          this.exercises =
-            exercises || [];
+      error: (err: any) => {
+        console.error('Hiba az exercise-ok betöltésekor:', err);
 
+        this.exercises = [];
 
-          this.loadingExercises = false;
-
-
-          console.log(
-            'Coach exercise-ok betöltve:',
-            this.exercises
-          );
-
-        },
-
-
-        error: (err: any) => {
-
-          console.error(
-            'Hiba az exercise-ok betöltésekor:',
-            err
-          );
-
-
-          this.exercises = [];
-
-          this.loadingExercises = false;
-
-        }
-
-      });
-
+        this.loadingExercises = false;
+      },
+    });
   }
-
 
   // ==========================================================
   // PROGRAM LÉTREHOZÁSA
   // ==========================================================
 
   createProgram(): void {
-
     if (!this.programName.trim()) {
-
       return;
     }
 
-
-    if (
-      this.durationDays === null ||
-      this.durationDays <= 0
-    ) {
-
+    if (this.durationDays === null || this.durationDays <= 0) {
       return;
     }
-
 
     if (!this.difficultyLevel) {
-
       return;
     }
-
 
     this.creatingProgram = true;
 
+    const request: ProgramCreationRequest = {
+      programName: this.programName.trim(),
 
-    const request:
-      ProgramCreationRequest = {
+      programDescription: this.programDescription.trim(),
 
-      programName:
-        this.programName.trim(),
+      durationDays: this.durationDays,
 
-      programDescription:
-        this.programDescription.trim(),
-
-      durationDays:
-      this.durationDays,
-
-      difficultyLevel:
-      this.difficultyLevel
-
+      difficultyLevel: this.difficultyLevel,
     };
 
+    console.log('Program létrehozási request:', request);
 
-    console.log(
-      'Program létrehozási request:',
-      request
-    );
+    this.coachProgramService.createProgram(request).subscribe({
+      next: (response: any) => {
+        console.log('Program létrehozva:', response);
 
+        if (response.success && response.programId !== null) {
+          this.programId = response.programId;
 
-    this.coachProgramService
-      .createProgram(request)
-      .subscribe({
+          console.log('Létrehozott program ID:', this.programId);
 
-        next: (response: any) => {
+          // FONTOS:
+          // Ez továbbra is ÚJ program.
+          //
+          // Attól, hogy most már van programId,
+          // az isEditMode nem változik.
+          //
+          // isEditMode = false
 
-          console.log(
-            'Program létrehozva:',
-            response
-          );
+          // A program létrejött,
+          // betöltjük a programhoz tartozó workoutokat.
 
+          this.loadProgramWorkouts();
 
-          if (
-            response.success &&
-            response.programId !== null
-          ) {
+          this.currentStep = 2;
+        } else {
+          console.error('A program létrehozása sikertelen:', response.message);
 
-            this.programId =
-              response.programId;
-
-
-            console.log(
-              'Létrehozott program ID:',
-              this.programId
-            );
-
-
-            // FONTOS:
-            // Ez továbbra is ÚJ program.
-            //
-            // Attól, hogy most már van programId,
-            // az isEditMode nem változik.
-            //
-            // isEditMode = false
-
-
-            // A program létrejött,
-            // betöltjük a programhoz tartozó workoutokat.
-
-            this.loadProgramWorkouts();
-
-
-            this.currentStep = 2;
-
-          } else {
-
-            console.error(
-              'A program létrehozása sikertelen:',
-              response.message
-            );
-
-
-            this.message =
-              response.message ||
-              'A program létrehozása sikertelen.';
-
-            this.messageType = 'error';
-
-          }
-
-
-          this.creatingProgram = false;
-
-        },
-
-
-        error: (error: any) => {
-
-          console.error(
-            'Hiba a program létrehozásakor:',
-            error
-          );
-
-
-          this.message =
-            error?.error?.message ||
-            'Hiba történt a program létrehozásakor.';
+          this.message = response.message || 'A program létrehozása sikertelen.';
 
           this.messageType = 'error';
-
-
-          this.creatingProgram = false;
-
         }
 
-      });
+        this.creatingProgram = false;
+      },
 
+      error: (error: any) => {
+        console.error('Hiba a program létrehozásakor:', error);
+
+        this.message = error?.error?.message || 'Hiba történt a program létrehozásakor.';
+
+        this.messageType = 'error';
+
+        this.creatingProgram = false;
+      },
+    });
   }
-
 
   // ==========================================================
   // PROGRAM MÓDOSÍTÁSA
   // ==========================================================
 
   updateProgram(): void {
-
     if (this.programId === null) {
-
-      console.error(
-        'Nincs program ID.'
-      );
+      console.error('Nincs program ID.');
 
       return;
     }
-
 
     if (!this.programName.trim()) {
-
       return;
     }
 
-
-    if (
-      this.durationDays === null ||
-      this.durationDays <= 0
-    ) {
-
+    if (this.durationDays === null || this.durationDays <= 0) {
       return;
     }
-
 
     if (!this.difficultyLevel) {
-
       return;
     }
-
 
     this.creatingProgram = true;
 
+    const request: ProgramCreationRequest = {
+      programName: this.programName.trim(),
 
-    const request:
-      ProgramCreationRequest = {
+      programDescription: this.programDescription.trim(),
 
-      programName:
-        this.programName.trim(),
+      durationDays: this.durationDays,
 
-      programDescription:
-        this.programDescription.trim(),
-
-      durationDays:
-      this.durationDays,
-
-      difficultyLevel:
-      this.difficultyLevel
-
+      difficultyLevel: this.difficultyLevel,
     };
 
+    console.log('Program módosítási request:', request);
 
-    console.log(
-      'Program módosítási request:',
-      request
-    );
+    this.coachProgramService.updateProgram(this.programId, request).subscribe({
+      next: (response) => {
+        console.log('Program módosítva:', response);
 
-
-    this.coachProgramService
-      .updateProgram(
-        this.programId,
-        request
-      )
-      .subscribe({
-
-        next: (response) => {
-
-          console.log(
-            'Program módosítva:',
-            response
-          );
-
-
-          if (response.success) {
-
-            console.log(
-              'Program sikeresen módosítva:',
-              this.programId
-            );
-
-
-            this.creatingProgram = false;
-
-
-            this.currentStep = 2;
-
-
-            this.loadProgramWorkouts();
-
-          } else {
-
-            console.error(
-              'A program módosítása sikertelen:',
-              response.message
-            );
-
-
-            this.message =
-              response.message ||
-              'A program módosítása sikertelen.';
-
-            this.messageType = 'error';
-
-
-            this.creatingProgram = false;
-
-          }
-
-        },
-
-
-        error: (error: any) => {
-
-          console.error(
-            'Hiba a program módosításakor:',
-            error
-          );
-
-
-          this.message =
-            error?.error?.message ||
-            'Hiba történt a program módosításakor.';
-
-          this.messageType = 'error';
-
+        if (response.success) {
+          console.log('Program sikeresen módosítva:', this.programId);
 
           this.creatingProgram = false;
 
+          this.currentStep = 2;
+
+          this.loadProgramWorkouts();
+        } else {
+          console.error('A program módosítása sikertelen:', response.message);
+
+          this.message = response.message || 'A program módosítása sikertelen.';
+
+          this.messageType = 'error';
+
+          this.creatingProgram = false;
         }
+      },
 
-      });
+      error: (error: any) => {
+        console.error('Hiba a program módosításakor:', error);
 
+        this.message = error?.error?.message || 'Hiba történt a program módosításakor.';
+
+        this.messageType = 'error';
+
+        this.creatingProgram = false;
+      },
+    });
   }
-
 
   // ==========================================================
   // PROGRAMHOZ TARTOZÓ WORKOUTOK BETÖLTÉSE
   // ==========================================================
 
   loadProgramWorkouts(): void {
-
     if (this.programId === null) {
-
-      console.error(
-        'Nincs program ID.'
-      );
+      console.error('Nincs program ID.');
 
       return;
     }
 
+    this.programWorkoutService.getWorkoutsForProgram(this.programId).subscribe({
+      next: (response: any) => {
+        console.log('Program workout kapcsolatok:', response);
 
-    this.programWorkoutService
-      .getWorkoutsForProgram(
-        this.programId
-      )
-      .subscribe({
+        /**
+         * A backend jelenleg közvetlenül egy tömböt
+         * ad vissza.
+         *
+         * Ha esetleg később data mezőbe kerülne
+         * a válasz, azt is kezeljük.
+         */
 
-        next: (response: any) => {
+        const data: ProgramWorkout[] = Array.isArray(response)
+          ? response
+          : Array.isArray(response?.data)
+            ? response.data
+            : [];
 
-          console.log(
-            'Program workout kapcsolatok:',
-            response
-          );
+        this.programWorkouts = [...data].sort(
+          (a: ProgramWorkout, b: ProgramWorkout) => a.dayIndex - b.dayIndex,
+        );
 
+        /**
+         * A selectedWorkouts továbbra is WorkoutDto[].
+         *
+         * A workoutId alapján megkeressük
+         * a teljes workout objektumot.
+         */
 
-          /**
-           * A backend jelenleg közvetlenül egy tömböt
-           * ad vissza.
-           *
-           * Ha esetleg később data mezőbe kerülne
-           * a válasz, azt is kezeljük.
-           */
+        this.selectedWorkouts = this.programWorkouts
+          .map((programWorkout) =>
+            this.workouts.find((workout) => workout.id === programWorkout.workoutId),
+          )
+          .filter((workout): workout is WorkoutDto => workout !== undefined);
 
-          const data:
-            ProgramWorkout[] =
-            Array.isArray(response)
-              ? response
-              : Array.isArray(response?.data)
-                ? response.data
-                : [];
+        console.log('Programhoz betöltött workoutok:', this.selectedWorkouts);
 
+        console.log('Program workout kapcsolatok:', this.programWorkouts);
 
-          this.programWorkouts =
-            [...data].sort(
-              (
-                a: ProgramWorkout,
-                b: ProgramWorkout
-              ) =>
-                a.dayIndex -
-                b.dayIndex
-            );
+        /**
+         * Ha a Program Builder egy újonnan létrehozott
+         * workouthoz tért vissza, azt automatikusan
+         * kiválasztjuk.
+         */
 
+        const newWorkoutId = this.route.snapshot.queryParamMap.get('newWorkoutId');
 
-          /**
-           * A selectedWorkouts továbbra is WorkoutDto[].
-           *
-           * A workoutId alapján megkeressük
-           * a teljes workout objektumot.
-           */
+        if (newWorkoutId) {
+          const workoutId = Number(newWorkoutId);
 
-          this.selectedWorkouts =
-            this.programWorkouts
-              .map(
-                programWorkout =>
-                  this.workouts.find(
-                    workout =>
-                      workout.id ===
-                      programWorkout.workoutId
-                  )
-              )
-              .filter(
-                (
-                  workout
-                ): workout is WorkoutDto =>
-                  workout !== undefined
+          if (!Number.isNaN(workoutId) && workoutId > 0) {
+            const newWorkout = this.workouts.find((workout) => workout.id === workoutId);
+
+            if (newWorkout) {
+              console.log('Új workout automatikusan kiválasztva:', newWorkout);
+
+              this.isNewWorkout = true;
+
+              this.selectWorkout(newWorkout.id);
+            } else {
+              console.warn(
+                'Az új workout még nem található a betöltött workout listában:',
+                workoutId,
               );
-
-
-          console.log(
-            'Programhoz betöltött workoutok:',
-            this.selectedWorkouts
-          );
-
-
-          console.log(
-            'Program workout kapcsolatok:',
-            this.programWorkouts
-          );
-
-
-          /**
-           * Ha a Program Builder egy újonnan létrehozott
-           * workouthoz tért vissza, azt automatikusan
-           * kiválasztjuk.
-           */
-
-          const newWorkoutId =
-            this.route.snapshot.queryParamMap.get(
-              'newWorkoutId'
-            );
-
-
-          if (newWorkoutId) {
-
-            const workoutId =
-              Number(newWorkoutId);
-
-
-            if (
-              !Number.isNaN(workoutId) &&
-              workoutId > 0
-            ) {
-
-              const newWorkout =
-                this.workouts.find(
-                  workout =>
-                    workout.id ===
-                    workoutId
-                );
-
-
-              if (newWorkout) {
-
-                console.log(
-                  'Új workout automatikusan kiválasztva:',
-                  newWorkout
-                );
-
-
-                this.isNewWorkout = true;
-
-
-                this.selectWorkout(
-                  newWorkout.id
-                );
-
-              } else {
-
-                console.warn(
-                  'Az új workout még nem található a betöltött workout listában:',
-                  workoutId
-                );
-
-              }
-
             }
-
           }
-
-        },
-
-
-        error: (error: any) => {
-
-          console.error(
-            'Hiba a program workoutjainak betöltésekor:',
-            error
-          );
-
-
-          this.programWorkouts = [];
-
-          this.selectedWorkouts = [];
-
         }
+      },
 
-      });
+      error: (error: any) => {
+        console.error('Hiba a program workoutjainak betöltésekor:', error);
 
+        this.programWorkouts = [];
+
+        this.selectedWorkouts = [];
+      },
+    });
   }
-
 
   // ==========================================================
   // WORKOUT KIVÁLASZTÁSA
   // ==========================================================
 
-  selectWorkout(
-    workoutId: number
-  ): void {
-
+  selectWorkout(workoutId: number): void {
     if (!workoutId) {
-
       return;
     }
-
 
     /*
      * Ha ugyanarra a már megnyitott workoutra kattintunk,
      * akkor csukjuk vissza.
      */
 
-    if (
-      this.selectedWorkoutId ===
-      workoutId
-    ) {
+    if (this.selectedWorkoutId === workoutId) {
+      this.selectedWorkoutId = null;
 
-      this.selectedWorkoutId =
-        null;
+      this.selectedWorkout = null;
 
-      this.selectedWorkout =
-        null;
+      this.selectedWorkoutExercises = [];
 
-      this.selectedWorkoutExercises =
-        [];
+      this.selectedExercises = [];
 
-      this.selectedExercises =
-        [];
+      this.loadingExercises = false;
 
-      this.loadingExercises =
-        false;
-
-      this.isNewWorkout =
-        false;
-
+      this.isNewWorkout = false;
 
       return;
     }
-
 
     /*
      * Másik workout kiválasztása.
      */
 
-    this.selectedWorkoutId =
-      workoutId;
+    this.selectedWorkoutId = workoutId;
 
-    this.selectedWorkout =
-      null;
+    this.selectedWorkout = null;
 
-    this.loadingExercises =
-      true;
-
+    this.loadingExercises = true;
 
     /**
      * Alaphelyzet.
      */
 
-    this.selectedWorkoutExercises =
-      [];
+    this.selectedWorkoutExercises = [];
 
-    this.selectedExercises =
-      [];
-
+    this.selectedExercises = [];
 
     /**
      * Meghatározzuk, hogy ez az újonnan létrehozott
@@ -1238,116 +730,58 @@ export class CoachProgramBuilderComponent
      * pillanatában van jelen.
      */
 
-    const newWorkoutId =
-      this.route.snapshot.queryParamMap.get(
-        'newWorkoutId'
-      );
+    const newWorkoutId = this.route.snapshot.queryParamMap.get('newWorkoutId');
 
+    this.isNewWorkout = newWorkoutId !== null && Number(newWorkoutId) === workoutId;
 
-    this.isNewWorkout =
-      newWorkoutId !== null &&
-      Number(newWorkoutId) ===
-      workoutId;
+    this.exerciseService.getWorkoutExercises(workoutId).subscribe({
+      next: (workout: WorkoutDto) => {
+        this.selectedWorkout = workout;
 
+        /**
+         * A workoutban már meglévő
+         * WorkoutExercise objektumok.
+         */
 
-    this.exerciseService
-      .getWorkoutExercises(
-        workoutId
-      )
-      .subscribe({
+        this.selectedWorkoutExercises = workout.exercises || [];
 
-        next: (workout: WorkoutDto) => {
+        /**
+         * A board számára csak az Exercise
+         * objektumokat adjuk át.
+         *
+         * Ezek automatikusan kijelölve
+         * fognak megjelenni.
+         */
 
-          this.selectedWorkout =
-            workout;
+        this.selectedExercises = this.selectedWorkoutExercises
+          .map((workoutExercise) => workoutExercise.exercise)
+          .filter((exercise): exercise is Exercise => exercise != null);
 
+        this.loadingExercises = false;
 
-          /**
-           * A workoutban már meglévő
-           * WorkoutExercise objektumok.
-           */
+        console.log('Kiválasztott workout:', workout);
 
-          this.selectedWorkoutExercises =
-            workout.exercises || [];
+        console.log('Már meglévő WorkoutExercise-ek:', this.selectedWorkoutExercises);
 
+        console.log('Már meglévő Exercise-ek:', this.selectedExercises);
 
-          /**
-           * A board számára csak az Exercise
-           * objektumokat adjuk át.
-           *
-           * Ezek automatikusan kijelölve
-           * fognak megjelenni.
-           */
+        console.log(
+          'Workout típusa:',
+          this.isNewWorkout ? 'ÚJ WORKOUT - SZERKESZTHETŐ' : 'MEGLÉVŐ WORKOUT - LOCKOLT',
+        );
+      },
 
-          this.selectedExercises =
-            this.selectedWorkoutExercises
-              .map(
-                workoutExercise =>
-                  workoutExercise.exercise
-              )
-              .filter(
-                (
-                  exercise
-                ): exercise is Exercise =>
-                  exercise != null
-              );
+      error: (error: any) => {
+        console.error('Hiba a workout exercise-ok betöltésekor:', error);
 
+        this.selectedWorkoutExercises = [];
 
-          this.loadingExercises =
-            false;
+        this.selectedExercises = [];
 
-
-          console.log(
-            'Kiválasztott workout:',
-            workout
-          );
-
-
-          console.log(
-            'Már meglévő WorkoutExercise-ek:',
-            this.selectedWorkoutExercises
-          );
-
-
-          console.log(
-            'Már meglévő Exercise-ek:',
-            this.selectedExercises
-          );
-
-
-          console.log(
-            'Workout típusa:',
-            this.isNewWorkout
-              ? 'ÚJ WORKOUT - SZERKESZTHETŐ'
-              : 'MEGLÉVŐ WORKOUT - LOCKOLT'
-          );
-
-        },
-
-
-        error: (error: any) => {
-
-          console.error(
-            'Hiba a workout exercise-ok betöltésekor:',
-            error
-          );
-
-
-          this.selectedWorkoutExercises =
-            [];
-
-          this.selectedExercises =
-            [];
-
-          this.loadingExercises =
-            false;
-
-        }
-
-      });
-
+        this.loadingExercises = false;
+      },
+    });
   }
-
 
   // ==========================================================
   // EXERCISE-EK SZERKESZTHETŐSÉGE
@@ -1364,20 +798,14 @@ export class CoachProgramBuilderComponent
    */
 
   get lockSelectedExercises(): boolean {
-
     return !this.isNewWorkout;
-
   }
-
 
   // ==========================================================
   // KIVÁLASZTOTT EXERCISE-OK
   // ==========================================================
 
-  onExercisesChange(
-    updatedExercises: Exercise[]
-  ): void {
-
+  onExercisesChange(updatedExercises: Exercise[]): void {
     /**
      * Meglévő workout esetén nem engedünk
      * frontend oldali módosítást sem.
@@ -1386,31 +814,19 @@ export class CoachProgramBuilderComponent
      */
 
     if (!this.isNewWorkout) {
-
-      console.log(
-        'Meglévő workout exercise-listája LOCKOLVA van.'
-      );
-
+      console.log('Meglévő workout exercise-listája LOCKOLVA van.');
 
       return;
     }
-
 
     /**
      * Új workout esetén szabadon módosítható.
      */
 
-    this.selectedExercises =
-      [...updatedExercises];
+    this.selectedExercises = [...updatedExercises];
 
-
-    console.log(
-      'Kiválasztott exercise-ok:',
-      this.selectedExercises
-    );
-
+    console.log('Kiválasztott exercise-ok:', this.selectedExercises);
   }
-
 
   // ==========================================================
   // ÚJ EXERCISE-EK MEGHATÁROZÁSA
@@ -1422,47 +838,25 @@ export class CoachProgramBuilderComponent
    */
 
   getNewExercisesForWorkout(): Exercise[] {
-
-    const existingExerciseIds =
-      this.selectedWorkoutExercises
-        .map(
-          workoutExercise =>
-            workoutExercise.exercise?.id
-        )
-        .filter(
-          (id): id is number =>
-            id != null
-        );
-
+    const existingExerciseIds = this.selectedWorkoutExercises
+      .map((workoutExercise) => workoutExercise.exercise?.id)
+      .filter((id): id is number => id != null);
 
     return this.selectedExercises.filter(
-      exercise =>
-        exercise.id != null &&
-        !existingExerciseIds.includes(
-          exercise.id
-        )
+      (exercise) => exercise.id != null && !existingExerciseIds.includes(exercise.id),
     );
-
   }
-
 
   // ==========================================================
   // EXERCISE-EK MENTÉSE AZ AKTUÁLIS WORKOUT-HOZ
   // ==========================================================
 
   saveSelectedExercises(): void {
-
-    if (
-      this.selectedWorkoutId === null
-    ) {
-
-      console.error(
-        'Nincs kiválasztott workout.'
-      );
+    if (this.selectedWorkoutId === null) {
+      console.error('Nincs kiválasztott workout.');
 
       return;
     }
-
 
     /**
      * FONTOS:
@@ -1474,98 +868,51 @@ export class CoachProgramBuilderComponent
      */
 
     if (!this.isNewWorkout) {
-
-      console.log(
-        'Meglévő workout. Exercise-ek mentése kihagyva.'
-      );
-
+      console.log('Meglévő workout. Exercise-ek mentése kihagyva.');
 
       return;
     }
 
+    const newExercises = this.getNewExercisesForWorkout();
 
-    const newExercises =
-      this.getNewExercisesForWorkout();
-
-
-    if (
-      newExercises.length === 0
-    ) {
-
-      console.log(
-        'Nincs új exercise, amit menteni kell.'
-      );
-
+    if (newExercises.length === 0) {
+      console.log('Nincs új exercise, amit menteni kell.');
 
       return;
     }
 
+    console.log('Új exercise-ek mentése:', newExercises);
 
-    console.log(
-      'Új exercise-ek mentése:',
-      newExercises
-    );
-
-
-    for (
-      const exercise of newExercises
-      ) {
-
-      if (
-        exercise.id == null
-      ) {
-
+    for (const exercise of newExercises) {
+      if (exercise.id == null) {
         continue;
       }
 
-
       this.workoutExerciseService
-        .assignExerciseToWorkout(
-          this.selectedWorkoutId,
-          exercise.id
-        )
+        .assignExerciseToWorkout(this.selectedWorkoutId, exercise.id)
         .subscribe({
+          next: (response: any) => {
+            console.log('Exercise sikeresen hozzáadva az új workouthoz:', {
+              workoutId: this.selectedWorkoutId,
 
-          next: (
-            response: any
-          ) => {
+              exerciseId: exercise.id,
 
-            console.log(
-              'Exercise sikeresen hozzáadva az új workouthoz:',
-              {
-                workoutId:
-                this.selectedWorkoutId,
-
-                exerciseId:
-                exercise.id,
-
-                response
-              }
-            );
-
+              response,
+            });
 
             /**
              * Frontend állapot frissítése.
              */
 
-            const alreadyExists =
-              this.selectedWorkoutExercises.some(
-                workoutExercise =>
-                  workoutExercise.exercise?.id ===
-                  exercise.id
-              );
-
+            const alreadyExists = this.selectedWorkoutExercises.some(
+              (workoutExercise) => workoutExercise.exercise?.id === exercise.id,
+            );
 
             if (!alreadyExists) {
-
               this.selectedWorkoutExercises.push({
+                id: Number(response) || 0,
 
-                id:
-                  Number(response) ||
-                  0,
-
-                workoutId:
-                  this.selectedWorkoutId!,
+                workoutId: this.selectedWorkoutId!,
 
                 exercise,
 
@@ -1573,90 +920,50 @@ export class CoachProgramBuilderComponent
 
                 repetitions: 0,
 
-                orderIndex:
-                this.selectedWorkoutExercises.length,
+                orderIndex: this.selectedWorkoutExercises.length,
 
                 restSeconds: 0,
 
-                done: false
-
+                done: false,
               });
-
             }
-
           },
 
-
-          error: (
-            error: any
-          ) => {
-
-            console.error(
-              'Hiba az exercise új workouthoz adásakor:',
-              error
-            );
-
-          }
-
+          error: (error: any) => {
+            console.error('Hiba az exercise új workouthoz adásakor:', error);
+          },
         });
-
     }
-
   }
-
 
   // ==========================================================
   // WORKOUT MÁR KIVÁLASZTVA?
   // ==========================================================
 
-  isWorkoutSelected(
-    workoutId: number
-  ): boolean {
-
-    return this.selectedWorkouts.some(
-      workout =>
-        workout.id ===
-        workoutId
-    );
-
+  isWorkoutSelected(workoutId: number): boolean {
+    return this.selectedWorkouts.some((workout) => workout.id === workoutId);
   }
-
 
   // ==========================================================
   // WORKOUT HOZZÁADÁSA
   // ==========================================================
 
   addSelectedWorkout(): void {
-
     if (!this.selectedWorkout) {
-
       return;
     }
-
 
     if (this.programId === null) {
-
-      console.error(
-        'Nincs program ID.'
-      );
+      console.error('Nincs program ID.');
 
       return;
     }
 
-
-    if (
-      this.isWorkoutSelected(
-        this.selectedWorkout.id
-      )
-    ) {
-
+    if (this.isWorkoutSelected(this.selectedWorkout.id)) {
       return;
     }
 
-
-    const workout =
-      this.selectedWorkout;
-
+    const workout = this.selectedWorkout;
 
     /**
      * A következő dayIndex.
@@ -1666,479 +973,240 @@ export class CoachProgramBuilderComponent
      * stb.
      */
 
-    const dayIndex =
-      this.selectedWorkouts.length;
+    const dayIndex = this.selectedWorkouts.length;
 
+    this.programWorkoutService.addWorkoutToProgram(this.programId, workout.id, dayIndex).subscribe({
+      next: (response: any) => {
+        console.log('Workout hozzáadva a programhoz:', response);
 
-    this.programWorkoutService
-      .addWorkoutToProgram(
-        this.programId,
-        workout.id,
-        dayIndex
-      )
-      .subscribe({
+        /**
+         * Frontend lista frissítése.
+         */
 
-        next: (
-          response: any
-        ) => {
+        this.selectedWorkouts.push(workout);
 
-          console.log(
-            'Workout hozzáadva a programhoz:',
-            response
-          );
+        /**
+         * Új program-workout kapcsolat
+         * létrehozása a frontend állapotban.
+         */
 
+        this.programWorkouts.push({
+          id: response?.id,
 
-          /**
-           * Frontend lista frissítése.
-           */
+          programId: this.programId!,
 
-          this.selectedWorkouts.push(
-            workout
-          );
+          workoutId: workout.id,
 
+          dayIndex,
+        });
 
-          /**
-           * Új program-workout kapcsolat
-           * létrehozása a frontend állapotban.
-           */
+        console.log('Program workoutok:', this.programWorkouts);
 
-          this.programWorkouts.push({
+        /**
+         * FONTOS:
+         *
+         * Csak új workout esetén mentjük
+         * az exercise-eket.
+         *
+         * Meglévő workout esetén semmilyen
+         * workout_exercises módosítás nem történik.
+         */
 
-            id:
-            response?.id,
-
-            programId:
-              this.programId!,
-
-            workoutId:
-            workout.id,
-
-            dayIndex
-
-          });
-
-
-          console.log(
-            'Program workoutok:',
-            this.programWorkouts
-          );
-
-
-          /**
-           * FONTOS:
-           *
-           * Csak új workout esetén mentjük
-           * az exercise-eket.
-           *
-           * Meglévő workout esetén semmilyen
-           * workout_exercises módosítás nem történik.
-           */
-
-          if (this.isNewWorkout) {
-
-            this.saveSelectedExercises();
-
-          } else {
-
-            console.log(
-              'Meglévő workout hozzáadva. ' +
-              'WorkoutExercise-ek nem módosulnak.'
-            );
-
-          }
-
-        },
-
-
-        error: (
-          error: any
-        ) => {
-
-          console.error(
-            'Hiba a workout programhoz adásakor:',
-            error
-          );
-
+        if (this.isNewWorkout) {
+          this.saveSelectedExercises();
+        } else {
+          console.log('Meglévő workout hozzáadva. ' + 'WorkoutExercise-ek nem módosulnak.');
         }
+      },
 
-      });
-
+      error: (error: any) => {
+        console.error('Hiba a workout programhoz adásakor:', error);
+      },
+    });
   }
-
 
   // ==========================================================
   // WORKOUT ELTÁVOLÍTÁSA
   // ==========================================================
 
-  removeWorkout(
-    workoutId: number
-  ): void {
-
+  removeWorkout(workoutId: number): void {
     if (this.programId === null) {
-
-      console.error(
-        'Nincs program ID.'
-      );
+      console.error('Nincs program ID.');
 
       return;
     }
 
+    this.programWorkoutService.deleteProgramWorkout(this.programId, workoutId).subscribe({
+      next: (response: any) => {
+        console.log('Workout törölve a programból:', response);
 
-    this.programWorkoutService
-      .deleteProgramWorkout(
-        this.programId,
-        workoutId
-      )
-      .subscribe({
+        /**
+         * FONTOS:
+         *
+         * Csak a program-workout kapcsolatot töröljük.
+         *
+         * A workout saját exercise-eihez
+         * NEM nyúlunk.
+         *
+         * Ez azért fontos, mert ugyanaz a workout
+         * másik programban is szerepelhet.
+         */
 
-        next: (
-          response: any
-        ) => {
+        this.selectedWorkouts = this.selectedWorkouts.filter((workout) => workout.id !== workoutId);
 
-          console.log(
-            'Workout törölve a programból:',
-            response
-          );
+        /**
+         * ProgramWorkout kapcsolat törlése
+         * a frontend állapotból is.
+         */
 
+        this.programWorkouts = this.programWorkouts.filter(
+          (programWorkout) => programWorkout.workoutId !== workoutId,
+        );
 
-          /**
-           * FONTOS:
-           *
-           * Csak a program-workout kapcsolatot töröljük.
-           *
-           * A workout saját exercise-eihez
-           * NEM nyúlunk.
-           *
-           * Ez azért fontos, mert ugyanaz a workout
-           * másik programban is szerepelhet.
-           */
+        /**
+         * Ha ezt a workoutot néztük,
+         * zárjuk be a részleteit.
+         */
 
-          this.selectedWorkouts =
-            this.selectedWorkouts.filter(
-              workout =>
-                workout.id !==
-                workoutId
-            );
+        if (this.selectedWorkoutId === workoutId) {
+          this.selectedWorkoutId = null;
 
+          this.selectedWorkout = null;
 
-          /**
-           * ProgramWorkout kapcsolat törlése
-           * a frontend állapotból is.
-           */
+          this.selectedWorkoutExercises = [];
 
-          this.programWorkouts =
-            this.programWorkouts.filter(
-              programWorkout =>
-                programWorkout.workoutId !==
-                workoutId
-            );
+          this.selectedExercises = [];
 
-
-          /**
-           * Ha ezt a workoutot néztük,
-           * zárjuk be a részleteit.
-           */
-
-          if (
-            this.selectedWorkoutId ===
-            workoutId
-          ) {
-
-            this.selectedWorkoutId =
-              null;
-
-            this.selectedWorkout =
-              null;
-
-            this.selectedWorkoutExercises =
-              [];
-
-            this.selectedExercises =
-              [];
-
-            this.isNewWorkout =
-              false;
-
-          }
-
-
-          /**
-           * A törlés után újraszámoljuk
-           * a dayIndex értékeket.
-           */
-
-          this.reindexProgramWorkouts();
-
-        },
-
-
-        error: (
-          error: any
-        ) => {
-
-          console.error(
-            'Hiba a workout programból törlésekor:',
-            error
-          );
-
+          this.isNewWorkout = false;
         }
 
-      });
+        /**
+         * A törlés után újraszámoljuk
+         * a dayIndex értékeket.
+         */
 
+        this.reindexProgramWorkouts();
+      },
+
+      error: (error: any) => {
+        console.error('Hiba a workout programból törlésekor:', error);
+      },
+    });
   }
-
 
   // ==========================================================
   // DAY INDEX ÚJRASZÁMOZÁSA
   // ==========================================================
 
   reindexProgramWorkouts(): void {
-
     if (this.programId === null) {
-
       return;
     }
 
+    this.programWorkouts = this.programWorkouts.map((programWorkout, index) => ({
+      ...programWorkout,
 
-    this.programWorkouts =
-      this.programWorkouts.map(
-        (
-          programWorkout,
-          index
-        ) => ({
+      dayIndex: index,
+    }));
 
-          ...programWorkout,
-
-          dayIndex:
-          index
-
-        })
-      );
-
-
-    console.log(
-      'Új dayIndex-ek:',
-      this.programWorkouts
-    );
-
+    console.log('Új dayIndex-ek:', this.programWorkouts);
   }
-
 
   // ==========================================================
   // WORKOUT NAPJÁNAK MÓDOSÍTÁSA
   // ==========================================================
 
-  updateWorkoutDay(
-    workoutId: number,
-    dayIndex: number
-  ): void {
-
-    const programWorkout =
-      this.programWorkouts.find(
-        pw =>
-          pw.workoutId ===
-          workoutId
-      );
-
+  updateWorkoutDay(workoutId: number, dayIndex: number): void {
+    const programWorkout = this.programWorkouts.find((pw) => pw.workoutId === workoutId);
 
     if (!programWorkout) {
-
-      console.error(
-        'Nem található program-workout kapcsolat.'
-      );
+      console.error('Nem található program-workout kapcsolat.');
 
       return;
     }
 
-
-    if (
-      programWorkout.id ===
-      undefined
-    ) {
-
-      console.error(
-        'A program-workout kapcsolatnak nincs ID-ja.'
-      );
+    if (programWorkout.id === undefined) {
+      console.error('A program-workout kapcsolatnak nincs ID-ja.');
 
       return;
     }
 
+    this.programWorkoutService.updateProgramWorkout(programWorkout.id, dayIndex).subscribe({
+      next: (response: any) => {
+        console.log('Workout napja módosítva:', response);
 
-    this.programWorkoutService
-      .updateProgramWorkout(
-        programWorkout.id,
-        dayIndex
-      )
-      .subscribe({
+        programWorkout.dayIndex = dayIndex;
 
-        next: (
-          response: any
-        ) => {
+        this.programWorkouts = [...this.programWorkouts].sort((a, b) => a.dayIndex - b.dayIndex);
 
-          console.log(
-            'Workout napja módosítva:',
-            response
-          );
+        this.selectedWorkouts = this.programWorkouts
+          .map((pw) => this.workouts.find((workout) => workout.id === pw.workoutId))
+          .filter((workout): workout is WorkoutDto => workout !== undefined);
+      },
 
-
-          programWorkout.dayIndex =
-            dayIndex;
-
-
-          this.programWorkouts =
-            [
-              ...this.programWorkouts
-            ].sort(
-              (
-                a,
-                b
-              ) =>
-                a.dayIndex -
-                b.dayIndex
-            );
-
-
-          this.selectedWorkouts =
-            this.programWorkouts
-              .map(
-                pw =>
-                  this.workouts.find(
-                    workout =>
-                      workout.id ===
-                      pw.workoutId
-                  )
-              )
-              .filter(
-                (
-                  workout
-                ): workout is WorkoutDto =>
-                  workout !== undefined
-              );
-
-        },
-
-
-        error: (
-          error: any
-        ) => {
-
-          console.error(
-            'Hiba a workout napjának módosításakor:',
-            error
-          );
-
-        }
-
-      });
-
+      error: (error: any) => {
+        console.error('Hiba a workout napjának módosításakor:', error);
+      },
+    });
   }
-
 
   // ==========================================================
   // WORKOUT DAY INDEX LEKÉRÉSE
   // ==========================================================
 
-  getWorkoutDayIndex(
-    workoutId: number
-  ): number {
+  getWorkoutDayIndex(workoutId: number): number {
+    const programWorkout = this.programWorkouts.find((pw) => pw.workoutId === workoutId);
 
-    const programWorkout =
-      this.programWorkouts.find(
-        pw =>
-          pw.workoutId ===
-          workoutId
-      );
-
-
-    return (
-      programWorkout?.dayIndex ??
-      0
-    );
-
+    return programWorkout?.dayIndex ?? 0;
   }
-
 
   // ==========================================================
   // KÖVETKEZŐ LÉPÉS
   // ==========================================================
 
   nextStep(): void {
-
-    if (
-      this.currentStep === 1
-    ) {
-
-      if (
-        this.programId === null
-      ) {
-
+    if (this.currentStep === 1) {
+      if (this.programId === null) {
         // Új program → INSERT
 
         this.createProgram();
-
       } else {
-
         // Meglévő program → UPDATE
 
         this.updateProgram();
-
       }
-
 
       return;
     }
 
-
-    if (
-      this.currentStep < 2
-    ) {
-
+    if (this.currentStep < 2) {
       this.currentStep++;
-
     }
-
   }
-
 
   // ==========================================================
   // ELŐZŐ LÉPÉS
   // ==========================================================
 
   previousStep(): void {
-
     // Meglévő program szerkesztésekor
     // a 2. lépésből visszamegyünk a Programok listájára.
 
-    if (
-      this.currentStep === 2 &&
-      this.isEditMode
-    ) {
-
-      this.router.navigate(
-        ['/coach/dashboard'],
-        {
-          queryParams: {
-            section: 'programs'
-          }
-        }
-      );
-
+    if (this.currentStep === 2 && this.isEditMode) {
+      this.router.navigate(['/coach/dashboard'], {
+        queryParams: {
+          section: 'programs',
+        },
+      });
 
       return;
     }
 
-
     // Új program esetén
     // 2. lépés -> 1. lépés visszalépés.
 
-    if (
-      this.currentStep > 1
-    ) {
-
+    if (this.currentStep > 1) {
       this.currentStep--;
-
     }
-
   }
-
 }

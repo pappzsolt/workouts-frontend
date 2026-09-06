@@ -22,10 +22,9 @@ export interface CoachProfile {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './coach-profile.component.html',
-  styleUrls: ['./coach-profile.component.css']
+  styleUrls: ['./coach-profile.component.css'],
 })
 export class CoachProfileComponent implements OnInit {
-
   private authService = inject(AuthService);
   private coachProfileService = inject(CoachProfileService);
 
@@ -36,7 +35,7 @@ export class CoachProfileComponent implements OnInit {
     phone: '',
     specialization: '',
     avatar_url: '',
-    created_at: ''
+    created_at: '',
   };
 
   message = '';
@@ -63,7 +62,7 @@ export class CoachProfileComponent implements OnInit {
           phone: profile.extraFields?.phone ?? '',
           specialization: profile.extraFields?.specialization ?? '',
           avatar_url: profile.avatarUrl ?? '',
-          created_at: profile.createdAt ?? ''
+          created_at: profile.createdAt ?? '',
         };
 
         this.message = USER_MESSAGES.profileLoaded;
@@ -71,7 +70,7 @@ export class CoachProfileComponent implements OnInit {
 
       error: () => {
         this.message = USER_MESSAGES.loadProfileError;
-      }
+      },
     });
   }
 
@@ -89,7 +88,7 @@ export class CoachProfileComponent implements OnInit {
       avatarUrl: this.profile.avatar_url,
       phone: this.profile.phone,
       specialization: this.profile.specialization,
-      passwordHash: this.profile.password_hash
+      passwordHash: this.profile.password_hash,
     };
 
     this.coachProfileService.saveCoachProfile(payload).subscribe({
@@ -102,12 +101,11 @@ export class CoachProfileComponent implements OnInit {
         if (error.status === 0) {
           this.message = USER_MESSAGES.saveProfileNetworkError;
         } else if (error.error?.message) {
-          this.message =
-            `${USER_MESSAGES.serverError}: ${error.error.message}`;
+          this.message = `${USER_MESSAGES.serverError}: ${error.error.message}`;
         } else {
           this.message = USER_MESSAGES.saveProfileUnknownError;
         }
-      }
+      },
     });
   }
 }

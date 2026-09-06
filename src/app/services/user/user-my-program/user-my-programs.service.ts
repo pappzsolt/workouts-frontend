@@ -16,19 +16,15 @@ export interface UserProgram {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserMyProgramsService {
-
   private readonly http = inject(HttpClient);
   private readonly apiUrl = API_ENDPOINTS.assignedPrograms;
 
   getPrograms(): Observable<UserProgram[]> {
-
     return this.http.get<any>(this.apiUrl).pipe(
-
-      map(res => {
-
+      map((res) => {
         if (!res?.data) {
           return [];
         }
@@ -40,11 +36,11 @@ export class UserMyProgramsService {
           durationWeeks: Math.ceil(p.durationDays / 7),
           difficulty: p.difficulty,
           status: p.status,
-          assignedAt: p.assignedAt
+          assignedAt: p.assignedAt,
         }));
       }),
 
-      catchError(() => of([]))
+      catchError(() => of([])),
     );
   }
 }

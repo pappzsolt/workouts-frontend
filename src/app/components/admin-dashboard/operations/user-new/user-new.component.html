@@ -1,25 +1,19 @@
 <div class="user-new-container">
-
-  <h2 class="user-new-title">
-    Új Felhasználó
-  </h2>
+  <h2 class="user-new-title">Új Felhasználó</h2>
 
   <!-- Üzenet -->
   <div
     *ngIf="message"
     [ngClass]="{
       'message-error': isError,
-      'message-success': !isError
+      'message-success': !isError,
     }"
-    class="message">
+    class="message"
+  >
     {{ message }}
   </div>
 
-  <form
-    #userForm="ngForm"
-    (ngSubmit)="onSubmit(userForm)"
-    class="user-form">
-
+  <form #userForm="ngForm" (ngSubmit)="onSubmit(userForm)" class="user-form">
     <div class="form-group">
       <label for="username">Felhasználónév</label>
       <input
@@ -28,7 +22,8 @@
         type="text"
         required
         [(ngModel)]="user.username"
-        class="form-input"/>
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
@@ -39,7 +34,8 @@
         type="email"
         required
         [(ngModel)]="user.email"
-        class="form-input"/>
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
@@ -50,17 +46,13 @@
         type="password"
         required
         [(ngModel)]="user.passwordHash"
-        class="form-input"/>
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
       <label for="age">Életkor</label>
-      <input
-        id="age"
-        name="age"
-        type="number"
-        [(ngModel)]="user.age"
-        class="form-input"/>
+      <input id="age" name="age" type="number" [(ngModel)]="user.age" class="form-input" />
     </div>
 
     <div class="form-group">
@@ -71,7 +63,8 @@
         type="number"
         step="0.01"
         [(ngModel)]="user.weight"
-        class="form-input"/>
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
@@ -82,31 +75,22 @@
         type="number"
         step="0.01"
         [(ngModel)]="user.height"
-        class="form-input"/>
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
       <label for="gender">Nem</label>
-      <select
-        id="gender"
-        name="gender"
-        [(ngModel)]="user.gender"
-        class="form-input">
-
+      <select id="gender" name="gender" [(ngModel)]="user.gender" class="form-input">
         <option value="Férfi">Férfi</option>
         <option value="Nő">Nő</option>
-
       </select>
     </div>
 
     <div class="form-group form-group-full">
       <label for="goals">Célok</label>
 
-      <textarea
-        id="goals"
-        name="goals"
-        [(ngModel)]="user.goals"
-        class="form-input form-textarea">
+      <textarea id="goals" name="goals" [(ngModel)]="user.goals" class="form-input form-textarea">
       </textarea>
     </div>
 
@@ -118,63 +102,39 @@
         name="avatarUrl"
         type="text"
         [(ngModel)]="user.avatarUrl"
-        class="form-input"/>
+        class="form-input"
+      />
     </div>
 
     <!-- Coach select -->
     <div class="form-group form-group-full">
-      <label class="form-label">
-        Edző hozzárendelése
-      </label>
+      <label class="form-label"> Edző hozzárendelése </label>
 
       <app-coach-select
         [(selectedCoachId)]="user.coachId"
-        (coachSelected)="onCoachSelected($event)">
+        (coachSelected)="onCoachSelected($event)"
+      >
       </app-coach-select>
     </div>
 
     <!-- Role kiválasztás -->
     <div class="form-group form-group-full">
+      <label class="form-label"> Szerepkörök* </label>
 
-      <label class="form-label">
-        Szerepkörök*
-      </label>
-
-      <app-role-select
-        [roles]="roles"
-        (roleSelected)="onRoleSelected($event)">
-      </app-role-select>
+      <app-role-select [roles]="roles" (roleSelected)="onRoleSelected($event)"> </app-role-select>
 
       <div class="selected-roles">
-
-        <span
-          *ngFor="let r of user.roleIds"
-          class="selected-role"
-          (click)="onRemoveRole(r)">
-
+        <span *ngFor="let r of user.roleIds" class="selected-role" (click)="onRemoveRole(r)">
           {{ r.name }}
 
-          <span class="remove-role">
-            x
-          </span>
-
+          <span class="remove-role"> x </span>
         </span>
-
       </div>
-
     </div>
 
     <!-- Submit -->
     <div class="form-submit">
-
-      <button
-        type="submit"
-        class="submit-button">
-        Létrehozás
-      </button>
-
+      <button type="submit" class="submit-button">Létrehozás</button>
     </div>
-
   </form>
-
 </div>

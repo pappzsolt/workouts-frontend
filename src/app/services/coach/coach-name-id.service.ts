@@ -9,10 +9,9 @@ export interface CoachNameId {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CoachNameIdService {
-
   private apiUrl = API_ENDPOINTS.coachesNameId;
 
   constructor(private http: HttpClient) {}

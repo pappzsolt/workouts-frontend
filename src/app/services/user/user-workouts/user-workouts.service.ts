@@ -8,7 +8,7 @@ export interface Workout {
   workoutId: number;
   workoutName: string;
   workoutDescription: string;
-  workoutDate: string;           // ISO dátum
+  workoutDate: string; // ISO dátum
   durationMinutes: number;
   intensityLevel: string;
   dayIndex: number;
@@ -23,20 +23,14 @@ export interface Workout {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserWorkoutsService {
-
   private readonly http = inject(HttpClient);
   private readonly apiUrl = API_ENDPOINTS.workouts;
 
   /** Backend hívás – Workouts by program */
-  getWorkoutsByProgram(
-    programId: number
-  ): Observable<Workout[]> {
-
-    return this.http.get<Workout[]>(
-      `${this.apiUrl}/program/${programId}`
-    );
+  getWorkoutsByProgram(programId: number): Observable<Workout[]> {
+    return this.http.get<Workout[]>(`${this.apiUrl}/program/${programId}`);
   }
 }

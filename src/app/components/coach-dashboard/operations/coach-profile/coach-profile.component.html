@@ -5,27 +5,14 @@
 </div>
 
 <form class="profile-form">
-
   <div class="form-field">
     <label for="name">Name</label>
-    <input
-      id="name"
-      name="name"
-      type="text"
-      placeholder="Name"
-      [(ngModel)]="profile.name"
-    />
+    <input id="name" name="name" type="text" placeholder="Name" [(ngModel)]="profile.name" />
   </div>
 
   <div class="form-field">
     <label for="email">Email</label>
-    <input
-      id="email"
-      name="email"
-      type="email"
-      placeholder="Email"
-      [(ngModel)]="profile.email"
-    />
+    <input id="email" name="email" type="email" placeholder="Email" [(ngModel)]="profile.email" />
   </div>
 
   <div class="form-field">
@@ -41,13 +28,7 @@
 
   <div class="form-field">
     <label for="phone">Phone</label>
-    <input
-      id="phone"
-      name="phone"
-      type="text"
-      placeholder="Phone"
-      [(ngModel)]="profile.phone"
-    />
+    <input id="phone" name="phone" type="text" placeholder="Phone" [(ngModel)]="profile.phone" />
   </div>
 
   <div class="form-field full-width">
@@ -73,12 +54,6 @@
   </div>
 
   <div class="form-actions">
-    <button
-      type="button"
-      (click)="saveProfile()"
-    >
-      Save
-    </button>
+    <button type="button" (click)="saveProfile()">Save</button>
   </div>
-
 </form>

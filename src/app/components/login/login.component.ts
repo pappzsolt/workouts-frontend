@@ -16,17 +16,21 @@ interface LoginResponse {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
   loginForm: FormGroup;
   errorMessage = '';
   loading = false;
 
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router,
+  ) {
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
-      password: ['', Validators.required]
+      password: ['', Validators.required],
     });
   }
 
@@ -42,14 +46,15 @@ export class LoginComponent {
     this.loading = true;
     this.errorMessage = '';
 
-    this.authService.login(username, password)
+    this.authService
+      .login(username, password)
       .pipe(
-        catchError(err => {
+        catchError((err) => {
           console.error('Login hiba:', err);
           this.errorMessage = USER_MESSAGES.userOrPassFailed;
           this.loading = false;
           return of(null);
-        })
+        }),
       )
       .subscribe((res: LoginResponse | null) => {
         this.loading = false;

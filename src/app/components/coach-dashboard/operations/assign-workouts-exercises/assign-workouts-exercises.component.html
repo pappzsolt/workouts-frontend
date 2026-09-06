@@ -1,5 +1,4 @@
 <div class="page-container">
-
   <!-- Workout lista -->
   <div class="content-card">
     <h2 class="section-title">Elérhető workoutok</h2>
@@ -8,36 +7,21 @@
       [externalWorkouts]="workouts"
       [selectedWorkoutIds]="selectedWorkoutIds"
       [multiSelect]="false"
-      (workoutsChange)="onWorkoutsChange($event)">
+      (workoutsChange)="onWorkoutsChange($event)"
+    >
     </app-coach-workout-board>
   </div>
 
   <!-- Kiválasztott workoutok -->
-  <div
-    *ngIf="selectedWorkoutIds.length"
-    class="content-card"
-  >
+  <div *ngIf="selectedWorkoutIds.length" class="content-card">
     <h2 class="section-title">Kiválasztott workoutok</h2>
 
     <div class="items-list">
+      <div *ngFor="let wid of selectedWorkoutIds" class="selected-workout">
+        <span class="item-text"> ID: {{ wid }} </span>
 
-      <div
-        *ngFor="let wid of selectedWorkoutIds"
-        class="selected-workout"
-      >
-        <span class="item-text">
-          ID: {{ wid }}
-        </span>
-
-        <button
-          (click)="removeWorkout(wid)"
-          class="remove-button"
-          title="Eltávolítás"
-        >
-          ✕
-        </button>
+        <button (click)="removeWorkout(wid)" class="remove-button" title="Eltávolítás">✕</button>
       </div>
-
     </div>
   </div>
 
@@ -48,35 +32,25 @@
     <app-coach-exercises-board
       [externalExercises]="exercises"
       [externalSelectedExercises]="selectedExercises"
-      (exercisesChange)="onExercisesChange($event)">
+      (exercisesChange)="onExercisesChange($event)"
+    >
     </app-coach-exercises-board>
   </div>
 
   <!-- Mentés gomb -->
   <div class="save-container">
-    <button
-      (click)="saveSelectedWorkoutsAndExercises()"
-      class="save-button"
-    >
+    <button (click)="saveSelectedWorkoutsAndExercises()" class="save-button">
       Mentés a kiválasztott workoutokhoz és exercise-ekhez
     </button>
   </div>
-
 </div>
 
 <!-- Mentett workout-exercise kapcsolatok -->
-<div
-  *ngIf="savedWorkoutExercises.length"
-  class="saved-container"
->
+<div *ngIf="savedWorkoutExercises.length" class="saved-container">
   <h2 class="section-title">Mentett kapcsolatok</h2>
 
   <div class="items-list">
-
-    <div
-      *ngFor="let saved of savedWorkoutExercises"
-      class="saved-item"
-    >
+    <div *ngFor="let saved of savedWorkoutExercises" class="saved-item">
       <span class="item-text">
         {{ saved.workoutName }} -
         {{ saved.exerciseName }}
@@ -93,8 +67,6 @@
       >
         ✕
       </button>
-
     </div>
-
   </div>
 </div>

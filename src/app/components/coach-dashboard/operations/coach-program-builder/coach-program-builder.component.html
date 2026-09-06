@@ -1,37 +1,21 @@
 <div class="program-builder">
-
   <!-- ====================================================== -->
   <!-- HEADER -->
   <!-- ====================================================== -->
 
   <div class="program-builder-header">
-
     <div class="header-content">
-
-      <span class="header-icon">
-        🏋️
-      </span>
+      <span class="header-icon"> 🏋️ </span>
 
       <div>
-
-        <h2>
-          Program Builder
-        </h2>
+        <h2>Program Builder</h2>
 
         <p>
-          {{
-            isEditMode
-              ? 'Meglévő edzésprogram módosítása'
-              : 'Új edzésprogram létrehozása'
-          }}
+          {{ isEditMode ? 'Meglévő edzésprogram módosítása' : 'Új edzésprogram létrehozása' }}
         </p>
-
       </div>
-
     </div>
-
   </div>
-
 
   <!-- ====================================================== -->
   <!-- ÜZENET -->
@@ -46,30 +30,17 @@
     {{ message }}
   </div>
 
-
   <!-- ====================================================== -->
   <!-- 1. LÉPÉS - PROGRAM -->
   <!-- ====================================================== -->
 
-  <div
-    class="builder-card"
-    *ngIf="currentStep === 1"
-  >
-
+  <div class="builder-card" *ngIf="currentStep === 1">
     <div class="step-header">
-
-      <span class="step-number">
-        1
-      </span>
+      <span class="step-number"> 1 </span>
 
       <div>
-
         <h3>
-          {{
-            isEditMode
-              ? 'Program módosítása'
-              : 'Program létrehozása'
-          }}
+          {{ isEditMode ? 'Program módosítása' : 'Program létrehozása' }}
         </h3>
 
         <p>
@@ -79,19 +50,13 @@
               : 'Állítsd be az edzésprogram alapadatait.'
           }}
         </p>
-
       </div>
-
     </div>
-
 
     <!-- PROGRAM NÉV -->
 
     <div class="form-group">
-
-      <label for="programName">
-        Program neve
-      </label>
+      <label for="programName"> Program neve </label>
 
       <input
         id="programName"
@@ -99,17 +64,12 @@
         [(ngModel)]="programName"
         placeholder="Pl. Erőemelő kezdő program"
       />
-
     </div>
-
 
     <!-- PROGRAM LEÍRÁS -->
 
     <div class="form-group">
-
-      <label for="programDescription">
-        Program leírása
-      </label>
+      <label for="programDescription"> Program leírása </label>
 
       <textarea
         id="programDescription"
@@ -117,20 +77,14 @@
         [(ngModel)]="programDescription"
         placeholder="Írd le röviden a program célját..."
       ></textarea>
-
     </div>
-
 
     <!-- PROGRAM IDŐTARTAMA -->
 
     <div class="form-group">
-
-      <label for="durationDays">
-        Program időtartama
-      </label>
+      <label for="durationDays"> Program időtartama </label>
 
       <div class="input-with-suffix">
-
         <input
           id="durationDays"
           type="number"
@@ -139,55 +93,31 @@
           placeholder="Pl. 30"
         />
 
-        <span>
-          nap
-        </span>
-
+        <span> nap </span>
       </div>
-
     </div>
-
 
     <!-- NEHÉZSÉGI SZINT -->
 
     <div class="form-group">
+      <label for="difficultyLevel"> Nehézségi szint </label>
 
-      <label for="difficultyLevel">
-        Nehézségi szint
-      </label>
+      <select id="difficultyLevel" [(ngModel)]="difficultyLevel">
+        <option value="">Válassz nehézségi szintet</option>
 
-      <select
-        id="difficultyLevel"
-        [(ngModel)]="difficultyLevel"
-      >
+        <option value="BEGINNER">Kezdő</option>
 
-        <option value="">
-          Válassz nehézségi szintet
-        </option>
+        <option value="INTERMEDIATE">Középhaladó</option>
 
-        <option value="BEGINNER">
-          Kezdő
-        </option>
-
-        <option value="INTERMEDIATE">
-          Középhaladó
-        </option>
-
-        <option value="ADVANCED">
-          Haladó
-        </option>
-
+        <option value="ADVANCED">Haladó</option>
       </select>
-
     </div>
-
 
     <!-- ================================================== -->
     <!-- PROGRAM MENTÉSE / MÓDOSÍTÁSA -->
     <!-- ================================================== -->
 
     <div class="builder-actions">
-
       <button
         type="button"
         class="next-button primary-action"
@@ -200,194 +130,100 @@
         "
         (click)="nextStep()"
       >
-
         <span>
           {{
             creatingProgram
-              ? (
-                isEditMode
-                  ? 'Program módosítása...'
-                  : 'Program létrehozása...'
-              )
-              : (
-                isEditMode
-                  ? 'Program módosítása'
-                  : 'Program létrehozása'
-              )
+              ? isEditMode
+                ? 'Program módosítása...'
+                : 'Program létrehozása...'
+              : isEditMode
+                ? 'Program módosítása'
+                : 'Program létrehozása'
           }}
         </span>
 
-        <span *ngIf="!creatingProgram">
-          →
-        </span>
-
+        <span *ngIf="!creatingProgram"> → </span>
       </button>
-
     </div>
-
   </div>
-
 
   <!-- ====================================================== -->
   <!-- 2. LÉPÉS - WORKOUTOK -->
   <!-- ====================================================== -->
 
-  <div
-    class="builder-card"
-    *ngIf="currentStep === 2"
-  >
-
+  <div class="builder-card" *ngIf="currentStep === 2">
     <!-- STEP HEADER -->
 
     <div class="step-header">
-
-      <span class="step-number">
-        2
-      </span>
+      <span class="step-number"> 2 </span>
 
       <div>
+        <h3>Workoutok</h3>
 
-        <h3>
-          Workoutok
-        </h3>
-
-        <p>
-          Válassz egy meglévő workoutot, vagy hozz létre egy újat.
-        </p>
-
+        <p>Válassz egy meglévő workoutot, vagy hozz létre egy újat.</p>
       </div>
-
     </div>
-
 
     <!-- ================================================== -->
     <!-- WORKOUT OPCIÓK -->
     <!-- ================================================== -->
 
     <div class="workout-options">
-
-      <button
-        type="button"
-        class="builder-option"
-      >
-
-        <span class="option-icon">
-          📋
-        </span>
+      <button type="button" class="builder-option">
+        <span class="option-icon"> 📋 </span>
 
         <span class="option-content">
+          <strong> Meglévő workout hozzáadása </strong>
 
-          <strong>
-            Meglévő workout hozzáadása
-          </strong>
-
-          <small>
-            Válassz a már létrehozott workoutok közül.
-          </small>
-
+          <small> Válassz a már létrehozott workoutok közül. </small>
         </span>
 
-        <span class="option-arrow">
-          →
-        </span>
-
+        <span class="option-arrow"> → </span>
       </button>
 
-
-      <button
-        type="button"
-        class="builder-option"
-        (click)="goToCreateWorkout()"
-      >
-
-        <span class="option-icon">
-          ➕
-        </span>
+      <button type="button" class="builder-option" (click)="goToCreateWorkout()">
+        <span class="option-icon"> ➕ </span>
 
         <span class="option-content">
+          <strong> Új workout létrehozása </strong>
 
-          <strong>
-            Új workout létrehozása
-          </strong>
-
-          <small>
-            Hozz létre egy új workoutot a programhoz.
-          </small>
-
+          <small> Hozz létre egy új workoutot a programhoz. </small>
         </span>
 
-        <span class="option-arrow">
-          →
-        </span>
-
+        <span class="option-arrow"> → </span>
       </button>
-
     </div>
-
 
     <!-- ================================================== -->
     <!-- ELÉRHETŐ WORKOUTOK -->
     <!-- ================================================== -->
 
     <div class="existing-workouts">
-
       <div class="section-header">
-
         <div>
+          <h4>Elérhető workoutok</h4>
 
-          <h4>
-            Elérhető workoutok
-          </h4>
-
-          <p>
-            Válassz egy workoutot a részletek megtekintéséhez.
-          </p>
-
+          <p>Válassz egy workoutot a részletek megtekintéséhez.</p>
         </div>
-
       </div>
-
 
       <!-- LOADING -->
 
-      <div
-        *ngIf="loadingWorkouts"
-        class="loading-message"
-      >
-
+      <div *ngIf="loadingWorkouts" class="loading-message">
         <span class="loading-spinner"></span>
 
-        <span>
-          Workoutok betöltése...
-        </span>
-
+        <span> Workoutok betöltése... </span>
       </div>
-
 
       <!-- NINCS WORKOUT -->
 
-      <div
-        *ngIf="
-          !loadingWorkouts &&
-          workouts.length === 0
-        "
-        class="empty-message"
-      >
+      <div *ngIf="!loadingWorkouts && workouts.length === 0" class="empty-message">
+        <span class="empty-icon"> 📋 </span>
 
-        <span class="empty-icon">
-          📋
-        </span>
+        <strong> Nincs elérhető workout </strong>
 
-        <strong>
-          Nincs elérhető workout
-        </strong>
-
-        <span>
-          Hozz létre egy új workoutot a folytatáshoz.
-        </span>
-
+        <span> Hozz létre egy új workoutot a folytatáshoz. </span>
       </div>
-
 
       <!-- ================================================= -->
       <!-- WORKOUT KÁRTYÁK -->
@@ -396,125 +232,74 @@
       <div
         *ngFor="let workout of workouts"
         class="workout-card"
-        [class.workout-card-selected]="
-          selectedWorkoutId === workout.id
-        "
+        [class.workout-card-selected]="selectedWorkoutId === workout.id"
       >
-
         <!-- WORKOUT FEJLÉC -->
 
-        <div
-          class="workout-card-header"
-          (click)="selectWorkout(workout.id)"
-        >
-
+        <div class="workout-card-header" (click)="selectWorkout(workout.id)">
           <div class="workout-info">
-
             <div class="workout-title-row">
-
               <h5>
                 {{ workout.name }}
               </h5>
 
-              <span
-                *ngIf="isWorkoutSelected(workout.id)"
-                class="workout-selected-badge"
-              >
+              <span *ngIf="isWorkoutSelected(workout.id)" class="workout-selected-badge">
                 ✓ Hozzáadva
               </span>
-
             </div>
-
 
             <p>
               {{ workout.description || 'Nincs leírás' }}
             </p>
 
-
             <!-- WORKOUT META -->
 
             <div class="workout-meta">
-
               <span>
                 🏋️
                 {{ workout.exercises?.length || 0 }}
                 exercise
               </span>
 
-              <span
-                *ngIf="workout.durationMinutes"
-              >
+              <span *ngIf="workout.durationMinutes">
                 ⏱️
                 {{ workout.durationMinutes }}
                 perc
               </span>
 
-              <span
-                *ngIf="workout.intensityLevel"
-              >
+              <span *ngIf="workout.intensityLevel">
                 📊
                 {{ workout.intensityLevel }}
               </span>
-
             </div>
-
           </div>
 
-
           <span class="workout-arrow">
-
-            {{
-              selectedWorkoutId === workout.id
-                ? '▲'
-                : '▼'
-            }}
-
+            {{ selectedWorkoutId === workout.id ? '▲' : '▼' }}
           </span>
-
         </div>
-
 
         <!-- ================================================= -->
         <!-- KIVÁLASZTOTT WORKOUT RÉSZLETEI -->
         <!-- ================================================= -->
 
-        <div
-          *ngIf="
-            selectedWorkoutId === workout.id
-          "
-          class="workout-details"
-        >
-
-
+        <div *ngIf="selectedWorkoutId === workout.id" class="workout-details">
           <!-- EXERCISE LOADING -->
 
-          <div
-            *ngIf="loadingExercises"
-            class="loading-message"
-          >
-
+          <div *ngIf="loadingExercises" class="loading-message">
             <span class="loading-spinner"></span>
 
-            <span>
-              Exercise-ok betöltése...
-            </span>
-
+            <span> Exercise-ok betöltése... </span>
           </div>
-
 
           <!-- ================================================= -->
           <!-- EXERCISE KIVÁLASZTÓ -->
           <!-- ================================================= -->
 
           <div class="builder-exercises">
-
             <div class="section-header">
-
               <div>
-
-                <h4>
-                  Exercise-ok
-                </h4>
+                <h4>Exercise-ok</h4>
 
                 <p>
                   {{
@@ -523,11 +308,8 @@
                       : 'Válaszd ki a workoutban használni kívánt gyakorlatokat.'
                   }}
                 </p>
-
               </div>
-
             </div>
-
 
             <app-coach-exercises-board
               [externalExercises]="exercises"
@@ -536,143 +318,80 @@
               (exercisesChange)="onExercisesChange($event)"
             >
             </app-coach-exercises-board>
-
           </div>
-
 
           <!-- ================================================= -->
           <!-- MÁR KIVÁLASZTOTT EXERCISE-OK -->
           <!-- ================================================= -->
 
           <div
-            *ngIf="
-              !loadingExercises &&
-              selectedExercises.length === 0
-            "
+            *ngIf="!loadingExercises && selectedExercises.length === 0"
             class="empty-message compact"
           >
+            <span class="empty-icon"> 🏋️ </span>
 
-            <span class="empty-icon">
-              🏋️
-            </span>
-
-            <span>
-              Ehhez a workouthoz nincs exercise hozzáadva.
-            </span>
-
+            <span> Ehhez a workouthoz nincs exercise hozzáadva. </span>
           </div>
 
-
-          <div
-            *ngIf="
-              !loadingExercises &&
-              selectedExercises.length > 0
-            "
-            class="exercise-list"
-          >
-
+          <div *ngIf="!loadingExercises && selectedExercises.length > 0" class="exercise-list">
             <div class="selected-exercise-header">
-
-              <strong>
-                Kiválasztott exercise-ok
-              </strong>
+              <strong> Kiválasztott exercise-ok </strong>
 
               <span>
                 {{ selectedExercises.length }}
               </span>
-
             </div>
 
-
-            <div
-              *ngFor="
-                let exercise of selectedExercises
-              "
-              class="exercise-card"
-            >
-
+            <div *ngFor="let exercise of selectedExercises" class="exercise-card">
               <div class="exercise-card-header">
-
                 <strong>
                   {{ exercise.name }}
                 </strong>
-
               </div>
 
-
               <div class="exercise-details">
-
-                <span
-                  *ngIf="exercise.muscleGroup"
-                >
-                  <strong>
-                    Izomcsoport
-                  </strong>
+                <span *ngIf="exercise.muscleGroup">
+                  <strong> Izomcsoport </strong>
 
                   {{ exercise.muscleGroup }}
                 </span>
 
-
-                <span
-                  *ngIf="exercise.equipment"
-                >
-                  <strong>
-                    Eszköz
-                  </strong>
+                <span *ngIf="exercise.equipment">
+                  <strong> Eszköz </strong>
 
                   {{ exercise.equipment }}
                 </span>
 
-
-                <span
-                  *ngIf="exercise.difficultyLevel"
-                >
-                  <strong>
-                    Nehézség
-                  </strong>
+                <span *ngIf="exercise.difficultyLevel">
+                  <strong> Nehézség </strong>
 
                   {{ exercise.difficultyLevel }}
                 </span>
 
-
-                <span
-                  *ngIf="exercise.category"
-                >
-                  <strong>
-                    Kategória
-                  </strong>
+                <span *ngIf="exercise.category">
+                  <strong> Kategória </strong>
 
                   {{ exercise.category }}
                 </span>
-
               </div>
 
-
-              <div
-                *ngIf="exercise.description"
-                class="exercise-notes"
-              >
+              <div *ngIf="exercise.description" class="exercise-notes">
                 {{ exercise.description }}
               </div>
-
             </div>
-
           </div>
-
 
           <!-- ================================================= -->
           <!-- WORKOUT HOZZÁADÁSA -->
           <!-- ================================================= -->
 
           <div class="workout-add-action">
-
             <button
               type="button"
               class="add-workout-button"
               [disabled]="isWorkoutSelected(workout.id)"
               (click)="addSelectedWorkout()"
             >
-
               <span>
                 {{
                   isWorkoutSelected(workout.id)
@@ -680,65 +399,36 @@
                     : '+ Hozzáadás a programhoz'
                 }}
               </span>
-
             </button>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
-
 
     <!-- ================================================== -->
     <!-- PROGRAMHOZ HOZZÁADOTT WORKOUTOK -->
     <!-- ================================================== -->
 
-    <div
-      class="selected-workouts"
-      *ngIf="selectedWorkouts.length > 0"
-    >
-
+    <div class="selected-workouts" *ngIf="selectedWorkouts.length > 0">
       <div class="section-header">
-
         <div>
+          <h4>Programhoz hozzáadott workoutok</h4>
 
-          <h4>
-            Programhoz hozzáadott workoutok
-          </h4>
-
-          <p>
-            Ezek a workoutok kerültek be a programba.
-          </p>
-
+          <p>Ezek a workoutok kerültek be a programba.</p>
         </div>
 
         <span class="selected-count">
           {{ selectedWorkouts.length }}
         </span>
-
       </div>
 
-
       <div class="selected-workout-list">
-
-        <div
-          *ngFor="
-            let workout of selectedWorkouts;
-            let i = index
-          "
-          class="selected-workout-item"
-        >
-
+        <div *ngFor="let workout of selectedWorkouts; let i = index" class="selected-workout-item">
           <div class="selected-workout-number">
             {{ i + 1 }}
           </div>
 
-
           <div class="selected-workout-info">
-
             <strong>
               {{ workout.name }}
             </strong>
@@ -747,9 +437,7 @@
               {{ workout.exercises?.length || 0 }}
               exercise
             </small>
-
           </div>
-
 
           <button
             type="button"
@@ -759,39 +447,24 @@
           >
             ✕
           </button>
-
         </div>
-
       </div>
-
     </div>
-
 
     <!-- ================================================== -->
     <!-- NAVIGÁCIÓ -->
     <!-- ================================================== -->
 
     <div class="builder-actions builder-actions-bottom">
-
-      <button
-        type="button"
-        class="back-button"
-        (click)="previousStep()"
-      >
-        ← Vissza
-      </button>
-
+      <button type="button" class="back-button" (click)="previousStep()">← Vissza</button>
 
       <div class="user-select-wrapper">
-
         <app-user-select
           [(selectedUserId)]="selectedUserId"
           [disabled]="isEditMode && selectedUserId !== undefined"
         >
         </app-user-select>
-
       </div>
-
 
       <button
         type="button"
@@ -799,19 +472,10 @@
         [disabled]="programId === null || !selectedUserId"
         (click)="finishProgram()"
       >
+        <span> Program befejezése </span>
 
-        <span>
-          Program befejezése
-        </span>
-
-        <span>
-          →
-        </span>
-
+        <span> → </span>
       </button>
-
     </div>
-
   </div>
-
 </div>

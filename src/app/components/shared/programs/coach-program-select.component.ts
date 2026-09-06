@@ -1,11 +1,4 @@
-import {
-  Component,
-  OnInit,
-  Input,
-  Output,
-  EventEmitter,
-  inject
-} from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, inject } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -16,14 +9,10 @@ import { CoachProgram } from '../../../models/coach-program-select-model';
 @Component({
   selector: 'app-coach-program-select',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  templateUrl: './coach-program-select.component.html'
+  imports: [CommonModule, FormsModule],
+  templateUrl: './coach-program-select.component.html',
 })
 export class CoachProgramSelectComponent implements OnInit {
-
   private programService = inject(CoachProgramSelectService);
 
   programs: CoachProgram[] = [];
@@ -48,7 +37,7 @@ export class CoachProgramSelectComponent implements OnInit {
       error: () => {
         this.message = 'Hiba a programok lekérése során';
         this.loading = false;
-      }
+      },
     });
   }
 

@@ -13,7 +13,6 @@ import { ActivatedRoute, Router } from '@angular/router';
   imports: [CommonModule, FormsModule],
 })
 export class NewWorkoutComponent implements OnInit {
-
   workouts: Workout[] = [];
 
   newWorkout = {
@@ -22,7 +21,7 @@ export class NewWorkoutComponent implements OnInit {
     workoutDate: '',
     durationMinutes: 0,
     intensityLevel: '',
-    done: false
+    done: false,
   };
 
   message: string = '';
@@ -31,202 +30,109 @@ export class NewWorkoutComponent implements OnInit {
   constructor(
     private coachWorkoutsService: CoachWorkoutsService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
+    const fromProgramBuilder = this.route.snapshot.queryParamMap.get('fromProgramBuilder');
 
-    const fromProgramBuilder =
-      this.route.snapshot.queryParamMap.get(
-        'fromProgramBuilder'
-      );
+    const programId = this.route.snapshot.queryParamMap.get('programId');
 
-    const programId =
-      this.route.snapshot.queryParamMap.get(
-        'programId'
-      );
+    console.log('Program Builderből érkezett:', fromProgramBuilder);
 
-    console.log(
-      'Program Builderből érkezett:',
-      fromProgramBuilder
-    );
-
-    console.log(
-      'Program ID:',
-      programId
-    );
+    console.log('Program ID:', programId);
 
     this.loadWorkouts();
   }
 
-
   loadWorkouts(): void {
+    this.coachWorkoutsService.getMyWorkouts().subscribe({
+      next: (res) => {
+        this.workouts = res || [];
+      },
 
-    this.coachWorkoutsService
-      .getMyWorkouts()
-      .subscribe({
-
-        next: (res) => {
-
-          this.workouts = res || [];
-
-        },
-
-        error: (err) => {
-
-          console.error(
-            'Hiba a workoutok betöltésekor',
-            err
-          );
-
-        }
-
-      });
+      error: (err) => {
+        console.error('Hiba a workoutok betöltésekor', err);
+      },
+    });
   }
 
-
   addWorkout(): void {
+    this.coachWorkoutsService.addWorkout(this.newWorkout).subscribe({
+      next: (res) => {
+        console.log('Workout létrehozás válasz:', res);
+        console.log('Workout response.data:', res.data);
+        this.message = 'Workout létrehozva!';
 
-    this.coachWorkoutsService
-      .addWorkout(this.newWorkout)
-      .subscribe({
+        this.messageType = 'success';
 
-        next: (res) => {
+        // Megnézzük, hogy a Program Builderből
+        // érkeztünk-e.
+        const fromProgramBuilder = this.route.snapshot.queryParamMap.get('fromProgramBuilder');
 
-          console.log(
-            'Workout létrehozás válasz:',
-            res
-          );
-          console.log(
-            'Workout response.data:',
-            res.data
-          );
-          this.message =
-            'Workout létrehozva!';
+        // Az aktuális program ID-ja.
+        const programId = this.route.snapshot.queryParamMap.get('programId');
 
-          this.messageType =
-            'success';
+        // ==================================================
+        // PROGRAM BUILDERBŐL ÉRKEZTÜNK
+        // ==================================================
 
+        if (fromProgramBuilder === 'true' && programId) {
+          /**
+           * A WorkoutResponse modell alapján
+           * az új workout azonosítója:
+           *
+           * res.data.id
+           */
+          const workoutId = res.data?.id;
 
-          // Megnézzük, hogy a Program Builderből
-          // érkeztünk-e.
-          const fromProgramBuilder =
-            this.route.snapshot.queryParamMap.get(
-              'fromProgramBuilder'
-            );
+          console.log('Új workout létrehozva.', 'Workout ID:', workoutId, 'Program ID:', programId);
 
-
-          // Az aktuális program ID-ja.
-          const programId =
-            this.route.snapshot.queryParamMap.get(
-              'programId'
-            );
-
-
-          // ==================================================
-          // PROGRAM BUILDERBŐL ÉRKEZTÜNK
-          // ==================================================
-
-          if (
-            fromProgramBuilder === 'true' &&
-            programId
-          ) {
-
-            /**
-             * A WorkoutResponse modell alapján
-             * az új workout azonosítója:
-             *
-             * res.data.id
-             */
-            const workoutId =
-              res.data?.id;
-
-
-            console.log(
-              'Új workout létrehozva.',
-              'Workout ID:',
-              workoutId,
-              'Program ID:',
-              programId
-            );
-
-
-            if (
-              workoutId === undefined ||
-              workoutId === null
-            ) {
-
-              console.error(
-                'A workout létrejött, de a backend válaszában nincs workout ID.',
-                res
-              );
-
-              return;
-            }
-
-
-            console.log(
-              'Visszatérés a Program Builderbe az új workout ID-jával.'
-            );
-
-
-            this.router.navigate(
-              ['/coach/program-builder'],
-              {
-                queryParams: {
-                  programId: programId,
-                  newWorkoutId: workoutId
-                }
-              }
-            );
+          if (workoutId === undefined || workoutId === null) {
+            console.error('A workout létrejött, de a backend válaszában nincs workout ID.', res);
 
             return;
           }
 
+          console.log('Visszatérés a Program Builderbe az új workout ID-jával.');
 
-          // ==================================================
-          // NORMÁL WORKOUT LÉTREHOZÁS
-          // ==================================================
+          this.router.navigate(['/coach/program-builder'], {
+            queryParams: {
+              programId: programId,
+              newWorkoutId: workoutId,
+            },
+          });
 
-          this.resetForm();
-
-          this.loadWorkouts();
-
-        },
-
-
-        error: (err) => {
-
-          console.error(
-            'Hiba a workout létrehozásakor:',
-            err
-          );
-
-          this.message =
-            'Hiba a workout létrehozásakor!';
-
-          this.messageType =
-            'error';
-
+          return;
         }
 
-      });
+        // ==================================================
+        // NORMÁL WORKOUT LÉTREHOZÁS
+        // ==================================================
+
+        this.resetForm();
+
+        this.loadWorkouts();
+      },
+
+      error: (err) => {
+        console.error('Hiba a workout létrehozásakor:', err);
+
+        this.message = 'Hiba a workout létrehozásakor!';
+
+        this.messageType = 'error';
+      },
+    });
   }
 
-
   private resetForm(): void {
-
     this.newWorkout = {
-
       name: '',
       description: '',
       workoutDate: '',
       durationMinutes: 0,
       intensityLevel: '',
-      done: false
-
+      done: false,
     };
-
   }
-
 }

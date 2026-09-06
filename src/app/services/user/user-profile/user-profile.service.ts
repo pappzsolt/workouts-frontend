@@ -6,10 +6,9 @@ import { RawUser, Coach, Role } from '../../../models/user-profil.model';
 import { API_ENDPOINTS } from '../../../api-endpoints';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserProfilService {
-
   private readonly http = inject(HttpClient);
 
   private readonly apiUrl = API_ENDPOINTS.members;
@@ -18,41 +17,29 @@ export class UserProfilService {
   private readonly rolesUrl = API_ENDPOINTS.roles;
 
   getUsers(): Observable<RawUser[]> {
-    return this.http.get<any>(this.usersUrl).pipe(
-      map(res => res.data)
-    );
+    return this.http.get<any>(this.usersUrl).pipe(map((res) => res.data));
   }
 
   getCoaches(): Observable<Coach[]> {
     return this.http.get<any>(this.coachesUrl).pipe(
-      map(res =>
+      map((res) =>
         res.data.map((c: any) => ({
           id: c.id,
-          name: c.usernameOrName || c.name
-        }))
-      )
+          name: c.usernameOrName || c.name,
+        })),
+      ),
     );
   }
 
   getRoles(): Observable<Role[]> {
-    return this.http.get<any>(this.rolesUrl).pipe(
-      map(res => res.data)
-    );
+    return this.http.get<any>(this.rolesUrl).pipe(map((res) => res.data));
   }
 
   getMemberById(id: number): Observable<any> {
-    return this.http.get<any>(
-      `${this.apiUrl}/${id}`
-    ).pipe(
-      map(res => res.data)
-    );
+    return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(map((res) => res.data));
   }
 
-  updateUser(
-    user: RawUser,
-    roleIds: number[]
-  ): Observable<any> {
-
+  updateUser(user: RawUser, roleIds: number[]): Observable<any> {
     const payload: any = {
       type: 'user',
       username: user.usernameOrName,
@@ -64,7 +51,7 @@ export class UserProfilService {
       gender: user.extraFields?.gender,
       goals: user.extraFields?.goals,
       coachId: user.extraFields?.coach_id,
-      roleIds: roleIds || []
+      roleIds: roleIds || [],
     };
 
     if (user.password && user.password.trim() !== '') {
@@ -75,9 +62,6 @@ export class UserProfilService {
       payload.id = user.id;
     }
 
-    return this.http.post(
-      this.apiUrl,
-      payload
-    );
+    return this.http.post(this.apiUrl, payload);
   }
 }

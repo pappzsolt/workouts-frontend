@@ -1,40 +1,21 @@
 <div class="workouts-calendar">
-
   <!-- ===================================================== -->
   <!-- NAPTÁR FEJLÉC -->
   <!-- ===================================================== -->
 
   <div class="calendar-header">
+    <button type="button" class="month-button" (click)="previousMonth()">‹</button>
 
-    <button
-      type="button"
-      class="month-button"
-      (click)="previousMonth()"
-    >
-      ‹
-    </button>
+    <h2>{{ monthNames[currentMonth] }} {{ currentYear }}</h2>
 
-    <h2>
-      {{ monthNames[currentMonth] }} {{ currentYear }}
-    </h2>
-
-    <button
-      type="button"
-      class="month-button"
-      (click)="nextMonth()"
-    >
-      ›
-    </button>
-
+    <button type="button" class="month-button" (click)="nextMonth()">›</button>
   </div>
-
 
   <!-- ===================================================== -->
   <!-- HÉT NAPJAI -->
   <!-- ===================================================== -->
 
   <div class="calendar-weekdays">
-
     <div>H</div>
     <div>K</div>
     <div>Sze</div>
@@ -42,29 +23,24 @@
     <div>P</div>
     <div>Szo</div>
     <div>V</div>
-
   </div>
-
 
   <!-- ===================================================== -->
   <!-- NAPTÁR -->
   <!-- ===================================================== -->
 
   <div class="calendar-days">
-
     <div
       class="calendar-day"
       *ngFor="let day of calendarDays"
       [class.other-month]="!day.currentMonth"
       [class.today]="day.isToday"
     >
-
       <!-- Dátum -->
 
       <div class="day-number">
         {{ day.date.getDate() }}
       </div>
-
 
       <!-- Workoutok -->
 
@@ -74,112 +50,62 @@
         [class.completed]="workout.completed"
         (click)="selectWorkout(workout)"
       >
-
         <span class="workout-icon">🏋️</span>
 
         <span class="workout-name">
           {{ workout.workout_name }}
         </span>
-
       </div>
-
     </div>
-
   </div>
 
-
-
-  <div
-    class="selected-workout"
-    *ngIf="selectedWorkout"
-  >
-
+  <div class="selected-workout" *ngIf="selectedWorkout">
     <!-- Fejléc -->
 
     <div class="selected-workout-header">
-
       <div>
+        <div class="selected-workout-title">🏋️ {{ selectedWorkout.workout_name }}</div>
 
-        <div class="selected-workout-title">
-          🏋️ {{ selectedWorkout.workout_name }}
-        </div>
-
-        <div
-          class="selected-workout-date"
-          *ngIf="selectedWorkout.scheduled_at"
-        >
+        <div class="selected-workout-date" *ngIf="selectedWorkout.scheduled_at">
           📅 {{ selectedWorkout.scheduled_at }}
         </div>
 
-        <div
-          class="selected-workout-date"
-          *ngIf="!selectedWorkout.scheduled_at"
-        >
+        <div class="selected-workout-date" *ngIf="!selectedWorkout.scheduled_at">
           📅 Nincs tervezett dátum
         </div>
-
       </div>
 
-
-      <button
-        type="button"
-        class="close-button"
-        (click)="closeWorkoutDetails()"
-      >
-        ×
-      </button>
-
+      <button type="button" class="close-button" (click)="closeWorkoutDetails()">×</button>
     </div>
-
 
     <!-- Elválasztó -->
 
     <div class="selected-workout-divider"></div>
 
-
     <!-- Exercise lista -->
 
     <div class="exercises-section">
-
       <h4>Gyakorlatok</h4>
-
 
       <!-- Nincs exercise -->
 
-      <div
-        *ngIf="selectedExercises.length === 0"
-        class="no-exercises"
-      >
+      <div *ngIf="selectedExercises.length === 0" class="no-exercises">
         Ehhez a workouthoz nincs gyakorlat.
       </div>
 
-
       <!-- Exercise-ok -->
 
-      <div
-        *ngFor="
-          let exercise of selectedExercises;
-          let i = index
-        "
-        class="exercise-card"
-      >
-
+      <div *ngFor="let exercise of selectedExercises; let i = index" class="exercise-card">
         <div class="exercise-number">
           {{ i + 1 }}
         </div>
 
         <div class="exercise-content">
-
           <div class="exercise-name">
             {{ exercise.exercise_name }}
           </div>
-
         </div>
-
       </div>
-
     </div>
-
   </div>
-
 </div>

@@ -10,7 +10,7 @@ import { Exercise } from '../../../../../models/exercise.model';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './new-exercise.component.html',
-  styleUrls: ['./new-exercise.component.css']
+  styleUrls: ['./new-exercise.component.css'],
 })
 export class NewExerciseComponent implements OnInit {
   @Input() workoutId!: number;
@@ -26,7 +26,7 @@ export class NewExerciseComponent implements OnInit {
     category: '',
     caloriesBurnedPerMinute: 0,
     durationSeconds: 0,
-    done: false
+    done: false,
   };
 
   message: string = '';
@@ -52,7 +52,7 @@ export class NewExerciseComponent implements OnInit {
       difficultyLevel: this.newExercise.difficultyLevel,
       category: this.newExercise.category,
       caloriesBurnedPerMinute: this.newExercise.caloriesBurnedPerMinute,
-      durationSeconds: this.newExercise.durationSeconds
+      durationSeconds: this.newExercise.durationSeconds,
     };
 
     this.exercisesService.addExercise(payload).subscribe({
@@ -72,7 +72,7 @@ export class NewExerciseComponent implements OnInit {
           category: '',
           caloriesBurnedPerMinute: 0,
           durationSeconds: 0,
-          done: false
+          done: false,
         };
       },
       error: (err) => {
@@ -86,8 +86,7 @@ export class NewExerciseComponent implements OnInit {
         }
         this.messageType = 'error';
         console.error('Exercise creation error:', err);
-      }
+      },
     });
   }
-
 }

@@ -1,23 +1,14 @@
 <div class="program-form-card">
-
   <!-- Name -->
   <div class="program-form-group-full">
-    <label class="program-form-label" for="name">
-      Program Name
-    </label>
+    <label class="program-form-label" for="name"> Program Name </label>
 
-    <input
-      id="name"
-      formControlName="name"
-      class="program-form-input"
-    />
+    <input id="name" formControlName="name" class="program-form-input" />
   </div>
 
   <!-- Description -->
   <div class="program-form-group-full">
-    <label class="program-form-label" for="description">
-      Description
-    </label>
+    <label class="program-form-label" for="description"> Description </label>
 
     <textarea
       id="description"
@@ -29,9 +20,7 @@
 
   <!-- Duration -->
   <div class="program-form-group">
-    <label class="program-form-label" for="duration_days">
-      Duration (days)
-    </label>
+    <label class="program-form-label" for="duration_days"> Duration (days) </label>
 
     <input
       type="number"
@@ -43,40 +32,22 @@
 
   <!-- Difficulty Level -->
   <div class="program-form-group">
-    <label class="program-form-label" for="difficulty_level">
-      Difficulty Level
-    </label>
+    <label class="program-form-label" for="difficulty_level"> Difficulty Level </label>
 
-    <input
-      id="difficulty_level"
-      formControlName="difficulty_level"
-      class="program-form-input"
-    />
+    <input id="difficulty_level" formControlName="difficulty_level" class="program-form-input" />
   </div>
 
   <!-- Coach ID -->
   <div class="program-form-group">
-    <label class="program-form-label" for="coach_id">
-      Coach ID
-    </label>
+    <label class="program-form-label" for="coach_id"> Coach ID </label>
 
-    <input
-      type="number"
-      id="coach_id"
-      formControlName="coach_id"
-      class="program-form-input"
-    />
+    <input type="number" id="coach_id" formControlName="coach_id" class="program-form-input" />
   </div>
 
   <!-- Submit Button -->
   <div class="program-form-submit">
-    <button
-      type="button"
-      (click)="submit()"
-      class="program-form-button"
-    >
+    <button type="button" (click)="submit()" class="program-form-button">
       {{ isEditMode ? 'Update Program' : 'Create Program' }}
     </button>
   </div>
-
 </div>

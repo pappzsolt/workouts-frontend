@@ -1,7 +1,6 @@
 <h2 class="dashboard-title">Coach Dashboard</h2>
 
 <div class="dashboard-cards-container">
-
   <!-- Programs -->
   <div class="dashboard-card" (click)="togglePrograms()">
     <div class="dashboard-card-emoji">💪</div>
@@ -23,9 +22,8 @@
   <!-- Workout Exercise Manager -->
   <div class="dashboard-card" (click)="toggleWorkoutExerciseManager()">
     <div class="dashboard-card-emoji">📊🏋️</div>
-    <div class="dashboard-card-title">Edzés és sorozatok beállítása </div>
+    <div class="dashboard-card-title">Edzés és sorozatok beállítása</div>
   </div>
-
 </div>
 
 <!-- Dinamikus tartalmak -->
@@ -35,9 +33,7 @@
 </div>
 
 <div *ngIf="showWorkouts">
-  <app-coach-workouts
-    [programId]="programIdForWorkouts">
-  </app-coach-workouts>
+  <app-coach-workouts [programId]="programIdForWorkouts"> </app-coach-workouts>
 </div>
 
 <div *ngIf="showExercises">

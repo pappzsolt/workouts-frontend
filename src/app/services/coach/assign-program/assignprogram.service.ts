@@ -4,56 +4,37 @@ import { Observable } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
 
-import {
-  ApiResponse,
-  ProgramDto,
-  UserProgramDto
-} from '../../../models/assign-program-model';
+import { ApiResponse, ProgramDto, UserProgramDto } from '../../../models/assign-program-model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AssignProgramService {
-
   private http = inject(HttpClient);
 
   getAllPrograms(): Observable<ApiResponse<ProgramDto[]>> {
-    return this.http.get<ApiResponse<ProgramDto[]>>(
-      API_ENDPOINTS.allPrograms
-    );
+    return this.http.get<ApiResponse<ProgramDto[]>>(API_ENDPOINTS.allPrograms);
   }
 
   getMyAssignedPrograms(): Observable<ApiResponse<UserProgramDto[]>> {
-    return this.http.get<ApiResponse<UserProgramDto[]>>(
-      API_ENDPOINTS.assignedPrograms
-    );
+    return this.http.get<ApiResponse<UserProgramDto[]>>(API_ENDPOINTS.assignedPrograms);
   }
 
   /**
    * Lekéri, hogy az adott program melyik userhez van rendelve.
    */
-  getAssignedUserId(
-    programId: number
-  ): Observable<ApiResponse<number | null>> {
-
+  getAssignedUserId(programId: number): Observable<ApiResponse<number | null>> {
     return this.http.get<ApiResponse<number | null>>(
-      `${API_ENDPOINTS.programs}/${programId}/assigned-user`
+      `${API_ENDPOINTS.programs}/${programId}/assigned-user`,
     );
   }
 
-  assignProgramToUser(
-    userId: number,
-    programId: number
-  ): Observable<ApiResponse<void>> {
-
+  assignProgramToUser(userId: number, programId: number): Observable<ApiResponse<void>> {
     const body = {
       userId,
-      programId
+      programId,
     };
 
-    return this.http.post<ApiResponse<void>>(
-      API_ENDPOINTS.assignProgram,
-      body
-    );
+    return this.http.post<ApiResponse<void>>(API_ENDPOINTS.assignProgram, body);
   }
 }

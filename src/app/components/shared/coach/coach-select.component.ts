@@ -14,12 +14,13 @@ import { CoachNameId, CoachNameIdService } from '../../../services/coach/coach-n
         id="coachSelect"
         [(ngModel)]="selectedCoachId"
         (change)="onCoachChange()"
-        class="border rounded px-2 py-1 w-full">
+        class="border rounded px-2 py-1 w-full"
+      >
         <option value="">-- Válassz --</option>
         <option *ngFor="let coach of coaches" [ngValue]="coach.id">{{ coach.name }}</option>
       </select>
     </div>
-  `
+  `,
 })
 export class CoachSelectComponent implements OnInit {
   coaches: CoachNameId[] = [];
@@ -36,12 +37,12 @@ export class CoachSelectComponent implements OnInit {
         console.log('Coaches loaded:', coaches); // debug: ellenőrizzük a bejövő adatot
         this.coaches = coaches;
       },
-      error: (err) => console.error('Hiba a coachok lekérésénél', err)
+      error: (err) => console.error('Hiba a coachok lekérésénél', err),
     });
   }
 
   onCoachChange(): void {
-    const selected = this.coaches.find(c => c.id === this.selectedCoachId);
+    const selected = this.coaches.find((c) => c.id === this.selectedCoachId);
     if (selected) {
       this.coachSelected.emit(selected);
     }

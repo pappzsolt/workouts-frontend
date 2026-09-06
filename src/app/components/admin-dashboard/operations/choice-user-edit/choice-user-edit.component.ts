@@ -7,7 +7,7 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './choice-user-edit.component.html',
-  styleUrls: ['./choice-user-edit.component.css']
+  styleUrls: ['./choice-user-edit.component.css'],
 })
 export class ChoiceUserEditComponent {
   constructor(private router: Router) {}

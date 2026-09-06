@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { DynamicMenuComponent, MenuItem } from '../../components/dynamic-menu/dynamic-menu.component';
+import {
+  DynamicMenuComponent,
+  MenuItem,
+} from '../../components/dynamic-menu/dynamic-menu.component';
 import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
@@ -9,11 +12,11 @@ import { AuthService } from '../../services/auth/auth.service';
   standalone: true,
   imports: [
     CommonModule,
-    RouterModule,           // ← Hozzáadva, így router-outlet működik
-    DynamicMenuComponent
+    RouterModule, // ← Hozzáadva, így router-outlet működik
+    DynamicMenuComponent,
   ],
   templateUrl: './main-layout.component.html',
-  styleUrls: ['./main-layout.component.css']
+  styleUrls: ['./main-layout.component.css'],
 })
 export class MainLayoutComponent {
   menuItems: MenuItem[] = [
@@ -22,13 +25,16 @@ export class MainLayoutComponent {
       label: 'Settings',
       children: [
         { label: 'Profile', path: '/settings/profile' },
-        { label: 'Security', path: '/settings/security' }
-      ]
+        { label: 'Security', path: '/settings/security' },
+      ],
     },
-    { label: 'Logout', action: 'logout' }
+    { label: 'Logout', action: 'logout' },
   ];
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
   handleMenuAction(action: string) {
     if (action === 'logout') {
@@ -39,4 +45,3 @@ export class MainLayoutComponent {
     }
   }
 }
-

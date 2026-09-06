@@ -1,31 +1,13 @@
 <div class="exercise-manager">
+  <div *ngIf="loading" class="exercise-message">Betöltés...</div>
 
-  <div
-    *ngIf="loading"
-    class="exercise-message"
-  >
-    Betöltés...
-  </div>
-
-  <div
-    *ngIf="message && !loading"
-    class="exercise-message"
-  >
+  <div *ngIf="message && !loading" class="exercise-message">
     {{ message }}
   </div>
 
-  <div
-    *ngIf="!loading && exercises?.length"
-    class="exercise-list"
-  >
-
-    <div
-      *ngFor="let ex of pagedExercises"
-      class="exercise-card"
-    >
-
+  <div *ngIf="!loading && exercises?.length" class="exercise-list">
+    <div *ngFor="let ex of pagedExercises" class="exercise-card">
       <div class="exercise-header">
-
         <h2 class="exercise-name">
           {{ ex.name }}
         </h2>
@@ -37,79 +19,45 @@
           (change)="onCheckboxChange(ex, $event)"
           class="exercise-checkbox"
         />
-
       </div>
 
-
-      <p
-        *ngIf="ex.description"
-        class="exercise-description"
-      >
+      <p *ngIf="ex.description" class="exercise-description">
         {{ ex.description }}
       </p>
 
-
       <div class="exercise-details">
-
-        <span
-          *ngIf="ex.muscleGroup"
-          class="exercise-detail"
-        >
+        <span *ngIf="ex.muscleGroup" class="exercise-detail">
           Izomcsoport: {{ ex.muscleGroup }}
         </span>
 
-        <span
-          *ngIf="ex.equipment"
-          class="exercise-detail"
-        >
-          Eszköz: {{ ex.equipment }}
-        </span>
+        <span *ngIf="ex.equipment" class="exercise-detail"> Eszköz: {{ ex.equipment }} </span>
 
-        <span
-          *ngIf="ex.difficultyLevel"
-          class="exercise-detail"
-        >
+        <span *ngIf="ex.difficultyLevel" class="exercise-detail">
           Nehézség: {{ ex.difficultyLevel }}
         </span>
 
-        <span
-          *ngIf="
-            ex.sets !== undefined &&
-            ex.repetitions !== undefined
-          "
-          class="exercise-detail"
-        >
+        <span *ngIf="ex.sets !== undefined && ex.repetitions !== undefined" class="exercise-detail">
           Sorozat/Reps:
           {{ ex.sets }}x{{ ex.repetitions }}
         </span>
 
-        <span
-          *ngIf="ex.duration_minutes"
-          class="exercise-detail"
-        >
+        <span *ngIf="ex.duration_minutes" class="exercise-detail">
           Időtartam:
           {{ ex.duration_minutes }} perc
         </span>
 
-        <span
-          *ngIf="ex.intensity_level"
-          class="exercise-detail"
-        >
+        <span *ngIf="ex.intensity_level" class="exercise-detail">
           Intenzitás:
           {{ ex.intensity_level }}
         </span>
-
       </div>
-
     </div>
-
 
     <!-- ====================================================== -->
     <!-- LAPOZÓ -->
     <!-- ====================================================== -->
 
     <div class="exercise-pagination">
-
       <button
         (click)="prevExercisePage()"
         [disabled]="exercisePage === 1"
@@ -132,9 +80,6 @@
       >
         Következő ▶
       </button>
-
     </div>
-
   </div>
-
 </div>

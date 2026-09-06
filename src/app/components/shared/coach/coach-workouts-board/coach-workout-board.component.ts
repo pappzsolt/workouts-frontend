@@ -1,4 +1,13 @@
-import { Component, OnInit, OnChanges, SimpleChanges, Input, Output, EventEmitter, inject } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnChanges,
+  SimpleChanges,
+  Input,
+  Output,
+  EventEmitter,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Workout } from '../../../../models/workout.model';
@@ -9,7 +18,7 @@ import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './coach-workout-board.component.html',
-  styleUrls: ['./coach-workout-board.component.css']
+  styleUrls: ['./coach-workout-board.component.css'],
 })
 export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
   private workoutService = inject(CoachWorkoutsService);
@@ -41,7 +50,7 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
         this.loading = false;
         if (res.workouts?.length) {
           this.workouts = res.workouts.sort((a: Workout, b: Workout) =>
-            (a.name ?? '').localeCompare(b.name ?? '')
+            (a.name ?? '').localeCompare(b.name ?? ''),
           );
         } else {
           this.message = 'Nincsenek elérhető workoutok.';
@@ -51,7 +60,7 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
         this.loading = false;
         this.message = 'Hiba a workoutok lekérése során';
         console.error('❌ Workoutok betöltése sikertelen', err);
-      }
+      },
     });
   }
 
@@ -60,7 +69,7 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
       if (checked) {
         if (!this.selectedWorkoutIds.includes(id)) this.selectedWorkoutIds.push(id);
       } else {
-        this.selectedWorkoutIds = this.selectedWorkoutIds.filter(wid => wid !== id);
+        this.selectedWorkoutIds = this.selectedWorkoutIds.filter((wid) => wid !== id);
       }
     } else {
       this.selectedWorkoutIds = checked ? [id] : [];

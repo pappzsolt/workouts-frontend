@@ -10,16 +10,10 @@ import { Coach } from '../../../../models/coach.model';
   standalone: true,
   templateUrl: './coach-edit.component.html',
   styleUrls: ['./coach-edit.component.css'],
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
-  providers: [
-    CoachEditService
-  ]
+  imports: [CommonModule, FormsModule],
+  providers: [CoachEditService],
 })
 export class CoachEditComponent implements OnInit {
-
   selectedCoachId: number | null = null;
 
   coaches: Coach[] = [];
@@ -31,22 +25,18 @@ export class CoachEditComponent implements OnInit {
     phone: '',
     specialization: '',
     avatarUrl: '',
-    password: ''
+    password: '',
   };
 
   message = '';
   error = '';
   loading = false;
 
-
   // =========================================================
   // Constructor
   // =========================================================
 
-  constructor(
-    private readonly coachService: CoachEditService
-  ) {}
-
+  constructor(private readonly coachService: CoachEditService) {}
 
   // =========================================================
   // Angular lifecycle
@@ -56,62 +46,46 @@ export class CoachEditComponent implements OnInit {
     this.loadCoaches();
   }
 
-
   // =========================================================
   // Edzők betöltése
   // =========================================================
 
   loadCoaches(): void {
-
     this.loading = true;
     this.message = '';
     this.error = '';
 
-    this.coachService
-      .getCoaches()
-      .subscribe({
+    this.coachService.getCoaches().subscribe({
+      next: (coaches) => {
+        this.coaches = coaches;
+        this.loading = false;
 
-        next: coaches => {
+        if (this.coaches.length > 0) {
+          this.selectedCoachId = this.coaches[0].id;
 
-          this.coaches = coaches;
-          this.loading = false;
-
-          if (this.coaches.length > 0) {
-
-            this.selectedCoachId =
-              this.coaches[0].id;
-
-            this.onSelectCoach();
-          }
-        },
-
-        error: err => {
-
-          this.loading = false;
-
-          this.error =
-            err?.message ??
-            'Az edzők betöltése nem sikerült.';
+          this.onSelectCoach();
         }
-      });
-  }
+      },
 
+      error: (err) => {
+        this.loading = false;
+
+        this.error = err?.message ?? 'Az edzők betöltése nem sikerült.';
+      },
+    });
+  }
 
   // =========================================================
   // Edző kiválasztása
   // =========================================================
 
   onSelectCoach(): void {
-
-    const found = this.coaches.find(
-      coach => coach.id === this.selectedCoachId
-    );
+    const found = this.coaches.find((coach) => coach.id === this.selectedCoachId);
 
     if (found) {
-
       this.selectedCoach = {
         ...found,
-        password: ''
+        password: '',
       };
 
       this.message = '';
@@ -123,13 +97,11 @@ export class CoachEditComponent implements OnInit {
     this.resetSelectedCoach();
   }
 
-
   // =========================================================
   // Edző mentése
   // =========================================================
 
   onSave(): void {
-
     if (this.selectedCoachId === null) {
       this.error = 'Nincs kiválasztva edző.';
       return;
@@ -139,61 +111,42 @@ export class CoachEditComponent implements OnInit {
     this.message = '';
     this.error = '';
 
-    this.selectedCoach.id =
-      this.selectedCoachId;
+    this.selectedCoach.id = this.selectedCoachId;
 
-    this.coachService
-      .updateCoach(
-        this.selectedCoachId,
-        this.selectedCoach
-      )
-      .subscribe({
+    this.coachService.updateCoach(this.selectedCoachId, this.selectedCoach).subscribe({
+      next: (updatedCoach) => {
+        this.loading = false;
 
-        next: updatedCoach => {
+        this.message = 'Az edző adatai sikeresen frissítve.';
 
-          this.loading = false;
+        const index = this.coaches.findIndex((coach) => coach.id === this.selectedCoachId);
 
-          this.message =
-            'Az edző adatai sikeresen frissítve.';
+        if (index !== -1) {
+          this.coaches[index] = {
+            ...updatedCoach,
+            password: '',
+          };
 
-          const index =
-            this.coaches.findIndex(
-              coach =>
-                coach.id === this.selectedCoachId
-            );
-
-          if (index !== -1) {
-
-            this.coaches[index] = {
-              ...updatedCoach,
-              password: ''
-            };
-
-            this.selectedCoach = {
-              ...updatedCoach,
-              password: ''
-            };
-          }
-        },
-
-        error: err => {
-
-          this.loading = false;
-
-          this.error =
-            err?.message ??
-            'Az edző mentése nem sikerült.';
+          this.selectedCoach = {
+            ...updatedCoach,
+            password: '',
+          };
         }
-      });
-  }
+      },
 
+      error: (err) => {
+        this.loading = false;
+
+        this.error = err?.message ?? 'Az edző mentése nem sikerült.';
+      },
+    });
+  }
 
   // =========================================================
   // Kiválasztott edző alaphelyzetbe állítása
   // =========================================================
 
   private resetSelectedCoach(): void {
-
     this.selectedCoach = {
       id: 0,
       name: '',
@@ -201,7 +154,7 @@ export class CoachEditComponent implements OnInit {
       phone: '',
       specialization: '',
       avatarUrl: '',
-      password: ''
+      password: '',
     };
   }
 }

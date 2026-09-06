@@ -7,7 +7,7 @@ export interface Statistic {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserStatisticsService {
   constructor() {}
@@ -15,7 +15,7 @@ export class UserStatisticsService {
   getStatistics(): Observable<Statistic> {
     return of({
       workoutCompleted: 15,
-      totalHours: 20
+      totalHours: 20,
     });
   }
 }

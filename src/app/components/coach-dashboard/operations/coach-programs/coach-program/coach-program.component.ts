@@ -10,15 +10,11 @@ import { USER_MESSAGES } from '../../../../../constants/user-messages';
 @Component({
   selector: 'app-coach-program',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
+  imports: [CommonModule, FormsModule],
   templateUrl: './coach-program.component.html',
-  styleUrls: ['./coach-program.component.css']
+  styleUrls: ['./coach-program.component.css'],
 })
 export class CoachProgramComponent implements OnInit {
-
   programs: Program[] = [];
 
   message = '';
@@ -36,7 +32,7 @@ export class CoachProgramComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private programService: CoachProgramService
+    private programService: CoachProgramService,
   ) {}
 
   ngOnInit(): void {
@@ -44,156 +40,90 @@ export class CoachProgramComponent implements OnInit {
   }
 
   private loadCoachPrograms(): void {
+    this.programService.getProgramsForLoggedInCoach().subscribe({
+      next: (response) => {
+        console.log('Coach program response:', response);
 
-    this.programService
-      .getProgramsForLoggedInCoach()
-      .subscribe({
+        if (response.status === 'success' && response.data?.length) {
+          this.programs = response.data.map((program: any): Program => ({
+            id: program.programId,
 
-        next: (response) => {
+            programName: program.programName,
 
-          console.log(
-            'Coach program response:',
-            response
-          );
+            programDescription: program.programDescription,
 
-          if (
-            response.status === 'success' &&
-            response.data?.length
-          ) {
+            name: program.name,
 
-            this.programs = response.data.map(
-              (program: any): Program => ({
+            description: program.description,
 
-                id:
-                program.programId,
+            coachId: program.coachId,
 
-                programName:
-                program.programName,
+            startDate: program.startDate,
 
-                programDescription:
-                program.programDescription,
+            endDate: program.endDate,
 
-                name:
-                program.name,
+            durationDays: program.durationDays,
 
-                description:
-                program.description,
+            difficultyLevel: program.difficultyLevel,
 
-                coachId:
-                program.coachId,
+            workouts: program.workouts,
+          }));
 
-                startDate:
-                program.startDate,
+          console.log('Programok frontend modellként:', this.programs);
 
-                endDate:
-                program.endDate,
+          console.log('Első program:', this.programs[0]);
 
-                durationDays:
-                program.durationDays,
+          console.log('Első program ID:', this.programs[0]?.id);
 
-                difficultyLevel:
-                program.difficultyLevel,
+          this.updatePagination();
 
-                workouts:
-                program.workouts
-
-              })
-            );
-
-            console.log(
-              'Programok frontend modellként:',
-              this.programs
-            );
-
-            console.log(
-              'Első program:',
-              this.programs[0]
-            );
-
-            console.log(
-              'Első program ID:',
-              this.programs[0]?.id
-            );
-
-            this.updatePagination();
-
-            this.showProgramsList = true;
-            this.message = '';
-
-          } else {
-
-            this.programs = [];
-            this.totalPages = 1;
-            this.currentPage = 1;
-            this.showProgramsList = false;
-
-            this.message =
-              'Nincsenek programok a coachhoz.';
-          }
-
-        },
-
-        error: (error) => {
-
-          console.error(
-            'Hiba a coach programok betöltésekor:',
-            error
-          );
-
+          this.showProgramsList = true;
+          this.message = '';
+        } else {
           this.programs = [];
           this.totalPages = 1;
           this.currentPage = 1;
           this.showProgramsList = false;
 
-          this.message =
-            'Nem sikerült lekérni a programokat.';
+          this.message = 'Nincsenek programok a coachhoz.';
         }
+      },
 
-      });
+      error: (error) => {
+        console.error('Hiba a coach programok betöltésekor:', error);
+
+        this.programs = [];
+        this.totalPages = 1;
+        this.currentPage = 1;
+        this.showProgramsList = false;
+
+        this.message = 'Nem sikerült lekérni a programokat.';
+      },
+    });
   }
 
   /**
    * Keresett és rendezett programok.
    */
   get filteredPrograms(): Program[] {
+    const search = this.searchTerm.trim().toLowerCase();
 
-    const search = this.searchTerm
-      .trim()
-      .toLowerCase();
+    let result = this.programs.filter((program) => {
+      const programName = program.programName?.toLowerCase() ?? '';
 
-    let result = this.programs.filter(
-      (program) => {
-
-        const programName =
-          program.programName
-            ?.toLowerCase() ?? '';
-
-        return programName.includes(search);
-      }
-    );
+      return programName.includes(search);
+    });
 
     result.sort((a, b) => {
+      const nameA = a.programName?.toLowerCase() ?? '';
 
-      const nameA =
-        a.programName
-          ?.toLowerCase() ?? '';
+      const nameB = b.programName?.toLowerCase() ?? '';
 
-      const nameB =
-        b.programName
-          ?.toLowerCase() ?? '';
+      const comparison = nameA.localeCompare(nameB, 'hu', {
+        sensitivity: 'base',
+      });
 
-      const comparison =
-        nameA.localeCompare(
-          nameB,
-          'hu',
-          {
-            sensitivity: 'base'
-          }
-        );
-
-      return this.sortDirection === 'asc'
-        ? comparison
-        : -comparison;
+      return this.sortDirection === 'asc' ? comparison : -comparison;
     });
 
     return result;
@@ -203,24 +133,12 @@ export class CoachProgramComponent implements OnInit {
    * Lapozás előtt frissítjük az oldalak számát.
    */
   private updatePagination(): void {
+    const count = this.filteredPrograms.length;
 
-    const count =
-      this.filteredPrograms.length;
+    this.totalPages = Math.max(1, Math.ceil(count / this.itemsPerPage));
 
-    this.totalPages =
-      Math.max(
-        1,
-        Math.ceil(
-          count / this.itemsPerPage
-        )
-      );
-
-    if (
-      this.currentPage >
-      this.totalPages
-    ) {
-      this.currentPage =
-        this.totalPages;
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
     }
   }
 
@@ -228,7 +146,6 @@ export class CoachProgramComponent implements OnInit {
    * Keresés megváltozott.
    */
   onSearchChange(): void {
-
     this.currentPage = 1;
 
     this.updatePagination();
@@ -238,11 +155,7 @@ export class CoachProgramComponent implements OnInit {
    * Rendezés megfordítása.
    */
   toggleSort(): void {
-
-    this.sortDirection =
-      this.sortDirection === 'asc'
-        ? 'desc'
-        : 'asc';
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
 
     this.currentPage = 1;
 
@@ -253,130 +166,65 @@ export class CoachProgramComponent implements OnInit {
    * Aktuális oldal programjai.
    */
   get pagedPrograms(): Program[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
 
-    const startIndex =
-      (this.currentPage - 1) *
-      this.itemsPerPage;
-
-    return this.filteredPrograms.slice(
-      startIndex,
-      startIndex + this.itemsPerPage
-    );
+    return this.filteredPrograms.slice(startIndex, startIndex + this.itemsPerPage);
   }
 
   nextPage(): void {
-
-    if (
-      this.currentPage <
-      this.totalPages
-    ) {
-
+    if (this.currentPage < this.totalPages) {
       this.currentPage++;
     }
   }
 
   prevPage(): void {
-
     if (this.currentPage > 1) {
-
       this.currentPage--;
     }
   }
 
   createNewProgram(): void {
+    this.router.navigate(['/coach/programs/new']).catch((error) => {
+      console.error('Hiba az új program oldal megnyitásakor:', error);
 
-    this.router
-      .navigate([
-        '/coach/programs/new'
-      ])
-      .catch((error) => {
-
-        console.error(
-          'Hiba az új program oldal megnyitásakor:',
-          error
-        );
-
-        this.message =
-          USER_MESSAGES.programClickError;
-      });
+      this.message = USER_MESSAGES.programClickError;
+    });
   }
 
-  editProgram(
-    programId: number | undefined,
-    event: MouseEvent
-  ): void {
-
+  editProgram(programId: number | undefined, event: MouseEvent): void {
     event.stopPropagation();
 
-    console.log(
-      'Szerkesztés gomb megnyomva. programId =',
-      programId
-    );
+    console.log('Szerkesztés gomb megnyomva. programId =', programId);
 
-    if (
-      programId === undefined ||
-      programId === null ||
-      programId <= 0
-    ) {
+    if (programId === undefined || programId === null || programId <= 0) {
+      console.error('Érvénytelen program ID:', programId);
 
-      console.error(
-        'Érvénytelen program ID:',
-        programId
-      );
-
-      this.message =
-        USER_MESSAGES.programClickError;
+      this.message = USER_MESSAGES.programClickError;
 
       return;
     }
 
     this.router
-      .navigate(
-        ['/coach/program-builder'],
-        {
-          queryParams: {
-            programId: programId
-          }
-        }
-      )
+      .navigate(['/coach/program-builder'], {
+        queryParams: {
+          programId: programId,
+        },
+      })
       .then((success) => {
-
-        console.log(
-          'Program Builder navigáció eredménye:',
-          success
-        );
-
+        console.log('Program Builder navigáció eredménye:', success);
       })
       .catch((error) => {
+        console.error('Hiba a Program Builder megnyitásakor:', error);
 
-        console.error(
-          'Hiba a Program Builder megnyitásakor:',
-          error
-        );
-
-        this.message =
-          USER_MESSAGES.programClickError;
+        this.message = USER_MESSAGES.programClickError;
       });
   }
 
-  goToWorkouts(
-    programId: number | undefined
-  ): void {
-
-    if (
-      programId === undefined ||
-      programId === null ||
-      programId <= 0
-    ) {
-
+  goToWorkouts(programId: number | undefined): void {
+    if (programId === undefined || programId === null || programId <= 0) {
       return;
     }
 
-    this.router.navigate([
-      '/coach/programs',
-      programId,
-      'workouts'
-    ]);
+    this.router.navigate(['/coach/programs', programId, 'workouts']);
   }
-
 }

@@ -10,10 +10,9 @@ import { USER_MESSAGES } from '../../../../constants/user-messages';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './admin-list-users.component.html',
-  styleUrls: ['./admin-list-users.component.css']
+  styleUrls: ['./admin-list-users.component.css'],
 })
 export class AdminListUsersComponent {
-
   users: User[] = [];
 
   errorMessage: string | null = null;
@@ -23,58 +22,39 @@ export class AdminListUsersComponent {
   pageSize = 6;
   totalPages = 1;
 
-  constructor(
-    private readonly adminListUsersService: AdminListUsersService
-  ) {
+  constructor(private readonly adminListUsersService: AdminListUsersService) {
     this.loadUsers();
   }
 
   private loadUsers(): void {
+    this.adminListUsersService.getUsers().subscribe({
+      next: (users) => {
+        this.users = users;
 
-    this.adminListUsersService
-      .getUsers()
-      .subscribe({
+        this.totalPages = Math.ceil(this.users.length / this.pageSize);
 
-        next: users => {
+        this.errorMessage = null;
+      },
 
-          this.users = users;
-
-          this.totalPages = Math.ceil(
-            this.users.length / this.pageSize
-          );
-
-          this.errorMessage = null;
-        },
-
-        error: err => {
-
-          this.errorMessage =
-            err?.message || USER_MESSAGES.loadError;
-        }
-
-      });
+      error: (err) => {
+        this.errorMessage = err?.message || USER_MESSAGES.loadError;
+      },
+    });
   }
 
   get paginatedUsers(): User[] {
+    const start = (this.currentPage - 1) * this.pageSize;
 
-    const start =
-      (this.currentPage - 1) * this.pageSize;
-
-    return this.users.slice(
-      start,
-      start + this.pageSize
-    );
+    return this.users.slice(start, start + this.pageSize);
   }
 
   prevPage(): void {
-
     if (this.currentPage > 1) {
       this.currentPage--;
     }
   }
 
   nextPage(): void {
-
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
     }

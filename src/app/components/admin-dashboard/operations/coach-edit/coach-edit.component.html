@@ -1,11 +1,8 @@
 <div class="page-container">
-
   <h2 class="page-title">Edző módosítása</h2>
 
   <!-- Üzenetek -->
-  <div *ngIf="loading" class="loading-message">
-    Betöltés folyamatban...
-  </div>
+  <div *ngIf="loading" class="loading-message">Betöltés folyamatban...</div>
 
   <div *ngIf="message" class="success-message">
     {{ message }}
@@ -17,9 +14,7 @@
 
   <!-- Coach select -->
   <div class="coach-select-container">
-    <label class="form-label" for="coachSelect">
-      Válassz edzőt
-    </label>
+    <label class="form-label" for="coachSelect"> Válassz edzőt </label>
 
     <select
       id="coachSelect"
@@ -29,18 +24,12 @@
     >
       <option [ngValue]="null">-- Válassz edzőt --</option>
 
-      <option *ngFor="let c of coaches" [ngValue]="c.id">
-        {{ c.name }} ({{ c.email }})
-      </option>
+      <option *ngFor="let c of coaches" [ngValue]="c.id">{{ c.name }} ({{ c.email }})</option>
     </select>
   </div>
 
   <!-- Form -->
-  <form
-    class="coach-form"
-    (ngSubmit)="onSave()"
-  >
-
+  <form class="coach-form" (ngSubmit)="onSave()">
     <!-- Name -->
     <div class="form-group">
       <label class="form-label" for="name">Név</label>
@@ -99,9 +88,7 @@
 
     <!-- Specialization -->
     <div class="form-group full-width">
-      <label class="form-label" for="specialization">
-        Specializáció
-      </label>
+      <label class="form-label" for="specialization"> Specializáció </label>
 
       <textarea
         id="specialization"
@@ -115,9 +102,7 @@
 
     <!-- Avatar URL -->
     <div class="form-group full-width">
-      <label class="form-label" for="avatar_url">
-        Avatar URL
-      </label>
+      <label class="form-label" for="avatar_url"> Avatar URL </label>
 
       <input
         id="avatar_url"
@@ -131,14 +116,7 @@
 
     <!-- Submit Button -->
     <div class="submit-container">
-      <button
-        type="submit"
-        class="save-button"
-      >
-        Mentés
-      </button>
+      <button type="submit" class="save-button">Mentés</button>
     </div>
-
   </form>
-
 </div>

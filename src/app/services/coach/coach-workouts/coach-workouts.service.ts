@@ -2,19 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import {
-  Workout,
-  WorkoutResponse,
-  WorkoutListResponse
-} from '../../../models/workout.model';
+import { Workout, WorkoutResponse, WorkoutListResponse } from '../../../models/workout.model';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CoachWorkoutsService {
-
   private readonly http = inject(HttpClient);
   private readonly apiUrl = API_ENDPOINTS.workouts;
 
@@ -25,9 +20,7 @@ export class CoachWorkoutsService {
    * GET /api/workouts/my-workouts
    */
   getMyWorkouts(): Observable<Workout[]> {
-    return this.http.get<Workout[]>(
-      `${this.apiUrl}/my-workouts`
-    );
+    return this.http.get<Workout[]>(`${this.apiUrl}/my-workouts`);
   }
   /**
    * Új workout létrehozása.
@@ -35,46 +28,32 @@ export class CoachWorkoutsService {
    * a bejelentkezett felhasználó alapján.
    */
   addWorkout(workout: Workout): Observable<WorkoutResponse> {
-    return this.http.post<WorkoutResponse>(
-      `${this.apiUrl}/add`,
-      workout
-    );
+    return this.http.post<WorkoutResponse>(`${this.apiUrl}/add`, workout);
   }
 
   /**
    * Workout lekérése ID alapján.
    */
   getWorkoutById(id: number): Observable<WorkoutResponse> {
-    return this.http.get<WorkoutResponse>(
-      `${this.apiUrl}/${id}`
-    );
+    return this.http.get<WorkoutResponse>(`${this.apiUrl}/${id}`);
   }
 
   /**
    * Workout módosítása.
    */
-  updateWorkout(
-    id: number,
-    workout: Workout
-  ): Observable<WorkoutResponse> {
-
+  updateWorkout(id: number, workout: Workout): Observable<WorkoutResponse> {
     const payload: Workout = {
       ...workout,
-      id
+      id,
     };
 
-    return this.http.put<WorkoutResponse>(
-      `${this.apiUrl}/update`,
-      payload
-    );
+    return this.http.put<WorkoutResponse>(`${this.apiUrl}/update`, payload);
   }
 
   /**
    * Workout törlése.
    */
   deleteWorkout(id: number): Observable<WorkoutResponse> {
-    return this.http.delete<WorkoutResponse>(
-      `${this.apiUrl}/delete/${id}`
-    );
+    return this.http.delete<WorkoutResponse>(`${this.apiUrl}/delete/${id}`);
   }
 }

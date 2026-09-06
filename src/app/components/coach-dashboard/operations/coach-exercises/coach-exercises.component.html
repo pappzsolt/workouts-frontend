@@ -1,51 +1,28 @@
 <div class="exercises-container">
-
   <!-- ======================================================
        CÍM
        ====================================================== -->
 
-  <h2 class="exercises-title">
-    Gyakorlatok
-  </h2>
-
+  <h2 class="exercises-title">Gyakorlatok</h2>
 
   <!-- ======================================================
        BETÖLTÉS
        ====================================================== -->
 
-  <div
-    *ngIf="loading"
-    class="no-exercises">
-
-    Betöltés...
-
-  </div>
-
+  <div *ngIf="loading" class="no-exercises">Betöltés...</div>
 
   <ng-container *ngIf="!loading">
-
-
     <!-- ====================================================
          KERESÉS ÉS RENDEZÉS
          ==================================================== -->
 
     <div class="exercise-controls">
-
-
       <!-- ==================================================
            KERESÉS
            ================================================== -->
 
       <div class="exercise-search">
-
-        <label
-          for="exerciseSearch"
-          class="exercise-search-label">
-
-          Gyakorlat keresése
-
-        </label>
-
+        <label for="exerciseSearch" class="exercise-search-label"> Gyakorlat keresése </label>
 
         <input
           id="exerciseSearch"
@@ -56,187 +33,107 @@
           placeholder="Gyakorlat neve..."
           autocomplete="off"
         />
-
       </div>
-
 
       <!-- ==================================================
            RENDEZÉS
            ================================================== -->
 
-      <button
-        type="button"
-        class="exercise-sort-button"
-        (click)="toggleSort()">
-
+      <button type="button" class="exercise-sort-button" (click)="toggleSort()">
         Gyakorlat neve
 
         <span class="sort-icon">
           {{ sortDirection === 'asc' ? '↑' : '↓' }}
         </span>
-
       </button>
-
     </div>
-
 
     <!-- ======================================================
          GYAKORLATOK
          ====================================================== -->
 
-    <ng-container
-      *ngIf="
-        filteredExercises.length > 0;
-        else noExercises
-      ">
-
-
+    <ng-container *ngIf="filteredExercises.length > 0; else noExercises">
       <div class="exercises-grid">
-
-
-        <div
-          *ngFor="let ex of pagedExercises"
-          class="exercise-card">
-
-
+        <div *ngFor="let ex of pagedExercises" class="exercise-card">
           <!-- ==================================================
                FEJLÉC
                ================================================== -->
 
           <div class="exercise-image">
-
-            <span class="exercise-emoji">
-              🏋️‍♂️
-            </span>
-
+            <span class="exercise-emoji"> 🏋️‍♂️ </span>
           </div>
-
 
           <!-- ==================================================
                TARTALOM
                ================================================== -->
 
           <div class="exercise-content">
-
-
             <!-- GYAKORLAT NEVE -->
 
             <h3 class="exercise-name">
-
               {{ ex.name }}
-
             </h3>
-
 
             <!-- LEÍRÁS -->
 
-            <p
-              *ngIf="ex.description"
-              class="exercise-description">
-
+            <p *ngIf="ex.description" class="exercise-description">
               {{ ex.description }}
-
             </p>
-
 
             <!-- ==================================================
                  SZERKESZTÉS
                  ================================================== -->
 
             <div class="exercise-edit">
-
-              <button
-                type="button"
-                class="edit-button"
-                (click)="editExercise(ex.id!)">
-
+              <button type="button" class="edit-button" (click)="editExercise(ex.id!)">
                 ✏️ Szerkesztés
-
               </button>
-
             </div>
-
           </div>
-
         </div>
-
       </div>
-
 
       <!-- ======================================================
            LAPOZÁS
            ====================================================== -->
 
-      <div
-        *ngIf="totalPages > 1"
-        class="pagination-controls">
-
-
+      <div *ngIf="totalPages > 1" class="pagination-controls">
         <button
           type="button"
           class="pagination-button"
           (click)="prevPage()"
-          [disabled]="currentPage === 1">
-
+          [disabled]="currentPage === 1"
+        >
           ◀ Előző
-
         </button>
 
-
-        <span class="pagination-info">
-
-          {{ currentPage }} / {{ totalPages }}
-
-        </span>
-
+        <span class="pagination-info"> {{ currentPage }} / {{ totalPages }} </span>
 
         <button
           type="button"
           class="pagination-button"
           (click)="nextPage()"
-          [disabled]="currentPage === totalPages">
-
+          [disabled]="currentPage === totalPages"
+        >
           Következő ▶
-
         </button>
-
       </div>
-
     </ng-container>
-
-
   </ng-container>
-
 
   <!-- ======================================================
        NINCS GYAKORLAT / NINCS KERESÉSI TALÁLAT
        ====================================================== -->
 
   <ng-template #noExercises>
-
     <div class="no-exercises">
-
-      <span
-        *ngIf="
-          searchTerm;
-          else noExercisesAtAll
-        ">
-
+      <span *ngIf="searchTerm; else noExercisesAtAll">
         Nincs a keresésnek megfelelő gyakorlat.
-
       </span>
 
-
-      <ng-template #noExercisesAtAll>
-
-        Nincsenek gyakorlatok.
-
-      </ng-template>
-
+      <ng-template #noExercisesAtAll> Nincsenek gyakorlatok. </ng-template>
     </div>
-
   </ng-template>
-
 
   <!-- ======================================================
        ÚJ GYAKORLAT
@@ -246,10 +143,8 @@
     type="button"
     class="floating-action-button"
     (click)="goToNewExercise()"
-    title="Új gyakorlat hozzáadása">
-
+    title="Új gyakorlat hozzáadása"
+  >
     ➕
-
   </button>
-
 </div>

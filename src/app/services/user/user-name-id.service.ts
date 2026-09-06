@@ -10,10 +10,9 @@ export interface UserNameId {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserNameIdService {
-
   private readonly http = inject(HttpClient);
   private readonly apiUrl = API_ENDPOINTS.usersNameId;
 

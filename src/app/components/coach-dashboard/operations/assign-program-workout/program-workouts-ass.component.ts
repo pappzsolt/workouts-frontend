@@ -14,7 +14,6 @@ import { ProgramWorkoutService } from '../../../../services/coach/program-workou
   templateUrl: './program-workouts-ass.component.html',
 })
 export class ProgramWorkoutsAssComponent implements OnInit {
-
   programs: CoachProgram[] = [];
   workouts: Workout[] = [];
 
@@ -25,7 +24,7 @@ export class ProgramWorkoutsAssComponent implements OnInit {
   message: string | null = null;
   messageStatus: 'success' | 'error' | null = null;
 
-  @Output() assignedWorkouts = new EventEmitter<{ programId: number, workoutIds: number[] }>();
+  @Output() assignedWorkouts = new EventEmitter<{ programId: number; workoutIds: number[] }>();
 
   constructor(private programWorkoutService: ProgramWorkoutService) {}
 
@@ -45,11 +44,15 @@ export class ProgramWorkoutsAssComponent implements OnInit {
 
     this.selectedWorkoutIds = [...updatedIds];
 
-    console.log('Current assigned workouts for program', this.selectedProgramId, this.selectedWorkoutIds);
+    console.log(
+      'Current assigned workouts for program',
+      this.selectedProgramId,
+      this.selectedWorkoutIds,
+    );
 
     this.assignedWorkouts.emit({
       programId: this.selectedProgramId,
-      workoutIds: this.selectedWorkoutIds
+      workoutIds: this.selectedWorkoutIds,
     });
   }
 
@@ -66,24 +69,32 @@ export class ProgramWorkoutsAssComponent implements OnInit {
 
     console.log('🚀 Mentés backendhez:', {
       programId: this.selectedProgramId,
-      workoutIds: this.selectedWorkoutIds
+      workoutIds: this.selectedWorkoutIds,
     });
 
     this.selectedWorkoutIds.forEach((workoutId, index) => {
-      this.programWorkoutService.addWorkoutToProgram(this.selectedProgramId!, workoutId, index).subscribe({
-        next: res => {
-          console.log(`✅ Workout ${workoutId} mentve:`, res);
-          this.message = res.message;
-          this.messageStatus = res.status === 'success' ? 'success' : 'error';
-          setTimeout(() => { this.message = null; this.messageStatus = null; }, 5000);
-        },
-        error: err => {
-          console.error(`❌ Workout ${workoutId} mentése sikertelen:`, err);
-          this.message = err.error?.message || 'Ismeretlen hiba';
-          this.messageStatus = 'error';
-          setTimeout(() => { this.message = null; this.messageStatus = null; }, 5000);
-        }
-      });
+      this.programWorkoutService
+        .addWorkoutToProgram(this.selectedProgramId!, workoutId, index)
+        .subscribe({
+          next: (res) => {
+            console.log(`✅ Workout ${workoutId} mentve:`, res);
+            this.message = res.message;
+            this.messageStatus = res.status === 'success' ? 'success' : 'error';
+            setTimeout(() => {
+              this.message = null;
+              this.messageStatus = null;
+            }, 5000);
+          },
+          error: (err) => {
+            console.error(`❌ Workout ${workoutId} mentése sikertelen:`, err);
+            this.message = err.error?.message || 'Ismeretlen hiba';
+            this.messageStatus = 'error';
+            setTimeout(() => {
+              this.message = null;
+              this.messageStatus = null;
+            }, 5000);
+          },
+        });
     });
   }
 
@@ -93,24 +104,29 @@ export class ProgramWorkoutsAssComponent implements OnInit {
       return;
     }
 
-    this.selectedWorkoutIds = this.selectedWorkoutIds.filter(id => id !== wid);
+    this.selectedWorkoutIds = this.selectedWorkoutIds.filter((id) => id !== wid);
 
     this.programWorkoutService.deleteProgramWorkout(this.selectedProgramId, wid).subscribe({
-      next: res => {
+      next: (res) => {
         console.log(`✅ Workout ${wid} törölve a programból:`, res);
         this.message = res.message;
         this.messageStatus = res.status === 'success' ? 'success' : 'error';
-        setTimeout(() => { this.message = null; this.messageStatus = null; }, 5000);
+        setTimeout(() => {
+          this.message = null;
+          this.messageStatus = null;
+        }, 5000);
 
         this.onWorkoutsChange(this.selectedWorkoutIds);
       },
-      error: err => {
+      error: (err) => {
         console.error(`❌ Workout ${wid} törlése sikertelen:`, err);
         this.message = err.error?.message || 'Ismeretlen hiba';
         this.messageStatus = 'error';
-        setTimeout(() => { this.message = null; this.messageStatus = null; }, 5000);
-      }
+        setTimeout(() => {
+          this.message = null;
+          this.messageStatus = null;
+        }, 5000);
+      },
     });
   }
-
 }

@@ -9,15 +9,11 @@ import { Member } from '../../../../models/member-search-model';
 @Component({
   selector: 'app-member-search',
   standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule
-  ],
+  imports: [CommonModule, FormsModule],
   templateUrl: './member-search.component.html',
-  styleUrls: ['./member-search.component.css']
+  styleUrls: ['./member-search.component.css'],
 })
 export class MemberSearchComponent {
-
   keyword = '';
 
   members: Member[] = [];
@@ -34,20 +30,15 @@ export class MemberSearchComponent {
   pageSize = 6;
   totalPages = 1;
 
-  constructor(
-    private memberSearchService: MemberSearchService
-  ) {}
+  constructor(private memberSearchService: MemberSearchService) {}
 
   onSearch(): void {
-
     this.errorMessage = '';
     this.message = '';
     this.loading = true;
 
     this.memberSearchService.searchMembers(this.keyword).subscribe({
-
       next: (response) => {
-
         this.loading = false;
 
         if (!response.success) {
@@ -74,7 +65,6 @@ export class MemberSearchComponent {
       },
 
       error: (error) => {
-
         this.loading = false;
 
         this.members = [];
@@ -82,41 +72,25 @@ export class MemberSearchComponent {
         this.totalPages = 1;
         this.currentPage = 1;
 
-        this.errorMessage =
-          typeof error === 'string'
-            ? error
-            : 'Hiba történt a keresés során.';
-      }
+        this.errorMessage = typeof error === 'string' ? error : 'Hiba történt a keresés során.';
+      },
     });
   }
 
   private calculateTotalPages(): void {
-
-    this.totalPages = Math.max(
-      1,
-      Math.ceil(this.members.length / this.pageSize)
-    );
+    this.totalPages = Math.max(1, Math.ceil(this.members.length / this.pageSize));
   }
 
   updateDisplayedMembers(): void {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
 
-    const startIndex =
-      (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
 
-    const endIndex =
-      startIndex + this.pageSize;
-
-    this.displayedMembers =
-      this.members.slice(startIndex, endIndex);
+    this.displayedMembers = this.members.slice(startIndex, endIndex);
   }
 
   goToPage(page: number): void {
-
-    if (
-      page < 1 ||
-      page > this.totalPages ||
-      page === this.currentPage
-    ) {
+    if (page < 1 || page > this.totalPages || page === this.currentPage) {
       return;
     }
 
@@ -125,7 +99,6 @@ export class MemberSearchComponent {
   }
 
   nextPage(): void {
-
     if (this.currentPage >= this.totalPages) {
       return;
     }
@@ -135,7 +108,6 @@ export class MemberSearchComponent {
   }
 
   prevPage(): void {
-
     if (this.currentPage <= 1) {
       return;
     }

@@ -1,6 +1,4 @@
-<h2 class="universal-form-title">
-  ✏️ Edit Exercise
-</h2>
+<h2 class="universal-form-title">✏️ Edit Exercise</h2>
 
 <!-- Üzenet -->
 <div
@@ -8,7 +6,7 @@
   class="universal-form-message"
   [ngClass]="{
     'universal-form-message-success': messageType === 'success',
-    'universal-form-message-error': messageType === 'error'
+    'universal-form-message-error': messageType === 'error',
   }"
 >
   {{ message }}
@@ -120,7 +118,9 @@
 
     <!-- Calories Burned per Minute -->
     <div class="universal-form-group">
-      <label for="caloriesBurnedPerMinute" class="universal-form-label">Calories Burned / Minute</label>
+      <label for="caloriesBurnedPerMinute" class="universal-form-label"
+        >Calories Burned / Minute</label
+      >
       <input
         id="caloriesBurnedPerMinute"
         name="caloriesBurnedPerMinute"
@@ -145,11 +145,7 @@
 
     <!-- Save Button -->
     <div class="md:col-span-2 text-center mt-4">
-      <button
-        type="submit"
-        [disabled]="!exerciseForm.form.valid"
-        class="universal-form-button"
-      >
+      <button type="submit" [disabled]="!exerciseForm.form.valid" class="universal-form-button">
         💾 Save Exercise
       </button>
     </div>

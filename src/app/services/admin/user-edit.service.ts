@@ -11,14 +11,13 @@ import {
   UserListResponse,
   CoachListResponse,
   RoleListResponse,
-  UpdateUserRequest
+  UpdateUserRequest,
 } from '../../models/user-edit-model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserEditService {
-
   private apiUrl = API_ENDPOINTS.members;
   private coachesUrl = `${this.apiUrl}/all-coaches`;
   private usersUrl = `${this.apiUrl}/all-users`;
@@ -27,33 +26,25 @@ export class UserEditService {
   constructor(private http: HttpClient) {}
 
   getUsers(): Observable<RawUser[]> {
-    return this.http.get<UserListResponse>(this.usersUrl).pipe(
-      map(response => response.data)
-    );
+    return this.http.get<UserListResponse>(this.usersUrl).pipe(map((response) => response.data));
   }
 
   getCoaches(): Observable<Coach[]> {
     return this.http.get<CoachListResponse>(this.coachesUrl).pipe(
-      map(response =>
-        response.data.map(coach => ({
+      map((response) =>
+        response.data.map((coach) => ({
           id: coach.id,
-          name: coach.usernameOrName
-        }))
-      )
+          name: coach.usernameOrName,
+        })),
+      ),
     );
   }
 
   getRoles(): Observable<Role[]> {
-    return this.http.get<RoleListResponse>(this.rolesUrl).pipe(
-      map(response => response.data)
-    );
+    return this.http.get<RoleListResponse>(this.rolesUrl).pipe(map((response) => response.data));
   }
 
-  updateUser(
-    user: RawUser,
-    roleIds: number[]
-  ): Observable<void> {
-
+  updateUser(user: RawUser, roleIds: number[]): Observable<void> {
     const payload: UpdateUserRequest = {
       type: 'user',
       username: user.usernameOrName,
@@ -65,7 +56,7 @@ export class UserEditService {
       gender: user.extraFields?.gender,
       goals: user.extraFields?.goals,
       coachId: user.extraFields?.coach_id,
-      roleIds: roleIds || []
+      roleIds: roleIds || [],
     };
 
     if (user.password && user.password.trim() !== '') {

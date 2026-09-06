@@ -7,11 +7,8 @@
 
 <!-- Felhasználók -->
 <ng-container *ngIf="paginatedUsers.length > 0; else noUsers">
-
   <div class="programs-grid">
-
     <div *ngFor="let user of paginatedUsers" class="program-card">
-
       <!-- Avatar / Emoji -->
       <div class="program-image">
         <span class="program-emoji">👤</span>
@@ -27,45 +24,26 @@
           {{ user.email }}
         </div>
 
-        <div class="user-roles">
-          Szerepkör: {{ user.roles.join(', ') }}
-        </div>
+        <div class="user-roles">Szerepkör: {{ user.roles.join(', ') }}</div>
       </div>
-
     </div>
-
   </div>
 
   <!-- Lapozás -->
   <div class="pagination">
-
-    <button
-      (click)="prevPage()"
-      [disabled]="currentPage === 1"
-      class="pagination-button"
-    >
+    <button (click)="prevPage()" [disabled]="currentPage === 1" class="pagination-button">
       Előző
     </button>
 
-    <span class="pagination-page">
-      {{ currentPage }} / {{ totalPages }}
-    </span>
+    <span class="pagination-page"> {{ currentPage }} / {{ totalPages }} </span>
 
-    <button
-      (click)="nextPage()"
-      [disabled]="currentPage === totalPages"
-      class="pagination-button"
-    >
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-button">
       Következő
     </button>
-
   </div>
-
 </ng-container>
 
 <!-- Üres lista -->
 <ng-template #noUsers>
-  <div class="no-programs">
-    Nincsenek felhasználók.
-  </div>
+  <div class="no-programs">Nincsenek felhasználók.</div>
 </ng-template>

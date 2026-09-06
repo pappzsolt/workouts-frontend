@@ -8,52 +8,37 @@ import {
   ApiResponse,
   ProgramDto,
   ProgramCreationRequest,
-  ProgramCreationResponse
+  ProgramCreationResponse,
 } from '../../../models/program.model';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CoachProgramService {
-
   private http = inject(HttpClient);
 
   getProgramsForLoggedInCoach(): Observable<CoachProgramsResponse> {
-    return this.http.get<CoachProgramsResponse>(
-      `${API_ENDPOINTS.programs}/coach/programs`
-    );
+    return this.http.get<CoachProgramsResponse>(`${API_ENDPOINTS.programs}/coach/programs`);
   }
 
   getAllPrograms(): Observable<Program[]> {
-    return this.http.get<Program[]>(
-      `${API_ENDPOINTS.programs}/all`
-    );
+    return this.http.get<Program[]>(`${API_ENDPOINTS.programs}/all`);
   }
 
   getProgramById(id: number): Observable<ApiResponse<ProgramDto>> {
-    return this.http.get<ApiResponse<ProgramDto>>(
-      `${API_ENDPOINTS.programs}/${id}`
-    );
+    return this.http.get<ApiResponse<ProgramDto>>(`${API_ENDPOINTS.programs}/${id}`);
   }
 
-  createProgram(
-    request: ProgramCreationRequest
-  ): Observable<ProgramCreationResponse> {
-    return this.http.post<ProgramCreationResponse>(
-      API_ENDPOINTS.createProgram,
-      request
-    );
+  createProgram(request: ProgramCreationRequest): Observable<ProgramCreationResponse> {
+    return this.http.post<ProgramCreationResponse>(API_ENDPOINTS.createProgram, request);
   }
 
-  updateProgram(
-    id: number,
-    request: ProgramCreationRequest
-  ): Observable<ProgramCreationResponse> {
+  updateProgram(id: number, request: ProgramCreationRequest): Observable<ProgramCreationResponse> {
     return this.http.put<ProgramCreationResponse>(
       `${API_ENDPOINTS.updateProgram}?programId=${id}`,
-      request
+      request,
     );
   }
 }

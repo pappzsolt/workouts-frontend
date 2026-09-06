@@ -15,4 +15,3 @@ export interface UserWorkoutExerciseDto {
   workoutId?: number;
   scheduledAt?: string | null; // ISO string formátumban
 }
-

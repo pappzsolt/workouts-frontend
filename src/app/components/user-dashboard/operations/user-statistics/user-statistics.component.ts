@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UserStatisticsService,Statistic } from '../../../../services/user/user-statistics/user-statistics.service';
+import {
+  UserStatisticsService,
+  Statistic,
+} from '../../../../services/user/user-statistics/user-statistics.service';
 
 import { Observable } from 'rxjs';
 
@@ -9,7 +12,7 @@ import { Observable } from 'rxjs';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './user-statistics.component.html',
-  styleUrls: ['./user-statistics.component.css']
+  styleUrls: ['./user-statistics.component.css'],
 })
 export class UserStatisticsComponent implements OnInit {
   stats$!: Observable<Statistic>;

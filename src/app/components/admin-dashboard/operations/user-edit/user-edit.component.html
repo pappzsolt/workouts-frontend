@@ -4,46 +4,33 @@
   class="message-box"
   [ngClass]="{
     'message-success': message.includes('sikeresen'),
-    'message-error': message.includes('Hiba')
-  }">
+    'message-error': message.includes('Hiba'),
+  }"
+>
   {{ message }}
 </div>
 
 <div class="user-edit-container">
-
   <h2 class="user-edit-title">Felhasználó módosítása</h2>
 
   <!-- Felhasználó kiválasztása -->
   <div class="user-select-container">
-    <app-user-select
-      [(selectedUserId)]="selectedUserId"
-      (userSelected)="onUserSelected($event)">
+    <app-user-select [(selectedUserId)]="selectedUserId" (userSelected)="onUserSelected($event)">
     </app-user-select>
   </div>
 
   <!-- Form -->
-  <form
-    (ngSubmit)="onSave()"
-    class="user-edit-form">
-
+  <form (ngSubmit)="onSave()" class="user-edit-form">
     <div class="form-group">
       <label class="form-label">Username</label>
 
-      <input
-        type="text"
-        [(ngModel)]="selectedUser.username"
-        name="username"
-        class="form-input">
+      <input type="text" [(ngModel)]="selectedUser.username" name="username" class="form-input" />
     </div>
 
     <div class="form-group">
       <label class="form-label">Email</label>
 
-      <input
-        type="email"
-        [(ngModel)]="selectedUser.email"
-        name="email"
-        class="form-input">
+      <input type="email" [(ngModel)]="selectedUser.email" name="email" class="form-input" />
     </div>
 
     <div class="form-group">
@@ -54,20 +41,16 @@
         [(ngModel)]="selectedUser.password"
         name="password"
         placeholder="Új jelszó"
-        class="form-input">
+        class="form-input"
+      />
     </div>
 
     <!-- Életkor / testsúly / magasság -->
     <div class="physical-data-grid">
-
       <div class="form-group">
         <label class="form-label">Age</label>
 
-        <input
-          type="number"
-          [(ngModel)]="selectedUser.age"
-          name="age"
-          class="form-input">
+        <input type="number" [(ngModel)]="selectedUser.age" name="age" class="form-input" />
       </div>
 
       <div class="form-group">
@@ -78,7 +61,8 @@
           step="0.01"
           [(ngModel)]="selectedUser.weight"
           name="weight"
-          class="form-input">
+          class="form-input"
+        />
       </div>
 
       <div class="form-group">
@@ -89,39 +73,28 @@
           step="0.01"
           [(ngModel)]="selectedUser.height"
           name="height"
-          class="form-input">
+          class="form-input"
+        />
       </div>
-
     </div>
 
     <div class="form-group">
       <label class="form-label">Gender</label>
 
-      <input
-        type="text"
-        [(ngModel)]="selectedUser.gender"
-        name="gender"
-        class="form-input">
+      <input type="text" [(ngModel)]="selectedUser.gender" name="gender" class="form-input" />
     </div>
 
     <div class="form-group">
       <label class="form-label">Goals</label>
 
-      <textarea
-        [(ngModel)]="selectedUser.goals"
-        name="goals"
-        class="form-input form-textarea">
+      <textarea [(ngModel)]="selectedUser.goals" name="goals" class="form-input form-textarea">
       </textarea>
     </div>
 
     <div class="form-group">
       <label class="form-label">Avatar URL</label>
 
-      <input
-        type="text"
-        [(ngModel)]="selectedUser.avatarUrl"
-        name="avatarUrl"
-        class="form-input">
+      <input type="text" [(ngModel)]="selectedUser.avatarUrl" name="avatarUrl" class="form-input" />
     </div>
 
     <!-- Coach -->
@@ -130,47 +103,25 @@
 
       <app-coach-select
         [selectedCoachId]="selectedCoach?.id"
-        (coachSelected)="onCoachSelected($event)">
+        (coachSelected)="onCoachSelected($event)"
+      >
       </app-coach-select>
     </div>
 
     <!-- Roles -->
-    <mat-form-field
-      appearance="fill"
-      class="roles-field">
-
+    <mat-form-field appearance="fill" class="roles-field">
       <mat-label>Roles</mat-label>
 
-      <mat-select
-        multiple
-        [value]="selectedRoles"
-        (selectionChange)="onRoleSelected($event.value)">
-
-        <mat-option
-          *ngFor="let role of roles"
-          [value]="role">
-
+      <mat-select multiple [value]="selectedRoles" (selectionChange)="onRoleSelected($event.value)">
+        <mat-option *ngFor="let role of roles" [value]="role">
           {{ role.name }}
-
         </mat-option>
-
       </mat-select>
-
     </mat-form-field>
 
     <!-- Mentés -->
     <div class="save-container">
-
-      <button
-        type="submit"
-        class="save-button">
-
-        Mentés
-
-      </button>
-
+      <button type="submit" class="save-button">Mentés</button>
     </div>
-
   </form>
-
 </div>

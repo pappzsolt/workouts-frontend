@@ -1,8 +1,16 @@
-import { CanActivateFn, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import {
+  CanActivateFn,
+  Router,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+} from '@angular/router';
 import { inject } from '@angular/core';
 import { AuthService } from '../services/auth/auth.service';
 
-export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+export const roleGuard: CanActivateFn = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot,
+) => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
@@ -20,8 +28,8 @@ export const roleGuard: CanActivateFn = (route: ActivatedRouteSnapshot, state: R
     return false;
   }
 
-  const userRoles = userRole.split(',').map(r => r.trim());
-  const hasAccess = userRoles.some(r => allowedRoles.includes(r));
+  const userRoles = userRole.split(',').map((r) => r.trim());
+  const hasAccess = userRoles.some((r) => allowedRoles.includes(r));
 
   console.log('[roleGuard] userRoles array:', userRoles);
   console.log('[roleGuard] hasAccess:', hasAccess);

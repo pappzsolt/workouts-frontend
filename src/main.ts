@@ -13,7 +13,7 @@ bootstrapApplication(AppComponent, {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true
-    }
-  ]
-}).catch(err => console.error(err));
+      multi: true,
+    },
+  ],
+}).catch((err) => console.error(err));

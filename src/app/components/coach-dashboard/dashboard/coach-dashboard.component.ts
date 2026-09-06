@@ -24,7 +24,7 @@ import { UserWorkoutExerciseManagerComponent } from '../operations/user-workout-
     UserWorkoutExerciseManagerComponent,
   ],
   templateUrl: './coach-dashboard.component.html',
-  styleUrls: ['./coach-dashboard.component.css']
+  styleUrls: ['./coach-dashboard.component.css'],
 })
 export class CoachDashboardComponent implements OnInit {
   showWorkouts: boolean = false;
@@ -38,11 +38,11 @@ export class CoachDashboardComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe(params => {
+    this.route.queryParams.subscribe((params) => {
       if (params['section'] === 'workouts') this.showWorkouts = true;
       if (params['section'] === 'programs') this.showPrograms = true;
       if (params['section'] === 'exercises') this.showExercises = true;

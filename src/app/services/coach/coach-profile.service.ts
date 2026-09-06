@@ -6,19 +6,16 @@ import { AuthService } from '../auth/auth.service';
 import { API_ENDPOINTS } from '../../api-endpoints';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CoachProfileService {
-
   private http = inject(HttpClient);
   private authService = inject(AuthService);
 
   getMemberById(id: number): Observable<any> {
-    return this.http.get<any>(
-      `${API_ENDPOINTS.members}/${id}`
-    ).pipe(
-      map(response => response.data)
-    );
+    return this.http
+      .get<any>(`${API_ENDPOINTS.members}/${id}`)
+      .pipe(map((response) => response.data));
   }
 
   getLoggedInMemberProfile(): Observable<any> {
@@ -32,9 +29,6 @@ export class CoachProfileService {
   }
 
   saveCoachProfile(profile: any): Observable<any> {
-    return this.http.post<any>(
-      API_ENDPOINTS.members,
-      profile
-    );
+    return this.http.post<any>(API_ENDPOINTS.members, profile);
   }
 }

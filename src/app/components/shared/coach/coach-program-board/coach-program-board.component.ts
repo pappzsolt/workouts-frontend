@@ -10,7 +10,7 @@ import { ProgramDto } from '../../../../models/program.model';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './coach-program-board.component.html',
-  styleUrls: ['./coach-program-board.component.css']
+  styleUrls: ['./coach-program-board.component.css'],
 })
 export class CoachProgramBoardComponent implements OnInit {
   private programService = inject(CoachProgramService);
@@ -33,7 +33,7 @@ export class CoachProgramBoardComponent implements OnInit {
     this.programService.getProgramsForLoggedInCoach().subscribe({
       next: (res) => {
         this.loading = false;
-        this.programs = (res.data as ProgramDto[]).map(p => ({
+        this.programs = (res.data as ProgramDto[]).map((p) => ({
           programId: p.programId,
           programName: p.programName,
           programDescription: p.programDescription,
@@ -47,7 +47,7 @@ export class CoachProgramBoardComponent implements OnInit {
         this.loading = false;
         this.message = '❌ Programok betöltése sikertelen';
         console.error('❌ Programok betöltése sikertelen', err);
-      }
+      },
     });
   }
 

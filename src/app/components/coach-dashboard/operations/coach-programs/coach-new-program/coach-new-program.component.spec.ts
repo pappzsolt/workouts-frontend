@@ -8,9 +8,8 @@ describe('CoachNewProgramComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [CoachNewProgramComponent]
-    })
-    .compileComponents();
+      imports: [CoachNewProgramComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(CoachNewProgramComponent);
     component = fixture.componentInstance;

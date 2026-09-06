@@ -5,29 +5,20 @@ import { catchError } from 'rxjs/operators';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
 
-import {
-  CreateUserRequest,
-  CreateUserResponse
-} from '../../models/user-new-model';
+import { CreateUserRequest, CreateUserResponse } from '../../models/user-new-model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserNewService {
-
   private apiUrl = API_ENDPOINTS.members;
 
   constructor(private http: HttpClient) {}
 
-  createUser(
-    userData: CreateUserRequest
-  ): Observable<CreateUserResponse> {
-
+  createUser(userData: CreateUserRequest): Observable<CreateUserResponse> {
     return this.http
       .post<CreateUserResponse>(this.apiUrl, userData)
-      .pipe(
-        catchError(this.handleError)
-      );
+      .pipe(catchError(this.handleError));
   }
 
   private handleError(error: HttpErrorResponse) {

@@ -8,17 +8,20 @@ import { AuthService } from '../../services/auth/auth.service';
   standalone: true,
   imports: [RouterModule, AdminMenuComponent],
   templateUrl: './admin-layout.component.html',
-  styleUrls: ['./admin-layout.component.css']
+  styleUrls: ['./admin-layout.component.css'],
 })
 export class AdminLayoutComponent implements OnInit {
   username: string | null = null;
   role: string | null = null;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+  ) {}
 
   ngOnInit(): void {
     this.username = this.authService.getUserName(); // sub-ból jön
-    this.role = this.authService.getUserRole();     // roles-ból jön
+    this.role = this.authService.getUserRole(); // roles-ból jön
   }
 
   onLogout() {
@@ -26,5 +29,3 @@ export class AdminLayoutComponent implements OnInit {
     this.router.navigate(['/login']); // most már működik
   }
 }
-
-

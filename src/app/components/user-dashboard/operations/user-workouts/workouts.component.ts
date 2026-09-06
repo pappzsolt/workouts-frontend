@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   UserWorkoutsService,
-  Workout
+  Workout,
 } from '../../../../services/user/user-workouts/user-workouts.service';
 import { Observable, map } from 'rxjs';
 
@@ -15,7 +15,6 @@ import { Observable, map } from 'rxjs';
   templateUrl: './workouts.component.html',
 })
 export class WorkoutsComponent implements OnInit {
-
   programId!: number;
   programName!: string;
 
@@ -24,64 +23,45 @@ export class WorkoutsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private workoutsService: UserWorkoutsService
+    private workoutsService: UserWorkoutsService,
   ) {}
 
   ngOnInit(): void {
-
-    this.programId = Number(
-      this.route.snapshot.paramMap.get('id')
-    );
+    this.programId = Number(this.route.snapshot.paramMap.get('id'));
 
     // A program neve a navigation state-ből érkezik.
     const navState = window.history.state;
 
-    this.programName =
-      navState.programName || 'Unknown Program';
+    this.programName = navState.programName || 'Unknown Program';
 
-    this.workouts$ =
-      this.workoutsService
-        .getWorkoutsByProgram(this.programId)
-        .pipe(
-          map(workouts =>
-            workouts.map(workout => {
+    this.workouts$ = this.workoutsService.getWorkoutsByProgram(this.programId).pipe(
+      map((workouts) =>
+        workouts.map((workout) => {
+          const frontendCompleted =
+            localStorage.getItem(`workout-completed-${workout.workoutId}`) === 'true';
 
-              const frontendCompleted =
-                localStorage.getItem(
-                  `workout-completed-${workout.workoutId}`
-                ) === 'true';
+          if (frontendCompleted) {
+            return {
+              ...workout,
+              completed: true,
+            };
+          }
 
-              if (frontendCompleted) {
-
-                return {
-                  ...workout,
-                  completed: true
-                };
-
-              }
-
-              return workout;
-            })
-          )
-        );
+          return workout;
+        }),
+      ),
+    );
   }
 
   /**
    * Navigáció a workout exercises oldalára.
    */
-  goToExercises(
-    workoutId: number,
-    workoutName: string
-  ): void {
-
-    this.router.navigate(
-      ['/user/workouts', workoutId, 'exercises'],
-      {
-        state: {
-          workoutName,
-          programId: this.programId
-        }
-      }
-    );
+  goToExercises(workoutId: number, workoutName: string): void {
+    this.router.navigate(['/user/workouts', workoutId, 'exercises'], {
+      state: {
+        workoutName,
+        programId: this.programId,
+      },
+    });
   }
 }

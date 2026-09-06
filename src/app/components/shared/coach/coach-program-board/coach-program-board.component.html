@@ -1,7 +1,5 @@
 <!-- 🔄 Betöltés állapot -->
-<div *ngIf="loading" class="coach-board-message">
-  Betöltés...
-</div>
+<div *ngIf="loading" class="coach-board-message">Betöltés...</div>
 
 <!-- ℹ️ Üzenet -->
 <div *ngIf="message && !loading" class="coach-board-message">
@@ -9,15 +7,8 @@
 </div>
 
 <!-- 🧩 Program oszlopok -->
-<div
-  *ngIf="!loading && programs?.length"
-  class="coach-board coach-program-board"
->
-  <div
-    *ngFor="let program of programs"
-    class="coach-board-column"
-  >
-
+<div *ngIf="!loading && programs?.length" class="coach-board coach-program-board">
+  <div *ngFor="let program of programs" class="coach-board-column">
     <!-- Program kiválasztása rádiógombbal -->
     <div class="coach-program-select">
       <input
@@ -30,21 +21,14 @@
         class="coach-program-radio"
       />
 
-      <label
-        for="program-{{ program.programId }}"
-        class="coach-program-label"
-      >
+      <label for="program-{{ program.programId }}" class="coach-program-label">
         {{ program.programName }}
       </label>
     </div>
-
   </div>
 </div>
 
 <!-- 🚫 Nincs program -->
-<div
-  *ngIf="!loading && (!programs || !programs.length)"
-  class="coach-board-empty"
->
+<div *ngIf="!loading && (!programs || !programs.length)" class="coach-board-empty">
   Nincsenek programok.
 </div>

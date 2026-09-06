@@ -1,5 +1,4 @@
 <div class="profile-page">
-
   <h2 class="profile-title">Profile</h2>
 
   <div *ngIf="message" class="profile-message">
@@ -7,12 +6,9 @@
   </div>
 
   <form class="profile-form">
-
     <!-- Username -->
     <div class="profile-form-group">
-      <label class="profile-label" for="username">
-        Username
-      </label>
+      <label class="profile-label" for="username"> Username </label>
 
       <input
         id="username"
@@ -26,9 +22,7 @@
 
     <!-- Email -->
     <div class="profile-form-group">
-      <label class="profile-label" for="email">
-        Email
-      </label>
+      <label class="profile-label" for="email"> Email </label>
 
       <input
         id="email"
@@ -42,9 +36,7 @@
 
     <!-- Password -->
     <div class="profile-form-group">
-      <label class="profile-label" for="password_hash">
-        Password
-      </label>
+      <label class="profile-label" for="password_hash"> Password </label>
 
       <input
         id="password_hash"
@@ -58,9 +50,7 @@
 
     <!-- Age -->
     <div class="profile-form-group">
-      <label class="profile-label" for="age">
-        Age
-      </label>
+      <label class="profile-label" for="age"> Age </label>
 
       <input
         id="age"
@@ -74,9 +64,7 @@
 
     <!-- Weight -->
     <div class="profile-form-group">
-      <label class="profile-label" for="weight">
-        Weight (kg)
-      </label>
+      <label class="profile-label" for="weight"> Weight (kg) </label>
 
       <input
         id="weight"
@@ -91,9 +79,7 @@
 
     <!-- Height -->
     <div class="profile-form-group">
-      <label class="profile-label" for="height">
-        Height (cm)
-      </label>
+      <label class="profile-label" for="height"> Height (cm) </label>
 
       <input
         id="height"
@@ -108,9 +94,7 @@
 
     <!-- Goals -->
     <div class="profile-form-group profile-form-group-full">
-      <label class="profile-label" for="goals">
-        Goals
-      </label>
+      <label class="profile-label" for="goals"> Goals </label>
 
       <textarea
         id="goals"
@@ -124,9 +108,7 @@
 
     <!-- Avatar -->
     <div class="profile-form-group profile-form-group-full">
-      <label class="profile-label" for="avatar_url">
-        Avatar URL
-      </label>
+      <label class="profile-label" for="avatar_url"> Avatar URL </label>
 
       <input
         id="avatar_url"
@@ -140,9 +122,7 @@
 
     <!-- Coach -->
     <div class="profile-form-group profile-form-group-full">
-      <label class="profile-label">
-        Coach
-      </label>
+      <label class="profile-label"> Coach </label>
 
       <div class="profile-coach">
         {{ coachName }}
@@ -151,15 +131,7 @@
 
     <!-- Save -->
     <div class="profile-submit">
-      <button
-        type="button"
-        (click)="onSave()"
-        class="profile-save-button"
-      >
-        Save
-      </button>
+      <button type="button" (click)="onSave()" class="profile-save-button">Save</button>
     </div>
-
   </form>
-
 </div>
