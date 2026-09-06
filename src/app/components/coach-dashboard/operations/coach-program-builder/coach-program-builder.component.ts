@@ -5,7 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { WorkoutCopyService } from '../../../../services/coach/workout-copy.service';
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
-
+import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exercises-board/coach-exercises-board.component';
 
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
@@ -147,6 +147,7 @@ export class CoachProgramBuilderComponent implements OnInit {
     private workoutExerciseService: WorkoutExerciseService,
     private route: ActivatedRoute,
     private workoutCopyService: WorkoutCopyService,
+    private coachWorkoutsService: CoachWorkoutsService,
     private router: Router,
     private assignProgramService: AssignProgramService,
   ) {}
@@ -402,7 +403,7 @@ export class CoachProgramBuilderComponent implements OnInit {
   loadWorkouts(): void {
     this.loadingWorkouts = true;
 
-    this.exerciseService.getWorkoutsWithExercises().subscribe({
+    this.coachWorkoutsService.getUniqueWorkoutsWithExercises().subscribe({
       next: (workouts: WorkoutDto[]) => {
         this.workouts = workouts || [];
 
@@ -629,50 +630,63 @@ export class CoachProgramBuilderComponent implements OnInit {
         );
 
         /**
-         * A selectedWorkouts továbbra is WorkoutDto[].
+         * A Program Builder számára a programhoz
+         * már hozzáadott workoutokat a TELJES
+         * workout listából kell megkeresni.
          *
-         * A workoutId alapján megkeressük
-         * a teljes workout objektumot.
+         * Ez azért szükséges, mert az elérhető
+         * workout lista UNIQUE, ezért a másolatok
+         * ott szándékosan nem szerepelnek.
          */
 
-        this.selectedWorkouts = this.programWorkouts
-          .map((programWorkout) =>
-            this.workouts.find((workout) => workout.id === programWorkout.workoutId),
-          )
-          .filter((workout): workout is WorkoutDto => workout !== undefined);
+        this.exerciseService.getWorkoutsWithExercises().subscribe({
+          next: (allWorkouts: WorkoutDto[]) => {
+            this.selectedWorkouts = this.programWorkouts
+              .map((programWorkout) =>
+                allWorkouts.find((workout) => workout.id === programWorkout.workoutId),
+              )
+              .filter((workout): workout is WorkoutDto => workout !== undefined);
 
-        console.log('Programhoz betöltött workoutok:', this.selectedWorkouts);
+            console.log('Programhoz betöltött workoutok:', this.selectedWorkouts);
 
-        console.log('Program workout kapcsolatok:', this.programWorkouts);
+            console.log('Program workout kapcsolatok:', this.programWorkouts);
 
-        /**
-         * Ha a Program Builder egy újonnan létrehozott
-         * workouthoz tért vissza, azt automatikusan
-         * kiválasztjuk.
-         */
+            /**
+             * Ha a Program Builder egy újonnan létrehozott
+             * workouthoz tért vissza, azt automatikusan
+             * kiválasztjuk.
+             */
 
-        const newWorkoutId = this.route.snapshot.queryParamMap.get('newWorkoutId');
+            const newWorkoutId = this.route.snapshot.queryParamMap.get('newWorkoutId');
 
-        if (newWorkoutId) {
-          const workoutId = Number(newWorkoutId);
+            if (newWorkoutId) {
+              const workoutId = Number(newWorkoutId);
 
-          if (!Number.isNaN(workoutId) && workoutId > 0) {
-            const newWorkout = this.workouts.find((workout) => workout.id === workoutId);
+              if (!Number.isNaN(workoutId) && workoutId > 0) {
+                const newWorkout = allWorkouts.find((workout) => workout.id === workoutId);
 
-            if (newWorkout) {
-              console.log('Új workout automatikusan kiválasztva:', newWorkout);
+                if (newWorkout) {
+                  console.log('Új workout automatikusan kiválasztva:', newWorkout);
 
-              this.isNewWorkout = true;
+                  this.isNewWorkout = true;
 
-              this.selectWorkout(newWorkout.id);
-            } else {
-              console.warn(
-                'Az új workout még nem található a betöltött workout listában:',
-                workoutId,
-              );
+                  this.selectWorkout(newWorkout.id);
+                } else {
+                  console.warn(
+                    'Az új workout még nem található a teljes workout listában:',
+                    workoutId,
+                  );
+                }
+              }
             }
-          }
-        }
+          },
+
+          error: (error: any) => {
+            console.error('Hiba a teljes workout lista betöltésekor:', error);
+
+            this.selectedWorkouts = [];
+          },
+        });
       },
 
       error: (error: any) => {

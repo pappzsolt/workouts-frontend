@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { WorkoutDto } from '../../../models/exercise.model';
 import { Workout, WorkoutResponse, WorkoutListResponse } from '../../../models/workout.model';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
@@ -34,7 +34,9 @@ export class CoachWorkoutsService {
   getUniqueMyWorkouts(): Observable<Workout[]> {
     return this.http.get<Workout[]>(`${this.apiUrl}/my-workouts/unique`);
   }
-
+  getUniqueWorkoutsWithExercises(): Observable<WorkoutDto[]> {
+    return this.http.get<WorkoutDto[]>(`${API_ENDPOINTS.exercises}/workouts/unique`);
+  }
   /**
    * Új workout létrehozása.
    * A coach azonosítóját a backend határozza meg
