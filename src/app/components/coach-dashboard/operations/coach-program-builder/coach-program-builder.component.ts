@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { WorkoutCopyService } from '../../../../services/coach/workout-copy.service';
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
 
 import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exercises-board/coach-exercises-board.component';
@@ -22,6 +23,8 @@ import { Exercise, WorkoutDto, WorkoutExercise } from '../../../../models/exerci
 import { ProgramCreationRequest } from '../../../../models/program.model';
 
 import { ProgramWorkout } from '../../../../models/program-workout.model';
+
+import { WorkoutCopyRequest } from '../../../../models/workout-copy.model';
 
 @Component({
   selector: 'app-coach-program-builder',
@@ -106,6 +109,22 @@ export class CoachProgramBuilderComponent implements OnInit {
   isNewWorkout = false;
 
   // ==========================================================
+  // WORKOUT MÁSOLÁS
+  // ==========================================================
+
+  copyDialogOpen = false;
+
+  copySourceWorkout: WorkoutDto | null = null;
+
+  copyWorkoutName = '';
+
+  copyWorkoutDate = '';
+
+  copyWorkoutDayIndex = 0;
+
+  copyInProgress = false;
+
+  // ==========================================================
   // PROGRAM WORKOUT KAPCSOLATOK
   // ==========================================================
 
@@ -127,6 +146,7 @@ export class CoachProgramBuilderComponent implements OnInit {
     private programWorkoutService: ProgramWorkoutService,
     private workoutExerciseService: WorkoutExerciseService,
     private route: ActivatedRoute,
+    private workoutCopyService: WorkoutCopyService,
     private router: Router,
     private assignProgramService: AssignProgramService,
   ) {}
@@ -276,11 +296,8 @@ export class CoachProgramBuilderComponent implements OnInit {
 
           console.log('Program adatok betöltve:', {
             programName: this.programName,
-
             programDescription: this.programDescription,
-
             durationDays: this.durationDays,
-
             difficultyLevel: this.difficultyLevel,
           });
 
@@ -456,11 +473,8 @@ export class CoachProgramBuilderComponent implements OnInit {
 
     const request: ProgramCreationRequest = {
       programName: this.programName.trim(),
-
       programDescription: this.programDescription.trim(),
-
       durationDays: this.durationDays,
-
       difficultyLevel: this.difficultyLevel,
     };
 
@@ -539,11 +553,8 @@ export class CoachProgramBuilderComponent implements OnInit {
 
     const request: ProgramCreationRequest = {
       programName: this.programName.trim(),
-
       programDescription: this.programDescription.trim(),
-
       durationDays: this.durationDays,
-
       difficultyLevel: this.difficultyLevel,
     };
 
@@ -894,9 +905,7 @@ export class CoachProgramBuilderComponent implements OnInit {
           next: (response: any) => {
             console.log('Exercise sikeresen hozzáadva az új workouthoz:', {
               workoutId: this.selectedWorkoutId,
-
               exerciseId: exercise.id,
-
               response,
             });
 
@@ -911,19 +920,12 @@ export class CoachProgramBuilderComponent implements OnInit {
             if (!alreadyExists) {
               this.selectedWorkoutExercises.push({
                 id: Number(response) || 0,
-
                 workoutId: this.selectedWorkoutId!,
-
                 exercise,
-
                 sets: 0,
-
                 repetitions: 0,
-
                 orderIndex: this.selectedWorkoutExercises.length,
-
                 restSeconds: 0,
-
                 done: false,
               });
             }
@@ -992,11 +994,8 @@ export class CoachProgramBuilderComponent implements OnInit {
 
         this.programWorkouts.push({
           id: response?.id,
-
           programId: this.programId!,
-
           workoutId: workout.id,
-
           dayIndex,
         });
 
@@ -1105,7 +1104,6 @@ export class CoachProgramBuilderComponent implements OnInit {
 
     this.programWorkouts = this.programWorkouts.map((programWorkout, index) => ({
       ...programWorkout,
-
       dayIndex: index,
     }));
 
@@ -1208,5 +1206,137 @@ export class CoachProgramBuilderComponent implements OnInit {
     if (this.currentStep > 1) {
       this.currentStep--;
     }
+  }
+
+  // ==========================================================
+  // WORKOUT MÁSOLÁS
+  // ==========================================================
+
+  copyWorkout(workout: WorkoutDto): void {
+    if (this.programId === null) {
+      console.error('Nincs program ID.');
+
+      return;
+    }
+
+    this.copySourceWorkout = workout;
+
+    this.copyWorkoutName = `${workout.name} - másolat`;
+
+    this.copyWorkoutDate = workout.workoutDate ?? '';
+
+    this.copyWorkoutDayIndex = this.selectedWorkouts.length;
+
+    this.copyDialogOpen = true;
+
+    console.log('Workout másoló ablak megnyitva:', {
+      sourceWorkoutId: workout.id,
+      programId: this.programId,
+      workoutName: this.copyWorkoutName,
+      workoutDate: this.copyWorkoutDate,
+      dayIndex: this.copyWorkoutDayIndex,
+    });
+  }
+
+  cancelCopyWorkout(): void {
+    console.log('Workout másolás megszakítva.');
+
+    this.copyDialogOpen = false;
+
+    this.copySourceWorkout = null;
+
+    this.copyWorkoutName = '';
+
+    this.copyWorkoutDate = '';
+
+    this.copyWorkoutDayIndex = 0;
+  }
+
+  confirmCopyWorkout(): void {
+    if (this.programId === null) {
+      console.error('Nincs program ID.');
+
+      return;
+    }
+
+    if (this.copySourceWorkout === null) {
+      console.error('Nincs kiválasztott forrás workout.');
+
+      return;
+    }
+
+    if (!this.copyWorkoutName.trim()) {
+      this.message = 'Az új workout neve kötelező.';
+
+      this.messageType = 'error';
+
+      return;
+    }
+
+    if (!this.copyWorkoutDate) {
+      this.message = 'Az új workout dátuma kötelező.';
+
+      this.messageType = 'error';
+
+      return;
+    }
+
+    if (!Number.isInteger(this.copyWorkoutDayIndex) || this.copyWorkoutDayIndex < 0) {
+      this.message = 'Érvénytelen workout nap.';
+
+      this.messageType = 'error';
+
+      return;
+    }
+
+    const request: WorkoutCopyRequest = {
+      sourceWorkoutId: this.copySourceWorkout.id,
+
+      programId: this.programId,
+
+      workoutName: this.copyWorkoutName.trim(),
+
+      workoutDate: this.copyWorkoutDate,
+
+      dayIndex: this.copyWorkoutDayIndex,
+    };
+
+    console.log('Workout másolási request:', request);
+
+    this.copyInProgress = true;
+
+    this.workoutCopyService.copyWorkout(request).subscribe({
+      next: (response) => {
+        console.log('Workout másolás válasz:', response);
+
+        this.copyInProgress = false;
+
+        if (response.status === 'success' && response.data !== null) {
+          this.message = 'Workout sikeresen lemásolva.';
+
+          this.messageType = 'success';
+
+          this.cancelCopyWorkout();
+
+          this.loadWorkouts();
+        } else {
+          console.error('Workout másolása sikertelen:', response);
+
+          this.message = response.message || 'A workout másolása sikertelen.';
+
+          this.messageType = 'error';
+        }
+      },
+
+      error: (error: any) => {
+        console.error('Hiba a workout másolásakor:', error);
+
+        this.copyInProgress = false;
+
+        this.message = error?.error?.message || 'Hiba történt a workout másolásakor.';
+
+        this.messageType = 'error';
+      },
+    });
   }
 }

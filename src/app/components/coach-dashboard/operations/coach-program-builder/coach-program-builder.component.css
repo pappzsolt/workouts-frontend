@@ -1498,3 +1498,240 @@
   }
 
 }
+/* ==========================================================
+   WORKOUT COPY DIALOG
+   ========================================================== */
+
+.copy-dialog-overlay {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+  box-sizing: border-box;
+
+  background: rgba(15, 23, 42, 0.45);
+
+  z-index: 1000;
+}
+
+.copy-dialog {
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(100vh - 40px);
+
+  overflow-y: auto;
+
+  box-sizing: border-box;
+
+  background: #ffffff;
+
+  border: 1px solid #dbe2ea;
+  border-radius: 16px;
+
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.18);
+}
+
+.copy-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 16px;
+
+  padding: 20px 22px;
+
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.copy-dialog-header h3 {
+  margin: 0 0 5px;
+
+  color: #172033;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.copy-dialog-header p {
+  margin: 0;
+
+  color: #64748b;
+
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.copy-dialog-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+
+  padding: 0;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  color: #64748b;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.copy-dialog-close:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #111827;
+}
+
+.copy-dialog-close:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.copy-dialog-body {
+  padding: 22px;
+}
+
+.copy-dialog-body .form-group:last-child {
+  margin-bottom: 0;
+}
+
+.copy-dialog-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  padding: 18px 22px;
+
+  border-top: 1px solid #e2e8f0;
+}
+
+.copy-dialog-actions .back-button,
+.copy-dialog-actions .next-button {
+  min-height: 44px;
+}
+
+
+/* ==========================================================
+   COPY BUTTON
+   ========================================================== */
+
+.copy-workout-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+
+  padding: 0;
+
+  border: 1px solid #dbe2ea;
+  border-radius: 9px;
+
+  background: #ffffff;
+
+  color: #475569;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease,
+    color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.copy-workout-button:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  color: #111827;
+
+  box-shadow: 0 2px 7px rgba(15, 23, 42, 0.05);
+}
+
+.copy-workout-button:active {
+  transform: translateY(1px);
+}
+
+
+/* ==========================================================
+   COPY DIALOG - MOBILE
+   ========================================================== */
+
+@media (max-width: 480px) {
+
+  .copy-dialog-overlay {
+    align-items: flex-end;
+
+    padding: 10px;
+  }
+
+  .copy-dialog {
+    max-width: none;
+    max-height: calc(100vh - 20px);
+
+    border-radius: 14px;
+  }
+
+  .copy-dialog-header {
+    padding: 16px;
+  }
+
+  .copy-dialog-body {
+    padding: 16px;
+  }
+
+  .copy-dialog-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+
+    padding: 16px;
+  }
+
+  .copy-dialog-actions .back-button,
+  .copy-dialog-actions .next-button {
+    width: 100%;
+
+    min-height: 48px;
+  }
+
+  .copy-dialog-close {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+  }
+
+  .copy-workout-button {
+    width: 40px;
+    min-width: 40px;
+    height: 40px;
+  }
+}

@@ -112,7 +112,7 @@ export class WorkoutListComponent implements OnInit, OnChanges {
   loadWorkouts(): void {
     console.log('[CoachWorkouts] loadWorkouts()');
 
-    this.coachWorkoutsService.getMyWorkouts().subscribe({
+    this.coachWorkoutsService.getUniqueMyWorkouts().subscribe({
       next: (res: Workout[]) => {
         console.log('[CoachWorkouts] response:', res);
 

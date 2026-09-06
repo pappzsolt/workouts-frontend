@@ -22,6 +22,19 @@ export class CoachWorkoutsService {
   getMyWorkouts(): Observable<Workout[]> {
     return this.http.get<Workout[]>(`${this.apiUrl}/my-workouts`);
   }
+
+  /**
+   * A bejelentkezett coach egyedi workoutjainak lekérése.
+   *
+   * Az azonos exercise-halmazú workoutok közül
+   * csak a legkisebb ID-jú workout kerül visszaadásra.
+   *
+   * GET /api/workouts/my-workouts/unique
+   */
+  getUniqueMyWorkouts(): Observable<Workout[]> {
+    return this.http.get<Workout[]>(`${this.apiUrl}/my-workouts/unique`);
+  }
+
   /**
    * Új workout létrehozása.
    * A coach azonosítóját a backend határozza meg

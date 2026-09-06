@@ -333,7 +333,10 @@
             <span> Ehhez a workouthoz nincs exercise hozzáadva. </span>
           </div>
 
-          <div *ngIf="!loadingExercises && selectedExercises.length > 0" class="exercise-list">
+          <div
+            *ngIf="!loadingExercises && selectedExercises.length > 0"
+            class="exercise-list"
+          >
             <div class="selected-exercise-header">
               <strong> Kiválasztott exercise-ok </strong>
 
@@ -423,7 +426,10 @@
       </div>
 
       <div class="selected-workout-list">
-        <div *ngFor="let workout of selectedWorkouts; let i = index" class="selected-workout-item">
+        <div
+          *ngFor="let workout of selectedWorkouts; let i = index"
+          class="selected-workout-item"
+        >
           <div class="selected-workout-number">
             {{ i + 1 }}
           </div>
@@ -438,6 +444,15 @@
               exercise
             </small>
           </div>
+
+          <button
+            type="button"
+            class="copy-workout-button"
+            aria-label="Workout másolása"
+            (click)="copyWorkout(workout)"
+          >
+            📋
+          </button>
 
           <button
             type="button"
@@ -456,7 +471,9 @@
     <!-- ================================================== -->
 
     <div class="builder-actions builder-actions-bottom">
-      <button type="button" class="back-button" (click)="previousStep()">← Vissza</button>
+      <button type="button" class="back-button" (click)="previousStep()">
+        ← Vissza
+      </button>
 
       <div class="user-select-wrapper">
         <app-user-select
@@ -476,6 +493,112 @@
 
         <span> → </span>
       </button>
+    </div>
+  </div>
+
+  <!-- ====================================================== -->
+  <!-- WORKOUT MÁSOLÁSA -->
+  <!-- ====================================================== -->
+
+  <div
+    *ngIf="copyDialogOpen"
+    class="copy-dialog-overlay"
+  >
+    <div class="copy-dialog">
+      <div class="copy-dialog-header">
+        <div>
+          <h3>Workout másolása</h3>
+
+          <p *ngIf="copySourceWorkout">
+            Eredeti workout:
+            <strong>{{ copySourceWorkout.name }}</strong>
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="copy-dialog-close"
+          aria-label="Bezárás"
+          [disabled]="copyInProgress"
+          (click)="cancelCopyWorkout()"
+        >
+          ✕
+        </button>
+      </div>
+
+      <div class="copy-dialog-body">
+        <div class="form-group">
+          <label for="copyWorkoutName">
+            Új workout neve
+          </label>
+
+          <input
+            id="copyWorkoutName"
+            type="text"
+            [(ngModel)]="copyWorkoutName"
+            [disabled]="copyInProgress"
+            placeholder="Pl. 2. hét - 1. nap"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="copyWorkoutDate">
+            Új workout dátuma
+          </label>
+
+          <input
+            id="copyWorkoutDate"
+            type="date"
+            [(ngModel)]="copyWorkoutDate"
+            [disabled]="copyInProgress"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="copyWorkoutDayIndex">
+            Programon belüli nap
+          </label>
+
+          <input
+            id="copyWorkoutDayIndex"
+            type="number"
+            min="0"
+            [(ngModel)]="copyWorkoutDayIndex"
+            [disabled]="copyInProgress"
+          />
+        </div>
+      </div>
+
+      <div class="copy-dialog-actions">
+        <button
+          type="button"
+          class="back-button"
+          [disabled]="copyInProgress"
+          (click)="cancelCopyWorkout()"
+        >
+          Mégse
+        </button>
+
+        <button
+          type="button"
+          class="next-button primary-action"
+          [disabled]="
+            copyInProgress ||
+            !copyWorkoutName.trim() ||
+            !copyWorkoutDate ||
+            copyWorkoutDayIndex < 0
+          "
+          (click)="confirmCopyWorkout()"
+        >
+          <span>
+            {{
+              copyInProgress
+                ? 'Másolás...'
+                : 'Workout másolása'
+            }}
+          </span>
+        </button>
+      </div>
     </div>
   </div>
 </div>

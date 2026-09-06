@@ -56,7 +56,7 @@ export const API_ENDPOINTS = {
   // ============================================================
 
   workouts: `${environment.apiUrl}/workouts`,
-
+  workoutCopy: `${environment.apiUrl}/workout-copy`,
   // ============================================================
   // PROGRAM WORKOUTS
   // ============================================================
