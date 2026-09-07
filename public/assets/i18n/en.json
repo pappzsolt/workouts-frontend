@@ -89,7 +89,19 @@
     "height": "Height",
     "gender": "Gender",
     "goals": "Goals",
-    "unknownError": "Unknown error"
+    "unknownError": "Unknown error",
+    "username": "Username",
+    "email": "Email address",
+    "password": "Password",
+    "age": "Age",
+    "weight": "Weight",
+    "height": "Height",
+    "gender": "Gender",
+    "male": "Male",
+    "female": "Female",
+    "goals": "Goals",
+    "avatarUrl": "Avatar URL",
+    "search": "Search"
   },
   "adminUserEdit": {
     "title": "Edit User",
@@ -100,5 +112,32 @@
     "updateSuccess": "User updated successfully!",
     "updateError": "Error while updating",
     "saveError": "Error while saving"
+  },
+  "adminUserNew": {
+    "title": "New User",
+    "assignCoach": "Assign Coach",
+    "roles": "Roles",
+    "create": "Create",
+    "validationError": "Please fill in all required fields and select at least one role!",
+    "createSuccess": "Created successfully",
+    "saveError": "Error while saving"
+  },
+  "adminMemberSearch": {
+    "title": "User Search",
+    "searchPlaceholder": "Enter a keyword...",
+    "gridView": "Card View",
+    "tableView": "Table View",
+    "searching": "Searching...",
+    "role": "Role",
+    "coach": "Coach",
+    "extraData": "Extra Data",
+    "noResults": "No results found."
+  },
+  "coachDashboard": {
+    "title": "Coach Dashboard",
+    "programs": "Programs",
+    "workouts": "Workouts",
+    "exercises": "Exercises",
+    "workoutExerciseManager": "Workout and Set Configuration"
   }
 }

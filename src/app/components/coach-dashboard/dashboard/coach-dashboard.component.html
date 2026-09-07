@@ -1,28 +1,41 @@
-<h2 class="dashboard-title">Coach Dashboard</h2>
+<h2 class="dashboard-title">
+  {{ 'coachDashboard.title' | translate }}
+</h2>
 
 <div class="dashboard-cards-container">
   <!-- Programs -->
   <div class="dashboard-card" (click)="togglePrograms()">
     <div class="dashboard-card-emoji">💪</div>
-    <div class="dashboard-card-title">Programok</div>
+    <div class="dashboard-card-title">
+      {{ 'coachDashboard.programs' | translate }}
+    </div>
   </div>
 
   <!-- Workouts -->
   <div class="dashboard-card" (click)="toggleWorkouts()">
     <div class="dashboard-card-emoji">🔥</div>
-    <div class="dashboard-card-title">Edzések</div>
+    <div class="dashboard-card-title">
+      {{ 'coachDashboard.workouts' | translate }}
+    </div>
   </div>
 
   <!-- Exercises -->
   <div class="dashboard-card" (click)="toggleExercises()">
     <div class="dashboard-card-emoji">🏋️</div>
-    <div class="dashboard-card-title">Gyakorlatok</div>
+    <div class="dashboard-card-title">
+      {{ 'coachDashboard.exercises' | translate }}
+    </div>
   </div>
 
   <!-- Workout Exercise Manager -->
-  <div class="dashboard-card" (click)="toggleWorkoutExerciseManager()">
+  <div
+    class="dashboard-card"
+    (click)="toggleWorkoutExerciseManager()"
+  >
     <div class="dashboard-card-emoji">📊🏋️</div>
-    <div class="dashboard-card-title">Edzés és sorozatok beállítása</div>
+    <div class="dashboard-card-title">
+      {{ 'coachDashboard.workoutExerciseManager' | translate }}
+    </div>
   </div>
 </div>
 
@@ -33,7 +46,10 @@
 </div>
 
 <div *ngIf="showWorkouts">
-  <app-coach-workouts [programId]="programIdForWorkouts"> </app-coach-workouts>
+  <app-coach-workouts
+    [programId]="programIdForWorkouts"
+  >
+  </app-coach-workouts>
 </div>
 
 <div *ngIf="showExercises">

@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule, NgForm } from '@angular/forms';
+import { NgForm } from '@angular/forms';
 
 import { UserNewService } from '../../../../services/admin/user-new.service';
 
@@ -12,10 +11,12 @@ import { CoachNameId } from '../../../../services/coach/coach-name-id.service';
 
 import { CreateUserRequest, CreateUserResponse } from '../../../../models/user-new-model';
 
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+
 @Component({
   selector: 'app-user-new',
   standalone: true,
-  imports: [CommonModule, FormsModule, RoleSelectComponent, CoachSelectComponent],
+  imports: [...SHARED_IMPORTS, RoleSelectComponent, CoachSelectComponent],
   templateUrl: './user-new.component.html',
   styleUrls: ['./user-new.component.css'],
 })
@@ -71,8 +72,7 @@ export class UserNewComponent {
 
   onSubmit(form: NgForm): void {
     if (!form.valid || this.user.roleIds.length === 0) {
-      this.message =
-        'Kérlek töltsd ki az összes kötelező mezőt és válassz legalább egy szerepkört!';
+      this.message = 'adminUserNew.validationError';
       this.isError = true;
       return;
     }
@@ -94,7 +94,8 @@ export class UserNewComponent {
 
     this.userNewService.createUser(payload).subscribe({
       next: (res: CreateUserResponse) => {
-        this.message = res.message || 'Sikeres létrehozás';
+        this.message = res.message || 'adminUserNew.createSuccess';
+
         this.isError = !res.success;
 
         if (res.success) {
@@ -107,7 +108,7 @@ export class UserNewComponent {
       },
 
       error: (err) => {
-        this.message = err.error?.message || 'Hiba a mentésnél';
+        this.message = err.error?.message || 'adminUserNew.saveError';
 
         this.isError = true;
       },

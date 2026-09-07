@@ -1,5 +1,7 @@
 <div class="user-new-container">
-  <h2 class="user-new-title">Új Felhasználó</h2>
+  <h2 class="user-new-title">
+    {{ 'adminUserNew.title' | translate }}
+  </h2>
 
   <!-- Üzenet -->
   <div
@@ -10,12 +12,19 @@
     }"
     class="message"
   >
-    {{ message }}
+    {{ message | translate }}
   </div>
 
-  <form #userForm="ngForm" (ngSubmit)="onSubmit(userForm)" class="user-form">
+  <form
+    #userForm="ngForm"
+    (ngSubmit)="onSubmit(userForm)"
+    class="user-form"
+  >
     <div class="form-group">
-      <label for="username">Felhasználónév</label>
+      <label for="username">
+        {{ 'common.username' | translate }}
+      </label>
+
       <input
         id="username"
         name="username"
@@ -27,7 +36,10 @@
     </div>
 
     <div class="form-group">
-      <label for="email">Email cím</label>
+      <label for="email">
+        {{ 'common.email' | translate }}
+      </label>
+
       <input
         id="email"
         name="email"
@@ -39,7 +51,10 @@
     </div>
 
     <div class="form-group">
-      <label for="password">Jelszó</label>
+      <label for="password">
+        {{ 'common.password' | translate }}
+      </label>
+
       <input
         id="password"
         name="password"
@@ -51,12 +66,24 @@
     </div>
 
     <div class="form-group">
-      <label for="age">Életkor</label>
-      <input id="age" name="age" type="number" [(ngModel)]="user.age" class="form-input" />
+      <label for="age">
+        {{ 'common.age' | translate }}
+      </label>
+
+      <input
+        id="age"
+        name="age"
+        type="number"
+        [(ngModel)]="user.age"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
-      <label for="weight">Súly (kg)</label>
+      <label for="weight">
+        {{ 'common.weight' | translate }} (kg)
+      </label>
+
       <input
         id="weight"
         name="weight"
@@ -68,7 +95,10 @@
     </div>
 
     <div class="form-group">
-      <label for="height">Magasság (cm)</label>
+      <label for="height">
+        {{ 'common.height' | translate }} (cm)
+      </label>
+
       <input
         id="height"
         name="height"
@@ -80,22 +110,43 @@
     </div>
 
     <div class="form-group">
-      <label for="gender">Nem</label>
-      <select id="gender" name="gender" [(ngModel)]="user.gender" class="form-input">
-        <option value="Férfi">Férfi</option>
-        <option value="Nő">Nő</option>
+      <label for="gender">
+        {{ 'common.gender' | translate }}
+      </label>
+
+      <select
+        id="gender"
+        name="gender"
+        [(ngModel)]="user.gender"
+        class="form-input"
+      >
+        <option value="male">
+          {{ 'common.male' | translate }}
+        </option>
+
+        <option value="female">
+          {{ 'common.female' | translate }}
+        </option>
       </select>
     </div>
 
     <div class="form-group form-group-full">
-      <label for="goals">Célok</label>
+      <label for="goals">
+        {{ 'common.goals' | translate }}
+      </label>
 
-      <textarea id="goals" name="goals" [(ngModel)]="user.goals" class="form-input form-textarea">
-      </textarea>
+      <textarea
+        id="goals"
+        name="goals"
+        [(ngModel)]="user.goals"
+        class="form-input form-textarea"
+      ></textarea>
     </div>
 
     <div class="form-group">
-      <label for="avatarUrl">Avatar URL</label>
+      <label for="avatarUrl">
+        {{ 'common.avatarUrl' | translate }}
+      </label>
 
       <input
         id="avatarUrl"
@@ -108,7 +159,9 @@
 
     <!-- Coach select -->
     <div class="form-group form-group-full">
-      <label class="form-label"> Edző hozzárendelése </label>
+      <label class="form-label">
+        {{ 'adminUserNew.assignCoach' | translate }}
+      </label>
 
       <app-coach-select
         [(selectedCoachId)]="user.coachId"
@@ -119,22 +172,37 @@
 
     <!-- Role kiválasztás -->
     <div class="form-group form-group-full">
-      <label class="form-label"> Szerepkörök* </label>
+      <label class="form-label">
+        {{ 'adminUserNew.roles' | translate }}*
+      </label>
 
-      <app-role-select [roles]="roles" (roleSelected)="onRoleSelected($event)"> </app-role-select>
+      <app-role-select
+        [roles]="roles"
+        (roleSelected)="onRoleSelected($event)"
+      >
+      </app-role-select>
 
       <div class="selected-roles">
-        <span *ngFor="let r of user.roleIds" class="selected-role" (click)="onRemoveRole(r)">
+        <span
+          *ngFor="let r of user.roleIds"
+          class="selected-role"
+          (click)="onRemoveRole(r)"
+        >
           {{ r.name }}
 
-          <span class="remove-role"> x </span>
+          <span class="remove-role">x</span>
         </span>
       </div>
     </div>
 
     <!-- Submit -->
     <div class="form-submit">
-      <button type="submit" class="submit-button">Létrehozás</button>
+      <button
+        type="submit"
+        class="submit-button"
+      >
+        {{ 'adminUserNew.create' | translate }}
+      </button>
     </div>
   </form>
 </div>

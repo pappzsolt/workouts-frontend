@@ -1,15 +1,15 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 import { MemberSearchService } from '../../../../services/admin/member-search.service';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
 import { Member } from '../../../../models/member-search-model';
 
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+
 @Component({
   selector: 'app-member-search',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './member-search.component.html',
   styleUrls: ['./member-search.component.css'],
 })

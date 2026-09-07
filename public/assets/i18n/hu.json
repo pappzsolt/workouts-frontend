@@ -89,7 +89,19 @@
     "height": "Magasság",
     "gender": "Nem",
     "goals": "Célok",
-    "unknownError": "Ismeretlen hiba"
+    "unknownError": "Ismeretlen hiba",
+    "username": "Felhasználónév",
+    "email": "Email cím",
+    "password": "Jelszó",
+    "age": "Életkor",
+    "weight": "Súly",
+    "height": "Magasság",
+    "gender": "Nem",
+    "male": "Férfi",
+    "female": "Nő",
+    "goals": "Célok",
+    "avatarUrl": "Avatar URL",
+    "search": "Keresés"
   },
   "adminUserEdit": {
     "title": "Felhasználó módosítása",
@@ -100,5 +112,32 @@
     "updateSuccess": "Felhasználó sikeresen frissítve!",
     "updateError": "Hiba a frissítés során",
     "saveError": "Hiba a mentés során"
+  },
+  "adminUserNew": {
+    "title": "Új felhasználó",
+    "assignCoach": "Edző hozzárendelése",
+    "roles": "Szerepkörök",
+    "create": "Létrehozás",
+    "validationError": "Kérlek töltsd ki az összes kötelező mezőt és válassz legalább egy szerepkört!",
+    "createSuccess": "Sikeres létrehozás",
+    "saveError": "Hiba a mentésnél"
+  },
+  "adminMemberSearch": {
+    "title": "Felhasználó keresés",
+    "searchPlaceholder": "Írj be egy kulcsszót...",
+    "gridView": "Kártya nézet",
+    "tableView": "Táblázat nézet",
+    "searching": "Keresés folyamatban...",
+    "role": "Szerepkör",
+    "coach": "Coach",
+    "extraData": "Extra adatok",
+    "noResults": "Nincs találat a keresésre."
+  },
+  "coachDashboard": {
+    "title": "Coach Dashboard",
+    "programs": "Programok",
+    "workouts": "Edzések",
+    "exercises": "Gyakorlatok",
+    "workoutExerciseManager": "Edzés és sorozatok beállítása"
   }
 }
