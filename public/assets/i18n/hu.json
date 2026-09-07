@@ -630,5 +630,10 @@
     "passwordPlaceholder": "Jelszó",
     "loading": "Betöltés...",
     "login": "Bejelentkezés"
+  },
+  "adminLayout": {
+    "title": "Admin Dashboard",
+    "logout": "Kilépés",
+    "footer": "© 2025 FitApp Admin Panel – Minden jog fenntartva."
   }
 }

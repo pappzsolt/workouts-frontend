@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { RouterModule, Router } from '@angular/router';
 import { AdminMenuComponent } from '../../components/dynamic-menu/admin-menu/admin-menu.component';
 import { AuthService } from '../../services/auth/auth.service';
+import { SHARED_IMPORTS } from '../../components/shared/shared-imports';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [RouterModule, AdminMenuComponent],
+  imports: [...SHARED_IMPORTS, RouterModule, AdminMenuComponent],
   templateUrl: './admin-layout.component.html',
   styleUrls: ['./admin-layout.component.css'],
 })
@@ -20,12 +21,12 @@ export class AdminLayoutComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.username = this.authService.getUserName(); // sub-ból jön
-    this.role = this.authService.getUserRole(); // roles-ból jön
+    this.username = this.authService.getUserName();
+    this.role = this.authService.getUserRole();
   }
 
-  onLogout() {
+  onLogout(): void {
     this.authService.logout();
-    this.router.navigate(['/login']); // most már működik
+    this.router.navigate(['/login']);
   }
 }

@@ -630,5 +630,10 @@
     "passwordPlaceholder": "Password",
     "loading": "Loading...",
     "login": "Login"
+  },
+  "adminLayout": {
+    "title": "Admin Dashboard",
+    "logout": "Logout",
+    "footer": "© 2025 FitApp Admin Panel – All rights reserved."
   }
 }

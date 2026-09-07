@@ -2,17 +2,21 @@
 <div class="admin-layout flex flex-col min-h-screen">
   <!-- Fejléc -->
   <header class="bg-gray-800 text-white p-4 flex justify-between items-center">
-    <h1 class="text-lg md:text-xl font-bold">Admin Dashboard</h1>
+    <h1 class="text-lg md:text-xl font-bold">
+      {{ 'adminLayout.title' | translate }}
+    </h1>
+
     <div class="flex items-center space-x-3">
       <div class="text-sm md:text-base">
         <span class="mr-2">👤 {{ username }}</span>
         <span class="italic">({{ role }})</span>
       </div>
+
       <button
         class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm md:text-base"
         (click)="onLogout()"
       >
-        Kilépés
+        {{ 'adminLayout.logout' | translate }}
       </button>
     </div>
   </header>
@@ -32,6 +36,6 @@
 
   <!-- Lábléc -->
   <footer class="bg-gray-800 text-gray-300 text-center py-3 text-sm md:text-base">
-    © 2025 FitApp Admin Panel – Minden jog fenntartva.
+    {{ 'adminLayout.footer' | translate }}
   </footer>
 </div>
