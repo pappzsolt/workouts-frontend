@@ -1,19 +1,20 @@
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 export interface MenuItem {
   label: string;
   path?: string;
   children?: MenuItem[];
-  open?: boolean; // toggle állapot
-  action?: string; // pl. logout
+  open?: boolean;
+  action?: string;
 }
 
 @Component({
   selector: 'app-dynamic-menu',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TranslatePipe],
   templateUrl: './dynamic-menu.component.html',
   styleUrls: ['./dynamic-menu.component.css'],
 })

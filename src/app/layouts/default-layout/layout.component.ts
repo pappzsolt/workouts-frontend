@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { DynamicMenuComponent } from '../../components/dynamic-menu/dynamic-menu.component';
 import { AuthService } from '../../services/auth/auth.service';
-
+import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-layout',
   standalone: true,
@@ -20,22 +20,22 @@ export class LayoutComponent implements OnInit {
   menuOpen = false; // <-- hamburger menü állapota
 
   adminMenuItems = [
-    { label: 'Admin Dashboard', path: '/admin/dashboard' },
-    { label: 'Felhasználók listája', path: '/admin/users' },
-    { label: 'Kijelentkezés', action: 'logout' },
+    { label: 'menu.adminDashboard', path: '/admin/dashboard' },
+    { label: 'menu.users', path: '/admin/users' },
+    { label: 'menu.logout', action: 'logout' },
   ];
 
   coachMenuItems = [
-    { label: 'Coach Dashboard', path: '/coach/dashboard' },
-    { label: 'Profile', path: '/coach/profile' },
-    { label: 'Program Builder', path: '/coach/program-builder' },
-    { label: 'Kijelentkezés', action: 'logout' },
+    { label: 'menu.coachDashboard', path: '/coach/dashboard' },
+    { label: 'menu.profile', path: '/coach/profile' },
+    { label: 'menu.programBuilder', path: '/coach/programBuilder' },
+    { label: 'menu.logout', action: 'logout' },
   ];
 
   userMenuItems = [
-    { label: 'Dashboard', path: '/user/dashboard' },
-    { label: 'Profile', path: '/user/profile' },
-    { label: 'Kijelentkezés', action: 'logout' },
+    { label: 'menu.dashboard', path: '/user/dashboard' },
+    { label: 'menu.profile', path: '/user/profile' },
+    { label: 'menu.logout', action: 'logout' },
   ];
 
   constructor(

@@ -1,4 +1,4 @@
-<h2 class="universal-form-title">✏️ Edit Exercise</h2>
+<h2 class="universal-form-title">✏️ Gyakorlat szerkesztése</h2>
 
 <!-- Üzenet -->
 <div
@@ -12,16 +12,16 @@
   {{ message }}
 </div>
 
-<!-- Exercise Edit Form -->
+<!-- Gyakorlat szerkesztési űrlap -->
 <div class="form-card">
   <div class="form-header">
     <span class="form-header-emoji">🏋️‍♀️</span>
   </div>
 
   <form (ngSubmit)="saveExercise()" #exerciseForm="ngForm" class="universal-form">
-    <!-- Name -->
+    <!-- Név -->
     <div class="universal-form-group-full">
-      <label for="name" class="universal-form-label">Exercise Name</label>
+      <label for="name" class="universal-form-label">Gyakorlat neve</label>
       <input
         id="name"
         name="name"
@@ -32,9 +32,9 @@
       />
     </div>
 
-    <!-- Description -->
+    <!-- Leírás -->
     <div class="universal-form-group-full">
-      <label for="description" class="universal-form-label">Description</label>
+      <label for="description" class="universal-form-label">Leírás</label>
       <textarea
         id="description"
         name="description"
@@ -44,9 +44,9 @@
       ></textarea>
     </div>
 
-    <!-- Image URL -->
+    <!-- Kép URL -->
     <div class="universal-form-group">
-      <label for="imageUrl" class="universal-form-label">Image URL</label>
+      <label for="imageUrl" class="universal-form-label">Kép URL</label>
       <input
         id="imageUrl"
         name="imageUrl"
@@ -56,9 +56,9 @@
       />
     </div>
 
-    <!-- Video URL -->
+    <!-- Videó URL -->
     <div class="universal-form-group">
-      <label for="videoUrl" class="universal-form-label">Video URL</label>
+      <label for="videoUrl" class="universal-form-label">Videó URL</label>
       <input
         id="videoUrl"
         name="videoUrl"
@@ -68,9 +68,9 @@
       />
     </div>
 
-    <!-- Muscle Group -->
+    <!-- Izomcsoport -->
     <div class="universal-form-group">
-      <label for="muscleGroup" class="universal-form-label">Muscle Group</label>
+      <label for="muscleGroup" class="universal-form-label">Izomcsoport</label>
       <input
         id="muscleGroup"
         name="muscleGroup"
@@ -80,9 +80,9 @@
       />
     </div>
 
-    <!-- Equipment -->
+    <!-- Eszköz -->
     <div class="universal-form-group">
-      <label for="equipment" class="universal-form-label">Equipment</label>
+      <label for="equipment" class="universal-form-label">Eszköz</label>
       <input
         id="equipment"
         name="equipment"
@@ -92,9 +92,9 @@
       />
     </div>
 
-    <!-- Difficulty Level -->
+    <!-- Nehézségi szint -->
     <div class="universal-form-group">
-      <label for="difficultyLevel" class="universal-form-label">Difficulty Level</label>
+      <label for="difficultyLevel" class="universal-form-label">Nehézségi szint</label>
       <input
         id="difficultyLevel"
         name="difficultyLevel"
@@ -104,9 +104,9 @@
       />
     </div>
 
-    <!-- Category -->
+    <!-- Kategória -->
     <div class="universal-form-group">
-      <label for="category" class="universal-form-label">Category</label>
+      <label for="category" class="universal-form-label">Kategória</label>
       <input
         id="category"
         name="category"
@@ -116,11 +116,11 @@
       />
     </div>
 
-    <!-- Calories Burned per Minute -->
+    <!-- Elégetett kalória / perc -->
     <div class="universal-form-group">
-      <label for="caloriesBurnedPerMinute" class="universal-form-label"
-        >Calories Burned / Minute</label
-      >
+      <label for="caloriesBurnedPerMinute" class="universal-form-label">
+        Elégetett kalória / perc
+      </label>
       <input
         id="caloriesBurnedPerMinute"
         name="caloriesBurnedPerMinute"
@@ -131,9 +131,9 @@
       />
     </div>
 
-    <!-- Duration (seconds) -->
+    <!-- Időtartam (másodperc) -->
     <div class="universal-form-group">
-      <label for="durationSeconds" class="universal-form-label">Duration (seconds)</label>
+      <label for="durationSeconds" class="universal-form-label">Időtartam (másodperc)</label>
       <input
         id="durationSeconds"
         name="durationSeconds"
@@ -143,10 +143,10 @@
       />
     </div>
 
-    <!-- Save Button -->
+    <!-- Mentés gomb -->
     <div class="md:col-span-2 text-center mt-4">
       <button type="submit" [disabled]="!exerciseForm.form.valid" class="universal-form-button">
-        💾 Save Exercise
+        💾 Gyakorlat mentése
       </button>
     </div>
   </form>

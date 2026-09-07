@@ -1,0 +1,15 @@
+{
+  "language": {
+    "english": "English",
+    "hungarian": "Hungarian"
+  },
+  "menu": {
+    "adminDashboard": "Admin Dashboard",
+    "users": "User List",
+    "coachDashboard": "Coach Dashboard",
+    "profile": "Profile",
+    "programBuilder": "Program Builder",
+    "dashboard": "Dashboard",
+    "logout": "Logout"
+  }
+}

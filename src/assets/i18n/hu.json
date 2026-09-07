@@ -1,0 +1,15 @@
+{
+  "language": {
+    "english": "Angol",
+    "hungarian": "Magyar"
+  },
+  "menu": {
+    "adminDashboard": "Admin Dashboard",
+    "users": "Felhasználók listája",
+    "coachDashboard": "Coach Dashboard",
+    "profile": "Profil",
+    "programBuilder": "Program Builder",
+    "dashboard": "Dashboard",
+    "logout": "Kijelentkezés"
+  }
+}

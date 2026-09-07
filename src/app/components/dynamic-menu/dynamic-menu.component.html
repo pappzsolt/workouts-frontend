@@ -3,25 +3,39 @@
     <ng-container *ngFor="let item of menuItems">
       <li class="sidebar-item">
         <!-- Normál link -->
-        <a *ngIf="!item.children && !item.action" [routerLink]="item.path" class="sidebar-link">
-          {{ item.label }}
+        <a
+          *ngIf="!item.children && !item.action"
+          [routerLink]="item.path"
+          class="sidebar-link"
+        >
+          {{ item.label | translate }}
         </a>
 
         <!-- Action (logout) -->
-        <span *ngIf="item.action" class="sidebar-link sidebar-action" (click)="onAction(item)">
-          {{ item.label }}
+        <span
+          *ngIf="item.action"
+          class="sidebar-link sidebar-action"
+          (click)="onAction(item)"
+        >
+          {{ item.label | translate }}
         </span>
 
         <!-- Dropdown -->
         <div *ngIf="item.children">
-          <span class="sidebar-link sidebar-dropdown-toggle" (click)="toggle(item)">
-            {{ item.label }}
+          <span
+            class="sidebar-link sidebar-dropdown-toggle"
+            (click)="toggle(item)"
+          >
+            {{ item.label | translate }}
           </span>
 
           <ul *ngIf="isOpen(item)" class="sidebar-submenu">
             <li *ngFor="let child of item.children">
-              <a [routerLink]="child.path" class="sidebar-link sidebar-submenu-link">
-                {{ child.label }}
+              <a
+                [routerLink]="child.path"
+                class="sidebar-link sidebar-submenu-link"
+              >
+                {{ child.label | translate }}
               </a>
             </li>
           </ul>
