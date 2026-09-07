@@ -1,20 +1,27 @@
 <div class="profile-page">
-  <h2 class="profile-title">Profile</h2>
+  <h2 class="profile-title">
+    {{ 'userProfile.title' | translate }}
+  </h2>
 
   <div *ngIf="message" class="profile-message">
-    {{ message }}
+    {{ message | translate }}
   </div>
 
   <form class="profile-form">
     <!-- Username -->
     <div class="profile-form-group">
-      <label class="profile-label" for="username"> Username </label>
+      <label
+        class="profile-label"
+        for="username"
+      >
+        {{ 'userProfile.username' | translate }}
+      </label>
 
       <input
         id="username"
         name="username"
         type="text"
-        placeholder="Username"
+        [placeholder]="'userProfile.usernamePlaceholder' | translate"
         [(ngModel)]="selectedUser.username"
         class="profile-input"
       />
@@ -22,13 +29,18 @@
 
     <!-- Email -->
     <div class="profile-form-group">
-      <label class="profile-label" for="email"> Email </label>
+      <label
+        class="profile-label"
+        for="email"
+      >
+        {{ 'userProfile.email' | translate }}
+      </label>
 
       <input
         id="email"
         name="email"
         type="email"
-        placeholder="Email"
+        [placeholder]="'userProfile.emailPlaceholder' | translate"
         [(ngModel)]="selectedUser.email"
         class="profile-input"
       />
@@ -36,13 +48,18 @@
 
     <!-- Password -->
     <div class="profile-form-group">
-      <label class="profile-label" for="password_hash"> Password </label>
+      <label
+        class="profile-label"
+        for="password_hash"
+      >
+        {{ 'userProfile.password' | translate }}
+      </label>
 
       <input
         id="password_hash"
         name="password_hash"
         type="password"
-        placeholder="Password"
+        [placeholder]="'userProfile.passwordPlaceholder' | translate"
         [(ngModel)]="selectedUser.password"
         class="profile-input"
       />
@@ -50,13 +67,18 @@
 
     <!-- Age -->
     <div class="profile-form-group">
-      <label class="profile-label" for="age"> Age </label>
+      <label
+        class="profile-label"
+        for="age"
+      >
+        {{ 'userProfile.age' | translate }}
+      </label>
 
       <input
         id="age"
         name="age"
         type="number"
-        placeholder="Age"
+        [placeholder]="'userProfile.agePlaceholder' | translate"
         [(ngModel)]="selectedUser.age"
         class="profile-input"
       />
@@ -64,14 +86,19 @@
 
     <!-- Weight -->
     <div class="profile-form-group">
-      <label class="profile-label" for="weight"> Weight (kg) </label>
+      <label
+        class="profile-label"
+        for="weight"
+      >
+        {{ 'userProfile.weight' | translate }}
+      </label>
 
       <input
         id="weight"
         name="weight"
         type="number"
         step="0.01"
-        placeholder="Weight"
+        [placeholder]="'userProfile.weightPlaceholder' | translate"
         [(ngModel)]="selectedUser.weight"
         class="profile-input"
       />
@@ -79,14 +106,19 @@
 
     <!-- Height -->
     <div class="profile-form-group">
-      <label class="profile-label" for="height"> Height (cm) </label>
+      <label
+        class="profile-label"
+        for="height"
+      >
+        {{ 'userProfile.height' | translate }}
+      </label>
 
       <input
         id="height"
         name="height"
         type="number"
         step="0.01"
-        placeholder="Height"
+        [placeholder]="'userProfile.heightPlaceholder' | translate"
         [(ngModel)]="selectedUser.height"
         class="profile-input"
       />
@@ -94,13 +126,18 @@
 
     <!-- Goals -->
     <div class="profile-form-group profile-form-group-full">
-      <label class="profile-label" for="goals"> Goals </label>
+      <label
+        class="profile-label"
+        for="goals"
+      >
+        {{ 'userProfile.goals' | translate }}
+      </label>
 
       <textarea
         id="goals"
         name="goals"
         rows="3"
-        placeholder="Your goals"
+        [placeholder]="'userProfile.goalsPlaceholder' | translate"
         [(ngModel)]="selectedUser.goals"
         class="profile-textarea"
       ></textarea>
@@ -108,13 +145,18 @@
 
     <!-- Avatar -->
     <div class="profile-form-group profile-form-group-full">
-      <label class="profile-label" for="avatar_url"> Avatar URL </label>
+      <label
+        class="profile-label"
+        for="avatar_url"
+      >
+        {{ 'userProfile.avatarUrl' | translate }}
+      </label>
 
       <input
         id="avatar_url"
         name="avatar_url"
         type="text"
-        placeholder="Avatar image URL"
+        [placeholder]="'userProfile.avatarUrlPlaceholder' | translate"
         [(ngModel)]="selectedUser.avatarUrl"
         class="profile-input"
       />
@@ -122,7 +164,9 @@
 
     <!-- Coach -->
     <div class="profile-form-group profile-form-group-full">
-      <label class="profile-label"> Coach </label>
+      <label class="profile-label">
+        {{ 'userProfile.coach' | translate }}
+      </label>
 
       <div class="profile-coach">
         {{ coachName }}
@@ -131,7 +175,13 @@
 
     <!-- Save -->
     <div class="profile-submit">
-      <button type="button" (click)="onSave()" class="profile-save-button">Save</button>
+      <button
+        type="button"
+        (click)="onSave()"
+        class="profile-save-button"
+      >
+        {{ 'userProfile.save' | translate }}
+      </button>
     </div>
   </form>
 </div>

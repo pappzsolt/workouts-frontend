@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 import { WorkoutExercisesManagerService } from '../../../../services/coach/workout-exercises-manager.service';
+
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 interface CalendarDay {
   date: Date;
@@ -12,7 +13,7 @@ interface CalendarDay {
 @Component({
   selector: 'app-user-workouts-calendar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './user-workouts-calendar.component.html',
   styleUrls: ['./user-workouts-calendar.component.css'],
 })
@@ -36,18 +37,18 @@ export class UserWorkoutsCalendarComponent implements OnInit {
   calendarDays: CalendarDay[] = [];
 
   monthNames: string[] = [
-    'Január',
-    'Február',
-    'Március',
-    'Április',
-    'Május',
-    'Június',
-    'Július',
-    'Augusztus',
-    'Szeptember',
-    'Október',
-    'November',
-    'December',
+    'userWorkoutsCalendar.january',
+    'userWorkoutsCalendar.february',
+    'userWorkoutsCalendar.march',
+    'userWorkoutsCalendar.april',
+    'userWorkoutsCalendar.may',
+    'userWorkoutsCalendar.june',
+    'userWorkoutsCalendar.july',
+    'userWorkoutsCalendar.august',
+    'userWorkoutsCalendar.september',
+    'userWorkoutsCalendar.october',
+    'userWorkoutsCalendar.november',
+    'userWorkoutsCalendar.december',
   ];
 
   // =========================================================

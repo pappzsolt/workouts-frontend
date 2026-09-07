@@ -4,11 +4,26 @@
   <!-- ===================================================== -->
 
   <div class="calendar-header">
-    <button type="button" class="month-button" (click)="previousMonth()">‹</button>
+    <button
+      type="button"
+      class="month-button"
+      (click)="previousMonth()"
+    >
+      ‹
+    </button>
 
-    <h2>{{ monthNames[currentMonth] }} {{ currentYear }}</h2>
+    <h2>
+      {{ monthNames[currentMonth] | translate }}
+      {{ currentYear }}
+    </h2>
 
-    <button type="button" class="month-button" (click)="nextMonth()">›</button>
+    <button
+      type="button"
+      class="month-button"
+      (click)="nextMonth()"
+    >
+      ›
+    </button>
   </div>
 
   <!-- ===================================================== -->
@@ -16,13 +31,13 @@
   <!-- ===================================================== -->
 
   <div class="calendar-weekdays">
-    <div>H</div>
-    <div>K</div>
-    <div>Sze</div>
-    <div>Cs</div>
-    <div>P</div>
-    <div>Szo</div>
-    <div>V</div>
+    <div>{{ 'userWorkoutsCalendar.monday' | translate }}</div>
+    <div>{{ 'userWorkoutsCalendar.tuesday' | translate }}</div>
+    <div>{{ 'userWorkoutsCalendar.wednesday' | translate }}</div>
+    <div>{{ 'userWorkoutsCalendar.thursday' | translate }}</div>
+    <div>{{ 'userWorkoutsCalendar.friday' | translate }}</div>
+    <div>{{ 'userWorkoutsCalendar.saturday' | translate }}</div>
+    <div>{{ 'userWorkoutsCalendar.sunday' | translate }}</div>
   </div>
 
   <!-- ===================================================== -->
@@ -45,7 +60,9 @@
       <!-- Workoutok -->
 
       <div
-        *ngFor="let workout of getWorkoutsForDay(day.date)"
+        *ngFor="
+          let workout of getWorkoutsForDay(day.date)
+        "
         class="workout-item"
         [class.completed]="workout.completed"
         (click)="selectWorkout(workout)"
@@ -59,23 +76,42 @@
     </div>
   </div>
 
-  <div class="selected-workout" *ngIf="selectedWorkout">
+  <div
+    class="selected-workout"
+    *ngIf="selectedWorkout"
+  >
     <!-- Fejléc -->
 
     <div class="selected-workout-header">
       <div>
-        <div class="selected-workout-title">🏋️ {{ selectedWorkout.workout_name }}</div>
+        <div class="selected-workout-title">
+          🏋️ {{ selectedWorkout.workout_name }}
+        </div>
 
-        <div class="selected-workout-date" *ngIf="selectedWorkout.scheduled_at">
+        <div
+          class="selected-workout-date"
+          *ngIf="selectedWorkout.scheduled_at"
+        >
           📅 {{ selectedWorkout.scheduled_at }}
         </div>
 
-        <div class="selected-workout-date" *ngIf="!selectedWorkout.scheduled_at">
-          📅 Nincs tervezett dátum
+        <div
+          class="selected-workout-date"
+          *ngIf="!selectedWorkout.scheduled_at"
+        >
+          📅
+          {{ 'userWorkoutsCalendar.noScheduledDate' | translate }}
         </div>
       </div>
 
-      <button type="button" class="close-button" (click)="closeWorkoutDetails()">×</button>
+      <button
+        type="button"
+        class="close-button"
+        (click)="closeWorkoutDetails()"
+        [attr.aria-label]="'userWorkoutsCalendar.close' | translate"
+      >
+        ×
+      </button>
     </div>
 
     <!-- Elválasztó -->
@@ -85,17 +121,28 @@
     <!-- Exercise lista -->
 
     <div class="exercises-section">
-      <h4>Gyakorlatok</h4>
+      <h4>
+        {{ 'userWorkoutsCalendar.exercises' | translate }}
+      </h4>
 
       <!-- Nincs exercise -->
 
-      <div *ngIf="selectedExercises.length === 0" class="no-exercises">
-        Ehhez a workouthoz nincs gyakorlat.
+      <div
+        *ngIf="selectedExercises.length === 0"
+        class="no-exercises"
+      >
+        {{ 'userWorkoutsCalendar.noExercises' | translate }}
       </div>
 
       <!-- Exercise-ok -->
 
-      <div *ngFor="let exercise of selectedExercises; let i = index" class="exercise-card">
+      <div
+        *ngFor="
+          let exercise of selectedExercises;
+          let i = index
+        "
+        class="exercise-card"
+      >
         <div class="exercise-number">
           {{ i + 1 }}
         </div>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   UserStatisticsService,
   Statistic,
@@ -7,10 +7,12 @@ import {
 
 import { Observable } from 'rxjs';
 
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+
 @Component({
   selector: 'app-user-statistics',
   standalone: true,
-  imports: [CommonModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './user-statistics.component.html',
   styleUrls: ['./user-statistics.component.css'],
 })
