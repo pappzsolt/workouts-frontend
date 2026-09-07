@@ -2,12 +2,14 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { DynamicMenuComponent } from '../../components/dynamic-menu/dynamic-menu.component';
+import { LanguageSelectorComponent } from '../../components/shared/language/language-selector.component';
 import { AuthService } from '../../services/auth/auth.service';
 import { TranslateService } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, DynamicMenuComponent],
+  imports: [CommonModule, RouterModule, DynamicMenuComponent, LanguageSelectorComponent],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css'],
 })
@@ -61,9 +63,11 @@ export class LayoutComponent implements OnInit {
   isAdmin(): boolean {
     return this.role === 'ROLE_ADMIN';
   }
+
   isCoach(): boolean {
     return this.role === 'ROLE_COACH';
   }
+
   isUser(): boolean {
     return this.role === 'ROLE_USER';
   }
