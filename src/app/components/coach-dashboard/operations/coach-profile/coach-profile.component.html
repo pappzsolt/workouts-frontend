@@ -1,59 +1,102 @@
-<h2 class="profile-title">Coach Profile</h2>
+<h2 class="profile-title">
+  {{ 'coachProfile.title' | translate }}
+</h2>
 
 <div *ngIf="message" class="message-box">
-  {{ message }}
+  {{ message | translate }}
 </div>
 
 <form class="profile-form">
   <div class="form-field">
-    <label for="name">Name</label>
-    <input id="name" name="name" type="text" placeholder="Name" [(ngModel)]="profile.name" />
+    <label for="name">
+      {{ 'common.name' | translate }}
+    </label>
+
+    <input
+      id="name"
+      name="name"
+      type="text"
+      [placeholder]="'common.name' | translate"
+      [(ngModel)]="profile.name"
+    />
   </div>
 
   <div class="form-field">
-    <label for="email">Email</label>
-    <input id="email" name="email" type="email" placeholder="Email" [(ngModel)]="profile.email" />
+    <label for="email">
+      {{ 'common.email' | translate }}
+    </label>
+
+    <input
+      id="email"
+      name="email"
+      type="email"
+      [placeholder]="'common.email' | translate"
+      [(ngModel)]="profile.email"
+    />
   </div>
 
   <div class="form-field">
-    <label for="password_hash">Password</label>
+    <label for="password_hash">
+      {{ 'common.password' | translate }}
+    </label>
+
     <input
       id="password_hash"
       name="password_hash"
       type="password"
-      placeholder="Password"
+      [placeholder]="'common.password' | translate"
       [(ngModel)]="profile.password_hash"
     />
   </div>
 
   <div class="form-field">
-    <label for="phone">Phone</label>
-    <input id="phone" name="phone" type="text" placeholder="Phone" [(ngModel)]="profile.phone" />
+    <label for="phone">
+      {{ 'common.phone' | translate }}
+    </label>
+
+    <input
+      id="phone"
+      name="phone"
+      type="text"
+      [placeholder]="'common.phone' | translate"
+      [(ngModel)]="profile.phone"
+    />
   </div>
 
   <div class="form-field full-width">
-    <label for="specialization">Specialization</label>
+    <label for="specialization">
+      {{ 'common.specialization' | translate }}
+    </label>
+
     <textarea
       id="specialization"
       name="specialization"
       rows="3"
-      placeholder="Specialization"
+      [placeholder]="'common.specialization' | translate"
       [(ngModel)]="profile.specialization"
     ></textarea>
   </div>
 
   <div class="form-field full-width">
-    <label for="avatar_url">Avatar URL</label>
+    <label for="avatar_url">
+      {{ 'common.avatarUrl' | translate }}
+    </label>
+
     <input
       id="avatar_url"
       name="avatar_url"
       type="text"
-      placeholder="Avatar image URL"
+      [placeholder]="'common.avatarImageUrl' | translate"
       [(ngModel)]="profile.avatar_url"
     />
   </div>
 
   <div class="form-actions">
-    <button type="button" (click)="saveProfile()">Save</button>
+    <button
+      type="button"
+      (click)="saveProfile()"
+    >
+      {{ 'common.save' | translate }}
+    </button>
   </div>
 </form>

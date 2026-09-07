@@ -1,21 +1,17 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
-
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
-
 import { Workout } from '../../../../models/workout.model';
-
 import { USER_MESSAGES } from '../../../../constants/user-messages';
-
 import { NewWorkoutComponent } from '../../operations/coach-workouts/coach-workout-new/new-workout.component';
+
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
   selector: 'app-coach-workouts',
   standalone: true,
-  imports: [CommonModule, FormsModule, NewWorkoutComponent],
+  imports: [...SHARED_IMPORTS, NewWorkoutComponent],
   templateUrl: './coach-workouts.component.html',
   styleUrls: ['./coach-workouts.component.css'],
 })

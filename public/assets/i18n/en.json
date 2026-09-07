@@ -104,7 +104,13 @@
     "search": "Search",
     "id": "ID",
     "remove": "Remove",
-    "delete": "Delete"
+    "delete": "Delete",
+    "edit": "Edit",
+    "avatarImageUrl": "Avatar image URL",
+    "duration": "Duration",
+    "minutes": "minutes",
+    "exercises": "Exercises",
+    "edit": "Edit"
   },
   "adminUserEdit": {
     "title": "Edit User",
@@ -149,5 +155,42 @@
     "availableExercises": "Available exercises",
     "save": "Save to selected workouts and exercises",
     "savedRelations": "Saved relations"
+  },
+  "coachExerciseEdit": {
+    "title": "Edit Exercise",
+    "name": "Exercise Name",
+    "description": "Description",
+    "imageUrl": "Image URL",
+    "videoUrl": "Video URL",
+    "muscleGroup": "Muscle Group",
+    "equipment": "Equipment",
+    "difficultyLevel": "Difficulty Level",
+    "category": "Category",
+    "caloriesPerMinute": "Calories Burned / Minute",
+    "durationSeconds": "Duration (seconds)",
+    "save": "Save Exercise",
+    "notFound": "The selected exercise was not found",
+    "loadError": "Error loading exercise",
+    "saveSuccess": "Exercise saved successfully!",
+    "saveError": "Error saving exercise"
+  },
+  "coachExercises": {
+    "title": "Exercises",
+    "search": "Search exercises",
+    "searchPlaceholder": "Exercise name...",
+    "sortByName": "Exercise name",
+    "noSearchResults": "No exercises match the search.",
+    "noExercises": "No exercises found.",
+    "addExercise": "Add new exercise"
+  },
+  "coachWorkouts": {
+    "title": "Workouts",
+    "search": "Search workouts",
+    "searchPlaceholder": "Workout name...",
+    "sortByName": "Workout name",
+    "noExercises": "No exercises assigned.",
+    "noSearchResults": "No workouts match the search.",
+    "noWorkouts": "No workouts found.",
+    "addWorkout": "Add new workout"
   }
 }

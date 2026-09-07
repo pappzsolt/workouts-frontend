@@ -1,4 +1,6 @@
-<h2 class="universal-form-title">✏️ Gyakorlat szerkesztése</h2>
+<h2 class="universal-form-title">
+  ✏️ {{ 'coachExerciseEdit.title' | translate }}
+</h2>
 
 <!-- Üzenet -->
 <div
@@ -9,7 +11,7 @@
     'universal-form-message-error': messageType === 'error',
   }"
 >
-  {{ message }}
+  {{ message | translate }}
 </div>
 
 <!-- Gyakorlat szerkesztési űrlap -->
@@ -18,10 +20,17 @@
     <span class="form-header-emoji">🏋️‍♀️</span>
   </div>
 
-  <form (ngSubmit)="saveExercise()" #exerciseForm="ngForm" class="universal-form">
+  <form
+    (ngSubmit)="saveExercise()"
+    #exerciseForm="ngForm"
+    class="universal-form"
+  >
     <!-- Név -->
     <div class="universal-form-group-full">
-      <label for="name" class="universal-form-label">Gyakorlat neve</label>
+      <label for="name" class="universal-form-label">
+        {{ 'coachExerciseEdit.name' | translate }}
+      </label>
+
       <input
         id="name"
         name="name"
@@ -34,7 +43,13 @@
 
     <!-- Leírás -->
     <div class="universal-form-group-full">
-      <label for="description" class="universal-form-label">Leírás</label>
+      <label
+        for="description"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.description' | translate }}
+      </label>
+
       <textarea
         id="description"
         name="description"
@@ -46,7 +61,13 @@
 
     <!-- Kép URL -->
     <div class="universal-form-group">
-      <label for="imageUrl" class="universal-form-label">Kép URL</label>
+      <label
+        for="imageUrl"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.imageUrl' | translate }}
+      </label>
+
       <input
         id="imageUrl"
         name="imageUrl"
@@ -58,7 +79,13 @@
 
     <!-- Videó URL -->
     <div class="universal-form-group">
-      <label for="videoUrl" class="universal-form-label">Videó URL</label>
+      <label
+        for="videoUrl"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.videoUrl' | translate }}
+      </label>
+
       <input
         id="videoUrl"
         name="videoUrl"
@@ -70,7 +97,13 @@
 
     <!-- Izomcsoport -->
     <div class="universal-form-group">
-      <label for="muscleGroup" class="universal-form-label">Izomcsoport</label>
+      <label
+        for="muscleGroup"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.muscleGroup' | translate }}
+      </label>
+
       <input
         id="muscleGroup"
         name="muscleGroup"
@@ -82,7 +115,13 @@
 
     <!-- Eszköz -->
     <div class="universal-form-group">
-      <label for="equipment" class="universal-form-label">Eszköz</label>
+      <label
+        for="equipment"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.equipment' | translate }}
+      </label>
+
       <input
         id="equipment"
         name="equipment"
@@ -94,7 +133,13 @@
 
     <!-- Nehézségi szint -->
     <div class="universal-form-group">
-      <label for="difficultyLevel" class="universal-form-label">Nehézségi szint</label>
+      <label
+        for="difficultyLevel"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.difficultyLevel' | translate }}
+      </label>
+
       <input
         id="difficultyLevel"
         name="difficultyLevel"
@@ -106,7 +151,13 @@
 
     <!-- Kategória -->
     <div class="universal-form-group">
-      <label for="category" class="universal-form-label">Kategória</label>
+      <label
+        for="category"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.category' | translate }}
+      </label>
+
       <input
         id="category"
         name="category"
@@ -118,9 +169,13 @@
 
     <!-- Elégetett kalória / perc -->
     <div class="universal-form-group">
-      <label for="caloriesBurnedPerMinute" class="universal-form-label">
-        Elégetett kalória / perc
+      <label
+        for="caloriesBurnedPerMinute"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.caloriesPerMinute' | translate }}
       </label>
+
       <input
         id="caloriesBurnedPerMinute"
         name="caloriesBurnedPerMinute"
@@ -133,7 +188,13 @@
 
     <!-- Időtartam (másodperc) -->
     <div class="universal-form-group">
-      <label for="durationSeconds" class="universal-form-label">Időtartam (másodperc)</label>
+      <label
+        for="durationSeconds"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.durationSeconds' | translate }}
+      </label>
+
       <input
         id="durationSeconds"
         name="durationSeconds"
@@ -145,8 +206,12 @@
 
     <!-- Mentés gomb -->
     <div class="md:col-span-2 text-center mt-4">
-      <button type="submit" [disabled]="!exerciseForm.form.valid" class="universal-form-button">
-        💾 Gyakorlat mentése
+      <button
+        type="submit"
+        [disabled]="!exerciseForm.form.valid"
+        class="universal-form-button"
+      >
+        💾 {{ 'coachExerciseEdit.save' | translate }}
       </button>
     </div>
   </form>

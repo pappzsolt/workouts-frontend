@@ -3,13 +3,17 @@
        CÍM
        ====================================================== -->
 
-  <h2 class="exercises-title">Gyakorlatok</h2>
+  <h2 class="exercises-title">
+    {{ 'coachExercises.title' | translate }}
+  </h2>
 
   <!-- ======================================================
        BETÖLTÉS
        ====================================================== -->
 
-  <div *ngIf="loading" class="no-exercises">Betöltés...</div>
+  <div *ngIf="loading" class="no-exercises">
+    {{ 'common.loading' | translate }}
+  </div>
 
   <ng-container *ngIf="!loading">
     <!-- ====================================================
@@ -22,7 +26,12 @@
            ================================================== -->
 
       <div class="exercise-search">
-        <label for="exerciseSearch" class="exercise-search-label"> Gyakorlat keresése </label>
+        <label
+          for="exerciseSearch"
+          class="exercise-search-label"
+        >
+          {{ 'coachExercises.search' | translate }}
+        </label>
 
         <input
           id="exerciseSearch"
@@ -30,7 +39,7 @@
           [(ngModel)]="searchTerm"
           (ngModelChange)="onSearchChange()"
           class="exercise-search-input"
-          placeholder="Gyakorlat neve..."
+          [placeholder]="'coachExercises.searchPlaceholder' | translate"
           autocomplete="off"
         />
       </div>
@@ -39,8 +48,12 @@
            RENDEZÉS
            ================================================== -->
 
-      <button type="button" class="exercise-sort-button" (click)="toggleSort()">
-        Gyakorlat neve
+      <button
+        type="button"
+        class="exercise-sort-button"
+        (click)="toggleSort()"
+      >
+        {{ 'coachExercises.sortByName' | translate }}
 
         <span class="sort-icon">
           {{ sortDirection === 'asc' ? '↑' : '↓' }}
@@ -52,9 +65,14 @@
          GYAKORLATOK
          ====================================================== -->
 
-    <ng-container *ngIf="filteredExercises.length > 0; else noExercises">
+    <ng-container
+      *ngIf="filteredExercises.length > 0; else noExercises"
+    >
       <div class="exercises-grid">
-        <div *ngFor="let ex of pagedExercises" class="exercise-card">
+        <div
+          *ngFor="let ex of pagedExercises"
+          class="exercise-card"
+        >
           <!-- ==================================================
                FEJLÉC
                ================================================== -->
@@ -76,7 +94,10 @@
 
             <!-- LEÍRÁS -->
 
-            <p *ngIf="ex.description" class="exercise-description">
+            <p
+              *ngIf="ex.description"
+              class="exercise-description"
+            >
               {{ ex.description }}
             </p>
 
@@ -85,8 +106,12 @@
                  ================================================== -->
 
             <div class="exercise-edit">
-              <button type="button" class="edit-button" (click)="editExercise(ex.id!)">
-                ✏️ Szerkesztés
+              <button
+                type="button"
+                class="edit-button"
+                (click)="editExercise(ex.id!)"
+              >
+                ✏️ {{ 'common.edit' | translate }}
               </button>
             </div>
           </div>
@@ -97,17 +122,22 @@
            LAPOZÁS
            ====================================================== -->
 
-      <div *ngIf="totalPages > 1" class="pagination-controls">
+      <div
+        *ngIf="totalPages > 1"
+        class="pagination-controls"
+      >
         <button
           type="button"
           class="pagination-button"
           (click)="prevPage()"
           [disabled]="currentPage === 1"
         >
-          ◀ Előző
+          ◀ {{ 'common.previous' | translate }}
         </button>
 
-        <span class="pagination-info"> {{ currentPage }} / {{ totalPages }} </span>
+        <span class="pagination-info">
+          {{ currentPage }} / {{ totalPages }}
+        </span>
 
         <button
           type="button"
@@ -115,7 +145,7 @@
           (click)="nextPage()"
           [disabled]="currentPage === totalPages"
         >
-          Következő ▶
+          {{ 'common.next' | translate }} ▶
         </button>
       </div>
     </ng-container>
@@ -127,11 +157,15 @@
 
   <ng-template #noExercises>
     <div class="no-exercises">
-      <span *ngIf="searchTerm; else noExercisesAtAll">
-        Nincs a keresésnek megfelelő gyakorlat.
+      <span
+        *ngIf="searchTerm; else noExercisesAtAll"
+      >
+        {{ 'coachExercises.noSearchResults' | translate }}
       </span>
 
-      <ng-template #noExercisesAtAll> Nincsenek gyakorlatok. </ng-template>
+      <ng-template #noExercisesAtAll>
+        {{ 'coachExercises.noExercises' | translate }}
+      </ng-template>
     </div>
   </ng-template>
 
@@ -143,7 +177,7 @@
     type="button"
     class="floating-action-button"
     (click)="goToNewExercise()"
-    title="Új gyakorlat hozzáadása"
+    [title]="'coachExercises.addExercise' | translate"
   >
     ➕
   </button>

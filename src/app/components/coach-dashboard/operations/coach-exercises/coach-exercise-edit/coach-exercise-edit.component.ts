@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 import { Exercise } from '../../../../../models/exercise.model';
+
+import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
 @Component({
   selector: 'app-coach-exercise-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './coach-exercise-edit.component.html',
   styleUrls: ['./coach-exercise-edit.component.css'],
 })
@@ -31,7 +32,7 @@ export class CoachExerciseEditComponent implements OnInit {
   saving: boolean = false;
   errorMessage: string = '';
 
-  // 🔧 Hozzáadva a message változók a template-hez
+  // Message változók a template-hez
   message: string | null = null;
   messageType: 'success' | 'error' | null = null;
 
@@ -43,6 +44,7 @@ export class CoachExerciseEditComponent implements OnInit {
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
+
     if (id) {
       this.loadExercise(id);
     }
@@ -58,14 +60,17 @@ export class CoachExerciseEditComponent implements OnInit {
         if (ex) {
           this.exercise = { ...ex };
         } else {
-          this.errorMessage = 'A kiválasztott exercise nem található';
+          this.errorMessage = 'coachExerciseEdit.notFound';
         }
 
         this.loading = false;
       },
+
       error: (err) => {
         console.error('Hiba az exercise betöltésénél:', err);
-        this.errorMessage = 'Hiba az exercise betöltésénél';
+
+        this.errorMessage = 'coachExerciseEdit.loadError';
+
         this.loading = false;
       },
     });
@@ -73,17 +78,24 @@ export class CoachExerciseEditComponent implements OnInit {
 
   saveExercise(): void {
     this.saving = true;
+
     this.exerciseService.updateExercise(this.exercise).subscribe({
       next: (updated) => {
         console.log('Exercise frissítve:', updated);
-        this.message = 'Exercise successfully saved!';
+
+        this.message = 'coachExerciseEdit.saveSuccess';
+
         this.messageType = 'success';
         this.saving = false;
+
         this.router.navigate(['/coach/exercises']);
       },
+
       error: (err) => {
         console.error('Hiba az exercise frissítésénél:', err);
-        this.message = 'Hiba az exercise mentésénél';
+
+        this.message = 'coachExerciseEdit.saveError';
+
         this.messageType = 'error';
         this.saving = false;
       },

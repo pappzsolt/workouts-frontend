@@ -104,7 +104,13 @@
     "search": "Keresés",
     "id": "ID",
     "remove": "Eltávolítás",
-    "delete": "Törlés"
+    "delete": "Törlés",
+    "edit": "Szerkesztés",
+    "avatarImageUrl": "Avatar kép URL",
+    "duration": "Időtartam",
+    "minutes": "perc",
+    "exercises": "Gyakorlatok",
+    "edit": "Szerkesztés"
   },
   "adminUserEdit": {
     "title": "Felhasználó módosítása",
@@ -149,5 +155,45 @@
     "availableExercises": "Elérhető exercise-ek",
     "save": "Mentés a kiválasztott workoutokhoz és exercise-ekhez",
     "savedRelations": "Mentett kapcsolatok"
+  },
+  "coachExerciseEdit": {
+    "title": "Gyakorlat szerkesztése",
+    "name": "Gyakorlat neve",
+    "description": "Leírás",
+    "imageUrl": "Kép URL",
+    "videoUrl": "Videó URL",
+    "muscleGroup": "Izomcsoport",
+    "equipment": "Eszköz",
+    "difficultyLevel": "Nehézségi szint",
+    "category": "Kategória",
+    "caloriesPerMinute": "Elégetett kalória / perc",
+    "durationSeconds": "Időtartam (másodperc)",
+    "save": "Gyakorlat mentése",
+    "notFound": "A kiválasztott gyakorlat nem található",
+    "loadError": "Hiba a gyakorlat betöltésénél",
+    "saveSuccess": "A gyakorlat sikeresen mentve!",
+    "saveError": "Hiba a gyakorlat mentésénél"
+  },
+  "coachExercises": {
+    "title": "Gyakorlatok",
+    "search": "Gyakorlat keresése",
+    "searchPlaceholder": "Gyakorlat neve...",
+    "sortByName": "Gyakorlat neve",
+    "noSearchResults": "Nincs a keresésnek megfelelő gyakorlat.",
+    "noExercises": "Nincsenek gyakorlatok.",
+    "addExercise": "Új gyakorlat hozzáadása"
+  },
+  "coachProfile": {
+    "title": "Coach profil"
+  },
+  "coachWorkouts": {
+    "title": "Edzések",
+    "search": "Workout keresése",
+    "searchPlaceholder": "Workout neve...",
+    "sortByName": "Workout neve",
+    "noExercises": "Nincs gyakorlat hozzárendelve.",
+    "noSearchResults": "Nincs a keresésnek megfelelő workout.",
+    "noWorkouts": "Nincsenek edzések.",
+    "addWorkout": "Új edzés hozzáadása"
   }
 }

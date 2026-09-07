@@ -1,10 +1,10 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 import { AuthService } from '../../../../services/auth/auth.service';
 import { CoachProfileService } from '../../../../services/coach/coach-profile.service';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
+
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 export interface CoachProfile {
   id?: number;
@@ -20,7 +20,7 @@ export interface CoachProfile {
 @Component({
   selector: 'app-coach-profile',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './coach-profile.component.html',
   styleUrls: ['./coach-profile.component.css'],
 })

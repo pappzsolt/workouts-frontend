@@ -1,19 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-
-import { CommonModule } from '@angular/common';
-
-import { FormsModule } from '@angular/forms';
-
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { Exercise } from '../../../../models/exercise.model';
-
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
+
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
   selector: 'app-exercise-controller',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './coach-exercises.component.html',
   styleUrls: ['./coach-exercises.component.css'],
 })

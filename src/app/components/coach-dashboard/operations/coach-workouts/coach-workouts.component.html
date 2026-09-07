@@ -10,14 +10,16 @@
       'error-message': messageType === 'error',
     }"
   >
-    {{ message }}
+    {{ message | translate }}
   </div>
 
   <!-- ======================================================
        CÍM
        ====================================================== -->
 
-  <h2 class="workouts-title">Edzések</h2>
+  <h2 class="workouts-title">
+    {{ 'coachWorkouts.title' | translate }}
+  </h2>
 
   <!-- ======================================================
        KERESÉS ÉS RENDEZÉS
@@ -29,7 +31,12 @@
          ==================================================== -->
 
     <div class="workout-search">
-      <label for="workoutSearch" class="workout-search-label"> Workout keresése </label>
+      <label
+        for="workoutSearch"
+        class="workout-search-label"
+      >
+        {{ 'coachWorkouts.search' | translate }}
+      </label>
 
       <input
         id="workoutSearch"
@@ -37,7 +44,7 @@
         [(ngModel)]="searchTerm"
         (ngModelChange)="onSearchChange()"
         class="workout-search-input"
-        placeholder="Workout neve..."
+        [placeholder]="'coachWorkouts.searchPlaceholder' | translate"
         autocomplete="off"
       />
     </div>
@@ -46,8 +53,12 @@
          RENDEZÉS
          ==================================================== -->
 
-    <button type="button" class="workout-sort-button" (click)="toggleSort()">
-      Workout neve
+    <button
+      type="button"
+      class="workout-sort-button"
+      (click)="toggleSort()"
+    >
+      {{ 'coachWorkouts.sortByName' | translate }}
 
       <span class="sort-icon">
         {{ sortDirection === 'asc' ? '↑' : '↓' }}
@@ -59,15 +70,21 @@
        ÚJ EDZÉS FORM
        ====================================================== -->
 
-  <app-newworkout *ngIf="showNewWorkoutForm"> </app-newworkout>
+  <app-newworkout *ngIf="showNewWorkoutForm">
+  </app-newworkout>
 
   <!-- ======================================================
        EDZÉSEK
        ====================================================== -->
 
-  <ng-container *ngIf="filteredWorkouts.length > 0; else noWorkouts">
+  <ng-container
+    *ngIf="filteredWorkouts.length > 0; else noWorkouts"
+  >
     <div class="workouts-grid">
-      <div *ngFor="let w of pagedWorkouts" class="workout-card">
+      <div
+        *ngFor="let w of pagedWorkouts"
+        class="workout-card"
+      >
         <!-- ==================================================
              FEJLÉC
              ================================================== -->
@@ -89,7 +106,10 @@
 
           <!-- LEÍRÁS -->
 
-          <p *ngIf="w.description" class="workout-description">
+          <p
+            *ngIf="w.description"
+            class="workout-description"
+          >
             {{ w.description }}
           </p>
 
@@ -101,15 +121,22 @@
             <!-- IDŐTARTAM -->
 
             <div class="workout-meta-item">
-              <span class="workout-meta-label"> Időtartam </span>
+              <span class="workout-meta-label">
+                {{ 'common.duration' | translate }}
+              </span>
 
-              <span class="workout-meta-value"> {{ w.durationMinutes }} perc </span>
+              <span class="workout-meta-value">
+                {{ w.durationMinutes }}
+                {{ 'common.minutes' | translate }}
+              </span>
             </div>
 
             <!-- GYAKORLATOK -->
 
             <div class="workout-meta-item">
-              <span class="workout-meta-label"> Gyakorlatok </span>
+              <span class="workout-meta-label">
+                {{ 'common.exercises' | translate }}
+              </span>
 
               <span class="workout-meta-value">
                 {{ w.exercises?.length || 0 }}
@@ -121,8 +148,11 @@
                NINCS GYAKORLAT
                ================================================== -->
 
-          <div *ngIf="!w.exercises?.length" class="no-exercises">
-            Nincs gyakorlat hozzárendelve.
+          <div
+            *ngIf="!w.exercises?.length"
+            class="no-exercises"
+          >
+            {{ 'coachWorkouts.noExercises' | translate }}
           </div>
 
           <!-- ==================================================
@@ -130,8 +160,12 @@
                ================================================== -->
 
           <div class="workout-edit">
-            <button type="button" class="edit-button" (click)="editWorkout(w.id, $event)">
-              ✏️ Szerkesztés
+            <button
+              type="button"
+              class="edit-button"
+              (click)="editWorkout(w.id, $event)"
+            >
+              ✏️ {{ 'common.edit' | translate }}
             </button>
           </div>
         </div>
@@ -142,17 +176,22 @@
          LAPOZÁS
          ====================================================== -->
 
-    <div *ngIf="totalPages > 1" class="pagination-controls">
+    <div
+      *ngIf="totalPages > 1"
+      class="pagination-controls"
+    >
       <button
         type="button"
         class="pagination-button"
         (click)="prevPage()"
         [disabled]="currentPage === 1"
       >
-        ◀ Előző
+        ◀ {{ 'common.previous' | translate }}
       </button>
 
-      <span class="pagination-info"> {{ currentPage }} / {{ totalPages }} </span>
+      <span class="pagination-info">
+        {{ currentPage }} / {{ totalPages }}
+      </span>
 
       <button
         type="button"
@@ -160,7 +199,7 @@
         (click)="nextPage()"
         [disabled]="currentPage === totalPages"
       >
-        Következő ▶
+        {{ 'common.next' | translate }} ▶
       </button>
     </div>
   </ng-container>
@@ -171,9 +210,13 @@
 
   <ng-template #noWorkouts>
     <div class="no-workouts">
-      <span *ngIf="searchTerm; else noWorkoutsAtAll"> Nincs a keresésnek megfelelő workout. </span>
+      <span *ngIf="searchTerm; else noWorkoutsAtAll">
+        {{ 'coachWorkouts.noSearchResults' | translate }}
+      </span>
 
-      <ng-template #noWorkoutsAtAll> Nincsenek edzések. </ng-template>
+      <ng-template #noWorkoutsAtAll>
+        {{ 'coachWorkouts.noWorkouts' | translate }}
+      </ng-template>
     </div>
   </ng-template>
 
@@ -185,7 +228,7 @@
     type="button"
     class="floating-action-button"
     (click)="goToNewWorkout()"
-    title="Új edzés hozzáadása"
+    [title]="'coachWorkouts.addWorkout' | translate"
   >
     ➕
   </button>
