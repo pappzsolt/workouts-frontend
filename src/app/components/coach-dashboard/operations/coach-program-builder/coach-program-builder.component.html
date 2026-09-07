@@ -8,10 +8,14 @@
       <span class="header-icon"> 🏋️ </span>
 
       <div>
-        <h2>Program Builder</h2>
+        <h2>{{ 'coachProgramBuilder.title' | translate }}</h2>
 
         <p>
-          {{ isEditMode ? 'Meglévő edzésprogram módosítása' : 'Új edzésprogram létrehozása' }}
+          {{
+            isEditMode
+              ? ('coachProgramBuilder.editSubtitle' | translate)
+              : ('coachProgramBuilder.createSubtitle' | translate)
+          }}
         </p>
       </div>
     </div>
@@ -27,7 +31,7 @@
     [class.builder-message-error]="messageType === 'error'"
     [class.builder-message-success]="messageType === 'success'"
   >
-    {{ message }}
+    {{ message | translate }}
   </div>
 
   <!-- ====================================================== -->
@@ -40,14 +44,18 @@
 
       <div>
         <h3>
-          {{ isEditMode ? 'Program módosítása' : 'Program létrehozása' }}
+          {{
+            isEditMode
+              ? ('coachProgramBuilder.editProgram' | translate)
+              : ('coachProgramBuilder.createProgram' | translate)
+          }}
         </h3>
 
         <p>
           {{
             isEditMode
-              ? 'Módosítsd az edzésprogram alapadatait.'
-              : 'Állítsd be az edzésprogram alapadatait.'
+              ? ('coachProgramBuilder.editProgramDescription' | translate)
+              : ('coachProgramBuilder.createProgramDescription' | translate)
           }}
         </p>
       </div>
@@ -56,33 +64,39 @@
     <!-- PROGRAM NÉV -->
 
     <div class="form-group">
-      <label for="programName"> Program neve </label>
+      <label for="programName">
+        {{ 'coachProgramBuilder.programName' | translate }}
+      </label>
 
       <input
         id="programName"
         type="text"
         [(ngModel)]="programName"
-        placeholder="Pl. Erőemelő kezdő program"
+        [placeholder]="'coachProgramBuilder.programNamePlaceholder' | translate"
       />
     </div>
 
     <!-- PROGRAM LEÍRÁS -->
 
     <div class="form-group">
-      <label for="programDescription"> Program leírása </label>
+      <label for="programDescription">
+        {{ 'coachProgramBuilder.programDescription' | translate }}
+      </label>
 
       <textarea
         id="programDescription"
         rows="5"
         [(ngModel)]="programDescription"
-        placeholder="Írd le röviden a program célját..."
+        [placeholder]="'coachProgramBuilder.programDescriptionPlaceholder' | translate"
       ></textarea>
     </div>
 
     <!-- PROGRAM IDŐTARTAMA -->
 
     <div class="form-group">
-      <label for="durationDays"> Program időtartama </label>
+      <label for="durationDays">
+        {{ 'coachProgramBuilder.programDuration' | translate }}
+      </label>
 
       <div class="input-with-suffix">
         <input
@@ -90,26 +104,38 @@
           type="number"
           min="1"
           [(ngModel)]="durationDays"
-          placeholder="Pl. 30"
+          [placeholder]="'coachProgramBuilder.programDurationPlaceholder' | translate"
         />
 
-        <span> nap </span>
+        <span>
+          {{ 'coachProgramBuilder.days' | translate }}
+        </span>
       </div>
     </div>
 
     <!-- NEHÉZSÉGI SZINT -->
 
     <div class="form-group">
-      <label for="difficultyLevel"> Nehézségi szint </label>
+      <label for="difficultyLevel">
+        {{ 'coachProgramBuilder.difficultyLevel' | translate }}
+      </label>
 
       <select id="difficultyLevel" [(ngModel)]="difficultyLevel">
-        <option value="">Válassz nehézségi szintet</option>
+        <option value="">
+          {{ 'coachProgramBuilder.selectDifficulty' | translate }}
+        </option>
 
-        <option value="BEGINNER">Kezdő</option>
+        <option value="BEGINNER">
+          {{ 'coachProgramBuilder.beginner' | translate }}
+        </option>
 
-        <option value="INTERMEDIATE">Középhaladó</option>
+        <option value="INTERMEDIATE">
+          {{ 'coachProgramBuilder.intermediate' | translate }}
+        </option>
 
-        <option value="ADVANCED">Haladó</option>
+        <option value="ADVANCED">
+          {{ 'coachProgramBuilder.advanced' | translate }}
+        </option>
       </select>
     </div>
 
@@ -133,12 +159,12 @@
         <span>
           {{
             creatingProgram
-              ? isEditMode
-                ? 'Program módosítása...'
-                : 'Program létrehozása...'
-              : isEditMode
-                ? 'Program módosítása'
-                : 'Program létrehozása'
+              ? (isEditMode
+                ? ('coachProgramBuilder.updatingProgram' | translate)
+                : ('coachProgramBuilder.creatingProgram' | translate))
+              : (isEditMode
+                ? ('coachProgramBuilder.editProgram' | translate)
+                : ('coachProgramBuilder.createProgram' | translate))
           }}
         </span>
 
@@ -152,15 +178,17 @@
   <!-- ====================================================== -->
 
   <div class="builder-card" *ngIf="currentStep === 2">
-    <!-- STEP HEADER -->
-
     <div class="step-header">
       <span class="step-number"> 2 </span>
 
       <div>
-        <h3>Workoutok</h3>
+        <h3>
+          {{ 'coachProgramBuilder.workouts' | translate }}
+        </h3>
 
-        <p>Válassz egy meglévő workoutot, vagy hozz létre egy újat.</p>
+        <p>
+          {{ 'coachProgramBuilder.workoutsDescription' | translate }}
+        </p>
       </div>
     </div>
 
@@ -173,21 +201,33 @@
         <span class="option-icon"> 📋 </span>
 
         <span class="option-content">
-          <strong> Meglévő workout hozzáadása </strong>
+          <strong>
+            {{ 'coachProgramBuilder.addExistingWorkout' | translate }}
+          </strong>
 
-          <small> Válassz a már létrehozott workoutok közül. </small>
+          <small>
+            {{ 'coachProgramBuilder.addExistingWorkoutDescription' | translate }}
+          </small>
         </span>
 
         <span class="option-arrow"> → </span>
       </button>
 
-      <button type="button" class="builder-option" (click)="goToCreateWorkout()">
+      <button
+        type="button"
+        class="builder-option"
+        (click)="goToCreateWorkout()"
+      >
         <span class="option-icon"> ➕ </span>
 
         <span class="option-content">
-          <strong> Új workout létrehozása </strong>
+          <strong>
+            {{ 'coachProgramBuilder.createNewWorkout' | translate }}
+          </strong>
 
-          <small> Hozz létre egy új workoutot a programhoz. </small>
+          <small>
+            {{ 'coachProgramBuilder.createNewWorkoutDescription' | translate }}
+          </small>
         </span>
 
         <span class="option-arrow"> → </span>
@@ -201,9 +241,13 @@
     <div class="existing-workouts">
       <div class="section-header">
         <div>
-          <h4>Elérhető workoutok</h4>
+          <h4>
+            {{ 'coachProgramBuilder.availableWorkouts' | translate }}
+          </h4>
 
-          <p>Válassz egy workoutot a részletek megtekintéséhez.</p>
+          <p>
+            {{ 'coachProgramBuilder.availableWorkoutsDescription' | translate }}
+          </p>
         </div>
       </div>
 
@@ -212,17 +256,26 @@
       <div *ngIf="loadingWorkouts" class="loading-message">
         <span class="loading-spinner"></span>
 
-        <span> Workoutok betöltése... </span>
+        <span>
+          {{ 'coachProgramBuilder.loadingWorkouts' | translate }}
+        </span>
       </div>
 
       <!-- NINCS WORKOUT -->
 
-      <div *ngIf="!loadingWorkouts && workouts.length === 0" class="empty-message">
+      <div
+        *ngIf="!loadingWorkouts && workouts.length === 0"
+        class="empty-message"
+      >
         <span class="empty-icon"> 📋 </span>
 
-        <strong> Nincs elérhető workout </strong>
+        <strong>
+          {{ 'coachProgramBuilder.noWorkouts' | translate }}
+        </strong>
 
-        <span> Hozz létre egy új workoutot a folytatáshoz. </span>
+        <span>
+          {{ 'coachProgramBuilder.noWorkoutsDescription' | translate }}
+        </span>
       </div>
 
       <!-- ================================================= -->
@@ -236,20 +289,30 @@
       >
         <!-- WORKOUT FEJLÉC -->
 
-        <div class="workout-card-header" (click)="selectWorkout(workout.id)">
+        <div
+          class="workout-card-header"
+          (click)="selectWorkout(workout.id)"
+        >
           <div class="workout-info">
             <div class="workout-title-row">
               <h5>
                 {{ workout.name }}
               </h5>
 
-              <span *ngIf="isWorkoutSelected(workout.id)" class="workout-selected-badge">
-                ✓ Hozzáadva
+              <span
+                *ngIf="isWorkoutSelected(workout.id)"
+                class="workout-selected-badge"
+              >
+                ✓
+                {{ 'coachProgramBuilder.added' | translate }}
               </span>
             </div>
 
             <p>
-              {{ workout.description || 'Nincs leírás' }}
+              {{
+                workout.description ||
+                ('coachProgramBuilder.noDescription' | translate)
+              }}
             </p>
 
             <!-- WORKOUT META -->
@@ -258,13 +321,13 @@
               <span>
                 🏋️
                 {{ workout.exercises?.length || 0 }}
-                exercise
+                {{ 'coachProgramBuilder.exercise' | translate }}
               </span>
 
               <span *ngIf="workout.durationMinutes">
                 ⏱️
                 {{ workout.durationMinutes }}
-                perc
+                {{ 'coachProgramBuilder.minutes' | translate }}
               </span>
 
               <span *ngIf="workout.intensityLevel">
@@ -283,13 +346,18 @@
         <!-- KIVÁLASZTOTT WORKOUT RÉSZLETEI -->
         <!-- ================================================= -->
 
-        <div *ngIf="selectedWorkoutId === workout.id" class="workout-details">
+        <div
+          *ngIf="selectedWorkoutId === workout.id"
+          class="workout-details"
+        >
           <!-- EXERCISE LOADING -->
 
           <div *ngIf="loadingExercises" class="loading-message">
             <span class="loading-spinner"></span>
 
-            <span> Exercise-ok betöltése... </span>
+            <span>
+              {{ 'coachProgramBuilder.loadingExercises' | translate }}
+            </span>
           </div>
 
           <!-- ================================================= -->
@@ -299,13 +367,15 @@
           <div class="builder-exercises">
             <div class="section-header">
               <div>
-                <h4>Exercise-ok</h4>
+                <h4>
+                  {{ 'coachProgramBuilder.exercises' | translate }}
+                </h4>
 
                 <p>
                   {{
                     lockSelectedExercises
-                      ? 'A meglévő workout exercise-listája nem módosítható.'
-                      : 'Válaszd ki a workoutban használni kívánt gyakorlatokat.'
+                      ? ('coachProgramBuilder.exercisesLocked' | translate)
+                      : ('coachProgramBuilder.exercisesDescription' | translate)
                   }}
                 </p>
               </div>
@@ -330,7 +400,9 @@
           >
             <span class="empty-icon"> 🏋️ </span>
 
-            <span> Ehhez a workouthoz nincs exercise hozzáadva. </span>
+            <span>
+              {{ 'coachProgramBuilder.noExercises' | translate }}
+            </span>
           </div>
 
           <div
@@ -338,14 +410,19 @@
             class="exercise-list"
           >
             <div class="selected-exercise-header">
-              <strong> Kiválasztott exercise-ok </strong>
+              <strong>
+                {{ 'coachProgramBuilder.selectedExercises' | translate }}
+              </strong>
 
               <span>
                 {{ selectedExercises.length }}
               </span>
             </div>
 
-            <div *ngFor="let exercise of selectedExercises" class="exercise-card">
+            <div
+              *ngFor="let exercise of selectedExercises"
+              class="exercise-card"
+            >
               <div class="exercise-card-header">
                 <strong>
                   {{ exercise.name }}
@@ -354,31 +431,42 @@
 
               <div class="exercise-details">
                 <span *ngIf="exercise.muscleGroup">
-                  <strong> Izomcsoport </strong>
+                  <strong>
+                    {{ 'coachProgramBuilder.muscleGroup' | translate }}
+                  </strong>
 
                   {{ exercise.muscleGroup }}
                 </span>
 
                 <span *ngIf="exercise.equipment">
-                  <strong> Eszköz </strong>
+                  <strong>
+                    {{ 'coachProgramBuilder.equipment' | translate }}
+                  </strong>
 
                   {{ exercise.equipment }}
                 </span>
 
                 <span *ngIf="exercise.difficultyLevel">
-                  <strong> Nehézség </strong>
+                  <strong>
+                    {{ 'coachProgramBuilder.difficulty' | translate }}
+                  </strong>
 
                   {{ exercise.difficultyLevel }}
                 </span>
 
                 <span *ngIf="exercise.category">
-                  <strong> Kategória </strong>
+                  <strong>
+                    {{ 'coachProgramBuilder.category' | translate }}
+                  </strong>
 
                   {{ exercise.category }}
                 </span>
               </div>
 
-              <div *ngIf="exercise.description" class="exercise-notes">
+              <div
+                *ngIf="exercise.description"
+                class="exercise-notes"
+              >
                 {{ exercise.description }}
               </div>
             </div>
@@ -398,8 +486,8 @@
               <span>
                 {{
                   isWorkoutSelected(workout.id)
-                    ? '✓ Hozzáadva a programhoz'
-                    : '+ Hozzáadás a programhoz'
+                    ? ('coachProgramBuilder.addedToProgram' | translate)
+                    : ('coachProgramBuilder.addToProgram' | translate)
                 }}
               </span>
             </button>
@@ -412,12 +500,19 @@
     <!-- PROGRAMHOZ HOZZÁADOTT WORKOUTOK -->
     <!-- ================================================== -->
 
-    <div class="selected-workouts" *ngIf="selectedWorkouts.length > 0">
+    <div
+      class="selected-workouts"
+      *ngIf="selectedWorkouts.length > 0"
+    >
       <div class="section-header">
         <div>
-          <h4>Programhoz hozzáadott workoutok</h4>
+          <h4>
+            {{ 'coachProgramBuilder.selectedWorkouts' | translate }}
+          </h4>
 
-          <p>Ezek a workoutok kerültek be a programba.</p>
+          <p>
+            {{ 'coachProgramBuilder.selectedWorkoutsDescription' | translate }}
+          </p>
         </div>
 
         <span class="selected-count">
@@ -441,14 +536,14 @@
 
             <small>
               {{ workout.exercises?.length || 0 }}
-              exercise
+              {{ 'coachProgramBuilder.exercise' | translate }}
             </small>
           </div>
 
           <button
             type="button"
             class="copy-workout-button"
-            aria-label="Workout másolása"
+            [attr.aria-label]="'coachProgramBuilder.copyWorkoutAria' | translate"
             (click)="copyWorkout(workout)"
           >
             📋
@@ -457,7 +552,7 @@
           <button
             type="button"
             class="remove-workout-button"
-            aria-label="Workout eltávolítása"
+            [attr.aria-label]="'coachProgramBuilder.removeWorkoutAria' | translate"
             (click)="removeWorkout(workout.id)"
           >
             ✕
@@ -471,8 +566,13 @@
     <!-- ================================================== -->
 
     <div class="builder-actions builder-actions-bottom">
-      <button type="button" class="back-button" (click)="previousStep()">
-        ← Vissza
+      <button
+        type="button"
+        class="back-button"
+        (click)="previousStep()"
+      >
+        ←
+        {{ 'coachProgramBuilder.back' | translate }}
       </button>
 
       <div class="user-select-wrapper">
@@ -489,7 +589,9 @@
         [disabled]="programId === null || !selectedUserId"
         (click)="finishProgram()"
       >
-        <span> Program befejezése </span>
+        <span>
+          {{ 'coachProgramBuilder.finishProgram' | translate }}
+        </span>
 
         <span> → </span>
       </button>
@@ -507,18 +609,22 @@
     <div class="copy-dialog">
       <div class="copy-dialog-header">
         <div>
-          <h3>Workout másolása</h3>
+          <h3>
+            {{ 'coachProgramBuilder.copyWorkout' | translate }}
+          </h3>
 
           <p *ngIf="copySourceWorkout">
-            Eredeti workout:
-            <strong>{{ copySourceWorkout.name }}</strong>
+            {{ 'coachProgramBuilder.originalWorkout' | translate }}
+            <strong>
+              {{ copySourceWorkout.name }}
+            </strong>
           </p>
         </div>
 
         <button
           type="button"
           class="copy-dialog-close"
-          aria-label="Bezárás"
+          [attr.aria-label]="'coachProgramBuilder.close' | translate"
           [disabled]="copyInProgress"
           (click)="cancelCopyWorkout()"
         >
@@ -529,7 +635,7 @@
       <div class="copy-dialog-body">
         <div class="form-group">
           <label for="copyWorkoutName">
-            Új workout neve
+            {{ 'coachProgramBuilder.newWorkoutName' | translate }}
           </label>
 
           <input
@@ -537,13 +643,13 @@
             type="text"
             [(ngModel)]="copyWorkoutName"
             [disabled]="copyInProgress"
-            placeholder="Pl. 2. hét - 1. nap"
+            [placeholder]="'coachProgramBuilder.newWorkoutNamePlaceholder' | translate"
           />
         </div>
 
         <div class="form-group">
           <label for="copyWorkoutDate">
-            Új workout dátuma
+            {{ 'coachProgramBuilder.newWorkoutDate' | translate }}
           </label>
 
           <input
@@ -556,7 +662,7 @@
 
         <div class="form-group">
           <label for="copyWorkoutDayIndex">
-            Programon belüli nap
+            {{ 'coachProgramBuilder.workoutDay' | translate }}
           </label>
 
           <input
@@ -576,7 +682,7 @@
           [disabled]="copyInProgress"
           (click)="cancelCopyWorkout()"
         >
-          Mégse
+          {{ 'coachProgramBuilder.cancel' | translate }}
         </button>
 
         <button
@@ -593,8 +699,8 @@
           <span>
             {{
               copyInProgress
-                ? 'Másolás...'
-                : 'Workout másolása'
+                ? ('coachProgramBuilder.copying' | translate)
+                : ('coachProgramBuilder.copyWorkout' | translate)
             }}
           </span>
         </button>

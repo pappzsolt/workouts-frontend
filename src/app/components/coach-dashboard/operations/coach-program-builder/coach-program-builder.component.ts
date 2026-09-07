@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { WorkoutCopyService } from '../../../../services/coach/workout-copy.service';
@@ -26,10 +24,12 @@ import { ProgramWorkout } from '../../../../models/program-workout.model';
 
 import { WorkoutCopyRequest } from '../../../../models/workout-copy.model';
 
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+
 @Component({
   selector: 'app-coach-program-builder',
   standalone: true,
-  imports: [CommonModule, FormsModule, CoachExercisesBoardComponent, UserSelectComponent],
+  imports: [...SHARED_IMPORTS, CoachExercisesBoardComponent, UserSelectComponent],
   templateUrl: './coach-program-builder.component.html',
   styleUrl: './coach-program-builder.component.css',
 })
@@ -157,11 +157,7 @@ export class CoachProgramBuilderComponent implements OnInit {
   // ==========================================================
 
   ngOnInit(): void {
-    // Alapértelmezés:
-    // nincs programId -> új program
     this.isEditMode = false;
-
-    // Exercise-ok betöltése
 
     this.loadExercises();
 
@@ -174,10 +170,6 @@ export class CoachProgramBuilderComponent implements OnInit {
     // ----------------------------------------------------------
 
     if (programId) {
-      // FONTOS:
-      // Query paraméteres programId esetén
-      // ténylegesen meglévő programot szerkesztünk.
-
       this.isEditMode = true;
 
       const parsedProgramId = Number(programId);
@@ -192,31 +184,7 @@ export class CoachProgramBuilderComponent implements OnInit {
 
       console.log('Meglévő program betöltése:', this.programId);
 
-      /**
-       * Betöltjük a meglévő program adatait:
-       *
-       * - programName
-       * - programDescription
-       * - durationDays
-       * - difficultyLevel
-       *
-       * Fontos:
-       * ez csak SELECT / GET.
-       * Itt még semmilyen INSERT vagy UPDATE nem történik.
-       */
-
       this.loadProgram();
-
-      /**
-       * Ha új workout létrehozása után érkeztünk vissza,
-       * akkor közvetlenül a 2. lépésre kell menni.
-       *
-       * Például:
-       *
-       * /coach/program-builder
-       * ?programId=203
-       * &newWorkoutId=279
-       */
 
       if (newWorkoutId) {
         const workoutId = Number(newWorkoutId);
@@ -225,33 +193,15 @@ export class CoachProgramBuilderComponent implements OnInit {
           console.log('Újonnan létrehozott workout ID:', workoutId);
 
           this.isNewWorkout = true;
-
-          // Közvetlenül a workout lépésre megyünk.
-
           this.currentStep = 2;
         } else {
           console.error('Érvénytelen newWorkoutId:', newWorkoutId);
 
-          // Hibás newWorkoutId esetén
-          // normál program-szerkesztési mód.
-
           this.currentStep = 1;
         }
       } else {
-        /**
-         * Sima meglévő program szerkesztése.
-         *
-         * Itt az 1. lépés jelenik meg,
-         * a program adataival kitöltve.
-         *
-         * A következő gomb megnyomásakor
-         * updateProgram() fog lefutni.
-         */
-
         this.currentStep = 1;
       }
-
-      // A programhoz tartozó workoutokat is betöltjük.
 
       this.loadWorkouts();
 
@@ -365,7 +315,7 @@ export class CoachProgramBuilderComponent implements OnInit {
     if (!this.selectedUserId) {
       console.error('Nincs kiválasztott felhasználó.');
 
-      this.message = 'Nincs kiválasztott felhasználó.';
+      this.message = 'coachProgramBuilder.noUserSelected';
 
       this.messageType = 'error';
 
@@ -385,11 +335,9 @@ export class CoachProgramBuilderComponent implements OnInit {
       error: (err: any) => {
         console.error('Program hozzárendelése sikertelen:', err);
 
-        // Backend által visszaadott üzenet
-
         const backendMessage = err?.error?.message ?? err?.message;
 
-        this.message = backendMessage || 'A program hozzárendelése sikertelen.';
+        this.message = backendMessage || 'coachProgramBuilder.assignError';
 
         this.messageType = 'error';
       },
@@ -411,9 +359,6 @@ export class CoachProgramBuilderComponent implements OnInit {
 
         console.log('Coach workouts:', this.workouts);
 
-        // Ha már van program ID,
-        // töltsük be a hozzá tartozó workoutokat is.
-
         if (this.programId !== null) {
           this.loadProgramWorkouts();
         }
@@ -423,6 +368,10 @@ export class CoachProgramBuilderComponent implements OnInit {
         console.error('Hiba a workoutok betöltésekor:', error);
 
         this.loadingWorkouts = false;
+
+        this.message = 'coachProgramBuilder.loadWorkoutsError';
+
+        this.messageType = 'error';
       },
     });
   }
@@ -449,6 +398,10 @@ export class CoachProgramBuilderComponent implements OnInit {
         this.exercises = [];
 
         this.loadingExercises = false;
+
+        this.message = 'coachProgramBuilder.loadExercisesError';
+
+        this.messageType = 'error';
       },
     });
   }
@@ -490,24 +443,13 @@ export class CoachProgramBuilderComponent implements OnInit {
 
           console.log('Létrehozott program ID:', this.programId);
 
-          // FONTOS:
-          // Ez továbbra is ÚJ program.
-          //
-          // Attól, hogy most már van programId,
-          // az isEditMode nem változik.
-          //
-          // isEditMode = false
-
-          // A program létrejött,
-          // betöltjük a programhoz tartozó workoutokat.
-
           this.loadProgramWorkouts();
 
           this.currentStep = 2;
         } else {
           console.error('A program létrehozása sikertelen:', response.message);
 
-          this.message = response.message || 'A program létrehozása sikertelen.';
+          this.message = response.message || 'coachProgramBuilder.createError';
 
           this.messageType = 'error';
         }
@@ -518,7 +460,7 @@ export class CoachProgramBuilderComponent implements OnInit {
       error: (error: any) => {
         console.error('Hiba a program létrehozásakor:', error);
 
-        this.message = error?.error?.message || 'Hiba történt a program létrehozásakor.';
+        this.message = error?.error?.message || 'coachProgramBuilder.createError';
 
         this.messageType = 'error';
 
@@ -576,7 +518,7 @@ export class CoachProgramBuilderComponent implements OnInit {
         } else {
           console.error('A program módosítása sikertelen:', response.message);
 
-          this.message = response.message || 'A program módosítása sikertelen.';
+          this.message = response.message || 'coachProgramBuilder.updateError';
 
           this.messageType = 'error';
 
@@ -587,7 +529,7 @@ export class CoachProgramBuilderComponent implements OnInit {
       error: (error: any) => {
         console.error('Hiba a program módosításakor:', error);
 
-        this.message = error?.error?.message || 'Hiba történt a program módosításakor.';
+        this.message = error?.error?.message || 'coachProgramBuilder.updateError';
 
         this.messageType = 'error';
 
@@ -611,14 +553,6 @@ export class CoachProgramBuilderComponent implements OnInit {
       next: (response: any) => {
         console.log('Program workout kapcsolatok:', response);
 
-        /**
-         * A backend jelenleg közvetlenül egy tömböt
-         * ad vissza.
-         *
-         * Ha esetleg később data mezőbe kerülne
-         * a válasz, azt is kezeljük.
-         */
-
         const data: ProgramWorkout[] = Array.isArray(response)
           ? response
           : Array.isArray(response?.data)
@@ -628,16 +562,6 @@ export class CoachProgramBuilderComponent implements OnInit {
         this.programWorkouts = [...data].sort(
           (a: ProgramWorkout, b: ProgramWorkout) => a.dayIndex - b.dayIndex,
         );
-
-        /**
-         * A Program Builder számára a programhoz
-         * már hozzáadott workoutokat a TELJES
-         * workout listából kell megkeresni.
-         *
-         * Ez azért szükséges, mert az elérhető
-         * workout lista UNIQUE, ezért a másolatok
-         * ott szándékosan nem szerepelnek.
-         */
 
         this.exerciseService.getWorkoutsWithExercises().subscribe({
           next: (allWorkouts: WorkoutDto[]) => {
@@ -650,12 +574,6 @@ export class CoachProgramBuilderComponent implements OnInit {
             console.log('Programhoz betöltött workoutok:', this.selectedWorkouts);
 
             console.log('Program workout kapcsolatok:', this.programWorkouts);
-
-            /**
-             * Ha a Program Builder egy újonnan létrehozott
-             * workouthoz tért vissza, azt automatikusan
-             * kiválasztjuk.
-             */
 
             const newWorkoutId = this.route.snapshot.queryParamMap.get('newWorkoutId');
 
@@ -708,30 +626,16 @@ export class CoachProgramBuilderComponent implements OnInit {
       return;
     }
 
-    /*
-     * Ha ugyanarra a már megnyitott workoutra kattintunk,
-     * akkor csukjuk vissza.
-     */
-
     if (this.selectedWorkoutId === workoutId) {
       this.selectedWorkoutId = null;
-
       this.selectedWorkout = null;
-
       this.selectedWorkoutExercises = [];
-
       this.selectedExercises = [];
-
       this.loadingExercises = false;
-
       this.isNewWorkout = false;
 
       return;
     }
-
-    /*
-     * Másik workout kiválasztása.
-     */
 
     this.selectedWorkoutId = workoutId;
 
@@ -739,21 +643,8 @@ export class CoachProgramBuilderComponent implements OnInit {
 
     this.loadingExercises = true;
 
-    /**
-     * Alaphelyzet.
-     */
-
     this.selectedWorkoutExercises = [];
-
     this.selectedExercises = [];
-
-    /**
-     * Meghatározzuk, hogy ez az újonnan létrehozott
-     * workout-e.
-     *
-     * A query paraméter csak az új workout visszatérésének
-     * pillanatában van jelen.
-     */
 
     const newWorkoutId = this.route.snapshot.queryParamMap.get('newWorkoutId');
 
@@ -763,20 +654,7 @@ export class CoachProgramBuilderComponent implements OnInit {
       next: (workout: WorkoutDto) => {
         this.selectedWorkout = workout;
 
-        /**
-         * A workoutban már meglévő
-         * WorkoutExercise objektumok.
-         */
-
         this.selectedWorkoutExercises = workout.exercises || [];
-
-        /**
-         * A board számára csak az Exercise
-         * objektumokat adjuk át.
-         *
-         * Ezek automatikusan kijelölve
-         * fognak megjelenni.
-         */
 
         this.selectedExercises = this.selectedWorkoutExercises
           .map((workoutExercise) => workoutExercise.exercise)
@@ -804,6 +682,10 @@ export class CoachProgramBuilderComponent implements OnInit {
         this.selectedExercises = [];
 
         this.loadingExercises = false;
+
+        this.message = 'coachProgramBuilder.loadWorkoutExercisesError';
+
+        this.messageType = 'error';
       },
     });
   }
@@ -811,16 +693,6 @@ export class CoachProgramBuilderComponent implements OnInit {
   // ==========================================================
   // EXERCISE-EK SZERKESZTHETŐSÉGE
   // ==========================================================
-
-  /**
-   * A CoachExercisesBoardComponent ezt az értéket kapja.
-   *
-   * true:
-   *   meglévő workout → exercise-ek lockolva.
-   *
-   * false:
-   *   új workout → exercise-ek szabadon módosíthatók.
-   */
 
   get lockSelectedExercises(): boolean {
     return !this.isNewWorkout;
@@ -831,22 +703,11 @@ export class CoachProgramBuilderComponent implements OnInit {
   // ==========================================================
 
   onExercisesChange(updatedExercises: Exercise[]): void {
-    /**
-     * Meglévő workout esetén nem engedünk
-     * frontend oldali módosítást sem.
-     *
-     * A meglévő workout exercise listája fix.
-     */
-
     if (!this.isNewWorkout) {
       console.log('Meglévő workout exercise-listája LOCKOLVA van.');
 
       return;
     }
-
-    /**
-     * Új workout esetén szabadon módosítható.
-     */
 
     this.selectedExercises = [...updatedExercises];
 
@@ -856,11 +717,6 @@ export class CoachProgramBuilderComponent implements OnInit {
   // ==========================================================
   // ÚJ EXERCISE-EK MEGHATÁROZÁSA
   // ==========================================================
-
-  /**
-   * Csak azokat az exercise-eket adja vissza,
-   * amelyek még nincsenek benne a workoutban.
-   */
 
   getNewExercisesForWorkout(): Exercise[] {
     const existingExerciseIds = this.selectedWorkoutExercises
@@ -882,15 +738,6 @@ export class CoachProgramBuilderComponent implements OnInit {
 
       return;
     }
-
-    /**
-     * FONTOS:
-     *
-     * Meglévő workoutot SOHA nem módosítunk.
-     *
-     * Egy meglévő workout több programban is szerepelhet.
-     * Ezért annak exercise-listája fix.
-     */
 
     if (!this.isNewWorkout) {
       console.log('Meglévő workout. Exercise-ek mentése kihagyva.');
@@ -922,10 +769,6 @@ export class CoachProgramBuilderComponent implements OnInit {
               exerciseId: exercise.id,
               response,
             });
-
-            /**
-             * Frontend állapot frissítése.
-             */
 
             const alreadyExists = this.selectedWorkoutExercises.some(
               (workoutExercise) => workoutExercise.exercise?.id === exercise.id,
@@ -981,30 +824,13 @@ export class CoachProgramBuilderComponent implements OnInit {
 
     const workout = this.selectedWorkout;
 
-    /**
-     * A következő dayIndex.
-     *
-     * 0 = első workout
-     * 1 = második workout
-     * stb.
-     */
-
     const dayIndex = this.selectedWorkouts.length;
 
     this.programWorkoutService.addWorkoutToProgram(this.programId, workout.id, dayIndex).subscribe({
       next: (response: any) => {
         console.log('Workout hozzáadva a programhoz:', response);
 
-        /**
-         * Frontend lista frissítése.
-         */
-
         this.selectedWorkouts.push(workout);
-
-        /**
-         * Új program-workout kapcsolat
-         * létrehozása a frontend állapotban.
-         */
 
         this.programWorkouts.push({
           id: response?.id,
@@ -1015,16 +841,6 @@ export class CoachProgramBuilderComponent implements OnInit {
 
         console.log('Program workoutok:', this.programWorkouts);
 
-        /**
-         * FONTOS:
-         *
-         * Csak új workout esetén mentjük
-         * az exercise-eket.
-         *
-         * Meglévő workout esetén semmilyen
-         * workout_exercises módosítás nem történik.
-         */
-
         if (this.isNewWorkout) {
           this.saveSelectedExercises();
         } else {
@@ -1034,6 +850,10 @@ export class CoachProgramBuilderComponent implements OnInit {
 
       error: (error: any) => {
         console.error('Hiba a workout programhoz adásakor:', error);
+
+        this.message = 'coachProgramBuilder.addWorkoutError';
+
+        this.messageType = 'error';
       },
     });
   }
@@ -1053,56 +873,29 @@ export class CoachProgramBuilderComponent implements OnInit {
       next: (response: any) => {
         console.log('Workout törölve a programból:', response);
 
-        /**
-         * FONTOS:
-         *
-         * Csak a program-workout kapcsolatot töröljük.
-         *
-         * A workout saját exercise-eihez
-         * NEM nyúlunk.
-         *
-         * Ez azért fontos, mert ugyanaz a workout
-         * másik programban is szerepelhet.
-         */
-
         this.selectedWorkouts = this.selectedWorkouts.filter((workout) => workout.id !== workoutId);
-
-        /**
-         * ProgramWorkout kapcsolat törlése
-         * a frontend állapotból is.
-         */
 
         this.programWorkouts = this.programWorkouts.filter(
           (programWorkout) => programWorkout.workoutId !== workoutId,
         );
 
-        /**
-         * Ha ezt a workoutot néztük,
-         * zárjuk be a részleteit.
-         */
-
         if (this.selectedWorkoutId === workoutId) {
           this.selectedWorkoutId = null;
-
           this.selectedWorkout = null;
-
           this.selectedWorkoutExercises = [];
-
           this.selectedExercises = [];
-
           this.isNewWorkout = false;
         }
-
-        /**
-         * A törlés után újraszámoljuk
-         * a dayIndex értékeket.
-         */
 
         this.reindexProgramWorkouts();
       },
 
       error: (error: any) => {
         console.error('Hiba a workout programból törlésekor:', error);
+
+        this.message = 'coachProgramBuilder.removeWorkoutError';
+
+        this.messageType = 'error';
       },
     });
   }
@@ -1158,6 +951,10 @@ export class CoachProgramBuilderComponent implements OnInit {
 
       error: (error: any) => {
         console.error('Hiba a workout napjának módosításakor:', error);
+
+        this.message = 'coachProgramBuilder.updateWorkoutDayError';
+
+        this.messageType = 'error';
       },
     });
   }
@@ -1179,12 +976,8 @@ export class CoachProgramBuilderComponent implements OnInit {
   nextStep(): void {
     if (this.currentStep === 1) {
       if (this.programId === null) {
-        // Új program → INSERT
-
         this.createProgram();
       } else {
-        // Meglévő program → UPDATE
-
         this.updateProgram();
       }
 
@@ -1201,9 +994,6 @@ export class CoachProgramBuilderComponent implements OnInit {
   // ==========================================================
 
   previousStep(): void {
-    // Meglévő program szerkesztésekor
-    // a 2. lépésből visszamegyünk a Programok listájára.
-
     if (this.currentStep === 2 && this.isEditMode) {
       this.router.navigate(['/coach/dashboard'], {
         queryParams: {
@@ -1213,9 +1003,6 @@ export class CoachProgramBuilderComponent implements OnInit {
 
       return;
     }
-
-    // Új program esetén
-    // 2. lépés -> 1. lépés visszalépés.
 
     if (this.currentStep > 1) {
       this.currentStep--;
@@ -1280,7 +1067,7 @@ export class CoachProgramBuilderComponent implements OnInit {
     }
 
     if (!this.copyWorkoutName.trim()) {
-      this.message = 'Az új workout neve kötelező.';
+      this.message = 'coachProgramBuilder.copyNameRequired';
 
       this.messageType = 'error';
 
@@ -1288,7 +1075,7 @@ export class CoachProgramBuilderComponent implements OnInit {
     }
 
     if (!this.copyWorkoutDate) {
-      this.message = 'Az új workout dátuma kötelező.';
+      this.message = 'coachProgramBuilder.copyDateRequired';
 
       this.messageType = 'error';
 
@@ -1296,7 +1083,7 @@ export class CoachProgramBuilderComponent implements OnInit {
     }
 
     if (!Number.isInteger(this.copyWorkoutDayIndex) || this.copyWorkoutDayIndex < 0) {
-      this.message = 'Érvénytelen workout nap.';
+      this.message = 'coachProgramBuilder.invalidWorkoutDay';
 
       this.messageType = 'error';
 
@@ -1326,7 +1113,7 @@ export class CoachProgramBuilderComponent implements OnInit {
         this.copyInProgress = false;
 
         if (response.status === 'success' && response.data !== null) {
-          this.message = 'Workout sikeresen lemásolva.';
+          this.message = 'coachProgramBuilder.copySuccess';
 
           this.messageType = 'success';
 
@@ -1336,7 +1123,7 @@ export class CoachProgramBuilderComponent implements OnInit {
         } else {
           console.error('Workout másolása sikertelen:', response);
 
-          this.message = response.message || 'A workout másolása sikertelen.';
+          this.message = response.message || 'coachProgramBuilder.copyError';
 
           this.messageType = 'error';
         }
@@ -1347,7 +1134,7 @@ export class CoachProgramBuilderComponent implements OnInit {
 
         this.copyInProgress = false;
 
-        this.message = error?.error?.message || 'Hiba történt a workout másolásakor.';
+        this.message = error?.error?.message || 'coachProgramBuilder.copyError';
 
         this.messageType = 'error';
       },

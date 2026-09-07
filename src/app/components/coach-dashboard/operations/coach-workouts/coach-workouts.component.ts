@@ -127,7 +127,6 @@ export class WorkoutListComponent implements OnInit, OnChanges {
         }));
 
         // Mindig az első oldalról indulunk.
-
         this.currentPage = 1;
 
         this.updatePagination();
@@ -144,7 +143,7 @@ export class WorkoutListComponent implements OnInit, OnChanges {
 
         this.totalPages = 1;
 
-        this.setMessage('Nem sikerült betölteni a workoutokat.', 'error');
+        this.setMessage('coachWorkouts.loadError', 'error');
       },
     });
   }
@@ -200,9 +199,6 @@ export class WorkoutListComponent implements OnInit, OnChanges {
   // ==========================================================
 
   onSearchChange(): void {
-    // Új keresésnél
-    // mindig az első oldalra megyünk.
-
     this.currentPage = 1;
 
     this.updatePagination();
@@ -214,9 +210,6 @@ export class WorkoutListComponent implements OnInit, OnChanges {
 
   toggleSort(): void {
     this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-
-    // Rendezés után is
-    // az első oldalra megyünk.
 
     this.currentPage = 1;
 
@@ -282,7 +275,7 @@ export class WorkoutListComponent implements OnInit, OnChanges {
       },
 
       error: () => {
-        this.setMessage('Hiba történt a workout hozzáadásakor.', 'error');
+        this.setMessage('coachWorkouts.addError', 'error');
       },
     });
   }
