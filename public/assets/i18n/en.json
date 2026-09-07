@@ -11,5 +11,9 @@
     "programBuilder": "Program Builder",
     "dashboard": "Dashboard",
     "logout": "Logout"
+  },
+  "header": {
+    "user": "User",
+    "role": "Role"
   }
 }

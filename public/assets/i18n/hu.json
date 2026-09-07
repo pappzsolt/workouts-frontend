@@ -11,5 +11,9 @@
     "programBuilder": "Program Builder",
     "dashboard": "Dashboard",
     "logout": "Kijelentkezés"
+  },
+  "header": {
+    "user": "Felhasználó",
+    "role": "Jogosultság"
   }
 }

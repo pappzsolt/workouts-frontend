@@ -1,15 +1,14 @@
 import { Component, OnInit, HostListener } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { DynamicMenuComponent } from '../../components/dynamic-menu/dynamic-menu.component';
 import { LanguageSelectorComponent } from '../../components/shared/language/language-selector.component';
 import { AuthService } from '../../services/auth/auth.service';
-import { TranslateService } from '@ngx-translate/core';
+import { SHARED_IMPORTS } from '../../components/shared/shared-imports';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, RouterModule, DynamicMenuComponent, LanguageSelectorComponent],
+  imports: [...SHARED_IMPORTS, DynamicMenuComponent, LanguageSelectorComponent],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css'],
 })
@@ -55,7 +54,7 @@ export class LayoutComponent implements OnInit {
     }, 1000);
   }
 
-  onLogout() {
+  onLogout(): void {
     this.authService.logout();
     this.router.navigate(['/login']);
   }
@@ -72,7 +71,7 @@ export class LayoutComponent implements OnInit {
     return this.role === 'ROLE_USER';
   }
 
-  handleMenuAction(action: string | any) {
+  handleMenuAction(action: string | any): void {
     if (action === 'logout') {
       this.onLogout();
     }
@@ -80,11 +79,11 @@ export class LayoutComponent implements OnInit {
 
   // Mobil nézet ellenőrzése
   isMobile(): boolean {
-    return window.innerWidth < 640; // sm breakpoint
+    return window.innerWidth < 640;
   }
 
   @HostListener('window:resize', ['$event'])
-  onResize() {
+  onResize(): void {
     if (!this.isMobile()) {
       this.menuOpen = false;
     }
