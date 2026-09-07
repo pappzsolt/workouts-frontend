@@ -3,7 +3,9 @@
     <span class="form-header-emoji">💪</span>
   </div>
 
-  <h2 class="universal-form-title">➕ Új Gyakorlat</h2>
+  <h2 class="universal-form-title">
+    ➕ {{ 'newExercise.title' | translate }}
+  </h2>
 
   <!-- Üzenet -->
   <div
@@ -21,7 +23,9 @@
   <form (ngSubmit)="addExercise()" #exerciseForm="ngForm" class="universal-form">
     <!-- Név -->
     <div class="universal-form-group-full">
-      <label for="name" class="universal-form-label">Név:</label>
+      <label for="name" class="universal-form-label">
+        {{ 'newExercise.name' | translate }}:
+      </label>
       <input
         type="text"
         id="name"
@@ -34,7 +38,9 @@
 
     <!-- Leírás -->
     <div class="universal-form-group-full">
-      <label for="description" class="universal-form-label">Leírás:</label>
+      <label for="description" class="universal-form-label">
+        {{ 'newExercise.description' | translate }}:
+      </label>
       <textarea
         id="description"
         name="description"
@@ -46,7 +52,9 @@
 
     <!-- Kép URL -->
     <div class="universal-form-group">
-      <label for="imageUrl" class="universal-form-label">Kép URL:</label>
+      <label for="imageUrl" class="universal-form-label">
+        {{ 'newExercise.imageUrl' | translate }}:
+      </label>
       <input
         type="text"
         id="imageUrl"
@@ -58,7 +66,9 @@
 
     <!-- Videó URL -->
     <div class="universal-form-group">
-      <label for="videoUrl" class="universal-form-label">Videó URL:</label>
+      <label for="videoUrl" class="universal-form-label">
+        {{ 'newExercise.videoUrl' | translate }}:
+      </label>
       <input
         type="text"
         id="videoUrl"
@@ -70,7 +80,9 @@
 
     <!-- Izomcsoport -->
     <div class="universal-form-group">
-      <label for="muscleGroup" class="universal-form-label">Izomcsoport:</label>
+      <label for="muscleGroup" class="universal-form-label">
+        {{ 'newExercise.muscleGroup' | translate }}:
+      </label>
       <input
         type="text"
         id="muscleGroup"
@@ -82,7 +94,9 @@
 
     <!-- Eszköz -->
     <div class="universal-form-group">
-      <label for="equipment" class="universal-form-label">Eszköz:</label>
+      <label for="equipment" class="universal-form-label">
+        {{ 'newExercise.equipment' | translate }}:
+      </label>
       <input
         type="text"
         id="equipment"
@@ -94,22 +108,26 @@
 
     <!-- Nehézség -->
     <div class="universal-form-group">
-      <label for="difficultyLevel" class="universal-form-label">Nehézség:</label>
+      <label for="difficultyLevel" class="universal-form-label">
+        {{ 'newExercise.difficulty' | translate }}:
+      </label>
       <select
         id="difficultyLevel"
         name="difficultyLevel"
         [(ngModel)]="newExercise.difficultyLevel"
         class="universal-form-select"
       >
-        <option value="easy">Könnyű</option>
-        <option value="medium">Közepes</option>
-        <option value="hard">Nehéz</option>
+        <option value="easy">{{ 'newExercise.easy' | translate }}</option>
+        <option value="medium">{{ 'newExercise.medium' | translate }}</option>
+        <option value="hard">{{ 'newExercise.hard' | translate }}</option>
       </select>
     </div>
 
     <!-- Kategória -->
     <div class="universal-form-group">
-      <label for="category" class="universal-form-label">Kategória:</label>
+      <label for="category" class="universal-form-label">
+        {{ 'newExercise.category' | translate }}:
+      </label>
       <input
         type="text"
         id="category"
@@ -121,7 +139,9 @@
 
     <!-- Kalória / perc -->
     <div class="universal-form-group">
-      <label for="caloriesBurnedPerMinute" class="universal-form-label">Kalória/perc:</label>
+      <label for="caloriesBurnedPerMinute" class="universal-form-label">
+        {{ 'newExercise.caloriesPerMinute' | translate }}:
+      </label>
       <input
         type="number"
         id="caloriesBurnedPerMinute"
@@ -134,7 +154,9 @@
 
     <!-- Időtartam -->
     <div class="universal-form-group">
-      <label for="durationSeconds" class="universal-form-label">Időtartam (mp):</label>
+      <label for="durationSeconds" class="universal-form-label">
+        {{ 'newExercise.duration' | translate }}:
+      </label>
       <input
         type="number"
         id="durationSeconds"
@@ -153,13 +175,19 @@
         [(ngModel)]="newExercise.done"
         class="universal-form-checkbox"
       />
-      <label for="done" class="universal-form-label-inline">Kész</label>
+      <label for="done" class="universal-form-label-inline">
+        {{ 'newExercise.done' | translate }}
+      </label>
     </div>
 
     <!-- Submit -->
     <div class="universal-form-actions">
-      <button type="submit" [disabled]="!exerciseForm.form.valid" class="universal-form-button">
-        ➕ Létrehozás
+      <button
+        type="submit"
+        [disabled]="!exerciseForm.form.valid"
+        class="universal-form-button"
+      >
+        ➕ {{ 'newExercise.create' | translate }}
       </button>
     </div>
   </form>

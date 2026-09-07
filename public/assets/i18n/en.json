@@ -599,5 +599,36 @@
     "loading": "Loading...",
     "loadError": "Failed to load programs",
     "noPrograms": "No programs."
+  },
+  "newExercise": {
+    "title": "New Exercise",
+    "name": "Name",
+    "description": "Description",
+    "imageUrl": "Image URL",
+    "videoUrl": "Video URL",
+    "muscleGroup": "Muscle Group",
+    "equipment": "Equipment",
+    "difficulty": "Difficulty",
+    "easy": "Easy",
+    "medium": "Medium",
+    "hard": "Hard",
+    "category": "Category",
+    "caloriesPerMinute": "Calories/minute",
+    "duration": "Duration (sec)",
+    "done": "Done",
+    "create": "Create",
+    "workoutIdRequired": "Workout ID is required!",
+    "success": "Exercise \"{{name}}\" added successfully!",
+    "errorWithMessage": "An error occurred: {{message}}",
+    "errorWithStatus": "An error occurred ({{status}}): {{statusText}}"
+  },
+  "login": {
+    "title": "Login",
+    "username": "Username",
+    "usernamePlaceholder": "Username",
+    "password": "Password",
+    "passwordPlaceholder": "Password",
+    "loading": "Loading...",
+    "login": "Login"
   }
 }

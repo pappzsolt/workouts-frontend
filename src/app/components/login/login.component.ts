@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth/auth.service';
-import { CommonModule } from '@angular/common';
 import { catchError, of } from 'rxjs';
 import { Router } from '@angular/router';
 import { USER_MESSAGES } from '../../constants/user-messages';
+import { SHARED_IMPORTS } from '../shared/shared-imports';
+import { LanguageSelectorComponent } from '../shared/language/language-selector.component';
 
 interface LoginResponse {
   accessToken: string;
@@ -14,7 +15,7 @@ interface LoginResponse {
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [...SHARED_IMPORTS, ReactiveFormsModule, LanguageSelectorComponent],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
 })
@@ -58,18 +59,21 @@ export class LoginComponent {
       )
       .subscribe((res: LoginResponse | null) => {
         this.loading = false;
+
         if (res) {
           console.log('Bejelentkezve!', res);
 
-          // -------------------------------
-          // Role alapján történő navigáció (null-safety)
-          // -------------------------------
-          const role = this.authService.getUserRole() ?? ''; // ha null, üres string
+          const role = this.authService.getUserRole() ?? '';
 
-          if (role.includes('ROLE_ADMIN')) this.router.navigate(['/admin/dashboard']);
-          else if (role.includes('ROLE_COACH')) this.router.navigate(['/coach/dashboard']);
-          else if (role.includes('ROLE_USER')) this.router.navigate(['/user/dashboard']);
-          else this.router.navigate(['/login']); // ha nincs érvényes role
+          if (role.includes('ROLE_ADMIN')) {
+            this.router.navigate(['/admin/dashboard']);
+          } else if (role.includes('ROLE_COACH')) {
+            this.router.navigate(['/coach/dashboard']);
+          } else if (role.includes('ROLE_USER')) {
+            this.router.navigate(['/user/dashboard']);
+          } else {
+            this.router.navigate(['/login']);
+          }
         }
       });
   }

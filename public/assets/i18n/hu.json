@@ -599,5 +599,36 @@
     "loading": "Betöltés...",
     "loadError": "Programok betöltése sikertelen",
     "noPrograms": "Nincsenek programok."
+  },
+  "newExercise": {
+    "title": "Új Gyakorlat",
+    "name": "Név",
+    "description": "Leírás",
+    "imageUrl": "Kép URL",
+    "videoUrl": "Videó URL",
+    "muscleGroup": "Izomcsoport",
+    "equipment": "Eszköz",
+    "difficulty": "Nehézség",
+    "easy": "Könnyű",
+    "medium": "Közepes",
+    "hard": "Nehéz",
+    "category": "Kategória",
+    "caloriesPerMinute": "Kalória/perc",
+    "duration": "Időtartam (mp)",
+    "done": "Kész",
+    "create": "Létrehozás",
+    "workoutIdRequired": "Workout ID szükséges!",
+    "success": "Gyakorlat \"{{name}}\" sikeresen hozzáadva!",
+    "errorWithMessage": "Hiba történt: {{message}}",
+    "errorWithStatus": "Hiba történt ({{status}}): {{statusText}}"
+  },
+  "login": {
+    "title": "Bejelentkezés",
+    "username": "Felhasználónév",
+    "usernamePlaceholder": "Felhasználónév",
+    "password": "Jelszó",
+    "passwordPlaceholder": "Jelszó",
+    "loading": "Betöltés...",
+    "login": "Bejelentkezés"
   }
 }

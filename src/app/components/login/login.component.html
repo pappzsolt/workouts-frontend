@@ -1,22 +1,37 @@
 <div class="login-card">
-  <h2 class="login-title">Login</h2>
+  <div class="login-language-selector">
+    <app-language-selector></app-language-selector>
+  </div>
+
+  <h2 class="login-title">
+    {{ 'login.title' | translate }}
+  </h2>
 
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit($event)" class="login-form">
     <div class="login-form-group">
-      <label class="login-label"> Username </label>
+      <label class="login-label">
+        {{ 'login.username' | translate }}
+      </label>
 
       <input
         formControlName="username"
         type="text"
-        placeholder="Felhasználónév"
+        [placeholder]="'login.usernamePlaceholder' | translate"
         class="login-input"
       />
     </div>
 
     <div class="login-form-group">
-      <label class="login-label"> Password </label>
+      <label class="login-label">
+        {{ 'login.password' | translate }}
+      </label>
 
-      <input formControlName="password" type="password" placeholder="Jelszó" class="login-input" />
+      <input
+        formControlName="password"
+        type="password"
+        [placeholder]="'login.passwordPlaceholder' | translate"
+        class="login-input"
+      />
     </div>
 
     <div *ngIf="errorMessage" class="login-error">
@@ -24,7 +39,11 @@
     </div>
 
     <button type="submit" [disabled]="loading" class="login-button">
-      {{ loading ? 'Betöltés...' : 'Bejelentkezés' }}
+      {{
+        loading
+          ? ('login.loading' | translate)
+          : ('login.login' | translate)
+      }}
     </button>
   </form>
 </div>

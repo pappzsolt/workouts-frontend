@@ -1,14 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
+import { TranslateService } from '@ngx-translate/core';
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 import { Exercise } from '../../../../../models/exercise.model';
+import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
 @Component({
   selector: 'app-new-exercise',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './new-exercise.component.html',
   styleUrls: ['./new-exercise.component.css'],
 })
@@ -29,19 +29,22 @@ export class NewExerciseComponent implements OnInit {
     done: false,
   };
 
-  message: string = '';
+  message = '';
   messageType: 'success' | 'error' | '' = '';
 
-  constructor(private exercisesService: ExerciseService) {}
+  constructor(
+    private exercisesService: ExerciseService,
+    private translate: TranslateService,
+  ) {}
 
   ngOnInit(): void {
     if (!this.workoutId) {
-      this.message = 'Workout ID szükséges!';
+      this.message = this.translate.instant('newExercise.workoutIdRequired');
       this.messageType = 'error';
     }
   }
 
-  addExercise() {
+  addExercise(): void {
     const payload = {
       name: this.newExercise.name,
       description: this.newExercise.description,
@@ -57,10 +60,11 @@ export class NewExerciseComponent implements OnInit {
 
     this.exercisesService.addExercise(payload).subscribe({
       next: (res) => {
-        this.message = `Gyakorlat "${res.name}" sikeresen hozzáadva!`;
+        this.message = this.translate.instant('newExercise.success', {
+          name: res.name,
+        });
         this.messageType = 'success';
 
-        // Form reset
         this.newExercise = {
           name: '',
           description: '',
@@ -75,15 +79,22 @@ export class NewExerciseComponent implements OnInit {
           done: false,
         };
       },
-      error: (err) => {
-        // Hibák kezelése és üzenet a felhasználónak
+      error: (err: HttpErrorResponse) => {
         if (err.error && typeof err.error === 'string') {
-          this.message = `Hiba történt: ${err.error}`;
+          this.message = this.translate.instant('newExercise.errorWithMessage', {
+            message: err.error,
+          });
         } else if (err.error && err.error.message) {
-          this.message = `Hiba történt: ${err.error.message}`;
+          this.message = this.translate.instant('newExercise.errorWithMessage', {
+            message: err.error.message,
+          });
         } else {
-          this.message = `Hiba történt (${err.status}): ${err.statusText}`;
+          this.message = this.translate.instant('newExercise.errorWithStatus', {
+            status: err.status,
+            statusText: err.statusText,
+          });
         }
+
         this.messageType = 'error';
         console.error('Exercise creation error:', err);
       },
