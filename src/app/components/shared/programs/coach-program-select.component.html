@@ -1,16 +1,40 @@
 <div class="mb-3">
-  <label class="block mb-1 font-semibold">Program:</label>
+  <label class="block mb-1 font-semibold">
+    {{ 'coachProgramSelect.program' | translate }}:
+  </label>
+
   <select
     [(ngModel)]="selectedProgramId"
     (ngModelChange)="onProgramSelect($event)"
     class="border p-2 rounded w-full"
   >
-    <option [ngValue]="null" disabled selected>-- Válassz programot --</option>
-    <option *ngFor="let program of programs" [value]="program.programId">
+    <option
+      [ngValue]="null"
+      disabled
+      selected
+    >
+      {{ 'coachProgramSelect.selectProgram' | translate }}
+    </option>
+
+    <option
+      *ngFor="let program of programs"
+      [value]="program.programId"
+    >
       {{ program.programName }}
     </option>
   </select>
 </div>
 
-<div *ngIf="loading" class="text-gray-500 mt-2">Betöltés...</div>
-<div *ngIf="message" class="text-red-500 mt-2">{{ message }}</div>
+<div
+  *ngIf="loading"
+  class="text-gray-500 mt-2"
+>
+  {{ 'coachProgramSelect.loading' | translate }}
+</div>
+
+<div
+  *ngIf="message"
+  class="text-red-500 mt-2"
+>
+  {{ message | translate }}
+</div>

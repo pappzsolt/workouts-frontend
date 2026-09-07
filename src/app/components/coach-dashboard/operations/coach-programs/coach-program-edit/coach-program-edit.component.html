@@ -1,4 +1,6 @@
-<h2 class="programs-title">✏️ Edit Program</h2>
+<h2 class="programs-title">
+  ✏️ {{ 'coachProgramEdit.title' | translate }}
+</h2>
 
 <!-- Üzenet -->
 <div
@@ -9,7 +11,7 @@
     'form-message-error': messageType === 'error',
   }"
 >
-  {{ message }}
+  {{ message | translate }}
 </div>
 
 <!-- Kártyás form -->
@@ -19,16 +21,24 @@
     <span class="program-emoji">🛠️</span>
   </div>
 
-  <form (ngSubmit)="saveProgram()" class="program-form">
+  <form
+    (ngSubmit)="saveProgram()"
+    class="program-form"
+  >
     <!-- Program Name -->
     <div class="form-group-full">
-      <label class="form-label" for="programName"> Program Name </label>
+      <label
+        class="form-label"
+        for="programName"
+      >
+        {{ 'coachProgramEdit.programName' | translate }}
+      </label>
 
       <input
         type="text"
         id="programName"
         name="programName"
-        placeholder="Program Name"
+        [placeholder]="'coachProgramEdit.programNamePlaceholder' | translate"
         [(ngModel)]="program.programName"
         required
         class="form-input"
@@ -37,13 +47,18 @@
 
     <!-- Description -->
     <div class="form-group-full">
-      <label class="form-label" for="programDescription"> Description </label>
+      <label
+        class="form-label"
+        for="programDescription"
+      >
+        {{ 'coachProgramEdit.description' | translate }}
+      </label>
 
       <textarea
         id="programDescription"
         name="programDescription"
         rows="3"
-        placeholder="Program Description"
+        [placeholder]="'coachProgramEdit.descriptionPlaceholder' | translate"
         [(ngModel)]="program.programDescription"
         class="form-input form-textarea"
       ></textarea>
@@ -51,13 +66,18 @@
 
     <!-- Duration -->
     <div class="form-group">
-      <label class="form-label" for="durationDays"> Duration (days) </label>
+      <label
+        class="form-label"
+        for="durationDays"
+      >
+        {{ 'coachProgramEdit.duration' | translate }}
+      </label>
 
       <input
         type="number"
         id="durationDays"
         name="durationDays"
-        placeholder="Duration"
+        [placeholder]="'coachProgramEdit.durationPlaceholder' | translate"
         [(ngModel)]="program.durationDays"
         class="form-input"
         min="1"
@@ -66,7 +86,12 @@
 
     <!-- Difficulty -->
     <div class="form-group">
-      <label class="form-label" for="difficultyLevel"> Difficulty Level </label>
+      <label
+        class="form-label"
+        for="difficultyLevel"
+      >
+        {{ 'coachProgramEdit.difficultyLevel' | translate }}
+      </label>
 
       <select
         id="difficultyLevel"
@@ -74,16 +99,32 @@
         [(ngModel)]="program.difficultyLevel"
         class="form-input"
       >
-        <option value="">Select</option>
-        <option value="Easy">Easy</option>
-        <option value="Medium">Medium</option>
-        <option value="Hard">Hard</option>
+        <option value="">
+          {{ 'coachProgramEdit.selectDifficulty' | translate }}
+        </option>
+
+        <option value="Easy">
+          {{ 'coachProgramEdit.easy' | translate }}
+        </option>
+
+        <option value="Medium">
+          {{ 'coachProgramEdit.medium' | translate }}
+        </option>
+
+        <option value="Hard">
+          {{ 'coachProgramEdit.hard' | translate }}
+        </option>
       </select>
     </div>
 
     <!-- Gomb -->
     <div class="form-submit">
-      <button type="submit" class="form-button">💾 Save Program</button>
+      <button
+        type="submit"
+        class="form-button"
+      >
+        💾 {{ 'coachProgramEdit.save' | translate }}
+      </button>
     </div>
   </form>
 </div>

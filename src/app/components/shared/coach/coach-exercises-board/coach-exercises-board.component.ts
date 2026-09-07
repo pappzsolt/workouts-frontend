@@ -9,17 +9,16 @@ import {
   inject,
 } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
 
 import { Exercise } from '../../../../models/exercise.model';
 
+import { SHARED_IMPORTS } from '../../shared-imports';
+
 @Component({
   selector: 'app-coach-exercises-board',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...SHARED_IMPORTS],
   styleUrl: './coach-exercises-board.component.css',
   templateUrl: './coach-exercises-board.component.html',
 })
@@ -131,7 +130,7 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges {
         this.exercisePage = 1;
 
         if (!this.exercises.length) {
-          this.message = 'Nincsenek elérhető exercise-ek.';
+          this.message = 'coachExercisesBoard.noExercises';
         } else {
           this.message = '';
         }
@@ -140,7 +139,7 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges {
       error: (err) => {
         this.loading = false;
 
-        this.message = 'Hiba az exercise-ek betöltése során';
+        this.message = 'coachExercisesBoard.loadError';
 
         console.error('❌ Exercise-ek betöltése sikertelen', err);
       },

@@ -1,11 +1,13 @@
-<h2 class="programs-title">Programok</h2>
+<h2 class="programs-title">
+  {{ 'coachPrograms.title' | translate }}
+</h2>
 
 <!-- ============================================================
      ÜZENET
      ============================================================ -->
 
 <div *ngIf="message" class="message-box">
-  {{ message }}
+  {{ message | translate }}
 </div>
 
 <ng-container *ngIf="showProgramsList; else noPrograms">
@@ -17,7 +19,12 @@
     <!-- KERESÉS -->
 
     <div class="program-search">
-      <label for="programSearch" class="program-search-label"> Program keresése </label>
+      <label
+        for="programSearch"
+        class="program-search-label"
+      >
+        {{ 'coachPrograms.search' | translate }}
+      </label>
 
       <input
         id="programSearch"
@@ -25,15 +32,19 @@
         [(ngModel)]="searchTerm"
         (ngModelChange)="onSearchChange()"
         class="program-search-input"
-        placeholder="Program neve..."
+        [placeholder]="'coachPrograms.searchPlaceholder' | translate"
         autocomplete="off"
       />
     </div>
 
     <!-- RENDEZÉS -->
 
-    <button type="button" class="program-sort-button" (click)="toggleSort()">
-      Program neve
+    <button
+      type="button"
+      class="program-sort-button"
+      (click)="toggleSort()"
+    >
+      {{ 'coachPrograms.sortByName' | translate }}
 
       <span class="sort-icon">
         {{ sortDirection === 'asc' ? '↑' : '↓' }}
@@ -45,8 +56,14 @@
        PROGRAMOK
        ============================================================ -->
 
-  <div *ngIf="filteredPrograms.length > 0; else noSearchResults" class="programs-grid">
-    <div *ngFor="let program of pagedPrograms" class="program-card">
+  <div
+    *ngIf="filteredPrograms.length > 0; else noSearchResults"
+    class="programs-grid"
+  >
+    <div
+      *ngFor="let program of pagedPrograms"
+      class="program-card"
+    >
       <!-- ========================================================
            PROGRAM FEJLÉC
            ======================================================== -->
@@ -68,7 +85,10 @@
 
         <!-- PROGRAM LEÍRÁS -->
 
-        <p *ngIf="program.programDescription" class="program-description">
+        <p
+          *ngIf="program.programDescription"
+          class="program-description"
+        >
           {{ program.programDescription }}
         </p>
 
@@ -80,15 +100,22 @@
           <!-- IDŐTARTAM -->
 
           <div class="program-meta-item">
-            <span class="program-meta-label"> Időtartam </span>
+            <span class="program-meta-label">
+              {{ 'coachPrograms.duration' | translate }}
+            </span>
 
-            <span class="program-meta-value"> {{ program.durationDays }} nap </span>
+            <span class="program-meta-value">
+              {{ program.durationDays }}
+              {{ 'coachPrograms.days' | translate }}
+            </span>
           </div>
 
           <!-- EDZÉSEK SZÁMA -->
 
           <div class="program-meta-item">
-            <span class="program-meta-label"> Edzések </span>
+            <span class="program-meta-label">
+              {{ 'coachPrograms.workouts' | translate }}
+            </span>
 
             <span class="program-meta-value">
               {{ program.workouts?.length || 0 }}
@@ -101,8 +128,12 @@
              ====================================================== -->
 
         <div class="program-edit">
-          <button type="button" class="edit-button" (click)="editProgram(program.id, $event)">
-            ✏️ Szerkesztés
+          <button
+            type="button"
+            class="edit-button"
+            (click)="editProgram(program.id, $event)"
+          >
+            ✏️ {{ 'coachPrograms.edit' | translate }}
           </button>
         </div>
       </div>
@@ -114,24 +145,31 @@
        ============================================================ -->
 
   <ng-template #noSearchResults>
-    <div class="no-programs">Nincs a keresésnek megfelelő program.</div>
+    <div class="no-programs">
+      {{ 'coachPrograms.noSearchResults' | translate }}
+    </div>
   </ng-template>
 
   <!-- ============================================================
        LAPOZÁS
        ============================================================ -->
 
-  <div *ngIf="totalPages > 1" class="pagination-controls">
+  <div
+    *ngIf="totalPages > 1"
+    class="pagination-controls"
+  >
     <button
       type="button"
       class="pagination-button"
       (click)="prevPage()"
       [disabled]="currentPage === 1"
     >
-      ◀ Előző
+      ◀ {{ 'common.previous' | translate }}
     </button>
 
-    <span class="pagination-info"> {{ currentPage }} / {{ totalPages }} </span>
+    <span class="pagination-info">
+      {{ currentPage }} / {{ totalPages }}
+    </span>
 
     <button
       type="button"
@@ -139,7 +177,7 @@
       (click)="nextPage()"
       [disabled]="currentPage === totalPages"
     >
-      Következő ▶
+      {{ 'common.next' | translate }} ▶
     </button>
   </div>
 </ng-container>
@@ -149,7 +187,9 @@
      ============================================================ -->
 
 <ng-template #noPrograms>
-  <div class="no-programs">Nincsenek programok.</div>
+  <div class="no-programs">
+    {{ 'coachPrograms.empty' | translate }}
+  </div>
 </ng-template>
 
 <!-- ============================================================
@@ -160,7 +200,7 @@
   type="button"
   class="floating-action-button"
   (click)="createNewProgram()"
-  title="Új program létrehozása"
+  [title]="'coachPrograms.createNew' | translate"
 >
   ➕
 </button>

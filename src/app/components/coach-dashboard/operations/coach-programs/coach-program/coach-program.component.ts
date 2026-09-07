@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
 import { Program } from '../../../../../models/program.model';
 import { USER_MESSAGES } from '../../../../../constants/user-messages';
 
+import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
+
 @Component({
   selector: 'app-coach-program',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './coach-program.component.html',
   styleUrls: ['./coach-program.component.css'],
 })
@@ -85,7 +85,7 @@ export class CoachProgramComponent implements OnInit {
           this.currentPage = 1;
           this.showProgramsList = false;
 
-          this.message = 'Nincsenek programok a coachhoz.';
+          this.message = 'coachPrograms.noPrograms';
         }
       },
 
@@ -97,7 +97,7 @@ export class CoachProgramComponent implements OnInit {
         this.currentPage = 1;
         this.showProgramsList = false;
 
-        this.message = 'Nem sikerült lekérni a programokat.';
+        this.message = 'coachPrograms.loadError';
       },
     });
   }

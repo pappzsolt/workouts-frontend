@@ -1,4 +1,6 @@
-<h2 class="universal-form-title">➕ Létrehozás: Új Workout</h2>
+<h2 class="universal-form-title">
+  ➕ {{ 'newWorkout.title' | translate }}
+</h2>
 
 <!-- Üzenet -->
 <div
@@ -9,7 +11,7 @@
     'universal-form-message-error': messageType === 'error',
   }"
 >
-  {{ message }}
+  {{ message | translate }}
 </div>
 
 <!-- Workout form kártya -->
@@ -18,10 +20,19 @@
     <span class="form-header-emoji">🏋️‍♂️</span>
   </div>
 
-  <form (ngSubmit)="addWorkout()" #workoutForm="ngForm" class="universal-form">
+  <form
+    (ngSubmit)="addWorkout()"
+    #workoutForm="ngForm"
+    class="universal-form"
+  >
     <!-- Workout név -->
     <div class="universal-form-group-full">
-      <label for="workoutName" class="universal-form-label"> Workout Name </label>
+      <label
+        for="workoutName"
+        class="universal-form-label"
+      >
+        {{ 'newWorkout.workoutName' | translate }}
+      </label>
 
       <input
         type="text"
@@ -35,7 +46,12 @@
 
     <!-- Leírás -->
     <div class="universal-form-group-full">
-      <label for="description" class="universal-form-label"> Description </label>
+      <label
+        for="description"
+        class="universal-form-label"
+      >
+        {{ 'newWorkout.description' | translate }}
+      </label>
 
       <textarea
         id="description"
@@ -48,7 +64,12 @@
 
     <!-- Dátum -->
     <div class="universal-form-group">
-      <label for="workoutDate" class="universal-form-label"> Date </label>
+      <label
+        for="workoutDate"
+        class="universal-form-label"
+      >
+        {{ 'newWorkout.date' | translate }}
+      </label>
 
       <input
         type="date"
@@ -62,7 +83,12 @@
 
     <!-- Időtartam -->
     <div class="universal-form-group">
-      <label for="durationMinutes" class="universal-form-label"> Duration (minutes) </label>
+      <label
+        for="durationMinutes"
+        class="universal-form-label"
+      >
+        {{ 'newWorkout.duration' | translate }}
+      </label>
 
       <input
         type="number"
@@ -75,7 +101,12 @@
 
     <!-- Intenzitás -->
     <div class="universal-form-group">
-      <label for="intensityLevel" class="universal-form-label"> Intensity Level </label>
+      <label
+        for="intensityLevel"
+        class="universal-form-label"
+      >
+        {{ 'newWorkout.intensityLevel' | translate }}
+      </label>
 
       <select
         id="intensityLevel"
@@ -83,17 +114,32 @@
         [(ngModel)]="newWorkout.intensityLevel"
         class="universal-form-select"
       >
-        <option value="">Select</option>
-        <option value="Low">Low</option>
-        <option value="Medium">Medium</option>
-        <option value="High">High</option>
+        <option value="">
+          {{ 'newWorkout.select' | translate }}
+        </option>
+
+        <option value="Low">
+          {{ 'newWorkout.low' | translate }}
+        </option>
+
+        <option value="Medium">
+          {{ 'newWorkout.medium' | translate }}
+        </option>
+
+        <option value="High">
+          {{ 'newWorkout.high' | translate }}
+        </option>
       </select>
     </div>
 
     <!-- Gomb -->
     <div class="universal-form-actions">
-      <button type="submit" [disabled]="!workoutForm.form.valid" class="universal-form-button">
-        ➕ Create Workout
+      <button
+        type="submit"
+        [disabled]="!workoutForm.form.valid"
+        class="universal-form-button"
+      >
+        ➕ {{ 'newWorkout.createWorkout' | translate }}
       </button>
     </div>
   </form>

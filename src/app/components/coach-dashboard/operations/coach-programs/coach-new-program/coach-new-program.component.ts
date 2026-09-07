@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
+
+import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
 
@@ -11,7 +10,7 @@ import { Program, ProgramCreationRequest } from '../../../../../models/program.m
 @Component({
   selector: 'app-coach-new-program',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './coach-new-program.component.html',
   styleUrls: ['./coach-new-program.component.css'],
 })
@@ -62,7 +61,7 @@ export class CoachNewProgramComponent implements OnInit {
 
         if (response.success) {
           this.messageType = 'success';
-          this.message = 'Program sikeresen létrehozva!';
+          this.message = 'coachNewProgram.createSuccess';
 
           setTimeout(() => {
             this.router.navigate(['/coach/programs']);
@@ -81,7 +80,7 @@ export class CoachNewProgramComponent implements OnInit {
         if (err.error?.message) {
           this.message = `Hiba: ${err.error.message}`;
         } else {
-          this.message = 'Hiba történt a program létrehozása során.';
+          this.message = 'coachNewProgram.createError';
         }
       },
     });

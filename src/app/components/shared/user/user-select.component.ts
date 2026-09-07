@@ -1,16 +1,17 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-
 import { UserNameIdService, UserNameId } from '../../../services/user/user-name-id.service';
+
+import { SHARED_IMPORTS } from '../shared-imports';
 
 @Component({
   selector: 'app-user-select',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...SHARED_IMPORTS],
   template: `
-    <label for="userSelect" class="user-select-label"> Válassz felhasználót </label>
+    <label for="userSelect" class="user-select-label">
+      {{ 'userSelect.selectUser' | translate }}
+    </label>
 
     <select
       id="userSelect"
@@ -19,7 +20,9 @@ import { UserNameIdService, UserNameId } from '../../../services/user/user-name-
       [disabled]="disabled"
       class="user-select-control"
     >
-      <option [ngValue]="undefined">-- Válassz felhasználót --</option>
+      <option [ngValue]="undefined">
+        {{ 'userSelect.selectUserOption' | translate }}
+      </option>
 
       <option *ngFor="let u of users" [ngValue]="u.id">
         {{ u.username }}

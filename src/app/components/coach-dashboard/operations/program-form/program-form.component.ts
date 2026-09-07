@@ -1,16 +1,16 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { catchError, of } from 'rxjs';
 
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 import { Program } from '../../../../models/program.model';
-import { USER_MESSAGES } from '../../../../constants/user-messages';
+
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
   selector: 'app-program-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [...SHARED_IMPORTS, ReactiveFormsModule],
   templateUrl: './program-form.component.html',
   styleUrls: ['./program-form.component.css'],
 })
@@ -42,7 +42,8 @@ export class ProgramFormComponent implements OnInit {
         .getProgramById(this.programId)
         .pipe(
           catchError(() => {
-            this.message = USER_MESSAGES.loadProgramsError;
+            this.message = 'programForm.loadError';
+
             return of(null);
           }),
         )
@@ -57,7 +58,7 @@ export class ProgramFormComponent implements OnInit {
               difficultyLevel: program.difficultyLevel,
             });
 
-            this.message = USER_MESSAGES.profileLoaded;
+            this.message = 'programForm.loadSuccess';
           }
         });
     }
@@ -66,7 +67,9 @@ export class ProgramFormComponent implements OnInit {
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      this.message = USER_MESSAGES.required;
+
+      this.message = 'programForm.required';
+
       return;
     }
 
@@ -83,13 +86,14 @@ export class ProgramFormComponent implements OnInit {
         .updateProgram(this.programId, program)
         .pipe(
           catchError(() => {
-            this.message = USER_MESSAGES.updateError;
+            this.message = 'programForm.updateError';
+
             return of(null);
           }),
         )
         .subscribe((response) => {
           if (response?.status === 'success') {
-            this.message = USER_MESSAGES.updateSuccess;
+            this.message = 'programForm.updateSuccess';
           }
         });
 
@@ -108,13 +112,15 @@ export class ProgramFormComponent implements OnInit {
       .createProgram(request)
       .pipe(
         catchError(() => {
-          this.message = USER_MESSAGES.updateError;
+          this.message = 'programForm.updateError';
+
           return of(null);
         }),
       )
       .subscribe((response) => {
         if (response?.success) {
-          this.message = USER_MESSAGES.updateSuccess;
+          this.message = 'programForm.updateSuccess';
+
           this.form.reset();
         }
       });

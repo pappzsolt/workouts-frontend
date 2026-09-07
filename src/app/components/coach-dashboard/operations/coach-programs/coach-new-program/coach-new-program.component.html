@@ -1,4 +1,6 @@
-<h2 class="universal-form-title">➕ Create New Program</h2>
+<h2 class="universal-form-title">
+  ➕ {{ 'coachNewProgram.title' | translate }}
+</h2>
 
 <!-- Üzenet -->
 <div
@@ -9,7 +11,7 @@
     'universal-form-message-error': messageType === 'error',
   }"
 >
-  {{ message }}
+  {{ message | translate }}
 </div>
 
 <!-- Program form kártya -->
@@ -18,16 +20,24 @@
     <span class="form-header-emoji">💪</span>
   </div>
 
-  <form (ngSubmit)="saveProgram()" class="universal-form">
+  <form
+    (ngSubmit)="saveProgram()"
+    class="universal-form"
+  >
     <!-- Program Name -->
     <div class="universal-form-group-full">
-      <label for="programName" class="universal-form-label"> Program Name </label>
+      <label
+        for="programName"
+        class="universal-form-label"
+      >
+        {{ 'coachNewProgram.programName' | translate }}
+      </label>
 
       <input
         type="text"
         id="programName"
         name="programName"
-        placeholder="Program Name"
+        [placeholder]="'coachNewProgram.programNamePlaceholder' | translate"
         [(ngModel)]="program.programName"
         required
         class="universal-form-input"
@@ -36,13 +46,18 @@
 
     <!-- Description -->
     <div class="universal-form-group-full">
-      <label for="programDescription" class="universal-form-label"> Description </label>
+      <label
+        for="programDescription"
+        class="universal-form-label"
+      >
+        {{ 'coachNewProgram.description' | translate }}
+      </label>
 
       <textarea
         id="programDescription"
         name="programDescription"
         rows="3"
-        placeholder="Program Description"
+        [placeholder]="'coachNewProgram.descriptionPlaceholder' | translate"
         [(ngModel)]="program.programDescription"
         class="universal-form-textarea"
       ></textarea>
@@ -50,13 +65,18 @@
 
     <!-- Duration -->
     <div class="universal-form-group">
-      <label for="durationDays" class="universal-form-label"> Duration (days) </label>
+      <label
+        for="durationDays"
+        class="universal-form-label"
+      >
+        {{ 'coachNewProgram.duration' | translate }}
+      </label>
 
       <input
         type="number"
         id="durationDays"
         name="durationDays"
-        placeholder="Duration"
+        [placeholder]="'coachNewProgram.durationPlaceholder' | translate"
         [(ngModel)]="program.durationDays"
         class="universal-form-input"
         min="1"
@@ -65,7 +85,12 @@
 
     <!-- Difficulty -->
     <div class="universal-form-group">
-      <label for="difficultyLevel" class="universal-form-label"> Difficulty Level </label>
+      <label
+        for="difficultyLevel"
+        class="universal-form-label"
+      >
+        {{ 'coachNewProgram.difficultyLevel' | translate }}
+      </label>
 
       <select
         id="difficultyLevel"
@@ -73,16 +98,32 @@
         [(ngModel)]="program.difficultyLevel"
         class="universal-form-select"
       >
-        <option value="">Select</option>
-        <option value="Easy">Easy</option>
-        <option value="Medium">Medium</option>
-        <option value="Hard">Hard</option>
+        <option value="">
+          {{ 'coachNewProgram.selectDifficulty' | translate }}
+        </option>
+
+        <option value="Easy">
+          {{ 'coachNewProgram.easy' | translate }}
+        </option>
+
+        <option value="Medium">
+          {{ 'coachNewProgram.medium' | translate }}
+        </option>
+
+        <option value="Hard">
+          {{ 'coachNewProgram.hard' | translate }}
+        </option>
       </select>
     </div>
 
     <!-- Mentés gomb -->
     <div class="universal-form-submit">
-      <button type="submit" class="universal-form-button">💾 Save Program</button>
+      <button
+        type="submit"
+        class="universal-form-button"
+      >
+        💾 {{ 'coachNewProgram.save' | translate }}
+      </button>
     </div>
   </form>
 </div>

@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, map } from 'rxjs';
 
 import { UserExerciseService } from '../../../../services/user/user-exercise/user-exercise.service';
 import { WorkoutDto, WorkoutExercise } from '../../../../models/exercise.model';
 
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+
 @Component({
   standalone: true,
   selector: 'app-user-exercises',
-  imports: [CommonModule],
+  imports: [...SHARED_IMPORTS],
   styleUrl: './user-exercises.component.css',
   templateUrl: './user-exercises.component.html',
 })
@@ -32,7 +33,7 @@ export class UserExercisesComponent implements OnInit {
     // A workout neve és a program ID a navigation state-ből érkezik
     const navState = history.state;
 
-    this.workoutName = navState['workoutName'] || 'Unknown Workout';
+    this.workoutName = navState['workoutName'] || 'userExercises.unknownWorkout';
 
     this.programId = Number(navState['programId']);
 

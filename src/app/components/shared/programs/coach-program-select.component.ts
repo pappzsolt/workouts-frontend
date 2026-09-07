@@ -1,15 +1,14 @@
 import { Component, OnInit, Input, Output, EventEmitter, inject } from '@angular/core';
 
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-
 import { CoachProgramSelectService } from '../../../services/coach/coach-program-select/coach-program-select.service';
 import { CoachProgram } from '../../../models/coach-program-select-model';
+
+import { SHARED_IMPORTS } from '../shared-imports';
 
 @Component({
   selector: 'app-coach-program-select',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './coach-program-select.component.html',
 })
 export class CoachProgramSelectComponent implements OnInit {
@@ -19,8 +18,11 @@ export class CoachProgramSelectComponent implements OnInit {
   loading = false;
   message = '';
 
-  @Input() selectedProgramId?: number;
-  @Output() selectedProgramIdChange = new EventEmitter<number>();
+  @Input()
+  selectedProgramId?: number;
+
+  @Output()
+  selectedProgramIdChange = new EventEmitter<number>();
 
   ngOnInit(): void {
     this.loadPrograms();
@@ -34,8 +36,10 @@ export class CoachProgramSelectComponent implements OnInit {
         this.programs = programs;
         this.loading = false;
       },
+
       error: () => {
-        this.message = 'Hiba a programok lekérése során';
+        this.message = 'coachProgramSelect.loadError';
+
         this.loading = false;
       },
     });
@@ -43,6 +47,7 @@ export class CoachProgramSelectComponent implements OnInit {
 
   onProgramSelect(programId: number): void {
     this.selectedProgramId = programId;
+
     this.selectedProgramIdChange.emit(programId);
   }
 }

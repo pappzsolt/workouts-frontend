@@ -1,6 +1,10 @@
-<h2 class="exercises-title">{{ workoutName }} – Exercises</h2>
+<h2 class="exercises-title">
+  {{ workoutName }} – {{ 'userExercises.exercises' | translate }}
+</h2>
 
-<ng-container *ngIf="(exercises$ | async)?.length; else noExercises">
+<ng-container
+  *ngIf="(exercises$ | async)?.length; else noExercises"
+>
   <div class="exercises-grid">
     <div
       *ngFor="let exercise of exercises$ | async"
@@ -20,16 +24,26 @@
 
         <!-- Exercise description -->
         <div class="exercise-description">
-          {{ exercise.exercise.description || 'No description' }}
+          {{
+            exercise.exercise.description ||
+            ('userExercises.noDescription' | translate)
+          }}
         </div>
 
         <!-- Sets / Reps -->
         <div class="exercise-detail">
-          Sets: {{ exercise.sets }}, Reps: {{ exercise.repetitions }}
+          {{ 'userExercises.sets' | translate }}:
+          {{ exercise.sets }},
+          {{ 'userExercises.reps' | translate }}:
+          {{ exercise.repetitions }}
         </div>
 
         <!-- Rest -->
-        <div class="exercise-detail">Rest: {{ exercise.restSeconds }} sec</div>
+        <div class="exercise-detail">
+          {{ 'userExercises.rest' | translate }}:
+          {{ exercise.restSeconds }}
+          {{ 'userExercises.seconds' | translate }}
+        </div>
 
         <!-- Done status -->
         <div
@@ -37,7 +51,12 @@
           [class.exercise-status-completed]="exercise.done"
           [class.exercise-status-pending]="!exercise.done"
         >
-          {{ exercise.done ? 'Completed ✅' : 'Pending ⏳' }}
+          {{
+            exercise.done
+              ? ('userExercises.completed' | translate)
+              : ('userExercises.pending' | translate)
+          }}
+          {{ exercise.done ? '✅' : '⏳' }}
         </div>
       </div>
     </div>
@@ -45,5 +64,7 @@
 </ng-container>
 
 <ng-template #noExercises>
-  <div class="no-exercises">Nincsenek gyakorlatok ehhez a workouthoz.</div>
+  <div class="no-exercises">
+    {{ 'userExercises.noExercises' | translate }}
+  </div>
 </ng-template>

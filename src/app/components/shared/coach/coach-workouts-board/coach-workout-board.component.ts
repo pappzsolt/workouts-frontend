@@ -8,29 +8,38 @@ import {
   EventEmitter,
   inject,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+
 import { Workout } from '../../../../models/workout.model';
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
+
+import { SHARED_IMPORTS } from '../../shared-imports';
 
 @Component({
   selector: 'app-coach-workout-board',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './coach-workout-board.component.html',
   styleUrls: ['./coach-workout-board.component.css'],
 })
 export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
   private workoutService = inject(CoachWorkoutsService);
 
-  @Input() externalWorkouts: Workout[] = [];
-  @Input() selectedWorkoutIds: number[] = []; // Wrapperből kapott kiválasztott ID-k
-  @Input() multiSelect: boolean = true; // alapértelmezett: true
+  @Input()
+  externalWorkouts: Workout[] = [];
 
-  @Output() workoutsChange = new EventEmitter<number[]>(); // Frissített tömb
+  @Input()
+  selectedWorkoutIds: number[] = [];
+
+  @Input()
+  multiSelect: boolean = true;
+
+  @Output()
+  workoutsChange = new EventEmitter<number[]>();
 
   workouts: Workout[] = [];
+
   loading = false;
+
   message = '';
 
   ngOnInit() {
@@ -45,20 +54,25 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
 
   loadWorkouts() {
     this.loading = true;
+
     this.workoutService.getMyWorkouts().subscribe({
       next: (res: any) => {
         this.loading = false;
+
         if (res.workouts?.length) {
           this.workouts = res.workouts.sort((a: Workout, b: Workout) =>
             (a.name ?? '').localeCompare(b.name ?? ''),
           );
         } else {
-          this.message = 'Nincsenek elérhető workoutok.';
+          this.message = 'coachWorkoutBoard.noWorkouts';
         }
       },
+
       error: (err) => {
         this.loading = false;
-        this.message = 'Hiba a workoutok lekérése során';
+
+        this.message = 'coachWorkoutBoard.loadError';
+
         console.error('❌ Workoutok betöltése sikertelen', err);
       },
     });
@@ -67,7 +81,9 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
   toggleWorkoutSelection(id: number, checked: boolean) {
     if (this.multiSelect) {
       if (checked) {
-        if (!this.selectedWorkoutIds.includes(id)) this.selectedWorkoutIds.push(id);
+        if (!this.selectedWorkoutIds.includes(id)) {
+          this.selectedWorkoutIds.push(id);
+        }
       } else {
         this.selectedWorkoutIds = this.selectedWorkoutIds.filter((wid) => wid !== id);
       }

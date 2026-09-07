@@ -1,21 +1,41 @@
-<h2 class="dashboard-title">User Dashboard</h2>
+<h2 class="dashboard-title">
+  {{ 'userDashboard.title' | translate }}
+</h2>
 
 <div class="dashboard-cards-container">
   <!-- My Programs -->
-  <div class="dashboard-card" (click)="navigateTo('user/my-programs')">
+  <div
+    class="dashboard-card"
+    (click)="navigateTo('user/my-programs')"
+  >
     <div class="dashboard-card-emoji">📚</div>
-    <div class="dashboard-card-title">My Programs</div>
+
+    <div class="dashboard-card-title">
+      {{ 'userDashboard.myPrograms' | translate }}
+    </div>
   </div>
 
   <!-- Statistics -->
-  <div class="dashboard-card" (click)="navigateTo('user/statistics')">
+  <div
+    class="dashboard-card"
+    (click)="navigateTo('user/statistics')"
+  >
     <div class="dashboard-card-emoji">📊</div>
-    <div class="dashboard-card-title">Statistics</div>
+
+    <div class="dashboard-card-title">
+      {{ 'userDashboard.statistics' | translate }}
+    </div>
   </div>
 
   <!-- My Workouts -->
-  <div class="dashboard-card" (click)="navigateTo('user/workouts')">
+  <div
+    class="dashboard-card"
+    (click)="navigateTo('user/workouts')"
+  >
     <div class="dashboard-card-emoji">📅</div>
-    <div class="dashboard-card-title">My Workouts</div>
+
+    <div class="dashboard-card-title">
+      {{ 'userDashboard.myWorkouts' | translate }}
+    </div>
   </div>
 </div>

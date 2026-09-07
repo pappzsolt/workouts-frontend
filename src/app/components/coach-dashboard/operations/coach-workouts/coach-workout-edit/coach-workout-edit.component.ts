@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 import { CoachWorkoutsService } from '../../../../../services/coach/coach-workouts/coach-workouts.service';
 
@@ -17,10 +15,12 @@ import { Workout } from '../../../../../models/workout.model';
 
 import { Exercise } from '../../../../../models/exercise.model';
 
+import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
+
 @Component({
   selector: 'app-coach-workout-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './coach-workout-edit.component.html',
   styleUrls: ['./coach-workout-edit.component.css'],
 })
@@ -134,7 +134,7 @@ export class CoachWorkoutEditComponent implements OnInit {
     this.workoutId = Number(this.route.snapshot.paramMap.get('id'));
 
     if (!this.workoutId || this.workoutId <= 0) {
-      this.setMessage('Érvénytelen workout ID.', 'error');
+      this.setMessage('coachWorkoutEdit.invalidWorkoutId', 'error');
 
       return;
     }
@@ -243,14 +243,14 @@ export class CoachWorkoutEditComponent implements OnInit {
             done: w.done,
           };
         } else {
-          this.setMessage(res.message || 'Workout not found.', 'error');
+          this.setMessage(res.message || 'coachWorkoutEdit.notFound', 'error');
         }
       },
 
       error: (error) => {
         console.error('Hiba a workout betöltésekor:', error);
 
-        this.setMessage('Failed to load workout.', 'error');
+        this.setMessage('coachWorkoutEdit.loadError', 'error');
       },
     });
   }
@@ -276,7 +276,7 @@ export class CoachWorkoutEditComponent implements OnInit {
 
         this.loadingExercises = false;
 
-        this.setMessage('Nem sikerült betölteni az exercise-eket.', 'error');
+        this.setMessage('coachWorkoutEdit.loadExercisesError', 'error');
       },
     });
   }
@@ -308,7 +308,7 @@ export class CoachWorkoutEditComponent implements OnInit {
 
         this.workoutExercises = [];
 
-        this.setMessage('Nem sikerült betölteni a workout exercise-eit.', 'error');
+        this.setMessage('coachWorkoutEdit.loadWorkoutExercisesError', 'error');
       },
     });
   }
@@ -379,10 +379,7 @@ export class CoachWorkoutEditComponent implements OnInit {
     }
 
     if (this.workoutAssignedToProgram) {
-      this.setMessage(
-        'Ez a workout már programhoz van rendelve, ezért új exercise nem adható hozzá.',
-        'error',
-      );
+      this.setMessage('coachWorkoutEdit.workoutAssigned', 'error');
 
       return;
     }
@@ -457,7 +454,7 @@ export class CoachWorkoutEditComponent implements OnInit {
 
   addExerciseToWorkout(): void {
     if (!this.workoutId) {
-      this.setMessage('Nincs érvényes workout ID.', 'error');
+      this.setMessage('coachWorkoutEdit.invalidWorkoutId', 'error');
 
       return;
     }
@@ -468,22 +465,19 @@ export class CoachWorkoutEditComponent implements OnInit {
      * A backend védelem ettől függetlenül megmarad.
      */
     if (this.workoutAssignedToProgram) {
-      this.setMessage(
-        'Ez a workout már programhoz van rendelve, ezért új exercise nem adható hozzá.',
-        'error',
-      );
+      this.setMessage('coachWorkoutEdit.workoutAssigned', 'error');
 
       return;
     }
 
     if (!this.selectedExerciseId) {
-      this.setMessage('Válassz ki egy exercise-t.', 'error');
+      this.setMessage('coachWorkoutEdit.selectExercise', 'error');
 
       return;
     }
 
     if (this.isExerciseAlreadyAdded(this.selectedExerciseId)) {
-      this.setMessage('Ez az exercise már hozzá van adva a workouthoz.', 'error');
+      this.setMessage('coachWorkoutEdit.exerciseAlreadyAdded', 'error');
 
       return;
     }
@@ -532,7 +526,7 @@ export class CoachWorkoutEditComponent implements OnInit {
 
           this.addingExercise = false;
 
-          this.setMessage('Exercise sikeresen hozzáadva a workouthoz.', 'success');
+          this.setMessage('coachWorkoutEdit.addSuccess', 'success');
         },
 
         error: (error: any) => {
@@ -542,10 +536,7 @@ export class CoachWorkoutEditComponent implements OnInit {
 
           const backendMessage = error?.error?.message ?? error?.error?.error ?? error?.message;
 
-          this.setMessage(
-            backendMessage || 'Nem sikerült hozzáadni az exercise-t a workouthoz.',
-            'error',
-          );
+          this.setMessage(backendMessage || 'coachWorkoutEdit.addError', 'error');
         },
       });
   }
@@ -570,13 +561,13 @@ export class CoachWorkoutEditComponent implements OnInit {
     this.coachWorkoutsService.updateWorkout(this.workoutId, payload).subscribe({
       next: (res) => {
         if (res.status === 'success') {
-          this.setMessage('Workout updated successfully!', 'success');
+          this.setMessage('coachWorkoutEdit.updateSuccess', 'success');
 
           setTimeout(() => {
             this.router.navigate(['/coach/dashboard']);
           }, 1500);
         } else {
-          this.setMessage(res.message || 'Failed to update workout.', 'error');
+          this.setMessage(res.message || 'coachWorkoutEdit.updateError', 'error');
         }
       },
 
@@ -585,7 +576,7 @@ export class CoachWorkoutEditComponent implements OnInit {
 
         const backendMessage = error?.error?.message ?? error?.error?.error ?? error?.message;
 
-        this.setMessage(backendMessage || 'Failed to save workout.', 'error');
+        this.setMessage(backendMessage || 'coachWorkoutEdit.saveError', 'error');
       },
     });
   }

@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+
 import { CoachWorkoutsService } from '../../../../../services/coach/coach-workouts/coach-workouts.service';
 import { Workout } from '../../../../../models/workout.model';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+
+import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
 @Component({
   selector: 'app-newworkout',
   templateUrl: './new-workout.component.html',
   styleUrls: ['./new-workout.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...SHARED_IMPORTS],
 })
 export class NewWorkoutComponent implements OnInit {
   workouts: Workout[] = [];
@@ -53,6 +54,10 @@ export class NewWorkoutComponent implements OnInit {
 
       error: (err) => {
         console.error('Hiba a workoutok betöltésekor', err);
+
+        this.message = 'newWorkout.loadError';
+
+        this.messageType = 'error';
       },
     });
   }
@@ -61,8 +66,10 @@ export class NewWorkoutComponent implements OnInit {
     this.coachWorkoutsService.addWorkout(this.newWorkout).subscribe({
       next: (res) => {
         console.log('Workout létrehozás válasz:', res);
+
         console.log('Workout response.data:', res.data);
-        this.message = 'Workout létrehozva!';
+
+        this.message = 'newWorkout.createSuccess';
 
         this.messageType = 'success';
 
@@ -91,6 +98,10 @@ export class NewWorkoutComponent implements OnInit {
           if (workoutId === undefined || workoutId === null) {
             console.error('A workout létrejött, de a backend válaszában nincs workout ID.', res);
 
+            this.message = 'newWorkout.createIdMissing';
+
+            this.messageType = 'error';
+
             return;
           }
 
@@ -118,7 +129,7 @@ export class NewWorkoutComponent implements OnInit {
       error: (err) => {
         console.error('Hiba a workout létrehozásakor:', err);
 
-        this.message = 'Hiba a workout létrehozásakor!';
+        this.message = 'newWorkout.createError';
 
         this.messageType = 'error';
       },

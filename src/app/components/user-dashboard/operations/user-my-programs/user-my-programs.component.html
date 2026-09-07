@@ -1,12 +1,16 @@
-<h2 class="programs-title">My Programs</h2>
+<h2 class="programs-title">
+  {{ 'userMyPrograms.title' | translate }}
+</h2>
 
 <!-- Üzenet -->
 <div *ngIf="message" class="message-box">
-  {{ message }}
+  {{ message | translate }}
 </div>
 
 <!-- Program lista -->
-<ng-container *ngIf="(programs$ | async)?.length; else noPrograms">
+<ng-container
+  *ngIf="(programs$ | async)?.length; else noPrograms"
+>
   <div class="programs-grid">
     <div
       *ngFor="let program of programs$ | async"
@@ -25,17 +29,31 @@
         </div>
 
         <!-- Időtartam -->
-        <div class="program-description">Duration: {{ program.durationWeeks }} weeks</div>
+        <div class="program-description">
+          {{ 'userMyPrograms.duration' | translate }}:
+          {{ program.durationWeeks }}
+          {{ 'userMyPrograms.weeks' | translate }}
+        </div>
 
         <!-- Progress -->
         <div class="program-progress">
           <div class="program-progress-label">
-            <span>Napok:</span>
-            <span> {{ program.durationWeeks }} / {{ program.durationWeeks }} </span>
+            <span>
+              {{ 'userMyPrograms.days' | translate }}:
+            </span>
+
+            <span>
+              {{ program.durationWeeks }}
+              /
+              {{ program.durationWeeks }}
+            </span>
           </div>
 
           <div class="program-progress-bar">
-            <div class="program-progress-fill" [style.width.%]="100"></div>
+            <div
+              class="program-progress-fill"
+              [style.width.%]="100"
+            ></div>
           </div>
         </div>
       </div>
@@ -44,5 +62,7 @@
 </ng-container>
 
 <ng-template #noPrograms>
-  <div class="no-programs">Jelenleg nincsenek elérhető programok.</div>
+  <div class="no-programs">
+    {{ 'userMyPrograms.noPrograms' | translate }}
+  </div>
 </ng-template>

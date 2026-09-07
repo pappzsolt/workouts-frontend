@@ -1,14 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+
 import { Program, ProgramDto, ProgramCreationRequest } from '../../../../../models/program.model';
+
+import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
 @Component({
   selector: 'app-coach-program-edit',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './coach-program-edit.component.html',
   styleUrls: ['./coach-program-edit.component.css'],
 })
@@ -33,7 +35,8 @@ export class CoachProgramEditComponent implements OnInit {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
     if (!id) {
-      this.setMessage('Program ID nem található.', 'error');
+      this.setMessage('coachProgramEdit.idNotFound', 'error');
+
       return;
     }
 
@@ -51,21 +54,22 @@ export class CoachProgramEditComponent implements OnInit {
             difficultyLevel: dto.difficultyLevel,
           };
         } else {
-          this.setMessage(`Program with id ${id} not found.`, 'error');
+          this.setMessage(`coachProgramEdit.notFound`, 'error');
         }
       },
 
       error: (err) => {
         console.error(err);
 
-        this.setMessage('Hiba történt a program lekérésekor.', 'error');
+        this.setMessage('coachProgramEdit.loadError', 'error');
       },
     });
   }
 
   saveProgram(): void {
     if (!this.program.id) {
-      this.setMessage('Program ID nem található.', 'error');
+      this.setMessage('coachProgramEdit.idNotFound', 'error');
+
       return;
     }
 
@@ -79,7 +83,7 @@ export class CoachProgramEditComponent implements OnInit {
     this.programService.updateProgram(this.program.id, request).subscribe({
       next: (res) => {
         if (res.success) {
-          this.setMessage('Program sikeresen mentve!', 'success');
+          this.setMessage('coachProgramEdit.saveSuccess', 'success');
 
           setTimeout(() => {
             this.router.navigate(['/coach/dashboard'], {
@@ -89,14 +93,14 @@ export class CoachProgramEditComponent implements OnInit {
             });
           }, 1500);
         } else {
-          this.setMessage(res.message || 'Hiba történt a mentés közben.', 'error');
+          this.setMessage(res.message || 'coachProgramEdit.saveError', 'error');
         }
       },
 
       error: (err) => {
         console.error(err);
 
-        this.setMessage('Hiba történt a program mentésekor.', 'error');
+        this.setMessage('coachProgramEdit.saveError', 'error');
       },
     });
   }

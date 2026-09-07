@@ -1,4 +1,6 @@
-<h2 class="universal-form-title">🏋️ Edit Workout</h2>
+<h2 class="universal-form-title">
+  🏋️ {{ 'coachWorkoutEdit.title' | translate }}
+</h2>
 
 <!-- ====================================================== -->
 <!-- ÜZENET -->
@@ -12,7 +14,7 @@
     'universal-form-message-error': messageType === 'error',
   }"
 >
-  {{ message }}
+  {{ message | translate }}
 </div>
 
 <!-- ====================================================== -->
@@ -24,13 +26,22 @@
     <span class="form-header-emoji"> 💪 </span>
   </div>
 
-  <form (ngSubmit)="saveWorkout()" #workoutForm="ngForm" class="universal-form">
+  <form
+    (ngSubmit)="saveWorkout()"
+    #workoutForm="ngForm"
+    class="universal-form"
+  >
     <!-- ================================================== -->
     <!-- NAME -->
     <!-- ================================================== -->
 
     <div class="universal-form-group-full">
-      <label for="workoutName" class="universal-form-label"> Workout Name </label>
+      <label
+        for="workoutName"
+        class="universal-form-label"
+      >
+        {{ 'coachWorkoutEdit.workoutName' | translate }}
+      </label>
 
       <input
         id="workoutName"
@@ -47,7 +58,12 @@
     <!-- ================================================== -->
 
     <div class="universal-form-group-full">
-      <label for="description" class="universal-form-label"> Description </label>
+      <label
+        for="description"
+        class="universal-form-label"
+      >
+        {{ 'coachWorkoutEdit.description' | translate }}
+      </label>
 
       <textarea
         id="description"
@@ -63,7 +79,12 @@
     <!-- ================================================== -->
 
     <div class="universal-form-group">
-      <label for="workoutDate" class="universal-form-label"> Workout Date </label>
+      <label
+        for="workoutDate"
+        class="universal-form-label"
+      >
+        {{ 'coachWorkoutEdit.workoutDate' | translate }}
+      </label>
 
       <input
         id="workoutDate"
@@ -80,7 +101,12 @@
     <!-- ================================================== -->
 
     <div class="universal-form-group">
-      <label for="durationMinutes" class="universal-form-label"> Duration (minutes) </label>
+      <label
+        for="durationMinutes"
+        class="universal-form-label"
+      >
+        {{ 'coachWorkoutEdit.duration' | translate }}
+      </label>
 
       <input
         id="durationMinutes"
@@ -97,7 +123,12 @@
     <!-- ================================================== -->
 
     <div class="universal-form-group">
-      <label for="intensityLevel" class="universal-form-label"> Intensity Level </label>
+      <label
+        for="intensityLevel"
+        class="universal-form-label"
+      >
+        {{ 'coachWorkoutEdit.intensityLevel' | translate }}
+      </label>
 
       <select
         id="intensityLevel"
@@ -105,13 +136,21 @@
         [(ngModel)]="workout.intensityLevel"
         class="universal-form-select"
       >
-        <option value="">-- Select Intensity --</option>
+        <option value="">
+          {{ 'coachWorkoutEdit.selectIntensity' | translate }}
+        </option>
 
-        <option value="low">Low</option>
+        <option value="low">
+          {{ 'coachWorkoutEdit.low' | translate }}
+        </option>
 
-        <option value="moderate">Moderate</option>
+        <option value="moderate">
+          {{ 'coachWorkoutEdit.moderate' | translate }}
+        </option>
 
-        <option value="high">High</option>
+        <option value="high">
+          {{ 'coachWorkoutEdit.high' | translate }}
+        </option>
       </select>
     </div>
 
@@ -128,7 +167,12 @@
         class="form-checkbox"
       />
 
-      <label for="done" class="universal-form-label checkbox-label"> Workout Completed </label>
+      <label
+        for="done"
+        class="universal-form-label checkbox-label"
+      >
+        {{ 'coachWorkoutEdit.completed' | translate }}
+      </label>
     </div>
 
     <!-- ================================================== -->
@@ -142,9 +186,13 @@
 
       <div class="exercise-section-header">
         <div>
-          <h3>🏋️ Exercises</h3>
+          <h3>
+            🏋️ {{ 'coachWorkoutEdit.exercises' | translate }}
+          </h3>
 
-          <p>Search for an exercise and add it to this workout.</p>
+          <p>
+            {{ 'coachWorkoutEdit.exercisesDescription' | translate }}
+          </p>
         </div>
       </div>
 
@@ -152,35 +200,55 @@
       <!-- PROGRAMHOZ ZÁROLT WORKOUT -->
       <!-- ================================================== -->
 
-      <div *ngIf="checkingProgramAssignment" class="exercise-info-message">
+      <div
+        *ngIf="checkingProgramAssignment"
+        class="exercise-info-message"
+      >
         <span class="exercise-info-icon"> ⏳ </span>
 
-        <span> Workout állapotának ellenőrzése... </span>
+        <span>
+          {{ 'coachWorkoutEdit.checkingAssignment' | translate }}
+        </span>
       </div>
 
       <div
-        *ngIf="!checkingProgramAssignment && workoutAssignedToProgram"
+        *ngIf="
+          !checkingProgramAssignment &&
+          workoutAssignedToProgram
+        "
         class="exercise-info-message"
       >
         <span class="exercise-info-icon"> 🔒 </span>
 
-        <span> Ez a workout már programhoz van rendelve, ezért új exercise nem adható hozzá. </span>
+        <span>
+          {{ 'coachWorkoutEdit.workoutAssigned' | translate }}
+        </span>
       </div>
 
       <!-- ================================================== -->
       <!-- EXERCISE HOZZÁADÁS -->
       <!-- ================================================== -->
 
-      <div *ngIf="!checkingProgramAssignment && !workoutAssignedToProgram" class="exercise-add-box">
+      <div
+        *ngIf="
+          !checkingProgramAssignment &&
+          !workoutAssignedToProgram
+        "
+        class="exercise-add-box"
+      >
         <!-- HEADER -->
 
         <div class="exercise-add-title">
           <span class="exercise-add-icon"> ➕ </span>
 
           <div>
-            <strong> Add Exercise </strong>
+            <strong>
+              {{ 'coachWorkoutEdit.addExercise' | translate }}
+            </strong>
 
-            <small> Search by exercise name. </small>
+            <small>
+              {{ 'coachWorkoutEdit.addExerciseDescription' | translate }}
+            </small>
           </div>
         </div>
 
@@ -189,7 +257,12 @@
         <!-- ================================================== -->
 
         <div class="exercise-search-wrapper">
-          <label for="exerciseSearch" class="universal-form-label"> Search exercise </label>
+          <label
+            for="exerciseSearch"
+            class="universal-form-label"
+          >
+            {{ 'coachWorkoutEdit.searchExercise' | translate }}
+          </label>
 
           <div class="exercise-search-input-wrapper">
             <span class="exercise-search-icon"> 🔎 </span>
@@ -200,7 +273,7 @@
               name="exerciseSearchTerm"
               [(ngModel)]="exerciseSearchTerm"
               class="universal-form-input exercise-search-input"
-              placeholder="Search exercise..."
+              [placeholder]="'coachWorkoutEdit.searchExercisePlaceholder' | translate"
               autocomplete="off"
             />
 
@@ -208,8 +281,11 @@
               *ngIf="exerciseSearchTerm"
               type="button"
               class="exercise-search-clear"
-              aria-label="Clear search"
-              (click)="exerciseSearchTerm = ''; selectedExerciseId = null"
+              [attr.aria-label]="'coachWorkoutEdit.clearSearch' | translate"
+              (click)="
+                exerciseSearchTerm = '';
+                selectedExerciseId = null
+              "
             >
               ✕
             </button>
@@ -224,10 +300,15 @@
           <!-- TALÁLATOK FEJLÉCE -->
 
           <div
-            *ngIf="!loadingExercises && availableExercises.length > 0"
+            *ngIf="
+              !loadingExercises &&
+              availableExercises.length > 0
+            "
             class="exercise-results-header"
           >
-            <span> Exercises </span>
+            <span>
+              {{ 'coachWorkoutEdit.exercises' | translate }}
+            </span>
 
             <span class="exercise-results-count">
               {{ availableExercises.length }}
@@ -239,24 +320,37 @@
           <!-- ================================================== -->
 
           <div
-            *ngIf="!loadingExercises && availableExercises.length > 0"
+            *ngIf="
+              !loadingExercises &&
+              availableExercises.length > 0
+            "
             class="exercise-results-list"
           >
             <button
               type="button"
-              *ngFor="let exercise of availableExercises"
+              *ngFor="
+                let exercise of availableExercises
+              "
               class="exercise-result-item"
-              [class.exercise-result-selected]="selectedExerciseId === exercise.id"
+              [class.exercise-result-selected]="
+                selectedExerciseId === exercise.id
+              "
               (click)="selectExercise(exercise.id)"
             >
-              <span class="exercise-result-icon"> 🏋️ </span>
+              <span class="exercise-result-icon">
+                🏋️
+              </span>
 
               <span class="exercise-result-name">
                 {{ exercise.name }}
               </span>
 
               <span class="exercise-result-action">
-                {{ selectedExerciseId === exercise.id ? '✓' : '+' }}
+                {{
+                  selectedExerciseId === exercise.id
+                    ? '✓'
+                    : '+'
+                }}
               </span>
             </button>
           </div>
@@ -265,10 +359,15 @@
           <!-- LOADING -->
           <!-- ================================================== -->
 
-          <div *ngIf="loadingExercises" class="exercise-info-message exercise-loading">
+          <div
+            *ngIf="loadingExercises"
+            class="exercise-info-message exercise-loading"
+          >
             <span class="exercise-loading-spinner"></span>
 
-            <span> Exercise-ek betöltése... </span>
+            <span>
+              {{ 'coachWorkoutEdit.loadingExercises' | translate }}
+            </span>
           </div>
 
           <!-- ================================================== -->
@@ -287,9 +386,11 @@
             <span class="exercise-info-icon"> 🔎 </span>
 
             <span>
-              Nincs találat erre:
+              {{ 'coachWorkoutEdit.noSearchResults' | translate }}
 
-              <strong> "{{ exerciseSearchTerm }}" </strong>
+              <strong>
+                "{{ exerciseSearchTerm }}"
+              </strong>
             </span>
           </div>
 
@@ -308,7 +409,9 @@
           >
             <span class="exercise-info-icon"> ✓ </span>
 
-            <span> Minden elérhető exercise hozzá van adva ehhez a workouthoz. </span>
+            <span>
+              {{ 'coachWorkoutEdit.allExercisesAdded' | translate }}
+            </span>
           </div>
         </div>
 
@@ -316,12 +419,19 @@
         <!-- KIVÁLASZTOTT EXERCISE -->
         <!-- ================================================== -->
 
-        <div *ngIf="selectedExerciseId !== null" class="selected-exercise-preview">
+        <div
+          *ngIf="selectedExerciseId !== null"
+          class="selected-exercise-preview"
+        >
           <div class="selected-exercise-preview-info">
-            <span class="selected-exercise-preview-icon"> ✓ </span>
+            <span class="selected-exercise-preview-icon">
+              ✓
+            </span>
 
             <div>
-              <small> Selected exercise </small>
+              <small>
+                {{ 'coachWorkoutEdit.selectedExercise' | translate }}
+              </small>
 
               <strong>
                 {{ getSelectedExerciseName() }}
@@ -341,10 +451,16 @@
             "
             (click)="addExerciseToWorkout()"
           >
-            <span *ngIf="!addingExercise"> ➕ </span>
+            <span *ngIf="!addingExercise">
+              ➕
+            </span>
 
             <span>
-              {{ addingExercise ? 'Adding...' : 'Add Exercise' }}
+              {{
+                addingExercise
+                  ? ('coachWorkoutEdit.adding' | translate)
+                  : ('coachWorkoutEdit.addExercise' | translate)
+              }}
             </span>
           </button>
         </div>
@@ -357,9 +473,13 @@
       <div class="existing-exercises">
         <div class="existing-exercises-header">
           <div>
-            <h4>Current Exercises</h4>
+            <h4>
+              {{ 'coachWorkoutEdit.currentExercises' | translate }}
+            </h4>
 
-            <p>Exercises currently assigned to this workout.</p>
+            <p>
+              {{ 'coachWorkoutEdit.currentExercisesDescription' | translate }}
+            </p>
           </div>
 
           <span class="exercise-count">
@@ -369,23 +489,40 @@
 
         <!-- NINCS EXERCISE -->
 
-        <div *ngIf="workoutExercises.length === 0" class="exercise-empty-state">
-          <span class="exercise-empty-icon"> 🏋️ </span>
+        <div
+          *ngIf="workoutExercises.length === 0"
+          class="exercise-empty-state"
+        >
+          <span class="exercise-empty-icon">
+            🏋️
+          </span>
 
-          <strong> No exercises yet </strong>
+          <strong>
+            {{ 'coachWorkoutEdit.noExercisesYet' | translate }}
+          </strong>
 
-          <span *ngIf="!workoutAssignedToProgram"> Search for an exercise above to add it. </span>
+          <span *ngIf="!workoutAssignedToProgram">
+            {{ 'coachWorkoutEdit.searchToAdd' | translate }}
+          </span>
 
-          <span *ngIf="workoutAssignedToProgram"> This workout is assigned to a program. </span>
+          <span *ngIf="workoutAssignedToProgram">
+            {{ 'coachWorkoutEdit.assignedToProgram' | translate }}
+          </span>
         </div>
 
         <!-- ================================================== -->
         <!-- EXERCISE LISTA -->
         <!-- ================================================== -->
 
-        <div *ngIf="workoutExercises.length > 0" class="existing-exercise-list">
+        <div
+          *ngIf="workoutExercises.length > 0"
+          class="existing-exercise-list"
+        >
           <div
-            *ngFor="let workoutExercise of workoutExercises; let i = index"
+            *ngFor="
+              let workoutExercise of workoutExercises;
+              let i = index
+            "
             class="existing-exercise-item"
           >
             <div class="existing-exercise-number">
@@ -394,11 +531,17 @@
 
             <div class="existing-exercise-content">
               <strong>
-                {{ workoutExercise.exercise?.name || workoutExercise.name || 'Exercise' }}
+                {{
+                  workoutExercise.exercise?.name ||
+                  workoutExercise.name ||
+                  ('coachWorkoutEdit.exercise' | translate)
+                }}
               </strong>
             </div>
 
-            <div class="existing-exercise-check">✓</div>
+            <div class="existing-exercise-check">
+              ✓
+            </div>
           </div>
         </div>
       </div>
@@ -409,11 +552,21 @@
     <!-- ================================================== -->
 
     <div class="form-buttons">
-      <button type="submit" [disabled]="!workoutForm.form.valid" class="universal-form-button">
-        💾 Save
+      <button
+        type="submit"
+        [disabled]="!workoutForm.form.valid"
+        class="universal-form-button"
+      >
+        💾 {{ 'coachWorkoutEdit.save' | translate }}
       </button>
 
-      <button type="button" (click)="cancelEdit()" class="cancel-button">❌ Cancel</button>
+      <button
+        type="button"
+        (click)="cancelEdit()"
+        class="cancel-button"
+      >
+        ❌ {{ 'coachWorkoutEdit.cancel' | translate }}
+      </button>
     </div>
   </form>
 </div>

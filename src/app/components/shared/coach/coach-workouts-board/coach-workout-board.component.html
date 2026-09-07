@@ -1,7 +1,15 @@
-<div *ngIf="loading" class="text-gray-500 p-4 text-center">Betöltés...</div>
+<div
+  *ngIf="loading"
+  class="text-gray-500 p-4 text-center"
+>
+  {{ 'coachWorkoutBoard.loading' | translate }}
+</div>
 
-<div *ngIf="message && !loading" class="text-gray-500 p-4 text-center">
-  {{ message }}
+<div
+  *ngIf="message && !loading"
+  class="text-gray-500 p-4 text-center"
+>
+  {{ message | translate }}
 </div>
 
 <div
@@ -20,10 +28,20 @@
       class="mr-2"
     />
 
-    <p class="text-xs text-gray-600 text-center mb-2 line-clamp-2">
-      {{ workout.name || 'Nincs név' }}
+    <p
+      class="text-xs text-gray-600 text-center mb-2 line-clamp-2"
+    >
+      {{
+        workout.name ||
+        ('coachWorkoutBoard.noName' | translate)
+      }}
     </p>
 
-    <div class="text-[11px] text-gray-500 text-center italic mb-2">ID: {{ workout.id }}</div>
+    <div
+      class="text-[11px] text-gray-500 text-center italic mb-2"
+    >
+      {{ 'coachWorkoutBoard.id' | translate }}:
+      {{ workout.id }}
+    </div>
   </div>
 </div>

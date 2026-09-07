@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 
 import { UserExerciseDetailService } from '../../../../../services/user/user-exercises-detail/user-exercises-detail.service';
@@ -9,10 +8,12 @@ import {
   UserWorkoutExerciseSetDto,
 } from '../../../../../models/user-workout-exercise-detail.dto';
 
+import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
+
 @Component({
   selector: 'app-user-exercise-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './user-exercises-detail.component.html',
   styleUrls: ['./user-exercises-detail.component.css'],
 })

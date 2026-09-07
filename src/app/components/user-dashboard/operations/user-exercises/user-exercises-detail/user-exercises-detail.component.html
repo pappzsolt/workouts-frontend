@@ -1,27 +1,49 @@
 <!-- Exercise Detail -->
-<div *ngIf="workoutExercise; else noExercise" class="min-h-screen bg-gray-100 pb-6">
+<div
+  *ngIf="workoutExercise; else noExercise"
+  class="min-h-screen bg-gray-100 pb-6"
+>
   <!-- Header -->
-  <div class="bg-white border-b border-gray-200 px-4 py-4 sticky top-0 z-10">
+  <div
+    class="bg-white border-b border-gray-200 px-4 py-4 sticky top-0 z-10"
+  >
     <div class="max-w-xl mx-auto">
-      <div class="text-xs uppercase tracking-wide text-gray-500 mb-1">Exercise</div>
+      <div
+        class="text-xs uppercase tracking-wide text-gray-500 mb-1"
+      >
+        {{ 'userExerciseDetail.exercise' | translate }}
+      </div>
 
-      <h2 class="text-2xl font-bold text-gray-900 leading-tight">
+      <h2
+        class="text-2xl font-bold text-gray-900 leading-tight"
+      >
         {{ workoutExercise.exercise.name || 'N/A' }}
       </h2>
 
       <div class="mt-2 text-sm text-gray-500">
-        {{ workoutExercise.sets }} sets · {{ workoutExercise.repetitions }} reps
+        {{ workoutExercise.sets }}
+        {{ 'userExerciseDetail.sets' | translate }}
+        ·
+        {{ workoutExercise.repetitions }}
+        {{ 'userExerciseDetail.reps' | translate }}
       </div>
     </div>
   </div>
 
-  <div class="max-w-xl mx-auto px-3 sm:px-4 py-4 space-y-4">
+  <div
+    class="max-w-xl mx-auto px-3 sm:px-4 py-4 space-y-4"
+  >
     <!-- Exercise information -->
     <div class="bg-white rounded-2xl shadow-sm p-4">
       <!-- Description -->
-      <div *ngIf="workoutExercise.exercise.description" class="mb-4">
-        <div class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
-          Description
+      <div
+        *ngIf="workoutExercise.exercise.description"
+        class="mb-4"
+      >
+        <div
+          class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1"
+        >
+          {{ 'userExerciseDetail.description' | translate }}
         </div>
 
         <p class="text-gray-800 leading-relaxed">
@@ -31,32 +53,52 @@
 
       <!-- Exercise properties -->
       <div class="grid grid-cols-2 gap-3 text-sm">
-        <div *ngIf="workoutExercise.exercise.muscleGroup" class="bg-gray-50 rounded-xl p-3">
-          <div class="text-xs text-gray-500 mb-1">Muscle</div>
+        <div
+          *ngIf="workoutExercise.exercise.muscleGroup"
+          class="bg-gray-50 rounded-xl p-3"
+        >
+          <div class="text-xs text-gray-500 mb-1">
+            {{ 'userExerciseDetail.muscle' | translate }}
+          </div>
 
           <div class="font-semibold text-gray-900">
             {{ workoutExercise.exercise.muscleGroup }}
           </div>
         </div>
 
-        <div *ngIf="workoutExercise.exercise.equipment" class="bg-gray-50 rounded-xl p-3">
-          <div class="text-xs text-gray-500 mb-1">Equipment</div>
+        <div
+          *ngIf="workoutExercise.exercise.equipment"
+          class="bg-gray-50 rounded-xl p-3"
+        >
+          <div class="text-xs text-gray-500 mb-1">
+            {{ 'userExerciseDetail.equipment' | translate }}
+          </div>
 
           <div class="font-semibold text-gray-900">
             {{ workoutExercise.exercise.equipment }}
           </div>
         </div>
 
-        <div *ngIf="workoutExercise.exercise.difficultyLevel" class="bg-gray-50 rounded-xl p-3">
-          <div class="text-xs text-gray-500 mb-1">Difficulty</div>
+        <div
+          *ngIf="workoutExercise.exercise.difficultyLevel"
+          class="bg-gray-50 rounded-xl p-3"
+        >
+          <div class="text-xs text-gray-500 mb-1">
+            {{ 'userExerciseDetail.difficulty' | translate }}
+          </div>
 
           <div class="font-semibold text-gray-900">
             {{ workoutExercise.exercise.difficultyLevel }}
           </div>
         </div>
 
-        <div *ngIf="workoutExercise.exercise.category" class="bg-gray-50 rounded-xl p-3">
-          <div class="text-xs text-gray-500 mb-1">Category</div>
+        <div
+          *ngIf="workoutExercise.exercise.category"
+          class="bg-gray-50 rounded-xl p-3"
+        >
+          <div class="text-xs text-gray-500 mb-1">
+            {{ 'userExerciseDetail.category' | translate }}
+          </div>
 
           <div class="font-semibold text-gray-900">
             {{ workoutExercise.exercise.category }}
@@ -64,10 +106,14 @@
         </div>
 
         <div
-          *ngIf="workoutExercise.exercise.caloriesBurnedPerMinute != null"
+          *ngIf="
+            workoutExercise.exercise.caloriesBurnedPerMinute != null
+          "
           class="bg-gray-50 rounded-xl p-3"
         >
-          <div class="text-xs text-gray-500 mb-1">Calories / min</div>
+          <div class="text-xs text-gray-500 mb-1">
+            {{ 'userExerciseDetail.caloriesPerMinute' | translate }}
+          </div>
 
           <div class="font-semibold text-gray-900">
             {{ workoutExercise.exercise.caloriesBurnedPerMinute }}
@@ -78,10 +124,13 @@
           *ngIf="workoutExercise.exercise.durationSeconds != null"
           class="bg-gray-50 rounded-xl p-3"
         >
-          <div class="text-xs text-gray-500 mb-1">Duration</div>
+          <div class="text-xs text-gray-500 mb-1">
+            {{ 'userExerciseDetail.duration' | translate }}
+          </div>
 
           <div class="font-semibold text-gray-900">
-            {{ workoutExercise.exercise.durationSeconds }} sec
+            {{ workoutExercise.exercise.durationSeconds }}
+            {{ 'userExerciseDetail.seconds' | translate }}
           </div>
         </div>
       </div>
@@ -90,18 +139,28 @@
     <!-- Sets -->
     <div class="bg-white rounded-2xl shadow-sm p-4">
       <div class="flex items-center justify-between mb-4">
-        <h3 class="text-xl font-bold text-gray-900">Sets</h3>
+        <h3 class="text-xl font-bold text-gray-900">
+          {{ 'userExerciseDetail.sets' | translate }}
+        </h3>
 
         <div class="text-sm text-gray-500">
           {{ workoutExercise.userWorkoutExerciseSets?.length || 0 }}
-          total
+          {{ 'userExerciseDetail.total' | translate }}
         </div>
       </div>
 
-      <div *ngIf="workoutExercise.userWorkoutExerciseSets?.length; else noSets" class="space-y-3">
+      <div
+        *ngIf="
+          workoutExercise.userWorkoutExerciseSets?.length;
+          else noSets
+        "
+        class="space-y-3"
+      >
         <!-- SET -->
         <div
-          *ngFor="let set of workoutExercise.userWorkoutExerciseSets"
+          *ngFor="
+            let set of workoutExercise.userWorkoutExerciseSets
+          "
           class="rounded-2xl border-2 p-4 transition-all"
           [ngClass]="{
             'border-green-500 bg-green-50': set.completed,
@@ -112,7 +171,11 @@
           <div class="flex items-center justify-between">
             <!-- Set number -->
             <div>
-              <div class="text-xs uppercase tracking-wide text-gray-500">Set</div>
+              <div
+                class="text-xs uppercase tracking-wide text-gray-500"
+              >
+                {{ 'userExerciseDetail.set' | translate }}
+              </div>
 
               <div
                 class="text-2xl font-bold"
@@ -126,7 +189,9 @@
             </div>
 
             <!-- DONE button area -->
-            <label class="flex items-center justify-center cursor-pointer select-none">
+            <label
+              class="flex items-center justify-center cursor-pointer select-none"
+            >
               <input
                 type="checkbox"
                 class="sr-only"
@@ -138,13 +203,19 @@
                 class="min-w-[110px] min-h-[52px] px-4 rounded-xl flex items-center justify-center gap-2 font-bold text-base transition-all active:scale-95"
                 [ngClass]="{
                   'bg-green-600 text-white': set.completed,
-                  'bg-white text-gray-700 border-2 border-gray-300': !set.completed,
+                  'bg-white text-gray-700 border-2 border-gray-300':
+                    !set.completed,
                 }"
               >
-                <span *ngIf="set.completed" class="text-xl"> ✓ </span>
+                <span
+                  *ngIf="set.completed"
+                  class="text-xl"
+                >
+                  ✓
+                </span>
 
                 <span>
-                  {{ set.completed ? 'DONE' : 'DONE' }}
+                  {{ 'userExerciseDetail.done' | translate }}
                 </span>
               </div>
             </label>
@@ -153,25 +224,41 @@
           <!-- Target values -->
           <div class="grid grid-cols-2 gap-3 mt-4">
             <!-- Reps -->
-            <div class="bg-white rounded-xl p-3 border border-gray-200">
-              <div class="text-xs text-gray-500 mb-1">Repetitions</div>
+            <div
+              class="bg-white rounded-xl p-3 border border-gray-200"
+            >
+              <div class="text-xs text-gray-500 mb-1">
+                {{ 'userExerciseDetail.repetitions' | translate }}
+              </div>
 
-              <div class="text-xl font-bold text-gray-900">
+              <div
+                class="text-xl font-bold text-gray-900"
+              >
                 {{ set.targetRepetitions ?? '-' }}
               </div>
 
-              <div class="text-xs text-gray-500">reps</div>
+              <div class="text-xs text-gray-500">
+                {{ 'userExerciseDetail.reps' | translate }}
+              </div>
             </div>
 
             <!-- Weight -->
-            <div class="bg-white rounded-xl p-3 border border-gray-200">
-              <div class="text-xs text-gray-500 mb-1">Weight</div>
+            <div
+              class="bg-white rounded-xl p-3 border border-gray-200"
+            >
+              <div class="text-xs text-gray-500 mb-1">
+                {{ 'userExerciseDetail.weight' | translate }}
+              </div>
 
-              <div class="text-xl font-bold text-gray-900">
+              <div
+                class="text-xl font-bold text-gray-900"
+              >
                 {{ set.targetWeightKg ?? '-' }}
               </div>
 
-              <div class="text-xs text-gray-500">kg</div>
+              <div class="text-xs text-gray-500">
+                kg
+              </div>
             </div>
           </div>
 
@@ -183,7 +270,12 @@
               'text-gray-500': !set.completed,
             }"
           >
-            {{ set.completed ? 'Set completed ✓' : 'Tap DONE when finished' }}
+            {{
+              set.completed
+                ? ('userExerciseDetail.setCompleted' | translate)
+                : ('userExerciseDetail.tapDone' | translate)
+            }}
+            {{ set.completed ? '✓' : '' }}
           </div>
         </div>
       </div>
@@ -193,20 +285,38 @@
     <div
       class="rounded-2xl p-5 text-center border-2"
       [ngClass]="{
-        'bg-green-50 border-green-500 text-green-700': workoutExercise.done,
-        'bg-white border-gray-200 text-gray-600': !workoutExercise.done,
+        'bg-green-50 border-green-500 text-green-700':
+          workoutExercise.done,
+        'bg-white border-gray-200 text-gray-600':
+          !workoutExercise.done,
       }"
     >
-      <div class="text-sm uppercase tracking-wide mb-1">Exercise status</div>
+      <div
+        class="text-sm uppercase tracking-wide mb-1"
+      >
+        {{ 'userExerciseDetail.exerciseStatus' | translate }}
+      </div>
 
       <div class="text-xl font-bold">
-        {{ workoutExercise.done ? 'Completed ✅' : 'In progress ⏳' }}
+        {{
+          workoutExercise.done
+            ? ('userExerciseDetail.completed' | translate)
+            : ('userExerciseDetail.inProgress' | translate)
+        }}
+        {{ workoutExercise.done ? '✅' : '⏳' }}
       </div>
     </div>
 
     <!-- Image -->
-    <div *ngIf="workoutExercise.exercise.imageUrl" class="bg-white rounded-2xl shadow-sm p-4">
-      <div class="text-sm font-semibold text-gray-700 mb-3">Exercise image</div>
+    <div
+      *ngIf="workoutExercise.exercise.imageUrl"
+      class="bg-white rounded-2xl shadow-sm p-4"
+    >
+      <div
+        class="text-sm font-semibold text-gray-700 mb-3"
+      >
+        {{ 'userExerciseDetail.exerciseImage' | translate }}
+      </div>
 
       <img
         [src]="workoutExercise.exercise.imageUrl"
@@ -216,8 +326,15 @@
     </div>
 
     <!-- Video -->
-    <div *ngIf="workoutExercise.exercise.videoUrl" class="bg-white rounded-2xl shadow-sm p-4">
-      <div class="text-sm font-semibold text-gray-700 mb-3">Exercise video</div>
+    <div
+      *ngIf="workoutExercise.exercise.videoUrl"
+      class="bg-white rounded-2xl shadow-sm p-4"
+    >
+      <div
+        class="text-sm font-semibold text-gray-700 mb-3"
+      >
+        {{ 'userExerciseDetail.exerciseVideo' | translate }}
+      </div>
 
       <video
         [src]="workoutExercise.exercise.videoUrl"
@@ -231,14 +348,22 @@
 
 <!-- No sets -->
 <ng-template #noSets>
-  <div class="py-8 text-center text-gray-500">Nincsenek sorozatok ehhez a gyakorlathoz.</div>
+  <div
+    class="py-8 text-center text-gray-500"
+  >
+    {{ 'userExerciseDetail.noSets' | translate }}
+  </div>
 </ng-template>
 
 <!-- No exercise -->
 <ng-template #noExercise>
-  <div class="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-sm p-8 text-center text-gray-600 w-full max-w-md">
-      Nincs ilyen gyakorlat.
+  <div
+    class="min-h-screen bg-gray-100 flex items-center justify-center p-4"
+  >
+    <div
+      class="bg-white rounded-2xl shadow-sm p-8 text-center text-gray-600 w-full max-w-md"
+    >
+      {{ 'userExerciseDetail.noExercise' | translate }}
     </div>
   </div>
 </ng-template>
