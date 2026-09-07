@@ -1,8 +1,12 @@
 <div class="page-container">
-  <h2 class="page-title">Edző módosítása</h2>
+  <h2 class="page-title">
+    {{ 'adminCoachEdit.title' | translate }}
+  </h2>
 
   <!-- Üzenetek -->
-  <div *ngIf="loading" class="loading-message">Betöltés folyamatban...</div>
+  <div *ngIf="loading" class="loading-message">
+    {{ 'common.loading' | translate }}
+  </div>
 
   <div *ngIf="message" class="success-message">
     {{ message }}
@@ -14,7 +18,9 @@
 
   <!-- Coach select -->
   <div class="coach-select-container">
-    <label class="form-label" for="coachSelect"> Válassz edzőt </label>
+    <label class="form-label" for="coachSelect">
+      {{ 'adminCoachEdit.selectCoach' | translate }}
+    </label>
 
     <select
       id="coachSelect"
@@ -22,9 +28,16 @@
       (change)="onSelectCoach()"
       class="form-control"
     >
-      <option [ngValue]="null">-- Válassz edzőt --</option>
+      <option [ngValue]="null">
+        -- {{ 'adminCoachEdit.selectCoach' | translate }} --
+      </option>
 
-      <option *ngFor="let c of coaches" [ngValue]="c.id">{{ c.name }} ({{ c.email }})</option>
+      <option
+        *ngFor="let c of coaches"
+        [ngValue]="c.id"
+      >
+        {{ c.name }} ({{ c.email }})
+      </option>
     </select>
   </div>
 
@@ -32,13 +45,15 @@
   <form class="coach-form" (ngSubmit)="onSave()">
     <!-- Name -->
     <div class="form-group">
-      <label class="form-label" for="name">Név</label>
+      <label class="form-label" for="name">
+        {{ 'common.name' | translate }}
+      </label>
 
       <input
         id="name"
         name="name"
         type="text"
-        placeholder="Név"
+        [placeholder]="'common.name' | translate"
         [(ngModel)]="selectedCoach.name"
         class="form-control"
       />
@@ -46,13 +61,15 @@
 
     <!-- Email -->
     <div class="form-group">
-      <label class="form-label" for="email">Email</label>
+      <label class="form-label" for="email">
+        {{ 'common.email' | translate }}
+      </label>
 
       <input
         id="email"
         name="email"
         type="email"
-        placeholder="Email"
+        [placeholder]="'common.email' | translate"
         [(ngModel)]="selectedCoach.email"
         class="form-control"
       />
@@ -60,13 +77,15 @@
 
     <!-- Password -->
     <div class="form-group">
-      <label class="form-label" for="password">Jelszó</label>
+      <label class="form-label" for="password">
+        {{ 'common.password' | translate }}
+      </label>
 
       <input
         id="password"
         name="password"
         type="password"
-        placeholder="Jelszó (hagyd üresen ha nem változik)"
+        [placeholder]="'adminCoachEdit.passwordPlaceholder' | translate"
         [(ngModel)]="selectedCoach.password"
         class="form-control"
       />
@@ -74,13 +93,15 @@
 
     <!-- Phone -->
     <div class="form-group">
-      <label class="form-label" for="phone">Telefon</label>
+      <label class="form-label" for="phone">
+        {{ 'common.phone' | translate }}
+      </label>
 
       <input
         id="phone"
         name="phone"
         type="text"
-        placeholder="Telefon"
+        [placeholder]="'common.phone' | translate"
         [(ngModel)]="selectedCoach.phone"
         class="form-control"
       />
@@ -88,13 +109,15 @@
 
     <!-- Specialization -->
     <div class="form-group full-width">
-      <label class="form-label" for="specialization"> Specializáció </label>
+      <label class="form-label" for="specialization">
+        {{ 'common.specialization' | translate }}
+      </label>
 
       <textarea
         id="specialization"
         name="specialization"
         rows="3"
-        placeholder="Specializáció"
+        [placeholder]="'common.specialization' | translate"
         [(ngModel)]="selectedCoach.specialization"
         class="form-control"
       ></textarea>
@@ -102,7 +125,9 @@
 
     <!-- Avatar URL -->
     <div class="form-group full-width">
-      <label class="form-label" for="avatar_url"> Avatar URL </label>
+      <label class="form-label" for="avatar_url">
+        Avatar URL
+      </label>
 
       <input
         id="avatar_url"
@@ -116,7 +141,9 @@
 
     <!-- Submit Button -->
     <div class="submit-container">
-      <button type="submit" class="save-button">Mentés</button>
+      <button type="submit" class="save-button">
+        {{ 'common.save' | translate }}
+      </button>
     </div>
   </form>
 </div>

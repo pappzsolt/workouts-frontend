@@ -30,7 +30,14 @@
   },
   "common": {
     "previous": "Előző",
-    "next": "Következő"
+    "next": "Következő",
+    "loading": "Betöltés folyamatban...",
+    "name": "Név",
+    "email": "Email",
+    "password": "Jelszó",
+    "phone": "Telefon",
+    "specialization": "Specializáció",
+    "save": "Mentés"
   },
   "adminChoiceEdit": {
     "title": "Bejegyzések módosítása",
@@ -41,5 +48,57 @@
     "title": "Új felhasználó",
     "newCoach": "Új coach",
     "newUser": "Új felhasználó"
+  },
+  "adminCoachEdit": {
+    "title": "Edző módosítása",
+    "selectCoach": "Válassz edzőt",
+    "passwordPlaceholder": "Jelszó (hagyd üresen ha nem változik)",
+    "loadError": "Az edzők betöltése nem sikerült.",
+    "noCoachSelected": "Nincs kiválasztva edző.",
+    "updateSuccess": "Az edző adatai sikeresen frissítve.",
+    "saveError": "Az edző mentése nem sikerült."
+  },
+  "adminCoachNew": {
+    "title": "Új Edző",
+    "nameRequired": "Név megadása kötelező",
+    "validEmailRequired": "Érvényes email cím szükséges",
+    "minimumSixCharacters": "Minimum 6 karakter",
+    "validHungarianPhoneRequired": "Érvényes magyar telefonszám szükséges (+36xxxxxxxxx)",
+    "specialization": "Szakterület",
+    "avatarUrl": "Avatar URL",
+    "avatarImageUrl": "Avatar kép URL",
+    "validationError": "Kérlek töltsd ki az összes kötelező mezőt és adj meg érvényes adatokat.",
+    "createSuccess": "Az edző sikeresen létrejött.",
+    "createError": "Az edző létrehozása nem sikerült.",
+    "createCoach": "Edző létrehozása"
+  },
+  "common": {
+    "previous": "Előző",
+    "next": "Következő",
+    "loading": "Betöltés folyamatban...",
+    "name": "Név",
+    "email": "Email",
+    "password": "Jelszó",
+    "phone": "Telefon",
+    "specialization": "Specializáció",
+    "save": "Mentés",
+    "saving": "Mentés...",
+    "username": "Felhasználónév",
+    "age": "Életkor",
+    "weight": "Testsúly",
+    "height": "Magasság",
+    "gender": "Nem",
+    "goals": "Célok",
+    "unknownError": "Ismeretlen hiba"
+  },
+  "adminUserEdit": {
+    "title": "Felhasználó módosítása",
+    "newPassword": "Új jelszó",
+    "avatarUrl": "Avatar URL",
+    "coach": "Coach",
+    "roles": "Szerepkörök",
+    "updateSuccess": "Felhasználó sikeresen frissítve!",
+    "updateError": "Hiba a frissítés során",
+    "saveError": "Hiba a mentés során"
   }
 }

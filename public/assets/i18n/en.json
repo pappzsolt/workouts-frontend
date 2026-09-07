@@ -30,7 +30,14 @@
   },
   "common": {
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "loading": "Loading...",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "phone": "Phone",
+    "specialization": "Specialization",
+    "save": "Save"
   },
   "adminChoiceEdit": {
     "title": "Edit Entries",
@@ -41,5 +48,57 @@
     "title": "New User",
     "newCoach": "New Coach",
     "newUser": "New User"
+  },
+  "adminCoachEdit": {
+    "title": "Edit Coach",
+    "selectCoach": "Select coach",
+    "passwordPlaceholder": "Password (leave empty if unchanged)",
+    "loadError": "Failed to load coaches.",
+    "noCoachSelected": "No coach selected.",
+    "updateSuccess": "Coach details updated successfully.",
+    "saveError": "Failed to save coach."
+  },
+  "adminCoachNew": {
+    "title": "New Coach",
+    "nameRequired": "Name is required",
+    "validEmailRequired": "A valid email address is required",
+    "minimumSixCharacters": "Minimum 6 characters",
+    "validHungarianPhoneRequired": "A valid Hungarian phone number is required (+36xxxxxxxxx)",
+    "specialization": "Specialization",
+    "avatarUrl": "Avatar URL",
+    "avatarImageUrl": "Avatar image URL",
+    "validationError": "Please fill in all required fields and enter valid data.",
+    "createSuccess": "Coach created successfully.",
+    "createError": "Failed to create coach.",
+    "createCoach": "Create Coach"
+  },
+  "common": {
+    "previous": "Previous",
+    "next": "Next",
+    "loading": "Loading...",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "phone": "Phone",
+    "specialization": "Specialization",
+    "save": "Save",
+    "saving": "Saving...",
+    "username": "Username",
+    "age": "Age",
+    "weight": "Weight",
+    "height": "Height",
+    "gender": "Gender",
+    "goals": "Goals",
+    "unknownError": "Unknown error"
+  },
+  "adminUserEdit": {
+    "title": "Edit User",
+    "newPassword": "New password",
+    "avatarUrl": "Avatar URL",
+    "coach": "Coach",
+    "roles": "Roles",
+    "updateSuccess": "User updated successfully!",
+    "updateError": "Error while updating",
+    "saveError": "Error while saving"
   }
 }

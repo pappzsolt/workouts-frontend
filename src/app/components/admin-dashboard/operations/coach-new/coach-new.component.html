@@ -1,10 +1,18 @@
 <div class="coach-new">
-  <h2 class="coach-new__title">Új Edző</h2>
+  <h2 class="coach-new__title">
+    {{ 'adminCoachNew.title' | translate }}
+  </h2>
 
-  <form #coachForm="ngForm" (ngSubmit)="onSubmit(coachForm)" class="coach-form">
+  <form
+    #coachForm="ngForm"
+    (ngSubmit)="onSubmit(coachForm)"
+    class="coach-form"
+  >
     <!-- Név -->
     <div class="form-field">
-      <label for="name"> Név* </label>
+      <label for="name">
+        {{ 'common.name' | translate }}*
+      </label>
 
       <input
         id="name"
@@ -19,13 +27,15 @@
         *ngIf="nameModel.invalid && (nameModel.dirty || nameModel.touched)"
         class="validation-error"
       >
-        Név megadása kötelező
+        {{ 'adminCoachNew.nameRequired' | translate }}
       </div>
     </div>
 
     <!-- Email -->
     <div class="form-field">
-      <label for="email"> Email* </label>
+      <label for="email">
+        {{ 'common.email' | translate }}*
+      </label>
 
       <input
         id="email"
@@ -41,13 +51,15 @@
         *ngIf="emailModel.invalid && (emailModel.dirty || emailModel.touched)"
         class="validation-error"
       >
-        Érvényes email cím szükséges
+        {{ 'adminCoachNew.validEmailRequired' | translate }}
       </div>
     </div>
 
     <!-- Jelszó -->
     <div class="form-field">
-      <label for="passwordHash"> Jelszó* </label>
+      <label for="passwordHash">
+        {{ 'common.password' | translate }}*
+      </label>
 
       <input
         id="passwordHash"
@@ -60,16 +72,21 @@
       />
 
       <div
-        *ngIf="passwordModel.invalid && (passwordModel.dirty || passwordModel.touched)"
+        *ngIf="
+          passwordModel.invalid &&
+          (passwordModel.dirty || passwordModel.touched)
+        "
         class="validation-error"
       >
-        Minimum 6 karakter
+        {{ 'adminCoachNew.minimumSixCharacters' | translate }}
       </div>
     </div>
 
     <!-- Telefon -->
     <div class="form-field">
-      <label for="phone"> Telefon* </label>
+      <label for="phone">
+        {{ 'common.phone' | translate }}*
+      </label>
 
       <input
         id="phone"
@@ -85,34 +102,48 @@
         *ngIf="phoneModel.invalid && (phoneModel.dirty || phoneModel.touched)"
         class="validation-error"
       >
-        Érvényes magyar telefonszám szükséges (+36xxxxxxxxx)
+        {{ 'adminCoachNew.validHungarianPhoneRequired' | translate }}
       </div>
     </div>
 
     <!-- Szakterület -->
     <div class="form-field form-field--full">
-      <label for="specialization"> Szakterület </label>
+      <label for="specialization">
+        {{ 'adminCoachNew.specialization' | translate }}
+      </label>
 
       <textarea
         id="specialization"
         name="specialization"
         rows="3"
-        placeholder="Szakterület"
+        [placeholder]="'adminCoachNew.specialization' | translate"
         [(ngModel)]="coach.specialization"
       ></textarea>
     </div>
 
     <!-- Avatar URL -->
     <div class="form-field form-field--full">
-      <label for="avatarUrl"> Avatar URL </label>
+      <label for="avatarUrl">
+        {{ 'adminCoachNew.avatarUrl' | translate }}
+      </label>
 
-      <input id="avatarUrl" name="avatarUrl" type="text" [(ngModel)]="coach.avatarUrl" />
+      <input
+        id="avatarUrl"
+        name="avatarUrl"
+        type="text"
+        [placeholder]="'adminCoachNew.avatarImageUrl' | translate"
+        [(ngModel)]="coach.avatarUrl"
+      />
     </div>
 
     <!-- Submit -->
     <div class="form-actions">
       <button type="submit" [disabled]="loading">
-        {{ loading ? 'Mentés...' : 'Edző létrehozása' }}
+        {{
+          loading
+            ? ('common.saving' | translate)
+            : ('adminCoachNew.createCoach' | translate)
+        }}
       </button>
     </div>
   </form>

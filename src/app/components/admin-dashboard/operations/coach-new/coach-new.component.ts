@@ -1,15 +1,14 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 
 import { CoachNewService } from '../../../../services/admin/coach-new.service';
-
 import { CreateCoachRequest } from '../../../../models/create-coach-request.model';
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
   selector: 'app-coach-new',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './coach-new.component.html',
   styleUrls: ['./coach-new.component.css'],
 })
@@ -27,8 +26,7 @@ export class CoachNewComponent {
    */
   onSubmit(form: NgForm): void {
     if (!form.valid) {
-      this.showError('Kérlek töltsd ki az összes kötelező mezőt és adj meg érvényes adatokat.');
-
+      this.showError('adminCoachNew.validationError');
       return;
     }
 
@@ -40,20 +38,20 @@ export class CoachNewComponent {
         this.loading = false;
 
         if (response.success) {
-          this.showSuccess(response.message || 'Az edző sikeresen létrejött.');
+          this.showSuccess(response.message || 'adminCoachNew.createSuccess');
 
           form.resetForm();
 
           this.coach = this.createEmptyCoach();
         } else {
-          this.showError(response.message || 'Az edző létrehozása nem sikerült.');
+          this.showError(response.message || 'adminCoachNew.createError');
         }
       },
 
       error: (error: Error) => {
         this.loading = false;
 
-        this.showError(error.message || 'Az edző létrehozása nem sikerült.');
+        this.showError(error.message || 'adminCoachNew.createError');
       },
     });
   }

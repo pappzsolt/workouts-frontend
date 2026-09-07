@@ -1,7 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 import { UserSelectComponent } from '../../../../components/shared/user/user-select.component';
 import { CoachSelectComponent } from '../../../shared/coach/coach-select.component';
@@ -14,17 +12,16 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 
 import { User } from '../../../../models/user-profil.model';
-
 import { RawUser, Coach, Role } from '../../../../models/user-edit-model';
-
 import { UserEditService } from '../../../../services/admin/user-edit.service';
+
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
   selector: 'app-user-edit',
   standalone: true,
   imports: [
-    CommonModule,
-    FormsModule,
+    ...SHARED_IMPORTS,
     UserSelectComponent,
     CoachSelectComponent,
     MatFormFieldModule,
@@ -62,6 +59,7 @@ export class UserEditComponent implements OnInit {
   selectedRoles: Role[] = [];
 
   message = '';
+  isError = false;
 
   constructor(
     private userService: UserEditService,
@@ -174,15 +172,18 @@ export class UserEditComponent implements OnInit {
 
       this.userService.updateUser(rawUser, this.selectedUser.roleIds || []).subscribe({
         next: () => {
-          this.message = 'Felhasználó sikeresen frissítve!';
+          this.message = 'adminUserEdit.updateSuccess';
+          this.isError = false;
         },
 
         error: (err) => {
-          this.message = 'Hiba a frissítés során: ' + (err?.message || 'Ismeretlen hiba');
+          this.message = 'adminUserEdit.updateError: ' + (err?.message || 'common.unknownError');
+          this.isError = true;
         },
       });
     } catch (err: any) {
-      this.message = 'Hiba a mentés során: ' + (err?.message || 'Ismeretlen hiba');
+      this.message = 'adminUserEdit.saveError: ' + (err?.message || 'common.unknownError');
+      this.isError = true;
     }
   }
 }

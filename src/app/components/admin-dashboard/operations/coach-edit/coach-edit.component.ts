@@ -1,16 +1,15 @@
 import { Component, OnInit } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
 
 import { CoachEditService } from '../../../../services/admin/coach-edit.service';
 import { Coach } from '../../../../models/coach.model';
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
   selector: 'app-coach-edit',
   standalone: true,
   templateUrl: './coach-edit.component.html',
   styleUrls: ['./coach-edit.component.css'],
-  imports: [CommonModule, FormsModule],
+  imports: [...SHARED_IMPORTS],
   providers: [CoachEditService],
 })
 export class CoachEditComponent implements OnInit {
@@ -70,7 +69,7 @@ export class CoachEditComponent implements OnInit {
       error: (err) => {
         this.loading = false;
 
-        this.error = err?.message ?? 'Az edzők betöltése nem sikerült.';
+        this.error = err?.message ?? 'adminCoachEdit.loadError';
       },
     });
   }
@@ -103,7 +102,7 @@ export class CoachEditComponent implements OnInit {
 
   onSave(): void {
     if (this.selectedCoachId === null) {
-      this.error = 'Nincs kiválasztva edző.';
+      this.error = 'adminCoachEdit.noCoachSelected';
       return;
     }
 
@@ -117,7 +116,7 @@ export class CoachEditComponent implements OnInit {
       next: (updatedCoach) => {
         this.loading = false;
 
-        this.message = 'Az edző adatai sikeresen frissítve.';
+        this.message = 'adminCoachEdit.updateSuccess';
 
         const index = this.coaches.findIndex((coach) => coach.id === this.selectedCoachId);
 
@@ -137,7 +136,7 @@ export class CoachEditComponent implements OnInit {
       error: (err) => {
         this.loading = false;
 
-        this.error = err?.message ?? 'Az edző mentése nem sikerült.';
+        this.error = err?.message ?? 'adminCoachEdit.saveError';
       },
     });
   }

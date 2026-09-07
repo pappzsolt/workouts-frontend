@@ -3,44 +3,71 @@
   *ngIf="message"
   class="message-box"
   [ngClass]="{
-    'message-success': message.includes('sikeresen'),
-    'message-error': message.includes('Hiba'),
+    'message-success': !isError,
+    'message-error': isError,
   }"
 >
-  {{ message }}
+  <ng-container *ngIf="!isError">
+    {{ message | translate }}
+  </ng-container>
+
+  <ng-container *ngIf="isError">
+    {{ message | translate }}
+  </ng-container>
 </div>
 
 <div class="user-edit-container">
-  <h2 class="user-edit-title">Felhasználó módosítása</h2>
+  <h2 class="user-edit-title">
+    {{ 'adminUserEdit.title' | translate }}
+  </h2>
 
   <!-- Felhasználó kiválasztása -->
   <div class="user-select-container">
-    <app-user-select [(selectedUserId)]="selectedUserId" (userSelected)="onUserSelected($event)">
+    <app-user-select
+      [(selectedUserId)]="selectedUserId"
+      (userSelected)="onUserSelected($event)"
+    >
     </app-user-select>
   </div>
 
   <!-- Form -->
   <form (ngSubmit)="onSave()" class="user-edit-form">
     <div class="form-group">
-      <label class="form-label">Username</label>
+      <label class="form-label">
+        {{ 'common.username' | translate }}
+      </label>
 
-      <input type="text" [(ngModel)]="selectedUser.username" name="username" class="form-input" />
+      <input
+        type="text"
+        [(ngModel)]="selectedUser.username"
+        name="username"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
-      <label class="form-label">Email</label>
+      <label class="form-label">
+        {{ 'common.email' | translate }}
+      </label>
 
-      <input type="email" [(ngModel)]="selectedUser.email" name="email" class="form-input" />
+      <input
+        type="email"
+        [(ngModel)]="selectedUser.email"
+        name="email"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
-      <label class="form-label">Password</label>
+      <label class="form-label">
+        {{ 'common.password' | translate }}
+      </label>
 
       <input
         type="password"
         [(ngModel)]="selectedUser.password"
         name="password"
-        placeholder="Új jelszó"
+        [placeholder]="'adminUserEdit.newPassword' | translate"
         class="form-input"
       />
     </div>
@@ -48,13 +75,22 @@
     <!-- Életkor / testsúly / magasság -->
     <div class="physical-data-grid">
       <div class="form-group">
-        <label class="form-label">Age</label>
+        <label class="form-label">
+          {{ 'common.age' | translate }}
+        </label>
 
-        <input type="number" [(ngModel)]="selectedUser.age" name="age" class="form-input" />
+        <input
+          type="number"
+          [(ngModel)]="selectedUser.age"
+          name="age"
+          class="form-input"
+        />
       </div>
 
       <div class="form-group">
-        <label class="form-label">Weight</label>
+        <label class="form-label">
+          {{ 'common.weight' | translate }}
+        </label>
 
         <input
           type="number"
@@ -66,7 +102,9 @@
       </div>
 
       <div class="form-group">
-        <label class="form-label">Height</label>
+        <label class="form-label">
+          {{ 'common.height' | translate }}
+        </label>
 
         <input
           type="number"
@@ -79,27 +117,48 @@
     </div>
 
     <div class="form-group">
-      <label class="form-label">Gender</label>
+      <label class="form-label">
+        {{ 'common.gender' | translate }}
+      </label>
 
-      <input type="text" [(ngModel)]="selectedUser.gender" name="gender" class="form-input" />
+      <input
+        type="text"
+        [(ngModel)]="selectedUser.gender"
+        name="gender"
+        class="form-input"
+      />
     </div>
 
     <div class="form-group">
-      <label class="form-label">Goals</label>
+      <label class="form-label">
+        {{ 'common.goals' | translate }}
+      </label>
 
-      <textarea [(ngModel)]="selectedUser.goals" name="goals" class="form-input form-textarea">
-      </textarea>
+      <textarea
+        [(ngModel)]="selectedUser.goals"
+        name="goals"
+        class="form-input form-textarea"
+      ></textarea>
     </div>
 
     <div class="form-group">
-      <label class="form-label">Avatar URL</label>
+      <label class="form-label">
+        {{ 'adminUserEdit.avatarUrl' | translate }}
+      </label>
 
-      <input type="text" [(ngModel)]="selectedUser.avatarUrl" name="avatarUrl" class="form-input" />
+      <input
+        type="text"
+        [(ngModel)]="selectedUser.avatarUrl"
+        name="avatarUrl"
+        class="form-input"
+      />
     </div>
 
     <!-- Coach -->
     <div class="form-group">
-      <label class="form-label">Coach</label>
+      <label class="form-label">
+        {{ 'adminUserEdit.coach' | translate }}
+      </label>
 
       <app-coach-select
         [selectedCoachId]="selectedCoach?.id"
@@ -110,9 +169,15 @@
 
     <!-- Roles -->
     <mat-form-field appearance="fill" class="roles-field">
-      <mat-label>Roles</mat-label>
+      <mat-label>
+        {{ 'adminUserEdit.roles' | translate }}
+      </mat-label>
 
-      <mat-select multiple [value]="selectedRoles" (selectionChange)="onRoleSelected($event.value)">
+      <mat-select
+        multiple
+        [value]="selectedRoles"
+        (selectionChange)="onRoleSelected($event.value)"
+      >
         <mat-option *ngFor="let role of roles" [value]="role">
           {{ role.name }}
         </mat-option>
@@ -121,7 +186,9 @@
 
     <!-- Mentés -->
     <div class="save-container">
-      <button type="submit" class="save-button">Mentés</button>
+      <button type="submit" class="save-button">
+        {{ 'common.save' | translate }}
+      </button>
     </div>
   </form>
 </div>
