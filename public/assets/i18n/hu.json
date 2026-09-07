@@ -580,5 +580,24 @@
     "close": "Bezárás",
     "exercises": "Gyakorlatok",
     "noExercises": "Ehhez a workouthoz nincs gyakorlat."
+  },
+  "userWorkouts": {
+    "program": "Program",
+    "date": "Dátum",
+    "intensity": "Intenzitás",
+    "completed": "Teljesítve",
+    "notCompleted": "Nincs teljesítve",
+    "pending": "Függőben",
+    "sets": "Sorozatok",
+    "reps": "Ismétlések",
+    "weight": "Súly",
+    "feedback": "Visszajelzés",
+    "notes": "Megjegyzések",
+    "noWorkouts": "Nincsenek workoutok ehhez a programhoz."
+  },
+  "coachProgramBoard": {
+    "loading": "Betöltés...",
+    "loadError": "Programok betöltése sikertelen",
+    "noPrograms": "Nincsenek programok."
   }
 }

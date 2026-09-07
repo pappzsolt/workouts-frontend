@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   UserWorkoutsService,
   Workout,
 } from '../../../../services/user/user-workouts/user-workouts.service';
 import { Observable, map } from 'rxjs';
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
   standalone: true,
   selector: 'app-workouts',
-  imports: [CommonModule],
+  imports: [...SHARED_IMPORTS],
   styleUrl: './workouts.component.css',
   templateUrl: './workouts.component.html',
 })
@@ -32,7 +32,7 @@ export class WorkoutsComponent implements OnInit {
     // A program neve a navigation state-ből érkezik.
     const navState = window.history.state;
 
-    this.programName = navState.programName || 'Unknown Program';
+    this.programName = navState.programName || '';
 
     this.workouts$ = this.workoutsService.getWorkoutsByProgram(this.programId).pipe(
       map((workouts) =>

@@ -1,4 +1,6 @@
-<h2 class="workouts-title">Program: {{ programName }}</h2>
+<h2 class="workouts-title">
+  {{ 'userWorkouts.program' | translate }}: {{ programName }}
+</h2>
 
 <!-- Workouts lista -->
 <ng-container *ngIf="(workouts$ | async)?.length; else noWorkouts">
@@ -24,24 +26,33 @@
         </div>
 
         <div class="workout-meta">
-          Date: {{ workout.workoutDate | date: 'yyyy.MM.dd' }} – Intensity:
+          {{ 'userWorkouts.date' | translate }}:
+          {{ workout.workoutDate | date: 'yyyy.MM.dd' }}
+          –
+          {{ 'userWorkouts.intensity' | translate }}:
           {{ workout.intensityLevel }}
         </div>
 
         <!-- Teljesítési státusz -->
-        <div *ngIf="workout.completed" class="workout-status workout-status-completed">
-          Completed ✅
+        <div
+          *ngIf="workout.completed"
+          class="workout-status workout-status-completed"
+        >
+          {{ 'userWorkouts.completed' | translate }} ✅
         </div>
 
         <div
           *ngIf="workout.completed === false"
           class="workout-status workout-status-not-completed"
         >
-          Not completed ❌
+          {{ 'userWorkouts.notCompleted' | translate }} ❌
         </div>
 
-        <div *ngIf="workout.completed === null" class="workout-status workout-status-pending">
-          Pending ⏳
+        <div
+          *ngIf="workout.completed === null"
+          class="workout-status workout-status-pending"
+        >
+          {{ 'userWorkouts.pending' | translate }} ⏳
         </div>
 
         <!-- Részletek -->
@@ -49,22 +60,35 @@
           *ngIf="workout.actualSets || workout.actualRepetitions || workout.weightUsed"
           class="workout-details"
         >
-          <div *ngIf="workout.actualSets">Sets: {{ workout.actualSets }}</div>
+          <div *ngIf="workout.actualSets">
+            {{ 'userWorkouts.sets' | translate }}: {{ workout.actualSets }}
+          </div>
 
-          <div *ngIf="workout.actualRepetitions">Reps: {{ workout.actualRepetitions }}</div>
+          <div *ngIf="workout.actualRepetitions">
+            {{ 'userWorkouts.reps' | translate }}: {{ workout.actualRepetitions }}
+          </div>
 
-          <div *ngIf="workout.weightUsed">Weight: {{ workout.weightUsed }} kg</div>
+          <div *ngIf="workout.weightUsed">
+            {{ 'userWorkouts.weight' | translate }}:
+            {{ workout.weightUsed }} kg
+          </div>
         </div>
 
         <!-- Feedback / Notes -->
-        <div *ngIf="workout.feedback" class="workout-extra">Feedback: {{ workout.feedback }}</div>
+        <div *ngIf="workout.feedback" class="workout-extra">
+          {{ 'userWorkouts.feedback' | translate }}: {{ workout.feedback }}
+        </div>
 
-        <div *ngIf="workout.notes" class="workout-extra">Notes: {{ workout.notes }}</div>
+        <div *ngIf="workout.notes" class="workout-extra">
+          {{ 'userWorkouts.notes' | translate }}: {{ workout.notes }}
+        </div>
       </div>
     </div>
   </div>
 </ng-container>
 
 <ng-template #noWorkouts>
-  <div class="no-workouts">Nincsenek workoutok ehhez a programhoz.</div>
+  <div class="no-workouts">
+    {{ 'userWorkouts.noWorkouts' | translate }}
+  </div>
 </ng-template>

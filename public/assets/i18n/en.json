@@ -580,5 +580,24 @@
     "close": "Close",
     "exercises": "Exercises",
     "noExercises": "No exercises for this workout."
+  },
+  "userWorkouts": {
+    "program": "Program",
+    "date": "Date",
+    "intensity": "Intensity",
+    "completed": "Completed",
+    "notCompleted": "Not completed",
+    "pending": "Pending",
+    "sets": "Sets",
+    "reps": "Reps",
+    "weight": "Weight",
+    "feedback": "Feedback",
+    "notes": "Notes",
+    "noWorkouts": "There are no workouts for this program."
+  },
+  "coachProgramBoard": {
+    "loading": "Loading...",
+    "loadError": "Failed to load programs",
+    "noPrograms": "No programs."
   }
 }

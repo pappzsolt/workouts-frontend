@@ -1,14 +1,13 @@
 import { Component, OnInit, Input, Output, EventEmitter, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 import { CoachProgram } from '../../../../models/coach-program.model';
 import { ProgramDto } from '../../../../models/program.model';
+import { SHARED_IMPORTS } from '../../shared-imports';
 
 @Component({
   selector: 'app-coach-program-board',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './coach-program-board.component.html',
   styleUrls: ['./coach-program-board.component.css'],
 })
@@ -45,7 +44,7 @@ export class CoachProgramBoardComponent implements OnInit {
       },
       error: (err) => {
         this.loading = false;
-        this.message = '❌ Programok betöltése sikertelen';
+        this.message = 'coachProgramBoard.loadError';
         console.error('❌ Programok betöltése sikertelen', err);
       },
     });
