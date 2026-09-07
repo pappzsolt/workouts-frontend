@@ -522,5 +522,12 @@
     "duration": "Időtartam",
     "weeks": "hét",
     "days": "Napok"
+  },
+  "userProfile": {
+    "noUserId": "Nincs bejelentkezett felhasználó!",
+    "profileLoaded": "Profil sikeresen betöltve!",
+    "loadError": "Hiba történt a profil betöltésekor!",
+    "updateSuccess": "Felhasználó sikeresen frissítve!",
+    "updateError": "Hiba a frissítés során!"
   }
 }

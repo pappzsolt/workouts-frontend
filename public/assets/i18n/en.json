@@ -519,5 +519,12 @@
     "duration": "Duration",
     "weeks": "weeks",
     "days": "Days"
+  },
+  "userProfile": {
+    "noUserId": "No logged-in user!",
+    "profileLoaded": "Profile loaded successfully!",
+    "loadError": "An error occurred while loading the profile!",
+    "updateSuccess": "User updated successfully!",
+    "updateError": "Error during update!"
   }
 }
