@@ -36,5 +36,10 @@
     "title": "Bejegyzések módosítása",
     "editCoach": "Coach módosítása",
     "editUser": "Felhasználó módosítása"
+  },
+  "adminChoiceNew": {
+    "title": "Új felhasználó",
+    "newCoach": "Új coach",
+    "newUser": "Új felhasználó"
   }
 }

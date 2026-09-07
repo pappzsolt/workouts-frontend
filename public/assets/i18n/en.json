@@ -36,5 +36,10 @@
     "title": "Edit Entries",
     "editCoach": "Edit Coach",
     "editUser": "Edit User"
+  },
+  "adminChoiceNew": {
+    "title": "New User",
+    "newCoach": "New Coach",
+    "newUser": "New User"
   }
 }
