@@ -1,6 +1,4 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
@@ -11,10 +9,12 @@ import { Exercise } from '../../../../models/exercise.model';
 import { WorkoutExerciseService } from '../../../../services/coach/workout-exercises.service';
 import { SavedWorkoutExercise } from '../../../../models/workout-exercise.model';
 
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+
 @Component({
   selector: 'app-assign-workouts-exercises',
   standalone: true,
-  imports: [CommonModule, FormsModule, CoachWorkoutBoardComponent, CoachExercisesBoardComponent],
+  imports: [...SHARED_IMPORTS, CoachWorkoutBoardComponent, CoachExercisesBoardComponent],
   styleUrl: './assign-workouts-exercises.component.css',
   templateUrl: './assign-workouts-exercises.component.html',
 })

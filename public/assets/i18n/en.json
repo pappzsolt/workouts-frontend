@@ -101,7 +101,10 @@
     "female": "Female",
     "goals": "Goals",
     "avatarUrl": "Avatar URL",
-    "search": "Search"
+    "search": "Search",
+    "id": "ID",
+    "remove": "Remove",
+    "delete": "Delete"
   },
   "adminUserEdit": {
     "title": "Edit User",
@@ -139,5 +142,12 @@
     "workouts": "Workouts",
     "exercises": "Exercises",
     "workoutExerciseManager": "Workout and Set Configuration"
+  },
+  "assignWorkoutExercises": {
+    "availableWorkouts": "Available workouts",
+    "selectedWorkouts": "Selected workouts",
+    "availableExercises": "Available exercises",
+    "save": "Save to selected workouts and exercises",
+    "savedRelations": "Saved relations"
   }
 }

@@ -101,7 +101,10 @@
     "female": "Nő",
     "goals": "Célok",
     "avatarUrl": "Avatar URL",
-    "search": "Keresés"
+    "search": "Keresés",
+    "id": "ID",
+    "remove": "Eltávolítás",
+    "delete": "Törlés"
   },
   "adminUserEdit": {
     "title": "Felhasználó módosítása",
@@ -139,5 +142,12 @@
     "workouts": "Edzések",
     "exercises": "Gyakorlatok",
     "workoutExerciseManager": "Edzés és sorozatok beállítása"
+  },
+  "assignWorkoutExercises": {
+    "availableWorkouts": "Elérhető workoutok",
+    "selectedWorkouts": "Kiválasztott workoutok",
+    "availableExercises": "Elérhető exercise-ek",
+    "save": "Mentés a kiválasztott workoutokhoz és exercise-ekhez",
+    "savedRelations": "Mentett kapcsolatok"
   }
 }

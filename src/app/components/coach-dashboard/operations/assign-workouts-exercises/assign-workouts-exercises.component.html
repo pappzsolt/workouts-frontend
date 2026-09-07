@@ -1,7 +1,9 @@
 <div class="page-container">
   <!-- Workout lista -->
   <div class="content-card">
-    <h2 class="section-title">Elérhető workoutok</h2>
+    <h2 class="section-title">
+      {{ 'assignWorkoutExercises.availableWorkouts' | translate }}
+    </h2>
 
     <app-coach-workout-board
       [externalWorkouts]="workouts"
@@ -13,21 +15,39 @@
   </div>
 
   <!-- Kiválasztott workoutok -->
-  <div *ngIf="selectedWorkoutIds.length" class="content-card">
-    <h2 class="section-title">Kiválasztott workoutok</h2>
+  <div
+    *ngIf="selectedWorkoutIds.length"
+    class="content-card"
+  >
+    <h2 class="section-title">
+      {{ 'assignWorkoutExercises.selectedWorkouts' | translate }}
+    </h2>
 
     <div class="items-list">
-      <div *ngFor="let wid of selectedWorkoutIds" class="selected-workout">
-        <span class="item-text"> ID: {{ wid }} </span>
+      <div
+        *ngFor="let wid of selectedWorkoutIds"
+        class="selected-workout"
+      >
+        <span class="item-text">
+          {{ 'common.id' | translate }}: {{ wid }}
+        </span>
 
-        <button (click)="removeWorkout(wid)" class="remove-button" title="Eltávolítás">✕</button>
+        <button
+          (click)="removeWorkout(wid)"
+          class="remove-button"
+          [title]="'common.remove' | translate"
+        >
+          ✕
+        </button>
       </div>
     </div>
   </div>
 
   <!-- Exercises lista -->
   <div class="content-card">
-    <h2 class="section-title">Elérhető exercise-ek</h2>
+    <h2 class="section-title">
+      {{ 'assignWorkoutExercises.availableExercises' | translate }}
+    </h2>
 
     <app-coach-exercises-board
       [externalExercises]="exercises"
@@ -39,22 +59,33 @@
 
   <!-- Mentés gomb -->
   <div class="save-container">
-    <button (click)="saveSelectedWorkoutsAndExercises()" class="save-button">
-      Mentés a kiválasztott workoutokhoz és exercise-ekhez
+    <button
+      (click)="saveSelectedWorkoutsAndExercises()"
+      class="save-button"
+    >
+      {{ 'assignWorkoutExercises.save' | translate }}
     </button>
   </div>
 </div>
 
 <!-- Mentett workout-exercise kapcsolatok -->
-<div *ngIf="savedWorkoutExercises.length" class="saved-container">
-  <h2 class="section-title">Mentett kapcsolatok</h2>
+<div
+  *ngIf="savedWorkoutExercises.length"
+  class="saved-container"
+>
+  <h2 class="section-title">
+    {{ 'assignWorkoutExercises.savedRelations' | translate }}
+  </h2>
 
   <div class="items-list">
-    <div *ngFor="let saved of savedWorkoutExercises" class="saved-item">
+    <div
+      *ngFor="let saved of savedWorkoutExercises"
+      class="saved-item"
+    >
       <span class="item-text">
         {{ saved.workoutName }} -
         {{ saved.exerciseName }}
-        (ID: {{ saved.id }})
+        ({{ 'common.id' | translate }}: {{ saved.id }})
       </span>
 
       <!-- Csak akkor jelenítjük meg a gombot,
@@ -63,7 +94,7 @@
         *ngIf="saved.id != null"
         (click)="removeSavedWorkoutExercise(saved.id!)"
         class="remove-button"
-        title="Törlés"
+        [title]="'common.delete' | translate"
       >
         ✕
       </button>
