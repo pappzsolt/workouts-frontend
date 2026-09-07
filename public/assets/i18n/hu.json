@@ -15,5 +15,26 @@
   "header": {
     "user": "Felhasználó",
     "role": "Jogosultság"
+  },
+  "adminDashboard": {
+    "title": "Admin Dashboard",
+    "usersList": "Felhasználók listája",
+    "userSearch": "Felhasználó keresés",
+    "newUser": "Új felhasználó",
+    "editUser": "Felhasználó módosítás"
+  },
+  "adminUsers": {
+    "title": "Felhasználók listája",
+    "role": "Szerepkör",
+    "noUsers": "Nincsenek felhasználók."
+  },
+  "common": {
+    "previous": "Előző",
+    "next": "Következő"
+  },
+  "adminChoiceEdit": {
+    "title": "Bejegyzések módosítása",
+    "editCoach": "Coach módosítása",
+    "editUser": "Felhasználó módosítása"
   }
 }

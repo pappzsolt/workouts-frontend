@@ -1,4 +1,6 @@
-<h2 class="programs-title">Felhasználók listája</h2>
+<h2 class="programs-title">
+  {{ 'adminUsers.title' | translate }}
+</h2>
 
 <!-- Hiba / Üzenet -->
 <div *ngIf="errorMessage" class="message-box message-error">
@@ -24,26 +26,40 @@
           {{ user.email }}
         </div>
 
-        <div class="user-roles">Szerepkör: {{ user.roles.join(', ') }}</div>
+        <div class="user-roles">
+          {{ 'adminUsers.role' | translate }}: {{ user.roles.join(', ') }}
+        </div>
       </div>
     </div>
   </div>
 
   <!-- Lapozás -->
   <div class="pagination">
-    <button (click)="prevPage()" [disabled]="currentPage === 1" class="pagination-button">
-      Előző
+    <button
+      (click)="prevPage()"
+      [disabled]="currentPage === 1"
+      class="pagination-button"
+    >
+      {{ 'common.previous' | translate }}
     </button>
 
-    <span class="pagination-page"> {{ currentPage }} / {{ totalPages }} </span>
+    <span class="pagination-page">
+      {{ currentPage }} / {{ totalPages }}
+    </span>
 
-    <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-button">
-      Következő
+    <button
+      (click)="nextPage()"
+      [disabled]="currentPage === totalPages"
+      class="pagination-button"
+    >
+      {{ 'common.next' | translate }}
     </button>
   </div>
 </ng-container>
 
 <!-- Üres lista -->
 <ng-template #noUsers>
-  <div class="no-programs">Nincsenek felhasználók.</div>
+  <div class="no-programs">
+    {{ 'adminUsers.noUsers' | translate }}
+  </div>
 </ng-template>

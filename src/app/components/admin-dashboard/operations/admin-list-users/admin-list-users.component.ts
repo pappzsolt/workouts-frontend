@@ -1,14 +1,14 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 import { AdminListUsersService } from '../../../../services/admin/admin-list-users.service';
 import { User } from '../../../../models/user.model';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
   selector: 'app-admin-list-users',
   standalone: true,
-  imports: [CommonModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './admin-list-users.component.html',
   styleUrls: ['./admin-list-users.component.css'],
 })

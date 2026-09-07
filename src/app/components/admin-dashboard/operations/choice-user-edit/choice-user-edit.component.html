@@ -1,15 +1,21 @@
-<h2 class="page-title">Edit Entries</h2>
+<h2 class="page-title">
+  {{ 'adminChoiceEdit.title' | translate }}
+</h2>
 
 <div class="entries-container">
   <!-- Edit Coach -->
   <div class="entry-card" (click)="navigateTo('admin/coach/edit')">
     <div class="entry-icon">🏋️</div>
-    <div class="entry-title">Edit Coach</div>
+    <div class="entry-title">
+      {{ 'adminChoiceEdit.editCoach' | translate }}
+    </div>
   </div>
 
   <!-- Edit User -->
   <div class="entry-card" (click)="navigateTo('admin/users/edit')">
     <div class="entry-icon">✏️</div>
-    <div class="entry-title">Edit User</div>
+    <div class="entry-title">
+      {{ 'adminChoiceEdit.editUser' | translate }}
+    </div>
   </div>
 </div>

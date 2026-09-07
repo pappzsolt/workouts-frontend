@@ -15,5 +15,26 @@
   "header": {
     "user": "User",
     "role": "Role"
+  },
+  "adminDashboard": {
+    "title": "Admin Dashboard",
+    "usersList": "User List",
+    "userSearch": "User Search",
+    "newUser": "New User",
+    "editUser": "Edit User"
+  },
+  "adminUsers": {
+    "title": "User List",
+    "role": "Role",
+    "noUsers": "No users found."
+  },
+  "common": {
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "adminChoiceEdit": {
+    "title": "Edit Entries",
+    "editCoach": "Edit Coach",
+    "editUser": "Edit User"
   }
 }

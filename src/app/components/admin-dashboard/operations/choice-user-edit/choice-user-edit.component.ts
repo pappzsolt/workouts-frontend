@@ -1,18 +1,19 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
   selector: 'app-choice-edit',
   standalone: true,
-  imports: [CommonModule],
+  imports: [...SHARED_IMPORTS],
   templateUrl: './choice-user-edit.component.html',
   styleUrls: ['./choice-user-edit.component.css'],
 })
 export class ChoiceUserEditComponent {
   constructor(private router: Router) {}
 
-  navigateTo(path: string) {
+  navigateTo(path: string): void {
     this.router.navigate([path]);
   }
 }
