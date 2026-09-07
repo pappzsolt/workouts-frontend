@@ -11,23 +11,23 @@ import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 
 bootstrapApplication(AppComponent, {
   providers: [
-    // Meglévő router konfiguráció
+    // Meglévő router
     provideRouter(routes),
 
-    // Meglévő HttpClient konfiguráció
+    // Meglévő HttpClient
     importProvidersFrom(HttpClientModule),
 
-    // Meglévő AuthInterceptor - változatlanul
+    // Meglévő interceptor
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true,
     },
 
-    // ÚJ: ngx-translate
+    // ngx-translate
     provideTranslateService({
       loader: provideTranslateHttpLoader({
-        prefix: './assets/i18n/',
+        prefix: '/assets/i18n/',
         suffix: '.json',
       }),
     }),
