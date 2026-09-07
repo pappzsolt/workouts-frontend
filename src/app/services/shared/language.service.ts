@@ -8,7 +8,7 @@ export class LanguageService {
   private readonly defaultLanguage = 'hu';
 
   constructor(private translate: TranslateService) {
-    this.translate.setDefaultLang(this.defaultLanguage);
+    this.translate.setFallbackLang(this.defaultLanguage);
 
     const savedLanguage = localStorage.getItem('language');
 
@@ -21,6 +21,6 @@ export class LanguageService {
   }
 
   getCurrentLanguage(): string {
-    return this.translate.currentLang || this.defaultLanguage;
+    return this.translate.currentLang() || this.defaultLanguage;
   }
 }
