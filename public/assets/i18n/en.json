@@ -3,6 +3,7 @@
     "english": "English",
     "hungarian": "Hungarian"
   },
+
   "menu": {
     "adminDashboard": "Admin Dashboard",
     "users": "User List",
@@ -12,10 +13,12 @@
     "dashboard": "Dashboard",
     "logout": "Logout"
   },
+
   "header": {
     "user": "User",
     "role": "Role"
   },
+
   "adminDashboard": {
     "title": "Admin Dashboard",
     "usersList": "User List",
@@ -23,32 +26,57 @@
     "newUser": "New User",
     "editUser": "Edit User"
   },
+
   "adminUsers": {
     "title": "User List",
     "role": "Role",
     "noUsers": "No users found."
   },
+
   "common": {
     "previous": "Previous",
     "next": "Next",
     "loading": "Loading...",
     "name": "Name",
-    "email": "Email",
+    "email": "Email address",
     "password": "Password",
     "phone": "Phone",
     "specialization": "Specialization",
-    "save": "Save"
+    "save": "Save",
+    "saving": "Saving...",
+    "username": "Username",
+    "age": "Age",
+    "weight": "Weight",
+    "height": "Height",
+    "gender": "Gender",
+    "goals": "Goals",
+    "unknownError": "Unknown error",
+    "male": "Male",
+    "female": "Female",
+    "avatarUrl": "Avatar URL",
+    "avatarImageUrl": "Avatar image URL",
+    "search": "Search",
+    "id": "ID",
+    "remove": "Remove",
+    "delete": "Delete",
+    "edit": "Edit",
+    "duration": "Duration",
+    "minutes": "minutes",
+    "exercises": "Exercises"
   },
+
   "adminChoiceEdit": {
     "title": "Edit Entries",
     "editCoach": "Edit Coach",
     "editUser": "Edit User"
   },
+
   "adminChoiceNew": {
     "title": "New User",
     "newCoach": "New Coach",
     "newUser": "New User"
   },
+
   "adminCoachEdit": {
     "title": "Edit Coach",
     "selectCoach": "Select coach",
@@ -58,6 +86,7 @@
     "updateSuccess": "Coach details updated successfully.",
     "saveError": "Failed to save coach."
   },
+
   "adminCoachNew": {
     "title": "New Coach",
     "nameRequired": "Name is required",
@@ -72,47 +101,7 @@
     "createError": "Failed to create coach.",
     "createCoach": "Create Coach"
   },
-  "common": {
-    "previous": "Previous",
-    "next": "Next",
-    "loading": "Loading...",
-    "name": "Name",
-    "email": "Email",
-    "password": "Password",
-    "phone": "Phone",
-    "specialization": "Specialization",
-    "save": "Save",
-    "saving": "Saving...",
-    "username": "Username",
-    "age": "Age",
-    "weight": "Weight",
-    "height": "Height",
-    "gender": "Gender",
-    "goals": "Goals",
-    "unknownError": "Unknown error",
-    "username": "Username",
-    "email": "Email address",
-    "password": "Password",
-    "age": "Age",
-    "weight": "Weight",
-    "height": "Height",
-    "gender": "Gender",
-    "male": "Male",
-    "female": "Female",
-    "goals": "Goals",
-    "avatarUrl": "Avatar URL",
-    "search": "Search",
-    "id": "ID",
-    "remove": "Remove",
-    "delete": "Delete",
-    "edit": "Edit",
-    "avatarImageUrl": "Avatar image URL",
-    "duration": "Duration",
-    "minutes": "minutes",
-    "exercises": "Exercises",
-    "edit": "Edit",
-    "minutes": "minutes"
-  },
+
   "adminUserEdit": {
     "title": "Edit User",
     "newPassword": "New password",
@@ -123,6 +112,7 @@
     "updateError": "Error while updating",
     "saveError": "Error while saving"
   },
+
   "adminUserNew": {
     "title": "New User",
     "assignCoach": "Assign Coach",
@@ -132,6 +122,7 @@
     "createSuccess": "Created successfully",
     "saveError": "Error while saving"
   },
+
   "adminMemberSearch": {
     "title": "User Search",
     "searchPlaceholder": "Enter a keyword...",
@@ -143,6 +134,7 @@
     "extraData": "Extra Data",
     "noResults": "No results found."
   },
+
   "coachDashboard": {
     "title": "Coach Dashboard",
     "programs": "Programs",
@@ -150,6 +142,7 @@
     "exercises": "Exercises",
     "workoutExerciseManager": "Workout and Set Configuration"
   },
+
   "assignWorkoutExercises": {
     "availableWorkouts": "Available workouts",
     "selectedWorkouts": "Selected workouts",
@@ -157,6 +150,7 @@
     "save": "Save to selected workouts and exercises",
     "savedRelations": "Saved relations"
   },
+
   "coachExerciseEdit": {
     "title": "Edit Exercise",
     "name": "Exercise Name",
@@ -175,6 +169,7 @@
     "saveSuccess": "Exercise saved successfully!",
     "saveError": "Error saving exercise"
   },
+
   "coachExercises": {
     "title": "Exercises",
     "search": "Search exercises",
@@ -184,15 +179,8 @@
     "noExercises": "No exercises found.",
     "addExercise": "Add new exercise"
   },
+
   "coachWorkouts": {
-    "title": "Workouts",
-    "search": "Search workouts",
-    "searchPlaceholder": "Workout name...",
-    "sortByName": "Workout name",
-    "noExercises": "No exercises assigned.",
-    "noSearchResults": "No workouts match the search.",
-    "noWorkouts": "No workouts found.",
-    "addWorkout": "Add new workout",
     "title": "Workouts",
     "search": "Search workouts",
     "searchPlaceholder": "Workout name...",
@@ -206,6 +194,11 @@
     "loadError": "Failed to load workouts.",
     "addError": "Error adding workout."
   },
+
+  "coachProfile": {
+    "title": "Coach Profile"
+  },
+
   "coachProgramBuilder": {
     "title": "Program Builder",
     "editSubtitle": "Edit existing training program",
@@ -286,6 +279,7 @@
     "copySuccess": "Workout copied successfully.",
     "copyError": "An error occurred while copying the workout."
   },
+
   "coachNewProgram": {
     "createSuccess": "Program created successfully!",
     "createError": "An error occurred while creating the program.",
@@ -303,6 +297,7 @@
     "hard": "Hard",
     "save": "Save Program"
   },
+
   "coachProgramEdit": {
     "idNotFound": "Program ID not found.",
     "notFound": "Program not found.",
@@ -323,6 +318,7 @@
     "hard": "Hard",
     "save": "Save Program"
   },
+
   "coachPrograms": {
     "noPrograms": "There are no programs for the coach.",
     "loadError": "Failed to load programs.",
@@ -338,6 +334,7 @@
     "empty": "There are no programs.",
     "createNew": "Create new program"
   },
+
   "coachWorkoutEdit": {
     "invalidWorkoutId": "Invalid workout ID.",
     "notFound": "Workout not found.",
@@ -382,9 +379,9 @@
     "searchToAdd": "Search for an exercise above to add it.",
     "assignedToProgram": "This workout is assigned to a program.",
     "exercise": "Exercise",
-    "save": "Save",
     "cancel": "Cancel"
   },
+
   "newWorkout": {
     "loadError": "Failed to load workouts.",
     "createSuccess": "Workout created!",
@@ -402,12 +399,8 @@
     "high": "High",
     "createWorkout": "Create Workout"
   },
+
   "programForm": {
-    "loadError": "An error occurred while loading the program.",
-    "loadSuccess": "Program loaded successfully.",
-    "required": "This field is required.",
-    "updateError": "Error saving the program.",
-    "updateSuccess": "Program saved successfully.",
     "loadError": "An error occurred while loading the program.",
     "loadSuccess": "Program loaded successfully.",
     "required": "This field is required.",
@@ -421,9 +414,8 @@
     "updateProgram": "Update Program",
     "createProgram": "Create Program"
   },
+
   "coachExercisesBoard": {
-    "noExercises": "No exercises are available.",
-    "loadError": "Error loading exercises.",
     "noExercises": "No exercises are available.",
     "loadError": "Error loading exercises.",
     "loading": "Loading...",
@@ -436,29 +428,35 @@
     "intensity": "Intensity",
     "page": "Page"
   },
+
   "coachProgramSelect": {
     "loadError": "Error loading programs.",
     "program": "Program",
     "selectProgram": "-- Select a program --",
     "loading": "Loading..."
   },
+
   "roleSelect": {
     "role": "Role",
     "select": "-- Select --",
     "loadError": "An error occurred while loading roles."
   },
+
   "userSelect": {
     "selectUser": "Select user",
     "selectUserOption": "-- Select user --"
   },
+
   "workoutSelect": {
     "selectWorkout": "Select workout",
     "selectWorkoutOption": "-- Select workout --"
   },
+
   "coachSelect": {
     "coach": "Coach",
     "select": "-- Select --"
   },
+
   "coachWorkoutBoard": {
     "noWorkouts": "No workouts are available.",
     "loadError": "Error loading workouts.",
@@ -466,12 +464,14 @@
     "noName": "No name",
     "id": "ID"
   },
+
   "userDashboard": {
     "title": "User Dashboard",
     "myPrograms": "My Programs",
     "statistics": "Statistics",
     "myWorkouts": "My Workouts"
   },
+
   "userExercises": {
     "unknownWorkout": "Unknown Workout",
     "exercises": "Exercises",
@@ -484,6 +484,7 @@
     "pending": "Pending",
     "noExercises": "No exercises for this workout."
   },
+
   "userExerciseDetail": {
     "exercise": "Exercise",
     "sets": "Sets",
@@ -511,6 +512,7 @@
     "noSets": "No sets for this exercise.",
     "noExercise": "Exercise not found."
   },
+
   "userMyPrograms": {
     "title": "My Programs",
     "loading": "Loading programs...",
@@ -520,6 +522,7 @@
     "weeks": "weeks",
     "days": "Days"
   },
+
   "userProfile": {
     "noUserId": "No logged-in user!",
     "profileLoaded": "Profile loaded successfully!",
@@ -546,11 +549,13 @@
     "coach": "Coach",
     "save": "Save"
   },
+
   "userStatistics": {
     "title": "Statistics",
     "workoutsCompleted": "Workouts Completed",
     "totalHours": "Total Hours"
   },
+
   "userWorkoutsCalendar": {
     "january": "January",
     "february": "February",

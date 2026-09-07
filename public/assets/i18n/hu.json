@@ -3,6 +3,7 @@
     "english": "Angol",
     "hungarian": "Magyar"
   },
+
   "menu": {
     "adminDashboard": "Admin Dashboard",
     "users": "Felhasználók listája",
@@ -12,10 +13,12 @@
     "dashboard": "Dashboard",
     "logout": "Kijelentkezés"
   },
+
   "header": {
     "user": "Felhasználó",
     "role": "Jogosultság"
   },
+
   "adminDashboard": {
     "title": "Admin Dashboard",
     "usersList": "Felhasználók listája",
@@ -23,32 +26,57 @@
     "newUser": "Új felhasználó",
     "editUser": "Felhasználó módosítás"
   },
+
   "adminUsers": {
     "title": "Felhasználók listája",
     "role": "Szerepkör",
     "noUsers": "Nincsenek felhasználók."
   },
+
   "common": {
     "previous": "Előző",
     "next": "Következő",
     "loading": "Betöltés folyamatban...",
     "name": "Név",
-    "email": "Email",
+    "email": "Email cím",
     "password": "Jelszó",
     "phone": "Telefon",
     "specialization": "Specializáció",
-    "save": "Mentés"
+    "save": "Mentés",
+    "saving": "Mentés...",
+    "username": "Felhasználónév",
+    "age": "Életkor",
+    "weight": "Testsúly",
+    "height": "Magasság",
+    "gender": "Nem",
+    "goals": "Célok",
+    "unknownError": "Ismeretlen hiba",
+    "male": "Férfi",
+    "female": "Nő",
+    "avatarUrl": "Avatar URL",
+    "avatarImageUrl": "Avatar kép URL",
+    "search": "Keresés",
+    "id": "ID",
+    "remove": "Eltávolítás",
+    "delete": "Törlés",
+    "edit": "Szerkesztés",
+    "duration": "Időtartam",
+    "minutes": "perc",
+    "exercises": "Gyakorlatok"
   },
+
   "adminChoiceEdit": {
     "title": "Bejegyzések módosítása",
     "editCoach": "Coach módosítása",
     "editUser": "Felhasználó módosítása"
   },
+
   "adminChoiceNew": {
     "title": "Új felhasználó",
     "newCoach": "Új coach",
     "newUser": "Új felhasználó"
   },
+
   "adminCoachEdit": {
     "title": "Edző módosítása",
     "selectCoach": "Válassz edzőt",
@@ -58,6 +86,7 @@
     "updateSuccess": "Az edző adatai sikeresen frissítve.",
     "saveError": "Az edző mentése nem sikerült."
   },
+
   "adminCoachNew": {
     "title": "Új Edző",
     "nameRequired": "Név megadása kötelező",
@@ -72,47 +101,7 @@
     "createError": "Az edző létrehozása nem sikerült.",
     "createCoach": "Edző létrehozása"
   },
-  "common": {
-    "previous": "Előző",
-    "next": "Következő",
-    "loading": "Betöltés folyamatban...",
-    "name": "Név",
-    "email": "Email",
-    "password": "Jelszó",
-    "phone": "Telefon",
-    "specialization": "Specializáció",
-    "save": "Mentés",
-    "saving": "Mentés...",
-    "username": "Felhasználónév",
-    "age": "Életkor",
-    "weight": "Testsúly",
-    "height": "Magasság",
-    "gender": "Nem",
-    "goals": "Célok",
-    "unknownError": "Ismeretlen hiba",
-    "username": "Felhasználónév",
-    "email": "Email cím",
-    "password": "Jelszó",
-    "age": "Életkor",
-    "weight": "Súly",
-    "height": "Magasság",
-    "gender": "Nem",
-    "male": "Férfi",
-    "female": "Nő",
-    "goals": "Célok",
-    "avatarUrl": "Avatar URL",
-    "search": "Keresés",
-    "id": "ID",
-    "remove": "Eltávolítás",
-    "delete": "Törlés",
-    "edit": "Szerkesztés",
-    "avatarImageUrl": "Avatar kép URL",
-    "duration": "Időtartam",
-    "minutes": "perc",
-    "exercises": "Gyakorlatok",
-    "edit": "Szerkesztés",
-    "minutes": "perc"
-  },
+
   "adminUserEdit": {
     "title": "Felhasználó módosítása",
     "newPassword": "Új jelszó",
@@ -123,6 +112,7 @@
     "updateError": "Hiba a frissítés során",
     "saveError": "Hiba a mentés során"
   },
+
   "adminUserNew": {
     "title": "Új felhasználó",
     "assignCoach": "Edző hozzárendelése",
@@ -132,6 +122,7 @@
     "createSuccess": "Sikeres létrehozás",
     "saveError": "Hiba a mentésnél"
   },
+
   "adminMemberSearch": {
     "title": "Felhasználó keresés",
     "searchPlaceholder": "Írj be egy kulcsszót...",
@@ -143,6 +134,7 @@
     "extraData": "Extra adatok",
     "noResults": "Nincs találat a keresésre."
   },
+
   "coachDashboard": {
     "title": "Coach Dashboard",
     "programs": "Programok",
@@ -150,6 +142,7 @@
     "exercises": "Gyakorlatok",
     "workoutExerciseManager": "Edzés és sorozatok beállítása"
   },
+
   "assignWorkoutExercises": {
     "availableWorkouts": "Elérhető workoutok",
     "selectedWorkouts": "Kiválasztott workoutok",
@@ -157,6 +150,7 @@
     "save": "Mentés a kiválasztott workoutokhoz és exercise-ekhez",
     "savedRelations": "Mentett kapcsolatok"
   },
+
   "coachExerciseEdit": {
     "title": "Gyakorlat szerkesztése",
     "name": "Gyakorlat neve",
@@ -175,6 +169,7 @@
     "saveSuccess": "A gyakorlat sikeresen mentve!",
     "saveError": "Hiba a gyakorlat mentésénél"
   },
+
   "coachExercises": {
     "title": "Gyakorlatok",
     "search": "Gyakorlat keresése",
@@ -184,18 +179,8 @@
     "noExercises": "Nincsenek gyakorlatok.",
     "addExercise": "Új gyakorlat hozzáadása"
   },
-  "coachProfile": {
-    "title": "Coach profil"
-  },
+
   "coachWorkouts": {
-    "title": "Edzések",
-    "search": "Workout keresése",
-    "searchPlaceholder": "Workout neve...",
-    "sortByName": "Workout neve",
-    "noExercises": "Nincs gyakorlat hozzárendelve.",
-    "noSearchResults": "Nincs a keresésnek megfelelő workout.",
-    "noWorkouts": "Nincsenek edzések.",
-    "addWorkout": "Új edzés hozzáadása",
     "title": "Edzések",
     "search": "Workout keresése",
     "searchPlaceholder": "Workout neve...",
@@ -209,6 +194,11 @@
     "loadError": "Nem sikerült betölteni a workoutokat.",
     "addError": "Hiba történt a workout hozzáadásakor."
   },
+
+  "coachProfile": {
+    "title": "Coach profil"
+  },
+
   "coachProgramBuilder": {
     "title": "Program Builder",
     "editSubtitle": "Meglévő edzésprogram módosítása",
@@ -289,6 +279,7 @@
     "copySuccess": "Workout sikeresen lemásolva.",
     "copyError": "Hiba történt a workout másolásakor."
   },
+
   "coachNewProgram": {
     "createSuccess": "Program sikeresen létrehozva!",
     "createError": "Hiba történt a program létrehozása során.",
@@ -306,6 +297,7 @@
     "hard": "Nehéz",
     "save": "Program mentése"
   },
+
   "coachProgramEdit": {
     "idNotFound": "Program ID nem található.",
     "notFound": "A program nem található.",
@@ -326,6 +318,7 @@
     "hard": "Nehéz",
     "save": "Program mentése"
   },
+
   "coachPrograms": {
     "noPrograms": "Nincsenek programok a coachhoz.",
     "loadError": "Nem sikerült lekérni a programokat.",
@@ -341,6 +334,7 @@
     "empty": "Nincsenek programok.",
     "createNew": "Új program létrehozása"
   },
+
   "coachWorkoutEdit": {
     "invalidWorkoutId": "Érvénytelen workout ID.",
     "notFound": "A workout nem található.",
@@ -385,9 +379,9 @@
     "searchToAdd": "Keress egy exercise-t fent a hozzáadáshoz.",
     "assignedToProgram": "Ez a workout hozzá van rendelve egy programhoz.",
     "exercise": "Exercise",
-    "save": "Mentés",
     "cancel": "Mégse"
   },
+
   "newWorkout": {
     "loadError": "Nem sikerült betölteni a workoutokat.",
     "createSuccess": "Workout létrehozva!",
@@ -405,12 +399,8 @@
     "high": "Magas",
     "createWorkout": "Workout létrehozása"
   },
+
   "programForm": {
-    "loadError": "Hiba történt a program betöltésekor.",
-    "loadSuccess": "Program sikeresen betöltve.",
-    "required": "Ez a mező kötelező.",
-    "updateError": "Hiba a program mentése során.",
-    "updateSuccess": "Program sikeresen mentve.",
     "loadError": "Hiba történt a program betöltésekor.",
     "loadSuccess": "Program sikeresen betöltve.",
     "required": "Ez a mező kötelező.",
@@ -424,9 +414,8 @@
     "updateProgram": "Program frissítése",
     "createProgram": "Program létrehozása"
   },
+
   "coachExercisesBoard": {
-    "noExercises": "Nincsenek elérhető exercise-ek.",
-    "loadError": "Hiba az exercise-ek betöltése során.",
     "noExercises": "Nincsenek elérhető exercise-ek.",
     "loadError": "Hiba az exercise-ek betöltése során.",
     "loading": "Betöltés...",
@@ -439,29 +428,35 @@
     "intensity": "Intenzitás",
     "page": "Oldal"
   },
+
   "coachProgramSelect": {
     "loadError": "Hiba a programok lekérése során",
     "program": "Program",
     "selectProgram": "-- Válassz programot --",
     "loading": "Betöltés..."
   },
+
   "roleSelect": {
     "role": "Szerepkör",
     "select": "-- Válassz --",
     "loadError": "Hiba történt a szerepkörök lekérésekor."
   },
+
   "userSelect": {
     "selectUser": "Válassz felhasználót",
     "selectUserOption": "-- Válassz felhasználót --"
   },
+
   "workoutSelect": {
     "selectWorkout": "Válassz edzést",
     "selectWorkoutOption": "-- Válassz edzést --"
   },
+
   "coachSelect": {
     "coach": "Coach",
     "select": "-- Válassz --"
   },
+
   "coachWorkoutBoard": {
     "noWorkouts": "Nincsenek elérhető workoutok.",
     "loadError": "Hiba a workoutok lekérése során.",
@@ -469,12 +464,14 @@
     "noName": "Nincs név",
     "id": "ID"
   },
+
   "userDashboard": {
     "title": "Felhasználói Dashboard",
     "myPrograms": "Programjaim",
     "statistics": "Statisztikák",
     "myWorkouts": "Edzéseim"
   },
+
   "userExercises": {
     "unknownWorkout": "Ismeretlen workout",
     "exercises": "Gyakorlatok",
@@ -487,6 +484,7 @@
     "pending": "Függőben",
     "noExercises": "Nincsenek gyakorlatok ehhez a workouthoz."
   },
+
   "userExerciseDetail": {
     "exercise": "Exercise",
     "sets": "Sorozat",
@@ -514,6 +512,7 @@
     "noSets": "Nincsenek sorozatok ehhez a gyakorlathoz.",
     "noExercise": "Nincs ilyen gyakorlat."
   },
+
   "userMyPrograms": {
     "title": "Programjaim",
     "loading": "Programok betöltése folyamatban...",
@@ -523,6 +522,7 @@
     "weeks": "hét",
     "days": "Napok"
   },
+
   "userProfile": {
     "noUserId": "Nincs bejelentkezett felhasználó!",
     "profileLoaded": "Profil sikeresen betöltve!",
@@ -549,11 +549,13 @@
     "coach": "Coach",
     "save": "Mentés"
   },
+
   "userStatistics": {
     "title": "Statisztikák",
     "workoutsCompleted": "Teljesített edzések",
     "totalHours": "Összes óra"
   },
+
   "userWorkoutsCalendar": {
     "january": "Január",
     "february": "Február",
