@@ -64,6 +64,12 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges {
   message = '';
 
   // ==========================================================
+  // KERESÉS
+  // ==========================================================
+
+  searchTerm = '';
+
+  // ==========================================================
   // LAPOZÁS
   // ==========================================================
 
@@ -147,17 +153,54 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges {
   }
 
   // ==========================================================
+  // KERESÉS
+  // ==========================================================
+
+  onSearchChange(): void {
+    this.exercisePage = 1;
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.exercisePage = 1;
+  }
+
+  get filteredExercises(): Exercise[] {
+    const search = this.searchTerm.trim().toLowerCase();
+
+    if (!search) {
+      return this.exercises;
+    }
+
+    return this.exercises.filter((exercise) => {
+      const name = exercise.name?.toLowerCase() ?? '';
+      const description = exercise.description?.toLowerCase() ?? '';
+      const muscleGroup = exercise.muscleGroup?.toLowerCase() ?? '';
+      const equipment = exercise.equipment?.toLowerCase() ?? '';
+
+      return (
+        name.includes(search) ||
+        description.includes(search) ||
+        muscleGroup.includes(search) ||
+        equipment.includes(search)
+      );
+    });
+  }
+
+  // ==========================================================
   // LAPOZÁS
   // ==========================================================
 
   get pagedExercises(): Exercise[] {
+    const exercises = this.filteredExercises;
+
     const start = (this.exercisePage - 1) * this.pageSize;
 
-    return this.exercises.slice(start, start + this.pageSize);
+    return exercises.slice(start, start + this.pageSize);
   }
 
   get totalExercisePages(): number {
-    return Math.ceil(this.exercises.length / this.pageSize);
+    return Math.ceil(this.filteredExercises.length / this.pageSize);
   }
 
   nextExercisePage(): void {

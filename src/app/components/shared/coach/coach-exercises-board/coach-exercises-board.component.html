@@ -1,8 +1,14 @@
 <div class="exercise-manager">
-  <div *ngIf="loading" class="exercise-message">
+
+  <!-- Betöltés -->
+  <div
+    *ngIf="loading"
+    class="exercise-message"
+  >
     {{ 'coachExercisesBoard.loading' | translate }}
   </div>
 
+  <!-- Hiba / üzenet -->
   <div
     *ngIf="message && !loading"
     class="exercise-message"
@@ -10,8 +16,49 @@
     {{ message | translate }}
   </div>
 
+  <!-- Keresés -->
   <div
     *ngIf="!loading && exercises?.length"
+    class="exercise-search"
+  >
+    <input
+      type="text"
+      [(ngModel)]="searchTerm"
+      (input)="onSearchChange()"
+      [placeholder]="'coachExercisesBoard.searchPlaceholder' | translate"
+      class="exercise-search-input"
+    />
+
+    <button
+      *ngIf="searchTerm"
+      type="button"
+      (click)="clearSearch()"
+      class="exercise-search-clear"
+      [title]="'common.clear' | translate"
+    >
+      ✕
+    </button>
+  </div>
+
+  <!-- Nincs találat -->
+  <div
+    *ngIf="
+      !loading &&
+      exercises?.length &&
+      searchTerm &&
+      !filteredExercises.length
+    "
+    class="exercise-message"
+  >
+    {{ 'coachExercisesBoard.noSearchResults' | translate }}
+  </div>
+
+  <!-- Exercise lista -->
+  <div
+    *ngIf="
+      !loading &&
+      filteredExercises.length
+    "
     class="exercise-list"
   >
     <div
@@ -40,6 +87,7 @@
       </p>
 
       <div class="exercise-details">
+
         <span
           *ngIf="ex.muscleGroup"
           class="exercise-detail"
@@ -91,6 +139,7 @@
           {{ 'coachExercisesBoard.intensity' | translate }}:
           {{ ex.intensity_level }}
         </span>
+
       </div>
     </div>
 
@@ -98,8 +147,12 @@
     <!-- LAPOZÓ -->
     <!-- ====================================================== -->
 
-    <div class="exercise-pagination">
+    <div
+      *ngIf="totalExercisePages > 1"
+      class="exercise-pagination"
+    >
       <button
+        type="button"
         (click)="prevExercisePage()"
         [disabled]="exercisePage === 1"
         class="exercise-pagination-button"
@@ -115,6 +168,7 @@
       </span>
 
       <button
+        type="button"
         (click)="nextExercisePage()"
         [disabled]="exercisePage === totalExercisePages"
         class="exercise-pagination-button"
@@ -122,5 +176,6 @@
         {{ 'common.next' | translate }} ▶
       </button>
     </div>
+
   </div>
 </div>

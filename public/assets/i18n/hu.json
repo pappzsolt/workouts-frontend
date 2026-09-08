@@ -426,7 +426,9 @@
     "duration": "Időtartam",
     "minutes": "perc",
     "intensity": "Intenzitás",
-    "page": "Oldal"
+    "page": "Oldal",
+    "searchPlaceholder": "Exercise keresése...",
+    "noSearchResults": "Nincs találat."
   },
 
   "coachProgramSelect": {

@@ -416,7 +416,7 @@
   },
 
   "coachExercisesBoard": {
-    "noExercises": "No exercises are available.",
+    "noExercises": "No exercises available.",
     "loadError": "Error loading exercises.",
     "loading": "Loading...",
     "muscleGroup": "Muscle group",
@@ -426,7 +426,9 @@
     "duration": "Duration",
     "minutes": "minutes",
     "intensity": "Intensity",
-    "page": "Page"
+    "page": "Page",
+    "searchPlaceholder": "Search exercises...",
+    "noSearchResults": "No results found."
   },
 
   "coachProgramSelect": {
