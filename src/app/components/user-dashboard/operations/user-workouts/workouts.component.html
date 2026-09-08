@@ -3,9 +3,9 @@
 </h2>
 
 <ng-container *ngIf="workouts$ | async as workouts">
-
   <ng-container *ngIf="workouts.length; else noWorkouts">
 
+    ```
     <!-- ============================== -->
     <!-- ELVÉGZENDŐ EDZÉSEK -->
     <!-- ============================== -->
@@ -14,31 +14,27 @@
       *ngIf="pendingWorkouts.length"
       class="workout-section workout-section-pending"
     >
-
       <div class="workout-section-header">
         <h3>
-          ⏳ Elvégzendő edzések
+          ⏳ {{ 'userWorkouts.pendingWorkouts' | translate }}
         </h3>
 
         <span class="workout-count">
-          {{ pendingWorkouts.length }}
-        </span>
+      {{ pendingWorkouts.length }}
+    </span>
       </div>
 
       <div class="workouts-grid">
-
         <div
           *ngFor="let workout of pendingWorkouts"
           class="workout-card workout-card-pending"
           (click)="goToExercises(workout.workoutId, workout.workoutName)"
         >
-
           <div class="workout-image">
             <span class="workout-emoji">🏋️‍♂️</span>
           </div>
 
           <div class="workout-content">
-
             <div class="workout-name">
               {{ workout.workoutName }}
             </div>
@@ -70,16 +66,14 @@
             </div>
 
             <!-- Részletek -->
-
             <div
               *ngIf="
-                workout.actualSets ||
-                workout.actualRepetitions ||
-                workout.weightUsed
-              "
+            workout.actualSets ||
+            workout.actualRepetitions ||
+            workout.weightUsed
+          "
               class="workout-details"
             >
-
               <div *ngIf="workout.actualSets">
                 {{ 'userWorkouts.sets' | translate }}:
                 {{ workout.actualSets }}
@@ -94,27 +88,23 @@
                 {{ 'userWorkouts.weight' | translate }}:
                 {{ workout.weightUsed }} kg
               </div>
-
             </div>
 
+            <!-- Feedback -->
             <div *ngIf="workout.feedback" class="workout-extra">
               {{ 'userWorkouts.feedback' | translate }}:
               {{ workout.feedback }}
             </div>
 
+            <!-- Notes -->
             <div *ngIf="workout.notes" class="workout-extra">
               {{ 'userWorkouts.notes' | translate }}:
               {{ workout.notes }}
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     </section>
-
 
     <!-- ============================== -->
     <!-- ELVÉGZETT EDZÉSEK -->
@@ -124,31 +114,27 @@
       *ngIf="completedWorkouts.length"
       class="workout-section workout-section-completed"
     >
-
       <div class="workout-section-header">
         <h3>
-          ✅ Elvégzett edzések
+          ✅ {{ 'userWorkouts.completedWorkouts' | translate }}
         </h3>
 
         <span class="workout-count">
-          {{ completedWorkouts.length }}
-        </span>
+      {{ completedWorkouts.length }}
+    </span>
       </div>
 
       <div class="workouts-grid">
-
         <div
           *ngFor="let workout of completedWorkouts"
           class="workout-card workout-card-completed"
           (click)="goToExercises(workout.workoutId, workout.workoutName)"
         >
-
           <div class="workout-image">
             <span class="workout-emoji">🏋️‍♂️</span>
           </div>
 
           <div class="workout-content">
-
             <div class="workout-name">
               {{ workout.workoutName }}
             </div>
@@ -169,15 +155,15 @@
               {{ 'userWorkouts.completed' | translate }} ✅
             </div>
 
+            <!-- Részletek -->
             <div
               *ngIf="
-                workout.actualSets ||
-                workout.actualRepetitions ||
-                workout.weightUsed
-              "
+            workout.actualSets ||
+            workout.actualRepetitions ||
+            workout.weightUsed
+          "
               class="workout-details"
             >
-
               <div *ngIf="workout.actualSets">
                 {{ 'userWorkouts.sets' | translate }}:
                 {{ workout.actualSets }}
@@ -192,36 +178,31 @@
                 {{ 'userWorkouts.weight' | translate }}:
                 {{ workout.weightUsed }} kg
               </div>
-
             </div>
 
+            <!-- Feedback -->
             <div *ngIf="workout.feedback" class="workout-extra">
               {{ 'userWorkouts.feedback' | translate }}:
               {{ workout.feedback }}
             </div>
 
+            <!-- Notes -->
             <div *ngIf="workout.notes" class="workout-extra">
               {{ 'userWorkouts.notes' | translate }}:
               {{ workout.notes }}
             </div>
-
           </div>
-
         </div>
-
       </div>
-
     </section>
+    ```
 
   </ng-container>
-
 </ng-container>
-
 
 <ng-template #noWorkouts>
 
   <div class="no-workouts">
     {{ 'userWorkouts.noWorkouts' | translate }}
   </div>
-
 </ng-template>

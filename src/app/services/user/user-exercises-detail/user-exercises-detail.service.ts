@@ -22,7 +22,13 @@ export class UserExerciseDetailService {
   }
 
   /**
-   * Egy konkrét set completed állapotának módosítása.
+   * Egy konkrét set adatainak mentése.
+   *
+   * Mentésre kerül:
+   * - completed
+   * - actualRepetitions
+   * - actualWeightKg
+   * - notes
    */
   updateSetCompleted(
     programId: number,
@@ -30,6 +36,9 @@ export class UserExerciseDetailService {
     exerciseId: number,
     setId: number,
     completed: boolean,
+    actualRepetitions: number | null,
+    actualWeightKg: number | null,
+    notes: string | null,
   ): Observable<void> {
     return this.http.patch<void>(`${API_ENDPOINTS.exercises}/set-completed`, {
       programId,
@@ -37,6 +46,9 @@ export class UserExerciseDetailService {
       exerciseId,
       setId,
       completed,
+      actualRepetitions,
+      actualWeightKg,
+      notes,
     });
   }
 }

@@ -513,7 +513,18 @@
     "exerciseImage": "Exercise image",
     "exerciseVideo": "Exercise video",
     "noSets": "No sets for this exercise.",
-    "noExercise": "Exercise not found."
+    "noExercise": "Exercise not found.",
+    "actualRepetitions": "Actual repetitions",
+    "actualWeight": "Actual weight",
+    "notes": "Notes",
+    "save": "Save",
+
+    "setCompleted": "Set completed",
+    "tapDone": "Mark as done",
+
+    "exerciseStatus": "Exercise status",
+    "completed": "Completed",
+    "inProgress": "In progress"
   },
 
   "userMyPrograms": {

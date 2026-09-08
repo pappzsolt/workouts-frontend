@@ -68,7 +68,7 @@ export class UserExerciseDetailComponent implements OnInit {
         console.log('User workout exercise sets:', this.workoutExercise.userWorkoutExerciseSets);
       },
 
-      error: (err) => {
+      error: (err: unknown) => {
         console.error('Hiba a workout lekérésekor:', err);
       },
     });
@@ -84,8 +84,8 @@ export class UserExerciseDetailComponent implements OnInit {
   }
 
   /**
-   * Egy konkrét set completed állapotának frissítése
-   * a backendben.
+   * Egy konkrét set completed állapotának
+   * és aktuális adatainak frissítése a backendben.
    */
   updateSetCompleted(set: UserWorkoutExerciseSetDto, completed: boolean): void {
     if (!this.workoutExercise) {
@@ -95,7 +95,16 @@ export class UserExerciseDetailComponent implements OnInit {
     const exerciseId = this.workoutExercise.exercise.id;
 
     this.exercisesService
-      .updateSetCompleted(this.programId, this.workoutId, exerciseId, set.id, completed)
+      .updateSetCompleted(
+        this.programId,
+        this.workoutId,
+        exerciseId,
+        set.id,
+        completed,
+        set.actualRepetitions,
+        set.actualWeightKg,
+        set.notes,
+      )
       .subscribe({
         next: () => {
           // Csak sikeres backend válasz után
@@ -107,16 +116,19 @@ export class UserExerciseDetailComponent implements OnInit {
           // completed állapotát is.
           this.updateExerciseDone();
 
-          console.log('Set completed állapot frissítve:', {
+          console.log('Set adatok frissítve:', {
             programId: this.programId,
             workoutId: this.workoutId,
             setId: set.id,
             completed,
+            actualRepetitions: set.actualRepetitions,
+            actualWeightKg: set.actualWeightKg,
+            notes: set.notes,
           });
         },
 
-        error: (err) => {
-          console.error('Hiba a set completed állapotának frissítésekor:', err);
+        error: (err: unknown) => {
+          console.error('Hiba a set adatainak frissítésekor:', err);
         },
       });
   }
@@ -183,5 +195,50 @@ export class UserExerciseDetailComponent implements OnInit {
       // töröljük a frontend completed állapotot.
       localStorage.removeItem(`workout-completed-${this.workoutId}`);
     }
+  }
+
+  /**
+   * Egy konkrét set tényleges adatainak mentése.
+   *
+   * A backend ugyanazt a /set-completed endpointot
+   * használja az összes set adat mentésére.
+   */
+  saveSetDetails(set: UserWorkoutExerciseSetDto): void {
+    if (!this.workoutExercise) {
+      return;
+    }
+
+    const exerciseId = this.workoutExercise.exercise.id;
+
+    this.exercisesService
+      .updateSetCompleted(
+        this.programId,
+        this.workoutId,
+        exerciseId,
+        set.id,
+        set.completed,
+        set.actualRepetitions,
+        set.actualWeightKg,
+        set.notes,
+      )
+      .subscribe({
+        next: () => {
+          // Sikeres mentés után frissítjük
+          // az exercise és workout állapotát.
+          this.updateExerciseDone();
+
+          console.log('Set sikeresen mentve:', {
+            setId: set.id,
+            completed: set.completed,
+            actualRepetitions: set.actualRepetitions,
+            actualWeightKg: set.actualWeightKg,
+            notes: set.notes,
+          });
+        },
+
+        error: (err: unknown) => {
+          console.error('Hiba a set mentésekor:', err);
+        },
+      });
   }
 }

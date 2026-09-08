@@ -513,7 +513,15 @@
     "exerciseImage": "Exercise kép",
     "exerciseVideo": "Exercise videó",
     "noSets": "Nincsenek sorozatok ehhez a gyakorlathoz.",
-    "noExercise": "Nincs ilyen gyakorlat."
+    "noExercise": "Nincs ilyen gyakorlat.",
+    "actualRepetitions": "Tényleges ismétlések",
+    "actualWeight": "Tényleges súly",
+    "notes": "Megjegyzés",
+    "setCompleted": "Sorozat teljesítve",
+    "tapDone": "Jelöld késznek",
+    "exerciseStatus": "Gyakorlat állapota",
+    "completed": "Teljesítve",
+    "inProgress": "Folyamatban"
   },
 
   "userMyPrograms": {
