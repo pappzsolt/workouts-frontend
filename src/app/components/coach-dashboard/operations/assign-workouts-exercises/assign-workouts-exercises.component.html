@@ -59,6 +59,18 @@
     </app-coach-exercises-board>
   </div>
 
+  <!-- Backend üzenet -->
+  <div
+    *ngIf="message"
+    class="message-container"
+    [ngClass]="{
+      'message-success': messageType === 'success',
+      'message-error': messageType === 'error'
+    }"
+  >
+    {{ message }}
+  </div>
+
   <!-- Mentés gomb -->
   <div class="save-container">
     <button
