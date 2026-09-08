@@ -86,6 +86,6 @@ export const API_ENDPOINTS = {
   // ============================================================
   // GENERAL API
   // ============================================================
-
+  userProgramStatistics: `${environment.apiUrl}/user/program-statistics`,
   api: environment.apiUrl,
 };

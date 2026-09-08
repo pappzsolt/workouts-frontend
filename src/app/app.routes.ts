@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
 import { LayoutComponent } from './layouts/default-layout/layout.component';
-
+import { UserProgramStatisticsComponent } from './components/user-dashboard/operations/program-statistics/program-statistics.component';
 import { AdminDashboardComponent } from './components/admin-dashboard/dashboard/admin-dashboard.component';
 import { AdminListUsersComponent } from './components/admin-dashboard/operations/admin-list-users/admin-list-users.component';
 import { MemberSearchComponent } from './components/admin-dashboard/operations/user-search/member-search.component';
@@ -235,7 +235,10 @@ export const routes: Routes = [
         path: 'statistics',
         component: UserStatisticsComponent,
       },
-
+      {
+        path: 'program-statistics',
+        component: UserProgramStatisticsComponent,
+      },
       {
         path: 'workouts',
         component: UserWorkoutsCalendarComponent,

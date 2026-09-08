@@ -3,6 +3,7 @@
 </h2>
 
 <div class="dashboard-cards-container">
+
   <!-- My Programs -->
   <div
     class="dashboard-card"
@@ -27,6 +28,18 @@
     </div>
   </div>
 
+  <!-- Program Statistics -->
+  <div
+    class="dashboard-card"
+    (click)="navigateTo('user/program-statistics')"
+  >
+    <div class="dashboard-card-emoji">📈</div>
+
+    <div class="dashboard-card-title">
+      {{ 'userDashboard.programStatistics' | translate }}
+    </div>
+  </div>
+
   <!-- My Workouts -->
   <div
     class="dashboard-card"
@@ -38,4 +51,5 @@
       {{ 'userDashboard.myWorkouts' | translate }}
     </div>
   </div>
+
 </div>
