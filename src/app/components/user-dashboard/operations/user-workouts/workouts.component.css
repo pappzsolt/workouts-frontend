@@ -106,3 +106,112 @@
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+/* ============================= */
+/* WORKOUT SZEKCIÓK */
+/* ============================= */
+
+.workout-section {
+  margin-bottom: 3rem;
+}
+
+.workout-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.workout-section-header h3 {
+  margin: 0;
+
+  font-size: 1.25rem;
+  font-weight: 700;
+
+  color: #374151;
+}
+
+.workout-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 2rem;
+  height: 2rem;
+
+  padding: 0 0.5rem;
+
+  border-radius: 9999px;
+
+  font-size: 0.875rem;
+  font-weight: 700;
+
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+
+/* ============================= */
+/* ELVÉGZENDŐ EDZÉSEK */
+/* ============================= */
+
+.workout-section-pending .workout-section-header {
+  border-bottom-color: #f59e0b;
+}
+
+.workout-section-pending .workout-count {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.workout-card-pending {
+  border-left: 4px solid #f59e0b;
+}
+
+
+/* ============================= */
+/* ELVÉGZETT EDZÉSEK */
+/* ============================= */
+
+.workout-section-completed .workout-section-header {
+  border-bottom-color: #22c55e;
+}
+
+.workout-section-completed .workout-count {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.workout-card-completed {
+  border-left: 4px solid #22c55e;
+  opacity: 0.9;
+}
+@media (max-width: 639px) {
+  .workouts-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .workout-section {
+    margin-bottom: 2rem;
+  }
+
+  .workout-section-header h3 {
+    font-size: 1.1rem;
+  }
+
+  .workout-card {
+    border-radius: 0.75rem;
+  }
+
+  .workout-image {
+    padding: 1rem;
+  }
+
+  .workout-emoji {
+    font-size: 2.5rem;
+  }
+}

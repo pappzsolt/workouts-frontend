@@ -596,7 +596,9 @@
     "weight": "Weight",
     "feedback": "Feedback",
     "notes": "Notes",
-    "noWorkouts": "There are no workouts for this program."
+    "noWorkouts": "There are no workouts for this program.",
+    "pendingWorkouts": "Pending Workouts",
+    "completedWorkouts": "Completed Workouts"
   },
   "coachProgramBoard": {
     "loading": "Loading...",

@@ -20,6 +20,9 @@ export class WorkoutsComponent implements OnInit {
 
   workouts$!: Observable<Workout[]>;
 
+  pendingWorkouts: Workout[] = [];
+  completedWorkouts: Workout[] = [];
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -29,33 +32,31 @@ export class WorkoutsComponent implements OnInit {
   ngOnInit(): void {
     this.programId = Number(this.route.snapshot.paramMap.get('id'));
 
-    // A program neve a navigation state-ből érkezik.
     const navState = window.history.state;
 
     this.programName = navState.programName || '';
 
     this.workouts$ = this.workoutsService.getWorkoutsByProgram(this.programId).pipe(
-      map((workouts) =>
-        workouts.map((workout) => {
+      map((workouts) => {
+        const mappedWorkouts = workouts.map((workout) => {
           const frontendCompleted =
             localStorage.getItem(`workout-completed-${workout.workoutId}`) === 'true';
 
-          if (frontendCompleted) {
-            return {
-              ...workout,
-              completed: true,
-            };
-          }
+          return {
+            ...workout,
+            completed: frontendCompleted || workout.completed,
+          };
+        });
 
-          return workout;
-        }),
-      ),
+        this.pendingWorkouts = mappedWorkouts.filter((workout) => !workout.completed);
+
+        this.completedWorkouts = mappedWorkouts.filter((workout) => workout.completed);
+
+        return mappedWorkouts;
+      }),
     );
   }
 
-  /**
-   * Navigáció a workout exercises oldalára.
-   */
   goToExercises(workoutId: number, workoutName: string): void {
     this.router.navigate(['/user/workouts', workoutId, 'exercises'], {
       state: {

@@ -596,7 +596,9 @@
     "weight": "Súly",
     "feedback": "Visszajelzés",
     "notes": "Megjegyzések",
-    "noWorkouts": "Nincsenek workoutok ehhez a programhoz."
+    "noWorkouts": "Nincsenek workoutok ehhez a programhoz.",
+    "pendingWorkouts": "Elvégzendő edzések",
+    "completedWorkouts": "Elvégzett edzések"
   },
   "coachProgramBoard": {
     "loading": "Betöltés...",
