@@ -1,4 +1,5 @@
 <div class="page-container">
+
   <!-- Workout lista -->
   <div class="content-card">
     <h2 class="section-title">
@@ -33,6 +34,7 @@
         </span>
 
         <button
+          type="button"
           (click)="removeWorkout(wid)"
           class="remove-button"
           [title]="'common.remove' | translate"
@@ -60,44 +62,12 @@
   <!-- Mentés gomb -->
   <div class="save-container">
     <button
+      type="button"
       (click)="saveSelectedWorkoutsAndExercises()"
       class="save-button"
     >
       {{ 'assignWorkoutExercises.save' | translate }}
     </button>
   </div>
-</div>
 
-<!-- Mentett workout-exercise kapcsolatok -->
-<div
-  *ngIf="savedWorkoutExercises.length"
-  class="saved-container"
->
-  <h2 class="section-title">
-    {{ 'assignWorkoutExercises.savedRelations' | translate }}
-  </h2>
-
-  <div class="items-list">
-    <div
-      *ngFor="let saved of savedWorkoutExercises"
-      class="saved-item"
-    >
-      <span class="item-text">
-        {{ saved.workoutName }} -
-        {{ saved.exerciseName }}
-        ({{ 'common.id' | translate }}: {{ saved.id }})
-      </span>
-
-      <!-- Csak akkor jelenítjük meg a gombot,
-           ha saved.id nem null/undefined -->
-      <button
-        *ngIf="saved.id != null"
-        (click)="removeSavedWorkoutExercise(saved.id!)"
-        class="remove-button"
-        [title]="'common.delete' | translate"
-      >
-        ✕
-      </button>
-    </div>
-  </div>
 </div>

@@ -1,55 +1,260 @@
-/* Alap layout */
+/* =========================================================
+   WORKOUT BOARD
+   ========================================================= */
+
 .coach-board {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  overflow-x: auto;
-  padding-bottom: 1.5rem;
-  position: relative;
-  z-index: 0;
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+  width: 100%;
+  max-height: 600px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0.5rem;
+  box-sizing: border-box;
 }
 
-/* Oszlop stílus */
-.coach-board-column {
-  background: #fff;
+/* =========================================================
+   WORKOUT KÁRTYA
+   ========================================================= */
+
+.coach-board > div {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  background: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 1rem;
+
   padding: 1rem;
-  width: 18rem;
-  flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  transition: box-shadow 0.2s ease;
-}
-.coach-board-column:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+
+  display: flex;
+  flex-direction: column;
+
+  min-height: 150px;
+
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.05);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+
+  touch-action: manipulation;
 }
 
-/* 🔹 Drag & Drop fixek */
+.coach-board > div:hover {
+  transform: translateY(-2px);
+
+  border-color: #93c5fd;
+
+  box-shadow:
+    0 8px 20px rgb(0 0 0 / 0.08);
+}
+
+/* =========================================================
+   KIVÁLASZTOTT WORKOUT
+   ========================================================= */
+
+.coach-board > div:has(input[type='checkbox']:checked) {
+  border-color: #3b82f6;
+
+  box-shadow:
+    0 0 0 2px rgb(59 130 246 / 0.15),
+    0 8px 20px rgb(59 130 246 / 0.12);
+
+  background: #f8fbff;
+}
+
+/* =========================================================
+   CHECKBOX
+   ========================================================= */
+
+.coach-board input[type='checkbox'] {
+  width: 1.25rem;
+  height: 1.25rem;
+
+  flex-shrink: 0;
+
+  cursor: pointer;
+}
+
+/* =========================================================
+   WORKOUT NÉV
+   ========================================================= */
+
+.coach-board p {
+  margin: 0;
+
+  font-size: 1.05rem;
+  line-height: 1.4rem;
+  font-weight: 600;
+
+  color: #1f2937;
+
+  overflow-wrap: anywhere;
+}
+
+/* =========================================================
+   SELECT + ID SOR
+   ========================================================= */
+
+.coach-board label {
+  min-width: 0;
+}
+
+.coach-board span {
+  white-space: nowrap;
+}
+
+/* =========================================================
+   ALSÓ WORKOUT INFORMÁCIÓ
+   ========================================================= */
+
+.coach-board > div > div:last-child {
+  margin-top: auto;
+}
+
+/* =========================================================
+   BETÖLTÉS / ÜZENET
+   ========================================================= */
+
+.coach-board-message {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 1rem;
+
+  text-align: center;
+
+  border-radius: 0.75rem;
+
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+
+  color: #6b7280;
+}
+
+/* =========================================================
+   DRAG & DROP
+   ========================================================= */
+
 .cdk-drag-preview {
   z-index: 99999 !important;
   position: fixed !important;
+
   pointer-events: none;
-  transform: rotate(2deg) scale(1.05);
-  background: white;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
+
+  transform: rotate(2deg) scale(1.03);
+
+  background: #ffffff;
+
+  box-shadow:
+    0 12px 28px rgb(0 0 0 / 0.2);
+
   border-radius: 0.75rem;
-  padding: 0.5rem;
+
+  padding: 0.75rem;
+
+  box-sizing: border-box;
 }
 
 .cdk-drag-placeholder {
   opacity: 0.3;
+
   border: 2px dashed #60a5fa;
+
   border-radius: 0.75rem;
 }
 
-/* Drop zóna highlight */
+/* =========================================================
+   DROP ZÓNA
+   ========================================================= */
+
 .cdk-drop-list-dragging {
   border-color: #3b82f6;
-  background: #f0f9ff;
+  background: #eff6ff;
 }
 
-/* Az egész board mindig a felső rétegben legyen */
+/* =========================================================
+   BOARD RÉTEG
+   ========================================================= */
+
 .coach-workout-board {
   position: relative;
   z-index: 1;
+  width: 100%;
+}
+
+/* =========================================================
+   TABLET
+   ========================================================= */
+
+@media (min-width: 640px) {
+  .coach-board {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  .coach-board > div {
+    padding: 1.25rem;
+    min-height: 160px;
+  }
+
+  .coach-board p {
+    font-size: 1.1rem;
+  }
+}
+
+/* =========================================================
+   LAPTOP
+   ========================================================= */
+
+@media (min-width: 900px) {
+  .coach-board {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* =========================================================
+   NAGY KÉPERNYŐ
+   ========================================================= */
+
+@media (min-width: 1200px) {
+  .coach-board {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  .coach-board > div {
+    min-height: 165px;
+  }
+}
+
+/* =========================================================
+   KIS MOBIL
+   ========================================================= */
+
+@media (max-width: 400px) {
+  .coach-board {
+    gap: 0.75rem;
+    padding: 0.25rem;
+  }
+
+  .coach-board > div {
+    padding: 0.875rem;
+    min-height: 140px;
+    border-radius: 0.875rem;
+  }
+
+  .coach-board p {
+    font-size: 1rem;
+  }
+
+  .coach-board input[type='checkbox'] {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
 }

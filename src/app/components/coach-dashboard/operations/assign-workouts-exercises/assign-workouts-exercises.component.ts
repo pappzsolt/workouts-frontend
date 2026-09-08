@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
@@ -7,7 +7,6 @@ import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exerci
 import { Workout } from '../../../../models/workout.model';
 import { Exercise } from '../../../../models/exercise.model';
 import { WorkoutExerciseService } from '../../../../services/coach/workout-exercises.service';
-import { SavedWorkoutExercise } from '../../../../models/workout-exercise.model';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
@@ -25,7 +24,8 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
   selectedWorkoutIds: number[] = [];
   selectedExercises: Exercise[] = [];
 
-  savedWorkoutExercises: SavedWorkoutExercise[] = [];
+  message = '';
+  messageType: 'success' | 'error' | '' = '';
 
   @Output() assignedWorkouts = new EventEmitter<number[]>();
   @Output() assignedExercises = new EventEmitter<Exercise[]>();
@@ -35,11 +35,14 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
   ngOnInit(): void {}
 
   onWorkoutsChange(updatedIds: number[]): void {
-    const prevSelectedWorkouts = [...this.selectedWorkoutIds];
+    const previousSelectedWorkouts = [...this.selectedWorkoutIds];
 
     this.selectedWorkoutIds = [...updatedIds];
 
-    if (JSON.stringify(prevSelectedWorkouts) !== JSON.stringify(this.selectedWorkoutIds)) {
+    this.message = '';
+    this.messageType = '';
+
+    if (JSON.stringify(previousSelectedWorkouts) !== JSON.stringify(this.selectedWorkoutIds)) {
       this.selectedExercises = [];
       this.assignedExercises.emit(this.selectedExercises);
     }
@@ -47,22 +50,13 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
     console.log('Selected workouts:', this.selectedWorkoutIds);
 
     this.assignedWorkouts.emit(this.selectedWorkoutIds);
-
-    if (this.selectedWorkoutIds.length > 0) {
-      const workoutId = this.selectedWorkoutIds[0];
-
-      // Betöltjük a már mentett workout-exercise kapcsolatokat
-      this.loadSavedWorkoutExercises(workoutId);
-    } else {
-      this.savedWorkoutExercises = [];
-      this.selectedExercises = [];
-
-      this.assignedExercises.emit(this.selectedExercises);
-    }
   }
 
   onExercisesChange(updatedExercises: Exercise[]): void {
     this.selectedExercises = [...updatedExercises];
+
+    this.message = '';
+    this.messageType = '';
 
     console.log('Selected exercises:', this.selectedExercises);
 
@@ -82,10 +76,30 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
   }
 
   saveSelectedWorkoutsAndExercises(): void {
+    this.message = '';
+    this.messageType = '';
+
+    if (this.selectedWorkoutIds.length === 0) {
+      this.message = 'Válassz ki legalább egy workoutot.';
+      this.messageType = 'error';
+      return;
+    }
+
+    if (this.selectedExercises.length === 0) {
+      this.message = 'Válassz ki legalább egy exercise-t.';
+      this.messageType = 'error';
+      return;
+    }
+
     console.log('🚀 Mentés backendhez:', {
       workouts: this.selectedWorkoutIds,
       exercises: this.selectedExercises,
     });
+
+    const requests: Array<{
+      workoutId: number;
+      exerciseId: number;
+    }> = [];
 
     for (const workoutId of this.selectedWorkoutIds) {
       for (const exercise of this.selectedExercises) {
@@ -93,91 +107,103 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
           continue;
         }
 
-        this.workoutExerciseService.addWorkoutExerciseSimple(workoutId, exercise.id).subscribe({
-          next: (res: any) => {
-            console.log('Mentés sikeres:', res);
-
-            const savedObj: SavedWorkoutExercise = {
-              id: res.id ?? 0,
-              workoutId: workoutId,
-              exerciseId: exercise.id!,
-              workoutName: res.workoutName ?? '',
-              exerciseName: res.exerciseName ?? '',
-              status: res.status,
-              message: res.message,
-            };
-
-            this.savedWorkoutExercises.push(savedObj);
-          },
-
-          error: (err: HttpErrorResponse) => {
-            console.error('Mentés hiba:', err);
-
-            if (err.error) {
-              console.error('Backend válasz:', err.error);
-            }
-          },
+        requests.push({
+          workoutId,
+          exerciseId: exercise.id,
         });
       }
     }
-  }
 
-  /**
-   * Mentett workout-exercise kapcsolatok betöltése workoutId alapján
-   */
-  loadSavedWorkoutExercises(workoutId: number): void {
-    if (!workoutId || workoutId <= 0) {
+    if (requests.length === 0) {
+      this.message = 'Nincs menthető exercise.';
+      this.messageType = 'error';
       return;
     }
 
-    this.workoutExerciseService.getWorkoutExercisesByWorkoutId(workoutId).subscribe({
-      next: (res: any) => {
-        // A backend válaszából csak a data tömb kell
-        this.savedWorkoutExercises = res.data || [];
+    let completedRequests = 0;
+    let successCount = 0;
+    let errorCount = 0;
 
-        console.log('Mentett kapcsolatok betöltve:', this.savedWorkoutExercises);
+    const errors: string[] = [];
+    const successes: string[] = [];
 
-        // Frissítjük a kiválasztott exercise-eket
-        this.selectedExercises = this.exercises.filter((e) =>
-          this.savedWorkoutExercises.some((s: SavedWorkoutExercise) => s.exerciseId === e.id),
-        );
+    for (const request of requests) {
+      this.workoutExerciseService
+        .addWorkoutExerciseSimple(request.workoutId, request.exerciseId)
+        .subscribe({
+          next: (res: any) => {
+            completedRequests++;
+            successCount++;
 
-        // Output esemény frissítése
-        this.assignedExercises.emit(this.selectedExercises);
-      },
+            console.log('Mentés sikeres:', res);
 
-      error: (err: HttpErrorResponse) => {
-        console.error('Mentett kapcsolatok betöltése hiba:', err);
+            const successMessage = res?.message || 'Exercise sikeresen hozzárendelve a workouthoz.';
 
-        if (err.error) {
-          console.error('Backend válasz:', err.error);
-        }
-      },
-    });
+            if (!successes.includes(successMessage)) {
+              successes.push(successMessage);
+            }
+
+            if (completedRequests === requests.length) {
+              this.finishSave(successCount, errorCount, successes, errors);
+            }
+          },
+
+          error: (err: HttpErrorResponse) => {
+            completedRequests++;
+            errorCount++;
+
+            console.error('Mentés hiba:', err);
+            console.error('Backend válasz:', err.error);
+
+            const backendMessage = typeof err.error === 'string' ? err.error : err.error?.message;
+
+            const errorMessage =
+              backendMessage ||
+              `Hiba történt az exercise hozzárendelése közben. HTTP ${err.status}`;
+
+            if (!errors.includes(errorMessage)) {
+              errors.push(errorMessage);
+            }
+
+            if (completedRequests === requests.length) {
+              this.finishSave(successCount, errorCount, successes, errors);
+            }
+          },
+        });
+    }
   }
 
-  /**
-   * Workout-exercise kapcsolat törlése ID alapján
-   */
-  deleteWorkoutExerciseById(id: number): void {
-    this.workoutExerciseService.deleteWorkoutExerciseById(id).subscribe({
-      next: (res: any) => {
-        console.log('Törlés sikeres:', res);
-      },
-
-      error: (err: HttpErrorResponse) => {
-        console.error('Törlés hiba:', err);
-
-        if (err.error) {
-          console.error('Backend válasz:', err.error);
-        }
-      },
+  private finishSave(
+    successCount: number,
+    errorCount: number,
+    successes: string[],
+    errors: string[],
+  ): void {
+    console.log('Mentés befejezve:', {
+      successCount,
+      errorCount,
+      successes,
+      errors,
     });
-  }
 
-  removeSavedWorkoutExercise(id: number): void {
-    this.deleteWorkoutExerciseById(id);
+    if (errorCount === 0) {
+      this.message = successes[0] || 'Az exercise-ek sikeresen hozzárendelésre kerültek.';
+      this.messageType = 'success';
+      return;
+    }
 
-    this.savedWorkoutExercises = this.savedWorkoutExercises.filter((w) => w.id !== id);
+    if (successCount === 0) {
+      this.message = errors.join(' ');
+      this.messageType = 'error';
+      return;
+    }
+
+    this.message = [
+      `Sikeres mentések: ${successCount}.`,
+      `Hibás mentések: ${errorCount}.`,
+      ...errors,
+    ].join(' ');
+
+    this.messageType = 'error';
   }
 }
