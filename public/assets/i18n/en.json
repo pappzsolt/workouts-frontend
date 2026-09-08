@@ -784,6 +784,7 @@
     "weightChange": "Weight change",
     "startRepetitions": "Starting repetitions",
     "currentRepetitions": "Current repetitions",
-    "repetitionsChange": "Repetitions change"
+    "repetitionsChange": "Repetitions change",
+    "noExercises": "There are no exercises in this workout."
   }
 }

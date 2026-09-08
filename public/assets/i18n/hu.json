@@ -784,6 +784,7 @@
     "weightChange": "Súly változás",
     "startRepetitions": "Kezdő ismétlésszám",
     "currentRepetitions": "Jelenlegi ismétlésszám",
-    "repetitionsChange": "Ismétlésszám változás"
+    "repetitionsChange": "Ismétlésszám változás",
+    "noExercises": "Ehhez a workouthoz nincs exercise."
   }
 }
