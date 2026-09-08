@@ -1,0 +1,799 @@
+<div class="program-statistics">
+
+  <!-- ==========================================================
+       FEJLÉC
+       ========================================================== -->
+
+  <div class="statistics-header">
+    <h1 class="statistics-title">
+      {{ 'userProgramStatistics.title' | translate }}
+    </h1>
+
+    <p class="statistics-subtitle">
+      {{ 'userProgramStatistics.subtitle' | translate }}
+    </p>
+  </div>
+
+  <!-- ==========================================================
+       PROGRAMOK
+       ========================================================== -->
+
+  <section class="program-section">
+
+    <h2 class="section-title">
+      {{ 'userProgramStatistics.selectProgram' | translate }}
+    </h2>
+
+    <!-- Programok betöltése -->
+    <div
+      *ngIf="loadingPrograms"
+      class="statistics-message"
+    >
+      {{ 'userProgramStatistics.loadingPrograms' | translate }}
+    </div>
+
+    <!-- Program betöltési hiba -->
+    <div
+      *ngIf="
+        message &&
+        messageType === 'error' &&
+        !loadingPrograms &&
+        !loadingStatistics
+      "
+      class="statistics-message statistics-error"
+    >
+      {{ message }}
+    </div>
+
+    <!-- Program lista -->
+    <div
+      *ngIf="
+        !loadingPrograms &&
+        programs.length
+      "
+      class="program-list"
+    >
+
+      <button
+        *ngFor="let program of pagedPrograms"
+        type="button"
+        class="program-card"
+        [class.program-card-selected]="
+          isProgramSelected(
+            program.programId ?? program.id
+          )
+        "
+        (click)="
+          selectProgram(
+            program.programId ?? program.id
+          )
+        "
+      >
+
+        <div class="program-card-content">
+
+          <div class="program-card-title">
+            {{ program.programName ?? program.name }}
+          </div>
+
+          <div
+            *ngIf="
+              program.programDesc ??
+              program.description
+            "
+            class="program-card-description"
+          >
+            {{ program.programDesc ?? program.description }}
+          </div>
+
+          <div class="program-card-details">
+
+            <span
+              *ngIf="
+                program.durationDays != null
+              "
+            >
+              {{ program.durationDays }}
+              {{ 'userProgramStatistics.days' | translate }}
+            </span>
+
+            <span
+              *ngIf="program.difficultyLevel"
+            >
+              {{ program.difficultyLevel }}
+            </span>
+
+          </div>
+
+        </div>
+
+        <div
+          *ngIf="
+            isProgramSelected(
+              program.programId ?? program.id
+            )
+          "
+          class="program-selected-indicator"
+        >
+          ✓
+        </div>
+
+      </button>
+
+    </div>
+
+    <!-- Nincs program -->
+    <div
+      *ngIf="
+        !loadingPrograms &&
+        !programs.length &&
+        !message
+      "
+      class="statistics-message"
+    >
+      {{ 'userProgramStatistics.noPrograms' | translate }}
+    </div>
+
+    <!-- Program lapozás -->
+    <div
+      *ngIf="
+        !loadingPrograms &&
+        totalProgramPages > 1
+      "
+      class="program-pagination"
+    >
+
+      <button
+        type="button"
+        class="pagination-button"
+        (click)="prevProgramPage()"
+        [disabled]="programPage === 1"
+      >
+        ◀
+        {{ 'common.previous' | translate }}
+      </button>
+
+      <span class="pagination-info">
+        {{ 'userProgramStatistics.page' | translate }}
+        {{ programPage }}
+        /
+        {{ totalProgramPages }}
+      </span>
+
+      <button
+        type="button"
+        class="pagination-button"
+        (click)="nextProgramPage()"
+        [disabled]="
+          programPage === totalProgramPages
+        "
+      >
+        {{ 'common.next' | translate }}
+        ▶
+      </button>
+
+    </div>
+
+  </section>
+
+  <!-- ==========================================================
+       STATISZTIKA
+       ========================================================== -->
+
+  <section
+    *ngIf="selectedProgramId"
+    class="statistics-section"
+  >
+
+    <!-- Betöltés -->
+    <div
+      *ngIf="loadingStatistics"
+      class="statistics-message"
+    >
+      {{ 'userProgramStatistics.loading' | translate }}
+    </div>
+
+    <!-- Backend hiba -->
+    <div
+      *ngIf="
+        !loadingStatistics &&
+        message &&
+        messageType === 'error'
+      "
+      class="statistics-message statistics-error"
+    >
+      {{ message }}
+    </div>
+
+    <!-- Nincs adat -->
+    <div
+      *ngIf="
+        !loadingStatistics &&
+        !groupedWorkouts.length &&
+        !message
+      "
+      class="statistics-message"
+    >
+      {{ 'userProgramStatistics.noData' | translate }}
+    </div>
+
+    <!-- ========================================================
+         AKTUÁLIS WORKOUT
+         ======================================================== -->
+
+    <div
+      *ngIf="
+        !loadingStatistics &&
+        currentWorkout
+      "
+      class="workout-section"
+    >
+
+      <!-- Workout lapozó fejléc -->
+
+      <div class="workout-navigation">
+
+        <button
+          type="button"
+          class="pagination-button"
+          (click)="previousWorkout()"
+          [disabled]="currentWorkoutIndex === 0"
+        >
+          ◀
+          {{ 'common.previous' | translate }}
+        </button>
+
+        <div class="workout-navigation-info">
+
+          <span class="workout-navigation-label">
+            {{ 'userProgramStatistics.workout' | translate }}
+          </span>
+
+          <span class="workout-navigation-page">
+            {{ currentWorkoutIndex + 1 }}
+            /
+            {{ totalWorkouts }}
+          </span>
+
+        </div>
+
+        <button
+          type="button"
+          class="pagination-button"
+          (click)="nextWorkout()"
+          [disabled]="
+            currentWorkoutIndex === totalWorkouts - 1
+          "
+        >
+          {{ 'common.next' | translate }}
+          ▶
+        </button>
+
+      </div>
+
+      <!-- ======================================================
+           WORKOUT
+           ====================================================== -->
+
+      <div class="workout-card">
+
+        <!-- Workout fejléc -->
+
+        <div class="workout-header">
+
+          <div>
+            <h2 class="workout-title">
+              {{ currentWorkout.workoutName }}
+            </h2>
+
+            <p
+              *ngIf="
+                currentWorkout.workoutDescription
+              "
+              class="workout-description"
+            >
+              {{ currentWorkout.workoutDescription }}
+            </p>
+          </div>
+
+          <div class="workout-status">
+
+            <span
+              *ngIf="
+                currentWorkout.userWorkoutCompleted
+              "
+              class="status-completed"
+            >
+              ✓
+              {{ 'userProgramStatistics.completed' | translate }}
+            </span>
+
+            <span
+              *ngIf="
+                !currentWorkout.userWorkoutCompleted
+              "
+              class="status-not-completed"
+            >
+              {{ 'userProgramStatistics.notCompleted' | translate }}
+            </span>
+
+          </div>
+
+        </div>
+
+        <!-- ====================================================
+             WORKOUT ADATOK
+             ==================================================== -->
+
+        <div class="workout-details">
+
+          <span
+            *ngIf="
+              currentWorkout.workoutDate
+            "
+          >
+            <strong>
+              {{ 'userProgramStatistics.workoutDate' | translate }}:
+            </strong>
+
+            {{ currentWorkout.workoutDate }}
+          </span>
+
+          <span
+            *ngIf="
+              currentWorkout.durationMinutes != null
+            "
+          >
+            <strong>
+              {{ 'userProgramStatistics.duration' | translate }}:
+            </strong>
+
+            {{ currentWorkout.durationMinutes }}
+            {{ 'userProgramStatistics.minutes' | translate }}
+          </span>
+
+          <span
+            *ngIf="
+              currentWorkout.intensityLevel
+            "
+          >
+            <strong>
+              {{ 'userProgramStatistics.intensity' | translate }}:
+            </strong>
+
+            {{ currentWorkout.intensityLevel }}
+          </span>
+
+          <span
+            *ngIf="
+              currentWorkout.userWorkoutPerformedAt
+            "
+          >
+            <strong>
+              {{ 'userProgramStatistics.performedAt' | translate }}:
+            </strong>
+
+            {{ currentWorkout.userWorkoutPerformedAt }}
+          </span>
+
+        </div>
+
+        <!-- Workout feedback -->
+
+        <div
+          *ngIf="
+            currentWorkout.userWorkoutFeedback
+          "
+          class="workout-extra"
+        >
+          <strong>
+            {{ 'userProgramStatistics.feedback' | translate }}:
+          </strong>
+
+          {{ currentWorkout.userWorkoutFeedback }}
+        </div>
+
+        <!-- Workout notes -->
+
+        <div
+          *ngIf="
+            currentWorkout.userWorkoutNotes
+          "
+          class="workout-extra"
+        >
+          <strong>
+            {{ 'userProgramStatistics.notes' | translate }}:
+          </strong>
+
+          {{ currentWorkout.userWorkoutNotes }}
+        </div>
+
+        <!-- ====================================================
+             EXERCISE-EK
+             ==================================================== -->
+
+        <div
+          *ngIf="
+            currentWorkout.exercises.length
+          "
+          class="exercise-list"
+        >
+
+          <div
+            *ngFor="
+              let exercise of currentWorkout.exercises
+            "
+            class="exercise-statistics-card"
+          >
+
+            <!-- Exercise fejléc -->
+
+            <div class="exercise-statistics-header">
+
+              <div>
+
+                <h3 class="exercise-title">
+                  {{ exercise.exerciseName }}
+                </h3>
+
+                <div class="exercise-meta">
+
+                  <span
+                    *ngIf="
+                      exercise.muscleGroup
+                    "
+                  >
+                    {{ 'userProgramStatistics.muscleGroup' | translate }}:
+                    {{ exercise.muscleGroup }}
+                  </span>
+
+                  <span
+                    *ngIf="
+                      exercise.equipment
+                    "
+                  >
+                    {{ 'userProgramStatistics.equipment' | translate }}:
+                    {{ exercise.equipment }}
+                  </span>
+
+                  <span
+                    *ngIf="
+                      exercise.difficultyLevel
+                    "
+                  >
+                    {{ exercise.difficultyLevel }}
+                  </span>
+
+                </div>
+
+              </div>
+
+              <div
+                *ngIf="
+                  exercise.userWorkoutExerciseCompleted
+                "
+                class="status-completed"
+              >
+                ✓
+              </div>
+
+            </div>
+
+            <!-- ==================================================
+                 FEJLŐDÉS
+                 ================================================== -->
+
+            <div
+              *ngIf="
+                exercise.startWeight != null ||
+                exercise.currentWeight != null ||
+                exercise.startRepetitions != null ||
+                exercise.currentRepetitions != null
+              "
+              class="progress-container"
+            >
+
+              <h4 class="progress-title">
+                {{ 'userProgramStatistics.progress' | translate }}
+              </h4>
+
+              <div class="progress-grid">
+
+                <!-- Súly -->
+
+                <div
+                  *ngIf="
+                    exercise.startWeight != null ||
+                    exercise.currentWeight != null
+                  "
+                  class="progress-item"
+                >
+
+                  <span class="progress-label">
+                    {{ 'userProgramStatistics.weight' | translate }}
+                  </span>
+
+                  <span
+                    *ngIf="
+                      exercise.startWeight != null
+                    "
+                  >
+                    {{ 'userProgramStatistics.startWeight' | translate }}:
+                    {{ exercise.startWeight }} kg
+                  </span>
+
+                  <span
+                    *ngIf="
+                      exercise.currentWeight != null
+                    "
+                  >
+                    {{ 'userProgramStatistics.currentWeight' | translate }}:
+                    {{ exercise.currentWeight }} kg
+                  </span>
+
+                  <span
+                    *ngIf="
+                      exercise.weightChange != null
+                    "
+                    class="progress-change"
+                    [class.progress-change-negative]="
+                      exercise.weightChange < 0
+                    "
+                  >
+                    {{ 'userProgramStatistics.weightChange' | translate }}:
+
+                    {{
+                      exercise.weightChange > 0
+                        ? '+'
+                        : ''
+                    }}
+
+                    {{ exercise.weightChange }} kg
+                  </span>
+
+                </div>
+
+                <!-- Ismétlés -->
+
+                <div
+                  *ngIf="
+                    exercise.startRepetitions != null ||
+                    exercise.currentRepetitions != null
+                  "
+                  class="progress-item"
+                >
+
+                  <span class="progress-label">
+                    {{ 'userProgramStatistics.repetitions' | translate }}
+                  </span>
+
+                  <span
+                    *ngIf="
+                      exercise.startRepetitions != null
+                    "
+                  >
+                    {{ 'userProgramStatistics.startRepetitions' | translate }}:
+                    {{ exercise.startRepetitions }}
+                  </span>
+
+                  <span
+                    *ngIf="
+                      exercise.currentRepetitions != null
+                    "
+                  >
+                    {{ 'userProgramStatistics.currentRepetitions' | translate }}:
+                    {{ exercise.currentRepetitions }}
+                  </span>
+
+                  <span
+                    *ngIf="
+                      exercise.repetitionsChange != null
+                    "
+                    class="progress-change"
+                    [class.progress-change-negative]="
+                      exercise.repetitionsChange < 0
+                    "
+                  >
+                    {{ 'userProgramStatistics.repetitionsChange' | translate }}:
+
+                    {{
+                      exercise.repetitionsChange > 0
+                        ? '+'
+                        : ''
+                    }}
+
+                    {{ exercise.repetitionsChange }}
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- ==================================================
+                 SETEK
+                 ================================================== -->
+
+            <div
+              *ngIf="
+                exercise.sets.length
+              "
+              class="sets-container"
+            >
+
+              <h4 class="sets-title">
+                {{ 'userProgramStatistics.sets' | translate }}
+              </h4>
+
+              <div class="sets-list">
+
+                <div
+                  *ngFor="
+                    let set of exercise.sets
+                  "
+                  class="set-row"
+                >
+
+                  <span class="set-number">
+                    {{ 'userProgramStatistics.set' | translate }}
+                    {{ set.setNumber }}
+                  </span>
+
+                  <span class="set-target">
+
+                    <strong>
+                      {{ 'userProgramStatistics.target' | translate }}:
+                    </strong>
+
+                    <span
+                      *ngIf="
+                        set.targetWeightKg != null
+                      "
+                    >
+                      {{ set.targetWeightKg }} kg
+                    </span>
+
+                    <span
+                      *ngIf="
+                        set.targetRepetitions != null
+                      "
+                    >
+                      × {{ set.targetRepetitions }}
+                    </span>
+
+                  </span>
+
+                  <span class="set-actual">
+
+                    <strong>
+                      {{ 'userProgramStatistics.actual' | translate }}:
+                    </strong>
+
+                    <span
+                      *ngIf="
+                        set.actualWeightKg != null
+                      "
+                    >
+                      {{ set.actualWeightKg }} kg
+                    </span>
+
+                    <span
+                      *ngIf="
+                        set.actualRepetitions != null
+                      "
+                    >
+                      × {{ set.actualRepetitions }}
+                    </span>
+
+                  </span>
+
+                  <span
+                    *ngIf="
+                      set.setCompleted
+                    "
+                    class="set-completed"
+                  >
+                    ✓
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+            <!-- Exercise feedback -->
+
+            <div
+              *ngIf="
+                exercise.userWorkoutExerciseFeedback
+              "
+              class="exercise-extra"
+            >
+              <strong>
+                {{ 'userProgramStatistics.feedback' | translate }}:
+              </strong>
+
+              {{ exercise.userWorkoutExerciseFeedback }}
+            </div>
+
+            <!-- Exercise notes -->
+
+            <div
+              *ngIf="
+                exercise.userWorkoutExerciseNotes
+              "
+              class="exercise-extra"
+            >
+              <strong>
+                {{ 'userProgramStatistics.notes' | translate }}:
+              </strong>
+
+              {{ exercise.userWorkoutExerciseNotes }}
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ====================================================
+             NINCS EXERCISE
+             ==================================================== -->
+
+        <div
+          *ngIf="
+            !currentWorkout.exercises.length
+          "
+          class="statistics-message"
+        >
+          {{ 'userProgramStatistics.noExercises' | translate }}
+        </div>
+
+      </div>
+
+      <!-- ======================================================
+           WORKOUT LAPOZÁS ALUL IS
+           ====================================================== -->
+
+      <div
+        *ngIf="totalWorkouts > 1"
+        class="workout-pagination"
+      >
+
+        <button
+          type="button"
+          class="pagination-button"
+          (click)="previousWorkout()"
+          [disabled]="currentWorkoutIndex === 0"
+        >
+          ◀
+          {{ 'common.previous' | translate }}
+        </button>
+
+        <span class="pagination-info">
+          {{ 'userProgramStatistics.workout' | translate }}
+          {{ currentWorkoutIndex + 1 }}
+          /
+          {{ totalWorkouts }}
+        </span>
+
+        <button
+          type="button"
+          class="pagination-button"
+          (click)="nextWorkout()"
+          [disabled]="
+            currentWorkoutIndex === totalWorkouts - 1
+          "
+        >
+          {{ 'common.next' | translate }}
+          ▶
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
