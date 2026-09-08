@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { Workout } from '../../../../models/workout.model';
+import { WorkoutDto } from '../../../../models/exercise.model';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
 import { NewWorkoutComponent } from '../../operations/coach-workouts/coach-workout-new/new-workout.component';
 
@@ -108,20 +109,20 @@ export class WorkoutListComponent implements OnInit, OnChanges {
   loadWorkouts(): void {
     console.log('[CoachWorkouts] loadWorkouts()');
 
-    this.coachWorkoutsService.getUniqueMyWorkouts().subscribe({
-      next: (res: Workout[]) => {
+    this.coachWorkoutsService.getUniqueWorkoutsWithExercises().subscribe({
+      next: (res: WorkoutDto[]) => {
         console.log('[CoachWorkouts] response:', res);
 
-        this.workouts = (res ?? []).map((w: Workout): Workout => ({
+        this.workouts = (res ?? []).map((w: WorkoutDto): Workout => ({
           id: w.id,
 
-          workoutName: w.workoutName ?? w.name ?? '',
+          workoutName: w.name ?? '',
 
-          description: w.description ?? w.workoutDescription ?? '',
+          description: w.description ?? '',
 
           durationMinutes: w.durationMinutes,
 
-          difficultyLevel: w.difficultyLevel,
+          difficultyLevel: undefined,
 
           exercises: w.exercises ?? [],
         }));

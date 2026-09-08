@@ -1,18 +1,17 @@
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AssignProgramService } from '../../../../services/coach/assign-program/assignprogram.service';
+import { TranslateService } from '@ngx-translate/core';
 
+import { AssignProgramService } from '../../../../services/coach/assign-program/assignprogram.service';
 import { UserNameIdService, UserNameId } from '../../../../services/user/user-name-id.service';
 
 import { CoachProgramSelectComponent } from '../../../shared/programs/coach-program-select.component';
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
   selector: 'app-assignprogram',
   standalone: true,
-  imports: [CommonModule, FormsModule, HttpClientModule, CoachProgramSelectComponent],
+  imports: [...SHARED_IMPORTS, CoachProgramSelectComponent],
   templateUrl: './assignprogram.component.html',
   styleUrls: ['./assignprogram.component.css'],
 })
@@ -20,6 +19,8 @@ export class AssignProgramComponent implements OnInit {
   private assignService = inject(AssignProgramService);
   private userNameIdService = inject(UserNameIdService);
   private route = inject(ActivatedRoute);
+  private translate = inject(TranslateService);
+
   userId!: number;
   selectedProgramId!: number;
 
@@ -42,13 +43,14 @@ export class AssignProgramComponent implements OnInit {
 
     this.loadUsers();
   }
+
   loadUsers(): void {
     this.userNameIdService.getAllUsers().subscribe({
       next: (users: UserNameId[]) => {
         this.users = users;
       },
       error: () => {
-        this.message = 'Felhasználók betöltése sikertelen.';
+        this.message = this.translate.instant('assignProgram.loadUsersError');
         this.success = false;
       },
     });
@@ -56,7 +58,7 @@ export class AssignProgramComponent implements OnInit {
 
   assignProgram(): void {
     if (!this.userId || !this.selectedProgramId) {
-      this.message = '❌ Kérlek, válassz felhasználót és programot!';
+      this.message = this.translate.instant('assignProgram.selectUserAndProgram');
       this.success = false;
       return;
     }
@@ -69,12 +71,14 @@ export class AssignProgramComponent implements OnInit {
       next: (response) => {
         this.loading = false;
         this.success = response.status === 'success';
-        this.message = response.message || 'Program sikeresen hozzárendelve!';
+
+        this.message = response.message || this.translate.instant('assignProgram.success');
       },
       error: () => {
         this.loading = false;
         this.success = false;
-        this.message = 'Hiba történt a hozzárendelés során.';
+
+        this.message = this.translate.instant('assignProgram.error');
       },
     });
   }

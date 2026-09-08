@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { TranslateService } from '@ngx-translate/core';
 
 import { WorkoutExercisesManagerService } from '../../../../services/coach/workout-exercises-manager.service';
 import { UserWorkoutExerciseSetService } from '../../../../services/coach/user-workout-exercise-set';
@@ -9,11 +8,12 @@ import { UserWorkoutExerciseSetModel } from '../../../../models/user-workout-exe
 
 import { UserSelectComponent } from '../../../shared/user/user-select.component';
 import { CoachProgramSelectComponent } from '../../../shared/programs/coach-program-select.component';
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
   selector: 'app-user-workout-exercise-manager',
   standalone: true,
-  imports: [CommonModule, FormsModule, UserSelectComponent, CoachProgramSelectComponent],
+  imports: [...SHARED_IMPORTS, UserSelectComponent, CoachProgramSelectComponent],
   templateUrl: './user-workout-exercise-manager.component.html',
   styleUrls: ['./user-workout-exercise-manager.component.css'],
 })
@@ -46,6 +46,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
   constructor(
     private service: WorkoutExercisesManagerService,
     private setService: UserWorkoutExerciseSetService,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {}
@@ -82,17 +83,18 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
     const userWorkoutExerciseId = this.selectedUserWorkoutExerciseId;
 
     if (!userWorkoutExerciseId) {
-      alert('Nincs kiválasztva user workout exercise.');
+      alert(this.translate.instant('userWorkoutExerciseManager.noExerciseSelected'));
       return;
     }
 
     this.setService.addSet(userWorkoutExerciseId).subscribe({
       next: () => {
-        // A backend után újra lekérjük az aktuális set-eket.
         this.loadSets(userWorkoutExerciseId);
       },
       error: (err: any) => {
-        alert(err?.error?.message || 'Hiba történt az új set hozzáadásakor.');
+        alert(
+          err?.error?.message || this.translate.instant('userWorkoutExerciseManager.addSetError'),
+        );
       },
     });
   }
@@ -103,7 +105,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
 
   updateSet(set: UserWorkoutExerciseSetModel): void {
     if (set.id == null) {
-      alert('A set azonosítója hiányzik.');
+      alert(this.translate.instant('userWorkoutExerciseManager.setIdMissing'));
       return;
     }
 
@@ -119,10 +121,17 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
 
     this.setService.updateSet(set.id, data).subscribe({
       next: () => {
-        alert(`Set #${set.setNumber} sikeresen módosítva.`);
+        alert(
+          this.translate.instant('userWorkoutExerciseManager.updateSetSuccess', {
+            setNumber: set.setNumber,
+          }),
+        );
       },
       error: (err: any) => {
-        alert(err?.error?.message || 'Hiba történt a set módosításakor.');
+        alert(
+          err?.error?.message ||
+            this.translate.instant('userWorkoutExerciseManager.updateSetError'),
+        );
       },
     });
   }
@@ -133,11 +142,17 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
 
   deleteSet(set: UserWorkoutExerciseSetModel): void {
     if (set.id == null) {
-      alert('A set azonosítója hiányzik.');
+      alert(this.translate.instant('userWorkoutExerciseManager.setIdMissing'));
       return;
     }
 
-    if (!confirm(`Biztosan törölni szeretnéd a ${set.setNumber}. set-et?`)) {
+    if (
+      !confirm(
+        this.translate.instant('userWorkoutExerciseManager.deleteSetConfirm', {
+          setNumber: set.setNumber,
+        }),
+      )
+    ) {
       return;
     }
 
@@ -145,18 +160,18 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
 
     this.setService.deleteSet(set.id).subscribe({
       next: () => {
-        // Azonnal frissítjük a lokális listát.
         this.selectedSets = this.selectedSets.filter((currentSet) => currentSet.id !== set.id);
 
-        // A backend újraszámozhatja a set-eket,
-        // ezért újra lekérjük az aktuális állapotot.
         if (userWorkoutExerciseId) {
           this.loadSets(userWorkoutExerciseId);
           this.loadUserProgramWithExercises();
         }
       },
       error: (err: any) => {
-        alert(err?.error?.message || 'Hiba történt a set törlésekor.');
+        alert(
+          err?.error?.message ||
+            this.translate.instant('userWorkoutExerciseManager.deleteSetError'),
+        );
       },
     });
   }
@@ -167,7 +182,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
 
   addUserWorkouts(): void {
     if (!this.selectedUserId || !this.selectedProgramId) {
-      alert('Hiányzó adatok: userId vagy programId!');
+      alert(this.translate.instant('userWorkoutExerciseManager.missingUserOrProgram'));
       return;
     }
 
@@ -176,12 +191,10 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.selectedUserWorkoutId = res.userWorkoutId;
-
           this.newWorkoutExerciseId = undefined;
         },
         error: () => {
-          // A hiba itt nem kerül kiírásra.
-          // A komponens jelenlegi működését megtartjuk.
+          // A jelenlegi működés szerint itt nincs üzenet.
         },
       });
   }
@@ -192,7 +205,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
 
   loadUserProgramWithExercises(): void {
     if (!this.selectedUserId || !this.selectedProgramId) {
-      alert('Előbb válassz usert és programot!');
+      alert(this.translate.instant('userWorkoutExerciseManager.selectUserAndProgram'));
       return;
     }
 
@@ -201,7 +214,6 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.userProgramData = data ?? [];
-
           this.dayGroups = this.groupByDayAndWorkout(this.userProgramData);
         },
         error: () => {
@@ -250,23 +262,14 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
 
       workout.exercises.push({
         userWorkoutExerciseId: row.user_workout_exercise_id,
-
         workoutExerciseId: row.workout_exercise_id,
-
         order: row.exercise_order,
-
         exerciseId: row.exercise_id,
-
         exerciseName: row.exercise_name,
-
         exerciseCompleted: row.exercise_completed === true,
-
         setsDone: row.sets_done,
-
         feedback: row.feedback,
-
         notes: row.notes,
-
         performedAt: row.performed_at,
       });
     }
@@ -298,24 +301,25 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
 
   updateScheduledDate(workout: any, scheduledAt: string): void {
     if (!workout.userWorkoutId) {
-      alert('A user workout azonosítója hiányzik.');
+      alert(this.translate.instant('userWorkoutExerciseManager.userWorkoutIdMissing'));
       return;
     }
 
     if (!scheduledAt) {
-      alert('A scheduled date megadása kötelező.');
+      alert(this.translate.instant('userWorkoutExerciseManager.scheduledDateRequired'));
       return;
     }
 
     this.service.updateUserWorkoutScheduledDate(workout.userWorkoutId, scheduledAt).subscribe({
       next: () => {
         workout.scheduledAt = scheduledAt;
-
-        // Az aktuális napstruktúrát újratöltjük.
         this.loadUserProgramWithExercises();
       },
       error: (err: any) => {
-        alert(err?.error?.message || 'Hiba történt a scheduled date módosításakor.');
+        alert(
+          err?.error?.message ||
+            this.translate.instant('userWorkoutExerciseManager.scheduledDateUpdateError'),
+        );
       },
     });
   }
@@ -346,23 +350,22 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
 
   updateExerciseOrderIndex(workoutId: number, exerciseId: number, orderIndex: number): void {
     if (!workoutId) {
-      alert('A workout azonosítója hiányzik.');
+      alert(this.translate.instant('userWorkoutExerciseManager.workoutIdMissing'));
       return;
     }
 
     if (!exerciseId) {
-      alert('Az exercise azonosítója hiányzik.');
+      alert(this.translate.instant('userWorkoutExerciseManager.exerciseIdMissing'));
       return;
     }
 
     if (orderIndex == null) {
-      alert('Az order index megadása kötelező.');
+      alert(this.translate.instant('userWorkoutExerciseManager.orderIndexRequired'));
       return;
     }
 
     this.service.updateExerciseOrderIndex(workoutId, exerciseId, orderIndex).subscribe({
       next: () => {
-        // Megkeressük az érintett workoutot.
         const workout = this.dayGroups
           .flatMap((day) => day.workouts)
           .find((currentWorkout: any) => currentWorkout.workoutId === workoutId);
@@ -371,7 +374,6 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
           return;
         }
 
-        // Megkeressük az érintett exercise-t.
         const exercise = workout.exercises.find(
           (currentExercise: any) => currentExercise.exerciseId === exerciseId,
         );
@@ -380,16 +382,17 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
           return;
         }
 
-        // Frissítjük a lokális sorrendet.
         exercise.order = orderIndex;
 
-        // Újrarendezzük az exercise-eket.
         workout.exercises = workout.exercises.sort(
           (a: any, b: any) => (a.order ?? 0) - (b.order ?? 0),
         );
       },
       error: (err: any) => {
-        alert(err?.error?.message || 'Hiba történt az exercise sorrendjének módosításakor.');
+        alert(
+          err?.error?.message ||
+            this.translate.instant('userWorkoutExerciseManager.orderUpdateError'),
+        );
       },
     });
   }
