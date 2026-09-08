@@ -27,6 +27,14 @@
     </div>
   </div>
 
+  <!-- Workout → Exercise hozzárendelés -->
+  <div class="dashboard-card" (click)="toggleWorkoutExercises()">
+    <div class="dashboard-card-emoji">🔗🏋️</div>
+    <div class="dashboard-card-title">
+      {{ 'coachDashboard.assignWorkoutExercises' | translate }}
+    </div>
+  </div>
+
   <!-- Workout Exercise Manager -->
   <div
     class="dashboard-card"
@@ -54,6 +62,10 @@
 
 <div *ngIf="showExercises">
   <app-exercise-controller></app-exercise-controller>
+</div>
+
+<div *ngIf="showWorkoutExercises">
+  <app-assign-workouts-exercises></app-assign-workouts-exercises>
 </div>
 
 <div *ngIf="showWorkoutExerciseManager">

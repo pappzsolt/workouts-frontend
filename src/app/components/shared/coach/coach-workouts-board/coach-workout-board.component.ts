@@ -8,6 +8,7 @@ import {
   EventEmitter,
   inject,
 } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { Workout } from '../../../../models/workout.model';
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
@@ -41,44 +42,60 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
   loading = false;
 
   message = '';
+  messageType: 'success' | 'error' | '' = '';
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loadWorkouts();
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
     if (changes['externalWorkouts'] && this.externalWorkouts?.length) {
       this.workouts = [...this.externalWorkouts];
+      this.message = '';
+      this.messageType = '';
     }
   }
 
-  loadWorkouts() {
+  loadWorkouts(): void {
     this.loading = true;
+    this.message = '';
+    this.messageType = '';
 
     this.workoutService.getMyWorkouts().subscribe({
-      next: (res: any) => {
+      next: (res: Workout[]) => {
         this.loading = false;
 
-        if (res.workouts?.length) {
-          this.workouts = res.workouts.sort((a: Workout, b: Workout) =>
-            (a.name ?? '').localeCompare(b.name ?? ''),
+        if (res?.length) {
+          this.workouts = res.sort((a: Workout, b: Workout) =>
+            (a.name ?? a.workoutName ?? '').localeCompare(b.name ?? b.workoutName ?? ''),
           );
         } else {
+          this.workouts = [];
           this.message = 'coachWorkoutBoard.noWorkouts';
+          this.messageType = 'error';
         }
       },
 
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         this.loading = false;
+        this.workouts = [];
 
-        this.message = 'coachWorkoutBoard.loadError';
+        const backendMessage = typeof err.error === 'string' ? err.error : err.error?.message;
+
+        this.message = backendMessage || 'coachWorkoutBoard.loadError';
+
+        this.messageType = 'error';
 
         console.error('❌ Workoutok betöltése sikertelen', err);
+
+        if (err.error) {
+          console.error('Backend válasz:', err.error);
+        }
       },
     });
   }
 
-  toggleWorkoutSelection(id: number, checked: boolean) {
+  toggleWorkoutSelection(id: number, checked: boolean): void {
     if (this.multiSelect) {
       if (checked) {
         if (!this.selectedWorkoutIds.includes(id)) {

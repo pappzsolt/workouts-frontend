@@ -690,5 +690,22 @@
     "selectUser": "-- Válassz felhasználót --",
     "assign": "Hozzárendelés",
     "loading": "Betöltés..."
+  },
+  "coachDashboard": {
+    "title": "Coach Dashboard",
+    "programs": "Programok",
+    "workouts": "Edzések",
+    "exercises": "Gyakorlatok",
+    "workoutExerciseManager": "Edzés és sorozatok beállítása",
+    "assignWorkoutExercises": "Workout → Exercise hozzárendelés"
+  },
+  "coachWorkoutBoard": {
+    "noWorkouts": "Nincsenek elérhető workoutok.",
+    "loadError": "Hiba a workoutok lekérése során.",
+    "loading": "Betöltés...",
+    "noName": "Nincs név",
+    "id": "ID",
+    "select": "Kiválasztás",
+    "workout": "Workout"
   }
 }

@@ -690,5 +690,22 @@
     "selectUser": "-- Select user --",
     "assign": "Assign",
     "loading": "Loading..."
+  },
+  "coachDashboard": {
+    "title": "Coach Dashboard",
+    "programs": "Programs",
+    "workouts": "Workouts",
+    "exercises": "Exercises",
+    "workoutExerciseManager": "Workout and Set Configuration",
+    "assignWorkoutExercises": "Assign Workout → Exercise"
+  },
+  "coachWorkoutBoard": {
+    "noWorkouts": "No workouts are available.",
+    "loadError": "Error loading workouts.",
+    "loading": "Loading...",
+    "noName": "No name",
+    "id": "ID",
+    "select": "Select",
+    "workout": "Workout"
   }
 }
