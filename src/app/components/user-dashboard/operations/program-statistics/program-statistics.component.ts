@@ -220,142 +220,192 @@ export class UserProgramStatisticsComponent implements OnInit {
   // STATISZTIKA CSOPORTOSÍTÁSA
   // ============================================================
 
-  private groupStatistics(): void {
-    const workoutMap = new Map<number, ProgramStatisticsWorkout>();
+private groupStatistics(): void {
+  const workoutMap = new Map<number, ProgramStatisticsWorkout>();
 
-    for (const row of this.statistics) {
-      // ========================================================
-      // WORKOUT
-      // ========================================================
+  for (const row of this.statistics) {
+    const workout = this.getOrCreateWorkout(
+      workoutMap,
+      row,
+    );
 
-      let workout = workoutMap.get(row.workoutId);
+    const exercise = this.getOrCreateExercise(
+      workout,
+      row,
+    );
 
-      if (!workout) {
-        workout = {
-          workoutId: row.workoutId,
-          workoutName: row.workoutName,
-          workoutDescription: row.workoutDescription,
-          workoutDate: row.workoutDate,
-          durationMinutes: row.durationMinutes,
-          intensityLevel: row.intensityLevel,
-
-          userWorkoutId: row.userWorkoutId,
-          userWorkoutCompleted: row.userWorkoutCompleted,
-          userWorkoutPerformedAt: row.userWorkoutPerformedAt,
-          userWorkoutScheduledAt: row.userWorkoutScheduledAt,
-          userWorkoutFeedback: row.userWorkoutFeedback,
-          userWorkoutNotes: row.userWorkoutNotes,
-
-          exercises: [],
-        };
-
-        workoutMap.set(row.workoutId, workout);
-      }
-
-      // ========================================================
-      // EXERCISE
-      // ========================================================
-
-      let exercise = workout.exercises.find((item) => item.exerciseId === row.exerciseId);
-
-      if (!exercise) {
-        exercise = {
-          exerciseId: row.exerciseId,
-          exerciseName: row.exerciseName,
-          muscleGroup: row.muscleGroup,
-          equipment: row.equipment,
-          difficultyLevel: row.difficultyLevel,
-          category: row.category,
-
-          userWorkoutExerciseId: row.userWorkoutExerciseId,
-          userWorkoutExerciseCompleted: row.userWorkoutExerciseCompleted,
-          userWorkoutExercisePerformedAt: row.userWorkoutExercisePerformedAt,
-          userWorkoutExerciseFeedback: row.userWorkoutExerciseFeedback,
-          userWorkoutExerciseNotes: row.userWorkoutExerciseNotes,
-          setsDone: row.setsDone,
-
-          sets: [],
-
-          startWeight: undefined,
-          currentWeight: undefined,
-          weightChange: undefined,
-
-          startRepetitions: undefined,
-          currentRepetitions: undefined,
-          repetitionsChange: undefined,
-        };
-
-        workout.exercises.push(exercise);
-      }
-
-      // ========================================================
-      // SET
-      // ========================================================
-
-      const existingSet = exercise.sets.find((item) => item.setId === row.setId);
-
-      if (!existingSet) {
-        exercise.sets.push({
-          setId: row.setId,
-          setNumber: row.setNumber,
-
-          targetRepetitions: row.targetRepetitions,
-          targetWeightKg: row.targetWeightKg,
-
-          actualRepetitions: row.actualRepetitions,
-          actualWeightKg: row.actualWeightKg,
-
-          setStartedAt: row.setStartedAt,
-          setCompletedAt: row.setCompletedAt,
-          setCompleted: row.setCompleted,
-          setNotes: row.setNotes,
-        });
-      }
-    }
-
-    // ============================================================
-    // WORKOUTOK RENDEZÉSE
-    // ============================================================
-
-    this.groupedWorkouts = Array.from(workoutMap.values());
-
-    this.groupedWorkouts.sort((a, b) => {
-      const dateA = a.workoutDate ? new Date(a.workoutDate).getTime() : Number.MAX_SAFE_INTEGER;
-
-      const dateB = b.workoutDate ? new Date(b.workoutDate).getTime() : Number.MAX_SAFE_INTEGER;
-
-      if (dateA !== dateB) {
-        return dateA - dateB;
-      }
-
-      const performedA = a.userWorkoutPerformedAt
-        ? new Date(a.userWorkoutPerformedAt).getTime()
-        : Number.MAX_SAFE_INTEGER;
-
-      const performedB = b.userWorkoutPerformedAt
-        ? new Date(b.userWorkoutPerformedAt).getTime()
-        : Number.MAX_SAFE_INTEGER;
-
-      return performedA - performedB;
-    });
-
-    // ============================================================
-    // WORKOUT LAPOZÁS RESET
-    // ============================================================
-
-    this.currentWorkoutIndex = 0;
-
-    // ============================================================
-    // FEJLŐDÉS KISZÁMÍTÁSA
-    // ============================================================
-
-    for (const workout of this.groupedWorkouts) {
-      for (const exercise of workout.exercises) {
-        this.calculateExerciseProgress(exercise);
-      }
-    }
+    this.addSetIfNotExists(
+      exercise,
+      row,
+    );
   }
 
+  this.groupedWorkouts = this.sortWorkouts(
+    Array.from(workoutMap.values()),
+  );
+
+  this.currentWorkoutIndex = 0;
+
+  this.calculateAllExerciseProgress();
+}
+private getOrCreateWorkout(
+  workoutMap: Map<number, ProgramStatisticsWorkout>,
+  row: ProgramStatisticsRow,
+): ProgramStatisticsWorkout {
+  let workout = workoutMap.get(row.workoutId);
+
+  if (!workout) {
+    workout = {
+      workoutId: row.workoutId,
+      workoutName: row.workoutName,
+      workoutDescription: row.workoutDescription,
+      workoutDate: row.workoutDate,
+      durationMinutes: row.durationMinutes,
+      intensityLevel: row.intensityLevel,
+
+      userWorkoutId: row.userWorkoutId,
+      userWorkoutCompleted: row.userWorkoutCompleted,
+      userWorkoutPerformedAt: row.userWorkoutPerformedAt,
+      userWorkoutScheduledAt: row.userWorkoutScheduledAt,
+      userWorkoutFeedback: row.userWorkoutFeedback,
+      userWorkoutNotes: row.userWorkoutNotes,
+
+      exercises: [],
+    };
+
+    workoutMap.set(
+      row.workoutId,
+      workout,
+    );
+  }
+
+  return workout;
+}
+private getOrCreateExercise(
+  workout: ProgramStatisticsWorkout,
+  row: ProgramStatisticsRow,
+): ProgramStatisticsExercise {
+  let exercise = workout.exercises.find(
+    (item) => item.exerciseId === row.exerciseId,
+  );
+
+  if (!exercise) {
+    exercise = {
+      exerciseId: row.exerciseId,
+      exerciseName: row.exerciseName,
+      muscleGroup: row.muscleGroup,
+      equipment: row.equipment,
+      difficultyLevel: row.difficultyLevel,
+      category: row.category,
+
+      userWorkoutExerciseId:
+        row.userWorkoutExerciseId,
+
+      userWorkoutExerciseCompleted:
+        row.userWorkoutExerciseCompleted,
+
+      userWorkoutExercisePerformedAt:
+        row.userWorkoutExercisePerformedAt,
+
+      userWorkoutExerciseFeedback:
+        row.userWorkoutExerciseFeedback,
+
+      userWorkoutExerciseNotes:
+        row.userWorkoutExerciseNotes,
+
+      setsDone: row.setsDone,
+
+      sets: [],
+
+      startWeight: undefined,
+      currentWeight: undefined,
+      weightChange: undefined,
+
+      startRepetitions: undefined,
+      currentRepetitions: undefined,
+      repetitionsChange: undefined,
+    };
+
+    workout.exercises.push(exercise);
+  }
+
+  return exercise;
+}
+private addSetIfNotExists(
+  exercise: ProgramStatisticsExercise,
+  row: ProgramStatisticsRow,
+): void {
+  const existingSet = exercise.sets.find(
+    (item) => item.setId === row.setId,
+  );
+
+  if (existingSet) {
+    return;
+  }
+
+  exercise.sets.push({
+    setId: row.setId,
+    setNumber: row.setNumber,
+
+    targetRepetitions:
+      row.targetRepetitions,
+
+    targetWeightKg:
+      row.targetWeightKg,
+
+    actualRepetitions:
+      row.actualRepetitions,
+
+    actualWeightKg:
+      row.actualWeightKg,
+
+    setStartedAt:
+      row.setStartedAt,
+
+    setCompletedAt:
+      row.setCompletedAt,
+
+    setCompleted:
+      row.setCompleted,
+
+    setNotes:
+      row.setNotes,
+  });
+}
+  private sortWorkouts(
+  workouts: ProgramStatisticsWorkout[],
+): ProgramStatisticsWorkout[] {
+  return workouts.sort((a, b) => {
+    const dateA = a.workoutDate
+      ? new Date(a.workoutDate).getTime()
+      : Number.MAX_SAFE_INTEGER;
+
+    const dateB = b.workoutDate
+      ? new Date(b.workoutDate).getTime()
+      : Number.MAX_SAFE_INTEGER;
+
+    if (dateA !== dateB) {
+      return dateA - dateB;
+    }
+
+    const performedA = a.userWorkoutPerformedAt
+      ? new Date(a.userWorkoutPerformedAt).getTime()
+      : Number.MAX_SAFE_INTEGER;
+
+    const performedB = b.userWorkoutPerformedAt
+      ? new Date(b.userWorkoutPerformedAt).getTime()
+      : Number.MAX_SAFE_INTEGER;
+
+    return performedA - performedB;
+  });
+}
+  private calculateAllExerciseProgress(): void {
+  for (const workout of this.groupedWorkouts) {
+    for (const exercise of workout.exercises) {
+      this.calculateExerciseProgress(exercise);
+    }
+  }
+}
   // ============================================================
   // AKTUÁLIS WORKOUT
   // ============================================================
