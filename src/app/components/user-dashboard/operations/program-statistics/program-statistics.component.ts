@@ -206,47 +206,63 @@ private selectFirstProgram(): void {
   // STATISZTIKA BETÖLTÉSE
   // ============================================================
 
-  loadStatistics(programId: number): void {
-    this.loadingStatistics = true;
+loadStatistics(programId: number): void {
+  this.startStatisticsLoading();
 
-    this.message = '';
-    this.messageType = '';
+  this.statisticsService.getProgramStatistics(programId).subscribe({
+    next: (res: ProgramStatisticsRow[]) => {
+      this.handleStatisticsSuccess(res);
+    },
 
-    this.statistics = [];
-    this.groupedWorkouts = [];
-    this.currentWorkoutIndex = 0;
+    error: (err: HttpErrorResponse) => {
+      this.handleStatisticsError(err);
+    },
+  });
+}
+private startStatisticsLoading(): void {
+  this.loadingStatistics = true;
 
-    this.statisticsService.getProgramStatistics(programId).subscribe({
-      next: (res: ProgramStatisticsRow[]) => {
-        this.loadingStatistics = false;
+  this.clearMessage();
+  this.resetStatisticsState();
+}
+  private handleStatisticsSuccess(
+  res: ProgramStatisticsRow[],
+): void {
+  this.loadingStatistics = false;
 
-        this.statistics = res ?? [];
+  this.statistics = res ?? [];
 
-        if (!this.statistics.length) {
-          this.message = 'userProgramStatistics.noData';
+  if (!this.statistics.length) {
+    this.message = 'userProgramStatistics.noData';
 
-          return;
-        }
-
-        this.groupStatistics();
-      },
-
-      error: (err: HttpErrorResponse) => {
-        this.loadingStatistics = false;
-
-        this.statistics = [];
-        this.groupedWorkouts = [];
-        this.currentWorkoutIndex = 0;
-
-        this.message = err.error?.message || 'userProgramStatistics.loadError';
-
-        this.messageType = 'error';
-
-        console.error('❌ Program statisztika betöltése sikertelen:', err);
-      },
-    });
+    return;
   }
 
+  this.groupStatistics();
+}
+private handleStatisticsError(
+  err: HttpErrorResponse,
+): void {
+  this.loadingStatistics = false;
+
+  this.resetStatisticsState();
+
+  this.message =
+    err.error?.message ||
+    'userProgramStatistics.loadError';
+
+  this.messageType = 'error';
+
+  console.error(
+    '❌ Program statisztika betöltése sikertelen:',
+    err,
+  );
+}
+  private resetStatisticsState(): void {
+  this.statistics = [];
+  this.groupedWorkouts = [];
+  this.currentWorkoutIndex = 0;
+}
   // ============================================================
   // STATISZTIKA CSOPORTOSÍTÁSA
   // ============================================================
