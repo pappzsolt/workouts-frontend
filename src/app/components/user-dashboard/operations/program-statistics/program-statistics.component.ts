@@ -76,54 +76,85 @@ export class UserProgramStatisticsComponent implements OnInit {
   // PROGRAMOK BETÖLTÉSE
   // ============================================================
 
-  loadPrograms(): void {
-    this.loadingPrograms = true;
-    this.message = '';
-    this.messageType = '';
+loadPrograms(): void {
+  this.loadingPrograms = true;
+  this.clearMessage();
 
-    this.programsService.getPrograms().subscribe({
-      next: (res: any) => {
-        this.loadingPrograms = false;
+  this.programsService.getPrograms().subscribe({
+    next: (res: any) => {
+      this.loadingPrograms = false;
 
-        this.programs = Array.isArray(res) ? res : (res?.data ?? res?.programs ?? []);
+      this.programs = this.extractPrograms(res);
 
-        this.programPage = 1;
-        this.currentWorkoutIndex = 0;
+      this.programPage = 1;
+      this.currentWorkoutIndex = 0;
 
-        if (!this.programs.length) {
-          this.selectedProgramId = null;
-          this.statistics = [];
-          this.groupedWorkouts = [];
-          this.message = 'userProgramStatistics.noPrograms';
-          return;
-        }
+      if (!this.programs.length) {
+        this.resetStatistics();
 
-        const firstProgram = this.pagedPrograms[0];
-
-        const firstProgramId = firstProgram?.programId ?? firstProgram?.id;
-
-        if (firstProgramId != null) {
-          this.selectProgram(firstProgramId);
-        }
-      },
-
-      error: (err: HttpErrorResponse) => {
-        this.loadingPrograms = false;
-
-        this.programs = [];
         this.selectedProgramId = null;
-        this.statistics = [];
-        this.groupedWorkouts = [];
-        this.currentWorkoutIndex = 0;
 
-        this.message = err.error?.message || 'userProgramStatistics.loadError';
+        this.message =
+          'userProgramStatistics.noPrograms';
 
-        this.messageType = 'error';
+        return;
+      }
 
-        console.error('❌ User programok betöltése sikertelen:', err);
-      },
-    });
+      this.selectFirstProgram();
+    },
+
+    error: (err: HttpErrorResponse) => {
+      this.loadingPrograms = false;
+
+      this.programs = [];
+
+      this.selectedProgramId = null;
+
+      this.resetStatistics();
+
+      this.message =
+        err.error?.message ||
+        'userProgramStatistics.loadError';
+
+      this.messageType = 'error';
+
+      console.error(
+        '❌ User programok betöltése sikertelen:',
+        err,
+      );
+    },
+  });
+}
+  private clearMessage(): void {
+  this.message = '';
+  this.messageType = '';
+}
+
+private resetStatistics(): void {
+  this.statistics = [];
+  this.groupedWorkouts = [];
+  this.currentWorkoutIndex = 0;
+}
+
+private extractPrograms(res: any): any[] {
+  if (Array.isArray(res)) {
+    return res;
   }
+
+  return res?.data ?? res?.programs ?? [];
+}
+
+private selectFirstProgram(): void {
+  const firstProgram = this.pagedPrograms[0];
+
+  const firstProgramId =
+    firstProgram?.programId ??
+    firstProgram?.id;
+
+  if (firstProgramId != null) {
+    this.selectProgram(firstProgramId);
+  }
+}
 
   // ============================================================
   // PROGRAM LISTA LAPOZÁSA
