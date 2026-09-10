@@ -1,3 +1,5 @@
+import { ApiResponse } from './api-response.model';
+
 export interface CreateUserRequest {
   type: 'user';
   username: string;
@@ -13,7 +15,4 @@ export interface CreateUserRequest {
   roleIds: number[];
 }
 
-export interface CreateUserResponse {
-  success: boolean;
-  message: string;
-}
+export type CreateUserResponse = ApiResponse<void>;

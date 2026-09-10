@@ -4,6 +4,8 @@ import { Observable, map } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
 
+import { ApiResponse } from '../../models/api-response.model';
+
 import {
   RawUser,
   Coach,
@@ -18,12 +20,15 @@ import {
   providedIn: 'root',
 })
 export class UserEditService {
-  private apiUrl = API_ENDPOINTS.members;
-  private coachesUrl = `${this.apiUrl}/all-coaches`;
-  private usersUrl = `${this.apiUrl}/all-users`;
-  private rolesUrl = API_ENDPOINTS.roles;
+  private readonly apiUrl = API_ENDPOINTS.members;
 
-  constructor(private http: HttpClient) {}
+  private readonly coachesUrl = `${this.apiUrl}/all-coaches`;
+
+  private readonly usersUrl = `${this.apiUrl}/all-users`;
+
+  private readonly rolesUrl = API_ENDPOINTS.roles;
+
+  constructor(private readonly http: HttpClient) {}
 
   getUsers(): Observable<RawUser[]> {
     return this.http.get<UserListResponse>(this.usersUrl).pipe(map((response) => response.data));
@@ -44,7 +49,7 @@ export class UserEditService {
     return this.http.get<RoleListResponse>(this.rolesUrl).pipe(map((response) => response.data));
   }
 
-  updateUser(user: RawUser, roleIds: number[]): Observable<void> {
+  updateUser(user: RawUser, roleIds: number[]): Observable<ApiResponse<void>> {
     const payload: UpdateUserRequest = {
       type: 'user',
       username: user.usernameOrName,
@@ -67,6 +72,6 @@ export class UserEditService {
       payload.id = user.id;
     }
 
-    return this.http.post<void>(this.apiUrl, payload);
+    return this.http.post<ApiResponse<void>>(this.apiUrl, payload);
   }
 }

@@ -3,7 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
+
 import { UserWorkoutDetailDto } from '../../../models/user-workout-exercise-detail.dto';
+
+import { ApiResponse } from '../../../models/api-response.model';
 
 @Injectable({
   providedIn: 'root',
@@ -14,9 +17,22 @@ export class UserExerciseDetailService {
   /**
    * Lekéri a belépett user adott programjához tartozó workoutját
    * az exercise-ekkel és azok saját setjeivel.
+   *
+   * Backend válasz:
+   *
+   * {
+   *   success: true,
+   *   data: {
+   *     ...
+   *   },
+   *   message: null
+   * }
    */
-  getWorkoutExercises(programId: number, workoutId: number): Observable<UserWorkoutDetailDto> {
-    return this.http.get<UserWorkoutDetailDto>(
+  getWorkoutExercises(
+    programId: number,
+    workoutId: number,
+  ): Observable<ApiResponse<UserWorkoutDetailDto>> {
+    return this.http.get<ApiResponse<UserWorkoutDetailDto>>(
       `${API_ENDPOINTS.exercises}/my-workout/${programId}/${workoutId}`,
     );
   }

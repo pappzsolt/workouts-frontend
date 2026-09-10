@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
 import { WorkoutDto } from '../../../models/exercise.model';
+import { ApiResponse } from '../../../models/api-response.model';
 
 @Injectable({
   providedIn: 'root',
@@ -16,8 +17,12 @@ export class UserExerciseService {
   /**
    * Lekéri a belépett user adott programjához tartozó workout
    * exercise-eit.
+   *
+   * GET /api/exercises/my-workout/{programId}/{workoutId}
    */
-  getWorkoutExercises(programId: number, workoutId: number): Observable<WorkoutDto> {
-    return this.http.get<WorkoutDto>(`${this.baseUrl}/my-workout/${programId}/${workoutId}`);
+  getWorkoutExercises(programId: number, workoutId: number): Observable<ApiResponse<WorkoutDto>> {
+    return this.http.get<ApiResponse<WorkoutDto>>(
+      `${this.baseUrl}/my-workout/${programId}/${workoutId}`,
+    );
   }
 }

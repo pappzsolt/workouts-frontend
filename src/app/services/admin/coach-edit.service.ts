@@ -5,7 +5,14 @@ import { Observable, map, catchError, throwError } from 'rxjs';
 import { API_ENDPOINTS } from '../../api-endpoints';
 
 import { Coach } from '../../models/coach.model';
-import { CoachResponse, CoachesResponse } from '../../models/coach-response.model';
+
+import {
+  CoachResponse,
+  CoachesResponse,
+  SingleCoachResponse,
+} from '../../models/coach-response.model';
+
+import { ApiResponse } from '../../models/api-response.model';
 
 import { UpdateCoachRequest } from '../../models/update-coach-request.model';
 
@@ -14,6 +21,7 @@ import { UpdateCoachRequest } from '../../models/update-coach-request.model';
 })
 export class CoachEditService {
   private readonly coachesUrl = API_ENDPOINTS.allCoaches;
+
   private readonly membersUrl = API_ENDPOINTS.members;
 
   constructor(private readonly http: HttpClient) {}
@@ -30,11 +38,11 @@ export class CoachEditService {
   }
 
   /**
-   * Egy edző lekérése.
+   * Egy edző lekérése ID alapján.
    */
   getCoach(id: number): Observable<Coach> {
-    return this.http.get<CoachResponse>(`${this.coachesUrl}/${id}`).pipe(
-      map((item) => this.mapCoach(item)),
+    return this.http.get<SingleCoachResponse>(`${this.membersUrl}/${id}`).pipe(
+      map((response) => this.mapCoach(response.data)),
 
       catchError(() => throwError(() => new Error('Az edző adatainak betöltése nem sikerült.'))),
     );
@@ -59,11 +67,14 @@ export class CoachEditService {
       payload.passwordHash = coach.password;
     }
 
-    return this.http
-      .post<Coach>(this.membersUrl, payload)
-      .pipe(
-        catchError(() => throwError(() => new Error('Az edző adatainak mentése nem sikerült.'))),
-      );
+    return this.http.post<ApiResponse<void>>(this.membersUrl, payload).pipe(
+      map(() => ({
+        ...coach,
+        id,
+      })),
+
+      catchError(() => throwError(() => new Error('Az edző adatainak mentése nem sikerült.'))),
+    );
   }
 
   /**

@@ -42,7 +42,7 @@ export class CoachProgramEditComponent implements OnInit {
 
     this.programService.getProgramById(id).subscribe({
       next: (res) => {
-        if (res && res.status === 'success' && res.data) {
+        if (res?.success && res.data) {
           const dto: ProgramDto = res.data;
 
           // Backend DTO -> frontend Program

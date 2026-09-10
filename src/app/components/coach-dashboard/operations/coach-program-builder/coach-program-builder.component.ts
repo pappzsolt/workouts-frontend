@@ -234,7 +234,7 @@ export class CoachProgramBuilderComponent implements OnInit {
       next: (response) => {
         console.log('Program betöltve:', response);
 
-        if (response && response.status === 'success' && response.data) {
+        if (response?.success && response.data) {
           const program = response.data;
 
           this.programName = program.programName ?? '';

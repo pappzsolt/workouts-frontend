@@ -25,13 +25,31 @@ export interface ProgramExercise {
   orderIndex?: number;
 }
 
-export interface CoachProgramsResponse {
-  status: string;
-  data: Program[];
+/**
+ * Egységes backend API válasz.
+ *
+ * Backend:
+ *
+ * {
+ *   "success": true,
+ *   "data": ...,
+ *   "message": "..."
+ * }
+ */
+export interface ApiResponse<T> {
+  success: boolean;
+  data: T;
   message?: string | null;
-  count: number;
 }
 
+/**
+ * A bejelentkezett coach programjainak válasza.
+ */
+export type CoachProgramsResponse = ApiResponse<Program[]>;
+
+/**
+ * Program DTO.
+ */
 export interface ProgramDto {
   programId: number;
   programName: string;
@@ -41,33 +59,12 @@ export interface ProgramDto {
   workouts?: any[];
 }
 
-export interface ApiResponse<T> {
-  status: string;
-  data: T;
-  message?: string | null;
-  count: number;
-}
-
 /**
- * Backend:
- *
- * private String programName;
- * private String programDescription;
- * private Integer durationDays;
- * private String difficultyLevel;
+ * Program létrehozási / módosítási kérés.
  */
 export interface ProgramCreationRequest {
   programName: string;
   programDescription?: string;
   durationDays?: number;
   difficultyLevel?: string;
-}
-
-/**
- * Backend ProgramCreationResponse
- */
-export interface ProgramCreationResponse {
-  success: boolean;
-  message: string;
-  programId: number | null;
 }

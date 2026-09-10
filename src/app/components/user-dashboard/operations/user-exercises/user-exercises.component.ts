@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, map } from 'rxjs';
 
 import { UserExerciseService } from '../../../../services/user/user-exercise/user-exercise.service';
+
 import { WorkoutDto, WorkoutExercise } from '../../../../models/exercise.model';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
@@ -18,6 +19,7 @@ export class UserExercisesComponent implements OnInit {
   workoutId!: number;
   programId!: number;
   workoutName!: string;
+
   exercises$!: Observable<WorkoutExercise[]>;
 
   constructor(
@@ -27,21 +29,47 @@ export class UserExercisesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Route paraméterek
+    /*
+     * Route paraméterek
+     */
     this.workoutId = Number(this.route.snapshot.paramMap.get('workoutId'));
 
-    // A workout neve és a program ID a navigation state-ből érkezik
+    /*
+     * A workout neve és a program ID
+     * a navigation state-ből érkezik.
+     */
     const navState = history.state;
 
     this.workoutName = navState['workoutName'] || 'userExercises.unknownWorkout';
 
     this.programId = Number(navState['programId']);
 
-    // Workout lekérése a backendről,
-    // majd az exercise lista kivétele
+    /*
+     * Workout lekérése a backendről.
+     *
+     * Backend válasz:
+     *
+     * {
+     *   success: true,
+     *   data: WorkoutDto,
+     *   message: null
+     * }
+     *
+     * Ezért:
+     *
+     * response.data
+     *        ↓
+     * WorkoutDto
+     *        ↓
+     * workout.exercises
+     */
     this.exercises$ = this.exercisesService
       .getWorkoutExercises(this.programId, this.workoutId)
-      .pipe(map((workout: WorkoutDto) => workout.exercises));
+      .pipe(
+        map((response) => {
+          return response.data.exercises;
+        }),
+      );
   }
 
   goToExercise(exerciseId: number): void {

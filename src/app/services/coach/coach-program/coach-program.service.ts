@@ -8,7 +8,6 @@ import {
   ApiResponse,
   ProgramDto,
   ProgramCreationRequest,
-  ProgramCreationResponse,
 } from '../../../models/program.model';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
@@ -19,24 +18,43 @@ import { API_ENDPOINTS } from '../../../api-endpoints';
 export class CoachProgramService {
   private http = inject(HttpClient);
 
+  /**
+   * Bejelentkezett coach programjai.
+   */
   getProgramsForLoggedInCoach(): Observable<CoachProgramsResponse> {
     return this.http.get<CoachProgramsResponse>(`${API_ENDPOINTS.programs}/coach/programs`);
   }
 
-  getAllPrograms(): Observable<Program[]> {
-    return this.http.get<Program[]>(`${API_ENDPOINTS.programs}/all`);
+  /**
+   * Összes program.
+   */
+  getAllPrograms(): Observable<ApiResponse<Program[]>> {
+    return this.http.get<ApiResponse<Program[]>>(`${API_ENDPOINTS.programs}/all`);
   }
 
+  /**
+   * Program lekérése ID alapján.
+   */
   getProgramById(id: number): Observable<ApiResponse<ProgramDto>> {
     return this.http.get<ApiResponse<ProgramDto>>(`${API_ENDPOINTS.programs}/${id}`);
   }
 
-  createProgram(request: ProgramCreationRequest): Observable<ProgramCreationResponse> {
-    return this.http.post<ProgramCreationResponse>(API_ENDPOINTS.createProgram, request);
+  /**
+   * Új program létrehozása.
+   *
+   * Backend data = programId
+   */
+  createProgram(request: ProgramCreationRequest): Observable<ApiResponse<number>> {
+    return this.http.post<ApiResponse<number>>(API_ENDPOINTS.createProgram, request);
   }
 
-  updateProgram(id: number, request: ProgramCreationRequest): Observable<ProgramCreationResponse> {
-    return this.http.put<ProgramCreationResponse>(
+  /**
+   * Program módosítása.
+   *
+   * Backend data = programId
+   */
+  updateProgram(id: number, request: ProgramCreationRequest): Observable<ApiResponse<number>> {
+    return this.http.put<ApiResponse<number>>(
       `${API_ENDPOINTS.updateProgram}?programId=${id}`,
       request,
     );

@@ -11,9 +11,9 @@ import { CreateUserRequest, CreateUserResponse } from '../../models/user-new-mod
   providedIn: 'root',
 })
 export class UserNewService {
-  private apiUrl = API_ENDPOINTS.members;
+  private readonly apiUrl = API_ENDPOINTS.members;
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   createUser(userData: CreateUserRequest): Observable<CreateUserResponse> {
     return this.http
@@ -21,7 +21,7 @@ export class UserNewService {
       .pipe(catchError(this.handleError));
   }
 
-  private handleError(error: HttpErrorResponse) {
+  private handleError(error: HttpErrorResponse): Observable<never> {
     return throwError(() => error);
   }
 }

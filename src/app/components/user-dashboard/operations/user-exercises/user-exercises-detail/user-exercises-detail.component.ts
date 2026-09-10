@@ -40,7 +40,24 @@ export class UserExerciseDetailComponent implements OnInit {
     this.programId = Number(navState['programId']);
 
     this.exercisesService.getWorkoutExercises(this.programId, this.workoutId).subscribe({
-      next: (workout) => {
+      next: (response) => {
+        /*
+         * Backend válasz:
+         *
+         * {
+         *   success: true,
+         *   data: {
+         *     ...
+         *   },
+         *   message: null
+         * }
+         *
+         * Ezért a tényleges workout:
+         *
+         * response.data
+         */
+        const workout = response.data;
+
         this.workout = workout;
 
         if (!workout?.exercises || workout.exercises.length === 0) {
@@ -59,8 +76,11 @@ export class UserExerciseDetailComponent implements OnInit {
 
         this.workoutExercise = found;
 
-        // Az exercise done állapotának kiszámítása
-        // a saját setek completed állapotából.
+        /*
+         * Az exercise done állapotának
+         * kiszámítása a saját setek
+         * completed állapotából.
+         */
         this.updateExerciseDone();
 
         console.log('Talált workoutExercise:', this.workoutExercise);
@@ -107,13 +127,18 @@ export class UserExerciseDetailComponent implements OnInit {
       )
       .subscribe({
         next: () => {
-          // Csak sikeres backend válasz után
-          // módosítjuk a frontend állapotát.
+          /*
+           * Csak sikeres backend válasz után
+           * módosítjuk a frontend állapotát.
+           */
           set.completed = completed;
 
-          // Exercise done újraszámolása.
-          // Ez automatikusan újraszámolja a workout
-          // completed állapotát is.
+          /*
+           * Exercise done újraszámolása.
+           *
+           * Ez automatikusan újraszámolja
+           * a workout completed állapotát is.
+           */
           this.updateExerciseDone();
 
           console.log('Set adatok frissítve:', {
@@ -156,7 +181,9 @@ export class UserExerciseDetailComponent implements OnInit {
       (set: UserWorkoutExerciseSetDto) => set.completed === true,
     );
 
-    // Workout állapot újraszámolása.
+    /*
+     * Workout állapot újraszámolása.
+     */
     this.updateWorkoutDone();
   }
 
@@ -191,8 +218,10 @@ export class UserExerciseDetailComponent implements OnInit {
 
       console.log('Workout frontend completed elmentve:', this.workoutId);
     } else {
-      // Ha valamelyik exercise újra incomplete,
-      // töröljük a frontend completed állapotot.
+      /*
+       * Ha valamelyik exercise újra incomplete,
+       * töröljük a frontend completed állapotot.
+       */
       localStorage.removeItem(`workout-completed-${this.workoutId}`);
     }
   }
@@ -223,8 +252,10 @@ export class UserExerciseDetailComponent implements OnInit {
       )
       .subscribe({
         next: () => {
-          // Sikeres mentés után frissítjük
-          // az exercise és workout állapotát.
+          /*
+           * Sikeres mentés után frissítjük
+           * az exercise és workout állapotát.
+           */
           this.updateExerciseDone();
 
           console.log('Set sikeresen mentve:', {

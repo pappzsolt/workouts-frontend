@@ -1,28 +1,62 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
 
 import { LoginResponse, TokenPayload } from '../../models/auth-model';
+import { ApiResponse } from '../../models/api-response.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  private apiUrl = API_ENDPOINTS.auth;
+  private readonly apiUrl = API_ENDPOINTS.auth;
 
   constructor(private http: HttpClient) {}
 
+  /**
+   * Bejelentkezés.
+   *
+   * Backend válasz:
+   *
+   * ApiResponse<LoginResponse>
+   */
   login(username: string, password: string): Observable<LoginResponse> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { username, password }).pipe(
-      tap((response) => {
-        localStorage.setItem('accessToken', response.accessToken);
+    return this.http
+      .post<ApiResponse<LoginResponse>>(`${this.apiUrl}/login`, {
+        username,
+        password,
+      })
+      .pipe(
+        /*
+         * ApiResponse<LoginResponse>
+         *        ↓
+         * response.data
+         *        ↓
+         * LoginResponse
+         *
+         * Így a komponenseknek nem kell
+         * az ApiResponse struktúráját ismerniük.
+         */
+        map((response) => {
+          if (!response.success || !response.data) {
+            throw new Error(response.message ?? 'Sikertelen bejelentkezés.');
+          }
 
-        localStorage.setItem('refreshToken', response.refreshToken);
-      }),
-    );
+          return response.data;
+        }),
+
+        /*
+         * Tokenek mentése.
+         */
+        tap((response) => {
+          localStorage.setItem('accessToken', response.accessToken);
+
+          localStorage.setItem('refreshToken', response.refreshToken);
+        }),
+      );
   }
 
   logout(): void {
@@ -43,6 +77,7 @@ export class AuthService {
 
     try {
       const decodedToken = jwtDecode<TokenPayload>(token);
+
       return decodedToken.roles;
     } catch (error) {
       console.error('[AuthService] Token dekódolási hiba', error);
@@ -60,6 +95,7 @@ export class AuthService {
 
     try {
       const decodedToken = jwtDecode<TokenPayload>(token);
+
       return decodedToken.id;
     } catch (error) {
       console.error('[AuthService] Token dekódolási hiba', error);
@@ -77,6 +113,7 @@ export class AuthService {
 
     try {
       const decodedToken = jwtDecode<TokenPayload>(token);
+
       return decodedToken.sub;
     } catch (error) {
       console.error('[AuthService] Token dekódolási hiba', error);

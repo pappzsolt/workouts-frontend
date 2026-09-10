@@ -1,3 +1,5 @@
+import { ApiResponse } from './api-response.model';
+
 export interface CreateCoachRequest {
   type: 'coach';
   name: string;
@@ -9,7 +11,4 @@ export interface CreateCoachRequest {
   roleIds: number[];
 }
 
-export interface CreateCoachResponse {
-  success: boolean;
-  message: string;
-}
+export type CreateCoachResponse = ApiResponse<void>;

@@ -44,7 +44,7 @@ export class CoachProgramComponent implements OnInit {
       next: (response) => {
         console.log('Coach program response:', response);
 
-        if (response.status === 'success' && response.data?.length) {
+        if (response.success && response.data?.length) {
           this.programs = response.data.map((program: any): Program => ({
             id: program.programId,
 
