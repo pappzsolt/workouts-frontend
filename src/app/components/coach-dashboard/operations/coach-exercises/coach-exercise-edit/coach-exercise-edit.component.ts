@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 import { Exercise } from '../../../../../models/exercise.model';
+import { ApiResponse } from '../../../../../models/api-response.model';
 
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
@@ -54,7 +55,9 @@ export class CoachExerciseEditComponent implements OnInit {
     this.loading = true;
 
     this.exerciseService.getAllExercises().subscribe({
-      next: (exercises: Exercise[]) => {
+      next: (response: ApiResponse<Exercise[]>) => {
+        const exercises = response.data ?? [];
+
         const ex = exercises.find((e) => e.id === exerciseId);
 
         if (ex) {

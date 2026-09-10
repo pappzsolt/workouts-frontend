@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { CoachWorkoutsService } from '../../../../../services/coach/coach-workouts/coach-workouts.service';
-
+import { ApiResponse } from '../../../../../models/api-response.model';
 import { WorkoutExerciseService } from '../../../../../services/coach/workout-exercises.service';
 
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
@@ -259,12 +259,18 @@ export class CoachWorkoutEditComponent implements OnInit {
   // ÖSSZES EXERCISE BETÖLTÉSE
   // ==========================================================
 
+  // ==========================================================
+  // ÖSSZES EXERCISE BETÖLTÉSE
+  // ==========================================================
+
   loadExercises(): void {
     this.loadingExercises = true;
 
     this.exerciseService.getAllExercises().subscribe({
-      next: (exercises: Exercise[]) => {
-        this.exercises = exercises || [];
+      next: (response: ApiResponse<Exercise[]>) => {
+        console.log('[CoachWorkoutEdit] exercises response:', response);
+
+        this.exercises = response.data ?? [];
 
         this.loadingExercises = false;
       },

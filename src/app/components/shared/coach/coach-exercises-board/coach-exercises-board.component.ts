@@ -12,6 +12,7 @@ import {
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
 
 import { Exercise } from '../../../../models/exercise.model';
+import { ApiResponse } from '../../../../models/api-response.model';
 
 import { SHARED_IMPORTS } from '../../shared-imports';
 
@@ -128,10 +129,12 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges {
     this.loading = true;
 
     this.exerciseService.getAllExercises().subscribe({
-      next: (res: Exercise[]) => {
+      next: (response: ApiResponse<Exercise[]>) => {
         this.loading = false;
 
-        this.exercises = res || [];
+        console.log('[CoachExercisesBoard] response:', response);
+
+        this.exercises = response.data ?? [];
 
         this.exercisePage = 1;
 
@@ -144,6 +147,8 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges {
 
       error: (err) => {
         this.loading = false;
+
+        this.exercises = [];
 
         this.message = 'coachExercisesBoard.loadError';
 
@@ -162,6 +167,7 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges {
 
   clearSearch(): void {
     this.searchTerm = '';
+
     this.exercisePage = 1;
   }
 

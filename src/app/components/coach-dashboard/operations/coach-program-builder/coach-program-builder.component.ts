@@ -5,7 +5,7 @@ import { WorkoutCopyService } from '../../../../services/coach/workout-copy.serv
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exercises-board/coach-exercises-board.component';
-
+import { ApiResponse } from '../../../../models/api-response.model';
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 
 import { ProgramWorkoutService } from '../../../../services/coach/program-workout.service';
@@ -348,12 +348,18 @@ export class CoachProgramBuilderComponent implements OnInit {
   // WORKOUTOK BETÖLTÉSE
   // ==========================================================
 
+  // ==========================================================
+  // WORKOUTOK BETÖLTÉSE
+  // ==========================================================
+
   loadWorkouts(): void {
     this.loadingWorkouts = true;
 
     this.coachWorkoutsService.getUniqueWorkoutsWithExercises().subscribe({
-      next: (workouts: WorkoutDto[]) => {
-        this.workouts = workouts || [];
+      next: (response: ApiResponse<WorkoutDto[]>) => {
+        console.log('Coach workouts response:', response);
+
+        this.workouts = response.data ?? [];
 
         this.loadingWorkouts = false;
 
@@ -366,6 +372,8 @@ export class CoachProgramBuilderComponent implements OnInit {
 
       error: (error: any) => {
         console.error('Hiba a workoutok betöltésekor:', error);
+
+        this.workouts = [];
 
         this.loadingWorkouts = false;
 
@@ -384,8 +392,8 @@ export class CoachProgramBuilderComponent implements OnInit {
     this.loadingExercises = true;
 
     this.exerciseService.getAllExercises().subscribe({
-      next: (exercises: Exercise[]) => {
-        this.exercises = exercises || [];
+      next: (response: ApiResponse<Exercise[]>) => {
+        this.exercises = response.data ?? [];
 
         this.loadingExercises = false;
 
@@ -564,7 +572,9 @@ export class CoachProgramBuilderComponent implements OnInit {
         );
 
         this.exerciseService.getWorkoutsWithExercises().subscribe({
-          next: (allWorkouts: WorkoutDto[]) => {
+          next: (response: ApiResponse<WorkoutDto[]>) => {
+            const allWorkouts = response.data ?? [];
+
             this.selectedWorkouts = this.programWorkouts
               .map((programWorkout) =>
                 allWorkouts.find((workout) => workout.id === programWorkout.workoutId),
@@ -597,12 +607,6 @@ export class CoachProgramBuilderComponent implements OnInit {
                 }
               }
             }
-          },
-
-          error: (error: any) => {
-            console.error('Hiba a teljes workout lista betöltésekor:', error);
-
-            this.selectedWorkouts = [];
           },
         });
       },

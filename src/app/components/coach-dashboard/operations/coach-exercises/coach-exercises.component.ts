@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { Exercise } from '../../../../models/exercise.model';
+
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
@@ -70,21 +71,41 @@ export class ExerciseControllerComponent implements OnInit {
     this.loading = true;
 
     this.exerciseService.getAllExercises().subscribe({
-      next: (exercises: Exercise[]) => {
-        this.exercises = exercises ?? [];
+      next: (response) => {
+        console.log('[CoachExercises] response:', response);
 
-        // Betöltés után
-        // mindig az első oldalról indulunk.
+        /*
+         * A backend válasz formátuma:
+         *
+         * {
+         *   success: true,
+         *   data: [...],
+         *   message: null
+         * }
+         *
+         * A service jelenleg Exercise[] típust deklarál,
+         * ezért itt nem adunk explicit ApiResponse típust.
+         */
+
+        const apiResponse = response as unknown as {
+          success: boolean;
+          data: Exercise[];
+          message: string | null;
+        };
+
+        this.exercises = apiResponse.data ?? [];
 
         this.currentPage = 1;
 
         this.updatePagination();
 
         this.loading = false;
+
+        console.log('[CoachExercises] betöltött gyakorlatok:', this.exercises);
       },
 
       error: (error) => {
-        console.error('Hiba a gyakorlatok betöltésekor:', error);
+        console.error('[CoachExercises] Hiba a gyakorlatok betöltésekor:', error);
 
         this.exercises = [];
 
@@ -148,9 +169,6 @@ export class ExerciseControllerComponent implements OnInit {
   // ==========================================================
 
   onSearchChange(): void {
-    // Új keresésnél
-    // mindig az első oldal.
-
     this.currentPage = 1;
 
     this.updatePagination();
@@ -162,9 +180,6 @@ export class ExerciseControllerComponent implements OnInit {
 
   toggleSort(): void {
     this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-
-    // Rendezés után
-    // mindig az első oldal.
 
     this.currentPage = 1;
 

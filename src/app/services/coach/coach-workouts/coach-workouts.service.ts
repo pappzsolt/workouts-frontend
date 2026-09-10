@@ -1,8 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
 import { WorkoutDto } from '../../../models/exercise.model';
-import { Workout, WorkoutResponse, WorkoutListResponse } from '../../../models/workout.model';
+import { Workout, WorkoutResponse } from '../../../models/workout.model';
+
+import { ApiResponse } from '../../../models/api-response.model';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
 
@@ -11,6 +14,7 @@ import { API_ENDPOINTS } from '../../../api-endpoints';
 })
 export class CoachWorkoutsService {
   private readonly http = inject(HttpClient);
+
   private readonly apiUrl = API_ENDPOINTS.workouts;
 
   /**
@@ -26,21 +30,23 @@ export class CoachWorkoutsService {
   /**
    * A bejelentkezett coach egyedi workoutjainak lekérése.
    *
-   * Az azonos exercise-halmazú workoutok közül
-   * csak a legkisebb ID-jú workout kerül visszaadásra.
-   *
    * GET /api/workouts/my-workouts/unique
    */
   getUniqueMyWorkouts(): Observable<Workout[]> {
     return this.http.get<Workout[]>(`${this.apiUrl}/my-workouts/unique`);
   }
-  getUniqueWorkoutsWithExercises(): Observable<WorkoutDto[]> {
-    return this.http.get<WorkoutDto[]>(`${API_ENDPOINTS.exercises}/workouts/unique`);
+
+  /**
+   * Egyedi workoutok exercise-okkal.
+   *
+   * GET /api/exercises/workouts/unique
+   */
+  getUniqueWorkoutsWithExercises(): Observable<ApiResponse<WorkoutDto[]>> {
+    return this.http.get<ApiResponse<WorkoutDto[]>>(`${API_ENDPOINTS.exercises}/workouts/unique`);
   }
+
   /**
    * Új workout létrehozása.
-   * A coach azonosítóját a backend határozza meg
-   * a bejelentkezett felhasználó alapján.
    */
   addWorkout(workout: Workout): Observable<WorkoutResponse> {
     return this.http.post<WorkoutResponse>(`${this.apiUrl}/add`, workout);

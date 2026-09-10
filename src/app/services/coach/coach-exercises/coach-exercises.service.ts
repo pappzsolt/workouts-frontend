@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { Exercise, WorkoutDto } from '../../../models/exercise.model';
+import { ApiResponse } from '../../../models/api-response.model';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
 
@@ -12,13 +13,25 @@ import { API_ENDPOINTS } from '../../../api-endpoints';
 export class ExerciseService {
   private http = inject(HttpClient);
 
-  getWorkoutsWithExercises(): Observable<WorkoutDto[]> {
-    return this.http.get<WorkoutDto[]>(`${API_ENDPOINTS.exercises}/workouts`);
+  // ==========================================================
+  // WORKOUTOK EXERCISE-EKKEL
+  // ==========================================================
+
+  getWorkoutsWithExercises(): Observable<ApiResponse<WorkoutDto[]>> {
+    return this.http.get<ApiResponse<WorkoutDto[]>>(`${API_ENDPOINTS.exercises}/workouts`);
   }
+
+  // ==========================================================
+  // EGY WORKOUT EXERCISE-EKKEL
+  // ==========================================================
 
   getWorkoutExercises(workoutId: number): Observable<WorkoutDto> {
     return this.http.get<WorkoutDto>(`${API_ENDPOINTS.exercises}/workout/${workoutId}`);
   }
+
+  // ==========================================================
+  // WORKOUT EXERCISE DONE
+  // ==========================================================
 
   updateWorkoutExerciseDone(
     workoutId: number,
@@ -32,9 +45,17 @@ export class ExerciseService {
     });
   }
 
+  // ==========================================================
+  // EXERCISE HOZZÁADÁSA
+  // ==========================================================
+
   addExercise(exercise: Exercise): Observable<Exercise> {
     return this.http.post<Exercise>(`${API_ENDPOINTS.exercises}/add`, exercise);
   }
+
+  // ==========================================================
+  // EXERCISE MÓDOSÍTÁSA
+  // ==========================================================
 
   updateExercise(exercise: Exercise): Observable<Exercise> {
     const payload = {
@@ -54,11 +75,19 @@ export class ExerciseService {
     return this.http.put<Exercise>(`${API_ENDPOINTS.exercises}/update`, payload);
   }
 
+  // ==========================================================
+  // EXERCISE TÖRLÉSE
+  // ==========================================================
+
   deleteExercise(exerciseId: number): Observable<string> {
     return this.http.delete<string>(`${API_ENDPOINTS.exercises}/delete/${exerciseId}`);
   }
 
-  getAllExercises(): Observable<Exercise[]> {
-    return this.http.get<Exercise[]>(`${API_ENDPOINTS.exercises}/all`);
+  // ==========================================================
+  // ÖSSZES GYAKORLAT LEKÉRÉSE
+  // ==========================================================
+
+  getAllExercises(): Observable<ApiResponse<Exercise[]>> {
+    return this.http.get<ApiResponse<Exercise[]>>(`${API_ENDPOINTS.exercises}/all`);
   }
 }
