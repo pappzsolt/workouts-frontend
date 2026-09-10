@@ -6,8 +6,14 @@ import { Observable, forkJoin, map, of, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
+
 import { Coach, SearchResponse } from '../../models/member-search-model';
 
+import { ApiResponse } from '../../models/api-response.model';
+
+/**
+ * A backend által visszaadott coach adat.
+ */
 interface CoachApiResponse {
   id: number;
   name: string;
@@ -22,10 +28,17 @@ interface CoachApiResponse {
 })
 export class MemberSearchService {
   private readonly memberSearchApiUrl = API_ENDPOINTS.memberSearch;
+
   private readonly coachApiUrl = API_ENDPOINTS.coach;
 
   constructor(private http: HttpClient) {}
 
+  /**
+   * Member keresés.
+   *
+   * A keresési eredményben szereplő coach ID-k alapján
+   * lekérjük a coach adatokat is.
+   */
   searchMembers(keyword: string): Observable<SearchResponse> {
     const params = new HttpParams().set('keyword', keyword.trim());
 
@@ -60,28 +73,65 @@ export class MemberSearchService {
          * Coach-ok lekérése párhuzamosan.
          */
         const coachRequests: Observable<Coach | undefined>[] = coachIds.map((coachId) =>
-          this.http.get<CoachApiResponse>(`${this.coachApiUrl}/${coachId}`).pipe(
+          /*
+           * FONTOS:
+           *
+           * A backend már nem közvetlenül
+           * a Coach objektumot adja vissza.
+           *
+           * Backend válasz:
+           *
+           * {
+           *   success: true,
+           *   data: {
+           *     id: ...,
+           *     name: ...
+           *   },
+           *   message: null
+           * }
+           */
+          this.http.get<ApiResponse<CoachApiResponse>>(`${this.coachApiUrl}/${coachId}`).pipe(
             /*
-             * Backend → frontend modell átalakítás.
+             * ApiResponse
+             * ↓
              *
-             * Backend:
-             *   name
+             * response.data
+             * ↓
              *
-             * Frontend:
-             *   usernameOrName
+             * Coach
              */
-            map((coach) => ({
-              id: coach.id,
-              usernameOrName: coach.name,
-              email: coach.email,
-              avatarUrl: coach.avatarUrl,
-              roles: coach.roles,
-              extraFields: coach.extraFields,
-            })),
+            map((response) => {
+              const coach = response.data;
+
+              /*
+               * Backend → frontend modell
+               * átalakítás.
+               *
+               * Backend:
+               *   name
+               *
+               * Frontend:
+               *   usernameOrName
+               */
+              return {
+                id: coach.id,
+
+                usernameOrName: coach.name,
+
+                email: coach.email,
+
+                avatarUrl: coach.avatarUrl,
+
+                roles: coach.roles,
+
+                extraFields: coach.extraFields,
+              };
+            }),
 
             /*
              * Ha egy coach lekérése hibázik,
-             * attól még a többi találat megjelenjen.
+             * attól még a többi találat
+             * megjelenjen.
              */
             catchError(() => of(undefined)),
           ),
@@ -104,20 +154,23 @@ export class MemberSearchService {
             });
 
             /*
-             * A member objektumokat nem módosítjuk közvetlenül,
-             * hanem új objektumokat hozunk létre.
+             * A member objektumokat nem módosítjuk
+             * közvetlenül, hanem új objektumokat
+             * hozunk létre.
              */
             const enrichedMembers = members.map((member) => {
               const coachId = member.extraFields?.coach_id;
 
               return {
                 ...member,
+
                 coach: coachId != null ? coachMap.get(coachId) : undefined,
               };
             });
 
             return {
               ...response,
+
               data: enrichedMembers,
             };
           }),
@@ -128,6 +181,9 @@ export class MemberSearchService {
     );
   }
 
+  /**
+   * HTTP hibák egységes kezelése.
+   */
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMsg = 'Ismeretlen hiba történt.';
 
@@ -138,7 +194,7 @@ export class MemberSearchService {
     } else if (error.error?.message) {
       errorMsg = error.error.message;
     } else {
-      errorMsg = `Szerver hiba: ${error.status}, üzenet: ${error.message}`;
+      errorMsg = `Szerver hiba: ${error.status}, ` + `üzenet: ${error.message}`;
     }
 
     return throwError(() => errorMsg);
