@@ -4,6 +4,7 @@ import { Observable, map } from 'rxjs';
 
 import { RawUser, Coach, Role } from '../../../models/user-profil.model';
 import { API_ENDPOINTS } from '../../../api-endpoints';
+import { ApiResponse } from '../../../models/api-response.model';
 
 @Injectable({
   providedIn: 'root',
@@ -16,32 +17,51 @@ export class UserProfilService {
   private readonly usersUrl = `${this.apiUrl}/all-users`;
   private readonly rolesUrl = API_ENDPOINTS.roles;
 
+  /**
+   * Összes user lekérése.
+   */
   getUsers(): Observable<RawUser[]> {
-    return this.http.get<any>(this.usersUrl).pipe(map((res) => res.data));
+    return this.http
+      .get<ApiResponse<RawUser[]>>(this.usersUrl)
+      .pipe(map((response) => response.data));
   }
 
+  /**
+   * Összes coach lekérése.
+   */
   getCoaches(): Observable<Coach[]> {
-    return this.http.get<any>(this.coachesUrl).pipe(
-      map((res) =>
-        res.data.map((c: any) => ({
-          id: c.id,
-          name: c.usernameOrName || c.name,
+    return this.http.get<ApiResponse<RawUser[]>>(this.coachesUrl).pipe(
+      map((response) =>
+        response.data.map((coach) => ({
+          id: coach.id,
+          name: coach.usernameOrName,
         })),
       ),
     );
   }
 
+  /**
+   * Összes role lekérése.
+   */
   getRoles(): Observable<Role[]> {
-    return this.http.get<any>(this.rolesUrl).pipe(map((res) => res.data));
+    return this.http.get<ApiResponse<Role[]>>(this.rolesUrl).pipe(map((response) => response.data));
   }
 
-  getMemberById(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/${id}`).pipe(map((res) => res.data));
+  /**
+   * Egy member lekérése ID alapján.
+   */
+  getMemberById(id: number): Observable<RawUser> {
+    return this.http
+      .get<ApiResponse<RawUser>>(`${this.apiUrl}/${id}`)
+      .pipe(map((response) => response.data));
   }
 
-  updateUser(user: RawUser, roleIds: number[]): Observable<any> {
-    const payload: any = {
-      type: 'user',
+  /**
+   * User módosítása.
+   */
+  updateUser(user: RawUser, roleIds: number[]): Observable<ApiResponse<void>> {
+    const payload = {
+      type: 'user' as const,
       username: user.usernameOrName,
       email: user.email,
       avatarUrl: user.avatarUrl,
@@ -52,16 +72,10 @@ export class UserProfilService {
       goals: user.extraFields?.goals,
       coachId: user.extraFields?.coach_id,
       roleIds: roleIds || [],
+      ...(user.id ? { id: user.id } : {}),
+      ...(user.password?.trim() ? { passwordHash: user.password } : {}),
     };
 
-    if (user.password && user.password.trim() !== '') {
-      payload.passwordHash = user.password;
-    }
-
-    if (user.id) {
-      payload.id = user.id;
-    }
-
-    return this.http.post(this.apiUrl, payload);
+    return this.http.post<ApiResponse<void>>(this.apiUrl, payload);
   }
 }

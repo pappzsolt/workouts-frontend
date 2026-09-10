@@ -12,7 +12,6 @@ import {
   Role,
   UserListResponse,
   CoachListResponse,
-  RoleListResponse,
   UpdateUserRequest,
 } from '../../models/user-edit-model';
 
@@ -46,7 +45,7 @@ export class UserEditService {
   }
 
   getRoles(): Observable<Role[]> {
-    return this.http.get<RoleListResponse>(this.rolesUrl).pipe(map((response) => response.data));
+    return this.http.get<ApiResponse<Role[]>>(this.rolesUrl).pipe(map((response) => response.data));
   }
 
   updateUser(user: RawUser, roleIds: number[]): Observable<ApiResponse<void>> {

@@ -49,11 +49,6 @@ export interface CoachListResponse {
   data: CoachResponse[];
 }
 
-export interface RoleListResponse {
-  success: boolean;
-  message: string;
-  data: Role[];
-}
 export interface UpdateUserRequest {
   id?: number;
   type: 'user';
