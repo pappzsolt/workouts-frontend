@@ -160,16 +160,23 @@ export class CoachWorkoutEditComponent implements OnInit {
     if (!this.workoutId) {
       return;
     }
+
     this.checkingProgramAssignment = true;
+
     this.programWorkoutService.isWorkoutAssignedToAnyProgram(this.workoutId).subscribe({
       next: (response) => {
         this.workoutAssignedToProgram = response.success && response.data?.assigned === true;
+
         this.checkingProgramAssignment = false;
+
         console.log('Workout programhoz tartozik:', this.workoutAssignedToProgram);
       },
+
       error: (error: any) => {
         console.error('Hiba a workout programhoz tartozásának ellenőrzésekor:', error);
+
         this.workoutAssignedToProgram = false;
+
         this.checkingProgramAssignment = false;
       },
     });
@@ -186,7 +193,7 @@ export class CoachWorkoutEditComponent implements OnInit {
 
     this.coachWorkoutsService.getWorkoutById(this.workoutId).subscribe({
       next: (res) => {
-        if (res.status === 'success' && res.data) {
+        if (res.success && res.data) {
           const w = res.data;
 
           /**
@@ -452,10 +459,26 @@ export class CoachWorkoutEditComponent implements OnInit {
   // EXERCISE HOZZÁADÁSA A WORKOUT-HOZ
   // ==========================================================
 
+  // ==========================================================
+  // EXERCISE HOZZÁADÁSA A WORKOUT-HOZ
+  // ==========================================================
+
+  // ==========================================================
+  // EXERCISE HOZZÁADÁSA A WORKOUT-HOZ
+  // ==========================================================
+
   addExerciseToWorkout(): void {
     if (!this.workoutId) {
       this.setMessage('coachWorkoutEdit.invalidWorkoutId', 'error');
 
+      return;
+    }
+
+    /*
+     * Megvárjuk, amíg a programhoz tartozás
+     * ellenőrzése befejeződik.
+     */
+    if (this.checkingProgramAssignment) {
       return;
     }
 
@@ -482,63 +505,54 @@ export class CoachWorkoutEditComponent implements OnInit {
       return;
     }
 
+    const exerciseId = this.selectedExerciseId;
+
     this.addingExercise = true;
 
-    this.workoutExerciseService
-      .assignExerciseToWorkout(this.workoutId, this.selectedExerciseId)
-      .subscribe({
-        next: (response: any) => {
-          console.log('Exercise sikeresen hozzáadva a workouthoz:', {
+    this.workoutExerciseService.assignExerciseToWorkout(this.workoutId, exerciseId).subscribe({
+      next: (response: any) => {
+        console.log('Exercise sikeresen hozzáadva a workouthoz:', {
+          workoutId: this.workoutId,
+          exerciseId,
+          response,
+        });
+
+        const addedExercise = this.exercises.find(
+          (exercise) => Number(exercise.id) === Number(exerciseId),
+        );
+
+        /*
+         * Azonnali frontend frissítés.
+         *
+         * A backend jelenleg nem küld vissza
+         * WorkoutExercise objektumot, ezért
+         * csak a szükséges adatokat tesszük be.
+         */
+        if (addedExercise && !this.isExerciseAlreadyAdded(exerciseId)) {
+          this.workoutExercises.push({
             workoutId: this.workoutId,
-
-            exerciseId: this.selectedExerciseId,
-
-            response,
+            exerciseId: addedExercise.id,
+            exercise: addedExercise,
           });
+        }
 
-          /**
-           * Megkeressük a hozzáadott exercise-t.
-           */
-          const addedExercise = this.exercises.find(
-            (exercise) => Number(exercise.id) === Number(this.selectedExerciseId),
-          );
+        this.selectedExerciseId = null;
 
-          /**
-           * Azonnali frontend frissítés.
-           */
-          if (addedExercise) {
-            const alreadyExists = this.isExerciseAlreadyAdded(addedExercise.id!);
+        this.addingExercise = false;
 
-            if (!alreadyExists) {
-              this.workoutExercises.push({
-                id: response?.id ?? response ?? 0,
+        this.setMessage('coachWorkoutEdit.addSuccess', 'success');
+      },
 
-                workoutId: this.workoutId,
+      error: (error: any) => {
+        console.error('Hiba az exercise workoutba adásakor:', error);
 
-                exerciseId: addedExercise.id,
+        this.addingExercise = false;
 
-                exercise: addedExercise,
-              });
-            }
-          }
+        const backendMessage = error?.error?.message ?? error?.error?.error ?? error?.message;
 
-          this.selectedExerciseId = null;
-
-          this.addingExercise = false;
-
-          this.setMessage('coachWorkoutEdit.addSuccess', 'success');
-        },
-
-        error: (error: any) => {
-          console.error('Hiba az exercise workoutba adásakor:', error);
-
-          this.addingExercise = false;
-
-          const backendMessage = error?.error?.message ?? error?.error?.error ?? error?.message;
-
-          this.setMessage(backendMessage || 'coachWorkoutEdit.addError', 'error');
-        },
-      });
+        this.setMessage(backendMessage || 'coachWorkoutEdit.addError', 'error');
+      },
+    });
   }
 
   // ==========================================================
@@ -560,7 +574,7 @@ export class CoachWorkoutEditComponent implements OnInit {
 
     this.coachWorkoutsService.updateWorkout(this.workoutId, payload).subscribe({
       next: (res) => {
-        if (res.status === 'success') {
+        if (res.success && res.data) {
           this.setMessage('coachWorkoutEdit.updateSuccess', 'success');
 
           setTimeout(() => {

@@ -28,8 +28,8 @@ export interface Workout {
 }
 
 export interface WorkoutResponse {
-  status: string;
-  message: string;
+  success: boolean;
+  message?: string;
   data?: Workout;
 }
 

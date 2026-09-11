@@ -262,8 +262,8 @@ export class WorkoutListComponent implements OnInit, OnChanges {
 
     this.coachWorkoutsService.addWorkout(this.newWorkout).subscribe({
       next: (res) => {
-        if (res.status === 'ok') {
-          this.setMessage(res.message, 'success');
+        if (res.success) {
+          this.setMessage(res.message || 'coachWorkouts.addSuccess', 'success');
 
           this.newWorkout = {
             workoutName: '',
@@ -273,7 +273,7 @@ export class WorkoutListComponent implements OnInit, OnChanges {
 
           this.loadWorkouts();
         } else {
-          this.setMessage(res.message, 'error');
+          this.setMessage(res.message || 'coachWorkouts.addError', 'error');
         }
       },
 
