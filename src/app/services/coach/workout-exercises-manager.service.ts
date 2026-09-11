@@ -84,8 +84,11 @@ export class WorkoutExercisesManagerService {
    * Egy már létező user workout
    * ütemezett dátumának módosítása.
    */
-  updateUserWorkoutScheduledDate(userWorkoutId: number, scheduledAt: string): Observable<void> {
-    return this.http.patch<void>(`${this.baseUrl}/reschedule-user-workout`, {
+  updateUserWorkoutScheduledDate(
+    userWorkoutId: number,
+    scheduledAt: string,
+  ): Observable<ApiResponse<void>> {
+    return this.http.patch<ApiResponse<void>>(`${this.baseUrl}/reschedule-user-workout`, {
       userWorkoutId,
       scheduledAt,
     });

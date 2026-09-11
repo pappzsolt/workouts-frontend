@@ -46,12 +46,13 @@ export class AssignProgramComponent implements OnInit {
 
   loadUsers(): void {
     this.userNameIdService.getAllUsers().subscribe({
-      next: (users: UserNameId[]) => {
-        this.users = users;
+      next: (response) => {
+        this.users = response.data ?? [];
       },
       error: () => {
         this.message = this.translate.instant('assignProgram.loadUsersError');
         this.success = false;
+        this.users = [];
       },
     });
   }

@@ -66,8 +66,12 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
     this.selectedSets = [];
 
     this.setService.getSetsByUserWorkoutExerciseId(userWorkoutExerciseId).subscribe({
-      next: (sets: UserWorkoutExerciseSetModel[]) => {
-        this.selectedSets = sets ?? [];
+      next: (res) => {
+        if (res.success && res.data) {
+          this.selectedSets = res.data;
+        } else {
+          this.selectedSets = [];
+        }
       },
       error: () => {
         this.selectedSets = [];
@@ -332,10 +336,18 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
     }
 
     this.service.updateUserWorkoutScheduledDate(workout.userWorkoutId, scheduledAt).subscribe({
-      next: () => {
-        workout.scheduledAt = scheduledAt;
-        this.loadUserProgramWithExercises();
+      next: (res) => {
+        if (res.success) {
+          workout.scheduledAt = scheduledAt;
+          this.loadUserProgramWithExercises();
+        } else {
+          alert(
+            res.message ||
+              this.translate.instant('userWorkoutExerciseManager.scheduledDateUpdateError'),
+          );
+        }
       },
+
       error: (err: any) => {
         alert(
           err?.error?.message ||
@@ -344,7 +356,6 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       },
     });
   }
-
   // ============================
   // ANGULAR TRACK BY
   // ============================

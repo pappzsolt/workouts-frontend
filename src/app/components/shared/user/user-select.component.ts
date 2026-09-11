@@ -50,12 +50,13 @@ export class UserSelectComponent implements OnInit {
 
   ngOnInit(): void {
     this.userService.getAllUsers().subscribe({
-      next: (users) => {
-        this.users = users;
+      next: (response) => {
+        this.users = response.data ?? [];
       },
 
       error: (err) => {
         console.error('Hiba a felhasználók lekérésekor:', err);
+        this.users = [];
       },
     });
   }
