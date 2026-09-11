@@ -180,6 +180,10 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
   // USER WORKOUT LÉTREHOZÁSA
   // ============================
 
+  // ============================
+  // USER WORKOUT LÉTREHOZÁSA
+  // ============================
+
   addUserWorkouts(): void {
     if (!this.selectedUserId || !this.selectedProgramId) {
       alert(this.translate.instant('userWorkoutExerciseManager.missingUserOrProgram'));
@@ -190,11 +194,23 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
       .addUserWorkout(this.selectedUserId, this.selectedProgramId, this.scheduledAt)
       .subscribe({
         next: (res) => {
-          this.selectedUserWorkoutId = res.userWorkoutId;
-          this.newWorkoutExerciseId = undefined;
+          if (res.success && res.data && res.data.length > 0) {
+            this.selectedUserWorkoutId = res.data[0];
+
+            this.newWorkoutExerciseId = undefined;
+          } else {
+            alert(
+              res.message ||
+                this.translate.instant('userWorkoutExerciseManager.createUserWorkoutError'),
+            );
+          }
         },
-        error: () => {
-          // A jelenlegi működés szerint itt nincs üzenet.
+
+        error: (err: any) => {
+          alert(
+            err?.error?.message ||
+              this.translate.instant('userWorkoutExerciseManager.createUserWorkoutError'),
+          );
         },
       });
   }

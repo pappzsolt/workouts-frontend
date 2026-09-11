@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+import { ApiResponse } from '../../models/api-response.model';
 import { UserWorkoutExerciseDto } from '../../models/user-workout-exercise.dto';
 import { API_ENDPOINTS } from '../../api-endpoints';
 
@@ -49,13 +50,13 @@ export class WorkoutExercisesManagerService {
   }
 
   /**
-   * Program hozzárendelése userhez.
+   * User workoutok létrehozása exercise-ekkel.
    */
   addUserWorkout(
     userId: number,
     programId: number,
     scheduledAt?: string,
-  ): Observable<{ userWorkoutId: number }> {
+  ): Observable<ApiResponse<number[]>> {
     const body: {
       userId: number;
       programId: number;
@@ -69,7 +70,7 @@ export class WorkoutExercisesManagerService {
       body.scheduledAt = scheduledAt;
     }
 
-    return this.http.post<{ userWorkoutId: number }>(this.userWorkoutsBaseUrl, body);
+    return this.http.post<ApiResponse<number[]>>(this.userWorkoutsBaseUrl, body);
   }
 
   /**

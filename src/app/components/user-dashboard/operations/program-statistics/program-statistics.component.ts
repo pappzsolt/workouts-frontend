@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
-
+import { ApiResponse } from '../../../../models/api-response.model';
 import { UserProgramStatisticsService } from '../../../../services/user/user-program-statistics.service';
 
 import {
@@ -76,85 +76,77 @@ export class UserProgramStatisticsComponent implements OnInit {
   // PROGRAMOK BETÖLTÉSE
   // ============================================================
 
-loadPrograms(): void {
-  this.loadingPrograms = true;
-  this.clearMessage();
+  loadPrograms(): void {
+    this.loadingPrograms = true;
+    this.clearMessage();
 
-  this.programsService.getPrograms().subscribe({
-    next: (res: any) => {
-      this.loadingPrograms = false;
+    this.programsService.getPrograms().subscribe({
+      next: (res: any) => {
+        this.loadingPrograms = false;
 
-      this.programs = this.extractPrograms(res);
+        this.programs = this.extractPrograms(res);
 
-      this.programPage = 1;
-      this.currentWorkoutIndex = 0;
+        this.programPage = 1;
+        this.currentWorkoutIndex = 0;
 
-      if (!this.programs.length) {
-        this.resetStatistics();
+        if (!this.programs.length) {
+          this.resetStatistics();
+
+          this.selectedProgramId = null;
+
+          this.message = 'userProgramStatistics.noPrograms';
+
+          return;
+        }
+
+        this.selectFirstProgram();
+      },
+
+      error: (err: HttpErrorResponse) => {
+        this.loadingPrograms = false;
+
+        this.programs = [];
 
         this.selectedProgramId = null;
 
-        this.message =
-          'userProgramStatistics.noPrograms';
+        this.resetStatistics();
 
-        return;
-      }
+        this.message = err.error?.message || 'userProgramStatistics.loadError';
 
-      this.selectFirstProgram();
-    },
+        this.messageType = 'error';
 
-    error: (err: HttpErrorResponse) => {
-      this.loadingPrograms = false;
-
-      this.programs = [];
-
-      this.selectedProgramId = null;
-
-      this.resetStatistics();
-
-      this.message =
-        err.error?.message ||
-        'userProgramStatistics.loadError';
-
-      this.messageType = 'error';
-
-      console.error(
-        '❌ User programok betöltése sikertelen:',
-        err,
-      );
-    },
-  });
-}
+        console.error('❌ User programok betöltése sikertelen:', err);
+      },
+    });
+  }
   private clearMessage(): void {
-  this.message = '';
-  this.messageType = '';
-}
-
-private resetStatistics(): void {
-  this.statistics = [];
-  this.groupedWorkouts = [];
-  this.currentWorkoutIndex = 0;
-}
-
-private extractPrograms(res: any): any[] {
-  if (Array.isArray(res)) {
-    return res;
+    this.message = '';
+    this.messageType = '';
   }
 
-  return res?.data ?? res?.programs ?? [];
-}
-
-private selectFirstProgram(): void {
-  const firstProgram = this.pagedPrograms[0];
-
-  const firstProgramId =
-    firstProgram?.programId ??
-    firstProgram?.id;
-
-  if (firstProgramId != null) {
-    this.selectProgram(firstProgramId);
+  private resetStatistics(): void {
+    this.statistics = [];
+    this.groupedWorkouts = [];
+    this.currentWorkoutIndex = 0;
   }
-}
+
+  private extractPrograms(res: any): any[] {
+    if (Array.isArray(res)) {
+      return res;
+    }
+
+    return res?.data ?? res?.programs ?? [];
+  }
+
+  private selectFirstProgram(): void {
+    const firstProgram = this.pagedPrograms[0];
+
+    const firstProgramId = firstProgram?.programId ?? firstProgram?.id;
+
+    if (firstProgramId != null) {
+      this.selectProgram(firstProgramId);
+    }
+  }
 
   // ============================================================
   // PROGRAM LISTA LAPOZÁSA
@@ -206,253 +198,215 @@ private selectFirstProgram(): void {
   // STATISZTIKA BETÖLTÉSE
   // ============================================================
 
-loadStatistics(programId: number): void {
-  this.startStatisticsLoading();
+  loadStatistics(programId: number): void {
+    this.startStatisticsLoading();
 
-  this.statisticsService.getProgramStatistics(programId).subscribe({
-    next: (res: ProgramStatisticsRow[]) => {
-      this.handleStatisticsSuccess(res);
-    },
+    this.statisticsService.getProgramStatistics(programId).subscribe({
+      next: (res: ApiResponse<ProgramStatisticsRow[]>) => {
+        if (res.success) {
+          this.handleStatisticsSuccess(res.data ?? []);
+        } else {
+          this.loadingStatistics = false;
 
-    error: (err: HttpErrorResponse) => {
-      this.handleStatisticsError(err);
-    },
-  });
-}
-private startStatisticsLoading(): void {
-  this.loadingStatistics = true;
+          this.resetStatisticsState();
 
-  this.clearMessage();
-  this.resetStatisticsState();
-}
-  private handleStatisticsSuccess(
-  res: ProgramStatisticsRow[],
-): void {
-  this.loadingStatistics = false;
+          this.message = res.message || 'userProgramStatistics.loadError';
 
-  this.statistics = res ?? [];
+          this.messageType = 'error';
+        }
+      },
 
-  if (!this.statistics.length) {
-    this.message = 'userProgramStatistics.noData';
-
-    return;
+      error: (err: HttpErrorResponse) => {
+        this.handleStatisticsError(err);
+      },
+    });
   }
 
-  this.groupStatistics();
-}
-private handleStatisticsError(
-  err: HttpErrorResponse,
-): void {
-  this.loadingStatistics = false;
+  private startStatisticsLoading(): void {
+    this.loadingStatistics = true;
 
-  this.resetStatisticsState();
+    this.clearMessage();
+    this.resetStatisticsState();
+  }
+  private handleStatisticsSuccess(res: ProgramStatisticsRow[]): void {
+    this.loadingStatistics = false;
 
-  this.message =
-    err.error?.message ||
-    'userProgramStatistics.loadError';
+    this.statistics = res ?? [];
 
-  this.messageType = 'error';
+    if (!this.statistics.length) {
+      this.message = 'userProgramStatistics.noData';
 
-  console.error(
-    '❌ Program statisztika betöltése sikertelen:',
-    err,
-  );
-}
+      return;
+    }
+
+    this.groupStatistics();
+  }
+  private handleStatisticsError(err: HttpErrorResponse): void {
+    this.loadingStatistics = false;
+
+    this.resetStatisticsState();
+
+    this.message = err.error?.message || 'userProgramStatistics.loadError';
+
+    this.messageType = 'error';
+
+    console.error('❌ Program statisztika betöltése sikertelen:', err);
+  }
   private resetStatisticsState(): void {
-  this.statistics = [];
-  this.groupedWorkouts = [];
-  this.currentWorkoutIndex = 0;
-}
+    this.statistics = [];
+    this.groupedWorkouts = [];
+    this.currentWorkoutIndex = 0;
+  }
   // ============================================================
   // STATISZTIKA CSOPORTOSÍTÁSA
   // ============================================================
 
-private groupStatistics(): void {
-  const workoutMap = new Map<number, ProgramStatisticsWorkout>();
+  private groupStatistics(): void {
+    const workoutMap = new Map<number, ProgramStatisticsWorkout>();
 
-  for (const row of this.statistics) {
-    const workout = this.getOrCreateWorkout(
-      workoutMap,
-      row,
-    );
+    for (const row of this.statistics) {
+      const workout = this.getOrCreateWorkout(workoutMap, row);
 
-    const exercise = this.getOrCreateExercise(
-      workout,
-      row,
-    );
+      const exercise = this.getOrCreateExercise(workout, row);
 
-    this.addSetIfNotExists(
-      exercise,
-      row,
-    );
-  }
-
-  this.groupedWorkouts = this.sortWorkouts(
-    Array.from(workoutMap.values()),
-  );
-
-  this.currentWorkoutIndex = 0;
-
-  this.calculateAllExerciseProgress();
-}
-private getOrCreateWorkout(
-  workoutMap: Map<number, ProgramStatisticsWorkout>,
-  row: ProgramStatisticsRow,
-): ProgramStatisticsWorkout {
-  let workout = workoutMap.get(row.workoutId);
-
-  if (!workout) {
-    workout = {
-      workoutId: row.workoutId,
-      workoutName: row.workoutName,
-      workoutDescription: row.workoutDescription,
-      workoutDate: row.workoutDate,
-      durationMinutes: row.durationMinutes,
-      intensityLevel: row.intensityLevel,
-
-      userWorkoutId: row.userWorkoutId,
-      userWorkoutCompleted: row.userWorkoutCompleted,
-      userWorkoutPerformedAt: row.userWorkoutPerformedAt,
-      userWorkoutScheduledAt: row.userWorkoutScheduledAt,
-      userWorkoutFeedback: row.userWorkoutFeedback,
-      userWorkoutNotes: row.userWorkoutNotes,
-
-      exercises: [],
-    };
-
-    workoutMap.set(
-      row.workoutId,
-      workout,
-    );
-  }
-
-  return workout;
-}
-private getOrCreateExercise(
-  workout: ProgramStatisticsWorkout,
-  row: ProgramStatisticsRow,
-): ProgramStatisticsExercise {
-  let exercise = workout.exercises.find(
-    (item) => item.exerciseId === row.exerciseId,
-  );
-
-  if (!exercise) {
-    exercise = {
-      exerciseId: row.exerciseId,
-      exerciseName: row.exerciseName,
-      muscleGroup: row.muscleGroup,
-      equipment: row.equipment,
-      difficultyLevel: row.difficultyLevel,
-      category: row.category,
-
-      userWorkoutExerciseId:
-        row.userWorkoutExerciseId,
-
-      userWorkoutExerciseCompleted:
-        row.userWorkoutExerciseCompleted,
-
-      userWorkoutExercisePerformedAt:
-        row.userWorkoutExercisePerformedAt,
-
-      userWorkoutExerciseFeedback:
-        row.userWorkoutExerciseFeedback,
-
-      userWorkoutExerciseNotes:
-        row.userWorkoutExerciseNotes,
-
-      setsDone: row.setsDone,
-
-      sets: [],
-
-      startWeight: undefined,
-      currentWeight: undefined,
-      weightChange: undefined,
-
-      startRepetitions: undefined,
-      currentRepetitions: undefined,
-      repetitionsChange: undefined,
-    };
-
-    workout.exercises.push(exercise);
-  }
-
-  return exercise;
-}
-private addSetIfNotExists(
-  exercise: ProgramStatisticsExercise,
-  row: ProgramStatisticsRow,
-): void {
-  const existingSet = exercise.sets.find(
-    (item) => item.setId === row.setId,
-  );
-
-  if (existingSet) {
-    return;
-  }
-
-  exercise.sets.push({
-    setId: row.setId,
-    setNumber: row.setNumber,
-
-    targetRepetitions:
-      row.targetRepetitions,
-
-    targetWeightKg:
-      row.targetWeightKg,
-
-    actualRepetitions:
-      row.actualRepetitions,
-
-    actualWeightKg:
-      row.actualWeightKg,
-
-    setStartedAt:
-      row.setStartedAt,
-
-    setCompletedAt:
-      row.setCompletedAt,
-
-    setCompleted:
-      row.setCompleted,
-
-    setNotes:
-      row.setNotes,
-  });
-}
-  private sortWorkouts(
-  workouts: ProgramStatisticsWorkout[],
-): ProgramStatisticsWorkout[] {
-  return workouts.sort((a, b) => {
-    const dateA = a.workoutDate
-      ? new Date(a.workoutDate).getTime()
-      : Number.MAX_SAFE_INTEGER;
-
-    const dateB = b.workoutDate
-      ? new Date(b.workoutDate).getTime()
-      : Number.MAX_SAFE_INTEGER;
-
-    if (dateA !== dateB) {
-      return dateA - dateB;
+      this.addSetIfNotExists(exercise, row);
     }
 
-    const performedA = a.userWorkoutPerformedAt
-      ? new Date(a.userWorkoutPerformedAt).getTime()
-      : Number.MAX_SAFE_INTEGER;
+    this.groupedWorkouts = this.sortWorkouts(Array.from(workoutMap.values()));
 
-    const performedB = b.userWorkoutPerformedAt
-      ? new Date(b.userWorkoutPerformedAt).getTime()
-      : Number.MAX_SAFE_INTEGER;
+    this.currentWorkoutIndex = 0;
 
-    return performedA - performedB;
-  });
-}
+    this.calculateAllExerciseProgress();
+  }
+  private getOrCreateWorkout(
+    workoutMap: Map<number, ProgramStatisticsWorkout>,
+    row: ProgramStatisticsRow,
+  ): ProgramStatisticsWorkout {
+    let workout = workoutMap.get(row.workoutId);
+
+    if (!workout) {
+      workout = {
+        workoutId: row.workoutId,
+        workoutName: row.workoutName,
+        workoutDescription: row.workoutDescription,
+        workoutDate: row.workoutDate,
+        durationMinutes: row.durationMinutes,
+        intensityLevel: row.intensityLevel,
+
+        userWorkoutId: row.userWorkoutId,
+        userWorkoutCompleted: row.userWorkoutCompleted,
+        userWorkoutPerformedAt: row.userWorkoutPerformedAt,
+        userWorkoutScheduledAt: row.userWorkoutScheduledAt,
+        userWorkoutFeedback: row.userWorkoutFeedback,
+        userWorkoutNotes: row.userWorkoutNotes,
+
+        exercises: [],
+      };
+
+      workoutMap.set(row.workoutId, workout);
+    }
+
+    return workout;
+  }
+  private getOrCreateExercise(
+    workout: ProgramStatisticsWorkout,
+    row: ProgramStatisticsRow,
+  ): ProgramStatisticsExercise {
+    let exercise = workout.exercises.find((item) => item.exerciseId === row.exerciseId);
+
+    if (!exercise) {
+      exercise = {
+        exerciseId: row.exerciseId,
+        exerciseName: row.exerciseName,
+        muscleGroup: row.muscleGroup,
+        equipment: row.equipment,
+        difficultyLevel: row.difficultyLevel,
+        category: row.category,
+
+        userWorkoutExerciseId: row.userWorkoutExerciseId,
+
+        userWorkoutExerciseCompleted: row.userWorkoutExerciseCompleted,
+
+        userWorkoutExercisePerformedAt: row.userWorkoutExercisePerformedAt,
+
+        userWorkoutExerciseFeedback: row.userWorkoutExerciseFeedback,
+
+        userWorkoutExerciseNotes: row.userWorkoutExerciseNotes,
+
+        setsDone: row.setsDone,
+
+        sets: [],
+
+        startWeight: undefined,
+        currentWeight: undefined,
+        weightChange: undefined,
+
+        startRepetitions: undefined,
+        currentRepetitions: undefined,
+        repetitionsChange: undefined,
+      };
+
+      workout.exercises.push(exercise);
+    }
+
+    return exercise;
+  }
+  private addSetIfNotExists(exercise: ProgramStatisticsExercise, row: ProgramStatisticsRow): void {
+    const existingSet = exercise.sets.find((item) => item.setId === row.setId);
+
+    if (existingSet) {
+      return;
+    }
+
+    exercise.sets.push({
+      setId: row.setId,
+      setNumber: row.setNumber,
+
+      targetRepetitions: row.targetRepetitions,
+
+      targetWeightKg: row.targetWeightKg,
+
+      actualRepetitions: row.actualRepetitions,
+
+      actualWeightKg: row.actualWeightKg,
+
+      setStartedAt: row.setStartedAt,
+
+      setCompletedAt: row.setCompletedAt,
+
+      setCompleted: row.setCompleted,
+
+      setNotes: row.setNotes,
+    });
+  }
+  private sortWorkouts(workouts: ProgramStatisticsWorkout[]): ProgramStatisticsWorkout[] {
+    return workouts.sort((a, b) => {
+      const dateA = a.workoutDate ? new Date(a.workoutDate).getTime() : Number.MAX_SAFE_INTEGER;
+
+      const dateB = b.workoutDate ? new Date(b.workoutDate).getTime() : Number.MAX_SAFE_INTEGER;
+
+      if (dateA !== dateB) {
+        return dateA - dateB;
+      }
+
+      const performedA = a.userWorkoutPerformedAt
+        ? new Date(a.userWorkoutPerformedAt).getTime()
+        : Number.MAX_SAFE_INTEGER;
+
+      const performedB = b.userWorkoutPerformedAt
+        ? new Date(b.userWorkoutPerformedAt).getTime()
+        : Number.MAX_SAFE_INTEGER;
+
+      return performedA - performedB;
+    });
+  }
   private calculateAllExerciseProgress(): void {
-  for (const workout of this.groupedWorkouts) {
-    for (const exercise of workout.exercises) {
-      this.calculateExerciseProgress(exercise);
+    for (const workout of this.groupedWorkouts) {
+      for (const exercise of workout.exercises) {
+        this.calculateExerciseProgress(exercise);
+      }
     }
   }
-}
   // ============================================================
   // AKTUÁLIS WORKOUT
   // ============================================================

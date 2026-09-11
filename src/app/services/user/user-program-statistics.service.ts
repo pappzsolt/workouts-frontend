@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
 import { ProgramStatisticsRow } from '../../models/user-program-statistics.model';
+import { ApiResponse } from '../../models/api-response.model';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +22,7 @@ export class UserProgramStatisticsService {
    * A backend a bejelentkezett user alapján
    * határozza meg, hogy milyen adatok adhatók vissza.
    */
-  getProgramStatistics(programId: number): Observable<ProgramStatisticsRow[]> {
-    return this.http.get<ProgramStatisticsRow[]>(`${this.apiUrl}/${programId}`);
+  getProgramStatistics(programId: number): Observable<ApiResponse<ProgramStatisticsRow[]>> {
+    return this.http.get<ApiResponse<ProgramStatisticsRow[]>>(`${this.apiUrl}/${programId}`);
   }
 }
