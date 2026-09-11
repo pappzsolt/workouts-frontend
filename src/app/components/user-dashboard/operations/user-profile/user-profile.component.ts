@@ -1,22 +1,16 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 
-import { Role } from '../../../../models/role.model';
-
-import { RoleService } from '../../../../services/roles/role.service';
-
 import { AuthService } from '../../../../services/auth/auth.service';
-
-import { MatFormFieldModule } from '@angular/material/form-field';
-
-import { MatSelectModule } from '@angular/material/select';
-
-import { MatInputModule } from '@angular/material/input';
 
 import { User, RawUser, Coach } from '../../../../models/user-profil.model';
 
 import { UserProfilService } from '../../../../services/user/user-profile/user-profile.service';
 
 import { forkJoin } from 'rxjs';
+
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
@@ -47,17 +41,22 @@ export class UserProfileComponent implements OnInit {
   };
 
   coaches: Coach[] = [];
-  roles: Role[] = [];
+
+  /**
+   * A felhasználó meglévő role-jai.
+   * A profil oldalon nem módosítjuk őket,
+   * csak mentéskor visszaküldjük a backendnek.
+   */
+  roles: string[] = [];
 
   selectedCoach?: Coach;
-  selectedRoles: Role[] = [];
 
   message = '';
+
   coachName = '';
 
   constructor(
     private userService: UserProfilService,
-    private roleService: RoleService,
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
   ) {}
@@ -73,14 +72,15 @@ export class UserProfileComponent implements OnInit {
 
     forkJoin({
       coaches: this.userService.getCoaches(),
-
-      roles: this.roleService.getRoles(),
-
       profile: this.userService.getMemberById(userId),
     }).subscribe({
-      next: ({ coaches, roles, profile }) => {
+      next: ({ coaches, profile }) => {
         this.coaches = coaches;
-        this.roles = roles;
+
+        /**
+         * Megőrizzük a backendről érkező role-okat.
+         */
+        this.roles = profile.roles || [];
 
         this.selectedUser = {
           id: profile.id,
@@ -91,8 +91,8 @@ export class UserProfileComponent implements OnInit {
           age: profile.extraFields?.age,
           weight: profile.extraFields?.weight,
           height: profile.extraFields?.height,
-          gender: profile.extraFields?.gender,
-          goals: profile.extraFields?.goals,
+          gender: profile.extraFields?.gender || '',
+          goals: profile.extraFields?.goals || '',
           coachId: profile.extraFields?.coach_id,
           roleName: undefined,
           roleIds: [],
@@ -109,13 +109,17 @@ export class UserProfileComponent implements OnInit {
         this.message = 'userProfile.profileLoaded';
       },
 
-      error: () => {
+      error: (err) => {
+        console.error('Hiba a profil betöltésekor:', err);
+
         this.message = 'userProfile.loadError';
       },
     });
   }
 
   private patchUserFromRaw(raw: RawUser): void {
+    this.roles = raw.roles || [];
+
     this.selectedUser = {
       id: raw.id,
       username: raw.usernameOrName || '',
@@ -125,8 +129,8 @@ export class UserProfileComponent implements OnInit {
       age: raw.extraFields?.age,
       weight: raw.extraFields?.weight,
       height: raw.extraFields?.height,
-      gender: raw.extraFields?.gender,
-      goals: raw.extraFields?.goals,
+      gender: raw.extraFields?.gender || '',
+      goals: raw.extraFields?.goals || '',
       coachId: raw.extraFields?.coach_id,
       roleName: undefined,
       roleIds: [],
@@ -135,8 +139,6 @@ export class UserProfileComponent implements OnInit {
     this.selectedCoach = this.coaches.find((c) => c.id === this.selectedUser.coachId);
 
     this.coachName = this.selectedCoach ? this.selectedCoach.name : '';
-
-    this.selectedRoles = this.roles.filter((r) => raw.roles?.includes(r.name));
 
     this.cdr.detectChanges();
   }
@@ -149,12 +151,6 @@ export class UserProfileComponent implements OnInit {
     this.coachName = coach.name;
   }
 
-  onRoleSelected(roles: Role[]): void {
-    this.selectedRoles = roles;
-
-    this.selectedUser.roleIds = roles.map((r) => r.id);
-  }
-
   onSave(): void {
     if (!this.selectedUser) {
       return;
@@ -162,27 +158,42 @@ export class UserProfileComponent implements OnInit {
 
     const rawUser: RawUser = {
       id: this.selectedUser.id,
+
       usernameOrName: this.selectedUser.username,
+
       email: this.selectedUser.email,
+
       avatarUrl: this.selectedUser.avatarUrl,
-      roles: this.selectedRoles.map((r) => r.name),
+
+      /**
+       * A meglévő role-ok változatlanul
+       * visszakerülnek a backendnek.
+       */
+      roles: this.roles,
 
       extraFields: {
         coach_id: this.selectedUser.coachId,
+
         age: this.selectedUser.age,
+
         weight: this.selectedUser.weight,
+
         height: this.selectedUser.height,
+
         gender: this.selectedUser.gender,
+
         goals: this.selectedUser.goals,
       },
     };
 
-    this.userService.updateUser(rawUser, this.selectedUser.roleIds || []).subscribe({
+    this.userService.updateUser(rawUser).subscribe({
       next: () => {
         this.message = 'userProfile.updateSuccess';
       },
 
       error: (err: any) => {
+        console.error('Profil mentési hiba:', err);
+
         this.message = 'userProfile.updateError' + (err?.message || '');
       },
     });

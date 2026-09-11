@@ -29,6 +29,6 @@ export class CoachProfileService {
   }
 
   saveCoachProfile(profile: any): Observable<any> {
-    return this.http.post<any>(API_ENDPOINTS.members, profile);
+    return this.http.put<any>(`${API_ENDPOINTS.members}/my-coach-profile`, profile);
   }
 }

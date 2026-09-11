@@ -49,14 +49,15 @@ export class NewWorkoutComponent implements OnInit {
   loadWorkouts(): void {
     this.coachWorkoutsService.getMyWorkouts().subscribe({
       next: (res) => {
-        this.workouts = res || [];
+        this.workouts = res.data || [];
       },
 
       error: (err) => {
         console.error('Hiba a workoutok betöltésekor', err);
 
-        this.message = 'newWorkout.loadError';
+        this.workouts = [];
 
+        this.message = 'newWorkout.loadError';
         this.messageType = 'error';
       },
     });

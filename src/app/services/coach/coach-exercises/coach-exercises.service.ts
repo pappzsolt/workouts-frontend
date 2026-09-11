@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-
+import { Observable, map } from 'rxjs';
 import { Exercise, WorkoutDto } from '../../../models/exercise.model';
 import { ApiResponse } from '../../../models/api-response.model';
 
@@ -26,7 +25,9 @@ export class ExerciseService {
   // ==========================================================
 
   getWorkoutExercises(workoutId: number): Observable<WorkoutDto> {
-    return this.http.get<WorkoutDto>(`${API_ENDPOINTS.exercises}/workout/${workoutId}`);
+    return this.http
+      .get<ApiResponse<WorkoutDto>>(`${API_ENDPOINTS.exercises}/workout/${workoutId}`)
+      .pipe(map((response: ApiResponse<WorkoutDto>) => response.data));
   }
 
   // ==========================================================

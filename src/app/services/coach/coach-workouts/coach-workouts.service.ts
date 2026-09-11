@@ -23,8 +23,8 @@ export class CoachWorkoutsService {
    *
    * GET /api/workouts/my-workouts
    */
-  getMyWorkouts(): Observable<Workout[]> {
-    return this.http.get<Workout[]>(`${this.apiUrl}/my-workouts`);
+  getMyWorkouts(): Observable<ApiResponse<Workout[]>> {
+    return this.http.get<ApiResponse<Workout[]>>(`${this.apiUrl}/my-workouts`);
   }
 
   /**

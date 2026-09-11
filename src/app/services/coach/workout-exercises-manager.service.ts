@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 import { ApiResponse } from '../../models/api-response.model';
 import { UserWorkoutExerciseDto } from '../../models/user-workout-exercise.dto';
@@ -20,7 +20,9 @@ export class WorkoutExercisesManagerService {
    * Lekéri egy user workout összes exercise-át.
    */
   getExercisesForUserWorkout(userWorkoutId: number): Observable<UserWorkoutExerciseDto[]> {
-    return this.http.get<UserWorkoutExerciseDto[]>(`${this.baseUrl}/workout/${userWorkoutId}`);
+    return this.http
+      .get<ApiResponse<UserWorkoutExerciseDto[]>>(`${this.baseUrl}/workout/${userWorkoutId}`)
+      .pipe(map((response: ApiResponse<UserWorkoutExerciseDto[]>) => response.data));
   }
 
   /**

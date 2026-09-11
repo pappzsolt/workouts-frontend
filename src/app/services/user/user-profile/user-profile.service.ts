@@ -57,25 +57,29 @@ export class UserProfilService {
   }
 
   /**
-   * User módosítása.
+   * A bejelentkezett USER saját profiljának módosítása.
    */
-  updateUser(user: RawUser, roleIds: number[]): Observable<ApiResponse<void>> {
+  updateUser(user: RawUser): Observable<ApiResponse<void>> {
     const payload = {
+      id: user.id,
       type: 'user' as const,
+
       username: user.usernameOrName,
       email: user.email,
+
       avatarUrl: user.avatarUrl,
+
       age: user.extraFields?.age,
       weight: user.extraFields?.weight,
       height: user.extraFields?.height,
       gender: user.extraFields?.gender,
       goals: user.extraFields?.goals,
+
       coachId: user.extraFields?.coach_id,
-      roleIds: roleIds || [],
-      ...(user.id ? { id: user.id } : {}),
+
       ...(user.password?.trim() ? { passwordHash: user.password } : {}),
     };
 
-    return this.http.post<ApiResponse<void>>(this.apiUrl, payload);
+    return this.http.post<ApiResponse<void>>(`${this.apiUrl}/my-profile`, payload);
   }
 }

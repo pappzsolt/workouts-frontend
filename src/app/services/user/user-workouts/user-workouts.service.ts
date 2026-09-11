@@ -1,14 +1,15 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
+import { ApiResponse } from '../../../models/api-response.model';
 
 export interface Workout {
   workoutId: number;
   workoutName: string;
   workoutDescription: string;
-  workoutDate: string; // ISO dátum
+  workoutDate: string;
   durationMinutes: number;
   intensityLevel: string;
   dayIndex: number;
@@ -31,6 +32,8 @@ export class UserWorkoutsService {
 
   /** Backend hívás – Workouts by program */
   getWorkoutsByProgram(programId: number): Observable<Workout[]> {
-    return this.http.get<Workout[]>(`${this.apiUrl}/program/${programId}`);
+    return this.http
+      .get<ApiResponse<Workout[]>>(`${this.apiUrl}/program/${programId}`)
+      .pipe(map((response) => response.data));
   }
 }

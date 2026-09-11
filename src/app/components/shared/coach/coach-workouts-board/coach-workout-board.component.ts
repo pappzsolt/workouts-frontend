@@ -9,7 +9,7 @@ import {
   inject,
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-
+import { ApiResponse } from '../../../../models/api-response.model';
 import { Workout } from '../../../../models/workout.model';
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 
@@ -62,17 +62,26 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
     this.messageType = '';
 
     this.workoutService.getMyWorkouts().subscribe({
-      next: (res: Workout[]) => {
+      next: (res: ApiResponse<Workout[]>) => {
         this.loading = false;
 
-        if (res?.length) {
-          this.workouts = res.sort((a: Workout, b: Workout) =>
+        console.log('=== getMyWorkouts válasz ===');
+        console.log('Teljes válasz:', res);
+        console.log('Workoutok:', res.data);
+
+        if (res.success && res.data?.length > 0) {
+          this.workouts = [...res.data].sort((a: Workout, b: Workout) =>
             (a.name ?? a.workoutName ?? '').localeCompare(b.name ?? b.workoutName ?? ''),
           );
+
+          console.log('Betöltött workoutok:', this.workouts);
         } else {
           this.workouts = [];
+
           this.message = 'coachWorkoutBoard.noWorkouts';
           this.messageType = 'error';
+
+          console.log('Nincs workout a válaszban.');
         }
       },
 
