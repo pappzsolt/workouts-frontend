@@ -558,14 +558,10 @@ export class CoachProgramBuilderComponent implements OnInit {
     }
 
     this.programWorkoutService.getWorkoutsForProgram(this.programId).subscribe({
-      next: (response: any) => {
+      next: (response: ApiResponse<ProgramWorkout[]>) => {
         console.log('Program workout kapcsolatok:', response);
 
-        const data: ProgramWorkout[] = Array.isArray(response)
-          ? response
-          : Array.isArray(response?.data)
-            ? response.data
-            : [];
+        const data = response.data ?? [];
 
         this.programWorkouts = [...data].sort(
           (a: ProgramWorkout, b: ProgramWorkout) => a.dayIndex - b.dayIndex,
@@ -831,17 +827,22 @@ export class CoachProgramBuilderComponent implements OnInit {
     const dayIndex = this.selectedWorkouts.length;
 
     this.programWorkoutService.addWorkoutToProgram(this.programId, workout.id, dayIndex).subscribe({
-      next: (response: any) => {
+      next: (response: ApiResponse<ProgramWorkout>) => {
         console.log('Workout hozzáadva a programhoz:', response);
+
+        if (!response.success || !response.data) {
+          console.error('A workout hozzáadása sikertelen:', response.message);
+
+          this.message = response.message || 'coachProgramBuilder.addWorkoutError';
+
+          this.messageType = 'error';
+
+          return;
+        }
 
         this.selectedWorkouts.push(workout);
 
-        this.programWorkouts.push({
-          id: response?.id,
-          programId: this.programId!,
-          workoutId: workout.id,
-          dayIndex,
-        });
+        this.programWorkouts.push(response.data);
 
         console.log('Program workoutok:', this.programWorkouts);
 
@@ -855,7 +856,7 @@ export class CoachProgramBuilderComponent implements OnInit {
       error: (error: any) => {
         console.error('Hiba a workout programhoz adásakor:', error);
 
-        this.message = 'coachProgramBuilder.addWorkoutError';
+        this.message = error.error?.message || 'coachProgramBuilder.addWorkoutError';
 
         this.messageType = 'error';
       },
@@ -874,8 +875,18 @@ export class CoachProgramBuilderComponent implements OnInit {
     }
 
     this.programWorkoutService.deleteProgramWorkout(this.programId, workoutId).subscribe({
-      next: (response: any) => {
+      next: (response: ApiResponse<void>) => {
         console.log('Workout törölve a programból:', response);
+
+        if (!response.success) {
+          console.error('A workout törlése sikertelen:', response.message);
+
+          this.message = response.message || 'coachProgramBuilder.removeWorkoutError';
+
+          this.messageType = 'error';
+
+          return;
+        }
 
         this.selectedWorkouts = this.selectedWorkouts.filter((workout) => workout.id !== workoutId);
 
@@ -897,7 +908,7 @@ export class CoachProgramBuilderComponent implements OnInit {
       error: (error: any) => {
         console.error('Hiba a workout programból törlésekor:', error);
 
-        this.message = 'coachProgramBuilder.removeWorkoutError';
+        this.message = error.error?.message || 'coachProgramBuilder.removeWorkoutError';
 
         this.messageType = 'error';
       },
@@ -939,12 +950,21 @@ export class CoachProgramBuilderComponent implements OnInit {
 
       return;
     }
-
     this.programWorkoutService.updateProgramWorkout(programWorkout.id, dayIndex).subscribe({
-      next: (response: any) => {
+      next: (response: ApiResponse<ProgramWorkout>) => {
         console.log('Workout napja módosítva:', response);
 
-        programWorkout.dayIndex = dayIndex;
+        if (!response.success || !response.data) {
+          console.error('A workout napjának módosítása sikertelen:', response.message);
+
+          this.message = response.message || 'coachProgramBuilder.updateWorkoutDayError';
+
+          this.messageType = 'error';
+
+          return;
+        }
+
+        programWorkout.dayIndex = response.data.dayIndex;
 
         this.programWorkouts = [...this.programWorkouts].sort((a, b) => a.dayIndex - b.dayIndex);
 
@@ -956,7 +976,7 @@ export class CoachProgramBuilderComponent implements OnInit {
       error: (error: any) => {
         console.error('Hiba a workout napjának módosításakor:', error);
 
-        this.message = 'coachProgramBuilder.updateWorkoutDayError';
+        this.message = error.error?.message || 'coachProgramBuilder.updateWorkoutDayError';
 
         this.messageType = 'error';
       },

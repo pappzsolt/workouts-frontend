@@ -160,21 +160,15 @@ export class CoachWorkoutEditComponent implements OnInit {
     if (!this.workoutId) {
       return;
     }
-
     this.checkingProgramAssignment = true;
-
     this.programWorkoutService.isWorkoutAssignedToAnyProgram(this.workoutId).subscribe({
       next: (response) => {
-        this.workoutAssignedToProgram = response?.assigned === true;
-
+        this.workoutAssignedToProgram = response.success && response.data?.assigned === true;
         this.checkingProgramAssignment = false;
-
         console.log('Workout programhoz tartozik:', this.workoutAssignedToProgram);
       },
-
       error: (error: any) => {
         console.error('Hiba a workout programhoz tartozásának ellenőrzésekor:', error);
-
         this.workoutAssignedToProgram = false;
         this.checkingProgramAssignment = false;
       },

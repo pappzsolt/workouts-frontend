@@ -1,10 +1,13 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 import { CoachProgramBoardComponent } from '../../../shared/coach/coach-program-board/coach-program-board.component';
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
+
 import { Workout } from '../../../../models/workout.model';
 import { CoachProgram } from '../../../../models/coach-program.model';
+
 import { ProgramWorkoutService } from '../../../../services/coach/program-workout.service';
 
 @Component({
@@ -22,9 +25,14 @@ export class ProgramWorkoutsAssComponent implements OnInit {
   selectedWorkoutIds: number[] = [];
 
   message: string | null = null;
+
   messageStatus: 'success' | 'error' | null = null;
 
-  @Output() assignedWorkouts = new EventEmitter<{ programId: number; workoutIds: number[] }>();
+  @Output()
+  assignedWorkouts = new EventEmitter<{
+    programId: number;
+    workoutIds: number[];
+  }>();
 
   constructor(private programWorkoutService: ProgramWorkoutService) {}
 
@@ -32,13 +40,16 @@ export class ProgramWorkoutsAssComponent implements OnInit {
 
   onProgramSelected(programId: number) {
     this.selectedProgramId = programId;
+
     console.log('Selected program in wrapper:', programId);
+
     this.selectedWorkoutIds = [];
   }
 
   onWorkoutsChange(updatedIds: number[]) {
     if (!this.selectedProgramId) {
       console.warn('Program nincs kiválasztva!');
+
       return;
     }
 
@@ -59,16 +70,19 @@ export class ProgramWorkoutsAssComponent implements OnInit {
   saveSelectedWorkouts() {
     if (!this.selectedProgramId) {
       console.warn('Nincs kiválasztott program!');
+
       return;
     }
 
     if (this.selectedWorkoutIds.length === 0) {
       console.warn('Nincsenek kiválasztott workoutok!');
+
       return;
     }
 
     console.log('🚀 Mentés backendhez:', {
       programId: this.selectedProgramId,
+
       workoutIds: this.selectedWorkoutIds,
     });
 
@@ -78,19 +92,28 @@ export class ProgramWorkoutsAssComponent implements OnInit {
         .subscribe({
           next: (res) => {
             console.log(`✅ Workout ${workoutId} mentve:`, res);
+
             this.message = res.message;
-            this.messageStatus = res.status === 'success' ? 'success' : 'error';
+
+            this.messageStatus = res.success ? 'success' : 'error';
+
             setTimeout(() => {
               this.message = null;
+
               this.messageStatus = null;
             }, 5000);
           },
+
           error: (err) => {
             console.error(`❌ Workout ${workoutId} mentése sikertelen:`, err);
+
             this.message = err.error?.message || 'Ismeretlen hiba';
+
             this.messageStatus = 'error';
+
             setTimeout(() => {
               this.message = null;
+
               this.messageStatus = null;
             }, 5000);
           },
@@ -101,6 +124,7 @@ export class ProgramWorkoutsAssComponent implements OnInit {
   removeWorkout(wid: number) {
     if (!this.selectedProgramId) {
       console.warn('Program nincs kiválasztva!');
+
       return;
     }
 
@@ -109,21 +133,30 @@ export class ProgramWorkoutsAssComponent implements OnInit {
     this.programWorkoutService.deleteProgramWorkout(this.selectedProgramId, wid).subscribe({
       next: (res) => {
         console.log(`✅ Workout ${wid} törölve a programból:`, res);
+
         this.message = res.message;
-        this.messageStatus = res.status === 'success' ? 'success' : 'error';
+
+        this.messageStatus = res.success ? 'success' : 'error';
+
         setTimeout(() => {
           this.message = null;
+
           this.messageStatus = null;
         }, 5000);
 
         this.onWorkoutsChange(this.selectedWorkoutIds);
       },
+
       error: (err) => {
         console.error(`❌ Workout ${wid} törlése sikertelen:`, err);
+
         this.message = err.error?.message || 'Ismeretlen hiba';
+
         this.messageStatus = 'error';
+
         setTimeout(() => {
           this.message = null;
+
           this.messageStatus = null;
         }, 5000);
       },
