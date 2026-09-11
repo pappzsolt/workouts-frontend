@@ -228,9 +228,14 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
     this.service
       .getUserProgramWithExercises(this.selectedUserId, this.selectedProgramId)
       .subscribe({
-        next: (data) => {
-          this.userProgramData = data ?? [];
-          this.dayGroups = this.groupByDayAndWorkout(this.userProgramData);
+        next: (res) => {
+          if (res.success && res.data) {
+            this.userProgramData = res.data;
+            this.dayGroups = this.groupByDayAndWorkout(this.userProgramData);
+          } else {
+            this.userProgramData = [];
+            this.dayGroups = [];
+          }
         },
         error: () => {
           this.userProgramData = [];

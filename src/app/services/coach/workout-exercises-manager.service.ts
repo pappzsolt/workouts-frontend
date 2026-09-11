@@ -76,8 +76,8 @@ export class WorkoutExercisesManagerService {
   /**
    * Teljes program + workout + exercise + user adatok lekérése.
    */
-  getUserProgramWithExercises(userId: number, programId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/user-program/${userId}/${programId}`);
+  getUserProgramWithExercises(userId: number, programId: number): Observable<ApiResponse<any[]>> {
+    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/user-program/${userId}/${programId}`);
   }
 
   /**
@@ -94,8 +94,8 @@ export class WorkoutExercisesManagerService {
   /**
    * A belépett user számára ütemezett workoutok lekérése.
    */
-  getScheduledWorkouts(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.baseUrl}/scheduled-workouts`);
+  getScheduledWorkouts(): Observable<ApiResponse<any[]>> {
+    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/scheduled-workouts`);
   }
 
   /**

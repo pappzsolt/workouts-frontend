@@ -78,10 +78,14 @@ export class UserWorkoutsCalendarComponent implements OnInit {
 
   loadScheduledWorkouts(): void {
     this.workoutService.getScheduledWorkouts().subscribe({
-      next: (workouts) => {
-        console.log('Scheduled workouts:', JSON.stringify(workouts, null, 2));
+      next: (response) => {
+        console.log('Scheduled workouts:', JSON.stringify(response, null, 2));
 
-        this.scheduledWorkouts = workouts ?? [];
+        if (response.success) {
+          this.scheduledWorkouts = response.data ?? [];
+        } else {
+          this.scheduledWorkouts = [];
+        }
 
         this.generateCalendar();
       },
@@ -90,6 +94,8 @@ export class UserWorkoutsCalendarComponent implements OnInit {
         console.error('Hiba az ütemezett workoutok lekérésekor:', err);
 
         this.scheduledWorkouts = [];
+
+        this.generateCalendar();
       },
     });
   }
