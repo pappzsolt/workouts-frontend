@@ -1,5 +1,19 @@
 <div class="page-container">
 
+  <!-- Oldal cím -->
+  <h1 class="page-title">
+    {{ 'assignWorkoutExercises.title' | translate }}
+  </h1>
+
+
+  <!-- Közös üzenet -->
+  <app-message
+    [message]="message"
+    [type]="messageType"
+  >
+  </app-message>
+
+
   <!-- Workout lista -->
   <div class="content-card">
     <h2 class="section-title">
@@ -26,7 +40,6 @@
     </h2>
 
     <div class="items-list">
-
       <div
         *ngFor="let wid of selectedWorkoutIds"
         class="selected-workout"
@@ -43,9 +56,7 @@
         >
           ✕
         </button>
-
       </div>
-
     </div>
   </div>
 
@@ -65,22 +76,8 @@
   </div>
 
 
-  <!-- Backend üzenet -->
-  <div
-    *ngIf="message"
-    class="message-container"
-    [ngClass]="{
-      'message-success': messageType === 'success',
-      'message-error': messageType === 'error'
-    }"
-  >
-    {{ message }}
-  </div>
-
-
   <!-- Mentés -->
   <div class="save-container">
-
     <button
       type="button"
       (click)="saveSelectedWorkoutsAndExercises()"
@@ -88,7 +85,6 @@
     >
       {{ 'assignWorkoutExercises.save' | translate }}
     </button>
-
   </div>
 
 </div>

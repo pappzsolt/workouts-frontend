@@ -4,6 +4,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
 import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exercises-board/coach-exercises-board.component';
 
+import { MessageComponent } from '../../../shared/message/message.component';
+
 import { Workout } from '../../../../models/workout.model';
 import { Exercise } from '../../../../models/exercise.model';
 
@@ -14,7 +16,12 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 @Component({
   selector: 'app-assign-workouts-exercises',
   standalone: true,
-  imports: [...SHARED_IMPORTS, CoachWorkoutBoardComponent, CoachExercisesBoardComponent],
+  imports: [
+    ...SHARED_IMPORTS,
+    CoachWorkoutBoardComponent,
+    CoachExercisesBoardComponent,
+    MessageComponent,
+  ],
   styleUrl: './assign-workouts-exercises.component.css',
   templateUrl: './assign-workouts-exercises.component.html',
 })
@@ -33,7 +40,7 @@ export class AssignWorkoutsExercisesComponent {
 
   message = '';
 
-  messageType: 'success' | 'error' | '' = '';
+  messageType: 'success' | 'error' | 'info' | '' = '';
 
   // =============================
   // OUTPUT
