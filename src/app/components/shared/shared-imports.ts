@@ -3,4 +3,12 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 
-export const SHARED_IMPORTS = [CommonModule, RouterModule, FormsModule, TranslatePipe];
+import { MessageComponent } from './message/message.component';
+
+export const SHARED_IMPORTS = [
+  CommonModule,
+  RouterModule,
+  FormsModule,
+  TranslatePipe,
+  MessageComponent,
+];

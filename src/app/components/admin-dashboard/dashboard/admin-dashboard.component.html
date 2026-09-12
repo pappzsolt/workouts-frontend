@@ -2,38 +2,74 @@
   {{ 'adminDashboard.title' | translate }}
 </h2>
 
+<app-message
+  [message]="message"
+  [type]="messageType">
+</app-message>
+
 <div class="dashboard-cards-container">
+
   <!-- Felhasználók listája -->
-  <div class="dashboard-card" (click)="navigateTo('admin/users')">
-    <div class="dashboard-card-emoji">👥</div>
+  <div
+    class="dashboard-card"
+    (click)="navigateTo('admin/users')">
+
+    <div class="dashboard-card-emoji">
+      👥
+    </div>
+
     <div class="dashboard-card-title">
       {{ 'adminDashboard.usersList' | translate }}
     </div>
+
   </div>
 
+
   <!-- Felhasználó keresés -->
-  <div class="dashboard-card" (click)="navigateTo('admin/users/search')">
-    <div class="dashboard-card-emoji">🔍</div>
+  <div
+    class="dashboard-card"
+    (click)="navigateTo('admin/users/search')">
+
+    <div class="dashboard-card-emoji">
+      🔍
+    </div>
+
     <div class="dashboard-card-title">
       {{ 'adminDashboard.userSearch' | translate }}
     </div>
+
   </div>
 
+
   <!-- Új felhasználó -->
-  <div class="dashboard-card" (click)="navigateTo('admin/choice-users/new')">
-    <div class="dashboard-card-emoji">➕</div>
+  <div
+    class="dashboard-card"
+    (click)="navigateTo('admin/choice-users/new')">
+
+    <div class="dashboard-card-emoji">
+      ➕
+    </div>
+
     <div class="dashboard-card-title">
       {{ 'adminDashboard.newUser' | translate }}
     </div>
+
   </div>
 
+
   <!-- Felhasználó módosítás -->
-  <div class="dashboard-card" (click)="navigateTo('admin/choice-users/edit')">
+  <div
+    class="dashboard-card"
+    (click)="navigateTo('admin/choice-users/edit')">
+
     <div class="dashboard-card-emoji">
       ✏️
     </div>
+
     <div class="dashboard-card-title">
       {{ 'adminDashboard.editUser' | translate }}
     </div>
+
   </div>
+
 </div>

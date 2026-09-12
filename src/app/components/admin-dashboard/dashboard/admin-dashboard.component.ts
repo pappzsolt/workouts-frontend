@@ -11,6 +11,9 @@ import { SHARED_IMPORTS } from '../../shared/shared-imports';
   styleUrls: ['./admin-dashboard.component.css'],
 })
 export class AdminDashboardComponent {
+  message = '';
+  messageType: 'success' | 'error' | 'info' = 'info';
+
   constructor(private router: Router) {}
 
   navigateTo(path: string): void {
