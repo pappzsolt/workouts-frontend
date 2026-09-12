@@ -5,12 +5,13 @@ import { ExerciseService } from '../../../../../services/coach/coach-exercises/c
 import { Exercise } from '../../../../../models/exercise.model';
 import { ApiResponse } from '../../../../../models/api-response.model';
 
+import { MessageComponent } from '../../../../shared/message/message.component';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
 @Component({
   selector: 'app-coach-exercise-edit',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, MessageComponent],
   templateUrl: './coach-exercise-edit.component.html',
   styleUrls: ['./coach-exercise-edit.component.css'],
 })
@@ -29,13 +30,16 @@ export class CoachExerciseEditComponent implements OnInit {
     durationSeconds: 0,
   };
 
-  loading: boolean = false;
-  saving: boolean = false;
-  errorMessage: string = '';
+  loading = false;
+  saving = false;
 
-  // Message változók a template-hez
-  message: string | null = null;
-  messageType: 'success' | 'error' | null = null;
+  // =============================
+  // ÜZENET
+  // =============================
+
+  message = '';
+
+  messageType: 'success' | 'error' | 'info' | '' = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -43,27 +47,43 @@ export class CoachExerciseEditComponent implements OnInit {
     private exerciseService: ExerciseService,
   ) {}
 
+  // =============================
+  // INIT
+  // =============================
+
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
-    if (id) {
-      this.loadExercise(id);
+    if (!id) {
+      this.showError('coachExerciseEdit.notFound');
+
+      return;
     }
+
+    this.loadExercise(id);
   }
+
+  // =============================
+  // EXERCISE BETÖLTÉS
+  // =============================
 
   loadExercise(exerciseId: number): void {
     this.loading = true;
+
+    this.clearMessage();
 
     this.exerciseService.getAllExercises().subscribe({
       next: (response: ApiResponse<Exercise[]>) => {
         const exercises = response.data ?? [];
 
-        const ex = exercises.find((e) => e.id === exerciseId);
+        const exercise = exercises.find((item) => item.id === exerciseId);
 
-        if (ex) {
-          this.exercise = { ...ex };
+        if (exercise) {
+          this.exercise = {
+            ...exercise,
+          };
         } else {
-          this.errorMessage = 'coachExerciseEdit.notFound';
+          this.showError('coachExerciseEdit.notFound');
         }
 
         this.loading = false;
@@ -72,36 +92,74 @@ export class CoachExerciseEditComponent implements OnInit {
       error: (err) => {
         console.error('Hiba az exercise betöltésénél:', err);
 
-        this.errorMessage = 'coachExerciseEdit.loadError';
+        this.showError('coachExerciseEdit.loadError');
 
         this.loading = false;
       },
     });
   }
 
+  // =============================
+  // EXERCISE MENTÉS
+  // =============================
+
   saveExercise(): void {
     this.saving = true;
+
+    this.clearMessage();
 
     this.exerciseService.updateExercise(this.exercise).subscribe({
       next: (updated) => {
         console.log('Exercise frissítve:', updated);
 
-        this.message = 'coachExerciseEdit.saveSuccess';
+        this.showSuccess('coachExerciseEdit.saveSuccess');
 
-        this.messageType = 'success';
         this.saving = false;
 
-        this.router.navigate(['/coach/exercises']);
+        /*
+         * FONTOS:
+         *
+         * Itt korábban azonnal navigáltunk:
+         *
+         * this.router.navigate(['/coach/exercises']);
+         *
+         * Emiatt a sikerüzenet nem volt látható.
+         *
+         * Egyelőre itt maradunk az oldalon,
+         * hogy a MessageComponent meg tudja
+         * jeleníteni az üzenetet.
+         */
       },
 
       error: (err) => {
         console.error('Hiba az exercise frissítésénél:', err);
 
-        this.message = 'coachExerciseEdit.saveError';
+        this.showError('coachExerciseEdit.saveError');
 
-        this.messageType = 'error';
         this.saving = false;
       },
     });
+  }
+
+  // =============================
+  // MESSAGE SEGÉDMETÓDUSOK
+  // =============================
+
+  private showSuccess(message: string): void {
+    this.message = message;
+
+    this.messageType = 'success';
+  }
+
+  private showError(message: string): void {
+    this.message = message;
+
+    this.messageType = 'error';
+  }
+
+  private clearMessage(): void {
+    this.message = '';
+
+    this.messageType = '';
   }
 }

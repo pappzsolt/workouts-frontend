@@ -1,0 +1,364 @@
+/* ========================================
+   OLDAL
+======================================== */
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+
+/* ========================================
+   OLDAL CÍM
+======================================== */
+
+.universal-form-title {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+
+  color: #1f2937;
+
+  text-align: center;
+
+  margin-bottom: 1rem;
+}
+
+
+/* ========================================
+   FORM KÁRTYA
+======================================== */
+
+.form-card {
+  max-width: 56rem;
+
+  margin: 0 auto;
+
+  background-color: white;
+
+  border: 1px solid #e5e7eb;
+
+  border-radius: 0.75rem;
+
+  padding: 1.5rem;
+
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+  transition:
+    transform 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.form-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+
+/* ========================================
+   FORM FEJLÉC
+======================================== */
+
+.form-header {
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  margin-bottom: 1.5rem;
+}
+
+.form-header-emoji {
+  font-size: 3rem;
+
+  line-height: 1;
+}
+
+
+/* ========================================
+   FORM
+======================================== */
+
+.universal-form {
+  display: grid;
+
+  grid-template-columns: 1fr;
+
+  gap: 1.25rem;
+}
+
+
+/* ========================================
+   FORM GROUP
+======================================== */
+
+.universal-form-group,
+.universal-form-group-full {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.5rem;
+}
+
+
+/* ========================================
+   LABEL
+======================================== */
+
+.universal-form-label {
+  font-size: 0.95rem;
+
+  font-weight: 600;
+
+  color: #374151;
+}
+
+
+/* ========================================
+   INPUT / TEXTAREA / SELECT
+======================================== */
+
+.universal-form-input,
+.universal-form-textarea,
+.universal-form-select {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 0.75rem 1rem;
+
+  font-size: 1rem;
+
+  color: #1f2937;
+
+  background-color: white;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 0.75rem;
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+
+/* ========================================
+   TEXTAREA
+======================================== */
+
+.universal-form-textarea {
+  resize: vertical;
+
+  min-height: 6rem;
+}
+
+
+/* ========================================
+   SELECT
+======================================== */
+
+.universal-form-select {
+  cursor: pointer;
+}
+
+
+/* ========================================
+   FOCUS
+======================================== */
+
+.universal-form-input:focus,
+.universal-form-textarea:focus,
+.universal-form-select:focus {
+  outline: none;
+
+  border-color: #22c55e;
+
+  box-shadow:
+    0 0 0 3px rgb(34 197 94 / 0.15);
+}
+
+
+/* ========================================
+   CHECKBOX
+======================================== */
+
+.universal-form-group-checkbox {
+  display: flex;
+
+  align-items: center;
+
+  gap: 0.75rem;
+}
+
+.universal-form-checkbox {
+  width: 1.125rem;
+  height: 1.125rem;
+
+  cursor: pointer;
+
+  accent-color: #22c55e;
+}
+
+.universal-form-label-inline {
+  font-size: 0.95rem;
+
+  font-weight: 600;
+
+  color: #374151;
+
+  cursor: pointer;
+}
+
+
+/* ========================================
+   FORM ACTIONS
+======================================== */
+
+.universal-form-actions {
+  display: flex;
+
+  justify-content: center;
+
+  margin-top: 1rem;
+}
+
+
+/* ========================================
+   MENTÉS / LÉTREHOZÁS GOMB
+======================================== */
+
+.universal-form-button {
+  background-color: #22c55e;
+
+  color: white;
+
+  border: none;
+
+  border-radius: 0.75rem;
+
+  padding: 0.75rem 1.5rem;
+
+  font-size: 1rem;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+  transition:
+    background-color 150ms ease,
+    transform 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.universal-form-button:hover:not(:disabled) {
+  background-color: #16a34a;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.universal-form-button:focus {
+  outline: none;
+
+  box-shadow:
+    0 0 0 3px rgb(34 197 94 / 0.25);
+}
+
+.universal-form-button:disabled {
+  background-color: #d1d5db;
+
+  color: #6b7280;
+
+  cursor: not-allowed;
+
+  box-shadow: none;
+
+  transform: none;
+}
+
+
+/* ========================================
+   TABLET / DESKTOP
+======================================== */
+
+@media (min-width: 640px) {
+
+  .universal-form {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .universal-form-group-full {
+    grid-column: 1 / -1;
+  }
+
+  .universal-form-actions {
+    grid-column: 1 / -1;
+  }
+}
+
+
+/* ========================================
+   MOBIL
+======================================== */
+
+@media (max-width: 640px) {
+
+  .universal-form-title {
+    font-size: 1.5rem;
+
+    line-height: 2rem;
+
+    margin-bottom: 1rem;
+  }
+
+  .form-card {
+    margin: 0 0.75rem;
+
+    padding: 1rem;
+
+    border-radius: 0.75rem;
+  }
+
+  .form-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .form-header-emoji {
+    font-size: 2.5rem;
+  }
+
+  .universal-form {
+    gap: 1rem;
+  }
+
+  .universal-form-input,
+  .universal-form-textarea,
+  .universal-form-select {
+    padding: 0.7rem 0.875rem;
+  }
+
+  .universal-form-actions {
+    width: 100%;
+  }
+
+  .universal-form-button {
+    width: 100%;
+
+    padding: 0.875rem 1rem;
+  }
+}

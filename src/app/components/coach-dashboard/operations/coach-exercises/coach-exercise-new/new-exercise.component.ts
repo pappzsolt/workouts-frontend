@@ -1,8 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
+
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 import { Exercise } from '../../../../../models/exercise.model';
+
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
 @Component({
@@ -13,23 +15,15 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   styleUrls: ['./new-exercise.component.css'],
 })
 export class NewExerciseComponent implements OnInit {
-  @Input() workoutId!: number;
+  @Input()
+  workoutId!: number;
 
-  newExercise: Exercise = {
-    name: '',
-    description: '',
-    imageUrl: '',
-    videoUrl: '',
-    muscleGroup: '',
-    equipment: '',
-    difficultyLevel: '',
-    category: '',
-    caloriesBurnedPerMinute: 0,
-    durationSeconds: 0,
-    done: false,
-  };
+  newExercise: Exercise = this.createEmptyExercise();
+
+  saving = false;
 
   message = '';
+
   messageType: 'success' | 'error' | '' = '';
 
   constructor(
@@ -37,14 +31,25 @@ export class NewExerciseComponent implements OnInit {
     private translate: TranslateService,
   ) {}
 
+  // =============================
+  // INIT
+  // =============================
+
   ngOnInit(): void {
     if (!this.workoutId) {
-      this.message = this.translate.instant('newExercise.workoutIdRequired');
-      this.messageType = 'error';
+      this.showError(this.translate.instant('newExercise.workoutIdRequired'));
     }
   }
 
+  // =============================
+  // EXERCISE LÉTREHOZÁS
+  // =============================
+
   addExercise(): void {
+    this.clearMessage();
+
+    this.saving = true;
+
     const payload = {
       name: this.newExercise.name,
       description: this.newExercise.description,
@@ -60,44 +65,99 @@ export class NewExerciseComponent implements OnInit {
 
     this.exercisesService.addExercise(payload).subscribe({
       next: (res) => {
-        this.message = this.translate.instant('newExercise.success', {
-          name: res.name,
-        });
-        this.messageType = 'success';
+        this.saving = false;
 
-        this.newExercise = {
-          name: '',
-          description: '',
-          imageUrl: '',
-          videoUrl: '',
-          muscleGroup: '',
-          equipment: '',
-          difficultyLevel: '',
-          category: '',
-          caloriesBurnedPerMinute: 0,
-          durationSeconds: 0,
-          done: false,
-        };
+        this.showSuccess(
+          this.translate.instant('newExercise.success', {
+            name: res.name,
+          }),
+        );
+
+        this.newExercise = this.createEmptyExercise();
       },
-      error: (err: HttpErrorResponse) => {
-        if (err.error && typeof err.error === 'string') {
-          this.message = this.translate.instant('newExercise.errorWithMessage', {
-            message: err.error,
-          });
-        } else if (err.error && err.error.message) {
-          this.message = this.translate.instant('newExercise.errorWithMessage', {
-            message: err.error.message,
-          });
-        } else {
-          this.message = this.translate.instant('newExercise.errorWithStatus', {
-            status: err.status,
-            statusText: err.statusText,
-          });
-        }
 
-        this.messageType = 'error';
+      error: (err: HttpErrorResponse) => {
+        this.saving = false;
+
         console.error('Exercise creation error:', err);
+
+        this.handleError(err);
       },
     });
+  }
+
+  // =============================
+  // ERROR KEZELÉS
+  // =============================
+
+  private handleError(err: HttpErrorResponse): void {
+    if (err.error && typeof err.error === 'string') {
+      this.showError(
+        this.translate.instant('newExercise.errorWithMessage', {
+          message: err.error,
+        }),
+      );
+
+      return;
+    }
+
+    if (err.error && err.error.message) {
+      this.showError(
+        this.translate.instant('newExercise.errorWithMessage', {
+          message: err.error.message,
+        }),
+      );
+
+      return;
+    }
+
+    this.showError(
+      this.translate.instant('newExercise.errorWithStatus', {
+        status: err.status,
+        statusText: err.statusText,
+      }),
+    );
+  }
+
+  // =============================
+  // ÜRES EXERCISE
+  // =============================
+
+  private createEmptyExercise(): Exercise {
+    return {
+      name: '',
+      description: '',
+      imageUrl: '',
+      videoUrl: '',
+      muscleGroup: '',
+      equipment: '',
+      difficultyLevel: '',
+      category: '',
+      caloriesBurnedPerMinute: 0,
+      durationSeconds: 0,
+      done: false,
+    };
+  }
+
+  // =============================
+  // MESSAGE SEGÉDMETÓDUSOK
+  // =============================
+
+  private showSuccess(message: string): void {
+    this.message = message;
+
+    this.messageType = 'success';
+  }
+
+  private showError(message: string): void {
+    this.message = message;
+
+    this.messageType = 'error';
+  }
+
+  private clearMessage(): void {
+    this.message = '';
+
+    this.messageType = '';
   }
 }
