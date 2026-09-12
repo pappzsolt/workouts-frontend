@@ -1,7 +1,19 @@
-<div class="coach-new">
-  <h2 class="coach-new__title">
+<div class="page-container">
+  <h2 class="page-title">
     {{ 'adminCoachNew.title' | translate }}
   </h2>
+
+  <!-- Üzenet -->
+  <app-message
+    *ngIf="message"
+    [message]="message"
+    [type]="messageType"
+  ></app-message>
+
+  <!-- Betöltés -->
+  <div *ngIf="loading" class="loading-message">
+    {{ 'common.loading' | translate }}
+  </div>
 
   <form
     #coachForm="ngForm"
@@ -138,7 +150,11 @@
 
     <!-- Submit -->
     <div class="form-actions">
-      <button type="submit" [disabled]="loading">
+      <button
+        type="submit"
+        class="save-button"
+        [disabled]="loading"
+      >
         {{
           loading
             ? ('common.saving' | translate)
@@ -147,14 +163,4 @@
       </button>
     </div>
   </form>
-
-  <!-- Üzenet -->
-  <div
-    *ngIf="message"
-    [class.error-message]="isError"
-    [class.success-message]="!isError"
-    class="form-message"
-  >
-    {{ message }}
-  </div>
 </div>

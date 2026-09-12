@@ -1,8 +1,8 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
 
 import { UserSelectComponent } from '../../../../components/shared/user/user-select.component';
 import { CoachSelectComponent } from '../../../shared/coach/coach-select.component';
+import { MessageComponent } from '../../../shared/message/message.component';
 
 import { RoleService } from '../../../../services/roles/role.service';
 import { UserNameId } from '../../../../services/user/user-name-id.service';
@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 
 import { User } from '../../../../models/user-profil.model';
 import { RawUser, Coach, Role } from '../../../../models/user-edit-model';
+
 import { UserEditService } from '../../../../services/admin/user-edit.service';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
@@ -24,6 +25,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
     ...SHARED_IMPORTS,
     UserSelectComponent,
     CoachSelectComponent,
+    MessageComponent,
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
@@ -32,7 +34,19 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   templateUrl: './user-edit.component.html',
 })
 export class UserEditComponent implements OnInit {
+  // =============================
+  // ADATOK
+  // =============================
+
   users: RawUser[] = [];
+
+  coaches: Coach[] = [];
+
+  roles: Role[] = [];
+
+  // =============================
+  // KIVÁLASZTOTT FELHASZNÁLÓ
+  // =============================
 
   selectedUserId?: number;
 
@@ -52,51 +66,119 @@ export class UserEditComponent implements OnInit {
     roleIds: [],
   };
 
-  coaches: Coach[] = [];
-  roles: Role[] = [];
-
   selectedCoach?: Coach;
+
   selectedRoles: Role[] = [];
 
+  // =============================
+  // ÜZENET
+  // =============================
+
   message = '';
-  isError = false;
+
+  messageType: 'success' | 'error' | '' = '';
+
+  // =============================
+  // CONSTRUCTOR
+  // =============================
 
   constructor(
-    private userService: UserEditService,
-    private roleService: RoleService,
-    private cdr: ChangeDetectorRef,
+    private readonly userService: UserEditService,
+    private readonly roleService: RoleService,
+    private readonly cdr: ChangeDetectorRef,
   ) {}
 
+  // =============================
+  // INIT
+  // =============================
+
   ngOnInit(): void {
-    this.userService.getCoaches().subscribe((coaches) => {
-      this.coaches = coaches;
-      this.cdr.detectChanges();
-    });
+    this.loadCoaches();
 
-    this.roleService.getRoles().subscribe((roles) => {
-      this.roles = roles;
-      this.cdr.detectChanges();
-    });
+    this.loadRoles();
 
-    this.userService.getUsers().subscribe((users) => {
-      this.users = users;
+    this.loadUsers();
+  }
 
-      if (this.users.length > 0) {
-        this.selectedUserId = this.users[0].id;
-        this.patchUserFromRaw(this.users[0]);
-      }
+  // =============================
+  // COACHOK BETÖLTÉSE
+  // =============================
+
+  private loadCoaches(): void {
+    this.userService.getCoaches().subscribe({
+      next: (coaches) => {
+        this.coaches = coaches;
+
+        this.cdr.detectChanges();
+      },
+
+      error: () => {
+        this.showError('adminUserEdit.loadCoachesError');
+      },
     });
   }
 
+  // =============================
+  // ROLE-OK BETÖLTÉSE
+  // =============================
+
+  private loadRoles(): void {
+    this.roleService.getRoles().subscribe({
+      next: (roles) => {
+        this.roles = roles;
+
+        this.cdr.detectChanges();
+      },
+
+      error: () => {
+        this.showError('adminUserEdit.loadRolesError');
+      },
+    });
+  }
+
+  // =============================
+  // FELHASZNÁLÓK BETÖLTÉSE
+  // =============================
+
+  private loadUsers(): void {
+    this.userService.getUsers().subscribe({
+      next: (users) => {
+        this.users = users;
+
+        if (this.users.length > 0) {
+          this.selectedUserId = this.users[0].id;
+
+          this.patchUserFromRaw(this.users[0]);
+        }
+
+        this.cdr.detectChanges();
+      },
+
+      error: () => {
+        this.showError('adminUserEdit.loadUsersError');
+      },
+    });
+  }
+
+  // =============================
+  // FELHASZNÁLÓ KIVÁLASZTÁSA
+  // =============================
+
   onUserSelected(user: UserNameId): void {
+    this.clearMessage();
+
     this.selectedUserId = user.id;
 
-    const found = this.users.find((u) => u.id === user.id);
+    const found = this.users.find((currentUser) => currentUser.id === user.id);
 
     if (found) {
       this.patchUserFromRaw(found);
     }
   }
+
+  // =============================
+  // USER ADATOK BETÖLTÉSE
+  // =============================
 
   private patchUserFromRaw(raw: RawUser): void {
     this.selectedUser = {
@@ -126,10 +208,19 @@ export class UserEditComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  // =============================
+  // COACH KIVÁLASZTÁSA
+  // =============================
+
   onCoachSelected(coach: Coach): void {
     this.selectedCoach = coach;
+
     this.selectedUser.coachId = coach.id;
   }
+
+  // =============================
+  // ROLE KIVÁLASZTÁSA
+  // =============================
 
   onRoleSelected(roles: Role[]): void {
     this.selectedRoles = roles;
@@ -139,51 +230,105 @@ export class UserEditComponent implements OnInit {
     this.selectedUser.roleName = roles.map((role) => role.name).join(',');
   }
 
+  // =============================
+  // MENTÉS
+  // =============================
+
   onSave(): void {
+    this.clearMessage();
+
     try {
-      if (!this.selectedRoles || this.selectedRoles.length === 0) {
-        const defaultRole = this.roles.find((role) => role.name === 'user');
+      this.setDefaultRoleIfNeeded();
 
-        if (defaultRole) {
-          this.selectedRoles = [defaultRole];
-
-          this.selectedUser.roleIds = [defaultRole.id];
-
-          this.selectedUser.roleName = defaultRole.name;
-        }
-      }
-
-      const rawUser: RawUser = {
-        id: this.selectedUser.id,
-        usernameOrName: this.selectedUser.username,
-        email: this.selectedUser.email,
-        avatarUrl: this.selectedUser.avatarUrl,
-        roles: this.selectedRoles.map((role) => role.name),
-
-        extraFields: {
-          coach_id: this.selectedUser.coachId,
-          age: this.selectedUser.age,
-          weight: this.selectedUser.weight,
-          height: this.selectedUser.height,
-          gender: this.selectedUser.gender,
-          goals: this.selectedUser.goals,
-        },
-      };
+      const rawUser = this.createRawUser();
 
       this.userService.updateUser(rawUser, this.selectedUser.roleIds || []).subscribe({
         next: () => {
-          this.message = 'adminUserEdit.updateSuccess';
-          this.isError = false;
+          this.showSuccess('adminUserEdit.updateSuccess');
         },
 
-        error: (err) => {
-          this.message = 'adminUserEdit.updateError: ' + (err?.message || 'common.unknownError');
-          this.isError = true;
+        error: () => {
+          this.showError('adminUserEdit.updateError');
         },
       });
-    } catch (err: any) {
-      this.message = 'adminUserEdit.saveError: ' + (err?.message || 'common.unknownError');
-      this.isError = true;
+    } catch {
+      this.showError('adminUserEdit.saveError');
     }
+  }
+
+  // =============================
+  // ALAPÉRTELMEZETT ROLE
+  // =============================
+
+  private setDefaultRoleIfNeeded(): void {
+    if (this.selectedRoles.length > 0) {
+      return;
+    }
+
+    const defaultRole = this.roles.find((role) => role.name === 'user');
+
+    if (!defaultRole) {
+      return;
+    }
+
+    this.selectedRoles = [defaultRole];
+
+    this.selectedUser.roleIds = [defaultRole.id];
+
+    this.selectedUser.roleName = defaultRole.name;
+  }
+
+  // =============================
+  // RAW USER LÉTREHOZÁSA
+  // =============================
+
+  private createRawUser(): RawUser {
+    return {
+      id: this.selectedUser.id,
+
+      usernameOrName: this.selectedUser.username,
+
+      email: this.selectedUser.email,
+
+      avatarUrl: this.selectedUser.avatarUrl,
+
+      roles: this.selectedRoles.map((role) => role.name),
+
+      extraFields: {
+        coach_id: this.selectedUser.coachId,
+
+        age: this.selectedUser.age,
+
+        weight: this.selectedUser.weight,
+
+        height: this.selectedUser.height,
+
+        gender: this.selectedUser.gender,
+
+        goals: this.selectedUser.goals,
+      },
+    };
+  }
+
+  // =============================
+  // MESSAGE SEGÉDMETÓDUSOK
+  // =============================
+
+  private showSuccess(message: string): void {
+    this.message = message;
+
+    this.messageType = 'success';
+  }
+
+  private showError(message: string): void {
+    this.message = message;
+
+    this.messageType = 'error';
+  }
+
+  private clearMessage(): void {
+    this.message = '';
+
+    this.messageType = '';
   }
 }

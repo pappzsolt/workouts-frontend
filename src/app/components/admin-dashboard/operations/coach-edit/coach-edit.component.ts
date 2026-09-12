@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { CoachEditService } from '../../../../services/admin/coach-edit.service';
 import { Coach } from '../../../../models/coach.model';
+
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
@@ -28,7 +29,9 @@ export class CoachEditComponent implements OnInit {
   };
 
   message = '';
-  error = '';
+
+  messageType: 'success' | 'error' | '' = '';
+
   loading = false;
 
   // =========================================================
@@ -51,12 +54,14 @@ export class CoachEditComponent implements OnInit {
 
   loadCoaches(): void {
     this.loading = true;
+
     this.message = '';
-    this.error = '';
+    this.messageType = '';
 
     this.coachService.getCoaches().subscribe({
       next: (coaches) => {
         this.coaches = coaches;
+
         this.loading = false;
 
         if (this.coaches.length > 0) {
@@ -69,7 +74,9 @@ export class CoachEditComponent implements OnInit {
       error: (err) => {
         this.loading = false;
 
-        this.error = err?.message ?? 'adminCoachEdit.loadError';
+        this.message = err?.error?.message || err?.message || 'adminCoachEdit.loadError';
+
+        this.messageType = 'error';
       },
     });
   }
@@ -88,7 +95,7 @@ export class CoachEditComponent implements OnInit {
       };
 
       this.message = '';
-      this.error = '';
+      this.messageType = '';
 
       return;
     }
@@ -102,13 +109,17 @@ export class CoachEditComponent implements OnInit {
 
   onSave(): void {
     if (this.selectedCoachId === null) {
-      this.error = 'adminCoachEdit.noCoachSelected';
+      this.message = 'adminCoachEdit.noCoachSelected';
+
+      this.messageType = 'error';
+
       return;
     }
 
     this.loading = true;
+
     this.message = '';
-    this.error = '';
+    this.messageType = '';
 
     this.selectedCoach.id = this.selectedCoachId;
 
@@ -117,6 +128,8 @@ export class CoachEditComponent implements OnInit {
         this.loading = false;
 
         this.message = 'adminCoachEdit.updateSuccess';
+
+        this.messageType = 'success';
 
         const index = this.coaches.findIndex((coach) => coach.id === this.selectedCoachId);
 
@@ -136,7 +149,9 @@ export class CoachEditComponent implements OnInit {
       error: (err) => {
         this.loading = false;
 
-        this.error = err?.message ?? 'adminCoachEdit.saveError';
+        this.message = err?.error?.message || err?.message || 'adminCoachEdit.saveError';
+
+        this.messageType = 'error';
       },
     });
   }

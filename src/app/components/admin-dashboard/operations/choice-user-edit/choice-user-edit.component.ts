@@ -11,6 +11,10 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   styleUrls: ['./choice-user-edit.component.css'],
 })
 export class ChoiceUserEditComponent {
+  message = '';
+
+  messageType: 'success' | 'error' | '' = '';
+
   constructor(private router: Router) {}
 
   navigateTo(path: string): void {

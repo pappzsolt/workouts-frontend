@@ -1,73 +1,121 @@
-<h2 class="dashboard-title">
-  {{ 'coachDashboard.title' | translate }}
-</h2>
+<div class="coach-dashboard-container">
+  <!-- Oldal címe -->
+  <h2 class="page-title">
+    {{ 'coachDashboard.title' | translate }}
+  </h2>
 
-<div class="dashboard-cards-container">
+  <!-- Dashboard kártyák -->
+  <div class="dashboard-cards-container">
+    <!-- Programs -->
+    <button
+      type="button"
+      class="dashboard-card"
+      (click)="togglePrograms()"
+    >
+      <div class="dashboard-card-emoji">💪</div>
+
+      <div class="dashboard-card-title">
+        {{ 'coachDashboard.programs' | translate }}
+      </div>
+    </button>
+
+    <!-- Workouts -->
+    <button
+      type="button"
+      class="dashboard-card"
+      (click)="toggleWorkouts()"
+    >
+      <div class="dashboard-card-emoji">🔥</div>
+
+      <div class="dashboard-card-title">
+        {{ 'coachDashboard.workouts' | translate }}
+      </div>
+    </button>
+
+    <!-- Exercises -->
+    <button
+      type="button"
+      class="dashboard-card"
+      (click)="toggleExercises()"
+    >
+      <div class="dashboard-card-emoji">🏋️</div>
+
+      <div class="dashboard-card-title">
+        {{ 'coachDashboard.exercises' | translate }}
+      </div>
+    </button>
+
+    <!-- Workout → Exercise hozzárendelés -->
+    <button
+      type="button"
+      class="dashboard-card"
+      (click)="toggleWorkoutExercises()"
+    >
+      <div class="dashboard-card-emoji">🔗🏋️</div>
+
+      <div class="dashboard-card-title">
+        {{ 'coachDashboard.assignWorkoutExercises' | translate }}
+      </div>
+    </button>
+
+    <!-- Workout Exercise Manager -->
+    <button
+      type="button"
+      class="dashboard-card"
+      (click)="toggleWorkoutExerciseManager()"
+    >
+      <div class="dashboard-card-emoji">📊🏋️</div>
+
+      <div class="dashboard-card-title">
+        {{ 'coachDashboard.workoutExerciseManager' | translate }}
+      </div>
+    </button>
+  </div>
+
+  <!-- Dinamikus tartalom -->
+
   <!-- Programs -->
-  <div class="dashboard-card" (click)="togglePrograms()">
-    <div class="dashboard-card-emoji">💪</div>
-    <div class="dashboard-card-title">
-      {{ 'coachDashboard.programs' | translate }}
-    </div>
+  <div
+    *ngIf="showPrograms"
+    class="dashboard-content"
+  >
+    <app-coach-program></app-coach-program>
   </div>
 
   <!-- Workouts -->
-  <div class="dashboard-card" (click)="toggleWorkouts()">
-    <div class="dashboard-card-emoji">🔥</div>
-    <div class="dashboard-card-title">
-      {{ 'coachDashboard.workouts' | translate }}
-    </div>
+  <div
+    *ngIf="showWorkouts"
+    class="dashboard-content"
+  >
+    <app-coach-workouts
+      [programId]="programIdForWorkouts"
+    >
+    </app-coach-workouts>
   </div>
 
   <!-- Exercises -->
-  <div class="dashboard-card" (click)="toggleExercises()">
-    <div class="dashboard-card-emoji">🏋️</div>
-    <div class="dashboard-card-title">
-      {{ 'coachDashboard.exercises' | translate }}
-    </div>
+  <div
+    *ngIf="showExercises"
+    class="dashboard-content"
+  >
+    <app-exercise-controller></app-exercise-controller>
   </div>
 
-  <!-- Workout → Exercise hozzárendelés -->
-  <div class="dashboard-card" (click)="toggleWorkoutExercises()">
-    <div class="dashboard-card-emoji">🔗🏋️</div>
-    <div class="dashboard-card-title">
-      {{ 'coachDashboard.assignWorkoutExercises' | translate }}
-    </div>
+  <!-- Workout → Exercise -->
+  <div
+    *ngIf="showWorkoutExercises"
+    class="dashboard-content"
+  >
+    <app-assign-workouts-exercises>
+    </app-assign-workouts-exercises>
   </div>
 
   <!-- Workout Exercise Manager -->
   <div
-    class="dashboard-card"
-    (click)="toggleWorkoutExerciseManager()"
+    *ngIf="showWorkoutExerciseManager"
+    class="dashboard-content"
   >
-    <div class="dashboard-card-emoji">📊🏋️</div>
-    <div class="dashboard-card-title">
-      {{ 'coachDashboard.workoutExerciseManager' | translate }}
-    </div>
+    <app-user-workout-exercise-manager>
+    </app-user-workout-exercise-manager>
   </div>
-</div>
-
-<!-- Dinamikus tartalmak -->
-
-<div *ngIf="showPrograms">
-  <app-coach-program></app-coach-program>
-</div>
-
-<div *ngIf="showWorkouts">
-  <app-coach-workouts
-    [programId]="programIdForWorkouts"
-  >
-  </app-coach-workouts>
-</div>
-
-<div *ngIf="showExercises">
-  <app-exercise-controller></app-exercise-controller>
-</div>
-
-<div *ngIf="showWorkoutExercises">
-  <app-assign-workouts-exercises></app-assign-workouts-exercises>
-</div>
-
-<div *ngIf="showWorkoutExerciseManager">
-  <app-user-workout-exercise-manager></app-user-workout-exercise-manager>
 </div>

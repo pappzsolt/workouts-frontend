@@ -1,52 +1,43 @@
 /* ============================================================
-   USER EDIT
+   USER EDIT OLDAL
    ============================================================ */
 
 .user-edit-container {
   width: 100%;
   max-width: 48rem;
+
   margin: 0 auto;
+
   padding: 1rem;
+
+  box-sizing: border-box;
 }
 
 
 /* ============================================================
-   CÍM
+   OLDAL CÍM
    ============================================================ */
 
-.user-edit-title {
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
+.page-title {
+  margin-bottom: 2rem;
+
+  font-size: 1.875rem;
+  line-height: 2.25rem;
   font-weight: 700;
-  color: #111827;
+
+  text-align: center;
+
+  color: #1f2937;
 }
 
 
 /* ============================================================
-   ÜZENETEK
-   ============================================================ */
-
-.message-box {
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  border-radius: 0.375rem;
-  color: #ffffff;
-}
-
-.message-success {
-  background-color: #22c55e;
-}
-
-.message-error {
-  background-color: #ef4444;
-}
-
-
-/* ============================================================
-   USER SELECT
+   FELHASZNÁLÓ KIVÁLASZTÁSA
    ============================================================ */
 
 .user-select-container {
+  width: 100%;
+
   margin-bottom: 1rem;
 }
 
@@ -56,16 +47,25 @@
    ============================================================ */
 
 .user-edit-form {
-  display: flex;
-  flex-direction: column;
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(1, minmax(0, 1fr));
+
   gap: 1rem;
 
-  padding: 1rem;
+  padding: 1.5rem;
 
-  border: 1px solid #d1d5db;
-  border-radius: 0.5rem;
+  box-sizing: border-box;
 
-  background-color: #f9fafb;
+  background-color: #ffffff;
+
+  border-radius: 0.75rem;
+
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -74,11 +74,21 @@
    ============================================================ */
 
 .form-group {
-  width: 100%;
+  min-width: 0;
 }
+
+.form-group-full {
+  grid-column: 1 / -1;
+}
+
+
+/* ============================================================
+   LABEL
+   ============================================================ */
 
 .form-label {
   display: block;
+
   margin-bottom: 0.25rem;
 
   font-size: 0.875rem;
@@ -94,19 +104,25 @@
 
 .form-input {
   width: 100%;
+
   box-sizing: border-box;
 
-  padding: 0.5rem 0.625rem;
+  padding: 0.5rem 0.75rem;
 
   border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
+  border-radius: 0.5rem;
 
   background-color: #ffffff;
-  color: #111827;
+
+  color: #374151;
+
+  font-size: 0.875rem;
 
   outline: none;
 
-  font-size: 0.875rem;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .form-input:focus {
@@ -127,27 +143,36 @@
 
 .form-textarea {
   min-height: 6rem;
+
   resize: vertical;
 }
 
 
 /* ============================================================
+   FIZIKAI ADATOK
    ÉLETKOR / TESTSÚLY / MAGASSÁG
    ============================================================ */
 
 .physical-data-grid {
+  grid-column: 1 / -1;
+
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
   gap: 1rem;
 }
 
 
 /* ============================================================
-   ROLES
+   ANGULAR MATERIAL ROLE-OK
    ============================================================ */
 
 .roles-field {
   width: 100%;
+
+  grid-column: 1 / -1;
 }
 
 
@@ -156,17 +181,23 @@
    ============================================================ */
 
 .save-container {
+  grid-column: 1 / -1;
+
   display: flex;
+
   justify-content: center;
 
   margin-top: 1rem;
 }
 
+
 .save-button {
+  width: 9rem;
+
   padding: 0.5rem 1rem;
 
   border: none;
-  border-radius: 0.375rem;
+  border-radius: 0.5rem;
 
   background-color: #2563eb;
   color: #ffffff;
@@ -176,20 +207,36 @@
 
   cursor: pointer;
 
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.1);
+
   transition:
     background-color 0.2s ease,
+    transform 0.2s ease,
     box-shadow 0.2s ease;
 }
 
+
 .save-button:hover {
   background-color: #1d4ed8;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 6px 10px rgba(0, 0, 0, 0.15);
 }
+
 
 .save-button:focus {
   outline: none;
 
   box-shadow:
-    0 0 0 2px rgba(37, 99, 235, 0.2);
+    0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+
+.save-button:active {
+  transform: translateY(0);
 }
 
 
@@ -197,19 +244,57 @@
    RESPONSIVE
    ============================================================ */
 
-@media (max-width: 640px) {
 
+/* ============================================================
+   TABLET
+   ============================================================ */
+
+@media (min-width: 640px) {
+  .user-edit-form {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+/* ============================================================
+   DESKTOP
+   ============================================================ */
+
+@media (min-width: 1024px) {
+  .user-edit-form {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+/* ============================================================
+   MOBIL
+   ============================================================ */
+
+@media (max-width: 639px) {
   .user-edit-container {
-    padding: 0.75rem;
+    padding: 1rem;
   }
 
-  .physical-data-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+  .page-title {
+    margin-bottom: 1.5rem;
+
+    font-size: 1.5rem;
+    line-height: 2rem;
   }
 
   .user-edit-form {
-    padding: 0.75rem;
+    padding: 1rem;
   }
 
+  .physical-data-grid {
+    grid-template-columns:
+      repeat(1, minmax(0, 1fr));
+  }
+
+  .save-button {
+    width: 100%;
+  }
 }

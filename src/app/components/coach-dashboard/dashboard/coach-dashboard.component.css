@@ -1,42 +1,95 @@
-.dashboard-title {
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-  font-weight: 700;
-  margin-bottom: 2rem;
-  text-align: center;
+/* ============================================================
+   COACH DASHBOARD OLDAL
+   ============================================================ */
+
+.coach-dashboard-container {
+  width: 100%;
+
+  max-width: 80rem;
+
+  margin: 0 auto;
+
+  padding: 1rem;
+
+  box-sizing: border-box;
 }
+
+
+/* ============================================================
+   OLDAL CÍM
+   ============================================================ */
+
+.page-title {
+  margin-bottom: 2rem;
+
+  text-align: center;
+
+  font-size: 1.875rem;
+  font-weight: 700;
+
+  line-height: 2.25rem;
+
+  color: #1f2937;
+}
+
+
+/* ============================================================
+   DASHBOARD KÁRTYÁK
+   ============================================================ */
 
 .dashboard-cards-container {
   display: flex;
+
   flex-wrap: wrap;
+
   justify-content: center;
+
   gap: 1.5rem;
 }
 
+
+/* ============================================================
+   DASHBOARD KÁRTYA
+   ============================================================ */
+
 .dashboard-card {
-  background-color: white;
+  width: 10rem;
+
+  min-height: 10rem;
+
+  padding: 1.5rem;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  box-sizing: border-box;
+
+  border: none;
+
   border-radius: 0.75rem;
+
+  background-color: #ffffff;
+
+  color: #111827;
+
+  text-align: center;
+
+  cursor: pointer;
+
   box-shadow:
     0 10px 15px -3px rgb(0 0 0 / 0.1),
     0 4px 6px -4px rgb(0 0 0 / 0.1);
 
-  padding: 1.5rem;
-
-  width: 10rem;
-  min-height: 10rem;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  text-align: center;
-  cursor: pointer;
-
   transition:
-    transform 300ms ease,
-    box-shadow 300ms ease;
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
 }
+
 
 .dashboard-card:hover {
   transform: scale(1.05);
@@ -45,19 +98,71 @@
     0 25px 50px -12px rgb(0 0 0 / 0.25);
 }
 
+
+.dashboard-card:focus {
+  outline: none;
+
+  box-shadow:
+    0 0 0 2px rgba(59, 130, 246, 0.3),
+    0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+
+.dashboard-card:active {
+  transform: scale(1.02);
+}
+
+
+/* ============================================================
+   KÁRTYA EMOJI
+   ============================================================ */
+
 .dashboard-card-emoji {
   margin-bottom: 1rem;
+
   font-size: 3rem;
+
   line-height: 1;
 }
 
+
+/* ============================================================
+   KÁRTYA CÍM
+   ============================================================ */
+
 .dashboard-card-title {
-  font-weight: 600;
   font-size: 1.125rem;
+
+  font-weight: 600;
+
   line-height: 1.75rem;
 }
 
+
+/* ============================================================
+   DINAMIKUS TARTALOM
+   ============================================================ */
+
+.dashboard-content {
+  width: 100%;
+
+  margin-top: 2rem;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+
+/* Tablet */
+
 @media (min-width: 640px) {
+
+  .coach-dashboard-container {
+    padding: 1.5rem;
+  }
+
   .dashboard-card {
     width: 11rem;
   }
@@ -69,9 +174,14 @@
   .dashboard-card-title {
     font-size: 1.25rem;
   }
+
 }
 
+
+/* Nagyobb tablet */
+
 @media (min-width: 768px) {
+
   .dashboard-card {
     width: 12rem;
   }
@@ -83,9 +193,14 @@
   .dashboard-card-title {
     font-size: 1.5rem;
   }
+
 }
 
+
+/* Desktop */
+
 @media (min-width: 1024px) {
+
   .dashboard-card {
     width: 13rem;
   }
@@ -93,4 +208,38 @@
   .dashboard-card-emoji {
     font-size: 5rem;
   }
+
+}
+
+
+/* Mobil */
+
+@media (max-width: 639px) {
+
+  .coach-dashboard-container {
+    padding: 1rem;
+  }
+
+  .page-title {
+    margin-bottom: 1.5rem;
+
+    font-size: 1.5rem;
+  }
+
+  .dashboard-cards-container {
+    gap: 1rem;
+  }
+
+  .dashboard-card {
+    width: 100%;
+
+    max-width: 20rem;
+
+    min-height: 8rem;
+  }
+
+  .dashboard-card-emoji {
+    font-size: 3rem;
+  }
+
 }

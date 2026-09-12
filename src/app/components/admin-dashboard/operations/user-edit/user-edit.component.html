@@ -1,25 +1,15 @@
-<!-- Üzenet -->
-<div
-  *ngIf="message"
-  class="message-box"
-  [ngClass]="{
-    'message-success': !isError,
-    'message-error': isError,
-  }"
->
-  <ng-container *ngIf="!isError">
-    {{ message | translate }}
-  </ng-container>
-
-  <ng-container *ngIf="isError">
-    {{ message | translate }}
-  </ng-container>
-</div>
-
 <div class="user-edit-container">
-  <h2 class="user-edit-title">
+  <!-- Oldal címe -->
+  <h2 class="page-title">
     {{ 'adminUserEdit.title' | translate }}
   </h2>
+
+  <!-- Üzenet -->
+  <app-message
+    *ngIf="message"
+    [message]="message | translate"
+    [type]="messageType"
+  ></app-message>
 
   <!-- Felhasználó kiválasztása -->
   <div class="user-select-container">
@@ -32,6 +22,7 @@
 
   <!-- Form -->
   <form (ngSubmit)="onSave()" class="user-edit-form">
+    <!-- Felhasználónév -->
     <div class="form-group">
       <label class="form-label">
         {{ 'common.username' | translate }}
@@ -45,6 +36,7 @@
       />
     </div>
 
+    <!-- Email -->
     <div class="form-group">
       <label class="form-label">
         {{ 'common.email' | translate }}
@@ -58,6 +50,7 @@
       />
     </div>
 
+    <!-- Jelszó -->
     <div class="form-group">
       <label class="form-label">
         {{ 'common.password' | translate }}
@@ -74,6 +67,7 @@
 
     <!-- Életkor / testsúly / magasság -->
     <div class="physical-data-grid">
+      <!-- Életkor -->
       <div class="form-group">
         <label class="form-label">
           {{ 'common.age' | translate }}
@@ -87,6 +81,7 @@
         />
       </div>
 
+      <!-- Testsúly -->
       <div class="form-group">
         <label class="form-label">
           {{ 'common.weight' | translate }}
@@ -101,6 +96,7 @@
         />
       </div>
 
+      <!-- Magasság -->
       <div class="form-group">
         <label class="form-label">
           {{ 'common.height' | translate }}
@@ -116,6 +112,7 @@
       </div>
     </div>
 
+    <!-- Nem -->
     <div class="form-group">
       <label class="form-label">
         {{ 'common.gender' | translate }}
@@ -129,7 +126,8 @@
       />
     </div>
 
-    <div class="form-group">
+    <!-- Célok -->
+    <div class="form-group form-group-full">
       <label class="form-label">
         {{ 'common.goals' | translate }}
       </label>
@@ -141,7 +139,8 @@
       ></textarea>
     </div>
 
-    <div class="form-group">
+    <!-- Avatar URL -->
+    <div class="form-group form-group-full">
       <label class="form-label">
         {{ 'adminUserEdit.avatarUrl' | translate }}
       </label>
@@ -154,7 +153,7 @@
       />
     </div>
 
-    <!-- Coach -->
+    <!-- Edző -->
     <div class="form-group">
       <label class="form-label">
         {{ 'adminUserEdit.coach' | translate }}
@@ -167,7 +166,7 @@
       </app-coach-select>
     </div>
 
-    <!-- Roles -->
+    <!-- Szerepkörök -->
     <mat-form-field appearance="fill" class="roles-field">
       <mat-label>
         {{ 'adminUserEdit.roles' | translate }}

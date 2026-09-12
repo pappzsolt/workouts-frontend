@@ -1,31 +1,56 @@
+/* ============================================================
+   ASSIGN WORKOUTS EXERCISES
+   ============================================================ */
+
 .page-container {
+  width: 100%;
   max-width: 56rem;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 1.5rem 1rem;
 
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
+
+/* ============================================================
+   CONTENT CARD
+   ============================================================ */
+
 .content-card {
-  background-color: white;
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 1.5rem;
+
+  background-color: #ffffff;
   border: 1px solid #e5e7eb;
-  border-radius: 1rem;
-  padding: 1rem;
+  border-radius: 0.75rem;
 
   box-shadow:
-    0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -2px rgb(0 0 0 / 0.1);
+    0 4px 6px rgba(0, 0, 0, 0.08);
 }
 
+
+/* ============================================================
+   SECTION TITLE
+   ============================================================ */
+
 .section-title {
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-  font-weight: 700;
   margin-bottom: 1rem;
+
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.75rem;
+
   color: #374151;
 }
+
+
+/* ============================================================
+   SELECTED WORKOUTS
+   ============================================================ */
 
 .items-list {
   display: flex;
@@ -34,113 +59,136 @@
 }
 
 .selected-workout {
-  background-color: #eff6ff;
-  color: #1e40af;
-  border-radius: 0.75rem;
-  padding: 0.75rem;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
 
+  padding: 0.75rem;
+
+  background-color: #eff6ff;
+  border-radius: 0.5rem;
+
+  color: #1e40af;
+
   box-shadow:
-    0 1px 2px 0 rgb(0 0 0 / 0.05);
+    0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .item-text {
   font-weight: 500;
 }
 
-.remove-button {
-  color: #ef4444;
-  font-weight: 700;
-  margin-left: 0.5rem;
 
-  background: none;
+/* ============================================================
+   REMOVE BUTTON
+   ============================================================ */
+
+.remove-button {
+  margin-left: 0.5rem;
+  padding: 0;
+
   border: none;
+  background: none;
+
+  color: #dc2626;
+  font-weight: 700;
+
   cursor: pointer;
 
-  transition: color 150ms ease;
+  transition: color 0.2s ease;
 }
 
 .remove-button:hover {
-  color: #b91c1c;
+  color: #991b1b;
 }
 
-.save-container {
-  margin-top: 1rem;
 
-  display: flex;
-  justify-content: center;
-}
+/* ============================================================
+   MESSAGE
+   ============================================================ */
 
-.save-button {
-  background-color: #22c55e;
-  color: white;
-
-  font-weight: 600;
-
-  padding: 0.75rem 1.5rem;
-
-  border: none;
-  border-radius: 1rem;
-
-  box-shadow:
-    0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -2px rgb(0 0 0 / 0.1);
-
-  cursor: pointer;
-
-  transition:
-    background-color 150ms ease,
-    box-shadow 150ms ease;
-}
-
-.save-button:hover {
-  background-color: #16a34a;
-}
-
-.save-button:focus {
-  outline: none;
-  box-shadow:
-    0 0 0 2px white,
-    0 0 0 4px #22c55e;
-}
-
-/* Backend / frontend üzenetek */
 .message-container {
   width: 100%;
+  box-sizing: border-box;
+
   padding: 0.875rem 1rem;
 
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
 
   font-weight: 500;
   line-height: 1.5;
-
-  box-sizing: border-box;
 }
 
 .message-success {
   background-color: #dcfce7;
-  color: #166534;
   border: 1px solid #86efac;
+  color: #166534;
 }
 
 .message-error {
   background-color: #fee2e2;
-  color: #991b1b;
   border: 1px solid #fca5a5;
+  color: #991b1b;
 }
 
+
+/* ============================================================
+   SAVE
+   ============================================================ */
+
+.save-container {
+  display: flex;
+  justify-content: center;
+
+  margin-top: 0.5rem;
+}
+
+.save-button {
+  padding: 0.75rem 1.5rem;
+
+  border: none;
+  border-radius: 0.5rem;
+
+  background-color: #16a34a;
+  color: #ffffff;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.save-button:hover {
+  background-color: #15803d;
+
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.save-button:focus {
+  outline: none;
+
+  box-shadow:
+    0 0 0 2px rgba(22, 163, 74, 0.2);
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
 @media (max-width: 640px) {
+
   .page-container {
-    padding: 0.75rem;
+    padding: 1rem 0.75rem;
     gap: 1rem;
   }
 
   .content-card {
-    padding: 0.875rem;
-    border-radius: 0.875rem;
+    padding: 1rem;
   }
 
   .section-title {
@@ -148,13 +196,12 @@
     line-height: 1.5rem;
   }
 
-  .save-button {
+  .save-container {
     width: 100%;
-    padding: 0.75rem 1rem;
   }
 
-  .message-container {
-    padding: 0.75rem;
-    font-size: 0.95rem;
+  .save-button {
+    width: 100%;
   }
+
 }

@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { AdminListUsersService } from '../../../../services/admin/admin-list-users.service';
 import { User } from '../../../../models/user.model';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
+
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
@@ -15,7 +16,8 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 export class AdminListUsersComponent {
   users: User[] = [];
 
-  errorMessage: string | null = null;
+  message = '';
+  messageType: 'success' | 'error' | '' = '';
 
   // Lapozás
   currentPage = 1;
@@ -27,17 +29,20 @@ export class AdminListUsersComponent {
   }
 
   private loadUsers(): void {
+    this.message = '';
+    this.messageType = '';
+
     this.adminListUsersService.getUsers().subscribe({
       next: (users) => {
         this.users = users;
 
         this.totalPages = Math.ceil(this.users.length / this.pageSize);
-
-        this.errorMessage = null;
       },
 
       error: (err) => {
-        this.errorMessage = err?.message || USER_MESSAGES.loadError;
+        this.message = err?.error?.message || err?.message || USER_MESSAGES.loadError;
+
+        this.messageType = 'error';
       },
     });
   }

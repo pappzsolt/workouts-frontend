@@ -2,18 +2,32 @@
   {{ 'adminChoiceEdit.title' | translate }}
 </h2>
 
+<app-message
+  *ngIf="message"
+  [message]="message"
+  [type]="messageType"
+></app-message>
+
 <div class="entries-container">
   <!-- Edit Coach -->
-  <div class="entry-card" (click)="navigateTo('admin/coach/edit')">
+  <div
+    class="entry-card"
+    (click)="navigateTo('admin/coach/edit')"
+  >
     <div class="entry-icon">🏋️</div>
+
     <div class="entry-title">
       {{ 'adminChoiceEdit.editCoach' | translate }}
     </div>
   </div>
 
   <!-- Edit User -->
-  <div class="entry-card" (click)="navigateTo('admin/users/edit')">
+  <div
+    class="entry-card"
+    (click)="navigateTo('admin/users/edit')"
+  >
     <div class="entry-icon">✏️</div>
+
     <div class="entry-title">
       {{ 'adminChoiceEdit.editUser' | translate }}
     </div>

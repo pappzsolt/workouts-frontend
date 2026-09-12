@@ -11,9 +11,12 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   styleUrls: ['./choice-user-new.component.css'],
 })
 export class ChoiceUserNewComponent {
+  message = '';
+
+  messageType: 'success' | 'error' | '' = '';
+
   constructor(private router: Router) {}
 
-  // A navigateTo metódus
   navigateTo(path: string): void {
     this.router.navigate([path]);
   }

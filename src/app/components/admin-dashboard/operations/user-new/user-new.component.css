@@ -1,46 +1,36 @@
 /* ============================================================
-   USER NEW
+   USER NEW OLDAL
    ============================================================ */
 
 .user-new-container {
   width: 100%;
   min-height: 100vh;
+
   padding: 1.5rem 1rem;
+
+  box-sizing: border-box;
+
   display: flex;
   flex-direction: column;
   align-items: center;
+
   background-color: #ffffff;
 }
 
 
 /* ============================================================
-   CÍM
+   OLDAL CÍM
    ============================================================ */
 
-.user-new-title {
-  margin-bottom: 1.5rem;
+.page-title {
+  margin-bottom: 2rem;
+
   text-align: center;
-  font-size: 1.5rem;
+
+  font-size: 1.875rem;
   font-weight: 700;
-  color: #111827;
-}
 
-
-/* ============================================================
-   ÜZENET
-   ============================================================ */
-
-.message {
-  margin-bottom: 1rem;
-  font-weight: 500;
-}
-
-.message-error {
-  color: #dc2626;
-}
-
-.message-success {
-  color: #16a34a;
+  color: #1f2937;
 }
 
 
@@ -51,60 +41,98 @@
 .user-form {
   width: 100%;
   max-width: 80rem;
+
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+
   gap: 1rem;
+
   padding: 1.5rem;
+
+  box-sizing: border-box;
+
   background-color: #ffffff;
+
   border-radius: 0.75rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-  0 4px 6px -4px rgba(0, 0, 0, 0.1);
+
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 
 /* ============================================================
-   FORM MEZŐ
+   FORM GROUP
    ============================================================ */
 
 .form-group {
-  width: 100%;
+  min-width: 0;
 }
 
 .form-group-full {
   grid-column: 1 / -1;
 }
 
+
+/* ============================================================
+   LABEL
+   ============================================================ */
+
 .form-group label,
 .form-label {
   display: block;
+
   margin-bottom: 0.25rem;
+
+  font-size: 0.875rem;
   font-weight: 500;
+
   color: #374151;
 }
 
 
 /* ============================================================
-   INPUT
+   INPUT / SELECT / TEXTAREA
    ============================================================ */
 
 .form-input {
   width: 100%;
+
   padding: 0.5rem 0.75rem;
+
+  box-sizing: border-box;
+
   border: 1px solid #d1d5db;
   border-radius: 0.5rem;
+
   background-color: #ffffff;
-  color: #111827;
+
+  color: #374151;
+
+  font-size: 0.875rem;
+
   outline: none;
-  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
+
 .form-input:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+  border-color: #3b82f6;
+
+  box-shadow:
+    0 0 0 2px rgba(59, 130, 246, 0.15);
 }
+
+
+/* ============================================================
+   TEXTAREA
+   ============================================================ */
 
 .form-textarea {
   min-height: 7rem;
+
   resize: vertical;
 }
 
@@ -117,23 +145,40 @@
   margin-top: 0.5rem;
 }
 
+
 .selected-role {
   display: inline-block;
+
   margin-right: 0.25rem;
   margin-bottom: 0.25rem;
+
   padding: 0.25rem 0.5rem;
+
   border-radius: 0.375rem;
+
   background-color: #bfdbfe;
   color: #1e40af;
+
+  font-size: 0.875rem;
+
   cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
 }
+
 
 .selected-role:hover {
   background-color: #93c5fd;
+
+  transform: translateY(-1px);
 }
+
 
 .remove-role {
   margin-left: 0.25rem;
+
   font-weight: 700;
 }
 
@@ -144,26 +189,66 @@
 
 .form-submit {
   grid-column: 1 / -1;
+
+  display: flex;
+  justify-content: center;
+
   margin-top: 1rem;
-  text-align: center;
 }
+
 
 .submit-button {
+  width: 9rem;
+
   padding: 0.5rem 1rem;
+
   border: none;
   border-radius: 0.5rem;
+
   background-color: #2563eb;
   color: #ffffff;
+
+  font-size: 0.875rem;
   font-weight: 500;
+
   cursor: pointer;
+
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.1);
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.submit-button:hover {
+
+.submit-button:hover:not(:disabled) {
   background-color: #1d4ed8;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 6px 10px rgba(0, 0, 0, 0.15);
 }
+
+
+.submit-button:focus {
+  outline: none;
+
+  box-shadow:
+    0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+
+.submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
 
 .submit-button:disabled {
   opacity: 0.6;
+
   cursor: not-allowed;
 }
 
@@ -172,6 +257,9 @@
    RESPONSIVE
    ============================================================ */
 
+
+/* Tablet */
+
 @media (min-width: 640px) {
 
   .user-new-container {
@@ -179,26 +267,65 @@
     padding-right: 1.5rem;
   }
 
-  .user-form {
-    grid-template-columns: repeat(2, 1fr);
-  }
 
+  .user-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
+
+/* Tablet / kisebb desktop */
 
 @media (min-width: 768px) {
 
-  .user-new-form {
-    grid-template-columns: repeat(3, 1fr);
+  .user-form {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-
 }
 
+
+/* Desktop */
 
 @media (min-width: 1024px) {
 
   .user-form {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+
+/* Mobil */
+
+@media (max-width: 639px) {
+
+  .user-new-container {
+    padding: 1rem;
   }
 
+
+  .page-title {
+    font-size: 1.5rem;
+
+    margin-bottom: 1.5rem;
+  }
+
+
+  .user-form {
+    padding: 1rem;
+  }
+
+
+  .form-group-full {
+    grid-column: auto;
+  }
+
+
+  .form-submit {
+    grid-column: auto;
+  }
+
+
+  .submit-button {
+    width: 100%;
+  }
 }

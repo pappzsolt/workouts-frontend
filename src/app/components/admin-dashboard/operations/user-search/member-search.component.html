@@ -1,90 +1,99 @@
-<h2 class="programs-title">
-  {{ 'adminMemberSearch.title' | translate }}
-</h2>
+<div class="member-search-container">
+  <!-- Oldal címe -->
+  <h2 class="page-title">
+    {{ 'adminMemberSearch.title' | translate }}
+  </h2>
 
-<!-- Hiba / info üzenet -->
-<div *ngIf="errorMessage" class="message-box">
-  {{ errorMessage }}
-</div>
+  <!-- Üzenet -->
+  <app-message
+    *ngIf="message"
+    [message]="message | translate"
+    [type]="messageType"
+  ></app-message>
 
-<div *ngIf="message && !errorMessage" class="message-box message-success">
-  {{ message }}
-</div>
+  <!-- Keresőmező + gomb -->
+  <div class="search-container">
+    <input
+      type="text"
+      [(ngModel)]="keyword"
+      [placeholder]="'adminMemberSearch.searchPlaceholder' | translate"
+      class="form-input"
+    />
 
-<!-- Keresőmező + gomb -->
-<div class="search-container">
-  <input
-    type="text"
-    [(ngModel)]="keyword"
-    [placeholder]="'adminMemberSearch.searchPlaceholder' | translate"
-    class="form-input"
-  />
-
-  <button
-    (click)="onSearch()"
-    [disabled]="loading"
-    class="form-button"
-  >
-    {{ 'common.search' | translate }}
-  </button>
-</div>
-
-<!-- Nézetváltás gombok -->
-<div
-  class="view-mode-container"
-  *ngIf="displayedMembers.length >= 1"
->
-  <button
-    (click)="viewMode = 'grid'"
-    [class.active]="viewMode === 'grid'"
-    class="view-mode-button"
-  >
-    {{ 'adminMemberSearch.gridView' | translate }}
-  </button>
-
-  <button
-    (click)="viewMode = 'table'"
-    [class.active]="viewMode === 'table'"
-    class="view-mode-button"
-  >
-    {{ 'adminMemberSearch.tableView' | translate }}
-  </button>
-</div>
-
-<!-- Loading -->
-<div *ngIf="loading" class="loading-message">
-  {{ 'adminMemberSearch.searching' | translate }}
-</div>
-
-<!-- Találatok / nincs találat -->
-<ng-container *ngIf="!loading && !errorMessage">
-  <div *ngIf="displayedMembers.length > 0; else noMembers">
-
-    <!-- Grid nézet -->
-    <div
-      *ngIf="viewMode === 'grid'"
-      class="members-grid"
+    <button
+      type="button"
+      (click)="onSearch()"
+      [disabled]="loading"
+      class="form-button"
     >
-      <ng-container *ngFor="let member of displayedMembers">
-        <div class="program-card">
+      {{ 'common.search' | translate }}
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="loading-message">
+    {{ 'adminMemberSearch.searching' | translate }}
+  </div>
+
+  <!-- Nézetváltás -->
+  <div
+    *ngIf="!loading && displayedMembers.length > 0"
+    class="view-mode-container"
+  >
+    <button
+      type="button"
+      (click)="viewMode = 'grid'"
+      [class.active]="viewMode === 'grid'"
+      class="view-mode-button"
+    >
+      {{ 'adminMemberSearch.gridView' | translate }}
+    </button>
+
+    <button
+      type="button"
+      (click)="viewMode = 'table'"
+      [class.active]="viewMode === 'table'"
+      class="view-mode-button"
+    >
+      {{ 'adminMemberSearch.tableView' | translate }}
+    </button>
+  </div>
+
+  <!-- Találatok -->
+  <ng-container *ngIf="!loading">
+    <!-- Van találat -->
+    <div *ngIf="displayedMembers.length > 0">
+      <!-- Grid nézet -->
+      <div
+        *ngIf="viewMode === 'grid'"
+        class="members-grid"
+      >
+        <div
+          *ngFor="let member of displayedMembers"
+          class="program-card"
+        >
           <div class="program-image">
             <span class="program-emoji">👤</span>
           </div>
 
           <div class="program-content">
+            <!-- Név -->
             <div class="program-name">
               {{ member.usernameOrName }}
             </div>
 
+            <!-- Email -->
             <div class="program-description">
               {{ member.email }}
             </div>
 
+            <!-- Role -->
             <div class="member-role">
               {{ 'adminMemberSearch.role' | translate }}:
               {{ member.roles.join(', ') }}
             </div>
 
+            <!-- Extra adatok -->
             <div
               *ngIf="
                 member.extraFields &&
@@ -102,6 +111,7 @@
               </div>
             </div>
 
+            <!-- Coach -->
             <div
               *ngIf="member.coach"
               class="coach-info"
@@ -110,6 +120,7 @@
                 <strong>
                   {{ 'adminMemberSearch.coach' | translate }}:
                 </strong>
+
                 {{ member.coach.usernameOrName }}
               </div>
 
@@ -119,120 +130,144 @@
             </div>
           </div>
         </div>
-      </ng-container>
-    </div>
+      </div>
 
-    <!-- Táblázat nézet -->
-    <div
-      *ngIf="viewMode === 'table'"
-      class="table-container"
-    >
-      <table class="members-table">
-        <thead>
-        <tr>
-          <th>{{ 'common.name' | translate }}</th>
-          <th>{{ 'common.email' | translate }}</th>
-          <th>{{ 'adminMemberSearch.role' | translate }}</th>
-          <th>{{ 'adminMemberSearch.extraData' | translate }}</th>
-          <th>{{ 'adminMemberSearch.coach' | translate }}</th>
-        </tr>
-        </thead>
+      <!-- Táblázat nézet -->
+      <div
+        *ngIf="viewMode === 'table'"
+        class="table-container"
+      >
+        <table class="members-table">
+          <thead>
+          <tr>
+            <th>
+              {{ 'common.name' | translate }}
+            </th>
 
-        <tbody>
-        <tr *ngFor="let member of displayedMembers">
-          <td>
-            {{ member.usernameOrName }}
-          </td>
+            <th>
+              {{ 'common.email' | translate }}
+            </th>
 
-          <td>
-            {{ member.email }}
-          </td>
+            <th>
+              {{ 'adminMemberSearch.role' | translate }}
+            </th>
 
-          <td>
-            {{ member.roles.join(', ') }}
-          </td>
+            <th>
+              {{ 'adminMemberSearch.extraData' | translate }}
+            </th>
 
-          <td>
-            <ng-container
-              *ngIf="
-                  member.extraFields &&
-                  (member.extraFields | keyvalue).length
-                "
-            >
-              <div
-                *ngFor="
-                    let kv of member.extraFields | keyvalue
+            <th>
+              {{ 'adminMemberSearch.coach' | translate }}
+            </th>
+          </tr>
+          </thead>
+
+          <tbody>
+          <tr *ngFor="let member of displayedMembers">
+            <!-- Név -->
+            <td>
+              {{ member.usernameOrName }}
+            </td>
+
+            <!-- Email -->
+            <td>
+              {{ member.email }}
+            </td>
+
+            <!-- Role -->
+            <td>
+              {{ member.roles.join(', ') }}
+            </td>
+
+            <!-- Extra adatok -->
+            <td>
+              <ng-container
+                *ngIf="
+                    member.extraFields &&
+                    (member.extraFields | keyvalue).length
                   "
-                class="table-extra-field"
               >
-                <ng-container *ngIf="kv.key !== 'coach_id'">
-                  <strong>{{ kv.key }}:</strong>
-                  {{ kv.value }}
-                </ng-container>
-              </div>
-            </ng-container>
-          </td>
+                <div
+                  *ngFor="let kv of member.extraFields | keyvalue"
+                  class="table-extra-field"
+                >
+                  <ng-container *ngIf="kv.key !== 'coach_id'">
+                    <strong>{{ kv.key }}:</strong>
+                    {{ kv.value }}
+                  </ng-container>
+                </div>
+              </ng-container>
+            </td>
 
-          <td>
-            <ng-container *ngIf="member.coach">
-              <p>
-                <strong>
-                  {{ member.coach.usernameOrName }}
-                </strong>
-              </p>
+            <!-- Coach -->
+            <td>
+              <ng-container *ngIf="member.coach">
+                <div>
+                  <strong>
+                    {{ member.coach.usernameOrName }}
+                  </strong>
+                </div>
 
-              <p>
-                {{ member.coach.email }}
-              </p>
-            </ng-container>
-          </td>
-        </tr>
-        </tbody>
-      </table>
+                <div>
+                  {{ member.coach.email }}
+                </div>
+              </ng-container>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
 
-  <!-- Nincs találat -->
-  <ng-template #noMembers>
-    <div class="no-programs">
+    <!-- Nincs találat -->
+    <div
+      *ngIf="displayedMembers.length === 0 && members.length === 0"
+      class="no-programs"
+    >
       {{ 'adminMemberSearch.noResults' | translate }}
     </div>
-  </ng-template>
-</ng-container>
-
-<!-- Lapozás -->
-<div
-  *ngIf="totalPages > 1"
-  class="pagination"
->
-  <button
-    (click)="prevPage()"
-    [disabled]="currentPage === 1"
-    class="pagination-button"
-  >
-    {{ 'common.previous' | translate }}
-  </button>
-
-  <ng-container
-    *ngFor="
-      let page of [].constructor(totalPages);
-      let i = index
-    "
-  >
-    <button
-      (click)="goToPage(i + 1)"
-      [class.active]="currentPage === i + 1"
-      class="pagination-button"
-    >
-      {{ i + 1 }}
-    </button>
   </ng-container>
 
-  <button
-    (click)="nextPage()"
-    [disabled]="currentPage === totalPages"
-    class="pagination-button"
+  <!-- Lapozás -->
+  <div
+    *ngIf="totalPages > 1"
+    class="pagination"
   >
-    {{ 'common.next' | translate }}
-  </button>
+    <!-- Előző -->
+    <button
+      type="button"
+      (click)="prevPage()"
+      [disabled]="currentPage === 1"
+      class="pagination-button"
+    >
+      {{ 'common.previous' | translate }}
+    </button>
+
+    <!-- Oldalszámok -->
+    <ng-container
+      *ngFor="
+        let page of [].constructor(totalPages);
+        let i = index
+      "
+    >
+      <button
+        type="button"
+        (click)="goToPage(i + 1)"
+        [class.active]="currentPage === i + 1"
+        class="pagination-button"
+      >
+        {{ i + 1 }}
+      </button>
+    </ng-container>
+
+    <!-- Következő -->
+    <button
+      type="button"
+      (click)="nextPage()"
+      [disabled]="currentPage === totalPages"
+      class="pagination-button"
+    >
+      {{ 'common.next' | translate }}
+    </button>
+  </div>
 </div>

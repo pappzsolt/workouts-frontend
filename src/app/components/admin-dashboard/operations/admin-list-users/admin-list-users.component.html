@@ -1,33 +1,40 @@
-<h2 class="programs-title">
+<h2 class="page-title">
   {{ 'adminUsers.title' | translate }}
 </h2>
 
-<!-- Hiba / Üzenet -->
-<div *ngIf="errorMessage" class="message-box message-error">
-  {{ errorMessage }}
-</div>
+<app-message
+  *ngIf="message"
+  [message]="message"
+  [type]="messageType"
+></app-message>
 
 <!-- Felhasználók -->
 <ng-container *ngIf="paginatedUsers.length > 0; else noUsers">
-  <div class="programs-grid">
-    <div *ngFor="let user of paginatedUsers" class="program-card">
+  <div class="users-grid">
+    <div
+      *ngFor="let user of paginatedUsers"
+      class="user-card"
+    >
       <!-- Avatar / Emoji -->
-      <div class="program-image">
-        <span class="program-emoji">👤</span>
+      <div class="user-image">
+        <span class="user-emoji">
+          👤
+        </span>
       </div>
 
       <!-- Tartalom -->
-      <div class="program-content">
-        <div class="program-name">
+      <div class="user-content">
+        <div class="user-name">
           {{ user.username }}
         </div>
 
-        <div class="program-description">
+        <div class="user-email">
           {{ user.email }}
         </div>
 
         <div class="user-roles">
-          {{ 'adminUsers.role' | translate }}: {{ user.roles.join(', ') }}
+          {{ 'adminUsers.role' | translate }}:
+          {{ user.roles.join(', ') }}
         </div>
       </div>
     </div>
@@ -59,7 +66,7 @@
 
 <!-- Üres lista -->
 <ng-template #noUsers>
-  <div class="no-programs">
+  <div class="no-users">
     {{ 'adminUsers.noUsers' | translate }}
   </div>
 </ng-template>

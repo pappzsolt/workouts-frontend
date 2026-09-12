@@ -15,6 +15,7 @@
     </app-coach-workout-board>
   </div>
 
+
   <!-- Kiválasztott workoutok -->
   <div
     *ngIf="selectedWorkoutIds.length"
@@ -25,6 +26,7 @@
     </h2>
 
     <div class="items-list">
+
       <div
         *ngFor="let wid of selectedWorkoutIds"
         class="selected-workout"
@@ -41,9 +43,12 @@
         >
           ✕
         </button>
+
       </div>
+
     </div>
   </div>
+
 
   <!-- Exercises lista -->
   <div class="content-card">
@@ -59,6 +64,7 @@
     </app-coach-exercises-board>
   </div>
 
+
   <!-- Backend üzenet -->
   <div
     *ngIf="message"
@@ -71,8 +77,10 @@
     {{ message }}
   </div>
 
-  <!-- Mentés gomb -->
+
+  <!-- Mentés -->
   <div class="save-container">
+
     <button
       type="button"
       (click)="saveSelectedWorkoutsAndExercises()"
@@ -80,6 +88,7 @@
     >
       {{ 'assignWorkoutExercises.save' | translate }}
     </button>
+
   </div>
 
 </div>

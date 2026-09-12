@@ -1,27 +1,25 @@
 <div class="user-new-container">
-  <h2 class="user-new-title">
+  <!-- Oldal címe -->
+  <h2 class="page-title">
     {{ 'adminUserNew.title' | translate }}
   </h2>
 
   <!-- Üzenet -->
-  <div
+  <app-message
     *ngIf="message"
-    [ngClass]="{
-      'message-error': isError,
-      'message-success': !isError,
-    }"
-    class="message"
-  >
-    {{ message | translate }}
-  </div>
+    [message]="message | translate"
+    [type]="messageType"
+  ></app-message>
 
+  <!-- Form -->
   <form
     #userForm="ngForm"
     (ngSubmit)="onSubmit(userForm)"
     class="user-form"
   >
+    <!-- Felhasználónév -->
     <div class="form-group">
-      <label for="username">
+      <label for="username" class="form-label">
         {{ 'common.username' | translate }}
       </label>
 
@@ -35,8 +33,9 @@
       />
     </div>
 
+    <!-- Email -->
     <div class="form-group">
-      <label for="email">
+      <label for="email" class="form-label">
         {{ 'common.email' | translate }}
       </label>
 
@@ -50,8 +49,9 @@
       />
     </div>
 
+    <!-- Jelszó -->
     <div class="form-group">
-      <label for="password">
+      <label for="password" class="form-label">
         {{ 'common.password' | translate }}
       </label>
 
@@ -65,8 +65,9 @@
       />
     </div>
 
+    <!-- Életkor -->
     <div class="form-group">
-      <label for="age">
+      <label for="age" class="form-label">
         {{ 'common.age' | translate }}
       </label>
 
@@ -79,8 +80,9 @@
       />
     </div>
 
+    <!-- Testsúly -->
     <div class="form-group">
-      <label for="weight">
+      <label for="weight" class="form-label">
         {{ 'common.weight' | translate }} (kg)
       </label>
 
@@ -94,8 +96,9 @@
       />
     </div>
 
+    <!-- Magasság -->
     <div class="form-group">
-      <label for="height">
+      <label for="height" class="form-label">
         {{ 'common.height' | translate }} (cm)
       </label>
 
@@ -109,8 +112,9 @@
       />
     </div>
 
+    <!-- Nem -->
     <div class="form-group">
-      <label for="gender">
+      <label for="gender" class="form-label">
         {{ 'common.gender' | translate }}
       </label>
 
@@ -130,8 +134,9 @@
       </select>
     </div>
 
+    <!-- Célok -->
     <div class="form-group form-group-full">
-      <label for="goals">
+      <label for="goals" class="form-label">
         {{ 'common.goals' | translate }}
       </label>
 
@@ -143,8 +148,9 @@
       ></textarea>
     </div>
 
-    <div class="form-group">
-      <label for="avatarUrl">
+    <!-- Avatar URL -->
+    <div class="form-group form-group-full">
+      <label for="avatarUrl" class="form-label">
         {{ 'common.avatarUrl' | translate }}
       </label>
 
@@ -157,7 +163,7 @@
       />
     </div>
 
-    <!-- Coach select -->
+    <!-- Edző kiválasztása -->
     <div class="form-group form-group-full">
       <label class="form-label">
         {{ 'adminUserNew.assignCoach' | translate }}
@@ -170,7 +176,7 @@
       </app-coach-select>
     </div>
 
-    <!-- Role kiválasztás -->
+    <!-- Szerepkörök -->
     <div class="form-group form-group-full">
       <label class="form-label">
         {{ 'adminUserNew.roles' | translate }}*
@@ -182,20 +188,21 @@
       >
       </app-role-select>
 
+      <!-- Kiválasztott szerepkörök -->
       <div class="selected-roles">
         <span
-          *ngFor="let r of user.roleIds"
+          *ngFor="let role of user.roleIds"
           class="selected-role"
-          (click)="onRemoveRole(r)"
+          (click)="onRemoveRole(role)"
         >
-          {{ r.name }}
+          {{ role.name }}
 
           <span class="remove-role">x</span>
         </span>
       </div>
     </div>
 
-    <!-- Submit -->
+    <!-- Mentés -->
     <div class="form-submit">
       <button
         type="submit"

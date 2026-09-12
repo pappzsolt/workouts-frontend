@@ -2,18 +2,32 @@
   {{ 'adminChoiceNew.title' | translate }}
 </h2>
 
+<app-message
+  *ngIf="message"
+  [message]="message"
+  [type]="messageType"
+></app-message>
+
 <div class="choice-container">
   <!-- New Coach -->
-  <div class="choice-card" (click)="navigateTo('admin/coach/new')">
+  <div
+    class="choice-card"
+    (click)="navigateTo('admin/coach/new')"
+  >
     <div class="choice-emoji">🏋️</div>
+
     <div class="choice-title">
       {{ 'adminChoiceNew.newCoach' | translate }}
     </div>
   </div>
 
   <!-- New User -->
-  <div class="choice-card" (click)="navigateTo('admin/users/new')">
+  <div
+    class="choice-card"
+    (click)="navigateTo('admin/users/new')"
+  >
     <div class="choice-emoji">➕</div>
+
     <div class="choice-title">
       {{ 'adminChoiceNew.newUser' | translate }}
     </div>

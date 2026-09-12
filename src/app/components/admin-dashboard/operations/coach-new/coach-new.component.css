@@ -1,132 +1,177 @@
+/* ============================= */
+/* OLDAL */
+/* ============================= */
+
 .coach-new {
   width: 100%;
   min-height: 100vh;
+
   box-sizing: border-box;
-  padding: 24px 40px;
-  background: #ffffff;
+
+  padding: 1.5rem 2.5rem;
+
+  background-color: white;
 
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+
+/* ============================= */
+/* OLDAL CÍM */
+/* ============================= */
+
 .coach-new__title {
-  margin: 0 0 24px;
+  font-size: 1.875rem;
+  font-weight: 700;
+
+  margin: 0 0 2rem;
+
   text-align: center;
 
-  font-size: 24px;
-  font-weight: 700;
-  color: #111827;
+  color: #1f2937;
 }
 
 
-/* =========================
-   Form
-   ========================= */
+/* ============================= */
+/* FORM */
+/* ============================= */
 
 .coach-form {
   width: 100%;
-  max-width: 1200px;
+  max-width: 75rem;
+
   box-sizing: border-box;
 
-  padding: 24px;
+  padding: 1.5rem;
 
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
 
-  background: #ffffff;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
 
-  border-radius: 12px;
+  gap: 1rem;
+
+  background-color: white;
+
+  border-radius: 0.75rem;
 
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.08);
+    0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 
-/* =========================
-   Mezők
-   ========================= */
+/* ============================= */
+/* FORM MEZŐK */
+/* ============================= */
 
 .form-field {
   min-width: 0;
 }
 
+
 .form-field--full {
   grid-column: 1 / -1;
 }
 
+
+/* ============================= */
+/* LABEL */
+/* ============================= */
+
 .form-field label {
   display: block;
 
-  margin-bottom: 6px;
+  margin-bottom: 0.5rem;
 
   color: #374151;
-  font-size: 14px;
+
+  font-size: 0.875rem;
   font-weight: 500;
 }
 
 
-/* =========================
-   Input / textarea
-   ========================= */
+/* ============================= */
+/* INPUT / TEXTAREA */
+/* ============================= */
 
 .form-field input,
 .form-field textarea {
   width: 100%;
+
   box-sizing: border-box;
 
-  padding: 10px 12px;
+  padding: 0.625rem 0.75rem;
 
   border: 1px solid #d1d5db;
-  border-radius: 8px;
+  border-radius: 0.5rem;
 
-  background: #ffffff;
+  background-color: white;
 
-  font-size: 14px;
-  color: #111827;
+  color: #374151;
+
+  font-size: 0.875rem;
 
   outline: none;
 
   transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
+
 .form-field input {
-  height: 42px;
+  height: 2.625rem;
 }
+
 
 .form-field textarea {
   resize: vertical;
-  min-height: 90px;
+
+  min-height: 5.625rem;
 }
+
+
+/* ============================= */
+/* FOCUS */
+/* ============================= */
 
 .form-field input:focus,
 .form-field textarea:focus {
-  border-color: #2563eb;
+  border-color: #3b82f6;
 
   box-shadow:
-    0 0 0 2px rgba(37, 99, 235, 0.15);
+    0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
 
-/* =========================
-   Validációs hiba
-   ========================= */
+/* ============================= */
+/* PLACEHOLDER */
+/* ============================= */
+
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+  color: #9ca3af;
+}
+
+
+/* ============================= */
+/* VALIDÁCIÓS HIBA */
+/* ============================= */
 
 .validation-error {
-  margin-top: 5px;
+  margin-top: 0.5rem;
 
-  color: #dc2626;
+  color: #ef4444;
 
-  font-size: 13px;
+  font-size: 0.75rem;
 }
 
 
-/* =========================
-   Gomb
-   ========================= */
+/* ============================= */
+/* GOMB */
+/* ============================= */
 
 .form-actions {
   grid-column: 1 / -1;
@@ -134,107 +179,117 @@
   display: flex;
   justify-content: center;
 
-  margin-top: 8px;
+  margin-top: 0.5rem;
 }
 
-.form-actions button {
-  width: 160px;
 
-  padding: 10px 16px;
+.form-actions button {
+  width: 10rem;
+
+  padding: 0.625rem 1rem;
 
   border: none;
-  border-radius: 8px;
+  border-radius: 0.5rem;
 
-  background: #2563eb;
-  color: #ffffff;
+  background-color: #2563eb;
 
-  font-size: 14px;
+  color: white;
+
+  font-size: 0.875rem;
   font-weight: 500;
 
   cursor: pointer;
 
   box-shadow:
-    0 2px 5px rgba(0, 0, 0, 0.12);
+    0 4px 6px rgba(0, 0, 0, 0.1);
 
   transition:
-    background 0.15s ease,
-    transform 0.1s ease;
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
+
 
 .form-actions button:hover:not(:disabled) {
-  background: #1d4ed8;
+  background-color: #1d4ed8;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 10px 15px rgba(0, 0, 0, 0.15);
 }
+
 
 .form-actions button:active:not(:disabled) {
-  transform: scale(0.98);
+  transform: translateY(0);
 }
+
 
 .form-actions button:disabled {
-  opacity: 0.5;
+  background-color: #9ca3af;
+
+  opacity: 0.7;
+
   cursor: not-allowed;
+
+  box-shadow: none;
 }
 
 
-/* =========================
-   Üzenet
-   ========================= */
-
-.form-message {
-  margin-top: 16px;
-
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.success-message {
-  color: #16a34a;
-}
-
-.error-message {
-  color: #dc2626;
-}
-
-
-/* =========================
-   Tablet
-   ========================= */
+/* ============================= */
+/* TABLET */
+/* ============================= */
 
 @media (max-width: 900px) {
 
   .coach-new {
-    padding: 20px;
+    padding: 1.25rem;
   }
 
+
   .coach-form {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
   }
 }
 
 
-/* =========================
-   Mobil
-   ========================= */
+/* ============================= */
+/* MOBIL */
+/* ============================= */
 
 @media (max-width: 600px) {
 
   .coach-new {
-    padding: 16px 10px;
+    padding: 1rem 0.625rem;
   }
 
+
   .coach-new__title {
-    font-size: 22px;
+    font-size: 1.5rem;
+
+    margin-bottom: 1.5rem;
   }
+
 
   .coach-form {
     grid-template-columns: 1fr;
-    padding: 18px;
+
+    padding: 1rem;
   }
+
 
   .form-field--full {
     grid-column: auto;
   }
 
+
   .form-actions {
     grid-column: auto;
+  }
+
+
+  .form-actions button {
+    width: 100%;
   }
 }

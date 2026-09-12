@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 import { WorkoutListComponent } from '../operations/coach-workouts/coach-workouts.component';
 import { CoachProgramComponent } from '../operations/coach-programs/coach-program/coach-program.component';
 import { ExerciseControllerComponent } from '../operations/coach-exercises/coach-exercises.component';
-import { AssignProgramComponent } from '../../../components/coach-dashboard/operations/assign-program/assignprogram.component';
+
+import { AssignProgramComponent } from '../operations/assign-program/assignprogram.component';
 import { ProgramWorkoutsAssComponent } from '../operations/assign-program-workout/program-workouts-ass.component';
 import { AssignWorkoutsExercisesComponent } from '../operations/assign-workouts-exercises/assign-workouts-exercises.component';
+
 import { UserWorkoutExerciseManagerComponent } from '../operations/user-workout-exercise-manager/user-workout-exercise-manager';
 
 import { SHARED_IMPORTS } from '../../shared/shared-imports';
@@ -28,79 +30,169 @@ import { SHARED_IMPORTS } from '../../shared/shared-imports';
   styleUrls: ['./coach-dashboard.component.css'],
 })
 export class CoachDashboardComponent implements OnInit {
-  showWorkouts: boolean = false;
-  showPrograms: boolean = false;
-  showExercises: boolean = false;
-  showAssignments: boolean = false;
-  showProgramWorkouts: boolean = false;
-  showWorkoutExercises: boolean = false;
-  showWorkoutExerciseManager: boolean = false;
+  // =============================
+  // PANEL ÁLLAPOTOK
+  // =============================
+
+  showWorkouts = false;
+
+  showPrograms = false;
+
+  showExercises = false;
+
+  showAssignments = false;
+
+  showProgramWorkouts = false;
+
+  showWorkoutExercises = false;
+
+  showWorkoutExerciseManager = false;
+
+  // =============================
+  // PROGRAM
+  // =============================
+
   programIdForWorkouts?: number;
 
-  constructor(
-    private router: Router,
-    private route: ActivatedRoute,
-  ) {}
+  constructor(private route: ActivatedRoute) {}
+
+  // =============================
+  // INIT
+  // =============================
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
-      if (params['section'] === 'workouts') this.showWorkouts = true;
-      if (params['section'] === 'programs') this.showPrograms = true;
-      if (params['section'] === 'exercises') this.showExercises = true;
-      if (params['section'] === 'assignments') this.showAssignments = true;
-      if (params['section'] === 'program-workouts') {
-        this.showProgramWorkouts = true;
-      }
-      if (params['section'] === 'workout-exercise-manager') {
-        this.showWorkoutExerciseManager = true;
+      this.closeAllPanels();
+
+      switch (params['section']) {
+        case 'workouts':
+          this.showWorkouts = true;
+          break;
+
+        case 'programs':
+          this.showPrograms = true;
+          break;
+
+        case 'exercises':
+          this.showExercises = true;
+          break;
+
+        case 'assignments':
+          this.showAssignments = true;
+          break;
+
+        case 'program-workouts':
+          this.showProgramWorkouts = true;
+          break;
+
+        case 'workout-exercise-manager':
+          this.showWorkoutExerciseManager = true;
+          break;
       }
     });
   }
 
-  // Segédfüggvény: minden panelt bezár
+  // =============================
+  // PANEL KEZELÉS
+  // =============================
+
   private closeAllPanels(): void {
-    this.showPrograms = false;
     this.showWorkouts = false;
+
+    this.showPrograms = false;
+
     this.showExercises = false;
+
     this.showAssignments = false;
+
     this.showProgramWorkouts = false;
+
     this.showWorkoutExercises = false;
+
     this.showWorkoutExerciseManager = false;
   }
 
+  // =============================
+  // WORKOUTS
+  // =============================
+
   toggleWorkouts(): void {
+    const shouldOpen = !this.showWorkouts;
+
     this.closeAllPanels();
-    this.showWorkouts = !this.showWorkouts;
+
+    this.showWorkouts = shouldOpen;
   }
+
+  // =============================
+  // PROGRAMS
+  // =============================
 
   togglePrograms(): void {
+    const shouldOpen = !this.showPrograms;
+
     this.closeAllPanels();
-    this.showPrograms = !this.showPrograms;
+
+    this.showPrograms = shouldOpen;
   }
+
+  // =============================
+  // EXERCISES
+  // =============================
 
   toggleExercises(): void {
+    const shouldOpen = !this.showExercises;
+
     this.closeAllPanels();
-    this.showExercises = !this.showExercises;
+
+    this.showExercises = shouldOpen;
   }
+
+  // =============================
+  // ASSIGNMENTS
+  // =============================
 
   toggleAssignments(): void {
+    const shouldOpen = !this.showAssignments;
+
     this.closeAllPanels();
-    this.showAssignments = !this.showAssignments;
+
+    this.showAssignments = shouldOpen;
   }
+
+  // =============================
+  // PROGRAM WORKOUTS
+  // =============================
 
   toggleProgramWorkouts(): void {
+    const shouldOpen = !this.showProgramWorkouts;
+
     this.closeAllPanels();
-    this.showProgramWorkouts = !this.showProgramWorkouts;
+
+    this.showProgramWorkouts = shouldOpen;
   }
+
+  // =============================
+  // WORKOUT EXERCISES
+  // =============================
 
   toggleWorkoutExercises(): void {
+    const shouldOpen = !this.showWorkoutExercises;
+
     this.closeAllPanels();
-    this.showWorkoutExercises = !this.showWorkoutExercises;
+
+    this.showWorkoutExercises = shouldOpen;
   }
 
-  // Új toggle: WorkoutExerciseManager
+  // =============================
+  // WORKOUT EXERCISE MANAGER
+  // =============================
+
   toggleWorkoutExerciseManager(): void {
+    const shouldOpen = !this.showWorkoutExerciseManager;
+
     this.closeAllPanels();
-    this.showWorkoutExerciseManager = !this.showWorkoutExerciseManager;
+
+    this.showWorkoutExerciseManager = shouldOpen;
   }
 }

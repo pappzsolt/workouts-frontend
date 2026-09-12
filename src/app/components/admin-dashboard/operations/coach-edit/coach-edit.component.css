@@ -1,84 +1,138 @@
+/* ============================= */
+/* OLDAL KONTEJNER */
+/* ============================= */
+
 .page-container {
-  width: 100vw;
-  min-height: 100vh;
-  background-color: white;
+  width: 100%;
   padding: 1.5rem 1rem;
+
   display: flex;
   flex-direction: column;
   align-items: center;
+
+  box-sizing: border-box;
 }
 
+
+/* ============================= */
+/* OLDAL CÍM */
+/* ============================= */
+
 .page-title {
-  font-size: 1.5rem;
-  line-height: 2rem;
+  font-size: 1.875rem;
   font-weight: 700;
-  margin-bottom: 1.5rem;
+
+  margin-bottom: 2rem;
+
   text-align: center;
+
+  color: #1f2937;
 }
+
+
+/* ============================= */
+/* BETÖLTÉS */
+/* ============================= */
 
 .loading-message {
   margin-bottom: 1rem;
-  color: #2563eb;
+
+  color: #6b7280;
+
   font-weight: 500;
+
+  text-align: center;
 }
 
-.success-message {
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  background-color: #dcfce7;
-  color: #166534;
-  border-radius: 0.25rem;
-}
 
-.error-message {
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  background-color: #fee2e2;
-  color: #991b1b;
-  border-radius: 0.25rem;
-}
+/* ============================= */
+/* COACH KIVÁLASZTÁSA */
+/* ============================= */
 
 .coach-select-container {
   width: 100%;
   max-width: 42rem;
+
   margin-bottom: 1rem;
 }
 
+
+/* ============================= */
+/* FORM LABEL */
+/* ============================= */
+
 .form-label {
   display: block;
+
+  margin-bottom: 0.5rem;
+
+  font-weight: 500;
+
   color: #374151;
-  margin-bottom: 0.25rem;
 }
 
+
+/* ============================= */
+/* FORM MEZŐK */
+/* ============================= */
+
 .form-control {
+  width: 100%;
+
+  padding: 0.5rem 0.75rem;
+
+  box-sizing: border-box;
+
+  background-color: white;
+
   border: 1px solid #d1d5db;
   border-radius: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  width: 100%;
-  box-sizing: border-box;
-  background-color: white;
+
+  color: #374151;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .form-control:focus {
   outline: none;
+
   border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgb(59 130 246 / 0.3);
+
+  box-shadow:
+    0 0 0 2px rgb(59 130 246 / 0.2);
 }
+
+
+/* ============================= */
+/* COACH FORM */
+/* ============================= */
 
 .coach-form {
   width: 100%;
   max-width: 42rem;
+
   background-color: white;
+
   border-radius: 0.75rem;
+
   box-shadow:
-    0 10px 15px -3px rgb(0 0 0 / 0.1),
-    0 4px 6px -4px rgb(0 0 0 / 0.1);
+    0 4px 6px rgba(0, 0, 0, 0.1);
+
   padding: 1.5rem;
 
   display: grid;
+
   gap: 1rem;
+
   box-sizing: border-box;
 }
+
+
+/* ============================= */
+/* FORM CSOPORT */
+/* ============================= */
 
 .form-group {
   min-width: 0;
@@ -88,49 +142,117 @@
   grid-column: 1 / -1;
 }
 
+
+/* ============================= */
+/* MENTÉS */
+/* ============================= */
+
 .submit-container {
   grid-column: 1 / -1;
-  text-align: center;
+
   margin-top: 1rem;
+
+  text-align: center;
 }
 
+
+/* ============================= */
+/* MENTÉS GOMB */
+/* ============================= */
+
 .save-button {
-  width: 9rem;
-  background-color: #2563eb;
-  color: white;
-  font-weight: 500;
+  min-width: 9rem;
+
   padding: 0.5rem 1rem;
+
   border: none;
   border-radius: 0.5rem;
-  box-shadow:
-    0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+  background-color: #2563eb;
+  color: white;
+
+  font-weight: 500;
+
   cursor: pointer;
-  transition: background-color 0.2s ease;
+
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.1);
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .save-button:hover {
   background-color: #1d4ed8;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 6px 10px rgba(0, 0, 0, 0.15);
 }
 
 .save-button:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgb(59 130 246 / 0.5);
+
+  box-shadow:
+    0 0 0 3px rgb(59 130 246 / 0.3);
 }
 
+
+/* ============================= */
+/* RESPONSIVE - TABLET */
+/* ============================= */
+
 @media (min-width: 640px) {
+
   .page-container {
     padding-left: 2.5rem;
     padding-right: 2.5rem;
   }
 
   .coach-form {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
   }
 }
 
+
+/* ============================= */
+/* RESPONSIVE - DESKTOP */
+/* ============================= */
+
 @media (min-width: 768px) {
+
   .coach-form {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+}
+
+
+/* ============================= */
+/* RESPONSIVE - MOBILE */
+/* ============================= */
+
+@media (max-width: 639px) {
+
+  .page-title {
+    font-size: 1.5rem;
+
+    margin-bottom: 1.5rem;
+  }
+
+  .page-container {
+    padding: 1rem;
+  }
+
+  .coach-form {
+    padding: 1rem;
+  }
+
+  .save-button {
+    width: 100%;
   }
 }

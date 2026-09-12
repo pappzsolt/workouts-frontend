@@ -1,24 +1,47 @@
 <div class="page-container">
+
+  <!-- ============================= -->
+  <!-- OLDAL CÍM -->
+  <!-- ============================= -->
+
   <h2 class="page-title">
     {{ 'adminCoachEdit.title' | translate }}
   </h2>
 
-  <!-- Üzenetek -->
-  <div *ngIf="loading" class="loading-message">
+
+  <!-- ============================= -->
+  <!-- ÜZENET -->
+  <!-- ============================= -->
+
+  <app-message
+    *ngIf="message"
+    [message]="message"
+    [type]="messageType"
+  ></app-message>
+
+
+  <!-- ============================= -->
+  <!-- BETÖLTÉS -->
+  <!-- ============================= -->
+
+  <div
+    *ngIf="loading"
+    class="loading-message"
+  >
     {{ 'common.loading' | translate }}
   </div>
 
-  <div *ngIf="message" class="success-message">
-    {{ message }}
-  </div>
 
-  <div *ngIf="error" class="error-message">
-    {{ error }}
-  </div>
+  <!-- ============================= -->
+  <!-- COACH KIVÁLASZTÁSA -->
+  <!-- ============================= -->
 
-  <!-- Coach select -->
   <div class="coach-select-container">
-    <label class="form-label" for="coachSelect">
+
+    <label
+      class="form-label"
+      for="coachSelect"
+    >
       {{ 'adminCoachEdit.selectCoach' | translate }}
     </label>
 
@@ -38,14 +61,29 @@
       >
         {{ c.name }} ({{ c.email }})
       </option>
+
     </select>
+
   </div>
 
-  <!-- Form -->
-  <form class="coach-form" (ngSubmit)="onSave()">
-    <!-- Name -->
+
+  <!-- ============================= -->
+  <!-- COACH FORM -->
+  <!-- ============================= -->
+
+  <form
+    class="coach-form"
+    (ngSubmit)="onSave()"
+  >
+
+    <!-- Név -->
+
     <div class="form-group">
-      <label class="form-label" for="name">
+
+      <label
+        class="form-label"
+        for="name"
+      >
         {{ 'common.name' | translate }}
       </label>
 
@@ -57,11 +95,18 @@
         [(ngModel)]="selectedCoach.name"
         class="form-control"
       />
+
     </div>
 
+
     <!-- Email -->
+
     <div class="form-group">
-      <label class="form-label" for="email">
+
+      <label
+        class="form-label"
+        for="email"
+      >
         {{ 'common.email' | translate }}
       </label>
 
@@ -73,11 +118,18 @@
         [(ngModel)]="selectedCoach.email"
         class="form-control"
       />
+
     </div>
 
-    <!-- Password -->
+
+    <!-- Jelszó -->
+
     <div class="form-group">
-      <label class="form-label" for="password">
+
+      <label
+        class="form-label"
+        for="password"
+      >
         {{ 'common.password' | translate }}
       </label>
 
@@ -89,11 +141,18 @@
         [(ngModel)]="selectedCoach.password"
         class="form-control"
       />
+
     </div>
 
-    <!-- Phone -->
+
+    <!-- Telefonszám -->
+
     <div class="form-group">
-      <label class="form-label" for="phone">
+
+      <label
+        class="form-label"
+        for="phone"
+      >
         {{ 'common.phone' | translate }}
       </label>
 
@@ -105,11 +164,18 @@
         [(ngModel)]="selectedCoach.phone"
         class="form-control"
       />
+
     </div>
 
-    <!-- Specialization -->
+
+    <!-- Specializáció -->
+
     <div class="form-group full-width">
-      <label class="form-label" for="specialization">
+
+      <label
+        class="form-label"
+        for="specialization"
+      >
         {{ 'common.specialization' | translate }}
       </label>
 
@@ -121,11 +187,18 @@
         [(ngModel)]="selectedCoach.specialization"
         class="form-control"
       ></textarea>
+
     </div>
 
+
     <!-- Avatar URL -->
+
     <div class="form-group full-width">
-      <label class="form-label" for="avatar_url">
+
+      <label
+        class="form-label"
+        for="avatar_url"
+      >
         Avatar URL
       </label>
 
@@ -137,13 +210,25 @@
         [(ngModel)]="selectedCoach.avatarUrl"
         class="form-control"
       />
+
     </div>
 
-    <!-- Submit Button -->
+
+    <!-- ============================= -->
+    <!-- MENTÉS -->
+    <!-- ============================= -->
+
     <div class="submit-container">
-      <button type="submit" class="save-button">
+
+      <button
+        type="submit"
+        class="save-button"
+      >
         {{ 'common.save' | translate }}
       </button>
+
     </div>
+
   </form>
+
 </div>

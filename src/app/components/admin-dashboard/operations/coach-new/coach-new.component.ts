@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { FormsModule, NgForm } from '@angular/forms';
+import { NgForm } from '@angular/forms';
 
 import { CoachNewService } from '../../../../services/admin/coach-new.service';
 import { CreateCoachRequest } from '../../../../models/create-coach-request.model';
+
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
@@ -16,7 +17,9 @@ export class CoachNewComponent {
   coach: CreateCoachRequest = this.createEmptyCoach();
 
   message = '';
-  isError = false;
+
+  messageType: 'success' | 'error' | '' = '';
+
   loading = false;
 
   constructor(private readonly coachNewService: CoachNewService) {}
@@ -27,10 +30,12 @@ export class CoachNewComponent {
   onSubmit(form: NgForm): void {
     if (!form.valid) {
       this.showError('adminCoachNew.validationError');
+
       return;
     }
 
     this.loading = true;
+
     this.clearMessage();
 
     this.coachNewService.createCoach(this.coach).subscribe({
@@ -62,12 +67,14 @@ export class CoachNewComponent {
   private createEmptyCoach(): CreateCoachRequest {
     return {
       type: 'coach',
+
       name: '',
       email: '',
       passwordHash: '',
       phone: '',
       specialization: '',
       avatarUrl: '',
+
       roleIds: [3],
     };
   }
@@ -77,7 +84,8 @@ export class CoachNewComponent {
    */
   private showSuccess(message: string): void {
     this.message = message;
-    this.isError = false;
+
+    this.messageType = 'success';
   }
 
   /**
@@ -85,7 +93,8 @@ export class CoachNewComponent {
    */
   private showError(message: string): void {
     this.message = message;
-    this.isError = true;
+
+    this.messageType = 'error';
   }
 
   /**
@@ -93,6 +102,7 @@ export class CoachNewComponent {
    */
   private clearMessage(): void {
     this.message = '';
-    this.isError = false;
+
+    this.messageType = '';
   }
 }

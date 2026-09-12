@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
@@ -6,6 +6,7 @@ import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exerci
 
 import { Workout } from '../../../../models/workout.model';
 import { Exercise } from '../../../../models/exercise.model';
+
 import { WorkoutExerciseService } from '../../../../services/coach/workout-exercises.service';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
@@ -17,51 +18,70 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   styleUrl: './assign-workouts-exercises.component.css',
   templateUrl: './assign-workouts-exercises.component.html',
 })
-export class AssignWorkoutsExercisesComponent implements OnInit {
+export class AssignWorkoutsExercisesComponent {
   workouts: Workout[] = [];
+
   exercises: Exercise[] = [];
 
   selectedWorkoutIds: number[] = [];
+
   selectedExercises: Exercise[] = [];
 
+  // =============================
+  // ÜZENET
+  // =============================
+
   message = '';
+
   messageType: 'success' | 'error' | '' = '';
 
-  @Output() assignedWorkouts = new EventEmitter<number[]>();
-  @Output() assignedExercises = new EventEmitter<Exercise[]>();
+  // =============================
+  // OUTPUT
+  // =============================
+
+  @Output()
+  assignedWorkouts = new EventEmitter<number[]>();
+
+  @Output()
+  assignedExercises = new EventEmitter<Exercise[]>();
 
   constructor(private workoutExerciseService: WorkoutExerciseService) {}
 
-  ngOnInit(): void {}
+  // =============================
+  // WORKOUT KIVÁLASZTÁS
+  // =============================
 
   onWorkoutsChange(updatedIds: number[]): void {
     const previousSelectedWorkouts = [...this.selectedWorkoutIds];
 
     this.selectedWorkoutIds = [...updatedIds];
 
-    this.message = '';
-    this.messageType = '';
+    this.clearMessage();
 
     if (JSON.stringify(previousSelectedWorkouts) !== JSON.stringify(this.selectedWorkoutIds)) {
       this.selectedExercises = [];
+
       this.assignedExercises.emit(this.selectedExercises);
     }
-
-    console.log('Selected workouts:', this.selectedWorkoutIds);
 
     this.assignedWorkouts.emit(this.selectedWorkoutIds);
   }
 
+  // =============================
+  // EXERCISE KIVÁLASZTÁS
+  // =============================
+
   onExercisesChange(updatedExercises: Exercise[]): void {
     this.selectedExercises = [...updatedExercises];
 
-    this.message = '';
-    this.messageType = '';
-
-    console.log('Selected exercises:', this.selectedExercises);
+    this.clearMessage();
 
     this.assignedExercises.emit(this.selectedExercises);
   }
+
+  // =============================
+  // WORKOUT ELTÁVOLÍTÁS
+  // =============================
 
   removeWorkout(wid: number): void {
     this.selectedWorkoutIds = this.selectedWorkoutIds.filter((id) => id !== wid);
@@ -69,32 +89,34 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
     this.onWorkoutsChange(this.selectedWorkoutIds);
   }
 
+  // =============================
+  // EXERCISE ELTÁVOLÍTÁS
+  // =============================
+
   removeExercise(eid: number): void {
-    this.selectedExercises = this.selectedExercises.filter((e) => e.id !== eid);
+    this.selectedExercises = this.selectedExercises.filter((exercise) => exercise.id !== eid);
 
     this.onExercisesChange(this.selectedExercises);
   }
 
+  // =============================
+  // MENTÉS
+  // =============================
+
   saveSelectedWorkoutsAndExercises(): void {
-    this.message = '';
-    this.messageType = '';
+    this.clearMessage();
 
     if (this.selectedWorkoutIds.length === 0) {
-      this.message = 'Válassz ki legalább egy workoutot.';
-      this.messageType = 'error';
+      this.showError('Válassz ki legalább egy workoutot.');
+
       return;
     }
 
     if (this.selectedExercises.length === 0) {
-      this.message = 'Válassz ki legalább egy exercise-t.';
-      this.messageType = 'error';
+      this.showError('Válassz ki legalább egy exercise-t.');
+
       return;
     }
-
-    console.log('🚀 Mentés backendhez:', {
-      workouts: this.selectedWorkoutIds,
-      exercises: this.selectedExercises,
-    });
 
     const requests: Array<{
       workoutId: number;
@@ -115,16 +137,19 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
     }
 
     if (requests.length === 0) {
-      this.message = 'Nincs menthető exercise.';
-      this.messageType = 'error';
+      this.showError('Nincs menthető exercise.');
+
       return;
     }
 
     let completedRequests = 0;
+
     let successCount = 0;
+
     let errorCount = 0;
 
     const errors: string[] = [];
+
     const successes: string[] = [];
 
     for (const request of requests) {
@@ -133,9 +158,8 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
         .subscribe({
           next: (res: any) => {
             completedRequests++;
-            successCount++;
 
-            console.log('Mentés sikeres:', res);
+            successCount++;
 
             const successMessage = res?.message || 'Exercise sikeresen hozzárendelve a workouthoz.';
 
@@ -150,10 +174,8 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
 
           error: (err: HttpErrorResponse) => {
             completedRequests++;
-            errorCount++;
 
-            console.error('Mentés hiba:', err);
-            console.error('Backend válasz:', err.error);
+            errorCount++;
 
             const backendMessage = typeof err.error === 'string' ? err.error : err.error?.message;
 
@@ -173,37 +195,52 @@ export class AssignWorkoutsExercisesComponent implements OnInit {
     }
   }
 
+  // =============================
+  // MENTÉS EREDMÉNYE
+  // =============================
+
   private finishSave(
     successCount: number,
     errorCount: number,
     successes: string[],
     errors: string[],
   ): void {
-    console.log('Mentés befejezve:', {
-      successCount,
-      errorCount,
-      successes,
-      errors,
-    });
-
     if (errorCount === 0) {
-      this.message = successes[0] || 'Az exercise-ek sikeresen hozzárendelésre kerültek.';
-      this.messageType = 'success';
+      this.showSuccess(successes[0] || 'Az exercise-ek sikeresen hozzárendelésre kerültek.');
+
       return;
     }
 
     if (successCount === 0) {
-      this.message = errors.join(' ');
-      this.messageType = 'error';
+      this.showError(errors.join(' '));
+
       return;
     }
 
-    this.message = [
-      `Sikeres mentések: ${successCount}.`,
-      `Hibás mentések: ${errorCount}.`,
-      ...errors,
-    ].join(' ');
+    this.showError(
+      [`Sikeres mentések: ${successCount}.`, `Hibás mentések: ${errorCount}.`, ...errors].join(' '),
+    );
+  }
+
+  // =============================
+  // MESSAGE SEGÉDMETÓDUSOK
+  // =============================
+
+  private showSuccess(message: string): void {
+    this.message = message;
+
+    this.messageType = 'success';
+  }
+
+  private showError(message: string): void {
+    this.message = message;
 
     this.messageType = 'error';
+  }
+
+  private clearMessage(): void {
+    this.message = '';
+
+    this.messageType = '';
   }
 }
