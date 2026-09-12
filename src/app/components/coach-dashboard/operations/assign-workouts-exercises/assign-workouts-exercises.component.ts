@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
 import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exercises-board/coach-exercises-board.component';
@@ -35,6 +36,16 @@ export class AssignWorkoutsExercisesComponent {
   selectedExercises: Exercise[] = [];
 
   // =============================
+  // PROGRAM BUILDER PARAMÉTEREK
+  // =============================
+
+  fromProgramBuilder = false;
+
+  programId: number | null = null;
+
+  newWorkoutId: number | null = null;
+
+  // =============================
   // ÜZENET
   // =============================
 
@@ -52,7 +63,23 @@ export class AssignWorkoutsExercisesComponent {
   @Output()
   assignedExercises = new EventEmitter<Exercise[]>();
 
-  constructor(private workoutExerciseService: WorkoutExerciseService) {}
+  constructor(
+    private workoutExerciseService: WorkoutExerciseService,
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {
+    const fromProgramBuilder = this.route.snapshot.queryParamMap.get('fromProgramBuilder');
+
+    const programId = this.route.snapshot.queryParamMap.get('programId');
+
+    const workoutId = this.route.snapshot.queryParamMap.get('workoutId');
+
+    this.fromProgramBuilder = fromProgramBuilder === 'true';
+
+    this.programId = programId !== null ? Number(programId) : null;
+
+    this.newWorkoutId = workoutId !== null ? Number(workoutId) : null;
+  }
 
   // =============================
   // WORKOUT KIVÁLASZTÁS
@@ -213,6 +240,25 @@ export class AssignWorkoutsExercisesComponent {
     errors: string[],
   ): void {
     if (errorCount === 0) {
+      // ==================================================
+      // PROGRAM BUILDERBE VISSZANAVIGÁLÁS
+      // ==================================================
+
+      if (this.fromProgramBuilder && this.programId !== null && this.newWorkoutId !== null) {
+        this.router.navigate(['/coach/program-builder'], {
+          queryParams: {
+            programId: this.programId,
+            newWorkoutId: this.newWorkoutId,
+          },
+        });
+
+        return;
+      }
+
+      // ==================================================
+      // EREDETI SIKERES MENTÉS
+      // ==================================================
+
       this.showSuccess(successes[0] || 'Az exercise-ek sikeresen hozzárendelésre kerültek.');
 
       return;

@@ -66,10 +66,6 @@ export class NewWorkoutComponent implements OnInit {
   addWorkout(): void {
     this.coachWorkoutsService.addWorkout(this.newWorkout).subscribe({
       next: (res) => {
-        console.log('Workout létrehozás válasz:', res);
-
-        console.log('Workout response.data:', res.data);
-
         this.message = 'newWorkout.createSuccess';
 
         this.messageType = 'success';
@@ -94,11 +90,7 @@ export class NewWorkoutComponent implements OnInit {
            */
           const workoutId = res.data?.id;
 
-          console.log('Új workout létrehozva.', 'Workout ID:', workoutId, 'Program ID:', programId);
-
           if (workoutId === undefined || workoutId === null) {
-            console.error('A workout létrejött, de a backend válaszában nincs workout ID.', res);
-
             this.message = 'newWorkout.createIdMissing';
 
             this.messageType = 'error';
@@ -106,12 +98,15 @@ export class NewWorkoutComponent implements OnInit {
             return;
           }
 
-          console.log('Visszatérés a Program Builderbe az új workout ID-jával.');
+          // ==================================================
+          // NAVIGÁCIÓ AZ EXERCISE HOZZÁRENDELÉS OLDALRA
+          // ==================================================
 
-          this.router.navigate(['/coach/program-builder'], {
+          this.router.navigate(['/coach/assign-workouts-exercises'], {
             queryParams: {
+              workoutId: workoutId,
+              fromProgramBuilder: 'true',
               programId: programId,
-              newWorkoutId: workoutId,
             },
           });
 
@@ -122,14 +117,24 @@ export class NewWorkoutComponent implements OnInit {
         // NORMÁL WORKOUT LÉTREHOZÁS
         // ==================================================
 
-        this.resetForm();
+        const workoutId = res.data?.id;
 
-        this.loadWorkouts();
+        if (workoutId === undefined || workoutId === null) {
+          this.message = 'newWorkout.createIdMissing';
+
+          this.messageType = 'error';
+
+          return;
+        }
+
+        this.router.navigate(['/coach/assign-workouts-exercises'], {
+          queryParams: {
+            workoutId: workoutId,
+          },
+        });
       },
 
-      error: (err) => {
-        console.error('Hiba a workout létrehozásakor:', err);
-
+      error: () => {
         this.message = 'newWorkout.createError';
 
         this.messageType = 'error';
