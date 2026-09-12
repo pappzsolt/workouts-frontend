@@ -1,20 +1,27 @@
-<h2 class="universal-form-title">
+<h1 class="universal-form-title">
   ➕ {{ 'coachNewProgram.title' | translate }}
-</h2>
+</h1>
 
-<!-- Üzenet -->
-<div
-  *ngIf="message"
-  class="universal-form-message"
-  [ngClass]="{
-    'universal-form-message-success': messageType === 'success',
-    'universal-form-message-error': messageType === 'error',
-  }"
->
-  {{ message | translate }}
-</div>
+<!-- ====================================================== -->
+
+<!-- ÜZENET -->
+
+<!-- ====================================================== -->
+
+<app-message
+  [message]="message"
+  [type]="messageType"
+
+> </app-message>
+
+<!-- ====================================================== -->
+
+<!-- OLDAL TARTALMA -->
+
+<!-- ====================================================== -->
 
 <!-- Program form kártya -->
+
 <div class="form-card">
   <div class="form-header">
     <span class="form-header-emoji">💪</span>
@@ -33,6 +40,7 @@
         {{ 'coachNewProgram.programName' | translate }}
       </label>
 
+      ```
       <input
         type="text"
         id="programName"
@@ -125,5 +133,7 @@
         💾 {{ 'coachNewProgram.save' | translate }}
       </button>
     </div>
+    ```
+
   </form>
 </div>

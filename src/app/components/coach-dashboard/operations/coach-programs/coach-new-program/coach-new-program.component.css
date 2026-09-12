@@ -1,40 +1,58 @@
+/* ====================================================== */
+/* OLDAL CÍME */
+/* ====================================================== */
+
 .universal-form-title {
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-  font-weight: 700;
   margin-bottom: 2rem;
+
+  color: #1f2937;
+
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 2.25rem;
+
   text-align: center;
 }
 
-.universal-form-message {
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-}
-
-.universal-form-message-success {
-  background-color: #dcfce7;
-  color: #166534;
-}
-
-.universal-form-message-error {
-  background-color: #fee2e2;
-  color: #991b1b;
-}
+/* ====================================================== */
+/* FORM KÁRTYA */
+/* ====================================================== */
 
 .form-card {
-  background-color: #ffffff;
-  border-radius: 0.75rem;
-  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-  0 4px 6px -4px rgb(0 0 0 / 0.1);
-  padding: 1.5rem;
   max-width: 48rem;
   margin: 0 auto;
+  padding: 1.5rem;
+
+  background-color: #ffffff;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
+
+.form-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* ====================================================== */
+/* FORM FEJLÉC */
+/* ====================================================== */
 
 .form-header {
   display: flex;
   justify-content: center;
+
   margin-bottom: 1.5rem;
 }
 
@@ -42,9 +60,13 @@
   font-size: 3.5rem;
 }
 
+/* ====================================================== */
+/* FORM */
+/* ====================================================== */
+
 .universal-form {
   display: grid;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .universal-form-group {
@@ -55,33 +77,57 @@
 .universal-form-group-full {
   display: flex;
   flex-direction: column;
+
   grid-column: 1 / -1;
 }
 
+/* ====================================================== */
+/* LABEL */
+/* ====================================================== */
+
 .universal-form-label {
   display: block;
-  color: #374151;
-  font-weight: 500;
+
   margin-bottom: 0.25rem;
+
+  color: #374151;
+
+  font-weight: 500;
 }
+
+/* ====================================================== */
+/* INPUT / TEXTAREA / SELECT */
+/* ====================================================== */
 
 .universal-form-input,
 .universal-form-textarea,
 .universal-form-select {
   width: 100%;
   box-sizing: border-box;
+
+  padding: 0.5rem 0.75rem;
+
+  background-color: #ffffff;
+
   border: 1px solid #d1d5db;
   border-radius: 0.5rem;
-  padding: 0.5rem 0.75rem;
+
+  color: #4b5563;
+
   font-size: 1rem;
-  background-color: #ffffff;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .universal-form-input:focus,
 .universal-form-textarea:focus,
 .universal-form-select:focus {
   outline: none;
+
   border-color: #3b82f6;
+
   box-shadow: 0 0 0 2px rgb(59 130 246 / 0.2);
 }
 
@@ -89,34 +135,73 @@
   resize: vertical;
 }
 
+/* ====================================================== */
+/* SUBMIT */
+/* ====================================================== */
+
 .universal-form-submit {
-  text-align: center;
-  margin-top: 0.5rem;
   grid-column: 1 / -1;
+
+  margin-top: 0.5rem;
+
+  text-align: center;
 }
 
 .universal-form-button {
-  background-color: #2563eb;
-  color: #ffffff;
-  font-weight: 500;
   padding: 0.5rem 1rem;
+
+  background-color: #2563eb;
+
   border: none;
   border-radius: 0.5rem;
+
+  color: #ffffff;
+
+  font-weight: 500;
+
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+
   cursor: pointer;
-  transition: background-color 0.2s ease;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .universal-form-button:hover {
   background-color: #1d4ed8;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 6px 10px -1px rgb(0 0 0 / 0.12);
 }
 
-@media (min-width: 768px) {
+/* ====================================================== */
+/* RESPONSIVE */
+/* ====================================================== */
+
+@media (max-width: 639px) {
+  .universal-form-title {
+    font-size: 1.5rem;
+  }
+
+  .form-card {
+    padding: 1rem;
+  }
+
+  .form-header-emoji {
+    font-size: 3rem;
+  }
+}
+
+@media (min-width: 640px) {
   .universal-form {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .universal-form-group-full {
-    grid-column: span 2;
+    grid-column: 1 / -1;
   }
 }

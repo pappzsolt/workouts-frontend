@@ -1,44 +1,41 @@
 .programs-title {
-  text-align: center;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-  line-height: 2rem;
-  font-weight: 700;
   color: #1f2937;
-}
-
-.form-message {
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 2.25rem;
+  margin-bottom: 2rem;
   text-align: center;
-  margin-bottom: 1rem;
-  font-weight: 500;
-}
-
-.form-message-success {
-  color: #16a34a;
-}
-
-.form-message-error {
-  color: #ef4444;
 }
 
 .program-card {
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+
   background-color: #ffffff;
-  border-radius: 1rem;
+  border-radius: 0.75rem;
+
   box-shadow:
     0 10px 15px -3px rgb(0 0 0 / 0.1),
     0 4px 6px -4px rgb(0 0 0 / 0.1);
 
-  padding: 1.5rem;
-  width: 100%;
-  max-width: 48rem;
-  margin: 0 auto;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
 
-  transition: all 0.3s ease;
+.program-card:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 20px 25px -5px rgb(0 0 0 / 0.1),
+    0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
 .program-image {
+  margin-bottom: 1.5rem;
   text-align: center;
-  margin-bottom: 1rem;
 }
 
 .program-emoji {
@@ -59,22 +56,23 @@
 
 .form-label {
   display: block;
-  font-weight: 600;
   margin-bottom: 0.25rem;
+
   color: #374151;
+  font-weight: 600;
 }
 
 .form-input {
   width: 100%;
   box-sizing: border-box;
 
+  padding: 0.5rem 1rem;
+
+  background-color: #ffffff;
   border: 1px solid #d1d5db;
   border-radius: 0.5rem;
 
-  padding: 0.5rem 1rem;
-
   font-size: 1rem;
-  background-color: #ffffff;
 
   transition:
     border-color 0.2s ease,
@@ -83,6 +81,7 @@
 
 .form-input:focus {
   outline: none;
+
   border-color: #3b82f6;
   box-shadow: 0 0 0 2px rgb(59 130 246 / 0.2);
 }
@@ -92,20 +91,19 @@
 }
 
 .form-submit {
+  margin-top: 0.5rem;
   text-align: center;
-  margin-top: 1rem;
 }
 
 .form-button {
-  background-color: #2563eb;
-  color: #ffffff;
-
-  font-weight: 500;
-
   padding: 0.5rem 2rem;
 
+  background-color: #2563eb;
   border: none;
   border-radius: 0.5rem;
+
+  color: #ffffff;
+  font-weight: 500;
 
   box-shadow:
     0 4px 6px -1px rgb(0 0 0 / 0.1);
@@ -114,30 +112,25 @@
 
   transition:
     background-color 0.2s ease,
+    transform 0.2s ease,
     box-shadow 0.2s ease;
 }
 
 .form-button:hover {
   background-color: #1d4ed8;
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 6px 8px -2px rgb(0 0 0 / 0.15);
 }
 
 .form-button:focus {
   outline: none;
-  box-shadow:
-    0 0 0 2px rgb(59 130 246 / 0.5);
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 0.5);
 }
 
-/* Tablet / desktop */
-@media (min-width: 768px) {
-
-  .programs-title {
-    font-size: 1.5rem;
-  }
-
-  .program-card {
-    padding: 2rem;
-  }
-
+/* Tablet */
+@media (min-width: 640px) {
   .program-form {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -148,11 +141,22 @@
   }
 }
 
-/* Nagyobb képernyő */
+/* Desktop */
 @media (min-width: 1024px) {
-
   .program-card {
     max-width: 64rem;
+    padding: 2rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 639px) {
+  .programs-title {
+    font-size: 1.5rem;
+    line-height: 2rem;
   }
 
+  .program-card {
+    padding: 1rem;
+  }
 }

@@ -2,19 +2,14 @@
   ✏️ {{ 'coachProgramEdit.title' | translate }}
 </h2>
 
-<!-- Üzenet -->
-<div
-  *ngIf="message"
-  class="form-message"
-  [ngClass]="{
-    'form-message-success': messageType === 'success',
-    'form-message-error': messageType === 'error',
-  }"
->
-  {{ message | translate }}
-</div>
+<app-message
+  [message]="message"
+  [type]="messageType"
+
+> </app-message>
 
 <!-- Kártyás form -->
+
 <div class="program-card">
   <!-- Ikon -->
   <div class="program-image">
@@ -34,6 +29,7 @@
         {{ 'coachProgramEdit.programName' | translate }}
       </label>
 
+      ```
       <input
         type="text"
         id="programName"
@@ -126,5 +122,7 @@
         💾 {{ 'coachProgramEdit.save' | translate }}
       </button>
     </div>
+    ```
+
   </form>
 </div>

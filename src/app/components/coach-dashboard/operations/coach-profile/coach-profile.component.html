@@ -1,102 +1,146 @@
+<!-- ======================================================
+     OLDAL CÍM
+     ====================================================== -->
+
 <h2 class="profile-title">
   {{ 'coachProfile.title' | translate }}
 </h2>
 
-<div *ngIf="message" class="message-box">
-  {{ message | translate }}
+<!-- ======================================================
+     ÜZENET
+     ====================================================== -->
+
+<app-message
+  [message]="message"
+  [type]="messageType"
+></app-message>
+
+<!-- ======================================================
+     PROFIL ŰRLAP
+     ====================================================== -->
+
+<div class="profile-container">
+  <form class="profile-form">
+    <!-- ==================================================
+         NÉV
+         ================================================== -->
+
+    <div class="form-field">
+      <label for="name">
+        {{ 'common.name' | translate }}
+      </label>
+
+      <input
+        id="name"
+        name="name"
+        type="text"
+        [placeholder]="'common.name' | translate"
+        [(ngModel)]="profile.name"
+      />
+    </div>
+
+    <!-- ==================================================
+         EMAIL
+         ================================================== -->
+
+    <div class="form-field">
+      <label for="email">
+        {{ 'common.email' | translate }}
+      </label>
+
+      <input
+        id="email"
+        name="email"
+        type="email"
+        [placeholder]="'common.email' | translate"
+        [(ngModel)]="profile.email"
+      />
+    </div>
+
+    <!-- ==================================================
+         JELSZÓ
+         ================================================== -->
+
+    <div class="form-field">
+      <label for="password_hash">
+        {{ 'common.password' | translate }}
+      </label>
+
+      <input
+        id="password_hash"
+        name="password_hash"
+        type="password"
+        [placeholder]="'common.password' | translate"
+        [(ngModel)]="profile.password_hash"
+      />
+    </div>
+
+    <!-- ==================================================
+         TELEFON
+         ================================================== -->
+
+    <div class="form-field">
+      <label for="phone">
+        {{ 'common.phone' | translate }}
+      </label>
+
+      <input
+        id="phone"
+        name="phone"
+        type="text"
+        [placeholder]="'common.phone' | translate"
+        [(ngModel)]="profile.phone"
+      />
+    </div>
+
+    <!-- ==================================================
+         SPECIALIZÁCIÓ
+         ================================================== -->
+
+    <div class="form-field full-width">
+      <label for="specialization">
+        {{ 'common.specialization' | translate }}
+      </label>
+
+      <textarea
+        id="specialization"
+        name="specialization"
+        rows="3"
+        [placeholder]="'common.specialization' | translate"
+        [(ngModel)]="profile.specialization"
+      ></textarea>
+    </div>
+
+    <!-- ==================================================
+         AVATAR URL
+         ================================================== -->
+
+    <div class="form-field full-width">
+      <label for="avatar_url">
+        {{ 'common.avatarUrl' | translate }}
+      </label>
+
+      <input
+        id="avatar_url"
+        name="avatar_url"
+        type="text"
+        [placeholder]="'common.avatarImageUrl' | translate"
+        [(ngModel)]="profile.avatar_url"
+      />
+    </div>
+
+    <!-- ==================================================
+         MENTÉS
+         ================================================== -->
+
+    <div class="form-actions">
+      <button
+        type="button"
+        (click)="saveProfile()"
+        class="save-button"
+      >
+        💾 {{ 'common.save' | translate }}
+      </button>
+    </div>
+  </form>
 </div>
-
-<form class="profile-form">
-  <div class="form-field">
-    <label for="name">
-      {{ 'common.name' | translate }}
-    </label>
-
-    <input
-      id="name"
-      name="name"
-      type="text"
-      [placeholder]="'common.name' | translate"
-      [(ngModel)]="profile.name"
-    />
-  </div>
-
-  <div class="form-field">
-    <label for="email">
-      {{ 'common.email' | translate }}
-    </label>
-
-    <input
-      id="email"
-      name="email"
-      type="email"
-      [placeholder]="'common.email' | translate"
-      [(ngModel)]="profile.email"
-    />
-  </div>
-
-  <div class="form-field">
-    <label for="password_hash">
-      {{ 'common.password' | translate }}
-    </label>
-
-    <input
-      id="password_hash"
-      name="password_hash"
-      type="password"
-      [placeholder]="'common.password' | translate"
-      [(ngModel)]="profile.password_hash"
-    />
-  </div>
-
-  <div class="form-field">
-    <label for="phone">
-      {{ 'common.phone' | translate }}
-    </label>
-
-    <input
-      id="phone"
-      name="phone"
-      type="text"
-      [placeholder]="'common.phone' | translate"
-      [(ngModel)]="profile.phone"
-    />
-  </div>
-
-  <div class="form-field full-width">
-    <label for="specialization">
-      {{ 'common.specialization' | translate }}
-    </label>
-
-    <textarea
-      id="specialization"
-      name="specialization"
-      rows="3"
-      [placeholder]="'common.specialization' | translate"
-      [(ngModel)]="profile.specialization"
-    ></textarea>
-  </div>
-
-  <div class="form-field full-width">
-    <label for="avatar_url">
-      {{ 'common.avatarUrl' | translate }}
-    </label>
-
-    <input
-      id="avatar_url"
-      name="avatar_url"
-      type="text"
-      [placeholder]="'common.avatarImageUrl' | translate"
-      [(ngModel)]="profile.avatar_url"
-    />
-  </div>
-
-  <div class="form-actions">
-    <button
-      type="button"
-      (click)="saveProfile()"
-    >
-      {{ 'common.save' | translate }}
-    </button>
-  </div>
-</form>

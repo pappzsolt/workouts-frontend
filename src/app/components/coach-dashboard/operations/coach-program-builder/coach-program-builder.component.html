@@ -1,14 +1,14 @@
 <div class="program-builder">
   <!-- ====================================================== -->
-  <!-- HEADER -->
+  <!-- OLDAL FEJLÉC -->
   <!-- ====================================================== -->
 
   <div class="program-builder-header">
     <div class="header-content">
-      <span class="header-icon"> 🏋️ </span>
+      <span class="header-icon">🏋️</span>
 
       <div>
-        <h2>{{ 'coachProgramBuilder.title' | translate }}</h2>
+        <h1>{{ 'coachProgramBuilder.title' | translate }}</h1>
 
         <p>
           {{
@@ -25,15 +25,10 @@
   <!-- ÜZENET -->
   <!-- ====================================================== -->
 
-  <div
-    *ngIf="message"
-    class="builder-message"
-    [class.builder-message-error]="messageType === 'error'"
-    [class.builder-message-success]="messageType === 'success'"
-  >
-    {{ message | translate }}
-  </div>
-
+  <app-message
+    [message]="message"
+    [type]="messageType"
+  ></app-message>
   <!-- ====================================================== -->
   <!-- 1. LÉPÉS - PROGRAM -->
   <!-- ====================================================== -->

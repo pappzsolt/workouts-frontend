@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
 
@@ -22,13 +22,12 @@ export class CoachProgramEditComponent implements OnInit {
     difficultyLevel: '',
   };
 
-  message: string = '';
+  message = '';
   messageType: 'success' | 'error' | '' = '';
 
   constructor(
     private route: ActivatedRoute,
     private programService: CoachProgramService,
-    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -45,7 +44,6 @@ export class CoachProgramEditComponent implements OnInit {
         if (res?.success && res.data) {
           const dto: ProgramDto = res.data;
 
-          // Backend DTO -> frontend Program
           this.program = {
             id: dto.programId,
             programName: dto.programName,
@@ -54,7 +52,7 @@ export class CoachProgramEditComponent implements OnInit {
             difficultyLevel: dto.difficultyLevel,
           };
         } else {
-          this.setMessage(`coachProgramEdit.notFound`, 'error');
+          this.setMessage('coachProgramEdit.notFound', 'error');
         }
       },
 
@@ -84,14 +82,6 @@ export class CoachProgramEditComponent implements OnInit {
       next: (res) => {
         if (res.success) {
           this.setMessage('coachProgramEdit.saveSuccess', 'success');
-
-          setTimeout(() => {
-            this.router.navigate(['/coach/dashboard'], {
-              queryParams: {
-                section: 'programs',
-              },
-            });
-          }, 1500);
         } else {
           this.setMessage(res.message || 'coachProgramEdit.saveError', 'error');
         }
@@ -105,13 +95,8 @@ export class CoachProgramEditComponent implements OnInit {
     });
   }
 
-  private setMessage(msg: string, type: 'success' | 'error'): void {
-    this.message = msg;
+  private setMessage(message: string, type: 'success' | 'error'): void {
+    this.message = message;
     this.messageType = type;
-
-    setTimeout(() => {
-      this.message = '';
-      this.messageType = '';
-    }, 4000);
   }
 }

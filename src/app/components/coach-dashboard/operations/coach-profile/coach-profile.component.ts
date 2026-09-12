@@ -26,7 +26,12 @@ export interface CoachProfile {
 })
 export class CoachProfileComponent implements OnInit {
   private authService = inject(AuthService);
+
   private coachProfileService = inject(CoachProfileService);
+
+  // ==========================================================
+  // PROFIL
+  // ==========================================================
 
   profile: CoachProfile = {
     name: '',
@@ -38,17 +43,34 @@ export class CoachProfileComponent implements OnInit {
     created_at: '',
   };
 
+  // ==========================================================
+  // ÜZENET
+  // ==========================================================
+
   message = '';
+
+  messageType: 'success' | 'error' | 'info' | '' = '';
+
+  // ==========================================================
+  // INIT
+  // ==========================================================
 
   ngOnInit(): void {
     this.loadProfile();
   }
 
+  // ==========================================================
+  // PROFIL BETÖLTÉSE
+  // ==========================================================
+
   private loadProfile(): void {
+    this.clearMessage();
+
     const userId = this.authService.getUserId();
 
     if (!userId) {
-      this.message = USER_MESSAGES.noUserId;
+      this.showError(USER_MESSAGES.noUserId);
+
       return;
     }
 
@@ -65,18 +87,27 @@ export class CoachProfileComponent implements OnInit {
           created_at: profile.createdAt ?? '',
         };
 
-        this.message = USER_MESSAGES.profileLoaded;
+        this.showSuccess(USER_MESSAGES.profileLoaded);
       },
 
-      error: () => {
-        this.message = USER_MESSAGES.loadProfileError;
+      error: (error) => {
+        console.error('Coach profil betöltési hiba:', error);
+
+        this.showError(USER_MESSAGES.loadProfileError);
       },
     });
   }
 
+  // ==========================================================
+  // PROFIL MENTÉSE
+  // ==========================================================
+
   saveProfile(): void {
+    this.clearMessage();
+
     if (!this.profile.id) {
-      this.message = USER_MESSAGES.saveProfileNoId;
+      this.showError(USER_MESSAGES.saveProfileNoId);
+
       return;
     }
 
@@ -93,19 +124,56 @@ export class CoachProfileComponent implements OnInit {
 
     this.coachProfileService.saveCoachProfile(payload).subscribe({
       next: () => {
-        this.message = USER_MESSAGES.saveProfileSuccess;
         this.profile.password_hash = '';
+
+        this.showSuccess(USER_MESSAGES.saveProfileSuccess);
       },
 
       error: (error) => {
+        console.error('Coach profil mentési hiba:', error);
+
         if (error.status === 0) {
-          this.message = USER_MESSAGES.saveProfileNetworkError;
-        } else if (error.error?.message) {
-          this.message = `${USER_MESSAGES.serverError}: ${error.error.message}`;
-        } else {
-          this.message = USER_MESSAGES.saveProfileUnknownError;
+          this.showError(USER_MESSAGES.saveProfileNetworkError);
+
+          return;
         }
+
+        if (error.error?.message) {
+          this.showError(`${USER_MESSAGES.serverError}: ${error.error.message}`);
+
+          return;
+        }
+
+        this.showError(USER_MESSAGES.saveProfileUnknownError);
       },
     });
+  }
+
+  // ==========================================================
+  // MESSAGE SEGÉDMETÓDUSOK
+  // ==========================================================
+
+  private showSuccess(message: string): void {
+    this.message = message;
+
+    this.messageType = 'success';
+  }
+
+  private showError(message: string): void {
+    this.message = message;
+
+    this.messageType = 'error';
+  }
+
+  private showInfo(message: string): void {
+    this.message = message;
+
+    this.messageType = 'info';
+  }
+
+  private clearMessage(): void {
+    this.message = '';
+
+    this.messageType = '';
   }
 }

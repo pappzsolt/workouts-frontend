@@ -18,6 +18,8 @@ export class CoachProgramComponent implements OnInit {
   programs: Program[] = [];
 
   message = '';
+  messageType: 'success' | 'error' | 'info' = 'info';
+
   showProgramsList = false;
 
   currentPage = 1;
@@ -47,45 +49,34 @@ export class CoachProgramComponent implements OnInit {
         if (response.success && response.data?.length) {
           this.programs = response.data.map((program: any): Program => ({
             id: program.programId,
-
             programName: program.programName,
-
             programDescription: program.programDescription,
-
             name: program.name,
-
             description: program.description,
-
             coachId: program.coachId,
-
             startDate: program.startDate,
-
             endDate: program.endDate,
-
             durationDays: program.durationDays,
-
             difficultyLevel: program.difficultyLevel,
-
             workouts: program.workouts,
           }));
 
           console.log('Programok frontend modellként:', this.programs);
-
           console.log('Első program:', this.programs[0]);
-
           console.log('Első program ID:', this.programs[0]?.id);
 
+          this.currentPage = 1;
           this.updatePagination();
 
           this.showProgramsList = true;
-          this.message = '';
+          this.clearMessage();
         } else {
           this.programs = [];
           this.totalPages = 1;
           this.currentPage = 1;
           this.showProgramsList = false;
 
-          this.message = 'coachPrograms.noPrograms';
+          this.setMessage('coachPrograms.noPrograms', 'info');
         }
       },
 
@@ -97,7 +88,7 @@ export class CoachProgramComponent implements OnInit {
         this.currentPage = 1;
         this.showProgramsList = false;
 
-        this.message = 'coachPrograms.loadError';
+        this.setMessage('coachPrograms.loadError', 'error');
       },
     });
   }
@@ -108,15 +99,14 @@ export class CoachProgramComponent implements OnInit {
   get filteredPrograms(): Program[] {
     const search = this.searchTerm.trim().toLowerCase();
 
-    let result = this.programs.filter((program) => {
+    const result = this.programs.filter((program) => {
       const programName = program.programName?.toLowerCase() ?? '';
 
       return programName.includes(search);
     });
 
-    result.sort((a, b) => {
+    return result.sort((a, b) => {
       const nameA = a.programName?.toLowerCase() ?? '';
-
       const nameB = b.programName?.toLowerCase() ?? '';
 
       const comparison = nameA.localeCompare(nameB, 'hu', {
@@ -125,8 +115,6 @@ export class CoachProgramComponent implements OnInit {
 
       return this.sortDirection === 'asc' ? comparison : -comparison;
     });
-
-    return result;
   }
 
   /**
@@ -147,7 +135,6 @@ export class CoachProgramComponent implements OnInit {
    */
   onSearchChange(): void {
     this.currentPage = 1;
-
     this.updatePagination();
   }
 
@@ -158,7 +145,6 @@ export class CoachProgramComponent implements OnInit {
     this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
 
     this.currentPage = 1;
-
     this.updatePagination();
   }
 
@@ -187,7 +173,7 @@ export class CoachProgramComponent implements OnInit {
     this.router.navigate(['/coach/programs/new']).catch((error) => {
       console.error('Hiba az új program oldal megnyitásakor:', error);
 
-      this.message = USER_MESSAGES.programClickError;
+      this.setMessage(USER_MESSAGES.programClickError, 'error');
     });
   }
 
@@ -199,7 +185,7 @@ export class CoachProgramComponent implements OnInit {
     if (programId === undefined || programId === null || programId <= 0) {
       console.error('Érvénytelen program ID:', programId);
 
-      this.message = USER_MESSAGES.programClickError;
+      this.setMessage(USER_MESSAGES.programClickError, 'error');
 
       return;
     }
@@ -207,7 +193,7 @@ export class CoachProgramComponent implements OnInit {
     this.router
       .navigate(['/coach/program-builder'], {
         queryParams: {
-          programId: programId,
+          programId,
         },
       })
       .then((success) => {
@@ -216,7 +202,7 @@ export class CoachProgramComponent implements OnInit {
       .catch((error) => {
         console.error('Hiba a Program Builder megnyitásakor:', error);
 
-        this.message = USER_MESSAGES.programClickError;
+        this.setMessage(USER_MESSAGES.programClickError, 'error');
       });
   }
 
@@ -226,5 +212,15 @@ export class CoachProgramComponent implements OnInit {
     }
 
     this.router.navigate(['/coach/programs', programId, 'workouts']);
+  }
+
+  private setMessage(message: string, type: 'success' | 'error' | 'info'): void {
+    this.message = message;
+    this.messageType = type;
+  }
+
+  private clearMessage(): void {
+    this.message = '';
+    this.messageType = 'info';
   }
 }

@@ -2,21 +2,14 @@
   {{ 'coachPrograms.title' | translate }}
 </h2>
 
-<!-- ============================================================
-     ÜZENET
-     ============================================================ -->
-
-<div *ngIf="message" class="message-box">
-  {{ message | translate }}
-</div>
+<app-message
+  [message]="message"
+  [type]="messageType"
+></app-message>
 
 <ng-container *ngIf="showProgramsList; else noPrograms">
-  <!-- ============================================================
-       KERESÉS ÉS RENDEZÉS
-       ============================================================ -->
 
   <div class="program-controls">
-    <!-- KERESÉS -->
 
     <div class="program-search">
       <label
@@ -37,8 +30,6 @@
       />
     </div>
 
-    <!-- RENDEZÉS -->
-
     <button
       type="button"
       class="program-sort-button"
@@ -52,10 +43,6 @@
     </button>
   </div>
 
-  <!-- ============================================================
-       PROGRAMOK
-       ============================================================ -->
-
   <div
     *ngIf="filteredPrograms.length > 0; else noSearchResults"
     class="programs-grid"
@@ -64,26 +51,15 @@
       *ngFor="let program of pagedPrograms"
       class="program-card"
     >
-      <!-- ========================================================
-           PROGRAM FEJLÉC
-           ======================================================== -->
-
       <div class="program-image">
-        <span class="program-emoji"> 💪 </span>
+        <span class="program-emoji">💪</span>
       </div>
 
-      <!-- ========================================================
-           PROGRAM TARTALOM
-           ======================================================== -->
-
       <div class="program-content">
-        <!-- PROGRAM NÉV -->
 
         <h3 class="program-name">
           {{ program.programName }}
         </h3>
-
-        <!-- PROGRAM LEÍRÁS -->
 
         <p
           *ngIf="program.programDescription"
@@ -92,12 +68,7 @@
           {{ program.programDescription }}
         </p>
 
-        <!-- ======================================================
-             PROGRAM ADATOK
-             ====================================================== -->
-
         <div class="program-meta">
-          <!-- IDŐTARTAM -->
 
           <div class="program-meta-item">
             <span class="program-meta-label">
@@ -110,8 +81,6 @@
             </span>
           </div>
 
-          <!-- EDZÉSEK SZÁMA -->
-
           <div class="program-meta-item">
             <span class="program-meta-label">
               {{ 'coachPrograms.workouts' | translate }}
@@ -121,11 +90,8 @@
               {{ program.workouts?.length || 0 }}
             </span>
           </div>
-        </div>
 
-        <!-- ======================================================
-             PROGRAM SZERKESZTÉSE
-             ====================================================== -->
+        </div>
 
         <div class="program-edit">
           <button
@@ -136,23 +102,16 @@
             ✏️ {{ 'coachPrograms.edit' | translate }}
           </button>
         </div>
+
       </div>
     </div>
   </div>
-
-  <!-- ============================================================
-       NINCS TALÁLAT KERESÉS UTÁN
-       ============================================================ -->
 
   <ng-template #noSearchResults>
     <div class="no-programs">
       {{ 'coachPrograms.noSearchResults' | translate }}
     </div>
   </ng-template>
-
-  <!-- ============================================================
-       LAPOZÁS
-       ============================================================ -->
 
   <div
     *ngIf="totalPages > 1"
@@ -180,21 +139,14 @@
       {{ 'common.next' | translate }} ▶
     </button>
   </div>
-</ng-container>
 
-<!-- ============================================================
-     NINCS PROGRAM
-     ============================================================ -->
+</ng-container>
 
 <ng-template #noPrograms>
   <div class="no-programs">
     {{ 'coachPrograms.empty' | translate }}
   </div>
 </ng-template>
-
-<!-- ============================================================
-     ÚJ PROGRAM
-     ============================================================ -->
 
 <button
   type="button"
