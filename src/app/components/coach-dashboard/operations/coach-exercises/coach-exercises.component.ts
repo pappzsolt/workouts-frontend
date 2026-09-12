@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { Exercise } from '../../../../models/exercise.model';
-
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
@@ -26,6 +25,14 @@ export class ExerciseControllerComponent implements OnInit {
   // ==========================================================
 
   loading = false;
+
+  // ==========================================================
+  // ÜZENET
+  // ==========================================================
+
+  message = '';
+
+  messageType: 'success' | 'error' | 'info' | '' = '';
 
   // ==========================================================
   // LAPOZÁS
@@ -70,27 +77,15 @@ export class ExerciseControllerComponent implements OnInit {
   loadExercises(): void {
     this.loading = true;
 
+    this.clearMessage();
+
     this.exerciseService.getAllExercises().subscribe({
       next: (response) => {
         console.log('[CoachExercises] response:', response);
 
-        /*
-         * A backend válasz formátuma:
-         *
-         * {
-         *   success: true,
-         *   data: [...],
-         *   message: null
-         * }
-         *
-         * A service jelenleg Exercise[] típust deklarál,
-         * ezért itt nem adunk explicit ApiResponse típust.
-         */
-
-        const apiResponse = response as unknown as {
-          success: boolean;
-          data: Exercise[];
-          message: string | null;
+        const apiResponse = response as {
+          data?: Exercise[];
+          message?: string;
         };
 
         this.exercises = apiResponse.data ?? [];
@@ -114,6 +109,10 @@ export class ExerciseControllerComponent implements OnInit {
         this.totalPages = 1;
 
         this.loading = false;
+
+        const backendMessage = typeof error.error === 'string' ? error.error : error.error?.message;
+
+        this.showError(backendMessage || 'A gyakorlatok betöltése sikertelen.');
       },
     });
   }
@@ -130,10 +129,6 @@ export class ExerciseControllerComponent implements OnInit {
 
       return exerciseName.includes(search);
     });
-
-    // ========================================================
-    // RENDEZÉS GYAKORLAT NÉV SZERINT
-    // ========================================================
 
     result.sort((a: Exercise, b: Exercise): number => {
       const nameA = a.name?.trim().toLowerCase() ?? '';
@@ -230,5 +225,21 @@ export class ExerciseControllerComponent implements OnInit {
 
   goToNewExercise(): void {
     this.router.navigate(['/coach/exercises/new']);
+  }
+
+  // ==========================================================
+  // MESSAGE SEGÉDMETÓDUSOK
+  // ==========================================================
+
+  private showError(message: string): void {
+    this.message = message;
+
+    this.messageType = 'error';
+  }
+
+  private clearMessage(): void {
+    this.message = '';
+
+    this.messageType = '';
   }
 }
