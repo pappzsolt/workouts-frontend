@@ -33,8 +33,13 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.loadPrograms();
-
+    /*
+     * Nyelvváltás figyelése.
+     *
+     * A BehaviorSubject az aktuális nyelvet
+     * azonnal kibocsátja, ezért az első
+     * programbetöltés is innen történik.
+     */
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.loadPrograms();
     });

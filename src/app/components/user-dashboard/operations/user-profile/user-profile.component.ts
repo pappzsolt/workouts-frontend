@@ -67,8 +67,13 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.loadProfile();
-
+    /*
+     * Nyelvváltás figyelése.
+     *
+     * A BehaviorSubject az aktuális nyelvet
+     * azonnal kibocsátja, ezért az első
+     * profilbetöltés is innen történik.
+     */
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.loadProfile();
     });

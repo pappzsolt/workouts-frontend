@@ -79,8 +79,6 @@ export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
   // ============================================================
 
   ngOnInit(): void {
-    this.loadPrograms();
-
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.loadPrograms();
     });

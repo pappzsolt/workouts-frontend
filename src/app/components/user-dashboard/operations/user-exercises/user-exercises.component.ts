@@ -4,7 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, map, takeUntil } from 'rxjs';
 
 import { UserExerciseService } from '../../../../services/user/user-exercise/user-exercise.service';
-
 import { LanguageService } from '../../../../services/shared/language.service';
 
 import { WorkoutExercise } from '../../../../models/exercise.model';
@@ -22,7 +21,9 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   workoutId!: number;
+
   programId!: number;
+
   workoutName!: string;
 
   exercises$!: Observable<WorkoutExercise[]>;
@@ -34,52 +35,94 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
     private languageService: LanguageService,
   ) {}
 
+  // ============================================================
+  // INIT
+  // ============================================================
+
   ngOnInit(): void {
-    /*
-     * Route paraméterek
-     */
+    // ==========================================================
+    // WORKOUT ID A ROUTE PARAMÉTERBŐL
+    // ==========================================================
+
     this.workoutId = Number(this.route.snapshot.paramMap.get('workoutId'));
 
-    /*
-     * A workout neve és a program ID
-     * a navigation state-ből érkezik.
-     */
+    // ==========================================================
+    // NAVIGATION STATE
+    // ==========================================================
+
     const navState = history.state;
 
-    this.workoutName = navState['workoutName'] || 'userExercises.unknownWorkout';
+    this.workoutName = navState?.workoutName || 'userExercises.unknownWorkout';
 
-    this.programId = Number(navState['programId']);
+    this.programId = Number(navState?.programId);
 
-    /*
-     * Exercise-ek betöltése.
-     */
-    this.loadExercises();
+    // ==========================================================
+    // DEBUG
+    // ==========================================================
 
-    /*
-     * Nyelvváltás figyelése.
-     */
+    console.log('=== UserExercisesComponent ===');
+
+    console.log('workoutId:', this.workoutId);
+
+    console.log('programId:', this.programId);
+
+    console.log('workoutName:', this.workoutName);
+
+    console.log('navigation state:', navState);
+
+    // ==========================================================
+    // ID VALIDÁLÁS
+    // ==========================================================
+
+    if (Number.isNaN(this.workoutId) || this.workoutId <= 0) {
+      console.error('Érvénytelen workout ID:', this.workoutId);
+
+      return;
+    }
+
+    if (Number.isNaN(this.programId) || this.programId <= 0) {
+      console.error('Érvénytelen program ID:', this.programId);
+
+      return;
+    }
+
+    // ==========================================================
+    // NYELVVÁLTÁS FIGYELÉSE
+    //
+    // A BehaviorSubject az aktuális nyelvet
+    // azonnal kibocsátja, ezért az első
+    // exercise betöltés is innen történik.
+    // ==========================================================
+
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.loadExercises();
     });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
+  // ============================================================
+  // EXERCISE-EK BETÖLTÉSE
+  // ============================================================
 
-  /*
-   * Workout exercise-ek lekérése.
-   */
   private loadExercises(): void {
+    console.log('Exercise-ek betöltése:', {
+      programId: this.programId,
+      workoutId: this.workoutId,
+    });
+
     this.exercises$ = this.exercisesService
       .getWorkoutExercises(this.programId, this.workoutId)
       .pipe(
         map((response) => {
-          return response.data.exercises;
+          console.log('Workout exercise válasz:', response);
+
+          return response.data?.exercises ?? [];
         }),
       );
   }
+
+  // ============================================================
+  // EXERCISE OLDALRA NAVIGÁLÁS
+  // ============================================================
 
   goToExercise(exerciseId: number): void {
     this.router.navigate(['/user/workouts', this.workoutId, 'exercises', exerciseId], {
@@ -88,5 +131,15 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
         programId: this.programId,
       },
     });
+  }
+
+  // ============================================================
+  // DESTROY
+  // ============================================================
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+
+    this.destroy$.complete();
   }
 }

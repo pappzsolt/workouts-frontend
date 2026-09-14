@@ -57,22 +57,15 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
 
     const navState = window.history.state;
 
-    this.programName =
-      navState?.programName || this.translate.instant('userWorkouts.unknownProgram');
-
-    this.loadWorkouts();
-
     // ==========================================================
     // NYELVVÁLTÁS FIGYELÉSE
     // ==========================================================
 
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      /*
-       * Nyelvváltáskor újra lekérjük a
-       * fordított szövegeket, ha szükséges.
-       */
       this.programName =
         navState?.programName || this.translate.instant('userWorkouts.unknownProgram');
+
+      this.loadWorkouts();
     });
   }
 
