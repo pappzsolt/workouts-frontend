@@ -1,13 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+
 import { TranslateService } from '@ngx-translate/core';
+
+import { Subject, takeUntil } from 'rxjs';
 
 import { WorkoutExercisesManagerService } from '../../../../services/coach/workout-exercises-manager.service';
 import { UserWorkoutExerciseSetService } from '../../../../services/coach/user-workout-exercise-set';
+
+import { LanguageService } from '../../../../services/shared/language.service';
 
 import { UserWorkoutExerciseSetModel } from '../../../../models/user-workout-exercise-set.model';
 
 import { UserSelectComponent } from '../../../shared/user/user-select.component';
 import { CoachProgramSelectComponent } from '../../../shared/programs/coach-program-select.component';
+
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
@@ -17,7 +23,9 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   templateUrl: './user-workout-exercise-manager.component.html',
   styleUrls: ['./user-workout-exercise-manager.component.css'],
 })
-export class UserWorkoutExerciseManagerComponent implements OnInit {
+export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
+
   // ============================
   // USER / PROGRAM
   // ============================
@@ -47,9 +55,19 @@ export class UserWorkoutExerciseManagerComponent implements OnInit {
     private service: WorkoutExercisesManagerService,
     private setService: UserWorkoutExerciseSetService,
     private translate: TranslateService,
+    private languageService: LanguageService,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      // Nyelvváltáskor itt lehet újratölteni az adatokat.
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   // ============================
   // SETS LEKÉRÉSE

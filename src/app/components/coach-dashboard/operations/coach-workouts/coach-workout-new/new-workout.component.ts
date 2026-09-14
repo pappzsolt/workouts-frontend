@@ -1,7 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { Subject, takeUntil } from 'rxjs';
+
 import { CoachWorkoutsService } from '../../../../../services/coach/coach-workouts/coach-workouts.service';
+import { LanguageService } from '../../../../../services/shared/language.service';
+
 import { Workout } from '../../../../../models/workout.model';
 
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
@@ -13,7 +17,9 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   standalone: true,
   imports: [...SHARED_IMPORTS],
 })
-export class NewWorkoutComponent implements OnInit {
+export class NewWorkoutComponent implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
+
   workouts: Workout[] = [];
 
   newWorkout = {
@@ -26,10 +32,12 @@ export class NewWorkoutComponent implements OnInit {
   };
 
   message: string = '';
+
   messageType: 'success' | 'error' | '' = '';
 
   constructor(
     private coachWorkoutsService: CoachWorkoutsService,
+    private languageService: LanguageService,
     private route: ActivatedRoute,
     private router: Router,
   ) {}
@@ -43,7 +51,15 @@ export class NewWorkoutComponent implements OnInit {
 
     console.log('Program ID:', programId);
 
-    this.loadWorkouts();
+    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.loadWorkouts();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+
+    this.destroy$.complete();
   }
 
   loadWorkouts(): void {
@@ -58,6 +74,7 @@ export class NewWorkoutComponent implements OnInit {
         this.workouts = [];
 
         this.message = 'newWorkout.loadError';
+
         this.messageType = 'error';
       },
     });

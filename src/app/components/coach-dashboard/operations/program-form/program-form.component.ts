@@ -1,8 +1,12 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { catchError, of } from 'rxjs';
+
+import { catchError, of, Subject, takeUntil } from 'rxjs';
 
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
+import { LanguageService } from '../../../../services/shared/language.service';
+
 import { Program } from '../../../../models/program.model';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
@@ -14,16 +18,22 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   templateUrl: './program-form.component.html',
   styleUrls: ['./program-form.component.css'],
 })
-export class ProgramFormComponent implements OnInit {
-  @Input() programId?: number;
+export class ProgramFormComponent implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
+
+  @Input()
+  programId?: number;
 
   form!: FormGroup;
+
   isEditMode = false;
+
   message = '';
 
   constructor(
     private fb: FormBuilder,
     private programService: CoachProgramService,
+    private languageService: LanguageService,
   ) {}
 
   ngOnInit(): void {
@@ -34,35 +44,57 @@ export class ProgramFormComponent implements OnInit {
       difficultyLevel: [''],
     });
 
-    // Szerkesztési mód
+    // ==========================================================
+    // SZERKESZTÉSI MÓD
+    // ==========================================================
+
     if (this.programId) {
       this.isEditMode = true;
 
-      this.programService
-        .getProgramById(this.programId)
-        .pipe(
-          catchError(() => {
-            this.message = 'programForm.loadError';
-
-            return of(null);
-          }),
-        )
-        .subscribe((response) => {
-          if (response?.data) {
-            const program = response.data;
-
-            this.form.patchValue({
-              programName: program.programName,
-              programDescription: program.programDescription,
-              durationDays: program.durationDays,
-              difficultyLevel: program.difficultyLevel,
-            });
-
-            this.message = 'programForm.loadSuccess';
-          }
-        });
+      // Nyelvváltáskor újratöltjük a programot
+      this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+        this.loadProgram();
+      });
     }
   }
+
+  // ==========================================================
+  // PROGRAM BETÖLTÉSE
+  // ==========================================================
+
+  private loadProgram(): void {
+    if (!this.programId) {
+      return;
+    }
+
+    this.programService
+      .getProgramById(this.programId)
+      .pipe(
+        catchError(() => {
+          this.message = 'programForm.loadError';
+
+          return of(null);
+        }),
+      )
+      .subscribe((response) => {
+        if (response?.data) {
+          const program = response.data;
+
+          this.form.patchValue({
+            programName: program.programName,
+            programDescription: program.programDescription,
+            durationDays: program.durationDays,
+            difficultyLevel: program.difficultyLevel,
+          });
+
+          this.message = 'programForm.loadSuccess';
+        }
+      });
+  }
+
+  // ==========================================================
+  // SUBMIT
+  // ==========================================================
 
   submit(): void {
     if (this.form.invalid) {
@@ -80,7 +112,10 @@ export class ProgramFormComponent implements OnInit {
       difficultyLevel: this.form.value.difficultyLevel,
     };
 
+    // ==========================================================
     // PROGRAM MÓDOSÍTÁSA
+    // ==========================================================
+
     if (this.isEditMode && this.programId) {
       this.programService
         .updateProgram(this.programId, program)
@@ -100,7 +135,10 @@ export class ProgramFormComponent implements OnInit {
       return;
     }
 
+    // ==========================================================
     // ÚJ PROGRAM LÉTREHOZÁSA
+    // ==========================================================
+
     const request = {
       programName: program.programName ?? '',
       programDescription: program.programDescription,
@@ -124,5 +162,15 @@ export class ProgramFormComponent implements OnInit {
           this.form.reset();
         }
       });
+  }
+
+  // ==========================================================
+  // DESTROY
+  // ==========================================================
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+
+    this.destroy$.complete();
   }
 }
