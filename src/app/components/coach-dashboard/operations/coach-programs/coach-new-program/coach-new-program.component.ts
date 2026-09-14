@@ -4,7 +4,9 @@ import { Router } from '@angular/router';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
+import { skip } from 'rxjs';
 
+import { LanguageService } from '../../../../../services/shared/language.service';
 import { Program, ProgramCreationRequest } from '../../../../../models/program.model';
 
 @Component({
@@ -28,9 +30,14 @@ export class CoachNewProgramComponent implements OnInit {
   constructor(
     private programService: CoachProgramService,
     private router: Router,
+    private languageService: LanguageService,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.languageService.language$.pipe(skip(1)).subscribe(() => {
+      this.message = '';
+    });
+  }
 
   saveProgram(): void {
     this.message = '';

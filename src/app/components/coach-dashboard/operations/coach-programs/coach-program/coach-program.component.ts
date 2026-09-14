@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
 import { Program } from '../../../../../models/program.model';
 import { USER_MESSAGES } from '../../../../../constants/user-messages';
-
+import { LanguageService } from '../../../../../services/shared/language.service';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
 @Component({
@@ -35,10 +35,13 @@ export class CoachProgramComponent implements OnInit {
   constructor(
     private router: Router,
     private programService: CoachProgramService,
+    private languageService: LanguageService,
   ) {}
 
   ngOnInit(): void {
-    this.loadCoachPrograms();
+    this.languageService.language$.subscribe(() => {
+      this.loadCoachPrograms();
+    });
   }
 
   private loadCoachPrograms(): void {

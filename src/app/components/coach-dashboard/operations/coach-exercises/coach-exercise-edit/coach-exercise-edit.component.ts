@@ -5,6 +5,8 @@ import { ExerciseService } from '../../../../../services/coach/coach-exercises/c
 import { Exercise } from '../../../../../models/exercise.model';
 import { ApiResponse } from '../../../../../models/api-response.model';
 
+import { LanguageService } from '../../../../../services/shared/language.service';
+
 import { MessageComponent } from '../../../../shared/message/message.component';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
@@ -45,6 +47,7 @@ export class CoachExerciseEditComponent implements OnInit {
     private route: ActivatedRoute,
     public router: Router,
     private exerciseService: ExerciseService,
+    private languageService: LanguageService,
   ) {}
 
   // =============================
@@ -60,7 +63,11 @@ export class CoachExerciseEditComponent implements OnInit {
       return;
     }
 
-    this.loadExercise(id);
+    // Nyelvváltáskor automatikusan újratöltjük
+    // az exercise adatokat.
+    this.languageService.language$.subscribe(() => {
+      this.loadExercise(id);
+    });
   }
 
   // =============================
@@ -115,20 +122,6 @@ export class CoachExerciseEditComponent implements OnInit {
         this.showSuccess('coachExerciseEdit.saveSuccess');
 
         this.saving = false;
-
-        /*
-         * FONTOS:
-         *
-         * Itt korábban azonnal navigáltunk:
-         *
-         * this.router.navigate(['/coach/exercises']);
-         *
-         * Emiatt a sikerüzenet nem volt látható.
-         *
-         * Egyelőre itt maradunk az oldalon,
-         * hogy a MessageComponent meg tudja
-         * jeleníteni az üzenetet.
-         */
       },
 
       error: (err) => {

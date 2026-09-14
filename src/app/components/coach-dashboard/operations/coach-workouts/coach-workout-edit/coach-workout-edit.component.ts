@@ -8,7 +8,9 @@ import { WorkoutExerciseService } from '../../../../../services/coach/workout-ex
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 
 import { ProgramWorkoutService } from '../../../../../services/coach/program-workout.service';
+import { skip } from 'rxjs';
 
+import { LanguageService } from '../../../../../services/shared/language.service';
 import { USER_MESSAGES } from '../../../../../constants/user-messages';
 
 import { Workout } from '../../../../../models/workout.model';
@@ -124,6 +126,7 @@ export class CoachWorkoutEditComponent implements OnInit {
     private workoutExerciseService: WorkoutExerciseService,
     private exerciseService: ExerciseService,
     private programWorkoutService: ProgramWorkoutService,
+    private languageService: LanguageService,
   ) {}
 
   // ==========================================================
@@ -131,6 +134,13 @@ export class CoachWorkoutEditComponent implements OnInit {
   // ==========================================================
 
   ngOnInit(): void {
+    this.languageService.language$.pipe(skip(1)).subscribe(() => {
+      this.loadWorkout();
+      this.loadExercises();
+      this.loadWorkoutExercises();
+      this.checkProgramAssignment();
+    });
+
     this.workoutId = Number(this.route.snapshot.paramMap.get('id'));
 
     if (!this.workoutId || this.workoutId <= 0) {

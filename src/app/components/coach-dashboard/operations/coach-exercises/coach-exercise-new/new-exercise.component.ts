@@ -3,6 +3,8 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
+import { LanguageService } from '../../../../../services/shared/language.service';
+
 import { Exercise } from '../../../../../models/exercise.model';
 
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
@@ -29,6 +31,7 @@ export class NewExerciseComponent implements OnInit {
   constructor(
     private exercisesService: ExerciseService,
     private translate: TranslateService,
+    private languageService: LanguageService,
   ) {}
 
   // =============================
@@ -39,6 +42,33 @@ export class NewExerciseComponent implements OnInit {
     if (!this.workoutId) {
       this.showError(this.translate.instant('newExercise.workoutIdRequired'));
     }
+
+    this.languageService.language$.subscribe(() => {
+      this.refreshMessage();
+    });
+  }
+
+  // =============================
+  // NYELVVÁLTÁS
+  // =============================
+
+  private refreshMessage(): void {
+    /*
+     * Ha nincs üzenet,
+     * nincs mit frissíteni.
+     */
+    if (!this.message) {
+      return;
+    }
+
+    /*
+     * A konkrét hiba/siker üzenet paramétereket is
+     * tartalmazhat, ezért itt nem tudjuk biztonságosan
+     * ugyanazt az üzenetet újra előállítani.
+     *
+     * Ezért nyelvváltáskor töröljük.
+     */
+    this.clearMessage();
   }
 
   // =============================

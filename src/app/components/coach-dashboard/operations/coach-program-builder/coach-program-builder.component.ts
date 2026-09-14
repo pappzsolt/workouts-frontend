@@ -7,13 +7,13 @@ import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/
 import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exercises-board/coach-exercises-board.component';
 import { ApiResponse } from '../../../../models/api-response.model';
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
-
+import { skip } from 'rxjs';
 import { ProgramWorkoutService } from '../../../../services/coach/program-workout.service';
 
 import { WorkoutExerciseService } from '../../../../services/coach/workout-exercises.service';
 
 import { AssignProgramService } from '../../../../services/coach/assign-program/assignprogram.service';
-
+import { LanguageService } from '../../../../services/shared/language.service';
 import { UserSelectComponent } from '../../../shared/user/user-select.component';
 
 import { Exercise, WorkoutDto, WorkoutExercise } from '../../../../models/exercise.model';
@@ -149,6 +149,7 @@ export class CoachProgramBuilderComponent implements OnInit {
     private coachWorkoutsService: CoachWorkoutsService,
     private router: Router,
     private assignProgramService: AssignProgramService,
+    private languageService: LanguageService,
   ) {}
 
   // ==========================================================
@@ -156,6 +157,24 @@ export class CoachProgramBuilderComponent implements OnInit {
   // ==========================================================
 
   ngOnInit(): void {
+    // ==========================================================
+    // NYELVVÁLTÁS FIGYELÉSE
+    // ==========================================================
+
+    this.languageService.language$.pipe(skip(1)).subscribe(() => {
+      this.loadExercises();
+
+      if (this.programId !== null) {
+        this.loadProgram();
+      }
+
+      this.loadWorkouts();
+    });
+
+    // ==========================================================
+    // EREDETI INICIALIZÁLÁS
+    // ==========================================================
+
     this.isEditMode = false;
 
     this.loadExercises();

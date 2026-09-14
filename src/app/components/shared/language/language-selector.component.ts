@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+
 import { LanguageService } from '../../../services/shared/language.service';
 
 @Component({
@@ -20,6 +21,9 @@ export class LanguageSelectorComponent {
 
   onLanguageChange(event: Event): void {
     const select = event.target as HTMLSelectElement;
-    this.languageService.setLanguage(select.value as 'hu' | 'en');
+
+    const newLanguage = select.value as 'hu' | 'en';
+
+    this.languageService.setLanguage(newLanguage);
   }
 }
