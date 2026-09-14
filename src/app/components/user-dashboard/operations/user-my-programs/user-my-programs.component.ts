@@ -1,10 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+
+import { Observable, Subject, takeUntil } from 'rxjs';
+
 import {
   UserMyProgramsService,
   UserProgram,
 } from '../../../../services/user/user-my-program/user-my-programs.service';
-import { Observable } from 'rxjs';
-import { Router } from '@angular/router';
+
+import { LanguageService } from '../../../../services/shared/language.service';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
@@ -15,15 +19,38 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   templateUrl: './user-my-programs.component.html',
   styleUrls: ['./user-my-programs.component.css'],
 })
-export class UserMyProgramsComponent implements OnInit {
+export class UserMyProgramsComponent implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
+
   programs$!: Observable<UserProgram[]>;
 
   message = 'userMyPrograms.loading';
 
+  constructor(
+    private programsService: UserMyProgramsService,
+    private router: Router,
+    private languageService: LanguageService,
+  ) {}
+
   ngOnInit(): void {
+    this.loadPrograms();
+
+    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.loadPrograms();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private loadPrograms(): void {
+    this.message = 'userMyPrograms.loading';
+
     this.programs$ = this.programsService.getPrograms();
 
-    this.programs$.subscribe({
+    this.programs$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (programs) => {
         if (!programs || programs.length === 0) {
           this.message = 'userMyPrograms.noPrograms';
@@ -37,11 +64,6 @@ export class UserMyProgramsComponent implements OnInit {
       },
     });
   }
-
-  constructor(
-    private programsService: UserMyProgramsService,
-    private router: Router,
-  ) {}
 
   /** Navigáció a programhoz tartozó workouts oldalára + programName átadás state-ben */
   goToWorkouts(programId: number, programName: string): void {

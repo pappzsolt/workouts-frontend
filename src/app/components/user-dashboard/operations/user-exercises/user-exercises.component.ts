@@ -1,10 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, map } from 'rxjs';
+
+import { Observable, Subject, map, takeUntil } from 'rxjs';
 
 import { UserExerciseService } from '../../../../services/user/user-exercise/user-exercise.service';
 
-import { WorkoutDto, WorkoutExercise } from '../../../../models/exercise.model';
+import { LanguageService } from '../../../../services/shared/language.service';
+
+import { WorkoutExercise } from '../../../../models/exercise.model';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
@@ -15,7 +18,9 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   styleUrl: './user-exercises.component.css',
   templateUrl: './user-exercises.component.html',
 })
-export class UserExercisesComponent implements OnInit {
+export class UserExercisesComponent implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
+
   workoutId!: number;
   programId!: number;
   workoutName!: string;
@@ -26,6 +31,7 @@ export class UserExercisesComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private exercisesService: UserExerciseService,
+    private languageService: LanguageService,
   ) {}
 
   ngOnInit(): void {
@@ -45,24 +51,27 @@ export class UserExercisesComponent implements OnInit {
     this.programId = Number(navState['programId']);
 
     /*
-     * Workout lekérése a backendről.
-     *
-     * Backend válasz:
-     *
-     * {
-     *   success: true,
-     *   data: WorkoutDto,
-     *   message: null
-     * }
-     *
-     * Ezért:
-     *
-     * response.data
-     *        ↓
-     * WorkoutDto
-     *        ↓
-     * workout.exercises
+     * Exercise-ek betöltése.
      */
+    this.loadExercises();
+
+    /*
+     * Nyelvváltás figyelése.
+     */
+    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.loadExercises();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /*
+   * Workout exercise-ek lekérése.
+   */
+  private loadExercises(): void {
     this.exercises$ = this.exercisesService
       .getWorkoutExercises(this.programId, this.workoutId)
       .pipe(

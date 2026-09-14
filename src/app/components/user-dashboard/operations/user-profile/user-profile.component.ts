@@ -1,4 +1,6 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+
+import { Subject, forkJoin, takeUntil } from 'rxjs';
 
 import { AuthService } from '../../../../services/auth/auth.service';
 
@@ -6,7 +8,7 @@ import { User, RawUser, Coach } from '../../../../models/user-profil.model';
 
 import { UserProfilService } from '../../../../services/user/user-profile/user-profile.service';
 
-import { forkJoin } from 'rxjs';
+import { LanguageService } from '../../../../services/shared/language.service';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
@@ -21,7 +23,9 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css',
 })
-export class UserProfileComponent implements OnInit {
+export class UserProfileComponent implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
+
   users: RawUser[] = [];
 
   selectedUser: User = {
@@ -59,9 +63,27 @@ export class UserProfileComponent implements OnInit {
     private userService: UserProfilService,
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
+    private languageService: LanguageService,
   ) {}
 
   ngOnInit(): void {
+    this.loadProfile();
+
+    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.loadProfile();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // ============================================================
+  // PROFIL BETÖLTÉSE
+  // ============================================================
+
+  private loadProfile(): void {
     const userId = this.authService.getUserId();
 
     if (!userId) {
@@ -73,48 +95,50 @@ export class UserProfileComponent implements OnInit {
     forkJoin({
       coaches: this.userService.getCoaches(),
       profile: this.userService.getMemberById(userId),
-    }).subscribe({
-      next: ({ coaches, profile }) => {
-        this.coaches = coaches;
+    })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: ({ coaches, profile }) => {
+          this.coaches = coaches;
 
-        /**
-         * Megőrizzük a backendről érkező role-okat.
-         */
-        this.roles = profile.roles || [];
+          /**
+           * Megőrizzük a backendről érkező role-okat.
+           */
+          this.roles = profile.roles || [];
 
-        this.selectedUser = {
-          id: profile.id,
-          username: profile.usernameOrName || '',
-          email: profile.email || '',
-          password: '',
-          avatarUrl: profile.avatarUrl || '',
-          age: profile.extraFields?.age,
-          weight: profile.extraFields?.weight,
-          height: profile.extraFields?.height,
-          gender: profile.extraFields?.gender || '',
-          goals: profile.extraFields?.goals || '',
-          coachId: profile.extraFields?.coach_id,
-          roleName: undefined,
-          roleIds: [],
-        };
+          this.selectedUser = {
+            id: profile.id,
+            username: profile.usernameOrName || '',
+            email: profile.email || '',
+            password: '',
+            avatarUrl: profile.avatarUrl || '',
+            age: profile.extraFields?.age,
+            weight: profile.extraFields?.weight,
+            height: profile.extraFields?.height,
+            gender: profile.extraFields?.gender || '',
+            goals: profile.extraFields?.goals || '',
+            coachId: profile.extraFields?.coach_id,
+            roleName: undefined,
+            roleIds: [],
+          };
 
-        const coach = this.coaches.find((c) => c.id === this.selectedUser.coachId);
+          const coach = this.coaches.find((c) => c.id === this.selectedUser.coachId);
 
-        this.coachName = coach ? coach.name : '';
+          this.coachName = coach ? coach.name : '';
 
-        this.selectedCoach = coach;
+          this.selectedCoach = coach;
 
-        this.cdr.detectChanges();
+          this.cdr.detectChanges();
 
-        this.message = 'userProfile.profileLoaded';
-      },
+          this.message = 'userProfile.profileLoaded';
+        },
 
-      error: (err) => {
-        console.error('Hiba a profil betöltésekor:', err);
+        error: (err) => {
+          console.error('Hiba a profil betöltésekor:', err);
 
-        this.message = 'userProfile.loadError';
-      },
-    });
+          this.message = 'userProfile.loadError';
+        },
+      });
   }
 
   private patchUserFromRaw(raw: RawUser): void {
@@ -186,16 +210,19 @@ export class UserProfileComponent implements OnInit {
       },
     };
 
-    this.userService.updateUser(rawUser).subscribe({
-      next: () => {
-        this.message = 'userProfile.updateSuccess';
-      },
+    this.userService
+      .updateUser(rawUser)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.message = 'userProfile.updateSuccess';
+        },
 
-      error: (err: any) => {
-        console.error('Profil mentési hiba:', err);
+        error: (err: any) => {
+          console.error('Profil mentési hiba:', err);
 
-        this.message = 'userProfile.updateError' + (err?.message || '');
-      },
-    });
+          this.message = 'userProfile.updateError' + (err?.message || '');
+        },
+      });
   }
 }

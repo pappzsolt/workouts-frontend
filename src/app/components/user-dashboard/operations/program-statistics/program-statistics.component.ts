@@ -1,8 +1,14 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
+import { Subject, takeUntil } from 'rxjs';
+
+import { LanguageService } from '../../../../services/shared/language.service';
+
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+
 import { ApiResponse } from '../../../../models/api-response.model';
+
 import { UserProgramStatisticsService } from '../../../../services/user/user-program-statistics.service';
 
 import {
@@ -20,10 +26,14 @@ import { UserMyProgramsService } from '../../../../services/user/user-my-program
   templateUrl: './program-statistics.component.html',
   styleUrl: './program-statistics.component.css',
 })
-export class UserProgramStatisticsComponent implements OnInit {
+export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
   private readonly statisticsService = inject(UserProgramStatisticsService);
 
   private readonly programsService = inject(UserMyProgramsService);
+
+  private readonly languageService = inject(LanguageService);
+
+  private readonly destroy$ = new Subject<void>();
 
   // ============================================================
   // PROGRAMOK
@@ -70,6 +80,19 @@ export class UserProgramStatisticsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadPrograms();
+
+    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.loadPrograms();
+    });
+  }
+
+  // ============================================================
+  // DESTROY
+  // ============================================================
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   // ============================================================

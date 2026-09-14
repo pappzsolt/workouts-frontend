@@ -1,7 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
+import { Subject, takeUntil } from 'rxjs';
+
 import { UserExerciseDetailService } from '../../../../../services/user/user-exercises-detail/user-exercises-detail.service';
+
+import { LanguageService } from '../../../../../services/shared/language.service';
 
 import {
   UserWorkoutDetailDto,
@@ -17,7 +21,9 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   templateUrl: './user-exercises-detail.component.html',
   styleUrls: ['./user-exercises-detail.component.css'],
 })
-export class UserExerciseDetailComponent implements OnInit {
+export class UserExerciseDetailComponent implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
+
   workout?: UserWorkoutDetailDto;
 
   workoutExercise?: UserWorkoutDetailDto['exercises'][number];
@@ -28,6 +34,7 @@ export class UserExerciseDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private exercisesService: UserExerciseDetailService,
+    private languageService: LanguageService,
   ) {}
 
   ngOnInit(): void {
@@ -39,6 +46,22 @@ export class UserExerciseDetailComponent implements OnInit {
 
     this.programId = Number(navState['programId']);
 
+    this.loadExerciseDetail(exerciseId);
+
+    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.loadExerciseDetail(exerciseId);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /**
+   * Workout és exercise adatainak betöltése.
+   */
+  private loadExerciseDetail(exerciseId: number): void {
     this.exercisesService.getWorkoutExercises(this.programId, this.workoutId).subscribe({
       next: (response) => {
         /*

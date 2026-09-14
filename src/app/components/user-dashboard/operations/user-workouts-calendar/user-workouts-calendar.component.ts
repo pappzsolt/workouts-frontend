@@ -1,6 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+
+import { TranslateService } from '@ngx-translate/core';
+
+import { Subject, takeUntil } from 'rxjs';
 
 import { WorkoutExercisesManagerService } from '../../../../services/coach/workout-exercises-manager.service';
+
+import { LanguageService } from '../../../../services/shared/language.service';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
@@ -17,7 +23,7 @@ interface CalendarDay {
   templateUrl: './user-workouts-calendar.component.html',
   styleUrls: ['./user-workouts-calendar.component.css'],
 })
-export class UserWorkoutsCalendarComponent implements OnInit {
+export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   // =========================================================
   // Workout adatok
   // =========================================================
@@ -52,10 +58,20 @@ export class UserWorkoutsCalendarComponent implements OnInit {
   ];
 
   // =========================================================
+  // DESTROY
+  // =========================================================
+
+  private readonly destroy$ = new Subject<void>();
+
+  // =========================================================
   // Constructor
   // =========================================================
 
-  constructor(private workoutService: WorkoutExercisesManagerService) {
+  constructor(
+    private workoutService: WorkoutExercisesManagerService,
+    private translate: TranslateService,
+    private languageService: LanguageService,
+  ) {
     const today = new Date();
 
     this.currentYear = today.getFullYear();
@@ -70,6 +86,28 @@ export class UserWorkoutsCalendarComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadScheduledWorkouts();
+
+    // =======================================================
+    // NYELVVÁLTÁS FIGYELÉSE
+    // =======================================================
+
+    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      /*
+       * A hónapnevek fordítási kulcsok,
+       * ezért itt elsősorban Angular
+       * change detection miatt generáljuk újra a naptárt.
+       */
+      this.generateCalendar();
+    });
+  }
+
+  // =========================================================
+  // DESTROY
+  // =========================================================
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   // =========================================================
@@ -219,10 +257,6 @@ export class UserWorkoutsCalendarComponent implements OnInit {
       );
     });
   }
-
-  // =========================================================
-  // Dátum nélküli workoutok
-  // =========================================================
 
   // =========================================================
   // Workout kiválasztása
