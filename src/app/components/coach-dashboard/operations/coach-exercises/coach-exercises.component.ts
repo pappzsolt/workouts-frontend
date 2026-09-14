@@ -1,8 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { Subject, takeUntil } from 'rxjs';
+
 import { Exercise } from '../../../../models/exercise.model';
+
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
+import { LanguageService } from '../../../../services/shared/language.service';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
@@ -13,7 +17,9 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   templateUrl: './coach-exercises.component.html',
   styleUrls: ['./coach-exercises.component.css'],
 })
-export class ExerciseControllerComponent implements OnInit {
+export class ExerciseControllerComponent implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
+
   // ==========================================================
   // GYAKORLATOK
   // ==========================================================
@@ -60,6 +66,7 @@ export class ExerciseControllerComponent implements OnInit {
     private exerciseService: ExerciseService,
     private router: Router,
     private route: ActivatedRoute,
+    private languageService: LanguageService,
   ) {}
 
   // ==========================================================
@@ -68,6 +75,14 @@ export class ExerciseControllerComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadExercises();
+
+    // ==========================================================
+    // NYELVVÁLTÁS
+    // ==========================================================
+
+    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.loadExercises();
+    });
   }
 
   // ==========================================================
@@ -241,5 +256,15 @@ export class ExerciseControllerComponent implements OnInit {
     this.message = '';
 
     this.messageType = '';
+  }
+
+  // ==========================================================
+  // DESTROY
+  // ==========================================================
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+
+    this.destroy$.complete();
   }
 }

@@ -1,6 +1,9 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
+
+import { Subject, takeUntil } from 'rxjs';
 
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
 import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exercises-board/coach-exercises-board.component';
@@ -11,6 +14,7 @@ import { Workout } from '../../../../models/workout.model';
 import { Exercise } from '../../../../models/exercise.model';
 
 import { WorkoutExerciseService } from '../../../../services/coach/workout-exercises.service';
+import { LanguageService } from '../../../../services/shared/language.service';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
@@ -26,7 +30,9 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   styleUrl: './assign-workouts-exercises.component.css',
   templateUrl: './assign-workouts-exercises.component.html',
 })
-export class AssignWorkoutsExercisesComponent {
+export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
+
   workouts: Workout[] = [];
 
   exercises: Exercise[] = [];
@@ -67,6 +73,7 @@ export class AssignWorkoutsExercisesComponent {
     private workoutExerciseService: WorkoutExerciseService,
     private route: ActivatedRoute,
     private router: Router,
+    private languageService: LanguageService,
   ) {
     const fromProgramBuilder = this.route.snapshot.queryParamMap.get('fromProgramBuilder');
 
@@ -79,6 +86,16 @@ export class AssignWorkoutsExercisesComponent {
     this.programId = programId !== null ? Number(programId) : null;
 
     this.newWorkoutId = workoutId !== null ? Number(workoutId) : null;
+  }
+
+  // =============================
+  // INIT
+  // =============================
+
+  ngOnInit(): void {
+    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      // Nyelvváltáskor itt lehet újratölteni az adatokat.
+    });
   }
 
   // =============================
@@ -295,5 +312,15 @@ export class AssignWorkoutsExercisesComponent {
     this.message = '';
 
     this.messageType = '';
+  }
+
+  // =============================
+  // DESTROY
+  // =============================
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+
+    this.destroy$.complete();
   }
 }

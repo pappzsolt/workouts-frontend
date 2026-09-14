@@ -1,6 +1,9 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
+import { Subject, takeUntil } from 'rxjs';
 
 import { CoachProgramBoardComponent } from '../../../shared/coach/coach-program-board/coach-program-board.component';
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
@@ -9,6 +12,7 @@ import { Workout } from '../../../../models/workout.model';
 import { CoachProgram } from '../../../../models/coach-program.model';
 
 import { ProgramWorkoutService } from '../../../../services/coach/program-workout.service';
+import { LanguageService } from '../../../../services/shared/language.service';
 
 @Component({
   selector: 'app-program-workouts-ass',
@@ -16,8 +20,11 @@ import { ProgramWorkoutService } from '../../../../services/coach/program-workou
   imports: [CommonModule, FormsModule, CoachProgramBoardComponent, CoachWorkoutBoardComponent],
   templateUrl: './program-workouts-ass.component.html',
 })
-export class ProgramWorkoutsAssComponent implements OnInit {
+export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
+
   programs: CoachProgram[] = [];
+
   workouts: Workout[] = [];
 
   selectedProgramId?: number;
@@ -34,9 +41,20 @@ export class ProgramWorkoutsAssComponent implements OnInit {
     workoutIds: number[];
   }>();
 
-  constructor(private programWorkoutService: ProgramWorkoutService) {}
+  constructor(
+    private programWorkoutService: ProgramWorkoutService,
+    private languageService: LanguageService,
+  ) {}
 
-  ngOnInit(): void {}
+  // ==========================================================
+  // INIT
+  // ==========================================================
+
+  ngOnInit(): void {
+    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      // Nyelvváltáskor itt lehet újratölteni az adatokat.
+    });
+  }
 
   onProgramSelected(programId: number) {
     this.selectedProgramId = programId;
@@ -161,5 +179,15 @@ export class ProgramWorkoutsAssComponent implements OnInit {
         }, 5000);
       },
     });
+  }
+
+  // ==========================================================
+  // DESTROY
+  // ==========================================================
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+
+    this.destroy$.complete();
   }
 }

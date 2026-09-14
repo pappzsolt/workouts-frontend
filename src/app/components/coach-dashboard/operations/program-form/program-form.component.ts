@@ -7,7 +7,7 @@ import { catchError, of, Subject, takeUntil } from 'rxjs';
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 import { LanguageService } from '../../../../services/shared/language.service';
 
-import { Program } from '../../../../models/program.model';
+import { Program, ProgramCreationRequest } from '../../../../models/program.model';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
@@ -113,12 +113,23 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
     };
 
     // ==========================================================
+    // REQUEST
+    // ==========================================================
+
+    const request: ProgramCreationRequest = {
+      programName: program.programName ?? '',
+      programDescription: program.programDescription,
+      durationDays: program.durationDays,
+      difficultyLevel: program.difficultyLevel,
+    };
+
+    // ==========================================================
     // PROGRAM MÓDOSÍTÁSA
     // ==========================================================
 
     if (this.isEditMode && this.programId) {
       this.programService
-        .updateProgram(this.programId, program)
+        .updateProgram(this.programId, request)
         .pipe(
           catchError(() => {
             this.message = 'programForm.updateError';
@@ -127,7 +138,7 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
           }),
         )
         .subscribe((response) => {
-          if (response?.status === 'success') {
+          if (response?.success) {
             this.message = 'programForm.updateSuccess';
           }
         });
@@ -139,25 +150,18 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
     // ÚJ PROGRAM LÉTREHOZÁSA
     // ==========================================================
 
-    const request = {
-      programName: program.programName ?? '',
-      programDescription: program.programDescription,
-      durationDays: program.durationDays,
-      difficultyLevel: program.difficultyLevel,
-    };
-
     this.programService
       .createProgram(request)
       .pipe(
         catchError(() => {
-          this.message = 'programForm.updateError';
+          this.message = 'programForm.createError';
 
           return of(null);
         }),
       )
       .subscribe((response) => {
         if (response?.success) {
-          this.message = 'programForm.updateSuccess';
+          this.message = 'programForm.createSuccess';
 
           this.form.reset();
         }
