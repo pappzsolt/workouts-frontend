@@ -60,7 +60,13 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      // Nyelvváltáskor itt lehet újratölteni az adatokat.
+      if (this.selectedUserId && this.selectedProgramId) {
+        this.loadUserProgramWithExercises();
+      }
+
+      if (this.selectedUserWorkoutExerciseId) {
+        this.loadSets(this.selectedUserWorkoutExerciseId);
+      }
     });
   }
 

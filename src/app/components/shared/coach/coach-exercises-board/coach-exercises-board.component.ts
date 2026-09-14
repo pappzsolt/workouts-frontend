@@ -2,6 +2,7 @@ import {
   Component,
   OnInit,
   OnChanges,
+  OnDestroy,
   SimpleChanges,
   Input,
   Output,
@@ -9,7 +10,10 @@ import {
   inject,
 } from '@angular/core';
 
+import { Subject, takeUntil } from 'rxjs';
+
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
+import { LanguageService } from '../../../../services/shared/language.service';
 
 import { Exercise } from '../../../../models/exercise.model';
 import { ApiResponse } from '../../../../models/api-response.model';
@@ -23,8 +27,12 @@ import { SHARED_IMPORTS } from '../../shared-imports';
   styleUrl: './coach-exercises-board.component.css',
   templateUrl: './coach-exercises-board.component.html',
 })
-export class CoachExercisesBoardComponent implements OnInit, OnChanges {
+export class CoachExercisesBoardComponent implements OnInit, OnChanges, OnDestroy {
+  private readonly destroy$ = new Subject<void>();
+
   private exerciseService = inject(ExerciseService);
+
+  private languageService = inject(LanguageService);
 
   // ==========================================================
   // INPUT / OUTPUT
@@ -84,6 +92,14 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.loadExercises();
+
+    // ==========================================================
+    // NYELVVÁLTÁS
+    // ==========================================================
+
+    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.loadExercises();
+    });
   }
 
   // ==========================================================
@@ -283,5 +299,15 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges {
     const target = event.target as HTMLInputElement;
 
     this.toggleExerciseSelection(ex, target.checked);
+  }
+
+  // ==========================================================
+  // DESTROY
+  // ==========================================================
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+
+    this.destroy$.complete();
   }
 }

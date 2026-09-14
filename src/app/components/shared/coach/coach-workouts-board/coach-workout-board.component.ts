@@ -2,16 +2,25 @@ import {
   Component,
   OnInit,
   OnChanges,
+  OnDestroy,
   SimpleChanges,
   Input,
   Output,
   EventEmitter,
   inject,
 } from '@angular/core';
+
 import { HttpErrorResponse } from '@angular/common/http';
+
+import { Subject, takeUntil } from 'rxjs';
+
 import { ApiResponse } from '../../../../models/api-response.model';
+
 import { Workout } from '../../../../models/workout.model';
+
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
+
+import { LanguageService } from '../../../../services/shared/language.service';
 
 import { SHARED_IMPORTS } from '../../shared-imports';
 
@@ -22,8 +31,12 @@ import { SHARED_IMPORTS } from '../../shared-imports';
   templateUrl: './coach-workout-board.component.html',
   styleUrls: ['./coach-workout-board.component.css'],
 })
-export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
-  private workoutService = inject(CoachWorkoutsService);
+export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy {
+  private readonly workoutService = inject(CoachWorkoutsService);
+
+  private readonly languageService = inject(LanguageService);
+
+  private readonly destroy$ = new Subject<void>();
 
   @Input()
   externalWorkouts: Workout[] = [];
@@ -42,23 +55,42 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
   loading = false;
 
   message = '';
+
   messageType: 'success' | 'error' | '' = '';
 
+  // ==========================================================
+  // INIT
+  // ==========================================================
+
   ngOnInit(): void {
-    this.loadWorkouts();
+    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.loadWorkouts();
+    });
   }
+
+  // ==========================================================
+  // INPUT VÁLTOZÁS
+  // ==========================================================
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['externalWorkouts'] && this.externalWorkouts?.length) {
       this.workouts = [...this.externalWorkouts];
+
       this.message = '';
+
       this.messageType = '';
     }
   }
 
+  // ==========================================================
+  // WORKOUTOK BETÖLTÉSE
+  // ==========================================================
+
   loadWorkouts(): void {
     this.loading = true;
+
     this.message = '';
+
     this.messageType = '';
 
     this.workoutService.getMyWorkouts().subscribe({
@@ -66,7 +98,9 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
         this.loading = false;
 
         console.log('=== getMyWorkouts válasz ===');
+
         console.log('Teljes válasz:', res);
+
         console.log('Workoutok:', res.data);
 
         if (res.success && res.data?.length > 0) {
@@ -79,6 +113,7 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
           this.workouts = [];
 
           this.message = 'coachWorkoutBoard.noWorkouts';
+
           this.messageType = 'error';
 
           console.log('Nincs workout a válaszban.');
@@ -87,6 +122,7 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
 
       error: (err: HttpErrorResponse) => {
         this.loading = false;
+
         this.workouts = [];
 
         const backendMessage = typeof err.error === 'string' ? err.error : err.error?.message;
@@ -104,6 +140,10 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
     });
   }
 
+  // ==========================================================
+  // WORKOUT KIVÁLASZTÁS
+  // ==========================================================
+
   toggleWorkoutSelection(id: number, checked: boolean): void {
     if (this.multiSelect) {
       if (checked) {
@@ -119,5 +159,15 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges {
 
     // Minden változást jelez a wrapper felé
     this.workoutsChange.emit([...this.selectedWorkoutIds]);
+  }
+
+  // ==========================================================
+  // DESTROY
+  // ==========================================================
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+
+    this.destroy$.complete();
   }
 }
