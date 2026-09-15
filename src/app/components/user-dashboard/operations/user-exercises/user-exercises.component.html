@@ -1,70 +1,142 @@
-<h2 class="exercises-title">
-  {{ workoutName }} – {{ 'userExercises.exercises' | translate }}
-</h2>
+<div class="exercises-container">
 
-<ng-container
-  *ngIf="(exercises$ | async)?.length; else noExercises"
->
-  <div class="exercises-grid">
-    <div
-      *ngFor="let exercise of exercises$ | async"
-      class="exercise-card"
-      (click)="goToExercise(exercise.exercise.id!)"
-    >
-      <!-- Emoji / ikon -->
-      <div class="exercise-image">
-        <span class="exercise-emoji">🏋️‍♂️</span>
+  <!-- ======================================================
+       OLDAL CÍM
+       ====================================================== -->
+
+  <h2 class="exercises-title">
+    {{ workoutName }} – {{ 'userExercises.exercises' | translate }}
+  </h2>
+
+
+  <!-- ======================================================
+       GYAKORLATOK
+       ====================================================== -->
+
+  <ng-container
+    *ngIf="(exercises$ | async)?.length; else noExercises"
+  >
+
+    <div class="exercises-grid">
+
+      <div
+        *ngFor="let exercise of exercises$ | async"
+        class="exercise-card"
+        (click)="goToExercise(exercise.exercise.id!)"
+      >
+
+        <!-- ==================================================
+             EXERCISE KÉPEK
+             ================================================== -->
+
+        <div class="exercise-image">
+
+          <ng-container
+            *ngIf="getExerciseImages(exercise.exercise).length > 0; else noImage"
+          >
+
+            <img
+              *ngFor="let image of getExerciseImages(exercise.exercise)"
+              [src]="'/assets/images/flat/' + image"
+              [alt]="exercise.exercise.name"
+              class="exercise-image-item"
+            />
+
+          </ng-container>
+
+
+          <!-- NINCS KÉP -->
+
+          <ng-template #noImage>
+
+            <span class="exercise-emoji">
+              🏋️‍♂️
+            </span>
+
+          </ng-template>
+
+        </div>
+
+
+        <!-- ==================================================
+             KÁRTYA TARTALOM
+             ================================================== -->
+
+        <div class="exercise-content">
+
+          <!-- Exercise name -->
+
+          <h3 class="exercise-name">
+            {{ exercise.exercise.name }}
+          </h3>
+
+
+          <!-- Exercise description -->
+
+          <p class="exercise-description">
+            {{
+              exercise.exercise.description ||
+              ('userExercises.noDescription' | translate)
+            }}
+          </p>
+
+
+          <!-- Sets / Reps -->
+
+          <div class="exercise-detail">
+            {{ 'userExercises.sets' | translate }}:
+            {{ exercise.sets }},
+            {{ 'userExercises.reps' | translate }}:
+            {{ exercise.repetitions }}
+          </div>
+
+
+          <!-- Rest -->
+
+          <div class="exercise-detail">
+            {{ 'userExercises.rest' | translate }}:
+            {{ exercise.restSeconds }}
+            {{ 'userExercises.seconds' | translate }}
+          </div>
+
+
+          <!-- Done status -->
+
+          <div
+            class="exercise-status"
+            [class.exercise-status-completed]="exercise.done"
+            [class.exercise-status-pending]="!exercise.done"
+          >
+
+            {{
+              exercise.done
+                ? ('userExercises.completed' | translate)
+                : ('userExercises.pending' | translate)
+            }}
+
+            {{ exercise.done ? '✅' : '⏳' }}
+
+          </div>
+
+        </div>
+
       </div>
 
-      <div class="exercise-content">
-        <!-- Exercise name -->
-        <div class="exercise-name">
-          {{ exercise.exercise.name }}
-        </div>
-
-        <!-- Exercise description -->
-        <div class="exercise-description">
-          {{
-            exercise.exercise.description ||
-            ('userExercises.noDescription' | translate)
-          }}
-        </div>
-
-        <!-- Sets / Reps -->
-        <div class="exercise-detail">
-          {{ 'userExercises.sets' | translate }}:
-          {{ exercise.sets }},
-          {{ 'userExercises.reps' | translate }}:
-          {{ exercise.repetitions }}
-        </div>
-
-        <!-- Rest -->
-        <div class="exercise-detail">
-          {{ 'userExercises.rest' | translate }}:
-          {{ exercise.restSeconds }}
-          {{ 'userExercises.seconds' | translate }}
-        </div>
-
-        <!-- Done status -->
-        <div
-          class="exercise-status"
-          [class.exercise-status-completed]="exercise.done"
-          [class.exercise-status-pending]="!exercise.done"
-        >
-          {{
-            exercise.done
-              ? ('userExercises.completed' | translate)
-              : ('userExercises.pending' | translate)
-          }}
-          {{ exercise.done ? '✅' : '⏳' }}
-        </div>
-      </div>
     </div>
-  </div>
-</ng-container>
 
-<ng-template #noExercises>
-  <div class="no-exercises">
-    {{ 'userExercises.noExercises' | translate }}
-  </div>
-</ng-template>
+  </ng-container>
+
+
+  <!-- ======================================================
+       NINCS GYAKORLAT
+       ====================================================== -->
+
+  <ng-template #noExercises>
+
+    <div class="no-exercises">
+      {{ 'userExercises.noExercises' | translate }}
+    </div>
+
+  </ng-template>
+
+</div>

@@ -6,7 +6,7 @@ import { Observable, Subject, map, takeUntil } from 'rxjs';
 import { UserExerciseService } from '../../../../services/user/user-exercise/user-exercise.service';
 import { LanguageService } from '../../../../services/shared/language.service';
 
-import { WorkoutExercise } from '../../../../models/exercise.model';
+import { WorkoutExercise, Exercise } from '../../../../models/exercise.model';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
@@ -115,7 +115,16 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
         map((response) => {
           console.log('Workout exercise válasz:', response);
 
-          return response.data?.exercises ?? [];
+          const exercises = response.data?.exercises ?? [];
+
+          exercises.forEach((item) => {
+            console.log('=== USER EXERCISE ===');
+            console.log('exercise id:', item.exercise?.id);
+            console.log('exercise name:', item.exercise?.name);
+            console.log('imageUrl:', item.exercise?.imageUrl);
+          });
+
+          return exercises;
         }),
       );
   }
@@ -141,5 +150,20 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
     this.destroy$.next();
 
     this.destroy$.complete();
+  }
+  getExerciseImages(exercise: Exercise): string[] {
+    if (!exercise.imageUrl) {
+      return [];
+    }
+
+    try {
+      const images = JSON.parse(exercise.imageUrl);
+
+      return Array.isArray(images) ? images : [];
+    } catch (error) {
+      console.error('[UserWorkouts] Hibás imageUrl JSON:', exercise.imageUrl, error);
+
+      return [];
+    }
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { LanguageService } from '../../shared/language.service';
 import { API_ENDPOINTS } from '../../../api-endpoints';
 import { WorkoutDto } from '../../../models/exercise.model';
 import { ApiResponse } from '../../../models/api-response.model';
