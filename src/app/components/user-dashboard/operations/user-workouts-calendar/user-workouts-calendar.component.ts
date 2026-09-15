@@ -3,9 +3,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 
 import { WorkoutExercisesManagerService } from '../../../../services/coach/workout-exercises-manager.service';
-
 import { LanguageService } from '../../../../services/shared/language.service';
-
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 interface CalendarDay {
@@ -86,13 +84,11 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
     this.loadScheduledWorkouts();
 
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      /*
-       * Nyelvváltáskor újrageneráljuk a naptárt.
-       *
-       * A hónapnevek fordítási kulcsok,
-       * amelyeket a HTML-ben a translate pipe fordít.
-       */
-      this.generateCalendar();
+      this.loadScheduledWorkouts();
+
+      if (this.selectedWorkout) {
+        this.loadSelectedWorkoutExercises();
+      }
     });
   }
 
@@ -102,7 +98,6 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.destroy$.next();
-
     this.destroy$.complete();
   }
 
@@ -144,7 +139,6 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   previousMonth(): void {
     if (this.currentMonth === 0) {
       this.currentMonth = 11;
-
       this.currentYear--;
     } else {
       this.currentMonth--;
@@ -160,7 +154,6 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   nextMonth(): void {
     if (this.currentMonth === 11) {
       this.currentMonth = 0;
-
       this.currentYear++;
     } else {
       this.currentMonth++;
@@ -274,8 +267,21 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
 
     console.log('Kiválasztott workout:', workout);
 
+    this.loadSelectedWorkoutExercises();
+  }
+
+  // =========================================================
+  // KIVÁLASZTOTT WORKOUT EXERCISE-AINAK BETÖLTÉSE
+  // =========================================================
+
+  private loadSelectedWorkoutExercises(): void {
+    if (!this.selectedWorkout?.user_workout_id) {
+      this.selectedExercises = [];
+      return;
+    }
+
     this.workoutService
-      .getExercisesForUserWorkout(workout.user_workout_id)
+      .getExercisesForUserWorkout(this.selectedWorkout.user_workout_id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (exercises) => {

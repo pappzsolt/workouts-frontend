@@ -1,11 +1,13 @@
 <div class="exercises-container">
+
   <!-- ======================================================
        OLDAL CÍM
-       =============ez az========================================= -->
+       ====================================================== -->
 
   <h2 class="exercises-title">
     {{ 'coachExercises.title' | translate }}
   </h2>
+
 
   <!-- ======================================================
        ÜZENET
@@ -17,23 +19,31 @@
   >
   </app-message>
 
+
   <!-- ======================================================
        BETÖLTÉS
        ====================================================== -->
 
-  <div *ngIf="loading" class="no-exercises">
+  <div
+    *ngIf="loading"
+    class="no-exercises"
+  >
     {{ 'common.loading' | translate }}
   </div>
 
+
   <ng-container *ngIf="!loading">
+
     <!-- ====================================================
          KERESÉS ÉS RENDEZÉS
          ==================================================== -->
 
     <div class="exercise-controls">
+
       <!-- KERESÉS -->
 
       <div class="exercise-search">
+
         <label
           for="exerciseSearch"
           class="exercise-search-label"
@@ -50,7 +60,9 @@
           [placeholder]="'coachExercises.searchPlaceholder' | translate"
           autocomplete="off"
         />
+
       </div>
+
 
       <!-- RENDEZÉS -->
 
@@ -65,7 +77,9 @@
           {{ sortDirection === 'asc' ? '↑' : '↓' }}
         </span>
       </button>
+
     </div>
+
 
     <!-- ======================================================
          GYAKORLATOK
@@ -74,25 +88,57 @@
     <ng-container
       *ngIf="filteredExercises.length > 0; else noExercises"
     >
+
       <div class="exercises-grid">
+
         <div
           *ngFor="let ex of pagedExercises"
           class="exercise-card"
         >
-          <!-- FEJLÉC -->
+
+          <!-- ==================================================
+               EXERCISE KÉPEK
+               ================================================== -->
 
           <div class="exercise-image">
-            <span class="exercise-emoji">
-              🏋️‍♂️
-            </span>
+
+            <ng-container
+              *ngIf="getExerciseImages(ex).length > 0; else noImage"
+            >
+
+              <img
+                *ngFor="let image of getExerciseImages(ex)"
+                [src]="'/assets/images/flat/' + image"
+                [alt]="ex.name"
+                class="exercise-image-item"
+              />
+
+            </ng-container>
+
+
+            <!-- NINCS KÉP -->
+
+            <ng-template #noImage>
+
+              <span class="exercise-emoji">
+                🏋️‍♂️
+              </span>
+
+            </ng-template>
+
           </div>
 
-          <!-- TARTALOM -->
+
+          <!-- ==================================================
+               KÁRTYA TARTALOM
+               ================================================== -->
 
           <div class="exercise-content">
+
             <h3 class="exercise-name">
               {{ ex.name }}
             </h3>
+
 
             <p
               *ngIf="ex.description"
@@ -101,9 +147,13 @@
               {{ ex.description }}
             </p>
 
-            <!-- SZERKESZTÉS -->
+
+            <!-- ==================================================
+                 SZERKESZTÉS
+                 ================================================== -->
 
             <div class="exercise-edit">
+
               <button
                 type="button"
                 class="edit-button"
@@ -111,10 +161,15 @@
               >
                 ✏️ {{ 'common.edit' | translate }}
               </button>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
+
 
       <!-- ======================================================
            LAPOZÁS
@@ -124,6 +179,7 @@
         *ngIf="totalPages > 1"
         class="pagination-controls"
       >
+
         <button
           type="button"
           class="pagination-button"
@@ -133,9 +189,11 @@
           ◀ {{ 'common.previous' | translate }}
         </button>
 
+
         <span class="pagination-info">
           {{ currentPage }} / {{ totalPages }}
         </span>
+
 
         <button
           type="button"
@@ -145,27 +203,39 @@
         >
           {{ 'common.next' | translate }} ▶
         </button>
+
       </div>
+
     </ng-container>
+
   </ng-container>
+
 
   <!-- ======================================================
        NINCS GYAKORLAT / NINCS KERESÉSI TALÁLAT
        ====================================================== -->
 
   <ng-template #noExercises>
+
     <div class="no-exercises">
+
       <span
         *ngIf="searchTerm; else noExercisesAtAll"
       >
         {{ 'coachExercises.noSearchResults' | translate }}
       </span>
 
+
       <ng-template #noExercisesAtAll>
+
         {{ 'coachExercises.noExercises' | translate }}
+
       </ng-template>
+
     </div>
+
   </ng-template>
+
 
   <!-- ======================================================
        ÚJ GYAKORLAT
@@ -179,4 +249,5 @@
   >
     ➕
   </button>
+
 </div>

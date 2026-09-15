@@ -250,7 +250,7 @@
 
 
 /* ============================================================
-   EXERCISE IKON
+   EXERCISE KÉPEK
    ============================================================ */
 
 .exercise-image {
@@ -260,13 +260,36 @@
 
   justify-content: center;
 
-  height: 110px;
+  gap: 0.5rem;
+
+  height: 180px;
+
+  padding: 0.5rem;
+
+  box-sizing: border-box;
 
   background-color: #f9fafb;
 
   border-bottom: 1px solid #e5e7eb;
+
+  overflow: hidden;
 }
 
+
+.exercise-image-item {
+  width: 50%;
+
+  height: 100%;
+
+  object-fit: contain;
+
+  border-radius: 0.5rem;
+}
+
+
+/* ============================================================
+   NINCS KÉP
+   ============================================================ */
 
 .exercise-emoji {
   font-size: 3.25rem;
@@ -575,7 +598,7 @@
 
 
   .exercise-image {
-    height: 90px;
+    height: 140px;
   }
 
 

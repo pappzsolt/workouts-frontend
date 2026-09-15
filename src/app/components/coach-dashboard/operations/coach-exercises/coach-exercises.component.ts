@@ -267,4 +267,19 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
 
     this.destroy$.complete();
   }
+  getExerciseImages(exercise: Exercise): string[] {
+    if (!exercise.imageUrl) {
+      return [];
+    }
+
+    try {
+      const images = JSON.parse(exercise.imageUrl);
+
+      return Array.isArray(images) ? images : [];
+    } catch (error) {
+      console.error('[CoachExercises] Hibás imageUrl JSON:', exercise.imageUrl, error);
+
+      return [];
+    }
+  }
 }
