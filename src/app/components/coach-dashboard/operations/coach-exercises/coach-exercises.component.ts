@@ -44,9 +44,11 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   // LAPOZÁS
   // ==========================================================
 
-  currentPage = 1;
+  currentPage = 0;
 
-  itemsPerPage = 4;
+  itemsPerPage = 6;
+
+  totalElements = 0;
 
   totalPages = 1;
 
@@ -81,6 +83,7 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
     // ==========================================================
 
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.currentPage = 0;
       this.loadExercises();
     });
   }
@@ -94,94 +97,73 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
 
     this.clearMessage();
 
-    this.exerciseService.getAllExercises().subscribe({
-      next: (response) => {
-        console.log('[CoachExercises] response:', response);
+    this.exerciseService
+      .searchExercises(
+        this.searchTerm,
+        this.currentPage,
+        this.itemsPerPage,
+        undefined,
+        undefined,
+        this.sortDirection,
+      )
+      .subscribe({
+        next: (response) => {
+          console.log('[CoachExercises] response:', response);
 
-        const apiResponse = response as {
-          data?: Exercise[];
-          message?: string;
-        };
+          const searchResponse = response.data;
 
-        this.exercises = apiResponse.data ?? [];
+          this.exercises = searchResponse?.content ?? [];
 
-        this.currentPage = 1;
+          this.totalElements = searchResponse?.totalElements ?? 0;
 
-        this.updatePagination();
+          this.totalPages = Math.max(1, searchResponse?.totalPages ?? 1);
 
-        this.loading = false;
+          this.loading = false;
 
-        console.log('[CoachExercises] betöltött gyakorlatok:', this.exercises);
-      },
+          console.log('[CoachExercises] betöltött gyakorlatok:', this.exercises);
 
-      error: (error) => {
-        console.error('[CoachExercises] Hiba a gyakorlatok betöltésekor:', error);
+          console.log('[CoachExercises] totalElements:', this.totalElements);
 
-        this.exercises = [];
+          console.log('[CoachExercises] totalPages:', this.totalPages);
+        },
 
-        this.currentPage = 1;
+        error: (error) => {
+          console.error('[CoachExercises] Hiba a gyakorlatok betöltésekor:', error);
 
-        this.totalPages = 1;
+          this.exercises = [];
 
-        this.loading = false;
+          this.totalElements = 0;
 
-        const backendMessage = typeof error.error === 'string' ? error.error : error.error?.message;
+          this.currentPage = 0;
 
-        this.showError(backendMessage || 'A gyakorlatok betöltése sikertelen.');
-      },
-    });
+          this.totalPages = 1;
+
+          this.loading = false;
+
+          const backendMessage =
+            typeof error.error === 'string' ? error.error : error.error?.message;
+
+          this.showError(backendMessage || 'A gyakorlatok betöltése sikertelen.');
+        },
+      });
   }
 
   // ==========================================================
-  // SZŰRT ÉS RENDEZETT GYAKORLATOK
+  // SZŰRT GYAKORLATOK
   // ==========================================================
 
   get filteredExercises(): Exercise[] {
-    const search = this.searchTerm.trim().toLowerCase();
-
-    const result = this.exercises.filter((exercise: Exercise): boolean => {
-      const exerciseName = exercise.name?.trim().toLowerCase() ?? '';
-
-      return exerciseName.includes(search);
-    });
-
-    result.sort((a: Exercise, b: Exercise): number => {
-      const nameA = a.name?.trim().toLowerCase() ?? '';
-
-      const nameB = b.name?.trim().toLowerCase() ?? '';
-
-      const comparison = nameA.localeCompare(nameB, 'hu', {
-        sensitivity: 'base',
-      });
-
-      return this.sortDirection === 'asc' ? comparison : -comparison;
-    });
-
-    return result;
+    return this.exercises;
   }
 
   // ==========================================================
-  // LAPOZÁS FRISSÍTÉSE
+  // KERESÉS
   // ==========================================================
 
-  private updatePagination(): void {
-    const exerciseCount = this.filteredExercises.length;
+  search(): void {
+    this.currentPage = 0;
 
-    this.totalPages = Math.max(1, Math.ceil(exerciseCount / this.itemsPerPage));
-
-    if (this.currentPage > this.totalPages) {
-      this.currentPage = this.totalPages;
-    }
-  }
-
-  // ==========================================================
-  // KERESÉS VÁLTOZÁSA
-  // ==========================================================
-
-  onSearchChange(): void {
-    this.currentPage = 1;
-
-    this.updatePagination();
+    this.loadExercises();
   }
 
   // ==========================================================
@@ -191,9 +173,9 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   toggleSort(): void {
     this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
 
-    this.currentPage = 1;
+    this.currentPage = 0;
 
-    this.updatePagination();
+    this.loadExercises();
   }
 
   // ==========================================================
@@ -201,9 +183,7 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   // ==========================================================
 
   get pagedExercises(): Exercise[] {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-
-    return this.filteredExercises.slice(startIndex, startIndex + this.itemsPerPage);
+    return this.exercises;
   }
 
   // ==========================================================
@@ -211,8 +191,10 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   // ==========================================================
 
   nextPage(): void {
-    if (this.currentPage < this.totalPages) {
+    if (this.currentPage < this.totalPages - 1) {
       this.currentPage++;
+
+      this.loadExercises();
     }
   }
 
@@ -221,8 +203,10 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   // ==========================================================
 
   prevPage(): void {
-    if (this.currentPage > 1) {
+    if (this.currentPage > 0) {
       this.currentPage--;
+
+      this.loadExercises();
     }
   }
 
@@ -267,6 +251,11 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
 
     this.destroy$.complete();
   }
+
+  // ==========================================================
+  // EXERCISE KÉPEK
+  // ==========================================================
+
   getExerciseImages(exercise: Exercise): string[] {
     if (!exercise.imageUrl) {
       return [];

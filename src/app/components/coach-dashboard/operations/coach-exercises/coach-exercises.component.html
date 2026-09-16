@@ -55,11 +55,18 @@
           id="exerciseSearch"
           type="text"
           [(ngModel)]="searchTerm"
-          (ngModelChange)="onSearchChange()"
           class="exercise-search-input"
           [placeholder]="'coachExercises.searchPlaceholder' | translate"
           autocomplete="off"
         />
+
+        <button
+          type="button"
+          class="exercise-search-button"
+          (click)="search()"
+        >
+          {{ 'common.search' | translate }}
+        </button>
 
       </div>
 
@@ -184,14 +191,14 @@
           type="button"
           class="pagination-button"
           (click)="prevPage()"
-          [disabled]="currentPage === 1"
+          [disabled]="currentPage === 0"
         >
           ◀ {{ 'common.previous' | translate }}
         </button>
 
 
         <span class="pagination-info">
-          {{ currentPage }} / {{ totalPages }}
+          {{ currentPage + 1 }} / {{ totalPages }}
         </span>
 
 
@@ -199,7 +206,7 @@
           type="button"
           class="pagination-button"
           (click)="nextPage()"
-          [disabled]="currentPage === totalPages"
+          [disabled]="currentPage === totalPages - 1"
         >
           {{ 'common.next' | translate }} ▶
         </button>

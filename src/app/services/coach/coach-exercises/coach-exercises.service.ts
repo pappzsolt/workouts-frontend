@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { Exercise, WorkoutDto } from '../../../models/exercise.model';
-import { ApiResponse } from '../../../models/api-response.model';
 
+import { Exercise, WorkoutDto, ExerciseSearchResponse } from '../../../models/exercise.model';
+
+import { ApiResponse } from '../../../models/api-response.model';
 import { API_ENDPOINTS } from '../../../api-endpoints';
 
 @Injectable({
@@ -90,5 +91,38 @@ export class ExerciseService {
 
   getAllExercises(): Observable<ApiResponse<Exercise[]>> {
     return this.http.get<ApiResponse<Exercise[]>>(`${API_ENDPOINTS.exercises}/all`);
+  }
+
+  // ==========================================================
+  // EXERCISE KERESÉS BACKENDEN
+  // ==========================================================
+
+  searchExercises(
+    search: string,
+    page: number = 0,
+    size: number = 6,
+    programId?: number,
+    workoutId?: number,
+    sortDirection: 'asc' | 'desc' = 'asc',
+  ): Observable<ApiResponse<ExerciseSearchResponse>> {
+    let params = new HttpParams()
+      .set('language', 'hu')
+      .set('search', search)
+      .set('page', page)
+      .set('size', size)
+      .set('sortDirection', sortDirection);
+
+    if (programId !== undefined) {
+      params = params.set('programId', programId);
+    }
+
+    if (workoutId !== undefined) {
+      params = params.set('workoutId', workoutId);
+    }
+
+    return this.http.get<ApiResponse<ExerciseSearchResponse>>(
+      `${API_ENDPOINTS.exercises}/exercise-search`,
+      { params },
+    );
   }
 }
