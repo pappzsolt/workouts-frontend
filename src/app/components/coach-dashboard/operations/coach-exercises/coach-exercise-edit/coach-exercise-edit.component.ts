@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 import { Exercise } from '../../../../../models/exercise.model';
@@ -18,6 +19,16 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   styleUrls: ['./coach-exercise-edit.component.css'],
 })
 export class CoachExerciseEditComponent implements OnInit {
+  // ==========================================================
+  // DESTROY REF
+  // ==========================================================
+
+  private readonly destroyRef = inject(DestroyRef);
+
+  // ==========================================================
+  // EXERCISE
+  // ==========================================================
+
   exercise: Exercise = {
     id: 0,
 
@@ -58,13 +69,17 @@ export class CoachExerciseEditComponent implements OnInit {
   saving = false;
   exerciseFound = false;
 
-  // =============================
+  // ==========================================================
   // ÜZENET
-  // =============================
+  // ==========================================================
 
   message = '';
 
   messageType: 'success' | 'error' | 'info' | '' = '';
+
+  // ==========================================================
+  // CONSTRUCTOR
+  // ==========================================================
 
   constructor(
     private route: ActivatedRoute,
@@ -73,9 +88,9 @@ export class CoachExerciseEditComponent implements OnInit {
     private languageService: LanguageService,
   ) {}
 
-  // =============================
+  // ==========================================================
   // INIT
-  // =============================
+  // ==========================================================
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
@@ -89,14 +104,16 @@ export class CoachExerciseEditComponent implements OnInit {
     // AKTUÁLIS NYELV ÉS NYELVVÁLTÁS
     // ==========================================================
 
-    this.languageService.language$.subscribe((language) => {
-      this.loadExercise(id, language);
-    });
+    this.languageService.language$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((language) => {
+        this.loadExercise(id, language);
+      });
   }
 
-  // =============================
+  // ==========================================================
   // EXERCISE BETÖLTÉS
-  // =============================
+  // ==========================================================
 
   loadExercise(exerciseId: number, language: string): void {
     this.loading = true;
@@ -147,9 +164,9 @@ export class CoachExerciseEditComponent implements OnInit {
     });
   }
 
-  // =============================
+  // ==========================================================
   // EXERCISE MENTÉS
-  // =============================
+  // ==========================================================
 
   saveExercise(): void {
     this.saving = true;
@@ -174,9 +191,9 @@ export class CoachExerciseEditComponent implements OnInit {
     });
   }
 
-  // =============================
+  // ==========================================================
   // MESSAGE SEGÉDMETÓDUSOK
-  // =============================
+  // ==========================================================
 
   private showSuccess(message: string): void {
     this.message = message;
