@@ -10,10 +10,15 @@ import { LanguageService } from '../../../../services/shared/language.service';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
+import {
+  ExerciseSearchFieldComponent,
+  SelectOption,
+} from '../../../shared/components/exercise-search-field/exercise-search-field.component';
+
 @Component({
   selector: 'app-exercise-controller',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, ExerciseSearchFieldComponent],
   templateUrl: './coach-exercises.component.html',
   styleUrls: ['./coach-exercises.component.css'],
 })
@@ -59,6 +64,29 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   searchTerm = '';
 
   searchField = 'all';
+
+  searchFieldOptions: SelectOption[] = [
+    {
+      value: 'all',
+      label: 'coachExercises.searchFields.all',
+    },
+    {
+      value: 'name',
+      label: 'coachExercises.searchFields.name',
+    },
+    {
+      value: 'bodyPart',
+      label: 'coachExercises.searchFields.bodyPart',
+    },
+    {
+      value: 'primaryMuscles',
+      label: 'coachExercises.searchFields.primaryMuscles',
+    },
+    {
+      value: 'secondaryMuscles',
+      label: 'coachExercises.searchFields.secondaryMuscles',
+    },
+  ];
 
   // ==========================================================
   // RENDEZÉS

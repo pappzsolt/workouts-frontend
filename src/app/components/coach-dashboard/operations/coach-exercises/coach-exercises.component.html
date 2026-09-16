@@ -51,7 +51,10 @@
           {{ 'coachExercises.search' | translate }}
         </label>
 
+
         <div class="exercise-search-row">
+
+          <!-- KERESÉSI SZÖVEG -->
 
           <input
             id="exerciseSearch"
@@ -62,30 +65,17 @@
             autocomplete="off"
           />
 
-          <select
-            [(ngModel)]="searchField"
-            class="exercise-search-field"
+
+          <!-- KERESÉSI MEZŐ -->
+
+          <app-exercise-search-field
+            [(value)]="searchField"
+            [options]="searchFieldOptions"
           >
-            <option value="all">
-              {{ 'coachExercises.searchFields.all' | translate }}
-            </option>
+          </app-exercise-search-field>
 
-            <option value="name">
-              {{ 'coachExercises.searchFields.name' | translate }}
-            </option>
 
-            <option value="bodyPart">
-              {{ 'coachExercises.searchFields.bodyPart' | translate }}
-            </option>
-
-            <option value="primaryMuscles">
-              {{ 'coachExercises.searchFields.primaryMuscles' | translate }}
-            </option>
-
-            <option value="secondaryMuscles">
-              {{ 'coachExercises.searchFields.secondaryMuscles' | translate }}
-            </option>
-          </select>
+          <!-- KERESÉS GOMB -->
 
           <button
             type="button"
@@ -100,7 +90,9 @@
       </div>
 
 
-      <!-- RENDEZÉS -->
+      <!-- ==================================================
+           RENDEZÉS
+           ================================================== -->
 
       <button
         type="button"
@@ -112,6 +104,7 @@
         <span class="sort-icon">
           {{ sortDirection === 'asc' ? '↑' : '↓' }}
         </span>
+
       </button>
 
     </div>
