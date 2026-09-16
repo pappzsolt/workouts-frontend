@@ -51,22 +51,51 @@
           {{ 'coachExercises.search' | translate }}
         </label>
 
-        <input
-          id="exerciseSearch"
-          type="text"
-          [(ngModel)]="searchTerm"
-          class="exercise-search-input"
-          [placeholder]="'coachExercises.searchPlaceholder' | translate"
-          autocomplete="off"
-        />
+        <div class="exercise-search-row">
 
-        <button
-          type="button"
-          class="exercise-search-button"
-          (click)="search()"
-        >
-          {{ 'common.search' | translate }}
-        </button>
+          <input
+            id="exerciseSearch"
+            type="text"
+            [(ngModel)]="searchTerm"
+            class="exercise-search-input"
+            [placeholder]="'coachExercises.searchPlaceholder' | translate"
+            autocomplete="off"
+          />
+
+          <select
+            [(ngModel)]="searchField"
+            class="exercise-search-field"
+          >
+            <option value="all">
+              {{ 'coachExercises.searchFields.all' | translate }}
+            </option>
+
+            <option value="name">
+              {{ 'coachExercises.searchFields.name' | translate }}
+            </option>
+
+            <option value="bodyPart">
+              {{ 'coachExercises.searchFields.bodyPart' | translate }}
+            </option>
+
+            <option value="primaryMuscles">
+              {{ 'coachExercises.searchFields.primaryMuscles' | translate }}
+            </option>
+
+            <option value="secondaryMuscles">
+              {{ 'coachExercises.searchFields.secondaryMuscles' | translate }}
+            </option>
+          </select>
+
+          <button
+            type="button"
+            class="exercise-search-button"
+            (click)="search()"
+          >
+            {{ 'common.search' | translate }}
+          </button>
+
+        </div>
 
       </div>
 

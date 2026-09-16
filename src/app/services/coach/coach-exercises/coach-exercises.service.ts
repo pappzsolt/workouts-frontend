@@ -99,6 +99,7 @@ export class ExerciseService {
 
   searchExercises(
     search: string,
+    searchField: string = 'all',
     page: number = 0,
     size: number = 6,
     programId?: number,
@@ -108,6 +109,7 @@ export class ExerciseService {
     let params = new HttpParams()
       .set('language', 'hu')
       .set('search', search)
+      .set('searchField', searchField)
       .set('page', page)
       .set('size', size)
       .set('sortDirection', sortDirection);

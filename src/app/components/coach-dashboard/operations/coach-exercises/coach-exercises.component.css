@@ -99,22 +99,50 @@
 
   font-weight: 600;
 
-  color: #4b5563;
+  color: #374151;
 }
 
+
+/* ============================================================
+   KERESÉSI SOR
+   ============================================================ */
+
+.exercise-search-row {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    180px
+    auto;
+
+  align-items: stretch;
+
+  gap: 0.5rem;
+
+  box-sizing: border-box;
+}
+
+
+/* ============================================================
+   KERESÉSI INPUT
+   ============================================================ */
 
 .exercise-search-input {
   width: 100%;
 
-  min-height: 2.5rem;
+  min-width: 0;
+
+  min-height: 2.75rem;
 
   box-sizing: border-box;
 
-  padding: 0.625rem 0.75rem;
+  padding: 0.625rem 0.875rem;
 
   border: 1px solid #d1d5db;
 
-  border-radius: 0.5rem;
+  border-radius: 0.625rem;
 
   background-color: #ffffff;
 
@@ -126,12 +154,20 @@
 
   transition:
     border-color 150ms ease,
-    box-shadow 150ms ease;
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}
+
+
+.exercise-search-input:hover {
+  border-color: #9ca3af;
 }
 
 
 .exercise-search-input:focus {
   border-color: #2563eb;
+
+  background-color: #ffffff;
 
   box-shadow:
     0 0 0 3px rgb(37 99 235 / 12%);
@@ -140,6 +176,112 @@
 
 .exercise-search-input::placeholder {
   color: #9ca3af;
+}
+
+
+/* ============================================================
+   KERESÉSI MEZŐ VÁLASZTÓ
+   ============================================================ */
+
+.exercise-search-field {
+  width: 100%;
+
+  min-width: 0;
+
+  min-height: 2.75rem;
+
+  box-sizing: border-box;
+
+  padding: 0.625rem 2rem 0.625rem 0.875rem;
+
+  border: 1px solid #d1d5db;
+
+  border-radius: 0.625rem;
+
+  background-color: #ffffff;
+
+  color: #374151;
+
+  font-size: 0.875rem;
+
+  font-weight: 500;
+
+  cursor: pointer;
+
+  outline: none;
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}
+
+
+.exercise-search-field:hover {
+  border-color: #9ca3af;
+
+  background-color: #f9fafb;
+}
+
+
+.exercise-search-field:focus {
+  border-color: #2563eb;
+
+  box-shadow:
+    0 0 0 3px rgb(37 99 235 / 12%);
+}
+
+
+/* ============================================================
+   KERESÉS GOMB
+   ============================================================ */
+
+.exercise-search-button {
+  min-height: 2.75rem;
+
+  padding: 0.625rem 1.25rem;
+
+  border: none;
+
+  border-radius: 0.625rem;
+
+  background-color: #2563eb;
+
+  color: #ffffff;
+
+  font-size: 0.875rem;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.08);
+
+  transition:
+    background-color 150ms ease,
+    transform 150ms ease,
+    box-shadow 150ms ease;
+}
+
+
+.exercise-search-button:hover {
+  background-color: #1d4ed8;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+
+.exercise-search-button:active {
+  transform: translateY(0);
+
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.08);
 }
 
 
@@ -179,6 +321,9 @@
   background-color: #1d4ed8;
 
   transform: translateY(-1px);
+
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1);
 }
 
 
@@ -589,6 +734,31 @@
     gap: 0.75rem;
 
     padding: 0.875rem;
+  }
+
+
+  /* ==========================================================
+     KERESÉS MOBILON
+     ========================================================== */
+
+  .exercise-search-row {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0.625rem;
+  }
+
+
+  .exercise-search-input,
+  .exercise-search-field,
+  .exercise-search-button {
+    width: 100%;
+  }
+
+
+  .exercise-search-field {
+    min-width: 0;
   }
 
 

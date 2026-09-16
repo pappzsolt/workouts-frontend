@@ -58,6 +58,8 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
 
   searchTerm = '';
 
+  searchField = 'all';
+
   // ==========================================================
   // RENDEZÉS
   // ==========================================================
@@ -100,6 +102,7 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
     this.exerciseService
       .searchExercises(
         this.searchTerm,
+        this.searchField,
         this.currentPage,
         this.itemsPerPage,
         undefined,
