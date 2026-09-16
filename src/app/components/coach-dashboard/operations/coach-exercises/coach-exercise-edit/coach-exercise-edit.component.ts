@@ -20,8 +20,24 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 export class CoachExerciseEditComponent implements OnInit {
   exercise: Exercise = {
     id: 0,
+
+    // ==========================================================
+    // FORDÍTOTT ADATOK
+    // ==========================================================
+
     name: '',
     description: '',
+    bodyPart: '',
+    synonyms: '',
+    instructions: '',
+    tips: '',
+    primaryMuscles: '',
+    secondaryMuscles: '',
+
+    // ==========================================================
+    // KÖZÖS EXERCISE ADATOK
+    // ==========================================================
+
     imageUrl: '',
     videoUrl: '',
     muscleGroup: '',
@@ -30,10 +46,17 @@ export class CoachExerciseEditComponent implements OnInit {
     category: '',
     caloriesBurnedPerMinute: 0,
     durationSeconds: 0,
+    done: false,
+    forceType: '',
+    mechanic: '',
+    isUnilateral: false,
+    isBodyweight: false,
+    variationGroup: '',
   };
 
   loading = false;
   saving = false;
+  exerciseFound = false;
 
   // =============================
   // ÜZENET
@@ -59,14 +82,15 @@ export class CoachExerciseEditComponent implements OnInit {
 
     if (!id) {
       this.showError('coachExerciseEdit.notFound');
-
       return;
     }
 
-    // Nyelvváltáskor automatikusan újratöltjük
-    // az exercise adatokat.
-    this.languageService.language$.subscribe(() => {
-      this.loadExercise(id);
+    // ==========================================================
+    // AKTUÁLIS NYELV ÉS NYELVVÁLTÁS
+    // ==========================================================
+
+    this.languageService.language$.subscribe((language) => {
+      this.loadExercise(id, language);
     });
   }
 
@@ -74,14 +98,22 @@ export class CoachExerciseEditComponent implements OnInit {
   // EXERCISE BETÖLTÉS
   // =============================
 
-  loadExercise(exerciseId: number): void {
+  loadExercise(exerciseId: number, language: string): void {
     this.loading = true;
-
     this.clearMessage();
 
-    this.exerciseService.getAllExercises().subscribe({
+    this.exerciseService.getAllExercises(language).subscribe({
       next: (response: ApiResponse<Exercise[]>) => {
+        console.log('EDIT EXERCISE RESPONSE:', response);
+
         const exercises = response.data ?? [];
+
+        console.log(
+          'EDIT EXERCISE ID:',
+          exerciseId,
+          'FOUND:',
+          exercises.find((item) => item.id === exerciseId),
+        );
 
         const exercise = exercises.find((item) => item.id === exerciseId);
 
@@ -89,8 +121,16 @@ export class CoachExerciseEditComponent implements OnInit {
           this.exercise = {
             ...exercise,
           };
+
+          this.exerciseFound = true;
         } else {
-          this.showError('coachExerciseEdit.notFound');
+          this.exerciseFound = false;
+
+          this.router.navigate(['/coach/dashboard'], {
+            queryParams: {
+              section: 'exercises',
+            },
+          });
         }
 
         this.loading = false;
@@ -112,7 +152,6 @@ export class CoachExerciseEditComponent implements OnInit {
 
   saveExercise(): void {
     this.saving = true;
-
     this.clearMessage();
 
     this.exerciseService.updateExercise(this.exercise).subscribe({
@@ -140,19 +179,16 @@ export class CoachExerciseEditComponent implements OnInit {
 
   private showSuccess(message: string): void {
     this.message = message;
-
     this.messageType = 'success';
   }
 
   private showError(message: string): void {
     this.message = message;
-
     this.messageType = 'error';
   }
 
   private clearMessage(): void {
     this.message = '';
-
     this.messageType = '';
   }
 }

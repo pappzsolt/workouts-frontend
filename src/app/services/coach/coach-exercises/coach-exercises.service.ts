@@ -89,10 +89,11 @@ export class ExerciseService {
   // ÖSSZES GYAKORLAT LEKÉRÉSE
   // ==========================================================
 
-  getAllExercises(): Observable<ApiResponse<Exercise[]>> {
-    return this.http.get<ApiResponse<Exercise[]>>(`${API_ENDPOINTS.exercises}/all`);
-  }
+  getAllExercises(language: string = 'hu'): Observable<ApiResponse<Exercise[]>> {
+    const params = new HttpParams().set('language', language);
 
+    return this.http.get<ApiResponse<Exercise[]>>(`${API_ENDPOINTS.exercises}/all`, { params });
+  }
   // ==========================================================
   // EXERCISE KERESÉS BACKENDEN
   // ==========================================================

@@ -2,8 +2,24 @@
 
 export interface Exercise {
   id?: number;
+
+  // ==========================================================
+  // FORDÍTOTT ADATOK
+  // ==========================================================
+
   name: string;
   description?: string;
+  bodyPart?: string;
+  synonyms?: string;
+  instructions?: string;
+  tips?: string;
+  primaryMuscles?: string;
+  secondaryMuscles?: string;
+
+  // ==========================================================
+  // KÖZÖS EXERCISE ADATOK
+  // ==========================================================
+
   imageUrl?: string;
   videoUrl?: string;
   muscleGroup?: string;
@@ -12,14 +28,21 @@ export interface Exercise {
   category?: string;
   caloriesBurnedPerMinute?: number;
   durationSeconds?: number;
+  done?: boolean;
+  forceType?: string;
+  mechanic?: string;
+  isUnilateral?: boolean;
+  isBodyweight?: boolean;
+  variationGroup?: string;
 
-  // A meglévő coach felület használja
+  // ==========================================================
+  // A MEGLÉVŐ COACH FELÜLET HASZNÁLJA
+  // ==========================================================
+
   sets?: number;
   repetitions?: number;
   duration_minutes?: number;
   intensity_level?: string;
-
-  done?: boolean;
 }
 
 export interface WorkoutExercise {
@@ -44,6 +67,7 @@ export interface WorkoutDto {
   done?: boolean;
   exercises: WorkoutExercise[];
 }
+
 export interface ExerciseSearchResponse {
   content: Exercise[];
   page: number;

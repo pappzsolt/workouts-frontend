@@ -10,7 +10,7 @@
 ></app-message>
 
 <!-- Gyakorlat szerkesztési űrlap -->
-<div class="form-card">
+<div class="form-card" *ngIf="exerciseFound">
 
   <div class="form-header">
     <span class="form-header-emoji">
@@ -23,6 +23,10 @@
     #exerciseForm="ngForm"
     class="universal-form"
   >
+
+    <!-- ======================================================
+         FORDÍTOTT ADATOK
+         ====================================================== -->
 
     <!-- Név -->
     <div class="universal-form-group-full">
@@ -66,6 +70,136 @@
 
     </div>
 
+
+    <!-- Testrész -->
+    <div class="universal-form-group">
+
+      <label
+        for="bodyPart"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.bodyPart' | translate }}
+      </label>
+
+      <input
+        id="bodyPart"
+        name="bodyPart"
+        type="text"
+        [(ngModel)]="exercise.bodyPart"
+        class="universal-form-input"
+      />
+
+    </div>
+
+
+    <!-- Szinonimák -->
+    <div class="universal-form-group">
+
+      <label
+        for="synonyms"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.synonyms' | translate }}
+      </label>
+
+      <input
+        id="synonyms"
+        name="synonyms"
+        type="text"
+        [(ngModel)]="exercise.synonyms"
+        class="universal-form-input"
+      />
+
+    </div>
+
+
+    <!-- Utasítások -->
+    <div class="universal-form-group-full">
+
+      <label
+        for="instructions"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.instructions' | translate }}
+      </label>
+
+      <textarea
+        id="instructions"
+        name="instructions"
+        rows="5"
+        [(ngModel)]="exercise.instructions"
+        class="universal-form-textarea"
+      ></textarea>
+
+    </div>
+
+
+    <!-- Tippek -->
+    <div class="universal-form-group-full">
+
+      <label
+        for="tips"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.tips' | translate }}
+      </label>
+
+      <textarea
+        id="tips"
+        name="tips"
+        rows="4"
+        [(ngModel)]="exercise.tips"
+        class="universal-form-textarea"
+      ></textarea>
+
+    </div>
+
+
+    <!-- Elsődleges izmok -->
+    <div class="universal-form-group">
+
+      <label
+        for="primaryMuscles"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.primaryMuscles' | translate }}
+      </label>
+
+      <input
+        id="primaryMuscles"
+        name="primaryMuscles"
+        type="text"
+        [(ngModel)]="exercise.primaryMuscles"
+        class="universal-form-input"
+      />
+
+    </div>
+
+
+    <!-- Másodlagos izmok -->
+    <div class="universal-form-group">
+
+      <label
+        for="secondaryMuscles"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.secondaryMuscles' | translate }}
+      </label>
+
+      <input
+        id="secondaryMuscles"
+        name="secondaryMuscles"
+        type="text"
+        [(ngModel)]="exercise.secondaryMuscles"
+        class="universal-form-input"
+      />
+
+    </div>
+
+
+    <!-- ======================================================
+         KÖZÖS EXERCISE ADATOK
+         ====================================================== -->
 
     <!-- Kép URL -->
     <div class="universal-form-group">
@@ -236,7 +370,129 @@
     </div>
 
 
-    <!-- Mentés -->
+    <!-- Erő típusa -->
+    <div class="universal-form-group">
+
+      <label
+        for="forceType"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.forceType' | translate }}
+      </label>
+
+      <input
+        id="forceType"
+        name="forceType"
+        type="text"
+        [(ngModel)]="exercise.forceType"
+        class="universal-form-input"
+      />
+
+    </div>
+
+
+    <!-- Mechanika -->
+    <div class="universal-form-group">
+
+      <label
+        for="mechanic"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.mechanic' | translate }}
+      </label>
+
+      <input
+        id="mechanic"
+        name="mechanic"
+        type="text"
+        [(ngModel)]="exercise.mechanic"
+        class="universal-form-input"
+      />
+
+    </div>
+
+
+    <!-- Variációs csoport -->
+    <div class="universal-form-group">
+
+      <label
+        for="variationGroup"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.variationGroup' | translate }}
+      </label>
+
+      <input
+        id="variationGroup"
+        name="variationGroup"
+        type="text"
+        [(ngModel)]="exercise.variationGroup"
+        class="universal-form-input"
+      />
+
+    </div>
+
+
+    <!-- Egyoldalas gyakorlat -->
+    <div class="universal-form-group">
+
+      <label
+        for="isUnilateral"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.isUnilateral' | translate }}
+      </label>
+
+      <select
+        id="isUnilateral"
+        name="isUnilateral"
+        [(ngModel)]="exercise.isUnilateral"
+        class="universal-form-input"
+      >
+        <option [ngValue]="false">
+          {{ 'common.no' | translate }}
+        </option>
+
+        <option [ngValue]="true">
+          {{ 'common.yes' | translate }}
+        </option>
+      </select>
+
+    </div>
+
+
+    <!-- Testsúlyos gyakorlat -->
+    <div class="universal-form-group">
+
+      <label
+        for="isBodyweight"
+        class="universal-form-label"
+      >
+        {{ 'coachExerciseEdit.isBodyweight' | translate }}
+      </label>
+
+      <select
+        id="isBodyweight"
+        name="isBodyweight"
+        [(ngModel)]="exercise.isBodyweight"
+        class="universal-form-input"
+      >
+        <option [ngValue]="false">
+          {{ 'common.no' | translate }}
+        </option>
+
+        <option [ngValue]="true">
+          {{ 'common.yes' | translate }}
+        </option>
+      </select>
+
+    </div>
+
+
+    <!-- ======================================================
+         MENTÉS
+         ====================================================== -->
+
     <div class="form-actions">
 
       <button
