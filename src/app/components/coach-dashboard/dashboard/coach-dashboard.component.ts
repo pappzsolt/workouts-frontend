@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { WorkoutListComponent } from '../operations/coach-workouts/coach-workouts.component';
 import { CoachProgramComponent } from '../operations/coach-programs/coach-program/coach-program.component';
@@ -29,17 +29,11 @@ export class CoachDashboardComponent implements OnInit {
   // =============================
 
   showWorkouts = false;
-
   showPrograms = false;
-
   showExercises = false;
-
   showAssignments = false;
-
   showProgramWorkouts = false;
-
   showWorkoutExercises = false;
-
   showWorkoutExerciseManager = false;
 
   exerciseNotFound = false;
@@ -50,7 +44,10 @@ export class CoachDashboardComponent implements OnInit {
 
   programIdForWorkouts?: number;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+  ) {}
 
   // =============================
   // INIT
@@ -104,17 +101,11 @@ export class CoachDashboardComponent implements OnInit {
 
   private closeAllPanels(): void {
     this.showWorkouts = false;
-
     this.showPrograms = false;
-
     this.showExercises = false;
-
     this.showAssignments = false;
-
     this.showProgramWorkouts = false;
-
     this.showWorkoutExercises = false;
-
     this.showWorkoutExerciseManager = false;
   }
 
@@ -128,6 +119,8 @@ export class CoachDashboardComponent implements OnInit {
     this.closeAllPanels();
 
     this.showWorkouts = shouldOpen;
+
+    this.exerciseNotFound = false;
   }
 
   // =============================
@@ -140,6 +133,8 @@ export class CoachDashboardComponent implements OnInit {
     this.closeAllPanels();
 
     this.showPrograms = shouldOpen;
+
+    this.exerciseNotFound = false;
   }
 
   // =============================
@@ -152,6 +147,10 @@ export class CoachDashboardComponent implements OnInit {
     this.closeAllPanels();
 
     this.showExercises = shouldOpen;
+
+    // Ha manuálisan nyitjuk meg az Exercises panelt,
+    // a korábbi "nem található" üzenet ne jelenjen meg.
+    this.exerciseNotFound = false;
   }
 
   // =============================
@@ -164,6 +163,8 @@ export class CoachDashboardComponent implements OnInit {
     this.closeAllPanels();
 
     this.showWorkoutExercises = shouldOpen;
+
+    this.exerciseNotFound = false;
   }
 
   // =============================
@@ -176,5 +177,7 @@ export class CoachDashboardComponent implements OnInit {
     this.closeAllPanels();
 
     this.showWorkoutExerciseManager = shouldOpen;
+
+    this.exerciseNotFound = false;
   }
 }
