@@ -151,6 +151,41 @@
 
 
 /* ============================================================
+   EXERCISE NEM TALÁLHATÓ ÜZENET
+   ============================================================ */
+
+.exercise-not-found-message {
+  width: 100%;
+
+  margin-bottom: 1.5rem;
+
+  padding: 1rem 1.25rem;
+
+  box-sizing: border-box;
+
+  border: 1px solid #f59e0b;
+
+  border-radius: 0.5rem;
+
+  background-color: #fffbeb;
+
+  color: #92400e;
+
+  text-align: center;
+
+  font-size: 1rem;
+
+  font-weight: 600;
+
+  line-height: 1.5rem;
+
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.05),
+    0 2px 4px -2px rgb(0 0 0 / 0.05);
+}
+
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 
@@ -173,6 +208,10 @@
 
   .dashboard-card-title {
     font-size: 1.25rem;
+  }
+
+  .exercise-not-found-message {
+    font-size: 1.05rem;
   }
 
 }
@@ -240,6 +279,14 @@
 
   .dashboard-card-emoji {
     font-size: 3rem;
+  }
+
+  .exercise-not-found-message {
+    margin-bottom: 1rem;
+
+    padding: 0.875rem 1rem;
+
+    font-size: 0.95rem;
   }
 
 }

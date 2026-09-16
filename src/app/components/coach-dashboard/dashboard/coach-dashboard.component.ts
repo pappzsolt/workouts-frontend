@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+
 import { WorkoutListComponent } from '../operations/coach-workouts/coach-workouts.component';
 import { CoachProgramComponent } from '../operations/coach-programs/coach-program/coach-program.component';
 import { ExerciseControllerComponent } from '../operations/coach-exercises/coach-exercises.component';
 import { AssignWorkoutsExercisesComponent } from '../operations/assign-workouts-exercises/assign-workouts-exercises.component';
 import { UserWorkoutExerciseManagerComponent } from '../operations/user-workout-exercise-manager/user-workout-exercise-manager';
+
 import { SHARED_IMPORTS } from '../../shared/shared-imports';
 
 @Component({
@@ -40,6 +42,8 @@ export class CoachDashboardComponent implements OnInit {
 
   showWorkoutExerciseManager = false;
 
+  exerciseNotFound = false;
+
   // =============================
   // PROGRAM
   // =============================
@@ -55,6 +59,16 @@ export class CoachDashboardComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       this.closeAllPanels();
+
+      // ==========================================================
+      // EXERCISE NEM TALÁLHATÓ
+      // ==========================================================
+
+      this.exerciseNotFound = params['exerciseNotFound'] === 'true';
+
+      // ==========================================================
+      // AKTUÁLIS DASHBOARD PANEL
+      // ==========================================================
 
       switch (params['section']) {
         case 'workouts':

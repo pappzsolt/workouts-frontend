@@ -129,6 +129,7 @@ export class CoachExerciseEditComponent implements OnInit {
           this.router.navigate(['/coach/dashboard'], {
             queryParams: {
               section: 'exercises',
+              exerciseNotFound: 'true',
             },
           });
         }

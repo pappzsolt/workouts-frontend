@@ -98,6 +98,13 @@
     *ngIf="showExercises"
     class="dashboard-content"
   >
+    <div
+      *ngIf="exerciseNotFound"
+      class="exercise-not-found-message"
+    >
+      {{ 'coachDashboard.exerciseNotFound' | translate }}
+    </div>
+
     <app-exercise-controller></app-exercise-controller>
   </div>
 

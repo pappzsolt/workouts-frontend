@@ -140,7 +140,9 @@
     "programs": "Programs",
     "workouts": "Workouts",
     "exercises": "Exercises",
-    "workoutExerciseManager": "Workout and Set Configuration"
+    "workoutExerciseManager": "Workout and Set Configuration",
+    "assignWorkoutExercises": "Assign Workout → Exercise",
+    "exerciseNotFound": "The exercise is not available in the current language."
   },
 
   "assignWorkoutExercises": {

@@ -717,7 +717,8 @@
     "workouts": "Edzések",
     "exercises": "Gyakorlatok",
     "workoutExerciseManager": "Edzés és sorozatok beállítása",
-    "assignWorkoutExercises": "Workout → Exercise hozzárendelés"
+    "assignWorkoutExercises": "Workout → Exercise hozzárendelés",
+    "exerciseNotFound": "A gyakorlat az aktuális nyelven nem található."
   },
   "coachWorkoutBoard": {
     "noWorkouts": "Nincsenek elérhető workoutok.",
