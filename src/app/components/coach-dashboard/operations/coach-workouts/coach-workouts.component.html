@@ -63,13 +63,15 @@
       <button
         type="button"
         (click)="toggleSort()"
-        class="flex min-h-[42px] w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 lg:w-auto"
+        class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-primary-200 bg-primary-50 px-4 py-2.5 text-sm font-semibold text-primary-700 shadow-sm transition duration-150 hover:border-primary-300 hover:bg-primary-100 focus:outline-none focus:ring-4 focus:ring-blue-500/10 lg:w-auto"
       >
-        {{ 'coachWorkouts.sortByName' | translate }}
+  <span>
+    {{ 'coachWorkouts.sortByName' | translate }}
+  </span>
 
-        <span class="text-base font-bold">
-          {{ sortDirection === 'asc' ? '↑' : '↓' }}
-        </span>
+        <span class="text-lg font-bold leading-none">
+    {{ sortDirection === 'asc' ? '↑' : '↓' }}
+  </span>
       </button>
     </div>
 
@@ -102,7 +104,7 @@
                ================================================== -->
 
           <div
-            class="flex h-28 items-center justify-center bg-gradient-to-r from-blue-600 to-indigo-600"
+            class="flex h-28 items-center justify-center bg-gradient-to-r from-primary-600 to-primary-700"
           >
             <span
               class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-3xl shadow-md transition duration-200 group-hover:scale-105"
@@ -273,7 +275,7 @@
     type="button"
     (click)="goToNewWorkout()"
     [title]="'coachWorkouts.addWorkout' | translate"
-    class="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-2xl text-white shadow-lg transition duration-200 hover:scale-105 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20"
+    class="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-primary-600 to-primary-700 text-2xl text-white shadow-lg transition duration-200 hover:scale-105 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20"
   >
     ➕
   </button>

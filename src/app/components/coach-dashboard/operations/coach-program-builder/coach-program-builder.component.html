@@ -8,7 +8,7 @@
          ====================================================== -->
 
     <div
-      class="overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 shadow-md"
+      class="overflow-hidden rounded-2xl bg-gradient-to-r from-primary-600 to-primary-700 shadow-md"
     >
       <div
         class="flex flex-col items-center gap-4 px-5 py-6 text-center sm:flex-row sm:text-left sm:px-7"
@@ -196,7 +196,7 @@
               !difficultyLevel
             "
             (click)="nextStep()"
-            class="w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            class="w-full rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             <span>
               {{
@@ -649,7 +649,7 @@
                     type="button"
                     [disabled]="isWorkoutSelected(workout.id)"
                     (click)="addSelectedWorkout()"
-                    class="w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                    class="w-full rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                   >
                     <span>
                       {{
@@ -781,7 +781,7 @@
             type="button"
             [disabled]="programId === null || !selectedUserId"
             (click)="finishProgram()"
-            class="w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto"
+            class="w-full rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto"
           >
             <span>
               {{ 'coachProgramBuilder.finishProgram' | translate }}
@@ -932,7 +932,7 @@
               copyWorkoutDayIndex < 0
             "
             (click)="confirmCopyWorkout()"
-            class="w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            class="w-full rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             <span>
               {{

@@ -71,6 +71,7 @@ export class CoachProgramComponent implements OnInit {
               endDate: program.endDate,
               durationDays: program.durationDays,
               difficultyLevel: program.difficultyLevel,
+              workoutCount: program.workoutCount,
               workouts: program.workouts,
             }));
 

@@ -70,14 +70,14 @@
   <div class="w-full sm:w-auto">
     <button
       type="button"
-      class="flex min-h-11 w-full items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 sm:w-auto"
+      class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 shadow-sm transition duration-150 hover:border-blue-300 hover:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-500/10 lg:w-auto"
       (click)="toggleSort()"
     >
       {{ 'coachWorkoutBoard.sortByName' | translate }}
 
       <span class="ml-2 text-base">
-        {{ sortDirection === 'asc' ? '↑' : '↓' }}
-      </span>
+    {{ sortDirection === 'asc' ? '↑' : '↓' }}
+  </span>
     </button>
   </div>
 </div>

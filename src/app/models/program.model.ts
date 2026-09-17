@@ -12,6 +12,7 @@ export interface Program {
   endDate?: string;
   durationDays?: number;
   difficultyLevel?: string;
+  workoutCount?: number;
   workouts?: ProgramWorkout[];
 }
 
