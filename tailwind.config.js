@@ -68,13 +68,6 @@ module.exports = {
           600: '#dc2626',
           700: '#b91c1c',
         },
-        delete: {
-          50: '#fef2f2',
-          100: '#fee2e2',
-          200: '#fecaca',
-          600: '#dc2626',
-          700: '#b91c1c',
-        },
         // Pagination gombok
         pagination: {
           50: '#eef2ff',
