@@ -1,228 +1,269 @@
-<div class="workouts-container">
-  <!-- ======================================================
-       ÜZENET
-       ====================================================== -->
-
-  <div
-    *ngIf="message"
-    [ngClass]="{
-      'message-success': messageType === 'success',
-      'error-message': messageType === 'error',
-    }"
-  >
-    {{ message | translate }}
-  </div>
-
-  <!-- ======================================================
-       CÍM
-       ====================================================== -->
-
-  <h2 class="workouts-title">
-    {{ 'coachWorkouts.title' | translate }}
-  </h2>
-
-  <!-- ======================================================
-       KERESÉS ÉS RENDEZÉS
-       ====================================================== -->
-
-  <div class="workout-controls">
-    <!-- ====================================================
-         KERESÉS
-         ==================================================== -->
-
-    <div class="workout-search">
-      <label
-        for="workoutSearch"
-        class="workout-search-label"
-      >
-        {{ 'coachWorkouts.search' | translate }}
-      </label>
-
-      <input
-        id="workoutSearch"
-        type="text"
-        [(ngModel)]="searchTerm"
-        (ngModelChange)="onSearchChange()"
-        class="workout-search-input"
-        [placeholder]="'coachWorkouts.searchPlaceholder' | translate"
-        autocomplete="off"
-      />
-    </div>
-
-    <!-- ====================================================
-         RENDEZÉS
-         ==================================================== -->
-
-    <button
-      type="button"
-      class="workout-sort-button"
-      (click)="toggleSort()"
-    >
-      {{ 'coachWorkouts.sortByName' | translate }}
-
-      <span class="sort-icon">
-        {{ sortDirection === 'asc' ? '↑' : '↓' }}
-      </span>
-    </button>
-  </div>
-
-  <!-- ======================================================
-       ÚJ EDZÉS FORM
-       ====================================================== -->
-
-  <app-newworkout
-    *ngIf="showNewWorkoutForm"
-  >
-  </app-newworkout>
-
-  <!-- ======================================================
-       EDZÉSEK
-       ====================================================== -->
-
-  <ng-container
-    *ngIf="filteredWorkouts.length > 0; else noWorkouts"
-  >
-    <div class="workouts-grid">
-      <div
-        *ngFor="let w of pagedWorkouts"
-        class="workout-card"
-      >
-        <!-- ==================================================
-             FEJLÉC
-             ================================================== -->
-
-        <div class="workout-image">
-          <span class="workout-emoji"> 🔥 </span>
-        </div>
-
-        <!-- ==================================================
-             TARTALOM
-             ================================================== -->
-
-        <div class="workout-content">
-          <!-- WORKOUT NÉV -->
-
-          <h3 class="workout-name">
-            {{ w.workoutName }}
-          </h3>
-
-          <!-- LEÍRÁS -->
-
-          <p
-            *ngIf="w.description"
-            class="workout-description"
-          >
-            {{ w.description }}
-          </p>
-
-          <!-- ==================================================
-               WORKOUT ADATOK
-               ================================================== -->
-
-          <div class="workout-meta">
-            <!-- IDŐTARTAM -->
-
-            <div class="workout-meta-item">
-              <span class="workout-meta-label">
-                {{ 'coachWorkouts.duration' | translate }}
-              </span>
-
-              <span class="workout-meta-value">
-                {{ w.durationMinutes }}
-                {{ 'common.minutes' | translate }}
-              </span>
-            </div>
-
-            <!-- GYAKORLATOK -->
-
-            <div class="workout-meta-item">
-              <span class="workout-meta-label">
-                {{ 'coachWorkouts.exercises' | translate }}
-              </span>
-
-              <span class="workout-meta-value">
-                {{ w.exercises?.length || 0 }}
-              </span>
-            </div>
-          </div>
-
-          <!-- ==================================================
-               NINCS GYAKORLAT
-               ================================================== -->
-
-          <div
-            *ngIf="!w.exercises?.length"
-            class="no-exercises"
-          >
-            {{ 'coachWorkouts.noExercisesAssigned' | translate }}
-          </div>
-
-          <!-- ==================================================
-               SZERKESZTÉS
-               ================================================== -->
-
-          <div class="workout-edit">
-            <button
-              type="button"
-              class="edit-button"
-              (click)="editWorkout(w.id, $event)"
-            >
-              ✏️ {{ 'common.edit' | translate }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+<div
+  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+>
+  <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
 
     <!-- ======================================================
-         LAPOZÁS
+         ÜZENET
          ====================================================== -->
 
     <div
-      *ngIf="totalPages > 1"
-      class="pagination-controls"
+      *ngIf="message"
+      class="rounded-xl border px-4 py-3 text-center text-sm font-medium shadow-sm"
+      [ngClass]="{
+        'border-emerald-200 bg-emerald-50 text-emerald-700':
+          messageType === 'success',
+        'border-red-200 bg-red-50 text-red-700':
+          messageType === 'error'
+      }"
     >
+      {{ message | translate }}
+    </div>
+
+    <!-- ======================================================
+         CÍM
+         ====================================================== -->
+
+    <h2
+      class="text-center text-2xl font-bold text-slate-800 sm:text-3xl"
+    >
+      {{ 'coachWorkouts.title' | translate }}
+    </h2>
+
+    <!-- ======================================================
+         KERESÉS ÉS RENDEZÉS
+         ====================================================== -->
+
+    <div
+      class="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:flex-row lg:items-end"
+    >
+      <!-- KERESÉS -->
+
+      <div class="min-w-0 flex-1">
+        <label
+          for="workoutSearch"
+          class="mb-2 block text-sm font-semibold text-slate-700"
+        >
+          {{ 'coachWorkouts.search' | translate }}
+        </label>
+
+        <input
+          id="workoutSearch"
+          type="text"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange()"
+          [placeholder]="'coachWorkouts.searchPlaceholder' | translate"
+          autocomplete="off"
+          class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
+        />
+      </div>
+
+      <!-- RENDEZÉS -->
+
       <button
         type="button"
-        class="pagination-button"
-        (click)="prevPage()"
-        [disabled]="currentPage === 1"
+        (click)="toggleSort()"
+        class="flex min-h-[42px] w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 lg:w-auto"
       >
-        ◀ {{ 'common.previous' | translate }}
-      </button>
+        {{ 'coachWorkouts.sortByName' | translate }}
 
-      <span class="pagination-info">
-        {{ currentPage }} / {{ totalPages }}
-      </span>
-
-      <button
-        type="button"
-        class="pagination-button"
-        (click)="nextPage()"
-        [disabled]="currentPage === totalPages"
-      >
-        {{ 'common.next' | translate }} ▶
+        <span class="text-base font-bold">
+          {{ sortDirection === 'asc' ? '↑' : '↓' }}
+        </span>
       </button>
     </div>
-  </ng-container>
 
-  <!-- ======================================================
-       NINCS EDZÉS / NINCS TALÁLAT
-       ====================================================== -->
+    <!-- ======================================================
+         ÚJ EDZÉS FORM
+         ====================================================== -->
 
-  <ng-template #noWorkouts>
-    <div class="no-workouts">
-      <span
-        *ngIf="searchTerm; else noWorkoutsAtAll"
+    <app-newworkout
+      *ngIf="showNewWorkoutForm"
+    >
+    </app-newworkout>
+
+    <!-- ======================================================
+         EDZÉSEK
+         ====================================================== -->
+
+    <ng-container
+      *ngIf="filteredWorkouts.length > 0; else noWorkouts"
+    >
+      <div
+        class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
       >
-        {{ 'coachWorkouts.noSearchResults' | translate }}
-      </span>
+        <div
+          *ngFor="let w of pagedWorkouts"
+          class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
+        >
 
-      <ng-template #noWorkoutsAtAll>
-        {{ 'coachWorkouts.noWorkouts' | translate }}
-      </ng-template>
-    </div>
-  </ng-template>
+          <!-- ==================================================
+               FEJLÉC
+               ================================================== -->
+
+          <div
+            class="flex h-28 items-center justify-center bg-gradient-to-r from-blue-600 to-indigo-600"
+          >
+            <span
+              class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-3xl shadow-md transition duration-200 group-hover:scale-105"
+            >
+              🔥
+            </span>
+          </div>
+
+          <!-- ==================================================
+               TARTALOM
+               ================================================== -->
+
+          <div class="flex min-w-0 flex-1 flex-col p-5">
+
+            <!-- WORKOUT NÉV -->
+
+            <h3
+              class="mb-2 break-words text-lg font-bold text-slate-800"
+            >
+              {{ w.workoutName }}
+            </h3>
+
+            <!-- LEÍRÁS -->
+
+            <p
+              *ngIf="w.description"
+              class="mb-4 line-clamp-3 break-words text-sm leading-6 text-slate-600"
+            >
+              {{ w.description }}
+            </p>
+
+            <!-- ==================================================
+                 WORKOUT ADATOK
+                 ================================================== -->
+
+            <div
+              class="mt-auto grid grid-cols-2 gap-3 border-t border-slate-100 pt-4"
+            >
+
+              <!-- IDŐTARTAM -->
+
+              <div
+                class="rounded-lg bg-slate-50 px-3 py-2.5"
+              >
+                <span
+                  class="block text-xs font-medium text-slate-500"
+                >
+                  {{ 'coachWorkouts.duration' | translate }}
+                </span>
+
+                <span
+                  class="mt-1 block text-sm font-semibold text-slate-800"
+                >
+                  {{ w.durationMinutes }}
+                  {{ 'common.minutes' | translate }}
+                </span>
+              </div>
+
+              <!-- GYAKORLATOK -->
+
+              <div
+                class="rounded-lg bg-slate-50 px-3 py-2.5"
+              >
+                <span
+                  class="block text-xs font-medium text-slate-500"
+                >
+                  {{ 'coachWorkouts.exercises' | translate }}
+                </span>
+
+                <span
+                  class="mt-1 block text-sm font-semibold text-slate-800"
+                >
+                  {{ w.exercises?.length || 0 }}
+                </span>
+              </div>
+            </div>
+
+            <!-- ==================================================
+                 NINCS GYAKORLAT
+                 ================================================== -->
+
+            <div
+              *ngIf="!w.exercises?.length"
+              class="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-center text-xs font-medium text-amber-700"
+            >
+              {{ 'coachWorkouts.noExercisesAssigned' | translate }}
+            </div>
+
+            <!-- ==================================================
+                 SZERKESZTÉS
+                 ================================================== -->
+
+            <div class="mt-4">
+              <button
+                type="button"
+                (click)="editWorkout(w.id, $event)"
+                class="w-full rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-600/10"
+              >
+                ✏️ {{ 'common.edit' | translate }}
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ======================================================
+           LAPOZÁS
+           ====================================================== -->
+
+      <div
+        *ngIf="totalPages > 1"
+        class="flex flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row"
+      >
+        <button
+          type="button"
+          (click)="prevPage()"
+          [disabled]="currentPage === 1"
+          class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+        >
+          ◀ {{ 'common.previous' | translate }}
+        </button>
+
+        <span
+          class="min-w-20 text-center text-sm font-semibold text-slate-700"
+        >
+          {{ currentPage }} / {{ totalPages }}
+        </span>
+
+        <button
+          type="button"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages"
+          class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+        >
+          {{ 'common.next' | translate }} ▶
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- ======================================================
+         NINCS EDZÉS / NINCS TALÁLAT
+         ====================================================== -->
+
+    <ng-template #noWorkouts>
+      <div
+        class="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-12 text-center text-sm font-medium text-slate-500 shadow-sm"
+      >
+        <span
+          *ngIf="searchTerm; else noWorkoutsAtAll"
+        >
+          {{ 'coachWorkouts.noSearchResults' | translate }}
+        </span>
+
+        <ng-template #noWorkoutsAtAll>
+          {{ 'coachWorkouts.noWorkouts' | translate }}
+        </ng-template>
+      </div>
+    </ng-template>
+
+  </div>
 
   <!-- ======================================================
        ÚJ EDZÉS
@@ -230,9 +271,9 @@
 
   <button
     type="button"
-    class="floating-action-button"
     (click)="goToNewWorkout()"
     [title]="'coachWorkouts.addWorkout' | translate"
+    class="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-2xl text-white shadow-lg transition duration-200 hover:scale-105 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20"
   >
     ➕
   </button>

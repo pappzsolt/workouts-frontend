@@ -1,35 +1,69 @@
-<h2 class="page-title">
-  {{ 'adminChoiceNew.title' | translate }}
-</h2>
+<div
+  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+>
+  <div class="mx-auto flex w-full max-w-5xl min-w-0 flex-col gap-6">
 
-<app-message
-  *ngIf="message"
-  [message]="message"
-  [type]="messageType"
-></app-message>
-
-<div class="choice-container">
-  <!-- New Coach -->
-  <div
-    class="choice-card"
-    (click)="navigateTo('admin/coach/new')"
-  >
-    <div class="choice-emoji">🏋️</div>
-
-    <div class="choice-title">
-      {{ 'adminChoiceNew.newCoach' | translate }}
+    <!-- Cím -->
+    <div class="text-center">
+      <h2
+        class="break-words text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
+      >
+        {{ 'adminChoiceNew.title' | translate }}
+      </h2>
     </div>
-  </div>
 
-  <!-- New User -->
-  <div
-    class="choice-card"
-    (click)="navigateTo('admin/users/new')"
-  >
-    <div class="choice-emoji">➕</div>
+    <!-- Üzenet -->
+    <app-message
+      *ngIf="message"
+      [message]="message"
+      [type]="messageType"
+    >
+    </app-message>
 
-    <div class="choice-title">
-      {{ 'adminChoiceNew.newUser' | translate }}
+    <!-- Választási lehetőségek -->
+    <div
+      class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2"
+    >
+
+      <!-- New Coach -->
+      <button
+        type="button"
+        class="group flex min-h-48 min-w-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-blue-500/10"
+        (click)="navigateTo('admin/coach/new')"
+      >
+        <div
+          class="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-100 text-4xl transition-transform duration-200 group-hover:scale-110"
+        >
+          🏋️
+        </div>
+
+        <div
+          class="mt-5 break-words text-lg font-bold text-slate-800"
+        >
+          {{ 'adminChoiceNew.newCoach' | translate }}
+        </div>
+      </button>
+
+      <!-- New User -->
+      <button
+        type="button"
+        class="group flex min-h-48 min-w-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-blue-500/10"
+        (click)="navigateTo('admin/users/new')"
+      >
+        <div
+          class="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-100 text-4xl transition-transform duration-200 group-hover:scale-110"
+        >
+          ➕
+        </div>
+
+        <div
+          class="mt-5 break-words text-lg font-bold text-slate-800"
+        >
+          {{ 'adminChoiceNew.newUser' | translate }}
+        </div>
+      </button>
+
     </div>
+
   </div>
 </div>

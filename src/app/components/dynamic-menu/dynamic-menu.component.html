@@ -1,12 +1,15 @@
-<nav class="sidebar">
-  <ul class="sidebar-menu">
+<nav class="w-full">
+  <ul class="flex flex-col gap-1.5">
+
     <ng-container *ngFor="let item of menuItems">
-      <li class="sidebar-item">
+
+      <li class="w-full">
+
         <!-- Normál link -->
         <a
           *ngIf="!item.children && !item.action"
           [routerLink]="item.path"
-          class="sidebar-link"
+          class="flex w-full items-center rounded-xl px-4 py-3 text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
         >
           {{ item.label | translate }}
         </a>
@@ -14,33 +17,44 @@
         <!-- Action (logout) -->
         <span
           *ngIf="item.action"
-          class="sidebar-link sidebar-action"
+          class="flex w-full cursor-pointer items-center rounded-xl px-4 py-3 text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-blue-50 hover:text-blue-700 focus:outline-none"
           (click)="onAction(item)"
         >
           {{ item.label | translate }}
         </span>
 
         <!-- Dropdown -->
-        <div *ngIf="item.children">
+        <div *ngIf="item.children" class="w-full">
+
           <span
-            class="sidebar-link sidebar-dropdown-toggle"
+            class="flex w-full cursor-pointer items-center rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 transition-all duration-200 hover:bg-blue-50 hover:text-blue-700"
             (click)="toggle(item)"
           >
             {{ item.label | translate }}
           </span>
 
-          <ul *ngIf="isOpen(item)" class="sidebar-submenu">
+          <!-- Dropdown submenu -->
+          <ul
+            *ngIf="isOpen(item)"
+            class="mt-1 ml-3 flex flex-col gap-1 border-l-2 border-blue-100 pl-3"
+          >
             <li *ngFor="let child of item.children">
+
               <a
                 [routerLink]="child.path"
-                class="sidebar-link sidebar-submenu-link"
+                class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm text-slate-600 transition-all duration-200 hover:bg-blue-50 hover:text-blue-700"
               >
                 {{ child.label | translate }}
               </a>
+
             </li>
           </ul>
+
         </div>
+
       </li>
+
     </ng-container>
+
   </ul>
 </nav>

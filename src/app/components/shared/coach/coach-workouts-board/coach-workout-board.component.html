@@ -4,7 +4,7 @@
 
 <div
   *ngIf="loading"
-  class="text-gray-500 p-6 text-center"
+  class="flex min-h-20 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-5 text-sm font-medium text-slate-600 shadow-sm"
 >
   {{ 'coachWorkoutBoard.loading' | translate }}
 </div>
@@ -15,11 +15,11 @@
 
 <div
   *ngIf="message && !loading"
-  class="p-4 mb-4 rounded-xl text-center font-medium"
+  class="mb-5 rounded-xl px-4 py-3 text-center text-sm font-medium"
   [ngClass]="{
-    'bg-red-50 text-red-700 border border-red-200':
+    'border border-red-200 bg-red-50 text-red-700':
       messageType === 'error',
-    'bg-green-50 text-green-700 border border-green-200':
+    'border border-green-200 bg-green-50 text-green-700':
       messageType === 'success',
   }"
 >
@@ -40,14 +40,14 @@
 
 <div
   *ngIf="!loading"
-  class="flex flex-col sm:flex-row gap-4 mb-5"
+  class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end"
 >
   <!-- KERESÉS -->
 
-  <div class="flex-1">
+  <div class="min-w-0 flex-1">
     <label
       for="workoutSearch"
-      class="block text-sm font-medium text-gray-600 mb-1"
+      class="mb-2 block text-sm font-semibold text-slate-700"
     >
       {{ 'coachWorkoutBoard.search' | translate }}
     </label>
@@ -57,25 +57,25 @@
       type="text"
       [(ngModel)]="searchTerm"
       (ngModelChange)="onSearchChange()"
-      class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
       [placeholder]="
         'coachWorkoutBoard.searchPlaceholder' | translate
       "
       autocomplete="off"
+      class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
     />
   </div>
 
   <!-- RENDEZÉS -->
 
-  <div class="flex items-end">
+  <div class="w-full sm:w-auto">
     <button
       type="button"
-      class="px-4 py-2 border border-gray-300 rounded-xl hover:bg-gray-50 transition"
+      class="flex min-h-11 w-full items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 sm:w-auto"
       (click)="toggleSort()"
     >
       {{ 'coachWorkoutBoard.sortByName' | translate }}
 
-      <span class="ml-2">
+      <span class="ml-2 text-base">
         {{ sortDirection === 'asc' ? '↑' : '↓' }}
       </span>
     </button>
@@ -88,20 +88,22 @@
 
 <div
   *ngIf="!loading && workouts?.length"
-  class="coach-board grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 pb-6 max-h-[600px] overflow-y-auto p-2"
+  class="grid max-h-[600px] min-w-0 grid-cols-1 gap-4 overflow-y-auto p-1 pb-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
 >
   <div
     *ngFor="let workout of workouts"
-    class="group relative bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-200 p-5 min-h-[150px] flex flex-col"
+    class="group relative flex min-h-40 min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md"
   >
+
     <!-- ==================================================
          KIVÁLASZTÁS
          ================================================== -->
 
-    <div class="flex items-center justify-between mb-4">
+    <div class="mb-4 flex items-center justify-between gap-3">
+
       <label
         for="workout-{{ workout.id }}"
-        class="flex items-center cursor-pointer"
+        class="flex min-w-0 cursor-pointer items-center"
       >
         <input
           type="checkbox"
@@ -115,19 +117,22 @@
             )
           "
           id="workout-{{ workout.id }}"
-          class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+          class="h-5 w-5 shrink-0 cursor-pointer rounded border-slate-300 text-blue-600 accent-blue-600 focus:ring-2 focus:ring-blue-500/20"
         />
 
-        <span class="ml-2 text-sm font-medium text-gray-600">
+        <span
+          class="ml-2 truncate text-sm font-medium text-slate-600"
+        >
           {{ 'coachWorkoutBoard.select' | translate }}
         </span>
       </label>
 
       <span
-        class="text-xs font-medium text-gray-400 bg-gray-100 px-2 py-1 rounded-lg"
+        class="shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-400"
       >
         ID {{ workout.id }}
       </span>
+
     </div>
 
     <!-- ==================================================
@@ -135,10 +140,10 @@
          ================================================== -->
 
     <div
-      class="flex-1 flex items-center justify-center text-center"
+      class="flex min-h-16 flex-1 items-center justify-center text-center"
     >
       <p
-        class="text-base sm:text-lg font-semibold text-gray-800 line-clamp-3"
+        class="line-clamp-3 break-words text-base font-bold leading-snug text-slate-800 sm:text-lg"
       >
         {{
           workout.name ||
@@ -152,10 +157,11 @@
          ================================================== -->
 
     <div
-      class="mt-4 pt-3 border-t border-gray-100 text-xs text-gray-400 text-center"
+      class="mt-4 border-t border-slate-100 pt-3 text-center text-xs font-medium text-slate-400"
     >
       {{ 'coachWorkoutBoard.workout' | translate }}
     </div>
+
   </div>
 </div>
 
@@ -165,7 +171,7 @@
 
 <div
   *ngIf="!loading && !workouts?.length"
-  class="p-6 text-center text-gray-500"
+  class="flex min-h-24 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-6 text-center text-sm font-medium text-slate-500 shadow-sm"
 >
   <span *ngIf="searchTerm; else noWorkouts">
     {{ 'coachWorkoutBoard.noSearchResults' | translate }}
@@ -182,24 +188,26 @@
 
 <div
   *ngIf="!loading && totalPages > 1"
-  class="pagination-controls flex items-center justify-center gap-4 py-4"
+  class="mt-2 flex flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:gap-5"
 >
   <button
     type="button"
-    class="pagination-button px-4 py-2 border border-gray-300 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition"
+    class="flex min-h-10 w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-all duration-200 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
     (click)="prevPage()"
     [disabled]="currentPage === 1"
   >
     ◀ {{ 'common.previous' | translate }}
   </button>
 
-  <span class="pagination-info font-medium text-gray-600">
+  <span
+    class="whitespace-nowrap text-sm font-semibold text-slate-600"
+  >
     {{ currentPage }} / {{ totalPages }}
   </span>
 
   <button
     type="button"
-    class="pagination-button px-4 py-2 border border-gray-300 rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50 transition"
+    class="flex min-h-10 w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-all duration-200 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
     (click)="nextPage()"
     [disabled]="currentPage === totalPages"
   >

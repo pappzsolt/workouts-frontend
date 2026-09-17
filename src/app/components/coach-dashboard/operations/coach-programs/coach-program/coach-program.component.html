@@ -1,159 +1,298 @@
-<h2 class="programs-title">
-  {{ 'coachPrograms.title' | translate }}
-</h2>
+<!-- ======================================================
+     OLDAL
+     ====================================================== -->
 
-<app-message
-  [message]="message"
-  [type]="messageType"
-></app-message>
+<div class="min-h-full bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50">
+  <div class="mx-auto w-full max-w-6xl px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
 
-<ng-container *ngIf="showProgramsList; else noPrograms">
+    <!-- ==================================================
+         OLDAL CÍM
+         ================================================== -->
 
-  <div class="program-controls">
+    <h2
+      class="mb-6 flex items-center justify-center gap-2 text-center text-2xl font-bold tracking-tight text-slate-800 sm:mb-8 sm:text-3xl"
+    >
+      <span>📋</span>
+      <span>{{ 'coachPrograms.title' | translate }}</span>
+    </h2>
 
-    <div class="program-search">
-      <label
-        for="programSearch"
-        class="program-search-label"
+    <!-- ==================================================
+         ÜZENET
+         ================================================== -->
+
+    <app-message
+      [message]="message"
+      [type]="messageType"
+    ></app-message>
+
+    <!-- ==================================================
+         PROGRAMOK
+         ================================================== -->
+
+    <ng-container *ngIf="showProgramsList; else noPrograms">
+
+      <!-- ==================================================
+           KERESÉS + RENDEZÉS
+           ================================================== -->
+
+      <div
+        class="mb-6 grid grid-cols-1 gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-md shadow-slate-200/50 sm:p-5 lg:grid-cols-[1fr_auto] lg:items-end"
       >
-        {{ 'coachPrograms.search' | translate }}
-      </label>
 
-      <input
-        id="programSearch"
-        type="text"
-        [(ngModel)]="searchTerm"
-        (ngModelChange)="onSearchChange()"
-        class="program-search-input"
-        [placeholder]="'coachPrograms.searchPlaceholder' | translate"
-        autocomplete="off"
-      />
-    </div>
+        <!-- Keresés -->
 
-    <button
-      type="button"
-      class="program-sort-button"
-      (click)="toggleSort()"
-    >
-      {{ 'coachPrograms.sortByName' | translate }}
+        <div class="flex min-w-0 flex-col gap-2">
+          <label
+            for="programSearch"
+            class="text-sm font-semibold text-slate-700"
+          >
+            {{ 'coachPrograms.search' | translate }}
+          </label>
 
-      <span class="sort-icon">
-        {{ sortDirection === 'asc' ? '↑' : '↓' }}
-      </span>
-    </button>
-  </div>
+          <input
+            id="programSearch"
+            type="text"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+            [placeholder]="'coachPrograms.searchPlaceholder' | translate"
+            autocomplete="off"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          />
+        </div>
 
-  <div
-    *ngIf="programs.length > 0; else noSearchResults"
-    class="programs-grid"
-  >
-    <div
-      *ngFor="let program of pagedPrograms"
-      class="program-card"
-    >
-      <div class="program-image">
-        <span class="program-emoji">💪</span>
+        <!-- Rendezés -->
+
+        <button
+          type="button"
+          (click)="toggleSort()"
+          class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 shadow-sm transition duration-150 hover:border-blue-300 hover:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-500/10 lg:w-auto"
+        >
+          <span>
+            {{ 'coachPrograms.sortByName' | translate }}
+          </span>
+
+          <span class="text-lg font-bold leading-none">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </button>
       </div>
 
-      <div class="program-content">
+      <!-- ==================================================
+           PROGRAM KÁRTYÁK
+           ================================================== -->
 
-        <h3 class="program-name">
-          {{ program.programName }}
-        </h3>
+      <div
+        *ngIf="programs.length > 0; else noSearchResults"
+        class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+      >
+
+        <div
+          *ngFor="let program of pagedPrograms"
+          class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md shadow-slate-200/50 transition duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-xl hover:shadow-blue-100/60"
+        >
+
+          <!-- ==================================================
+               PROGRAM FEJLÉC / KÉP
+               ================================================== -->
+
+          <div
+            class="relative flex h-36 items-center justify-center overflow-hidden bg-gradient-to-br from-blue-600 to-indigo-600"
+          >
+            <div
+              class="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/10"
+            ></div>
+
+            <div
+              class="absolute -bottom-12 -left-8 h-32 w-32 rounded-full bg-white/10"
+            ></div>
+
+            <span
+              class="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-white/95 text-5xl shadow-lg ring-1 ring-white/30 transition duration-200 group-hover:scale-105"
+            >
+              💪
+            </span>
+          </div>
+
+          <!-- ==================================================
+               PROGRAM TARTALOM
+               ================================================== -->
+
+          <div class="flex min-w-0 flex-1 flex-col p-5">
+
+            <!-- Program név -->
+
+            <h3
+              class="mb-2 break-words text-lg font-bold leading-6 text-slate-800"
+            >
+              {{ program.programName }}
+            </h3>
+
+            <!-- Leírás -->
+
+            <p
+              *ngIf="program.programDescription"
+              class="mb-5 line-clamp-3 min-w-0 break-words text-sm leading-6 text-slate-600"
+            >
+              {{ program.programDescription }}
+            </p>
+
+            <!-- ==================================================
+                 META ADATOK
+                 ================================================== -->
+
+            <div
+              class="mt-auto grid grid-cols-2 gap-3 border-t border-slate-100 pt-4"
+            >
+
+              <!-- Időtartam -->
+
+              <div
+                class="rounded-xl bg-slate-50 px-3 py-3"
+              >
+                <div
+                  class="mb-1 text-xs font-medium uppercase tracking-wide text-slate-500"
+                >
+                  {{ 'coachPrograms.duration' | translate }}
+                </div>
+
+                <div
+                  class="text-sm font-bold text-slate-800"
+                >
+                  {{ program.durationDays }}
+                  {{ 'coachPrograms.days' | translate }}
+                </div>
+              </div>
+
+              <!-- Edzések -->
+
+              <div
+                class="rounded-xl bg-blue-50 px-3 py-3"
+              >
+                <div
+                  class="mb-1 text-xs font-medium uppercase tracking-wide text-blue-600"
+                >
+                  {{ 'coachPrograms.workouts' | translate }}
+                </div>
+
+                <div
+                  class="text-sm font-bold text-blue-800"
+                >
+                  {{ program.workouts?.length || 0 }}
+                </div>
+              </div>
+
+            </div>
+
+            <!-- ==================================================
+                 SZERKESZTÉS
+                 ================================================== -->
+
+            <div class="mt-4">
+              <button
+                type="button"
+                (click)="editProgram(program.id, $event)"
+                class="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm transition duration-150 hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-blue-500/10 active:scale-[0.98]"
+              >
+                <span>✏️</span>
+                <span>{{ 'coachPrograms.edit' | translate }}</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================================================
+           NINCS KERESÉSI TALÁLAT
+           ================================================== -->
+
+      <ng-template #noSearchResults>
+        <div
+          class="flex min-h-40 items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-8 text-center text-sm font-medium text-slate-500 shadow-sm"
+        >
+          {{ 'coachPrograms.noSearchResults' | translate }}
+        </div>
+      </ng-template>
+
+      <!-- ==================================================
+           LAPOZÁS
+           ================================================== -->
+
+      <div
+        *ngIf="totalPages > 1"
+        class="mt-6 flex flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-md shadow-slate-200/40 sm:flex-row"
+      >
+
+        <!-- Előző -->
+
+        <button
+          type="button"
+          (click)="prevPage()"
+          [disabled]="currentPage === 1"
+          class="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition duration-150 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+        >
+          <span>◀</span>
+          <span>{{ 'common.previous' | translate }}</span>
+        </button>
+
+        <!-- Oldalszám -->
+
+        <span
+          class="flex min-h-10 items-center justify-center rounded-xl bg-blue-50 px-5 py-2 text-sm font-bold text-blue-700"
+        >
+          {{ currentPage }} / {{ totalPages }}
+        </span>
+
+        <!-- Következő -->
+
+        <button
+          type="button"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages"
+          class="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition duration-150 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+        >
+          <span>{{ 'common.next' | translate }}</span>
+          <span>▶</span>
+        </button>
+
+      </div>
+
+    </ng-container>
+
+    <!-- ======================================================
+         NINCS PROGRAM
+         ====================================================== -->
+
+    <ng-template #noPrograms>
+      <div
+        class="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center shadow-md shadow-slate-200/40"
+      >
+        <span
+          class="mb-3 text-5xl"
+        >
+          📋
+        </span>
 
         <p
-          *ngIf="program.programDescription"
-          class="program-description"
+          class="text-sm font-medium text-slate-500"
         >
-          {{ program.programDescription }}
+          {{ 'coachPrograms.empty' | translate }}
         </p>
-
-        <div class="program-meta">
-
-          <div class="program-meta-item">
-            <span class="program-meta-label">
-              {{ 'coachPrograms.duration' | translate }}
-            </span>
-
-            <span class="program-meta-value">
-              {{ program.durationDays }}
-              {{ 'coachPrograms.days' | translate }}
-            </span>
-          </div>
-
-          <div class="program-meta-item">
-            <span class="program-meta-label">
-              {{ 'coachPrograms.workouts' | translate }}
-            </span>
-
-            <span class="program-meta-value">
-              {{ program.workouts?.length || 0 }}
-            </span>
-          </div>
-
-        </div>
-
-        <div class="program-edit">
-          <button
-            type="button"
-            class="edit-button"
-            (click)="editProgram(program.id, $event)"
-          >
-            ✏️ {{ 'coachPrograms.edit' | translate }}
-          </button>
-        </div>
-
       </div>
-    </div>
+    </ng-template>
+
   </div>
 
-  <ng-template #noSearchResults>
-    <div class="no-programs">
-      {{ 'coachPrograms.noSearchResults' | translate }}
-    </div>
-  </ng-template>
+  <!-- ======================================================
+       ÚJ PROGRAM – FLOATING ACTION BUTTON
+       ====================================================== -->
 
-  <div
-    *ngIf="totalPages > 1"
-    class="pagination-controls"
+  <button
+    type="button"
+    (click)="createNewProgram()"
+    [title]="'coachPrograms.createNew' | translate"
+    class="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 text-2xl text-white shadow-xl shadow-blue-500/30 transition duration-200 hover:scale-105 hover:from-blue-700 hover:to-indigo-700 hover:shadow-2xl hover:shadow-blue-500/30 focus:outline-none focus:ring-4 focus:ring-blue-500/20 active:scale-95 sm:bottom-7 sm:right-7"
   >
-    <button
-      type="button"
-      class="pagination-button"
-      (click)="prevPage()"
-      [disabled]="currentPage === 1"
-    >
-      ◀ {{ 'common.previous' | translate }}
-    </button>
-
-    <span class="pagination-info">
-      {{ currentPage }} / {{ totalPages }}
-    </span>
-
-    <button
-      type="button"
-      class="pagination-button"
-      (click)="nextPage()"
-      [disabled]="currentPage === totalPages"
-    >
-      {{ 'common.next' | translate }} ▶
-    </button>
-
-  </div>
-
-</ng-container>
-
-<ng-template #noPrograms>
-  <div class="no-programs">
-    {{ 'coachPrograms.empty' | translate }}
-  </div>
-</ng-template>
-
-<button
-  type="button"
-  class="floating-action-button"
-  (click)="createNewProgram()"
-  [title]="'coachPrograms.createNew' | translate"
->
-  ➕
-</button>
+    ➕
+  </button>
+</div>

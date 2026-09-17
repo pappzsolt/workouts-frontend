@@ -1,9 +1,11 @@
 @if (message) {
   <div
-    class="message"
-    [class.message-success]="type === 'success'"
-    [class.message-error]="type === 'error'"
-    [class.message-info]="type === 'info'"
+    class="rounded-xl border px-4 py-3 text-sm font-medium"
+    [ngClass]="{
+      'border-green-200 bg-green-50 text-green-700': type === 'success',
+      'border-red-200 bg-red-50 text-red-700': type === 'error',
+      'border-blue-200 bg-blue-50 text-blue-700': type === 'info'
+    }"
   >
     {{ message }}
   </div>

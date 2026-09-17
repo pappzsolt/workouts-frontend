@@ -1,20 +1,31 @@
-<div class="flex flex-col min-h-screen bg-gray-50">
-  <!-- Fejléc -->
+<div
+  class="flex min-h-screen min-w-0 flex-col bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50"
+>
+  <!-- ===================================================== -->
+  <!-- FEJLÉC -->
+  <!-- ===================================================== -->
+
   <header
-    class="bg-gradient-to-r from-blue-600 to-blue-500 text-white p-4 shadow-md flex justify-between items-center"
+    class="relative z-30 flex min-h-16 items-center justify-between gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-3 text-white shadow-md sm:px-6"
   >
-    <div class="text-lg font-semibold">
+    <!-- Dátum -->
+    <div
+      class="min-w-0 truncate text-sm font-semibold sm:text-base"
+    >
       {{ currentDate | date: 'yyyy.MM.dd HH:mm:ss' }}
     </div>
 
-    <div class="flex items-center gap-3">
+    <div class="flex shrink-0 items-center gap-2 sm:gap-3">
+
       <!-- Hamburger menü mobilon -->
       <button
+        type="button"
         (click)="menuOpen = !menuOpen"
-        class="sm:hidden bg-white text-blue-600 p-2 rounded-md shadow-md focus:outline-none"
+        class="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-blue-600 shadow-sm transition-all duration-200 hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-white/30 sm:hidden"
+        aria-label="Menu"
       >
         <svg
-          class="w-6 h-6"
+          class="h-6 w-6"
           fill="none"
           stroke="currentColor"
           stroke-width="2"
@@ -28,41 +39,55 @@
         </svg>
       </button>
 
+      <!-- Username -->
       <span
         *ngIf="username"
-        class="hidden sm:inline bg-white text-blue-600 px-3 py-1 rounded-full font-medium shadow-sm"
+        class="hidden max-w-48 truncate rounded-full bg-white px-3 py-1.5 text-sm font-medium text-blue-600 shadow-sm sm:inline-block"
       >
         {{ 'header.user' | translate }}: {{ username }}
       </span>
 
+      <!-- Role -->
       <span
         *ngIf="role"
-        class="hidden sm:inline bg-white text-blue-600 px-3 py-1 rounded-full font-medium shadow-sm"
+        class="hidden max-w-40 truncate rounded-full bg-white px-3 py-1.5 text-sm font-medium text-blue-600 shadow-sm sm:inline-block"
       >
         {{ 'header.role' | translate }}: {{ role }}
       </span>
 
       <!-- Nyelvválasztó -->
-      <app-language-selector></app-language-selector>
+      <div class="shrink-0">
+        <app-language-selector></app-language-selector>
+      </div>
 
+      <!-- Logout -->
       <button
+        type="button"
         (click)="onLogout()"
-        class="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded-full font-semibold shadow-md transition duration-200"
+        class="rounded-xl bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-red-600 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-red-300/30 sm:px-4"
       >
         {{ 'menu.logout' | translate }}
       </button>
     </div>
   </header>
 
-  <!-- Menü + tartalom -->
-  <div class="flex flex-1 flex-col sm:flex-row relative">
-    <!-- Menüsáv -->
+  <!-- ===================================================== -->
+  <!-- MENÜ + TARTALOM -->
+  <!-- ===================================================== -->
+
+  <div class="relative flex min-w-0 flex-1 flex-col sm:flex-row">
+
+    <!-- ===================================================== -->
+    <!-- MENÜSÁV -->
+    <!-- ===================================================== -->
+
     <aside
       [class.hidden]="!menuOpen && isMobile()"
-      class="sm:block sm:w-64 bg-white shadow-inner border-r border-gray-200 flex-shrink-0 absolute sm:relative z-20 top-0 left-0 h-full sm:h-auto transition-transform transform sm:translate-x-0"
       [class.translate-x-0]="menuOpen"
       [class.-translate-x-full]="!menuOpen && isMobile()"
+      class="absolute left-0 top-0 z-20 h-full w-72 shrink-0 -translate-x-full overflow-y-auto border-r border-slate-200 bg-white shadow-xl transition-transform duration-200 sm:relative sm:block sm:h-auto sm:w-64 sm:translate-x-0 sm:shadow-inner"
     >
+      <!-- Admin -->
       <ng-container *ngIf="isAdmin()">
         <app-dynamic-menu
           [menuItems]="adminMenuItems"
@@ -70,6 +95,7 @@
         ></app-dynamic-menu>
       </ng-container>
 
+      <!-- Coach -->
       <ng-container *ngIf="isCoach()">
         <app-dynamic-menu
           [menuItems]="coachMenuItems"
@@ -77,6 +103,7 @@
         ></app-dynamic-menu>
       </ng-container>
 
+      <!-- User -->
       <ng-container *ngIf="isUser()">
         <app-dynamic-menu
           [menuItems]="userMenuItems"
@@ -85,26 +112,37 @@
       </ng-container>
     </aside>
 
-    <!-- Overlay mobil menühöz -->
+    <!-- ===================================================== -->
+    <!-- MOBIL OVERLAY -->
+    <!-- ===================================================== -->
+
     <div
       *ngIf="menuOpen && isMobile()"
       (click)="menuOpen = false"
-      class="fixed inset-0 bg-black bg-opacity-25 z-10"
+      class="fixed inset-0 z-10 bg-slate-900/30 backdrop-blur-[1px]"
     ></div>
 
-    <!-- Tartalom -->
-    <main class="flex-1 p-6 sm:p-8 bg-gray-50">
+    <!-- ===================================================== -->
+    <!-- TARTALOM -->
+    <!-- ===================================================== -->
+
+    <main
+      class="min-w-0 flex-1 p-4 sm:p-6 lg:p-8"
+    >
       <div
-        class="bg-white shadow-lg rounded-lg p-6 min-h-[300px] sm:min-h-[400px]"
+        class="min-h-[300px] min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:min-h-[400px] sm:p-6 lg:p-8"
       >
         <router-outlet></router-outlet>
       </div>
     </main>
   </div>
 
-  <!-- Lábléc -->
+  <!-- ===================================================== -->
+  <!-- LÁBLÉC -->
+  <!-- ===================================================== -->
+
   <footer
-    class="bg-gray-100 text-gray-600 p-4 text-center mt-auto shadow-inner"
+    class="mt-auto border-t border-slate-200 bg-white px-4 py-4 text-center text-sm text-slate-500 shadow-sm"
   >
     &copy; {{ currentYear }} Fitness App. Minden jog fenntartva.
   </footer>

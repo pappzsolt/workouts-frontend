@@ -1,75 +1,95 @@
-<div class="user-edit-container">
-  <!-- Oldal címe -->
-  <h2 class="page-title">
-    {{ 'adminUserEdit.title' | translate }}
-  </h2>
+<div
+  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+>
+  <div class="mx-auto flex w-full max-w-5xl min-w-0 flex-col gap-6">
 
-  <!-- Üzenet -->
-  <app-message
-    *ngIf="message"
-    [message]="message | translate"
-    [type]="messageType"
-  ></app-message>
+    <!-- Oldal címe -->
+    <div class="text-center">
+      <h2
+        class="break-words text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
+      >
+        {{ 'adminUserEdit.title' | translate }}
+      </h2>
+    </div>
 
-  <!-- Felhasználó kiválasztása -->
-  <div class="user-select-container">
-    <app-user-select
-      [(selectedUserId)]="selectedUserId"
-      (userSelected)="onUserSelected($event)"
+    <!-- Üzenet -->
+    <app-message
+      *ngIf="message"
+      [message]="message | translate"
+      [type]="messageType"
+    ></app-message>
+
+    <!-- Felhasználó kiválasztása -->
+    <div
+      class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
     >
-    </app-user-select>
-  </div>
-
-  <!-- Form -->
-  <form (ngSubmit)="onSave()" class="user-edit-form">
-    <!-- Felhasználónév -->
-    <div class="form-group">
-      <label class="form-label">
-        {{ 'common.username' | translate }}
-      </label>
-
-      <input
-        type="text"
-        [(ngModel)]="selectedUser.username"
-        name="username"
-        class="form-input"
-      />
+      <app-user-select
+        [(selectedUserId)]="selectedUserId"
+        (userSelected)="onUserSelected($event)"
+      >
+      </app-user-select>
     </div>
 
-    <!-- Email -->
-    <div class="form-group">
-      <label class="form-label">
-        {{ 'common.email' | translate }}
-      </label>
+    <!-- Form -->
+    <form
+      (ngSubmit)="onSave()"
+      class="grid min-w-0 grid-cols-1 gap-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6 lg:p-8"
+    >
 
-      <input
-        type="email"
-        [(ngModel)]="selectedUser.email"
-        name="email"
-        class="form-input"
-      />
-    </div>
+      <!-- Felhasználónév -->
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+        >
+          {{ 'common.username' | translate }}
+        </label>
 
-    <!-- Jelszó -->
-    <div class="form-group">
-      <label class="form-label">
-        {{ 'common.password' | translate }}
-      </label>
+        <input
+          type="text"
+          [(ngModel)]="selectedUser.username"
+          name="username"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
 
-      <input
-        type="password"
-        [(ngModel)]="selectedUser.password"
-        name="password"
-        [placeholder]="'adminUserEdit.newPassword' | translate"
-        class="form-input"
-      />
-    </div>
+      <!-- Email -->
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+        >
+          {{ 'common.email' | translate }}
+        </label>
 
-    <!-- Életkor / testsúly / magasság -->
-    <div class="physical-data-grid">
+        <input
+          type="email"
+          [(ngModel)]="selectedUser.email"
+          name="email"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
+
+      <!-- Jelszó -->
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+        >
+          {{ 'common.password' | translate }}
+        </label>
+
+        <input
+          type="password"
+          [(ngModel)]="selectedUser.password"
+          name="password"
+          [placeholder]="'adminUserEdit.newPassword' | translate"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
+
       <!-- Életkor -->
-      <div class="form-group">
-        <label class="form-label">
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+        >
           {{ 'common.age' | translate }}
         </label>
 
@@ -77,13 +97,15 @@
           type="number"
           [(ngModel)]="selectedUser.age"
           name="age"
-          class="form-input"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         />
       </div>
 
       <!-- Testsúly -->
-      <div class="form-group">
-        <label class="form-label">
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+        >
           {{ 'common.weight' | translate }}
         </label>
 
@@ -92,13 +114,15 @@
           step="0.01"
           [(ngModel)]="selectedUser.weight"
           name="weight"
-          class="form-input"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         />
       </div>
 
       <!-- Magasság -->
-      <div class="form-group">
-        <label class="form-label">
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+        >
           {{ 'common.height' | translate }}
         </label>
 
@@ -107,87 +131,110 @@
           step="0.01"
           [(ngModel)]="selectedUser.height"
           name="height"
-          class="form-input"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         />
       </div>
-    </div>
 
-    <!-- Nem -->
-    <div class="form-group">
-      <label class="form-label">
-        {{ 'common.gender' | translate }}
-      </label>
+      <!-- Nem -->
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+        >
+          {{ 'common.gender' | translate }}
+        </label>
 
-      <input
-        type="text"
-        [(ngModel)]="selectedUser.gender"
-        name="gender"
-        class="form-input"
-      />
-    </div>
+        <input
+          type="text"
+          [(ngModel)]="selectedUser.gender"
+          name="gender"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
 
-    <!-- Célok -->
-    <div class="form-group form-group-full">
-      <label class="form-label">
-        {{ 'common.goals' | translate }}
-      </label>
+      <!-- Célok -->
+      <div class="min-w-0 sm:col-span-2">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+        >
+          {{ 'common.goals' | translate }}
+        </label>
 
-      <textarea
-        [(ngModel)]="selectedUser.goals"
-        name="goals"
-        class="form-input form-textarea"
-      ></textarea>
-    </div>
+        <textarea
+          [(ngModel)]="selectedUser.goals"
+          name="goals"
+          rows="4"
+          class="w-full min-w-0 resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        ></textarea>
+      </div>
 
-    <!-- Avatar URL -->
-    <div class="form-group form-group-full">
-      <label class="form-label">
-        {{ 'adminUserEdit.avatarUrl' | translate }}
-      </label>
+      <!-- Avatar URL -->
+      <div class="min-w-0 sm:col-span-2">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+        >
+          {{ 'adminUserEdit.avatarUrl' | translate }}
+        </label>
 
-      <input
-        type="text"
-        [(ngModel)]="selectedUser.avatarUrl"
-        name="avatarUrl"
-        class="form-input"
-      />
-    </div>
+        <input
+          type="text"
+          [(ngModel)]="selectedUser.avatarUrl"
+          name="avatarUrl"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
 
-    <!-- Edző -->
-    <div class="form-group">
-      <label class="form-label">
-        {{ 'adminUserEdit.coach' | translate }}
-      </label>
+      <!-- Edző -->
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+        >
+          {{ 'adminUserEdit.coach' | translate }}
+        </label>
 
-      <app-coach-select
-        [selectedCoachId]="selectedCoach?.id"
-        (coachSelected)="onCoachSelected($event)"
+        <app-coach-select
+          [selectedCoachId]="selectedCoach?.id"
+          (coachSelected)="onCoachSelected($event)"
+        >
+        </app-coach-select>
+      </div>
+
+      <!-- Szerepkörök -->
+      <div class="min-w-0">
+        <mat-form-field
+          appearance="fill"
+          class="w-full"
+        >
+          <mat-label>
+            {{ 'adminUserEdit.roles' | translate }}
+          </mat-label>
+
+          <mat-select
+            multiple
+            [value]="selectedRoles"
+            (selectionChange)="onRoleSelected($event.value)"
+          >
+            <mat-option
+              *ngFor="let role of roles"
+              [value]="role"
+            >
+              {{ role.name }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <!-- Mentés -->
+      <div
+        class="flex min-w-0 sm:col-span-2 sm:justify-end"
       >
-      </app-coach-select>
-    </div>
+        <button
+          type="submit"
+          class="min-h-11 w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:from-blue-700 hover:to-indigo-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-blue-500/20 active:scale-[0.99] sm:w-auto"
+        >
+          {{ 'common.save' | translate }}
+        </button>
+      </div>
 
-    <!-- Szerepkörök -->
-    <mat-form-field appearance="fill" class="roles-field">
-      <mat-label>
-        {{ 'adminUserEdit.roles' | translate }}
-      </mat-label>
-
-      <mat-select
-        multiple
-        [value]="selectedRoles"
-        (selectionChange)="onRoleSelected($event.value)"
-      >
-        <mat-option *ngFor="let role of roles" [value]="role">
-          {{ role.name }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-
-    <!-- Mentés -->
-    <div class="save-container">
-      <button type="submit" class="save-button">
-        {{ 'common.save' | translate }}
-      </button>
-    </div>
-  </form>
+    </form>
+  </div>
 </div>

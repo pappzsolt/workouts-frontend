@@ -1,234 +1,211 @@
-<div class="page-container">
-
-  <!-- ============================= -->
-  <!-- OLDAL CÍM -->
-  <!-- ============================= -->
-
-  <h2 class="page-title">
-    {{ 'adminCoachEdit.title' | translate }}
-  </h2>
-
-
-  <!-- ============================= -->
-  <!-- ÜZENET -->
-  <!-- ============================= -->
-
-  <app-message
-    *ngIf="message"
-    [message]="message"
-    [type]="messageType"
-  ></app-message>
-
-
-  <!-- ============================= -->
-  <!-- BETÖLTÉS -->
-  <!-- ============================= -->
-
-  <div
-    *ngIf="loading"
-    class="loading-message"
-  >
-    {{ 'common.loading' | translate }}
-  </div>
-
-
-  <!-- ============================= -->
-  <!-- COACH KIVÁLASZTÁSA -->
-  <!-- ============================= -->
-
-  <div class="coach-select-container">
-
-    <label
-      class="form-label"
-      for="coachSelect"
-    >
-      {{ 'adminCoachEdit.selectCoach' | translate }}
-    </label>
-
-    <select
-      id="coachSelect"
-      [(ngModel)]="selectedCoachId"
-      (change)="onSelectCoach()"
-      class="form-control"
-    >
-      <option [ngValue]="null">
-        -- {{ 'adminCoachEdit.selectCoach' | translate }} --
-      </option>
-
-      <option
-        *ngFor="let c of coaches"
-        [ngValue]="c.id"
-      >
-        {{ c.name }} ({{ c.email }})
-      </option>
-
-    </select>
-
-  </div>
-
-
-  <!-- ============================= -->
-  <!-- COACH FORM -->
-  <!-- ============================= -->
-
-  <form
-    class="coach-form"
-    (ngSubmit)="onSave()"
-  >
-
-    <!-- Név -->
-
-    <div class="form-group">
-
-      <label
-        class="form-label"
-        for="name"
-      >
-        {{ 'common.name' | translate }}
-      </label>
-
-      <input
-        id="name"
-        name="name"
-        type="text"
-        [placeholder]="'common.name' | translate"
-        [(ngModel)]="selectedCoach.name"
-        class="form-control"
-      />
-
-    </div>
-
-
-    <!-- Email -->
-
-    <div class="form-group">
-
-      <label
-        class="form-label"
-        for="email"
-      >
-        {{ 'common.email' | translate }}
-      </label>
-
-      <input
-        id="email"
-        name="email"
-        type="email"
-        [placeholder]="'common.email' | translate"
-        [(ngModel)]="selectedCoach.email"
-        class="form-control"
-      />
-
-    </div>
-
-
-    <!-- Jelszó -->
-
-    <div class="form-group">
-
-      <label
-        class="form-label"
-        for="password"
-      >
-        {{ 'common.password' | translate }}
-      </label>
-
-      <input
-        id="password"
-        name="password"
-        type="password"
-        [placeholder]="'adminCoachEdit.passwordPlaceholder' | translate"
-        [(ngModel)]="selectedCoach.password"
-        class="form-control"
-      />
-
-    </div>
-
-
-    <!-- Telefonszám -->
-
-    <div class="form-group">
-
-      <label
-        class="form-label"
-        for="phone"
-      >
-        {{ 'common.phone' | translate }}
-      </label>
-
-      <input
-        id="phone"
-        name="phone"
-        type="text"
-        [placeholder]="'common.phone' | translate"
-        [(ngModel)]="selectedCoach.phone"
-        class="form-control"
-      />
-
-    </div>
-
-
-    <!-- Specializáció -->
-
-    <div class="form-group full-width">
-
-      <label
-        class="form-label"
-        for="specialization"
-      >
-        {{ 'common.specialization' | translate }}
-      </label>
-
-      <textarea
-        id="specialization"
-        name="specialization"
-        rows="3"
-        [placeholder]="'common.specialization' | translate"
-        [(ngModel)]="selectedCoach.specialization"
-        class="form-control"
-      ></textarea>
-
-    </div>
-
-
-    <!-- Avatar URL -->
-
-    <div class="form-group full-width">
-
-      <label
-        class="form-label"
-        for="avatar_url"
-      >
-        Avatar URL
-      </label>
-
-      <input
-        id="avatar_url"
-        name="avatarUrl"
-        type="text"
-        placeholder="Avatar kép URL"
-        [(ngModel)]="selectedCoach.avatarUrl"
-        class="form-control"
-      />
-
-    </div>
-
+<div
+  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+>
+  <div class="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-6">
 
     <!-- ============================= -->
-    <!-- MENTÉS -->
+    <!-- OLDAL CÍM -->
     <!-- ============================= -->
 
-    <div class="submit-container">
-
-      <button
-        type="submit"
-        class="save-button"
+    <div class="text-center">
+      <h2
+        class="break-words text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
       >
-        {{ 'common.save' | translate }}
-      </button>
-
+        {{ 'adminCoachEdit.title' | translate }}
+      </h2>
     </div>
 
-  </form>
+    <!-- ============================= -->
+    <!-- ÜZENET -->
+    <!-- ============================= -->
 
+    <app-message
+      *ngIf="message"
+      [message]="message"
+      [type]="messageType"
+    ></app-message>
+
+    <!-- ============================= -->
+    <!-- BETÖLTÉS -->
+    <!-- ============================= -->
+
+    <div
+      *ngIf="loading"
+      class="flex min-h-20 items-center justify-center rounded-xl border border-blue-200 bg-blue-50 px-4 py-4 text-center text-sm font-medium text-blue-700"
+    >
+      {{ 'common.loading' | translate }}
+    </div>
+
+    <!-- ============================= -->
+    <!-- COACH KIVÁLASZTÁSA -->
+    <!-- ============================= -->
+
+    <div
+      class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+    >
+      <label
+        class="mb-2 block text-sm font-semibold text-slate-700"
+        for="coachSelect"
+      >
+        {{ 'adminCoachEdit.selectCoach' | translate }}
+      </label>
+
+      <select
+        id="coachSelect"
+        [(ngModel)]="selectedCoachId"
+        (change)="onSelectCoach()"
+        class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+      >
+        <option [ngValue]="null">
+          -- {{ 'adminCoachEdit.selectCoach' | translate }} --
+        </option>
+
+        <option
+          *ngFor="let c of coaches"
+          [ngValue]="c.id"
+        >
+          {{ c.name }} ({{ c.email }})
+        </option>
+      </select>
+    </div>
+
+    <!-- ============================= -->
+    <!-- COACH FORM -->
+    <!-- ============================= -->
+
+    <form
+      class="grid min-w-0 grid-cols-1 gap-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6 lg:p-8"
+      (ngSubmit)="onSave()"
+    >
+
+      <!-- Név -->
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+          for="name"
+        >
+          {{ 'common.name' | translate }}
+        </label>
+
+        <input
+          id="name"
+          name="name"
+          type="text"
+          [placeholder]="'common.name' | translate"
+          [(ngModel)]="selectedCoach.name"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
+
+      <!-- Email -->
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+          for="email"
+        >
+          {{ 'common.email' | translate }}
+        </label>
+
+        <input
+          id="email"
+          name="email"
+          type="email"
+          [placeholder]="'common.email' | translate"
+          [(ngModel)]="selectedCoach.email"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
+
+      <!-- Jelszó -->
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+          for="password"
+        >
+          {{ 'common.password' | translate }}
+        </label>
+
+        <input
+          id="password"
+          name="password"
+          type="password"
+          [placeholder]="'adminCoachEdit.passwordPlaceholder' | translate"
+          [(ngModel)]="selectedCoach.password"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
+
+      <!-- Telefonszám -->
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+          for="phone"
+        >
+          {{ 'common.phone' | translate }}
+        </label>
+
+        <input
+          id="phone"
+          name="phone"
+          type="text"
+          [placeholder]="'common.phone' | translate"
+          [(ngModel)]="selectedCoach.phone"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
+
+      <!-- Specializáció -->
+      <div class="min-w-0 sm:col-span-2">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+          for="specialization"
+        >
+          {{ 'common.specialization' | translate }}
+        </label>
+
+        <textarea
+          id="specialization"
+          name="specialization"
+          rows="4"
+          [placeholder]="'common.specialization' | translate"
+          [(ngModel)]="selectedCoach.specialization"
+          class="w-full min-w-0 resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        ></textarea>
+      </div>
+
+      <!-- Avatar URL -->
+      <div class="min-w-0 sm:col-span-2">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+          for="avatar_url"
+        >
+          Avatar URL
+        </label>
+
+        <input
+          id="avatar_url"
+          name="avatarUrl"
+          type="text"
+          placeholder="Avatar kép URL"
+          [(ngModel)]="selectedCoach.avatarUrl"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
+
+      <!-- ============================= -->
+      <!-- MENTÉS -->
+      <!-- ============================= -->
+
+      <div class="flex min-w-0 sm:col-span-2 sm:justify-end">
+        <button
+          type="submit"
+          class="min-h-11 w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:from-blue-700 hover:to-indigo-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-blue-500/20 active:scale-[0.99] sm:w-auto"
+        >
+          {{ 'common.save' | translate }}
+        </button>
+      </div>
+
+    </form>
+
+  </div>
 </div>

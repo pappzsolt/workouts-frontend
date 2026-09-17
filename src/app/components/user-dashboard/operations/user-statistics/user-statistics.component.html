@@ -1,20 +1,64 @@
-<h2 class="statistics-title">
-  {{ 'userStatistics.title' | translate }}
-</h2>
-
 <div
-  *ngIf="stats$ | async as stats"
-  class="statistics-card"
+  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
 >
-  <div class="statistics-icon">📊</div>
+  <div class="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-6">
 
-  <div class="statistics-completed">
-    {{ 'userStatistics.workoutsCompleted' | translate }}:
-    {{ stats.workoutCompleted }}
-  </div>
+    <!-- Cím -->
+    <div class="text-center">
+      <h2
+        class="break-words text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
+      >
+        {{ 'userStatistics.title' | translate }}
+      </h2>
+    </div>
 
-  <div class="statistics-hours">
-    {{ 'userStatistics.totalHours' | translate }}:
-    {{ stats.totalHours }}
+    <!-- Statisztika kártya -->
+    <div
+      *ngIf="stats$ | async as stats"
+      class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md sm:p-8"
+    >
+      <!-- Ikon -->
+      <div
+        class="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 text-4xl shadow-sm"
+      >
+        📊
+      </div>
+
+      <!-- Statisztikák -->
+      <div
+        class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2"
+      >
+        <!-- Teljesített edzések -->
+        <div
+          class="rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-center"
+        >
+          <div class="text-sm font-semibold text-slate-500">
+            {{ 'userStatistics.workoutsCompleted' | translate }}
+          </div>
+
+          <div
+            class="mt-2 text-3xl font-bold text-slate-800"
+          >
+            {{ stats.workoutCompleted }}
+          </div>
+        </div>
+
+        <!-- Összes óra -->
+        <div
+          class="rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-center"
+        >
+          <div class="text-sm font-semibold text-slate-500">
+            {{ 'userStatistics.totalHours' | translate }}
+          </div>
+
+          <div
+            class="mt-2 text-3xl font-bold text-slate-800"
+          >
+            {{ stats.totalHours }}
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>

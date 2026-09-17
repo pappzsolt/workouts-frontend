@@ -1,5 +1,7 @@
 <!-- Oldal címe -->
-<h2 class="universal-form-title">
+<h2
+  class="mb-6 text-center text-2xl font-bold text-slate-800 sm:text-3xl"
+>
   ➕ {{ 'newExercise.title' | translate }}
 </h2>
 
@@ -11,22 +13,33 @@
 </app-message>
 
 <!-- Form kártya -->
-<div class="form-card">
-
-  <div class="form-header">
-    <span class="form-header-emoji">💪</span>
+<div
+  class="mx-auto mt-6 w-full max-w-5xl min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+>
+  <!-- Fejléc -->
+  <div
+    class="flex items-center justify-center bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-5"
+  >
+    <span
+      class="flex h-12 w-12 items-center justify-center rounded-full bg-white text-2xl shadow-md"
+    >
+      💪
+    </span>
   </div>
 
   <!-- Form -->
   <form
     (ngSubmit)="addExercise()"
     #exerciseForm="ngForm"
-    class="universal-form"
+    class="grid min-w-0 grid-cols-1 gap-5 p-5 sm:grid-cols-2 sm:p-6"
   >
 
     <!-- Név -->
-    <div class="universal-form-group-full">
-      <label for="name" class="universal-form-label">
+    <div class="min-w-0 sm:col-span-2">
+      <label
+        for="name"
+        class="mb-2 block text-sm font-semibold text-slate-700"
+      >
         {{ 'newExercise.name' | translate }}:
       </label>
 
@@ -36,13 +49,16 @@
         name="name"
         [(ngModel)]="newExercise.name"
         required
-        class="universal-form-input"
+        class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
       />
     </div>
 
     <!-- Leírás -->
-    <div class="universal-form-group-full">
-      <label for="description" class="universal-form-label">
+    <div class="min-w-0 sm:col-span-2">
+      <label
+        for="description"
+        class="mb-2 block text-sm font-semibold text-slate-700"
+      >
         {{ 'newExercise.description' | translate }}:
       </label>
 
@@ -51,13 +67,16 @@
         name="description"
         [(ngModel)]="newExercise.description"
         rows="3"
-        class="universal-form-textarea"
+        class="block w-full resize-y rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
       ></textarea>
     </div>
 
     <!-- Kép URL -->
-    <div class="universal-form-group">
-      <label for="imageUrl" class="universal-form-label">
+    <div class="min-w-0">
+      <label
+        for="imageUrl"
+        class="mb-2 block text-sm font-semibold text-slate-700"
+      >
         {{ 'newExercise.imageUrl' | translate }}:
       </label>
 
@@ -66,13 +85,16 @@
         id="imageUrl"
         name="imageUrl"
         [(ngModel)]="newExercise.imageUrl"
-        class="universal-form-input"
+        class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
       />
     </div>
 
     <!-- Videó URL -->
-    <div class="universal-form-group">
-      <label for="videoUrl" class="universal-form-label">
+    <div class="min-w-0">
+      <label
+        for="videoUrl"
+        class="mb-2 block text-sm font-semibold text-slate-700"
+      >
         {{ 'newExercise.videoUrl' | translate }}:
       </label>
 
@@ -81,13 +103,16 @@
         id="videoUrl"
         name="videoUrl"
         [(ngModel)]="newExercise.videoUrl"
-        class="universal-form-input"
+        class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
       />
     </div>
 
     <!-- Izomcsoport -->
-    <div class="universal-form-group">
-      <label for="muscleGroup" class="universal-form-label">
+    <div class="min-w-0">
+      <label
+        for="muscleGroup"
+        class="mb-2 block text-sm font-semibold text-slate-700"
+      >
         {{ 'newExercise.muscleGroup' | translate }}:
       </label>
 
@@ -96,13 +121,16 @@
         id="muscleGroup"
         name="muscleGroup"
         [(ngModel)]="newExercise.muscleGroup"
-        class="universal-form-input"
+        class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
       />
     </div>
 
     <!-- Eszköz -->
-    <div class="universal-form-group">
-      <label for="equipment" class="universal-form-label">
+    <div class="min-w-0">
+      <label
+        for="equipment"
+        class="mb-2 block text-sm font-semibold text-slate-700"
+      >
         {{ 'newExercise.equipment' | translate }}:
       </label>
 
@@ -111,13 +139,16 @@
         id="equipment"
         name="equipment"
         [(ngModel)]="newExercise.equipment"
-        class="universal-form-input"
+        class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
       />
     </div>
 
     <!-- Nehézség -->
-    <div class="universal-form-group">
-      <label for="difficultyLevel" class="universal-form-label">
+    <div class="min-w-0">
+      <label
+        for="difficultyLevel"
+        class="mb-2 block text-sm font-semibold text-slate-700"
+      >
         {{ 'newExercise.difficulty' | translate }}:
       </label>
 
@@ -125,7 +156,7 @@
         id="difficultyLevel"
         name="difficultyLevel"
         [(ngModel)]="newExercise.difficultyLevel"
-        class="universal-form-select"
+        class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
       >
         <option value="easy">
           {{ 'newExercise.easy' | translate }}
@@ -142,8 +173,11 @@
     </div>
 
     <!-- Kategória -->
-    <div class="universal-form-group">
-      <label for="category" class="universal-form-label">
+    <div class="min-w-0">
+      <label
+        for="category"
+        class="mb-2 block text-sm font-semibold text-slate-700"
+      >
         {{ 'newExercise.category' | translate }}:
       </label>
 
@@ -152,15 +186,15 @@
         id="category"
         name="category"
         [(ngModel)]="newExercise.category"
-        class="universal-form-input"
+        class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
       />
     </div>
 
     <!-- Kalória / perc -->
-    <div class="universal-form-group">
+    <div class="min-w-0">
       <label
         for="caloriesBurnedPerMinute"
-        class="universal-form-label"
+        class="mb-2 block text-sm font-semibold text-slate-700"
       >
         {{ 'newExercise.caloriesPerMinute' | translate }}:
       </label>
@@ -171,13 +205,16 @@
         name="caloriesBurnedPerMinute"
         [(ngModel)]="newExercise.caloriesBurnedPerMinute"
         step="0.01"
-        class="universal-form-input"
+        class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
       />
     </div>
 
     <!-- Időtartam -->
-    <div class="universal-form-group">
-      <label for="durationSeconds" class="universal-form-label">
+    <div class="min-w-0">
+      <label
+        for="durationSeconds"
+        class="mb-2 block text-sm font-semibold text-slate-700"
+      >
         {{ 'newExercise.duration' | translate }}:
       </label>
 
@@ -186,39 +223,42 @@
         id="durationSeconds"
         name="durationSeconds"
         [(ngModel)]="newExercise.durationSeconds"
-        class="universal-form-input"
+        class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
       />
     </div>
 
     <!-- Kész -->
-    <div class="universal-form-group-checkbox">
+    <div
+      class="flex min-w-0 items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 sm:col-span-2"
+    >
       <input
         type="checkbox"
         id="done"
         name="done"
         [(ngModel)]="newExercise.done"
-        class="universal-form-checkbox"
+        class="h-4 w-4 shrink-0 rounded border-slate-300 text-blue-600 focus:ring-2 focus:ring-blue-600/20"
       />
 
       <label
         for="done"
-        class="universal-form-label-inline"
+        class="cursor-pointer text-sm font-semibold text-slate-700"
       >
         {{ 'newExercise.done' | translate }}
       </label>
     </div>
 
     <!-- Submit -->
-    <div class="universal-form-actions">
+    <div
+      class="flex min-w-0 justify-end pt-1 sm:col-span-2"
+    >
       <button
         type="submit"
         [disabled]="!exerciseForm.form.valid || saving"
-        class="universal-form-button"
+        class="w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
       >
         ➕ {{ 'newExercise.create' | translate }}
       </button>
     </div>
 
   </form>
-
 </div>

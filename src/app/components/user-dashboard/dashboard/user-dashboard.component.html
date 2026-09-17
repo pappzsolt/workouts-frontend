@@ -1,55 +1,99 @@
-<h2 class="dashboard-title">
-  {{ 'userDashboard.title' | translate }}
-</h2>
+<div
+  class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+>
+  <div class="mx-auto flex w-full max-w-7xl flex-col gap-6">
 
-<div class="dashboard-cards-container">
-
-  <!-- My Programs -->
-  <div
-    class="dashboard-card"
-    (click)="navigateTo('user/my-programs')"
-  >
-    <div class="dashboard-card-emoji">📚</div>
-
-    <div class="dashboard-card-title">
-      {{ 'userDashboard.myPrograms' | translate }}
+    <!-- Oldal címe -->
+    <div class="text-center">
+      <h2
+        class="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
+      >
+        {{ 'userDashboard.title' | translate }}
+      </h2>
     </div>
-  </div>
 
-  <!-- Statistics -->
-  <div
-    class="dashboard-card"
-    (click)="navigateTo('user/statistics')"
-  >
-    <div class="dashboard-card-emoji">📊</div>
+    <!-- Dashboard kártyák -->
+    <div
+      class="grid grid-cols-1 gap-5 sm:grid-cols-2"
+    >
 
-    <div class="dashboard-card-title">
-      {{ 'userDashboard.statistics' | translate }}
+      <!-- My Programs -->
+      <button
+        type="button"
+        class="group flex min-h-44 flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-blue-500/10"
+        (click)="navigateTo('user/my-programs')"
+      >
+        <div
+          class="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-3xl shadow-sm transition-transform duration-200 group-hover:scale-105"
+        >
+          📚
+        </div>
+
+        <div
+          class="text-base font-semibold text-slate-800 sm:text-lg"
+        >
+          {{ 'userDashboard.myPrograms' | translate }}
+        </div>
+      </button>
+
+      <!-- Statistics -->
+      <button
+        type="button"
+        class="group flex min-h-44 flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-blue-500/10"
+        (click)="navigateTo('user/statistics')"
+      >
+        <div
+          class="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-3xl shadow-sm transition-transform duration-200 group-hover:scale-105"
+        >
+          📊
+        </div>
+
+        <div
+          class="text-base font-semibold text-slate-800 sm:text-lg"
+        >
+          {{ 'userDashboard.statistics' | translate }}
+        </div>
+      </button>
+
+      <!-- Program Statistics -->
+      <button
+        type="button"
+        class="group flex min-h-44 flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-blue-500/10"
+        (click)="navigateTo('user/program-statistics')"
+      >
+        <div
+          class="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-3xl shadow-sm transition-transform duration-200 group-hover:scale-105"
+        >
+          📈
+        </div>
+
+        <div
+          class="text-base font-semibold text-slate-800 sm:text-lg"
+        >
+          {{ 'userDashboard.programStatistics' | translate }}
+        </div>
+      </button>
+
+      <!-- My Workouts -->
+      <button
+        type="button"
+        class="group flex min-h-44 flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-blue-500/10"
+        (click)="navigateTo('user/workouts')"
+      >
+        <div
+          class="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-3xl shadow-sm transition-transform duration-200 group-hover:scale-105"
+        >
+          📅
+        </div>
+
+        <div
+          class="text-base font-semibold text-slate-800 sm:text-lg"
+        >
+          {{ 'userDashboard.myWorkouts' | translate }}
+        </div>
+      </button>
+
     </div>
+
   </div>
-
-  <!-- Program Statistics -->
-  <div
-    class="dashboard-card"
-    (click)="navigateTo('user/program-statistics')"
-  >
-    <div class="dashboard-card-emoji">📈</div>
-
-    <div class="dashboard-card-title">
-      {{ 'userDashboard.programStatistics' | translate }}
-    </div>
-  </div>
-
-  <!-- My Workouts -->
-  <div
-    class="dashboard-card"
-    (click)="navigateTo('user/workouts')"
-  >
-    <div class="dashboard-card-emoji">📅</div>
-
-    <div class="dashboard-card-title">
-      {{ 'userDashboard.myWorkouts' | translate }}
-    </div>
-  </div>
-
 </div>

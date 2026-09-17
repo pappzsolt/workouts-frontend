@@ -1,187 +1,210 @@
-<div class="profile-page">
-  <h2 class="profile-title">
-    {{ 'userProfile.title' | translate }}
-  </h2>
+<div
+  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+>
+  <div class="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-6">
 
-  <div *ngIf="message" class="profile-message">
-    {{ message | translate }}
-  </div>
-
-  <form class="profile-form">
-    <!-- Username -->
-    <div class="profile-form-group">
-      <label
-        class="profile-label"
-        for="username"
+    <!-- Cím -->
+    <div class="text-center">
+      <h2
+        class="break-words text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
       >
-        {{ 'userProfile.username' | translate }}
-      </label>
-
-      <input
-        id="username"
-        name="username"
-        type="text"
-        [placeholder]="'userProfile.usernamePlaceholder' | translate"
-        [(ngModel)]="selectedUser.username"
-        class="profile-input"
-      />
+        {{ 'userProfile.title' | translate }}
+      </h2>
     </div>
 
-    <!-- Email -->
-    <div class="profile-form-group">
-      <label
-        class="profile-label"
-        for="email"
-      >
-        {{ 'userProfile.email' | translate }}
-      </label>
-
-      <input
-        id="email"
-        name="email"
-        type="email"
-        [placeholder]="'userProfile.emailPlaceholder' | translate"
-        [(ngModel)]="selectedUser.email"
-        class="profile-input"
-      />
+    <!-- Üzenet -->
+    <div
+      *ngIf="message"
+      class="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-700 shadow-sm"
+    >
+      {{ message | translate }}
     </div>
 
-    <!-- Password -->
-    <div class="profile-form-group">
-      <label
-        class="profile-label"
-        for="password_hash"
-      >
-        {{ 'userProfile.password' | translate }}
-      </label>
+    <!-- Profil form -->
+    <form
+      class="grid min-w-0 grid-cols-1 gap-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6 lg:p-8"
+    >
 
-      <input
-        id="password_hash"
-        name="password_hash"
-        type="password"
-        [placeholder]="'userProfile.passwordPlaceholder' | translate"
-        [(ngModel)]="selectedUser.password"
-        class="profile-input"
-      />
-    </div>
+      <!-- Username -->
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+          for="username"
+        >
+          {{ 'userProfile.username' | translate }}
+        </label>
 
-    <!-- Age -->
-    <div class="profile-form-group">
-      <label
-        class="profile-label"
-        for="age"
-      >
-        {{ 'userProfile.age' | translate }}
-      </label>
-
-      <input
-        id="age"
-        name="age"
-        type="number"
-        [placeholder]="'userProfile.agePlaceholder' | translate"
-        [(ngModel)]="selectedUser.age"
-        class="profile-input"
-      />
-    </div>
-
-    <!-- Weight -->
-    <div class="profile-form-group">
-      <label
-        class="profile-label"
-        for="weight"
-      >
-        {{ 'userProfile.weight' | translate }}
-      </label>
-
-      <input
-        id="weight"
-        name="weight"
-        type="number"
-        step="0.01"
-        [placeholder]="'userProfile.weightPlaceholder' | translate"
-        [(ngModel)]="selectedUser.weight"
-        class="profile-input"
-      />
-    </div>
-
-    <!-- Height -->
-    <div class="profile-form-group">
-      <label
-        class="profile-label"
-        for="height"
-      >
-        {{ 'userProfile.height' | translate }}
-      </label>
-
-      <input
-        id="height"
-        name="height"
-        type="number"
-        step="0.01"
-        [placeholder]="'userProfile.heightPlaceholder' | translate"
-        [(ngModel)]="selectedUser.height"
-        class="profile-input"
-      />
-    </div>
-
-    <!-- Goals -->
-    <div class="profile-form-group profile-form-group-full">
-      <label
-        class="profile-label"
-        for="goals"
-      >
-        {{ 'userProfile.goals' | translate }}
-      </label>
-
-      <textarea
-        id="goals"
-        name="goals"
-        rows="3"
-        [placeholder]="'userProfile.goalsPlaceholder' | translate"
-        [(ngModel)]="selectedUser.goals"
-        class="profile-textarea"
-      ></textarea>
-    </div>
-
-    <!-- Avatar -->
-    <div class="profile-form-group profile-form-group-full">
-      <label
-        class="profile-label"
-        for="avatar_url"
-      >
-        {{ 'userProfile.avatarUrl' | translate }}
-      </label>
-
-      <input
-        id="avatar_url"
-        name="avatar_url"
-        type="text"
-        [placeholder]="'userProfile.avatarUrlPlaceholder' | translate"
-        [(ngModel)]="selectedUser.avatarUrl"
-        class="profile-input"
-      />
-    </div>
-
-    <!-- Coach -->
-    <div class="profile-form-group profile-form-group-full">
-      <label class="profile-label">
-        {{ 'userProfile.coach' | translate }}
-      </label>
-
-      <div class="profile-coach">
-        {{ coachName }}
+        <input
+          id="username"
+          name="username"
+          type="text"
+          [placeholder]="'userProfile.usernamePlaceholder' | translate"
+          [(ngModel)]="selectedUser.username"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
       </div>
-    </div>
 
-    <!-- Save -->
-    <div class="profile-submit">
-      <button
-        type="button"
-        (click)="onSave()"
-        class="profile-save-button"
-      >
-        {{ 'userProfile.save' | translate }}
-      </button>
-    </div>
-  </form>
+      <!-- Email -->
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+          for="email"
+        >
+          {{ 'userProfile.email' | translate }}
+        </label>
+
+        <input
+          id="email"
+          name="email"
+          type="email"
+          [placeholder]="'userProfile.emailPlaceholder' | translate"
+          [(ngModel)]="selectedUser.email"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
+
+      <!-- Password -->
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+          for="password_hash"
+        >
+          {{ 'userProfile.password' | translate }}
+        </label>
+
+        <input
+          id="password_hash"
+          name="password_hash"
+          type="password"
+          [placeholder]="'userProfile.passwordPlaceholder' | translate"
+          [(ngModel)]="selectedUser.password"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
+
+      <!-- Age -->
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+          for="age"
+        >
+          {{ 'userProfile.age' | translate }}
+        </label>
+
+        <input
+          id="age"
+          name="age"
+          type="number"
+          [placeholder]="'userProfile.agePlaceholder' | translate"
+          [(ngModel)]="selectedUser.age"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
+
+      <!-- Weight -->
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+          for="weight"
+        >
+          {{ 'userProfile.weight' | translate }}
+        </label>
+
+        <input
+          id="weight"
+          name="weight"
+          type="number"
+          step="0.01"
+          [placeholder]="'userProfile.weightPlaceholder' | translate"
+          [(ngModel)]="selectedUser.weight"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
+
+      <!-- Height -->
+      <div class="min-w-0">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+          for="height"
+        >
+          {{ 'userProfile.height' | translate }}
+        </label>
+
+        <input
+          id="height"
+          name="height"
+          type="number"
+          step="0.01"
+          [placeholder]="'userProfile.heightPlaceholder' | translate"
+          [(ngModel)]="selectedUser.height"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
+
+      <!-- Goals -->
+      <div class="min-w-0 sm:col-span-2">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+          for="goals"
+        >
+          {{ 'userProfile.goals' | translate }}
+        </label>
+
+        <textarea
+          id="goals"
+          name="goals"
+          rows="4"
+          [placeholder]="'userProfile.goalsPlaceholder' | translate"
+          [(ngModel)]="selectedUser.goals"
+          class="w-full min-w-0 resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        ></textarea>
+      </div>
+
+      <!-- Avatar -->
+      <div class="min-w-0 sm:col-span-2">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+          for="avatar_url"
+        >
+          {{ 'userProfile.avatarUrl' | translate }}
+        </label>
+
+        <input
+          id="avatar_url"
+          name="avatar_url"
+          type="text"
+          [placeholder]="'userProfile.avatarUrlPlaceholder' | translate"
+          [(ngModel)]="selectedUser.avatarUrl"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
+
+      <!-- Coach -->
+      <div class="min-w-0 sm:col-span-2">
+        <label
+          class="mb-2 block text-sm font-semibold text-slate-700"
+        >
+          {{ 'userProfile.coach' | translate }}
+        </label>
+
+        <div
+          class="flex min-h-11 items-center rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-base font-medium text-slate-700 sm:text-sm"
+        >
+          {{ coachName }}
+        </div>
+      </div>
+
+      <!-- Save -->
+      <div class="flex min-w-0 sm:col-span-2 sm:justify-end">
+        <button
+          type="button"
+          (click)="onSave()"
+          class="min-h-11 w-full rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:from-blue-700 hover:to-indigo-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-blue-500/20 active:scale-[0.99] sm:w-auto"
+        >
+          {{ 'userProfile.save' | translate }}
+        </button>
+      </div>
+
+    </form>
+  </div>
 </div>

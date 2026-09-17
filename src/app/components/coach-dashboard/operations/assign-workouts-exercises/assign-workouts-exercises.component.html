@@ -1,90 +1,144 @@
-<div class="page-container">
-
-  <!-- Oldal cím -->
-  <h1 class="page-title">
-    {{ 'assignWorkoutExercises.title' | translate }}
-  </h1>
-
-
-  <!-- Közös üzenet -->
-  <app-message
-    [message]="message"
-    [type]="messageType"
-  >
-  </app-message>
-
-
-  <!-- Workout lista -->
-  <div class="content-card">
-    <h2 class="section-title">
-      {{ 'assignWorkoutExercises.availableWorkouts' | translate }}
-    </h2>
-
-    <app-coach-workout-board
-      [externalWorkouts]="workouts"
-      [selectedWorkoutIds]="selectedWorkoutIds"
-      [multiSelect]="false"
-      (workoutsChange)="onWorkoutsChange($event)"
-    >
-    </app-coach-workout-board>
-  </div>
-
-
-  <!-- Kiválasztott workoutok -->
+<div
+  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+>
   <div
-    *ngIf="selectedWorkoutIds.length"
-    class="content-card"
+    class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6"
   >
-    <h2 class="section-title">
-      {{ 'assignWorkoutExercises.selectedWorkouts' | translate }}
-    </h2>
 
-    <div class="items-list">
+    <!-- ======================================================
+         OLDAL CÍM
+         ====================================================== -->
+
+    <h1
+      class="text-center text-2xl font-bold text-slate-800 sm:text-3xl"
+    >
+      {{ 'assignWorkoutExercises.title' | translate }}
+    </h1>
+
+
+    <!-- ======================================================
+         KÖZÖS ÜZENET
+         ====================================================== -->
+
+    <app-message
+      [message]="message"
+      [type]="messageType"
+    >
+    </app-message>
+
+
+    <!-- ======================================================
+         WORKOUT LISTA
+         ====================================================== -->
+
+    <div
+      class="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+    >
       <div
-        *ngFor="let wid of selectedWorkoutIds"
-        class="selected-workout"
+        class="border-b border-slate-100 px-5 py-4 sm:px-6"
       >
-        <span class="item-text">
-          {{ 'common.id' | translate }}: {{ wid }}
-        </span>
-
-        <button
-          type="button"
-          (click)="removeWorkout(wid)"
-          class="remove-button"
-          [title]="'common.remove' | translate"
+        <h2
+          class="text-lg font-bold text-slate-800 sm:text-xl"
         >
-          ✕
-        </button>
+          {{ 'assignWorkoutExercises.availableWorkouts' | translate }}
+        </h2>
+      </div>
+
+      <div class="min-w-0 p-5 sm:p-6">
+        <app-coach-workout-board
+          [externalWorkouts]="workouts"
+          [selectedWorkoutIds]="selectedWorkoutIds"
+          [multiSelect]="false"
+          (workoutsChange)="onWorkoutsChange($event)"
+        >
+        </app-coach-workout-board>
       </div>
     </div>
-  </div>
 
 
-  <!-- Exercises lista -->
-  <div class="content-card">
-    <h2 class="section-title">
-      {{ 'assignWorkoutExercises.availableExercises' | translate }}
-    </h2>
+    <!-- ======================================================
+         KIVÁLASZTOTT WORKOUTOK
+         ====================================================== -->
 
-    <app-coach-exercises-board
-      [externalExercises]="exercises"
-      [externalSelectedExercises]="selectedExercises"
-      (exercisesChange)="onExercisesChange($event)"
+    <div
+      *ngIf="selectedWorkoutIds.length"
+      class="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
     >
-    </app-coach-exercises-board>
-  </div>
+      <div
+        class="border-b border-slate-100 px-5 py-4 sm:px-6"
+      >
+        <h2
+          class="text-lg font-bold text-slate-800 sm:text-xl"
+        >
+          {{ 'assignWorkoutExercises.selectedWorkouts' | translate }}
+        </h2>
+      </div>
+
+      <div class="space-y-3 p-5 sm:p-6">
+        <div
+          *ngFor="let wid of selectedWorkoutIds"
+          class="flex items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 transition hover:border-blue-200 hover:bg-blue-50"
+        >
+          <span
+            class="min-w-0 break-words text-sm font-semibold text-slate-700"
+          >
+            {{ 'common.id' | translate }}: {{ wid }}
+          </span>
+
+          <button
+            type="button"
+            (click)="removeWorkout(wid)"
+            [title]="'common.remove' | translate"
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-red-200 bg-white text-sm font-bold text-red-600 transition hover:border-red-300 hover:bg-red-50 focus:outline-none focus:ring-4 focus:ring-red-600/10"
+          >
+            ✕
+          </button>
+        </div>
+      </div>
+    </div>
 
 
-  <!-- Mentés -->
-  <div class="save-container">
-    <button
-      type="button"
-      (click)="saveSelectedWorkoutsAndExercises()"
-      class="save-button"
+    <!-- ======================================================
+         EXERCISES LISTA
+         ====================================================== -->
+
+    <div
+      class="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
     >
-      {{ 'assignWorkoutExercises.save' | translate }}
-    </button>
-  </div>
+      <div
+        class="border-b border-slate-100 px-5 py-4 sm:px-6"
+      >
+        <h2
+          class="text-lg font-bold text-slate-800 sm:text-xl"
+        >
+          {{ 'assignWorkoutExercises.availableExercises' | translate }}
+        </h2>
+      </div>
 
+      <div class="min-w-0 p-5 sm:p-6">
+        <app-coach-exercises-board
+          [externalExercises]="exercises"
+          [externalSelectedExercises]="selectedExercises"
+          (exercisesChange)="onExercisesChange($event)"
+        >
+        </app-coach-exercises-board>
+      </div>
+    </div>
+
+
+    <!-- ======================================================
+         MENTÉS
+         ====================================================== -->
+
+    <div class="flex justify-center pt-1">
+      <button
+        type="button"
+        (click)="saveSelectedWorkoutsAndExercises()"
+        class="w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 sm:w-auto"
+      >
+        {{ 'assignWorkoutExercises.save' | translate }}
+      </button>
+    </div>
+
+  </div>
 </div>

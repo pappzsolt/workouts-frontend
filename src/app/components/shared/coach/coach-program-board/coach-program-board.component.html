@@ -1,18 +1,31 @@
-<!-- 🔄 Betöltés állapot -->
-<div *ngIf="loading" class="coach-board-message">
+<!-- Betöltés állapot -->
+<div
+  *ngIf="loading"
+  class="flex min-h-20 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-5 text-sm font-medium text-slate-600 shadow-sm"
+>
   {{ 'coachProgramBoard.loading' | translate }}
 </div>
 
-<!-- ℹ️ Üzenet -->
-<div *ngIf="message && !loading" class="coach-board-message">
+<!-- Üzenet -->
+<div
+  *ngIf="message && !loading"
+  class="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-700"
+>
   {{ message | translate }}
 </div>
 
-<!-- 🧩 Program oszlopok -->
-<div *ngIf="!loading && programs?.length" class="coach-board coach-program-board">
-  <div *ngFor="let program of programs" class="coach-board-column">
+<!-- Program oszlopok -->
+<div
+  *ngIf="!loading && programs?.length"
+  class="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+>
+  <div
+    *ngFor="let program of programs"
+    class="min-w-0"
+  >
     <!-- Program kiválasztása rádiógombbal -->
-    <div class="coach-program-select">
+    <div class="relative h-full">
+
       <input
         type="radio"
         name="selectedProgram"
@@ -20,17 +33,38 @@
         [(ngModel)]="selectedProgramId"
         (change)="onSelectProgram(program.programId)"
         id="program-{{ program.programId }}"
-        class="coach-program-radio"
+        class="peer sr-only"
       />
 
-      <label for="program-{{ program.programId }}" class="coach-program-label">
-        {{ program.programName }}
+      <label
+        for="program-{{ program.programId }}"
+        class="flex min-h-32 w-full cursor-pointer items-center gap-4 rounded-2xl border border-slate-200 bg-white px-5 py-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md peer-checked:border-blue-500 peer-checked:bg-blue-50/50 peer-checked:ring-2 peer-checked:ring-blue-500/20"
+      >
+        <!-- Radio vizuális jelzése -->
+        <span
+          class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-slate-300 bg-white transition-colors peer-checked:border-blue-600"
+        >
+          <span
+            class="h-3 w-3 rounded-full bg-blue-600 opacity-0 transition-opacity peer-checked:opacity-100"
+          ></span>
+        </span>
+
+        <!-- Program név -->
+        <span
+          class="min-w-0 flex-1 break-words text-base font-semibold leading-snug text-slate-800 sm:text-lg"
+        >
+          {{ program.programName }}
+        </span>
       </label>
+
     </div>
   </div>
 </div>
 
-<!-- 🚫 Nincs program -->
-<div *ngIf="!loading && (!programs || !programs.length)" class="coach-board-empty">
+<!-- Nincs program -->
+<div
+  *ngIf="!loading && (!programs || !programs.length)"
+  class="flex min-h-24 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-6 text-center text-sm font-medium text-slate-500 shadow-sm"
+>
   {{ 'coachProgramBoard.noPrograms' | translate }}
 </div>

@@ -1,6 +1,21 @@
-<div class="user-layout">
-  <app-user-menu></app-user-menu>
-  <main>
-    <router-outlet></router-outlet>
+<div
+  class="flex min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50"
+>
+  <!-- User menü -->
+  <aside
+    class="w-64 shrink-0 border-r border-slate-200 bg-white shadow-sm"
+  >
+    <app-user-menu></app-user-menu>
+  </aside>
+
+  <!-- Tartalom -->
+  <main
+    class="min-w-0 flex-1 p-4 sm:p-6 lg:p-8"
+  >
+    <div
+      class="min-h-[300px] min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:min-h-[400px] sm:p-6 lg:p-8"
+    >
+      <router-outlet></router-outlet>
+    </div>
   </main>
 </div>

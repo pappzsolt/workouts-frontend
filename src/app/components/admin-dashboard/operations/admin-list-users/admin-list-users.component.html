@@ -1,72 +1,118 @@
-<h2 class="page-title">
-  {{ 'adminUsers.title' | translate }}
-</h2>
+<div
+  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+>
+  <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
 
-<app-message
-  *ngIf="message"
-  [message]="message"
-  [type]="messageType"
-></app-message>
-
-<!-- Felhasználók -->
-<ng-container *ngIf="paginatedUsers.length > 0; else noUsers">
-  <div class="users-grid">
-    <div
-      *ngFor="let user of paginatedUsers"
-      class="user-card"
-    >
-      <!-- Avatar / Emoji -->
-      <div class="user-image">
-        <span class="user-emoji">
-          👤
-        </span>
-      </div>
-
-      <!-- Tartalom -->
-      <div class="user-content">
-        <div class="user-name">
-          {{ user.username }}
-        </div>
-
-        <div class="user-email">
-          {{ user.email }}
-        </div>
-
-        <div class="user-roles">
-          {{ 'adminUsers.role' | translate }}:
-          {{ user.roles.join(', ') }}
-        </div>
-      </div>
+    <!-- Cím -->
+    <div class="text-center">
+      <h2
+        class="break-words text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
+      >
+        {{ 'adminUsers.title' | translate }}
+      </h2>
     </div>
-  </div>
 
-  <!-- Lapozás -->
-  <div class="pagination">
-    <button
-      (click)="prevPage()"
-      [disabled]="currentPage === 1"
-      class="pagination-button"
+    <!-- Üzenet -->
+    <app-message
+      *ngIf="message"
+      [message]="message"
+      [type]="messageType"
     >
-      {{ 'common.previous' | translate }}
-    </button>
+    </app-message>
 
-    <span class="pagination-page">
-      {{ currentPage }} / {{ totalPages }}
-    </span>
+    <!-- Felhasználók -->
+    <ng-container *ngIf="paginatedUsers.length > 0; else noUsers">
 
-    <button
-      (click)="nextPage()"
-      [disabled]="currentPage === totalPages"
-      class="pagination-button"
-    >
-      {{ 'common.next' | translate }}
-    </button>
+      <div
+        class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+      >
+        <div
+          *ngFor="let user of paginatedUsers"
+          class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md"
+        >
+
+          <!-- Avatar -->
+          <div
+            class="flex h-40 items-center justify-center overflow-hidden bg-slate-100"
+          >
+            <span
+              class="text-6xl opacity-75 transition-transform duration-200 group-hover:scale-110"
+            >
+              👤
+            </span>
+          </div>
+
+          <!-- Tartalom -->
+          <div class="flex flex-1 min-w-0 flex-col p-5">
+
+            <!-- Username -->
+            <div
+              class="break-words text-lg font-bold text-slate-800"
+            >
+              {{ user.username }}
+            </div>
+
+            <!-- Email -->
+            <div
+              class="mt-2 break-words text-sm text-slate-600"
+            >
+              {{ user.email }}
+            </div>
+
+            <!-- Roles -->
+            <div
+              class="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-600"
+            >
+              <span class="font-semibold text-slate-700">
+                {{ 'adminUsers.role' | translate }}:
+              </span>
+
+              {{ user.roles.join(', ') }}
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Lapozás -->
+      <div
+        class="flex flex-col items-center justify-center gap-3 sm:flex-row"
+      >
+        <button
+          type="button"
+          (click)="prevPage()"
+          [disabled]="currentPage === 1"
+          class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none sm:w-auto"
+        >
+          {{ 'common.previous' | translate }}
+        </button>
+
+        <span
+          class="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm"
+        >
+          {{ currentPage }} / {{ totalPages }}
+        </span>
+
+        <button
+          type="button"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages"
+          class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none sm:w-auto"
+        >
+          {{ 'common.next' | translate }}
+        </button>
+      </div>
+
+    </ng-container>
+
+    <!-- Üres lista -->
+    <ng-template #noUsers>
+      <div
+        class="flex min-h-32 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-8 text-center text-sm font-medium text-slate-500 shadow-sm"
+      >
+        {{ 'adminUsers.noUsers' | translate }}
+      </div>
+    </ng-template>
+
   </div>
-</ng-container>
-
-<!-- Üres lista -->
-<ng-template #noUsers>
-  <div class="no-users">
-    {{ 'adminUsers.noUsers' | translate }}
-  </div>
-</ng-template>
+</div>

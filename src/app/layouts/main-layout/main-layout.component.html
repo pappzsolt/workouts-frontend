@@ -1,12 +1,27 @@
 <!-- main-layout.component.html -->
-<div class="flex min-h-screen">
+
+<div
+  class="flex min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50"
+>
   <!-- Menüsáv bal oldalon -->
-  <app-dynamic-menu [menuItems]="menuItems" (menuAction)="handleMenuAction($event)">
-  </app-dynamic-menu>
+  <aside
+    class="w-64 shrink-0 border-r border-slate-200 bg-white shadow-sm"
+  >
+    <app-dynamic-menu
+      [menuItems]="menuItems"
+      (menuAction)="handleMenuAction($event)"
+    >
+    </app-dynamic-menu>
+  </aside>
 
   <!-- Tartalom a menü mellett -->
-  <div class="flex-1 p-4">
-    <router-outlet></router-outlet>
-    <!-- ide töltődik a DashboardComponent és további oldalak -->
-  </div>
+  <main
+    class="min-w-0 flex-1 p-4 sm:p-6 lg:p-8"
+  >
+    <div
+      class="min-h-[300px] min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:p-8"
+    >
+      <router-outlet></router-outlet>
+    </div>
+  </main>
 </div>

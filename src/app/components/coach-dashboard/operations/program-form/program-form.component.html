@@ -1,8 +1,10 @@
-<div class="program-form-card">
+<div
+  class="grid min-w-0 grid-cols-1 gap-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6"
+>
   <!-- Name -->
-  <div class="program-form-group-full">
+  <div class="min-w-0 sm:col-span-2">
     <label
-      class="program-form-label"
+      class="mb-2 block text-sm font-semibold text-slate-700"
       for="name"
     >
       {{ 'programForm.programName' | translate }}
@@ -11,14 +13,14 @@
     <input
       id="name"
       formControlName="name"
-      class="program-form-input"
+      class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
     />
   </div>
 
   <!-- Description -->
-  <div class="program-form-group-full">
+  <div class="min-w-0 sm:col-span-2">
     <label
-      class="program-form-label"
+      class="mb-2 block text-sm font-semibold text-slate-700"
       for="description"
     >
       {{ 'programForm.description' | translate }}
@@ -28,14 +30,14 @@
       id="description"
       formControlName="description"
       rows="3"
-      class="program-form-textarea"
+      class="block w-full resize-y rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
     ></textarea>
   </div>
 
   <!-- Duration -->
-  <div class="program-form-group">
+  <div class="min-w-0">
     <label
-      class="program-form-label"
+      class="mb-2 block text-sm font-semibold text-slate-700"
       for="duration_days"
     >
       {{ 'programForm.duration' | translate }}
@@ -45,14 +47,14 @@
       type="number"
       id="duration_days"
       formControlName="duration_days"
-      class="program-form-input"
+      class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
     />
   </div>
 
   <!-- Difficulty Level -->
-  <div class="program-form-group">
+  <div class="min-w-0">
     <label
-      class="program-form-label"
+      class="mb-2 block text-sm font-semibold text-slate-700"
       for="difficulty_level"
     >
       {{ 'programForm.difficultyLevel' | translate }}
@@ -61,14 +63,14 @@
     <input
       id="difficulty_level"
       formControlName="difficulty_level"
-      class="program-form-input"
+      class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
     />
   </div>
 
   <!-- Coach ID -->
-  <div class="program-form-group">
+  <div class="min-w-0">
     <label
-      class="program-form-label"
+      class="mb-2 block text-sm font-semibold text-slate-700"
       for="coach_id"
     >
       {{ 'programForm.coachId' | translate }}
@@ -78,16 +80,18 @@
       type="number"
       id="coach_id"
       formControlName="coach_id"
-      class="program-form-input"
+      class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
     />
   </div>
 
   <!-- Submit Button -->
-  <div class="program-form-submit">
+  <div
+    class="flex min-w-0 justify-end pt-1 sm:col-span-2"
+  >
     <button
       type="button"
       (click)="submit()"
-      class="program-form-button"
+      class="w-full rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 sm:w-auto"
     >
       {{
         isEditMode

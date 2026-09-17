@@ -1,120 +1,176 @@
-<div class="exercises-container">
+<div
+  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+>
+  <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
 
-  <!-- ======================================================
-       OLDAL CÍM
-       ====================================================== -->
+    <!-- ======================================================
+         OLDAL CÍM
+         ====================================================== -->
 
-  <h2 class="exercises-title">
-    {{ workoutName }} – {{ 'userExercises.exercises' | translate }}
-  </h2>
+    <div class="text-center">
+      <h2
+        class="break-words text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
+      >
+        {{ workoutName }} –
+        {{ 'userExercises.exercises' | translate }}
+      </h2>
+    </div>
 
 
-  <!-- ======================================================
-       GYAKORLATOK
-       ====================================================== -->
+    <!-- ======================================================
+         GYAKORLATOK
+         ====================================================== -->
 
-  <ng-container
-    *ngIf="(exercises$ | async)?.length; else noExercises"
-  >
-
-    <div class="exercises-grid">
+    <ng-container
+      *ngIf="(exercises$ | async)?.length; else noExercises"
+    >
 
       <div
-        *ngFor="let exercise of exercises$ | async"
-        class="exercise-card"
-        (click)="goToExercise(exercise.exercise.id!)"
+        class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
       >
 
-        <!-- ==================================================
-             EXERCISE KÉPEK
-             ================================================== -->
+        <div
+          *ngFor="let exercise of exercises$ | async"
+          class="group flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md"
+          (click)="goToExercise(exercise.exercise.id!)"
+        >
 
-        <div class="exercise-image">
-
-          <ng-container
-            *ngIf="getExerciseImages(exercise.exercise).length > 0; else noImage"
-          >
-
-            <img
-              *ngFor="let image of getExerciseImages(exercise.exercise)"
-              [src]="'/assets/images/flat/' + image"
-              [alt]="exercise.exercise.name"
-              class="exercise-image-item"
-            />
-
-          </ng-container>
-
-
-          <!-- NINCS KÉP -->
-
-          <ng-template #noImage>
-
-            <span class="exercise-emoji">
-              🏋️‍♂️
-            </span>
-
-          </ng-template>
-
-        </div>
-
-
-        <!-- ==================================================
-             KÁRTYA TARTALOM
-             ================================================== -->
-
-        <div class="exercise-content">
-
-          <!-- Exercise name -->
-
-          <h3 class="exercise-name">
-            {{ exercise.exercise.name }}
-          </h3>
-
-
-          <!-- Exercise description -->
-
-          <p class="exercise-description">
-            {{
-              exercise.exercise.description ||
-              ('userExercises.noDescription' | translate)
-            }}
-          </p>
-
-
-          <!-- Sets / Reps -->
-
-          <div class="exercise-detail">
-            {{ 'userExercises.sets' | translate }}:
-            {{ exercise.sets }},
-            {{ 'userExercises.reps' | translate }}:
-            {{ exercise.repetitions }}
-          </div>
-
-
-          <!-- Rest -->
-
-          <div class="exercise-detail">
-            {{ 'userExercises.rest' | translate }}:
-            {{ exercise.restSeconds }}
-            {{ 'userExercises.seconds' | translate }}
-          </div>
-
-
-          <!-- Done status -->
+          <!-- ==================================================
+               EXERCISE KÉPEK
+               ================================================== -->
 
           <div
-            class="exercise-status"
-            [class.exercise-status-completed]="exercise.done"
-            [class.exercise-status-pending]="!exercise.done"
+            class="flex h-52 items-center justify-center overflow-hidden bg-slate-100"
           >
 
-            {{
-              exercise.done
-                ? ('userExercises.completed' | translate)
-                : ('userExercises.pending' | translate)
-            }}
+            <ng-container
+              *ngIf="
+                getExerciseImages(exercise.exercise).length > 0;
+                else noImage
+              "
+            >
 
-            {{ exercise.done ? '✅' : '⏳' }}
+              <div
+                class="flex h-full w-full overflow-x-auto"
+              >
+                <img
+                  *ngFor="
+                    let image of getExerciseImages(exercise.exercise)
+                  "
+                  [src]="'/assets/images/flat/' + image"
+                  [alt]="exercise.exercise.name"
+                  class="h-full w-full shrink-0 object-contain p-4"
+                />
+              </div>
+
+            </ng-container>
+
+
+            <!-- NINCS KÉP -->
+
+            <ng-template #noImage>
+
+              <span
+                class="text-6xl opacity-70 transition-transform duration-200 group-hover:scale-105"
+              >
+                🏋️‍♂️
+              </span>
+
+            </ng-template>
+
+          </div>
+
+
+          <!-- ==================================================
+               KÁRTYA TARTALOM
+               ================================================== -->
+
+          <div
+            class="flex flex-1 flex-col p-5"
+          >
+
+            <!-- Exercise name -->
+
+            <h3
+              class="break-words text-lg font-bold leading-snug text-slate-800"
+            >
+              {{ exercise.exercise.name }}
+            </h3>
+
+
+            <!-- Exercise description -->
+
+            <p
+              class="mt-2 line-clamp-3 text-sm leading-relaxed text-slate-600"
+            >
+              {{
+                exercise.exercise.description ||
+                ('userExercises.noDescription' | translate)
+              }}
+            </p>
+
+
+            <!-- Exercise details -->
+
+            <div
+              class="mt-4 flex flex-col gap-2"
+            >
+
+              <!-- Sets / Reps -->
+
+              <div
+                class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-600"
+              >
+                <span class="font-semibold text-slate-700">
+                  {{ 'userExercises.sets' | translate }}:
+                </span>
+
+                {{ exercise.sets }},
+
+                <span class="font-semibold text-slate-700">
+                  {{ 'userExercises.reps' | translate }}:
+                </span>
+
+                {{ exercise.repetitions }}
+              </div>
+
+
+              <!-- Rest -->
+
+              <div
+                class="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-600"
+              >
+                <span class="font-semibold text-slate-700">
+                  {{ 'userExercises.rest' | translate }}:
+                </span>
+
+                {{ exercise.restSeconds }}
+
+                {{ 'userExercises.seconds' | translate }}
+              </div>
+
+            </div>
+
+
+            <!-- Done status -->
+
+            <div
+              class="mt-4 rounded-xl border px-3 py-2.5 text-center text-sm font-semibold"
+              [class.border-green-200]="exercise.done"
+              [class.bg-green-50]="exercise.done"
+              [class.text-green-700]="exercise.done"
+              [class.border-amber-200]="!exercise.done"
+              [class.bg-amber-50]="!exercise.done"
+              [class.text-amber-700]="!exercise.done"
+            >
+              {{
+                exercise.done
+                  ? ('userExercises.completed' | translate)
+                  : ('userExercises.pending' | translate)
+              }}
+
+              {{ exercise.done ? '✅' : '⏳' }}
+            </div>
 
           </div>
 
@@ -122,21 +178,22 @@
 
       </div>
 
-    </div>
-
-  </ng-container>
+    </ng-container>
 
 
-  <!-- ======================================================
-       NINCS GYAKORLAT
-       ====================================================== -->
+    <!-- ======================================================
+         NINCS GYAKORLAT
+         ====================================================== -->
 
-  <ng-template #noExercises>
+    <ng-template #noExercises>
 
-    <div class="no-exercises">
-      {{ 'userExercises.noExercises' | translate }}
-    </div>
+      <div
+        class="flex min-h-32 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-8 text-center text-sm font-medium text-slate-500 shadow-sm"
+      >
+        {{ 'userExercises.noExercises' | translate }}
+      </div>
 
-  </ng-template>
+    </ng-template>
 
+  </div>
 </div>

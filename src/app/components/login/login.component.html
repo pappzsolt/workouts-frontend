@@ -1,49 +1,78 @@
-<div class="login-card">
-  <div class="login-language-selector">
-    <app-language-selector></app-language-selector>
+<div
+  class="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-8 sm:px-6"
+>
+  <div
+    class="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-lg sm:p-8"
+  >
+
+    <!-- Language selector -->
+    <div class="mb-6 flex justify-end">
+      <app-language-selector></app-language-selector>
+    </div>
+
+    <!-- Title -->
+    <div class="mb-8 text-center">
+      <h2 class="text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl">
+        {{ 'login.title' | translate }}
+      </h2>
+    </div>
+
+    <!-- Login form -->
+    <form
+      [formGroup]="loginForm"
+      (ngSubmit)="onSubmit($event)"
+      class="flex flex-col gap-5"
+    >
+
+      <!-- Username -->
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-semibold text-slate-700">
+          {{ 'login.username' | translate }}
+        </label>
+
+        <input
+          formControlName="username"
+          type="text"
+          [placeholder]="'login.usernamePlaceholder' | translate"
+          class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
+
+      <!-- Password -->
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-semibold text-slate-700">
+          {{ 'login.password' | translate }}
+        </label>
+
+        <input
+          formControlName="password"
+          type="password"
+          [placeholder]="'login.passwordPlaceholder' | translate"
+          class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        />
+      </div>
+
+      <!-- Error -->
+      <div
+        *ngIf="errorMessage"
+        class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
+      >
+        {{ errorMessage }}
+      </div>
+
+      <!-- Login button -->
+      <button
+        type="submit"
+        [disabled]="loading"
+        class="mt-2 flex min-h-11 w-full items-center justify-center rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:from-blue-700 hover:to-indigo-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        {{
+          loading
+            ? ('login.loading' | translate)
+            : ('login.login' | translate)
+        }}
+      </button>
+
+    </form>
   </div>
-
-  <h2 class="login-title">
-    {{ 'login.title' | translate }}
-  </h2>
-
-  <form [formGroup]="loginForm" (ngSubmit)="onSubmit($event)" class="login-form">
-    <div class="login-form-group">
-      <label class="login-label">
-        {{ 'login.username' | translate }}
-      </label>
-
-      <input
-        formControlName="username"
-        type="text"
-        [placeholder]="'login.usernamePlaceholder' | translate"
-        class="login-input"
-      />
-    </div>
-
-    <div class="login-form-group">
-      <label class="login-label">
-        {{ 'login.password' | translate }}
-      </label>
-
-      <input
-        formControlName="password"
-        type="password"
-        [placeholder]="'login.passwordPlaceholder' | translate"
-        class="login-input"
-      />
-    </div>
-
-    <div *ngIf="errorMessage" class="login-error">
-      {{ errorMessage }}
-    </div>
-
-    <button type="submit" [disabled]="loading" class="login-button">
-      {{
-        loading
-          ? ('login.loading' | translate)
-          : ('login.login' | translate)
-      }}
-    </button>
-  </form>
 </div>

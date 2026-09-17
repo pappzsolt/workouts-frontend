@@ -1,128 +1,184 @@
-<h2 class="programs-title">
-  ✏️ {{ 'coachProgramEdit.title' | translate }}
-</h2>
+<!-- ======================================================
+     OLDAL
+     ====================================================== -->
 
-<app-message
-  [message]="message"
-  [type]="messageType"
+<div class="min-h-full bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50">
+  <div class="mx-auto w-full max-w-5xl px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
 
-> </app-message>
+    <!-- ==================================================
+         OLDAL CÍM
+         ================================================== -->
 
-<!-- Kártyás form -->
+    <h2
+      class="mb-6 flex items-center justify-center gap-2 text-center text-2xl font-bold tracking-tight text-slate-800 sm:mb-8 sm:text-3xl"
+    >
+      <span>✏️</span>
+      <span>{{ 'coachProgramEdit.title' | translate }}</span>
+    </h2>
 
-<div class="program-card">
-  <!-- Ikon -->
-  <div class="program-image">
-    <span class="program-emoji">🛠️</span>
+    <!-- ==================================================
+         ÜZENET
+         ================================================== -->
+
+    <app-message
+      [message]="message"
+      [type]="messageType"
+    ></app-message>
+
+    <!-- ==================================================
+         PROGRAM SZERKESZTÉSI KÁRTYA
+         ================================================== -->
+
+    <div
+      class="mx-auto w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg shadow-slate-200/60"
+    >
+
+      <!-- ==================================================
+           FEJLÉC
+           ================================================== -->
+
+      <div
+        class="border-b border-blue-100 bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-6 sm:px-6 sm:py-7"
+      >
+        <div class="flex items-center justify-center">
+          <span
+            class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/95 text-4xl shadow-lg ring-1 ring-white/30"
+          >
+            🛠️
+          </span>
+        </div>
+      </div>
+
+      <!-- ==================================================
+           ŰRLAP
+           ================================================== -->
+
+      <form
+        (ngSubmit)="saveProgram()"
+        class="grid min-w-0 grid-cols-1 gap-5 p-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-5 sm:p-6"
+      >
+
+        <!-- ==================================================
+             PROGRAM NÉV
+             ================================================== -->
+
+        <div class="col-span-full flex min-w-0 flex-col gap-2">
+          <label
+            for="programName"
+            class="text-sm font-semibold text-slate-700"
+          >
+            {{ 'coachProgramEdit.programName' | translate }}
+          </label>
+
+          <input
+            type="text"
+            id="programName"
+            name="programName"
+            [placeholder]="'coachProgramEdit.programNamePlaceholder' | translate"
+            [(ngModel)]="program.programName"
+            required
+            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          />
+        </div>
+
+        <!-- ==================================================
+             LEÍRÁS
+             ================================================== -->
+
+        <div class="col-span-full flex min-w-0 flex-col gap-2">
+          <label
+            for="programDescription"
+            class="text-sm font-semibold text-slate-700"
+          >
+            {{ 'coachProgramEdit.description' | translate }}
+          </label>
+
+          <textarea
+            id="programDescription"
+            name="programDescription"
+            rows="3"
+            [placeholder]="'coachProgramEdit.descriptionPlaceholder' | translate"
+            [(ngModel)]="program.programDescription"
+            class="min-h-28 w-full min-w-0 resize-y rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base leading-6 text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          ></textarea>
+        </div>
+
+        <!-- ==================================================
+             IDŐTARTAM
+             ================================================== -->
+
+        <div class="flex min-w-0 flex-col gap-2">
+          <label
+            for="durationDays"
+            class="text-sm font-semibold text-slate-700"
+          >
+            {{ 'coachProgramEdit.duration' | translate }}
+          </label>
+
+          <input
+            type="number"
+            id="durationDays"
+            name="durationDays"
+            [placeholder]="'coachProgramEdit.durationPlaceholder' | translate"
+            [(ngModel)]="program.durationDays"
+            min="1"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          />
+        </div>
+
+        <!-- ==================================================
+             NEHÉZSÉGI SZINT
+             ================================================== -->
+
+        <div class="flex min-w-0 flex-col gap-2">
+          <label
+            for="difficultyLevel"
+            class="text-sm font-semibold text-slate-700"
+          >
+            {{ 'coachProgramEdit.difficultyLevel' | translate }}
+          </label>
+
+          <select
+            id="difficultyLevel"
+            name="difficultyLevel"
+            [(ngModel)]="program.difficultyLevel"
+            class="min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          >
+            <option value="">
+              {{ 'coachProgramEdit.selectDifficulty' | translate }}
+            </option>
+
+            <option value="Easy">
+              {{ 'coachProgramEdit.easy' | translate }}
+            </option>
+
+            <option value="Medium">
+              {{ 'coachProgramEdit.medium' | translate }}
+            </option>
+
+            <option value="Hard">
+              {{ 'coachProgramEdit.hard' | translate }}
+            </option>
+          </select>
+        </div>
+
+        <!-- ==================================================
+             MENTÉS
+             ================================================== -->
+
+        <div
+          class="col-span-full flex justify-end border-t border-blue-100 pt-5"
+        >
+          <button
+            type="submit"
+            class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition duration-150 hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg hover:shadow-blue-500/25 focus:outline-none focus:ring-4 focus:ring-blue-500/20 active:scale-[0.98] sm:w-auto"
+          >
+            <span>💾</span>
+            <span>{{ 'coachProgramEdit.save' | translate }}</span>
+          </button>
+        </div>
+
+      </form>
+    </div>
   </div>
-
-  <form
-    (ngSubmit)="saveProgram()"
-    class="program-form"
-  >
-    <!-- Program Name -->
-    <div class="form-group-full">
-      <label
-        class="form-label"
-        for="programName"
-      >
-        {{ 'coachProgramEdit.programName' | translate }}
-      </label>
-
-      ```
-      <input
-        type="text"
-        id="programName"
-        name="programName"
-        [placeholder]="'coachProgramEdit.programNamePlaceholder' | translate"
-        [(ngModel)]="program.programName"
-        required
-        class="form-input"
-      />
-    </div>
-
-    <!-- Description -->
-    <div class="form-group-full">
-      <label
-        class="form-label"
-        for="programDescription"
-      >
-        {{ 'coachProgramEdit.description' | translate }}
-      </label>
-
-      <textarea
-        id="programDescription"
-        name="programDescription"
-        rows="3"
-        [placeholder]="'coachProgramEdit.descriptionPlaceholder' | translate"
-        [(ngModel)]="program.programDescription"
-        class="form-input form-textarea"
-      ></textarea>
-    </div>
-
-    <!-- Duration -->
-    <div class="form-group">
-      <label
-        class="form-label"
-        for="durationDays"
-      >
-        {{ 'coachProgramEdit.duration' | translate }}
-      </label>
-
-      <input
-        type="number"
-        id="durationDays"
-        name="durationDays"
-        [placeholder]="'coachProgramEdit.durationPlaceholder' | translate"
-        [(ngModel)]="program.durationDays"
-        class="form-input"
-        min="1"
-      />
-    </div>
-
-    <!-- Difficulty -->
-    <div class="form-group">
-      <label
-        class="form-label"
-        for="difficultyLevel"
-      >
-        {{ 'coachProgramEdit.difficultyLevel' | translate }}
-      </label>
-
-      <select
-        id="difficultyLevel"
-        name="difficultyLevel"
-        [(ngModel)]="program.difficultyLevel"
-        class="form-input"
-      >
-        <option value="">
-          {{ 'coachProgramEdit.selectDifficulty' | translate }}
-        </option>
-
-        <option value="Easy">
-          {{ 'coachProgramEdit.easy' | translate }}
-        </option>
-
-        <option value="Medium">
-          {{ 'coachProgramEdit.medium' | translate }}
-        </option>
-
-        <option value="Hard">
-          {{ 'coachProgramEdit.hard' | translate }}
-        </option>
-      </select>
-    </div>
-
-    <!-- Gomb -->
-    <div class="form-submit">
-      <button
-        type="submit"
-        class="form-button"
-      >
-        💾 {{ 'coachProgramEdit.save' | translate }}
-      </button>
-    </div>
-    ```
-
-  </form>
 </div>

@@ -1,146 +1,212 @@
 <!-- ======================================================
-     OLDAL CÍM
+     OLDAL
      ====================================================== -->
 
-<h2 class="profile-title">
-  {{ 'coachProfile.title' | translate }}
-</h2>
-
-<!-- ======================================================
-     ÜZENET
-     ====================================================== -->
-
-<app-message
-  [message]="message"
-  [type]="messageType"
-></app-message>
-
-<!-- ======================================================
-     PROFIL ŰRLAP
-     ====================================================== -->
-
-<div class="profile-container">
-  <form class="profile-form">
-    <!-- ==================================================
-         NÉV
-         ================================================== -->
-
-    <div class="form-field">
-      <label for="name">
-        {{ 'common.name' | translate }}
-      </label>
-
-      <input
-        id="name"
-        name="name"
-        type="text"
-        [placeholder]="'common.name' | translate"
-        [(ngModel)]="profile.name"
-      />
-    </div>
+<div class="min-h-full bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50">
+  <div class="mx-auto w-full max-w-5xl px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
 
     <!-- ==================================================
-         EMAIL
+         OLDAL CÍM
          ================================================== -->
 
-    <div class="form-field">
-      <label for="email">
-        {{ 'common.email' | translate }}
-      </label>
-
-      <input
-        id="email"
-        name="email"
-        type="email"
-        [placeholder]="'common.email' | translate"
-        [(ngModel)]="profile.email"
-      />
-    </div>
+    <h2
+      class="mb-6 flex items-center justify-center gap-2 text-center text-2xl font-bold tracking-tight text-slate-800 sm:mb-8 sm:text-3xl"
+    >
+      <span>👤</span>
+      <span>{{ 'coachProfile.title' | translate }}</span>
+    </h2>
 
     <!-- ==================================================
-         JELSZÓ
+         ÜZENET
          ================================================== -->
 
-    <div class="form-field">
-      <label for="password_hash">
-        {{ 'common.password' | translate }}
-      </label>
-
-      <input
-        id="password_hash"
-        name="password_hash"
-        type="password"
-        [placeholder]="'common.password' | translate"
-        [(ngModel)]="profile.password_hash"
-      />
-    </div>
+    <app-message
+      [message]="message"
+      [type]="messageType"
+    ></app-message>
 
     <!-- ==================================================
-         TELEFON
+         PROFIL ŰRLAP
          ================================================== -->
 
-    <div class="form-field">
-      <label for="phone">
-        {{ 'common.phone' | translate }}
-      </label>
+    <div
+      class="mx-auto w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg shadow-slate-200/60"
+    >
 
-      <input
-        id="phone"
-        name="phone"
-        type="text"
-        [placeholder]="'common.phone' | translate"
-        [(ngModel)]="profile.phone"
-      />
-    </div>
+      <!-- ==================================================
+           FEJLÉC
+           ================================================== -->
 
-    <!-- ==================================================
-         SPECIALIZÁCIÓ
-         ================================================== -->
-
-    <div class="form-field full-width">
-      <label for="specialization">
-        {{ 'common.specialization' | translate }}
-      </label>
-
-      <textarea
-        id="specialization"
-        name="specialization"
-        rows="3"
-        [placeholder]="'common.specialization' | translate"
-        [(ngModel)]="profile.specialization"
-      ></textarea>
-    </div>
-
-    <!-- ==================================================
-         AVATAR URL
-         ================================================== -->
-
-    <div class="form-field full-width">
-      <label for="avatar_url">
-        {{ 'common.avatarUrl' | translate }}
-      </label>
-
-      <input
-        id="avatar_url"
-        name="avatar_url"
-        type="text"
-        [placeholder]="'common.avatarImageUrl' | translate"
-        [(ngModel)]="profile.avatar_url"
-      />
-    </div>
-
-    <!-- ==================================================
-         MENTÉS
-         ================================================== -->
-
-    <div class="form-actions">
-      <button
-        type="button"
-        (click)="saveProfile()"
-        class="save-button"
+      <div
+        class="border-b border-blue-100 bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-6 sm:px-6 sm:py-7"
       >
-        💾 {{ 'common.save' | translate }}
-      </button>
+        <div class="flex items-center justify-center">
+          <span
+            class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/95 text-4xl shadow-lg ring-1 ring-white/30"
+          >
+            🧑‍💼
+          </span>
+        </div>
+      </div>
+
+      <!-- ==================================================
+           ŰRLAP
+           ================================================== -->
+
+      <form
+        class="grid min-w-0 grid-cols-1 gap-5 p-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-5 sm:p-6"
+      >
+
+        <!-- ==================================================
+             NÉV
+             ================================================== -->
+
+        <div class="flex min-w-0 flex-col gap-2">
+          <label
+            for="name"
+            class="text-sm font-semibold text-slate-700"
+          >
+            {{ 'common.name' | translate }}
+          </label>
+
+          <input
+            id="name"
+            name="name"
+            type="text"
+            [placeholder]="'common.name' | translate"
+            [(ngModel)]="profile.name"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          />
+        </div>
+
+        <!-- ==================================================
+             EMAIL
+             ================================================== -->
+
+        <div class="flex min-w-0 flex-col gap-2">
+          <label
+            for="email"
+            class="text-sm font-semibold text-slate-700"
+          >
+            {{ 'common.email' | translate }}
+          </label>
+
+          <input
+            id="email"
+            name="email"
+            type="email"
+            [placeholder]="'common.email' | translate"
+            [(ngModel)]="profile.email"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          />
+        </div>
+
+        <!-- ==================================================
+             JELSZÓ
+             ================================================== -->
+
+        <div class="flex min-w-0 flex-col gap-2">
+          <label
+            for="password_hash"
+            class="text-sm font-semibold text-slate-700"
+          >
+            {{ 'common.password' | translate }}
+          </label>
+
+          <input
+            id="password_hash"
+            name="password_hash"
+            type="password"
+            [placeholder]="'common.password' | translate"
+            [(ngModel)]="profile.password_hash"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          />
+        </div>
+
+        <!-- ==================================================
+             TELEFON
+             ================================================== -->
+
+        <div class="flex min-w-0 flex-col gap-2">
+          <label
+            for="phone"
+            class="text-sm font-semibold text-slate-700"
+          >
+            {{ 'common.phone' | translate }}
+          </label>
+
+          <input
+            id="phone"
+            name="phone"
+            type="text"
+            [placeholder]="'common.phone' | translate"
+            [(ngModel)]="profile.phone"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          />
+        </div>
+
+        <!-- ==================================================
+             SPECIALIZÁCIÓ
+             ================================================== -->
+
+        <div class="col-span-full flex min-w-0 flex-col gap-2">
+          <label
+            for="specialization"
+            class="text-sm font-semibold text-slate-700"
+          >
+            {{ 'common.specialization' | translate }}
+          </label>
+
+          <textarea
+            id="specialization"
+            name="specialization"
+            rows="3"
+            [placeholder]="'common.specialization' | translate"
+            [(ngModel)]="profile.specialization"
+            class="min-h-28 w-full min-w-0 resize-y rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base leading-6 text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          ></textarea>
+        </div>
+
+        <!-- ==================================================
+             AVATAR URL
+             ================================================== -->
+
+        <div class="col-span-full flex min-w-0 flex-col gap-2">
+          <label
+            for="avatar_url"
+            class="text-sm font-semibold text-slate-700"
+          >
+            {{ 'common.avatarUrl' | translate }}
+          </label>
+
+          <input
+            id="avatar_url"
+            name="avatar_url"
+            type="text"
+            [placeholder]="'common.avatarImageUrl' | translate"
+            [(ngModel)]="profile.avatar_url"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          />
+        </div>
+
+        <!-- ==================================================
+             MENTÉS
+             ================================================== -->
+
+        <div
+          class="col-span-full flex justify-end border-t border-blue-100 pt-5"
+        >
+          <button
+            type="button"
+            (click)="saveProfile()"
+            class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition duration-150 hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg hover:shadow-blue-500/25 focus:outline-none focus:ring-4 focus:ring-blue-500/20 active:scale-[0.98] sm:w-auto"
+          >
+            <span>💾</span>
+            <span>{{ 'common.save' | translate }}</span>
+          </button>
+        </div>
+
+      </form>
     </div>
-  </form>
+  </div>
 </div>
