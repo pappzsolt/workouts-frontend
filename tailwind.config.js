@@ -5,13 +5,59 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Általános alkalmazás színek
         primary: {
+          50: '#fff7ed',
+          100: '#ffedd5',
+          200: '#fed7aa',
+          300: '#fdba74',
+          600: '#ea580c',
+          700: '#c2410c',
+        },
+
+        // Edit gombok
+        edit: {
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          600: '#2563eb',
+          700: '#1d4ed8',
+        },
+
+        // Search gombok
+        search: {
+          50: '#f0fdf4',
+          100: '#dcfce7',
+          200: '#bbf7d0',
+          600: '#16a34a',
+          700: '#15803d',
+        },
+
+        // Sort gombok
+        sort: {
           50: '#eef2ff',
           100: '#e0e7ff',
           200: '#c7d2fe',
-          300: '#a5b4fc',
           600: '#4f46e5',
           700: '#4338ca',
+        },
+
+        // Add gombok
+        add: {
+          50: '#fefce8',
+          100: '#fef9c3',
+          200: '#fef08a',
+          600: '#ca8a04',
+          700: '#a16207',
+        },
+
+        // Save gombok
+        save: {
+          50: '#fff7ed',
+          100: '#ffedd5',
+          200: '#fed7aa',
+          600: '#ea580c',
+          700: '#c2410c',
         },
       },
     },
