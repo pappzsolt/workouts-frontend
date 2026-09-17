@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { HttpClient, HttpParams } from '@angular/common/http';
 import {
   Program,
   CoachProgramsResponse,
@@ -58,5 +57,24 @@ export class CoachProgramService {
       `${API_ENDPOINTS.updateProgram}?programId=${id}`,
       request,
     );
+  }
+  /**
+   * Bejelentkezett coach programjainak keresése és lapozása.
+   */
+  searchProgramsForCoach(
+    search: string,
+    page: number = 0,
+    size: number = 6,
+    language: string = 'hu',
+    sortDirection: 'asc' | 'desc' = 'asc',
+  ): Observable<any> {
+    const params = new HttpParams()
+      .set('search', search)
+      .set('page', page)
+      .set('size', size)
+      .set('language', language)
+      .set('sortDirection', sortDirection);
+
+    return this.http.get<any>(`${API_ENDPOINTS.programs}/coach/search`, { params });
   }
 }

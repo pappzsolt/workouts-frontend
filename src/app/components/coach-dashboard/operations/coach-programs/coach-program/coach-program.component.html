@@ -44,7 +44,7 @@
   </div>
 
   <div
-    *ngIf="filteredPrograms.length > 0; else noSearchResults"
+    *ngIf="programs.length > 0; else noSearchResults"
     class="programs-grid"
   >
     <div
@@ -138,6 +138,7 @@
     >
       {{ 'common.next' | translate }} ▶
     </button>
+
   </div>
 
 </ng-container>

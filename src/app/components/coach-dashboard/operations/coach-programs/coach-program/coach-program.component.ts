@@ -23,7 +23,7 @@ export class CoachProgramComponent implements OnInit {
   showProgramsList = false;
 
   currentPage = 1;
-  itemsPerPage = 4;
+  itemsPerPage = 6;
   totalPages = 1;
 
   // Keresés
@@ -45,55 +45,59 @@ export class CoachProgramComponent implements OnInit {
   }
 
   private loadCoachPrograms(): void {
-    this.programService.getProgramsForLoggedInCoach().subscribe({
-      next: (response) => {
-        console.log('Coach program response:', response);
+    const backendPage = this.currentPage - 1;
 
-        if (response.success && response.data?.length) {
-          this.programs = response.data.map((program: any): Program => ({
-            id: program.programId,
-            programName: program.programName,
-            programDescription: program.programDescription,
-            name: program.name,
-            description: program.description,
-            coachId: program.coachId,
-            startDate: program.startDate,
-            endDate: program.endDate,
-            durationDays: program.durationDays,
-            difficultyLevel: program.difficultyLevel,
-            workouts: program.workouts,
-          }));
+    this.programService
+      .searchProgramsForCoach(
+        this.searchTerm.trim(),
+        backendPage,
+        this.itemsPerPage,
+        'hu',
+        this.sortDirection,
+      )
+      .subscribe({
+        next: (response) => {
+          console.log('Coach program search response:', response);
 
-          console.log('Programok frontend modellként:', this.programs);
-          console.log('Első program:', this.programs[0]);
-          console.log('Első program ID:', this.programs[0]?.id);
+          if (response.content?.length) {
+            this.programs = response.content.map((program: any): Program => ({
+              id: program.programId,
+              programName: program.programName,
+              programDescription: program.programDescription,
+              name: program.name,
+              description: program.description,
+              coachId: program.coachId,
+              startDate: program.startDate,
+              endDate: program.endDate,
+              durationDays: program.durationDays,
+              difficultyLevel: program.difficultyLevel,
+              workouts: program.workouts,
+            }));
 
-          this.currentPage = 1;
-          this.updatePagination();
+            this.totalPages = Math.max(1, response.totalPages);
 
-          this.showProgramsList = true;
-          this.clearMessage();
-        } else {
+            this.showProgramsList = true;
+            this.clearMessage();
+          } else {
+            this.programs = [];
+            this.totalPages = 1;
+            this.showProgramsList = false;
+
+            this.setMessage('coachPrograms.noPrograms', 'info');
+          }
+        },
+
+        error: (error) => {
+          console.error('Hiba a coach programok keresésekor:', error);
+
           this.programs = [];
           this.totalPages = 1;
           this.currentPage = 1;
           this.showProgramsList = false;
 
-          this.setMessage('coachPrograms.noPrograms', 'info');
-        }
-      },
-
-      error: (error) => {
-        console.error('Hiba a coach programok betöltésekor:', error);
-
-        this.programs = [];
-        this.totalPages = 1;
-        this.currentPage = 1;
-        this.showProgramsList = false;
-
-        this.setMessage('coachPrograms.loadError', 'error');
-      },
-    });
+          this.setMessage('coachPrograms.loadError', 'error');
+        },
+      });
   }
 
   /**
@@ -138,7 +142,7 @@ export class CoachProgramComponent implements OnInit {
    */
   onSearchChange(): void {
     this.currentPage = 1;
-    this.updatePagination();
+    this.loadCoachPrograms();
   }
 
   /**
@@ -148,27 +152,27 @@ export class CoachProgramComponent implements OnInit {
     this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
 
     this.currentPage = 1;
-    this.updatePagination();
+    this.loadCoachPrograms();
   }
 
   /**
    * Aktuális oldal programjai.
    */
   get pagedPrograms(): Program[] {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-
-    return this.filteredPrograms.slice(startIndex, startIndex + this.itemsPerPage);
+    return this.programs;
   }
 
   nextPage(): void {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
+      this.loadCoachPrograms();
     }
   }
 
   prevPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
+      this.loadCoachPrograms();
     }
   }
 

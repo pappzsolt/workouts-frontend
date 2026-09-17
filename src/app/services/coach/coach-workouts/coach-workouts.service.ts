@@ -1,10 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { WorkoutDto } from '../../../models/exercise.model';
 import { Workout, WorkoutResponse } from '../../../models/workout.model';
-
 import { ApiResponse } from '../../../models/api-response.model';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
@@ -76,5 +75,27 @@ export class CoachWorkoutsService {
    */
   deleteWorkout(id: number): Observable<WorkoutResponse> {
     return this.http.delete<WorkoutResponse>(`${this.apiUrl}/delete/${id}`);
+  }
+
+  /**
+   * A bejelentkezett coach workoutjainak keresése és lapozása.
+   *
+   * GET /api/workouts/my-workouts/search
+   */
+  searchMyWorkouts(
+    search: string,
+    page: number = 0,
+    size: number = 6,
+    language: string = 'hu',
+    sortDirection: 'asc' | 'desc' = 'asc',
+  ): Observable<any> {
+    const params = new HttpParams()
+      .set('search', search)
+      .set('page', page)
+      .set('size', size)
+      .set('language', language)
+      .set('sortDirection', sortDirection);
+
+    return this.http.get<any>(`${this.apiUrl}/my-workouts/search`, { params });
   }
 }

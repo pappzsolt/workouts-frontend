@@ -118,4 +118,17 @@ export class WorkoutExercisesManagerService {
 
     return this.http.put<void>(`${API_ENDPOINTS.workoutExercises}/order-index`, null, { params });
   }
+  /**
+   * A belépett user számára ütemezett workoutok
+   * keresése és lapozása.
+   */
+  searchScheduledWorkouts(
+    search: string,
+    page: number = 0,
+    size: number = 6,
+  ): Observable<ApiResponse<any>> {
+    const params = new HttpParams().set('search', search).set('page', page).set('size', size);
+
+    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/scheduled-workouts/search`, { params });
+  }
 }

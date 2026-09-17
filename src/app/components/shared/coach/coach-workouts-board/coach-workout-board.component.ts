@@ -14,8 +14,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 
 import { Subject, takeUntil } from 'rxjs';
 
-import { ApiResponse } from '../../../../models/api-response.model';
-
 import { Workout } from '../../../../models/workout.model';
 
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
@@ -58,6 +56,14 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
 
   messageType: 'success' | 'error' | '' = '';
 
+  currentPage = 1;
+  itemsPerPage = 6;
+  totalPages = 1;
+
+  searchTerm = '';
+
+  sortDirection: 'asc' | 'desc' = 'asc';
+
   // ==========================================================
   // INIT
   // ==========================================================
@@ -77,7 +83,6 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
       this.workouts = [...this.externalWorkouts];
 
       this.message = '';
-
       this.messageType = '';
     }
   }
@@ -90,54 +95,62 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
     this.loading = true;
 
     this.message = '';
-
     this.messageType = '';
 
-    this.workoutService.getMyWorkouts().subscribe({
-      next: (res: ApiResponse<Workout[]>) => {
-        this.loading = false;
+    const backendPage = this.currentPage - 1;
 
-        console.log('=== getMyWorkouts válasz ===');
+    this.workoutService
+      .searchMyWorkouts(
+        this.searchTerm.trim(),
+        backendPage,
+        this.itemsPerPage,
+        'hu',
+        this.sortDirection,
+      )
+      .subscribe({
+        next: (res) => {
+          this.loading = false;
 
-        console.log('Teljes válasz:', res);
+          console.log('=== searchMyWorkouts válasz ===');
+          console.log('Teljes válasz:', res);
+          console.log('Workoutok:', res.content);
 
-        console.log('Workoutok:', res.data);
+          if (res.content?.length) {
+            this.workouts = [...res.content];
 
-        if (res.success && res.data?.length > 0) {
-          this.workouts = [...res.data].sort((a: Workout, b: Workout) =>
-            (a.name ?? a.workoutName ?? '').localeCompare(b.name ?? b.workoutName ?? ''),
-          );
+            this.totalPages = Math.max(1, res.totalPages);
 
-          console.log('Betöltött workoutok:', this.workouts);
-        } else {
+            console.log('Betöltött workoutok:', this.workouts);
+          } else {
+            this.workouts = [];
+            this.totalPages = 1;
+
+            this.message = 'coachWorkoutBoard.noWorkouts';
+            this.messageType = 'error';
+
+            console.log('Nincs workout a válaszban.');
+          }
+        },
+
+        error: (err: HttpErrorResponse) => {
+          this.loading = false;
+
           this.workouts = [];
+          this.totalPages = 1;
 
-          this.message = 'coachWorkoutBoard.noWorkouts';
+          const backendMessage = typeof err.error === 'string' ? err.error : err.error?.message;
+
+          this.message = backendMessage || 'coachWorkoutBoard.loadError';
 
           this.messageType = 'error';
 
-          console.log('Nincs workout a válaszban.');
-        }
-      },
+          console.error('❌ Workoutok betöltése sikertelen', err);
 
-      error: (err: HttpErrorResponse) => {
-        this.loading = false;
-
-        this.workouts = [];
-
-        const backendMessage = typeof err.error === 'string' ? err.error : err.error?.message;
-
-        this.message = backendMessage || 'coachWorkoutBoard.loadError';
-
-        this.messageType = 'error';
-
-        console.error('❌ Workoutok betöltése sikertelen', err);
-
-        if (err.error) {
-          console.error('Backend válasz:', err.error);
-        }
-      },
-    });
+          if (err.error) {
+            console.error('Backend válasz:', err.error);
+          }
+        },
+      });
   }
 
   // ==========================================================
@@ -167,7 +180,47 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
 
   ngOnDestroy(): void {
     this.destroy$.next();
-
     this.destroy$.complete();
+  }
+  // ==========================================================
+  // KERESÉS
+  // ==========================================================
+
+  onSearchChange(): void {
+    this.currentPage = 1;
+
+    this.loadWorkouts();
+  }
+
+  // ==========================================================
+  // RENDEZÉS
+  // ==========================================================
+
+  toggleSort(): void {
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+
+    this.currentPage = 1;
+
+    this.loadWorkouts();
+  }
+
+  // ==========================================================
+  // LAPOZÁS
+  // ==========================================================
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+
+      this.loadWorkouts();
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+
+      this.loadWorkouts();
+    }
   }
 }
