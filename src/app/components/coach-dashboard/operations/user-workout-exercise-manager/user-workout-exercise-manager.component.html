@@ -17,7 +17,7 @@
       <button
         type="button"
         (click)="loadUserProgramWithExercises()"
-        class="btn btn-success"
+        class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-200/50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
         [disabled]="!selectedUserId || !selectedProgramId"
       >
         {{ 'userWorkoutExerciseManager.loadProgramData' | translate }}
@@ -83,7 +83,7 @@
               <button
                 type="button"
                 (click)="updateScheduledDate(w, w.scheduledAt)"
-                class="btn btn-primary btn-small"
+                class="inline-flex min-h-10 items-center justify-center rounded-xl bg-save-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-save-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-save-200/50 active:scale-[0.98]"
               >
                 {{ 'userWorkoutExerciseManager.saveDate' | translate }}
               </button>
@@ -121,13 +121,13 @@
                       <button
                         type="button"
                         (click)="
-                            updateExerciseOrderIndex(
-                              w.workoutId,
-                              ex.exerciseId,
-                              ex.order
-                            )
-                          "
-                        class="btn btn-primary btn-small"
+    updateExerciseOrderIndex(
+      w.workoutId,
+      ex.exerciseId,
+      ex.order
+    )
+  "
+                        class="inline-flex min-h-10 items-center justify-center rounded-xl bg-save-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-save-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-save-200/50 active:scale-[0.98]"
                       >
                         {{ 'userWorkoutExerciseManager.save' | translate }}
                       </button>
@@ -170,7 +170,7 @@
                     <button
                       type="button"
                       (click)="loadSets(ex.userWorkoutExerciseId)"
-                      class="btn btn-primary btn-small"
+                      class="inline-flex min-h-10 items-center justify-center rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-primary-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-primary-200/50 active:scale-[0.98]"
                     >
                       {{ 'userWorkoutExerciseManager.sets' | translate }}
                     </button>
@@ -191,7 +191,7 @@
                         <button
                           type="button"
                           (click)="addSet()"
-                          class="btn btn-primary btn-small"
+                          class="inline-flex min-h-10 items-center justify-center rounded-xl bg-add-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-add-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-add-200/50 active:scale-[0.98]"
                         >
                           + {{ 'userWorkoutExerciseManager.newSet' | translate }}
                         </button>
@@ -280,7 +280,7 @@
                               <button
                                 type="button"
                                 (click)="updateSet(set)"
-                                class="btn btn-success btn-small"
+                                class="inline-flex min-h-10 items-center justify-center rounded-xl bg-save-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-save-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-save-200/50 active:scale-[0.98]"
                               >
                                 {{ 'userWorkoutExerciseManager.save' | translate }}
                               </button>
@@ -288,7 +288,7 @@
                               <button
                                 type="button"
                                 (click)="deleteSet(set)"
-                                class="btn btn-danger btn-small"
+                                class="inline-flex min-h-10 items-center justify-center rounded-xl bg-delete-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-delete-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-delete-200/50 active:scale-[0.98]"
                               >
                                 {{ 'userWorkoutExerciseManager.delete' | translate }}
                               </button>

@@ -53,11 +53,35 @@ module.exports = {
 
         // Save gombok
         save: {
-          50: '#fff7ed',
-          100: '#ffedd5',
-          200: '#fed7aa',
-          600: '#ea580c',
-          700: '#c2410c',
+          50: '#faf5ff',
+          100: '#f3e8ff',
+          200: '#e9d5ff',
+          600: '#9333ea',
+          700: '#7e22ce',
+        },
+
+        // Delete gombok
+        delete: {
+          50: '#fef2f2',
+          100: '#fee2e2',
+          200: '#fecaca',
+          600: '#dc2626',
+          700: '#b91c1c',
+        },
+        delete: {
+          50: '#fef2f2',
+          100: '#fee2e2',
+          200: '#fecaca',
+          600: '#dc2626',
+          700: '#b91c1c',
+        },
+        // Pagination gombok
+        pagination: {
+          50: '#eef2ff',
+          100: '#e0e7ff',
+          200: '#c7d2fe',
+          600: '#6366f1',
+          700: '#4f46e5',
         },
       },
     },

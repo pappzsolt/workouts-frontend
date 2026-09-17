@@ -166,7 +166,7 @@
         type="button"
         (click)="prevExercisePage()"
         [disabled]="exercisePage === 1"
-        class="flex min-h-10 w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-all duration-200 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+        class="flex min-h-10 w-full items-center justify-center rounded-xl border border-pagination-200 bg-white px-4 py-2 text-sm font-semibold text-pagination-700 transition-all duration-200 hover:border-pagination-200 hover:bg-pagination-50 hover:text-pagination-700 focus:outline-none focus:ring-2 focus:ring-pagination-600/20 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
       >
         ◀ {{ 'common.previous' | translate }}
       </button>
@@ -182,7 +182,7 @@
         type="button"
         (click)="nextExercisePage()"
         [disabled]="exercisePage === totalExercisePages"
-        class="flex min-h-10 w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition-all duration-200 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+        class="flex min-h-10 w-full items-center justify-center rounded-xl border border-pagination-200 bg-white px-4 py-2 text-sm font-semibold text-pagination-700 transition-all duration-200 hover:border-pagination-200 hover:bg-pagination-50 hover:text-pagination-700 focus:outline-none focus:ring-2 focus:ring-pagination-600/20 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
       >
         {{ 'common.next' | translate }} ▶
       </button>
