@@ -1,204 +1,242 @@
-<div class="mx-auto flex max-w-[1200px] flex-col gap-6 p-4">
+<div
+  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+>
+  <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
 
-  <!-- ======================================================
-       OLDAL CÍM
-       ====================================================== -->
+    <!-- ======================================================
+         OLDAL CÍM
+         ====================================================== -->
 
-  <h2 class="text-center text-3xl font-bold text-gray-800">
-    {{ 'coachExercises.title' | translate }}
-  </h2>
-
-
-  <!-- ======================================================
-       ÜZENET
-       ====================================================== -->
-
-  <app-message
-    [message]="message"
-    [type]="messageType"
-  >
-  </app-message>
+    <h2
+      class="text-center text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
+    >
+      {{ 'coachExercises.title' | translate }}
+    </h2>
 
 
-  <!-- ======================================================
-       BETÖLTÉS
-       ====================================================== -->
+    <!-- ======================================================
+         ÜZENET
+         ====================================================== -->
 
-  <div
-    *ngIf="loading"
-    class="rounded-xl border border-dashed border-gray-300 bg-white p-8 text-center text-gray-500"
-  >
-    {{ 'common.loading' | translate }}
-  </div>
+    <app-message
+      [message]="message"
+      [type]="messageType"
+    >
+    </app-message>
 
 
-  <ng-container *ngIf="!loading">
-
-    <!-- ====================================================
-         KERESÉS ÉS RENDEZÉS
-         ==================================================== -->
+    <!-- ======================================================
+         BETÖLTÉS
+         ====================================================== -->
 
     <div
-      class="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm sm:p-5 lg:flex-row lg:items-end"
+      *ngIf="loading"
+      class="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500 shadow-sm"
     >
-
-      <!-- KERESÉS -->
-
-      <div class="flex min-w-0 flex-1 flex-col gap-2">
-
-        <label
-          for="exerciseSearch"
-          class="text-sm font-semibold text-gray-700"
-        >
-          {{ 'coachExercises.search' | translate }}
-        </label>
+      {{ 'common.loading' | translate }}
+    </div>
 
 
-        <div
-          class="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_180px_auto]"
-        >
+    <ng-container *ngIf="!loading">
 
-          <!-- KERESÉSI SZÖVEG -->
+      <!-- ====================================================
+           KERESÉS ÉS RENDEZÉS
+           ==================================================== -->
 
-          <input
-            id="exerciseSearch"
-            type="text"
-            [(ngModel)]="searchTerm"
-            class="min-h-11 w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 text-sm text-gray-800 outline-none transition focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
-            [placeholder]="'coachExercises.searchPlaceholder' | translate"
-            autocomplete="off"
-          />
+      <div
+        class="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:flex-row lg:items-end"
+      >
 
+        <!-- KERESÉS -->
 
-          <!-- KERESÉSI MEZŐ -->
+        <div class="flex min-w-0 flex-1 flex-col gap-2">
 
-          <app-exercise-search-field
-            [(value)]="searchField"
-            [options]="searchFieldOptions"
+          <label
+            for="exerciseSearch"
+            class="text-sm font-semibold text-slate-700"
           >
-          </app-exercise-search-field>
+            {{ 'coachExercises.search' | translate }}
+          </label>
 
 
-          <!-- KERESÉS GOMB -->
-
-          <button
-            type="button"
-            class="min-h-11 w-full rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 sm:w-auto"
-            (click)="search()"
+          <div
+            class="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_180px_auto]"
           >
-            {{ 'common.search' | translate }}
-          </button>
+
+            <!-- KERESÉSI SZÖVEG -->
+
+            <input
+              id="exerciseSearch"
+              type="text"
+              [(ngModel)]="searchTerm"
+              class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10"
+              [placeholder]="'coachExercises.searchPlaceholder' | translate"
+              autocomplete="off"
+            />
+
+
+            <!-- KERESÉSI MEZŐ -->
+
+            <app-exercise-search-field
+              [(value)]="searchField"
+              [options]="searchFieldOptions"
+            >
+            </app-exercise-search-field>
+
+
+            <!-- KERESÉS GOMB -->
+
+            <button
+              type="button"
+              class="min-h-11 w-full rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-600/10 sm:w-auto"
+              (click)="search()"
+            >
+              {{ 'common.search' | translate }}
+            </button>
+
+          </div>
 
         </div>
+
+
+        <!-- RENDEZÉS -->
+
+        <button
+          type="button"
+          class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-sort-200 bg-sort-50 px-4 py-2.5 text-sm font-semibold text-sort-700 shadow-sm transition duration-150 hover:border-sort-200 hover:bg-sort-100 focus:outline-none focus:ring-4 focus:ring-sort-600/10 lg:w-auto"
+          (click)="toggleSort()"
+        >
+
+          <span>
+            {{ 'coachExercises.sortByName' | translate }}
+          </span>
+
+          <span class="text-lg font-bold leading-none">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+
+        </button>
 
       </div>
 
 
-      <!-- ==================================================
-           RENDEZÉS
-           ================================================== -->
+      <!-- ======================================================
+           GYAKORLATOK
+           ====================================================== -->
 
-      <button
-        type="button"
-        class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-sort-200 bg-sort-50 px-4 py-2.5 text-sm font-semibold text-sort-700 shadow-sm transition duration-150 hover:border-sort-200 hover:bg-sort-100 focus:outline-none focus:ring-4 focus:ring-sort-600/10 lg:w-auto"
-        (click)="toggleSort()"
-      >
-  <span>
-    {{ 'coachExercises.sortByName' | translate }}
-  </span>
-
-        <span class="text-lg font-bold leading-none">
-    {{ sortDirection === 'asc' ? '↑' : '↓' }}
-  </span>
-      </button>
-
-    </div>
-
-
-    <!-- ======================================================
-         GYAKORLATOK
-         ====================================================== -->
-
-    <ng-container
-      *ngIf="filteredExercises.length > 0; else noExercises"
-    >
-
-      <div
-        class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+      <ng-container
+        *ngIf="filteredExercises.length > 0; else noExercises"
       >
 
         <div
-          *ngFor="let ex of pagedExercises"
-          class="flex min-h-[350px] flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition duration-150 hover:-translate-y-0.5 hover:shadow-md"
+          class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
         >
 
           <!-- ==================================================
-               EXERCISE KÉPEK
+               EXERCISE KÁRTYA
                ================================================== -->
 
           <div
-            class="flex h-[180px] items-center justify-center overflow-hidden border-b border-gray-200 bg-gray-50"
+            *ngFor="let ex of pagedExercises"
+            class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
           >
 
-            <ng-container
-              *ngIf="getExerciseImages(ex).length > 0; else noImage"
+            <!-- ==================================================
+                 PIROS FEJLÉC
+                 ================================================== -->
+
+            <div
+              class="flex h-28 items-center justify-center bg-gradient-to-r from-primary-600 to-primary-700"
             >
 
-              <img
-                *ngFor="let image of getExerciseImages(ex)"
-                [src]="'/assets/images/flat/' + image"
-                [alt]="ex.name"
-                class="h-full w-full object-contain"
-              />
-
-            </ng-container>
-
-
-            <!-- NINCS KÉP -->
-
-            <ng-template #noImage>
-
-              <span class="text-5xl">
+              <span
+                class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-3xl shadow-md transition duration-200 group-hover:scale-105"
+              >
                 🏋️‍♂️
               </span>
 
-            </ng-template>
-
-          </div>
-
-
-          <!-- ==================================================
-               KÁRTYA TARTALOM
-               ================================================== -->
-
-          <div class="flex flex-1 flex-col p-4">
-
-            <h3 class="text-lg font-bold text-gray-800">
-              {{ ex.name }}
-            </h3>
-
-
-            <p
-              *ngIf="ex.description"
-              class="mt-2 text-sm leading-6 text-gray-600"
-            >
-              {{ ex.description }}
-            </p>
+            </div>
 
 
             <!-- ==================================================
-                 SZERKESZTÉS
+                 EXERCISE KÉPEK
                  ================================================== -->
 
-            <div class="mt-auto pt-4">
+            <div
+              class="flex h-[180px] items-center justify-center overflow-hidden border-b border-slate-100 bg-slate-50"
+            >
 
-              <button
-                type="button"
-                class="w-full rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10"
-                (click)="editExercise(ex.id!)"
+              <ng-container
+                *ngIf="getExerciseImages(ex).length > 0; else noImage"
               >
-                ✏️ {{ 'common.edit' | translate }}
-              </button>
+
+                <img
+                  *ngFor="let image of getExerciseImages(ex)"
+                  [src]="'/assets/images/flat/' + image"
+                  [alt]="ex.name"
+                  class="h-full w-full object-contain transition duration-200 group-hover:scale-105"
+                />
+
+              </ng-container>
+
+
+              <!-- NINCS KÉP -->
+
+              <ng-template #noImage>
+
+                <span class="text-5xl">
+                  🏋️‍♂️
+                </span>
+
+              </ng-template>
+
+            </div>
+
+
+            <!-- ==================================================
+                 KÁRTYA TARTALOM
+                 ================================================== -->
+
+            <div
+              class="flex min-w-0 flex-1 flex-col p-5"
+            >
+
+              <!-- EXERCISE NÉV -->
+
+              <h3
+                class="mb-2 break-words text-lg font-bold text-slate-800"
+              >
+                {{ ex.name }}
+              </h3>
+
+
+              <!-- LEÍRÁS -->
+
+              <p
+                *ngIf="ex.description"
+                class="mb-4 break-words text-sm leading-6 text-slate-600"
+              >
+                {{ ex.description }}
+              </p>
+
+
+              <!-- ==================================================
+                   SZERKESZTÉS
+                   ================================================== -->
+
+              <div
+                class="mt-auto pt-4"
+              >
+
+                <button
+                  type="button"
+                  class="w-full rounded-lg border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-100 focus:outline-none focus:ring-4 focus:ring-blue-600/10"
+                  (click)="editExercise(ex.id!)"
+                >
+                  ✏️ {{ 'common.edit' | translate }}
+                </button>
+
+              </div>
 
             </div>
 
@@ -206,88 +244,80 @@
 
         </div>
 
-      </div>
 
+        <!-- ======================================================
+             LAPOZÁS
+             ====================================================== -->
 
-      <!-- ======================================================
-           LAPOZÁS
-           ====================================================== -->
-
-      <div
-        *ngIf="totalPages > 1"
-        class="flex items-center justify-center gap-4 pt-2"
-      >
-
-        <button
-          type="button"
-          class="rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
-          (click)="prevPage()"
-          [disabled]="currentPage === 0"
+        <div
+          *ngIf="totalPages > 1"
+          class="flex flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row"
         >
-          ◀ {{ 'common.previous' | translate }}
-        </button>
+
+          <button
+            type="button"
+            class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+            (click)="prevPage()"
+            [disabled]="currentPage === 0"
+          >
+            ◀ {{ 'common.previous' | translate }}
+          </button>
 
 
-        <span class="text-sm font-semibold text-gray-700">
-          {{ currentPage + 1 }} / {{ totalPages }}
-        </span>
+          <span
+            class="min-w-20 text-center text-sm font-semibold text-slate-700"
+          >
+            {{ currentPage + 1 }} / {{ totalPages }}
+          </span>
 
 
-        <button
-          type="button"
-          class="rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 transition hover:border-blue-300 hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
-          (click)="nextPage()"
-          [disabled]="currentPage === totalPages - 1"
-        >
-          {{ 'common.next' | translate }} ▶
-        </button>
+          <button
+            type="button"
+            class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+            (click)="nextPage()"
+            [disabled]="currentPage === totalPages - 1"
+          >
+            {{ 'common.next' | translate }} ▶
+          </button>
 
-      </div>
+        </div>
+
+      </ng-container>
 
     </ng-container>
 
-  </ng-container>
 
+    <!-- ======================================================
+         NINCS GYAKORLAT / NINCS KERESÉSI TALÁLAT
+         ====================================================== -->
 
-  <!-- ======================================================
-       NINCS GYAKORLAT / NINCS KERESÉSI TALÁLAT
-       ====================================================== -->
+    <ng-template #noExercises>
 
-  <ng-template #noExercises>
-
-    <div
-      class="rounded-xl border border-dashed border-gray-300 bg-white p-8 text-center text-gray-500"
-    >
-
-      <span
-        *ngIf="searchTerm; else noExercisesAtAll"
+      <app-message
+        [message]="
+          (searchTerm
+            ? 'coachExercises.noSearchResults'
+            : 'coachExercises.noExercises') | translate
+        "
+        type="info"
       >
-        {{ 'coachExercises.noSearchResults' | translate }}
-      </span>
+      </app-message>
+
+    </ng-template>
 
 
-      <ng-template #noExercisesAtAll>
+    <!-- ======================================================
+         ÚJ GYAKORLAT
+         ====================================================== -->
 
-        {{ 'coachExercises.noExercises' | translate }}
+    <button
+      type="button"
+      class="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-primary-600 to-primary-700 text-2xl text-white shadow-lg transition duration-200 hover:scale-105 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20"
+      (click)="goToNewExercise()"
+      [title]="'coachExercises.addExercise' | translate"
+    >
+      ➕
+    </button>
 
-      </ng-template>
-
-    </div>
-
-  </ng-template>
-
-
-  <!-- ======================================================
-       ÚJ GYAKORLAT
-       ====================================================== -->
-
-  <button
-    type="button"
-    class="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-green-600 text-2xl text-white shadow-lg transition hover:bg-green-700 hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-green-500/20"
-    (click)="goToNewExercise()"
-    [title]="'coachExercises.addExercise' | translate"
-  >
-    ➕
-  </button>
-
+  </div>
 </div>
