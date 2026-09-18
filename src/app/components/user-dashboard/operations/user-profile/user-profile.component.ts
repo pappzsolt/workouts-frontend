@@ -57,6 +57,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
   message = '';
 
+  messageType: 'success' | 'error' | 'info' | '' = '';
+
   coachName = '';
 
   constructor(
@@ -93,6 +95,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
     if (!userId) {
       this.message = 'userProfile.noUserId';
+      this.messageType = 'error';
 
       return;
     }
@@ -136,12 +139,12 @@ export class UserProfileComponent implements OnInit, OnDestroy {
           this.cdr.detectChanges();
 
           this.message = 'userProfile.profileLoaded';
+          this.messageType = 'success';
         },
 
-        error: (err) => {
-          console.error('Hiba a profil betöltésekor:', err);
-
+        error: () => {
           this.message = 'userProfile.loadError';
+          this.messageType = 'error';
         },
       });
   }
@@ -221,12 +224,12 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.message = 'userProfile.updateSuccess';
+          this.messageType = 'success';
         },
 
-        error: (err: any) => {
-          console.error('Profil mentési hiba:', err);
-
-          this.message = 'userProfile.updateError' + (err?.message || '');
+        error: () => {
+          this.message = 'userProfile.updateError';
+          this.messageType = 'error';
         },
       });
   }
