@@ -2,7 +2,9 @@
      OLDAL
      ====================================================== -->
 
-<div class="min-h-full bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50">
+<div
+  class="min-h-full bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50"
+>
   <div class="mx-auto w-full max-w-6xl px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
 
     <!-- ==================================================
@@ -20,16 +22,11 @@
          ÜZENET
          ================================================== -->
 
-    <div
+    <app-message
       *ngIf="message"
-      class="mb-5 rounded-xl border px-4 py-3 text-sm shadow-sm"
-      [ngClass]="{
-        'border-green-200 bg-green-50 text-green-700': messageType === 'success',
-        'border-red-200 bg-red-50 text-red-700': messageType === 'error'
-      }"
-    >
-      {{ message | translate }}
-    </div>
+      [message]="message | translate"
+      [type]="messageType"
+    ></app-message>
 
     <!-- ==================================================
          WORKOUT EDIT KÁRTYA
@@ -446,45 +443,31 @@
                    NINCS TALÁLAT
                    ================================================== -->
 
-              <div
+              <app-message
                 *ngIf="
                   !loadingExercises &&
                   exerciseSearchTerm.trim() &&
                   availableExercises.length === 0 &&
                   exercises.length > 0
                 "
-                class="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600"
-              >
-                <span class="text-lg">🔎</span>
-
-                <span class="min-w-0 break-words">
-                  {{ 'coachWorkoutEdit.noSearchResults' | translate }}
-
-                  <strong>
-                    "{{ exerciseSearchTerm }}"
-                  </strong>
-                </span>
-              </div>
+                [message]="'coachWorkoutEdit.noSearchResults' | translate"
+                type="info"
+              ></app-message>
 
               <!-- ==================================================
                    MINDEN EXERCISE HOZZÁADVA
                    ================================================== -->
 
-              <div
+              <app-message
                 *ngIf="
                   !loadingExercises &&
                   !exerciseSearchTerm.trim() &&
                   availableExercises.length === 0 &&
                   exercises.length > 0
                 "
-                class="flex items-center gap-3 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700"
-              >
-                <span class="text-lg">✓</span>
-
-                <span>
-                  {{ 'coachWorkoutEdit.allExercisesAdded' | translate }}
-                </span>
-              </div>
+                [message]="'coachWorkoutEdit.allExercisesAdded' | translate"
+                type="info"
+              ></app-message>
 
             </div>
 
@@ -588,32 +571,26 @@
                  NINCS EXERCISE
                  ================================================== -->
 
+            <app-message
+              *ngIf="workoutExercises.length === 0"
+              [message]="'coachWorkoutEdit.noExercisesYet' | translate"
+              type="info"
+            ></app-message>
+
             <div
               *ngIf="workoutExercises.length === 0"
-              class="flex min-h-36 flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center"
+              class="mt-3 text-center"
             >
               <span
-                class="mb-3 text-4xl"
-              >
-                🏋️
-              </span>
-
-              <strong
-                class="text-sm font-semibold text-slate-700"
-              >
-                {{ 'coachWorkoutEdit.noExercisesYet' | translate }}
-              </strong>
-
-              <span
                 *ngIf="!workoutAssignedToProgram"
-                class="mt-1 text-sm text-slate-500"
+                class="text-sm text-slate-500"
               >
                 {{ 'coachWorkoutEdit.searchToAdd' | translate }}
               </span>
 
               <span
                 *ngIf="workoutAssignedToProgram"
-                class="mt-1 text-sm text-slate-500"
+                class="text-sm text-slate-500"
               >
                 {{ 'coachWorkoutEdit.assignedToProgram' | translate }}
               </span>

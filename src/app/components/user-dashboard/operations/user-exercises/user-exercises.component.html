@@ -187,11 +187,10 @@
 
     <ng-template #noExercises>
 
-      <div
-        class="flex min-h-32 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-8 text-center text-sm font-medium text-slate-500 shadow-sm"
-      >
-        {{ 'userExercises.noExercises' | translate }}
-      </div>
+      <app-message
+        [message]="'userExercises.noExercises' | translate"
+        type="info"
+      ></app-message>
 
     </ng-template>
 

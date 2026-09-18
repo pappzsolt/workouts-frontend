@@ -1,16 +1,11 @@
 <div class="program-workouts-ass-container">
 
   <!-- Üzenet -->
-  <div
+  <app-message
     *ngIf="message"
-    class="message-box"
-    [ngClass]="{
-      'message-success': messageStatus === 'success',
-      'message-error': messageStatus === 'error'
-    }"
-  >
-    {{ message }}
-  </div>
+    [message]="message"
+    [type]="messageStatus"
+  ></app-message>
 
 
   <!-- Program lista -->

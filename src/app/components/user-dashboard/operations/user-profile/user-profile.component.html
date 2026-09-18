@@ -13,12 +13,11 @@
     </div>
 
     <!-- Üzenet -->
-    <div
+    <app-message
       *ngIf="message"
-      class="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-700 shadow-sm"
-    >
-      {{ message | translate }}
-    </div>
+      [message]="message | translate"
+      type="info"
+    ></app-message>
 
     <!-- Profil form -->
     <form

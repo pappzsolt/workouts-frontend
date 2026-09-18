@@ -527,13 +527,11 @@
     "actualWeight": "Actual weight",
     "notes": "Notes",
     "save": "Save",
-
-    "setCompleted": "Set completed",
-    "tapDone": "Mark as done",
-
-    "exerciseStatus": "Exercise status",
-    "completed": "Completed",
-    "inProgress": "In progress"
+    "loadError": "An error occurred while loading the exercise.",
+    "setUpdated": "The set was successfully updated.",
+    "setUpdateError": "An error occurred while updating the set.",
+    "saveSuccess": "The set was successfully saved.",
+    "saveError": "An error occurred while saving the set."
   },
 
   "userMyPrograms": {

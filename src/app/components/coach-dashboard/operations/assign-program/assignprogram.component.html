@@ -72,18 +72,11 @@
     </div>
 
     <!-- Üzenet -->
-    <div
+    <app-message
       *ngIf="message"
-      class="rounded-xl border px-4 py-3 text-center text-sm font-medium shadow-sm"
-      [ngClass]="{
-        'border-emerald-200 bg-emerald-50 text-emerald-700':
-          success,
-        'border-red-200 bg-red-50 text-red-700':
-          !success
-      }"
-    >
-      {{ message }}
-    </div>
+      [message]="message"
+      [type]="success ? 'success' : 'error'"
+    ></app-message>
 
   </div>
 </div>

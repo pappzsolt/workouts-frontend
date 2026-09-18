@@ -524,11 +524,11 @@
     "actualRepetitions": "Tényleges ismétlések",
     "actualWeight": "Tényleges súly",
     "notes": "Megjegyzés",
-    "setCompleted": "Sorozat teljesítve",
-    "tapDone": "Jelöld késznek",
-    "exerciseStatus": "Gyakorlat állapota",
-    "completed": "Teljesítve",
-    "inProgress": "Folyamatban"
+    "loadError": "Hiba történt az exercise betöltésekor.",
+    "setUpdated": "A sorozat sikeresen frissítve.",
+    "setUpdateError": "Hiba történt a sorozat frissítésekor.",
+    "saveSuccess": "A sorozat sikeresen mentve.",
+    "saveError": "Hiba történt a sorozat mentésekor."
   },
 
   "userMyPrograms": {

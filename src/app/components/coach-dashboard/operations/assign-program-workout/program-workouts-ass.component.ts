@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { Subject, takeUntil } from 'rxjs';
-
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 import { CoachProgramBoardComponent } from '../../../shared/coach/coach-program-board/coach-program-board.component';
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
 

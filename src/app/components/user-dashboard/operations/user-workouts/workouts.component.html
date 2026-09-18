@@ -328,11 +328,10 @@
 
     <!-- Nincs edzés -->
     <ng-template #noWorkouts>
-      <div
-        class="flex min-h-32 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-8 text-center text-sm font-medium text-slate-500 shadow-sm"
-      >
-        {{ 'userWorkouts.noWorkouts' | translate }}
-      </div>
+      <app-message
+        [message]="'userWorkouts.noWorkouts' | translate"
+        type="info"
+      ></app-message>
     </ng-template>
 
   </div>

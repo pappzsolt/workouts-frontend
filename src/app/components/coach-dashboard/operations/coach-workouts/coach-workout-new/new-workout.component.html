@@ -11,18 +11,11 @@
     </h2>
 
     <!-- Üzenet -->
-    <div
+    <app-message
       *ngIf="message"
-      class="rounded-xl border px-4 py-3 text-center text-sm font-medium shadow-sm"
-      [ngClass]="{
-        'border-emerald-200 bg-emerald-50 text-emerald-700':
-          messageType === 'success',
-        'border-red-200 bg-red-50 text-red-700':
-          messageType === 'error'
-      }"
-    >
-      {{ message | translate }}
-    </div>
+      [message]="message | translate"
+      [type]="messageType"
+    ></app-message>
 
     <!-- Workout form kártya -->
     <div

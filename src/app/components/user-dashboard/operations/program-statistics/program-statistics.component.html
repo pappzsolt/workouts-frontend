@@ -34,25 +34,23 @@
       </h2>
 
       <!-- Programok betöltése -->
-      <div
+      <app-message
         *ngIf="loadingPrograms"
-        class="flex min-h-20 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-4 py-5 text-sm font-medium text-slate-600"
-      >
-        {{ 'userProgramStatistics.loadingPrograms' | translate }}
-      </div>
+        [message]="'userProgramStatistics.loadingPrograms' | translate"
+        type="info"
+      ></app-message>
 
       <!-- Program betöltési hiba -->
-      <div
+      <app-message
         *ngIf="
           message &&
           messageType === 'error' &&
           !loadingPrograms &&
           !loadingStatistics
         "
-        class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
-      >
-        {{ message }}
-      </div>
+        [message]="message | translate"
+        [type]="messageType"
+      ></app-message>
 
       <!-- Program lista -->
       <div
@@ -74,27 +72,27 @@
           (click)="selectProgram(program.programId ?? program.id)"
         >
 
-        <div class="min-w-0 pr-8">
+          <div class="min-w-0 pr-8">
 
-          <div
-            class="break-words text-base font-bold leading-snug text-slate-800 sm:text-lg"
-          >
-            {{ program.programName ?? program.name }}
-          </div>
+            <div
+              class="break-words text-base font-bold leading-snug text-slate-800 sm:text-lg"
+            >
+              {{ program.programName ?? program.name }}
+            </div>
 
-          <div
-            *ngIf="
+            <div
+              *ngIf="
                 program.programDesc ??
                 program.description
               "
-            class="mt-2 line-clamp-3 text-sm leading-relaxed text-slate-600"
-          >
-            {{ program.programDesc ?? program.description }}
-          </div>
+              class="mt-2 line-clamp-3 text-sm leading-relaxed text-slate-600"
+            >
+              {{ program.programDesc ?? program.description }}
+            </div>
 
-          <div
-            class="mt-4 flex flex-wrap gap-2"
-          >
+            <div
+              class="mt-4 flex flex-wrap gap-2"
+            >
 
               <span
                 *ngIf="
@@ -106,43 +104,42 @@
                 {{ 'userProgramStatistics.days' | translate }}
               </span>
 
-            <span
-              *ngIf="program.difficultyLevel"
-              class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-600"
-            >
+              <span
+                *ngIf="program.difficultyLevel"
+                class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-600"
+              >
                 {{ program.difficultyLevel }}
               </span>
 
+            </div>
+
           </div>
 
-        </div>
-
-        <div
-          *ngIf="
+          <div
+            *ngIf="
               isProgramSelected(
                 program.programId ?? program.id
               )
             "
-          class="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white shadow-sm"
-        >
-          ✓
-        </div>
+            class="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white shadow-sm"
+          >
+            ✓
+          </div>
 
         </button>
 
       </div>
 
       <!-- Nincs program -->
-      <div
+      <app-message
         *ngIf="
           !loadingPrograms &&
           !programs.length &&
           !message
         "
-        class="flex min-h-24 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm font-medium text-slate-500"
-      >
-        {{ 'userProgramStatistics.noPrograms' | translate }}
-      </div>
+        [message]="'userProgramStatistics.noPrograms' | translate"
+        type="info"
+      ></app-message>
 
       <!-- Program lapozás -->
       <div
@@ -198,36 +195,33 @@
     >
 
       <!-- Betöltés -->
-      <div
+      <app-message
         *ngIf="loadingStatistics"
-        class="flex min-h-20 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-4 py-5 text-sm font-medium text-slate-600"
-      >
-        {{ 'userProgramStatistics.loading' | translate }}
-      </div>
+        [message]="'userProgramStatistics.loading' | translate"
+        type="info"
+      ></app-message>
 
       <!-- Backend hiba -->
-      <div
+      <app-message
         *ngIf="
           !loadingStatistics &&
           message &&
           messageType === 'error'
         "
-        class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
-      >
-        {{ message }}
-      </div>
+        [message]="message | translate"
+        [type]="messageType"
+      ></app-message>
 
       <!-- Nincs adat -->
-      <div
+      <app-message
         *ngIf="
           !loadingStatistics &&
           !groupedWorkouts.length &&
           !message
         "
-        class="flex min-h-24 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm font-medium text-slate-500"
-      >
-        {{ 'userProgramStatistics.noData' | translate }}
-      </div>
+        [message]="'userProgramStatistics.noData' | translate"
+        type="info"
+      ></app-message>
 
       <!-- ========================================================
            AKTUÁLIS WORKOUT
@@ -785,14 +779,11 @@
                NINCS EXERCISE
                ==================================================== -->
 
-          <div
-            *ngIf="
-              !currentWorkout.exercises.length
-            "
-            class="mt-5 flex min-h-24 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-center text-sm font-medium text-slate-500"
-          >
-            {{ 'userProgramStatistics.noExercises' | translate }}
-          </div>
+          <app-message
+            *ngIf="!currentWorkout.exercises.length"
+            [message]="'userProgramStatistics.noExercises' | translate"
+            type="info"
+          ></app-message>
 
         </div>
 

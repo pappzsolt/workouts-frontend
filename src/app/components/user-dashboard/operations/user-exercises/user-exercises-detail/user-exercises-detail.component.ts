@@ -31,6 +31,9 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   workoutId!: number;
   programId!: number;
 
+  message = '';
+  messageType: 'success' | 'error' | 'info' | '' = '';
+
   constructor(
     private route: ActivatedRoute,
     private exercisesService: UserExerciseDetailService,
@@ -62,6 +65,9 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
    * Workout és exercise adatainak betöltése.
    */
   private loadExerciseDetail(exerciseId: number): void {
+    this.message = '';
+    this.messageType = '';
+
     this.exercisesService.getWorkoutExercises(this.programId, this.workoutId).subscribe({
       next: (response) => {
         /*
@@ -84,7 +90,8 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
         this.workout = workout;
 
         if (!workout?.exercises || workout.exercises.length === 0) {
-          console.error('Nincs exercise a workout-ban');
+          this.message = 'userExerciseDetail.noExercise';
+          this.messageType = 'info';
 
           return;
         }
@@ -92,7 +99,8 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
         const found = workout.exercises.find((we) => we.exercise.id === exerciseId);
 
         if (!found) {
-          console.error('Exercise nem található a workout-ban:', exerciseId);
+          this.message = 'userExerciseDetail.noExercise';
+          this.messageType = 'info';
 
           return;
         }
@@ -105,14 +113,17 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
          * completed állapotából.
          */
         this.updateExerciseDone();
-
-        console.log('Talált workoutExercise:', this.workoutExercise);
-
-        console.log('User workout exercise sets:', this.workoutExercise.userWorkoutExerciseSets);
       },
 
       error: (err: unknown) => {
-        console.error('Hiba a workout lekérésekor:', err);
+        const error = err as {
+          error?: {
+            message?: string;
+          };
+        };
+
+        this.message = error.error?.message || 'userExerciseDetail.loadError';
+        this.messageType = 'error';
       },
     });
   }
@@ -136,6 +147,9 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     }
 
     const exerciseId = this.workoutExercise.exercise.id;
+
+    this.message = '';
+    this.messageType = '';
 
     this.exercisesService
       .updateSetCompleted(
@@ -164,19 +178,19 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
            */
           this.updateExerciseDone();
 
-          console.log('Set adatok frissítve:', {
-            programId: this.programId,
-            workoutId: this.workoutId,
-            setId: set.id,
-            completed,
-            actualRepetitions: set.actualRepetitions,
-            actualWeightKg: set.actualWeightKg,
-            notes: set.notes,
-          });
+          this.message = 'userExerciseDetail.setUpdated';
+          this.messageType = 'success';
         },
 
         error: (err: unknown) => {
-          console.error('Hiba a set adatainak frissítésekor:', err);
+          const error = err as {
+            error?: {
+              message?: string;
+            };
+          };
+
+          this.message = error.error?.message || 'userExerciseDetail.setUpdateError';
+          this.messageType = 'error';
         },
       });
   }
@@ -231,15 +245,8 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
     this.workout.done = this.workout.exercises.every((exercise) => exercise.done === true);
 
-    console.log('Workout frontend completed:', {
-      workoutId: this.workoutId,
-      completed: this.workout.done,
-    });
-
     if (this.workout.done) {
       localStorage.setItem(`workout-completed-${this.workoutId}`, 'true');
-
-      console.log('Workout frontend completed elmentve:', this.workoutId);
     } else {
       /*
        * Ha valamelyik exercise újra incomplete,
@@ -262,6 +269,9 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
     const exerciseId = this.workoutExercise.exercise.id;
 
+    this.message = '';
+    this.messageType = '';
+
     this.exercisesService
       .updateSetCompleted(
         this.programId,
@@ -281,17 +291,19 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
            */
           this.updateExerciseDone();
 
-          console.log('Set sikeresen mentve:', {
-            setId: set.id,
-            completed: set.completed,
-            actualRepetitions: set.actualRepetitions,
-            actualWeightKg: set.actualWeightKg,
-            notes: set.notes,
-          });
+          this.message = 'userExerciseDetail.saveSuccess';
+          this.messageType = 'success';
         },
 
         error: (err: unknown) => {
-          console.error('Hiba a set mentésekor:', err);
+          const error = err as {
+            error?: {
+              message?: string;
+            };
+          };
+
+          this.message = error.error?.message || 'userExerciseDetail.saveError';
+          this.messageType = 'error';
         },
       });
   }
