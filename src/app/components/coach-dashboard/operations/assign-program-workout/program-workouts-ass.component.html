@@ -1,16 +1,19 @@
-<div class="program-workouts-ass-container">
-
+<div
+  class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+>
   <!-- Üzenet -->
-  <app-message
-    *ngIf="message"
-    [message]="message"
-    [type]="messageStatus"
-  ></app-message>
-
+  @if (message) {
+    <div class="mb-6">
+      <app-message
+        [message]="message"
+        [type]="messageStatus"
+      ></app-message>
+    </div>
+  }
 
   <!-- Program lista -->
-  <div class="content-card">
-    <h2 class="section-title">
+  <div class="mb-8 min-w-0">
+    <h2 class="mb-4 text-xl font-bold tracking-tight text-slate-800 sm:text-2xl">
       Programok
     </h2>
 
@@ -21,10 +24,9 @@
     </app-coach-program-board>
   </div>
 
-
   <!-- Workout lista -->
-  <div class="content-card">
-    <h2 class="section-title">
+  <div class="mb-8 min-w-0">
+    <h2 class="mb-4 text-xl font-bold tracking-tight text-slate-800 sm:text-2xl">
       Elérhető workoutok
     </h2>
 
@@ -36,53 +38,48 @@
     </app-coach-workout-board>
   </div>
 
-
   <!-- Kiválasztott workoutok -->
-  <div
-    *ngIf="selectedWorkoutIds.length"
-    class="content-card"
-  >
-    <h2 class="section-title">
-      Kiválasztott workoutok
-    </h2>
-
-
-    <div class="selected-workouts">
-
-      <div
-        *ngFor="let wid of selectedWorkoutIds"
-        class="selected-workout"
+  @if (selectedWorkoutIds.length) {
+    <div
+      class="min-w-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+    >
+      <h2
+        class="mb-4 text-xl font-bold tracking-tight text-slate-800 sm:text-2xl"
       >
-        <span class="selected-workout-id">
-          ID: {{ wid }}
-        </span>
+        Kiválasztott workoutok
+      </h2>
 
-        <button
-          type="button"
-          (click)="removeWorkout(wid)"
-          class="remove-button"
-          title="Eltávolítás"
-        >
-          ✕
-        </button>
+      <div class="space-y-3">
+        @for (wid of selectedWorkoutIds; track wid) {
+          <div
+            class="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
+          >
+            <span class="font-medium text-slate-700">
+              ID: {{ wid }}
+            </span>
+
+            <button
+              type="button"
+              (click)="removeWorkout(wid)"
+              class="rounded-lg bg-delete-50 px-3 py-2 text-sm font-semibold text-delete-600 transition hover:bg-delete-100"
+              title="Eltávolítás"
+            >
+              ✕
+            </button>
+          </div>
+        }
       </div>
 
+      <!-- Mentés -->
+      <div class="mt-6 flex justify-end">
+        <button
+          type="button"
+          (click)="saveSelectedWorkouts()"
+          class="rounded-xl bg-gradient-to-r from-save-600 to-save-700 px-6 py-3 font-semibold text-white shadow-sm transition hover:from-save-700 hover:to-save-700 hover:shadow-md"
+        >
+          Mentés a programhoz
+        </button>
+      </div>
     </div>
-
-
-    <!-- Mentés -->
-    <div class="save-container">
-
-      <button
-        type="button"
-        (click)="saveSelectedWorkouts()"
-        class="save-button"
-      >
-        Mentés a programhoz
-      </button>
-
-    </div>
-
-  </div>
-
+  }
 </div>

@@ -10,7 +10,7 @@
          ====================================================== -->
 
     <h1
-      class="text-center text-2xl font-bold text-slate-800 sm:text-3xl"
+      class="text-center text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
     >
       {{ 'assignWorkoutExercises.title' | translate }}
     </h1>
@@ -31,28 +31,22 @@
          WORKOUT LISTA
          ====================================================== -->
 
-    <div
-      class="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-    >
-      <div
-        class="border-b border-slate-100 px-5 py-4 sm:px-6"
-      >
-        <h2
-          class="text-lg font-bold text-slate-800 sm:text-xl"
-        >
-          {{ 'assignWorkoutExercises.availableWorkouts' | translate }}
-        </h2>
-      </div>
+    <div class="min-w-0">
 
-      <div class="min-w-0 p-5 sm:p-6">
-        <app-coach-workout-board
-          [externalWorkouts]="workouts"
-          [selectedWorkoutIds]="selectedWorkoutIds"
-          [multiSelect]="false"
-          (workoutsChange)="onWorkoutsChange($event)"
-        >
-        </app-coach-workout-board>
-      </div>
+      <h2
+        class="mb-4 text-xl font-bold text-slate-800 sm:text-2xl"
+      >
+        {{ 'assignWorkoutExercises.availableWorkouts' | translate }}
+      </h2>
+
+      <app-coach-workout-board
+        [externalWorkouts]="workouts"
+        [selectedWorkoutIds]="selectedWorkoutIds"
+        [multiSelect]="false"
+        (workoutsChange)="onWorkoutsChange($event)"
+      >
+      </app-coach-workout-board>
+
     </div>
 
 
@@ -68,7 +62,7 @@
         class="border-b border-slate-100 px-5 py-4 sm:px-6"
       >
         <h2
-          class="text-lg font-bold text-slate-800 sm:text-xl"
+          class="text-xl font-bold tracking-tight text-slate-800 sm:text-2xl"
         >
           {{ 'assignWorkoutExercises.selectedWorkouts' | translate }}
         </h2>
@@ -89,7 +83,7 @@
             type="button"
             (click)="removeWorkout(wid)"
             [title]="'common.remove' | translate"
-            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-red-200 bg-white text-sm font-bold text-red-600 transition hover:border-red-300 hover:bg-red-50 focus:outline-none focus:ring-4 focus:ring-red-600/10"
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-delete-200 bg-delete-50 text-sm font-bold text-delete-600 transition hover:border-delete-300 hover:bg-delete-100 focus:outline-none focus:ring-4 focus:ring-delete-600/10"
           >
             ✕
           </button>
@@ -102,27 +96,21 @@
          EXERCISES LISTA
          ====================================================== -->
 
-    <div
-      class="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-    >
-      <div
-        class="border-b border-slate-100 px-5 py-4 sm:px-6"
-      >
-        <h2
-          class="text-lg font-bold text-slate-800 sm:text-xl"
-        >
-          {{ 'assignWorkoutExercises.availableExercises' | translate }}
-        </h2>
-      </div>
+    <div class="min-w-0">
 
-      <div class="min-w-0 p-5 sm:p-6">
-        <app-coach-exercises-board
-          [externalExercises]="exercises"
-          [externalSelectedExercises]="selectedExercises"
-          (exercisesChange)="onExercisesChange($event)"
-        >
-        </app-coach-exercises-board>
-      </div>
+      <h2
+        class="mb-4 text-xl font-bold tracking-tight text-slate-800 sm:text-2xl"
+      >
+        {{ 'assignWorkoutExercises.availableExercises' | translate }}
+      </h2>
+
+      <app-coach-exercises-board
+        [externalExercises]="exercises"
+        [externalSelectedExercises]="selectedExercises"
+        (exercisesChange)="onExercisesChange($event)"
+      >
+      </app-coach-exercises-board>
+
     </div>
 
 
@@ -134,7 +122,7 @@
       <button
         type="button"
         (click)="saveSelectedWorkoutsAndExercises()"
-        class="w-full rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 sm:w-auto"
+        class="w-full rounded-xl bg-gradient-to-r from-save-600 to-save-700 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-save-700 hover:to-save-700 focus:outline-none focus:ring-4 focus:ring-save-600/20 sm:w-auto"
       >
         {{ 'assignWorkoutExercises.save' | translate }}
       </button>

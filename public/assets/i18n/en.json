@@ -146,6 +146,7 @@
   },
 
   "assignWorkoutExercises": {
+    "title": "Workout → Exercise Assignment",
     "availableWorkouts": "Available workouts",
     "selectedWorkouts": "Selected workouts",
     "availableExercises": "Available exercises",

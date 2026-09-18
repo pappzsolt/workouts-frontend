@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { Subject, takeUntil } from 'rxjs';
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+
+import { MessageComponent } from '../../../shared/message/message.component';
 import { CoachProgramBoardComponent } from '../../../shared/coach/coach-program-board/coach-program-board.component';
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
 
@@ -17,7 +18,13 @@ import { LanguageService } from '../../../../services/shared/language.service';
 @Component({
   selector: 'app-program-workouts-ass',
   standalone: true,
-  imports: [CommonModule, FormsModule, CoachProgramBoardComponent, CoachWorkoutBoardComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MessageComponent,
+    CoachProgramBoardComponent,
+    CoachWorkoutBoardComponent,
+  ],
   templateUrl: './program-workouts-ass.component.html',
 })
 export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
@@ -33,7 +40,7 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
 
   message: string | null = null;
 
-  messageStatus: 'success' | 'error' | null = null;
+  messageStatus: 'success' | 'error' | 'info' | '' = '';
 
   @Output()
   assignedWorkouts = new EventEmitter<{
@@ -56,28 +63,27 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
     });
   }
 
-  onProgramSelected(programId: number) {
+  // ==========================================================
+  // PROGRAM SELECTION
+  // ==========================================================
+
+  onProgramSelected(programId: number): void {
     this.selectedProgramId = programId;
-
-    console.log('Selected program in wrapper:', programId);
-
     this.selectedWorkoutIds = [];
   }
 
-  onWorkoutsChange(updatedIds: number[]) {
-    if (!this.selectedProgramId) {
-      console.warn('Program nincs kiválasztva!');
+  // ==========================================================
+  // WORKOUT SELECTION
+  // ==========================================================
 
+  onWorkoutsChange(updatedIds: number[]): void {
+    if (!this.selectedProgramId) {
+      this.message = 'Program nincs kiválasztva!';
+      this.messageStatus = 'error';
       return;
     }
 
     this.selectedWorkoutIds = [...updatedIds];
-
-    console.log(
-      'Current assigned workouts for program',
-      this.selectedProgramId,
-      this.selectedWorkoutIds,
-    );
 
     this.assignedWorkouts.emit({
       programId: this.selectedProgramId,
@@ -85,64 +91,59 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
     });
   }
 
-  saveSelectedWorkouts() {
-    if (!this.selectedProgramId) {
-      console.warn('Nincs kiválasztott program!');
+  // ==========================================================
+  // SAVE WORKOUTS
+  // ==========================================================
 
+  saveSelectedWorkouts(): void {
+    if (!this.selectedProgramId) {
+      this.message = 'Nincs kiválasztott program!';
+      this.messageStatus = 'error';
       return;
     }
 
     if (this.selectedWorkoutIds.length === 0) {
-      console.warn('Nincsenek kiválasztott workoutok!');
-
+      this.message = 'Nincsenek kiválasztott workoutok!';
+      this.messageStatus = 'error';
       return;
     }
-
-    console.log('🚀 Mentés backendhez:', {
-      programId: this.selectedProgramId,
-
-      workoutIds: this.selectedWorkoutIds,
-    });
 
     this.selectedWorkoutIds.forEach((workoutId, index) => {
       this.programWorkoutService
         .addWorkoutToProgram(this.selectedProgramId!, workoutId, index)
         .subscribe({
           next: (res) => {
-            console.log(`✅ Workout ${workoutId} mentve:`, res);
-
             this.message = res.message;
-
             this.messageStatus = res.success ? 'success' : 'error';
 
             setTimeout(() => {
               this.message = null;
-
-              this.messageStatus = null;
+              this.messageStatus = '';
             }, 5000);
           },
 
           error: (err) => {
-            console.error(`❌ Workout ${workoutId} mentése sikertelen:`, err);
-
             this.message = err.error?.message || 'Ismeretlen hiba';
 
             this.messageStatus = 'error';
 
             setTimeout(() => {
               this.message = null;
-
-              this.messageStatus = null;
+              this.messageStatus = '';
             }, 5000);
           },
         });
     });
   }
 
-  removeWorkout(wid: number) {
-    if (!this.selectedProgramId) {
-      console.warn('Program nincs kiválasztva!');
+  // ==========================================================
+  // REMOVE WORKOUT
+  // ==========================================================
 
+  removeWorkout(wid: number): void {
+    if (!this.selectedProgramId) {
+      this.message = 'Program nincs kiválasztva!';
+      this.messageStatus = 'error';
       return;
     }
 
@@ -150,32 +151,25 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
 
     this.programWorkoutService.deleteProgramWorkout(this.selectedProgramId, wid).subscribe({
       next: (res) => {
-        console.log(`✅ Workout ${wid} törölve a programból:`, res);
-
         this.message = res.message;
-
         this.messageStatus = res.success ? 'success' : 'error';
 
         setTimeout(() => {
           this.message = null;
-
-          this.messageStatus = null;
+          this.messageStatus = '';
         }, 5000);
 
         this.onWorkoutsChange(this.selectedWorkoutIds);
       },
 
       error: (err) => {
-        console.error(`❌ Workout ${wid} törlése sikertelen:`, err);
-
         this.message = err.error?.message || 'Ismeretlen hiba';
 
         this.messageStatus = 'error';
 
         setTimeout(() => {
           this.message = null;
-
-          this.messageStatus = null;
+          this.messageStatus = '';
         }, 5000);
       },
     });
@@ -187,7 +181,6 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.destroy$.next();
-
     this.destroy$.complete();
   }
 }

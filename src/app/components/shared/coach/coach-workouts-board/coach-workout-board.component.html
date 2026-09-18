@@ -2,199 +2,224 @@
      LOADING
      ====================================================== -->
 
-<div
-  *ngIf="loading"
-  class="flex min-h-20 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-5 text-sm font-medium text-slate-600 shadow-sm"
->
-  {{ 'coachWorkoutBoard.loading' | translate }}
-</div>
+@if (loading) {
+  <div
+    class="flex min-h-20 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-5 text-sm font-medium text-slate-600 shadow-sm"
+  >
+    {{ 'coachWorkoutBoard.loading' | translate }}
+  </div>
+}
 
 <!-- ======================================================
      ÜZENET
      ====================================================== -->
 
-<app-message
-  *ngIf="message && !loading"
-  [message]="message | translate"
-  [type]="messageType"
-  class="mb-5 block"
-></app-message>
+@if (message && !loading) {
+  <app-message
+    [message]="message"
+    [type]="messageType"
+    class="mb-5 block"
+  ></app-message>
+}
 
 <!-- ======================================================
      KERESÉS ÉS RENDEZÉS
      ====================================================== -->
 
-<div
-  *ngIf="!loading"
-  class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end"
->
-  <!-- KERESÉS -->
+@if (!loading) {
+  <div
+    class="mb-6 flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:flex-row lg:items-end"
+  >
 
-  <div class="min-w-0 flex-1">
-    <label
-      for="workoutSearch"
-      class="mb-2 block text-sm font-semibold text-slate-700"
-    >
-      {{ 'coachWorkoutBoard.search' | translate }}
-    </label>
+    <!-- KERESÉS -->
 
-    <input
-      id="workoutSearch"
-      type="text"
-      [(ngModel)]="searchTerm"
-      (ngModelChange)="onSearchChange()"
-      [placeholder]="
-        'coachWorkoutBoard.searchPlaceholder' | translate
-      "
-      autocomplete="off"
-      class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
-    />
-  </div>
+    <div class="min-w-0 flex-1">
+      <label
+        for="workoutSearch"
+        class="mb-2 block text-sm font-semibold text-slate-700"
+      >
+        {{ 'coachWorkoutBoard.search' | translate }}
+      </label>
 
-  <!-- RENDEZÉS -->
+      <input
+        id="workoutSearch"
+        type="text"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
+        [placeholder]="'coachWorkoutBoard.searchPlaceholder' | translate"
+        autocomplete="off"
+        class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
+      />
+    </div>
 
-  <div class="w-full sm:w-auto">
+    <!-- RENDEZÉS -->
+
     <button
       type="button"
-      class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-sort-200 bg-sort-50 px-4 py-2.5 text-sm font-semibold text-sort-700 shadow-sm transition duration-150 hover:border-sort-200 hover:bg-sort-100 focus:outline-none focus:ring-4 focus:ring-sort-600/10 lg:w-auto"
       (click)="toggleSort()"
+      class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-sort-200 bg-sort-50 px-4 py-2.5 text-sm font-semibold text-sort-700 shadow-sm transition duration-150 hover:bg-sort-100 focus:outline-none focus:ring-4 focus:ring-sort-600/10 lg:w-auto"
     >
-      {{ 'coachWorkoutBoard.sortByName' | translate }}
+      <span>
+        {{ 'coachWorkoutBoard.sortByName' | translate }}
+      </span>
 
-      <span class="ml-2 text-base">
+      <span class="text-lg font-bold leading-none">
         {{ sortDirection === 'asc' ? '↑' : '↓' }}
       </span>
     </button>
+
   </div>
-</div>
+}
 
 <!-- ======================================================
      WORKOUTOK
      ====================================================== -->
 
-<div
-  *ngIf="!loading && workouts?.length"
-  class="grid max-h-[600px] min-w-0 grid-cols-1 gap-4 overflow-y-auto p-1 pb-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
->
+@if (!loading && workouts?.length) {
   <div
-    *ngFor="let workout of workouts"
-    class="group relative flex min-h-40 min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md"
+    class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
   >
-    <!-- ==================================================
-         KIVÁLASZTÁS
-         ================================================== -->
 
-    <div class="mb-4 flex items-center justify-between gap-3">
-      <label
-        for="workout-{{ workout.id }}"
-        class="flex min-w-0 cursor-pointer items-center"
+    @for (workout of workouts; track workout.id) {
+      <div
+        class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
       >
-        <input
-          type="checkbox"
-          [checked]="
-            selectedWorkoutIds.includes(workout.id!)
-          "
-          (change)="
-            toggleWorkoutSelection(
-              workout.id!,
-              $any($event.target).checked
-            )
-          "
-          id="workout-{{ workout.id }}"
-          class="h-5 w-5 shrink-0 cursor-pointer rounded border-slate-300 text-blue-600 accent-blue-600 focus:ring-2 focus:ring-blue-500/20"
-        />
 
-        <span
-          class="ml-2 truncate text-sm font-medium text-slate-600"
+        <!-- ==================================================
+             FEJLÉC
+             ================================================== -->
+
+        <div
+          class="flex h-20 items-center justify-center bg-gradient-to-r from-primary-600 to-primary-700"
         >
-          {{ 'coachWorkoutBoard.select' | translate }}
-        </span>
-      </label>
+          <span
+            class="text-2xl"
+          >
+            🔥
+          </span>
+        </div>
 
-      <span
-        class="shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-400"
-      >
-        ID {{ workout.id }}
-      </span>
-    </div>
+        <!-- ==================================================
+             TARTALOM
+             ================================================== -->
 
-    <!-- ==================================================
-         WORKOUT NÉV
-         ================================================== -->
+        <div class="flex min-w-0 flex-1 flex-col p-5">
 
-    <div
-      class="flex min-h-16 flex-1 items-center justify-center text-center"
-    >
-      <p
-        class="line-clamp-3 break-words text-base font-bold leading-snug text-slate-800 sm:text-lg"
-      >
-        {{
-          workout.name ||
-          ('coachWorkoutBoard.noName' | translate)
-        }}
-      </p>
-    </div>
+          <!-- KIVÁLASZTÁS + ID -->
 
-    <!-- ==================================================
-         ALSÓ INFORMÁCIÓ
-         ================================================== -->
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <label
+              for="workout-{{ workout.id }}"
+              class="flex min-w-0 cursor-pointer items-center"
+            >
+              <input
+                type="checkbox"
+                [checked]="selectedWorkoutIds.includes(workout.id!)"
+                (change)="
+                  toggleWorkoutSelection(
+                    workout.id!,
+                    $any($event.target).checked
+                  )
+                "
+                id="workout-{{ workout.id }}"
+                class="h-5 w-5 shrink-0 cursor-pointer rounded border-slate-300 text-primary-600 accent-primary-600 focus:ring-2 focus:ring-primary-500/20"
+              />
 
-    <div
-      class="mt-4 border-t border-slate-100 pt-3 text-center text-xs font-medium text-slate-400"
-    >
-      {{ 'coachWorkoutBoard.workout' | translate }}
-    </div>
+              <span
+                class="ml-2 truncate text-sm font-medium text-slate-600"
+              >
+                {{ 'coachWorkoutBoard.select' | translate }}
+              </span>
+            </label>
+
+            <span
+              class="shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs font-medium text-slate-400"
+            >
+              {{ 'coachWorkoutBoard.id' | translate }}
+              {{ workout.id }}
+            </span>
+          </div>
+
+          <!-- WORKOUT NÉV -->
+
+          <div
+            class="flex min-h-20 flex-1 items-center justify-center text-center"
+          >
+            <p
+              class="line-clamp-3 break-words text-lg font-bold leading-snug text-slate-800"
+            >
+              {{
+                workout.name ||
+                ('coachWorkoutBoard.noName' | translate)
+              }}
+            </p>
+          </div>
+
+          <!-- ALSÓ INFORMÁCIÓ -->
+
+          <div
+            class="mt-4 border-t border-slate-100 pt-3 text-center text-xs font-medium text-slate-400"
+          >
+            {{ 'coachWorkoutBoard.workout' | translate }}
+          </div>
+
+        </div>
+      </div>
+    }
+
   </div>
-</div>
+}
 
 <!-- ======================================================
      NINCS TALÁLAT
      ====================================================== -->
 
-<ng-container *ngIf="!loading && !workouts?.length">
-  <app-message
-    *ngIf="searchTerm; else noWorkouts"
-    [message]="'coachWorkoutBoard.noSearchResults' | translate"
-    type="info"
-  ></app-message>
-
-  <ng-template #noWorkouts>
+@if (!loading && !workouts?.length) {
+  @if (searchTerm) {
+    <app-message
+      [message]="'coachWorkoutBoard.noSearchResults' | translate"
+      type="info"
+    ></app-message>
+  } @else {
     <app-message
       [message]="'coachWorkoutBoard.noWorkouts' | translate"
       type="info"
     ></app-message>
-  </ng-template>
-</ng-container>
+  }
+}
 
 <!-- ======================================================
      LAPOZÁS
      ====================================================== -->
 
-<div
-  *ngIf="!loading && totalPages > 1"
-  class="mt-2 flex flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:gap-5"
->
-  <button
-    type="button"
-    class="flex min-h-10 w-full items-center justify-center rounded-xl border border-pagination-200 bg-white px-4 py-2 text-sm font-semibold text-pagination-700 transition-all duration-200 hover:border-pagination-200 hover:bg-pagination-50 hover:text-pagination-700 focus:outline-none focus:ring-2 focus:ring-pagination-600/20 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
-    (click)="prevPage()"
-    [disabled]="currentPage === 1"
+@if (!loading && totalPages > 1) {
+  <div
+    class="mt-6 flex flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row sm:gap-5"
   >
-    ◀ {{ 'common.previous' | translate }}
-  </button>
 
-  <span
-    class="whitespace-nowrap text-sm font-semibold text-slate-600"
-  >
-    {{ currentPage }} / {{ totalPages }}
-  </span>
+    <button
+      type="button"
+      (click)="prevPage()"
+      [disabled]="currentPage === 1"
+      class="w-full rounded-lg border border-pagination-200 bg-white px-4 py-2.5 text-sm font-semibold text-pagination-700 transition hover:bg-pagination-50 hover:text-pagination-700 focus:outline-none focus:ring-4 focus:ring-pagination-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+    >
+      ◀ {{ 'common.previous' | translate }}
+    </button>
 
-  <button
-    type="button"
-    class="flex min-h-10 w-full items-center justify-center rounded-xl border border-pagination-200 bg-white px-4 py-2 text-sm font-semibold text-pagination-700 transition-all duration-200 hover:border-pagination-200 hover:bg-pagination-50 hover:text-pagination-700 focus:outline-none focus:ring-2 focus:ring-pagination-600/20 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
-    (click)="nextPage()"
-    [disabled]="currentPage === totalPages"
-  >
-    {{ 'common.next' | translate }} ▶
-  </button>
-</div>
+    <span
+      class="min-w-20 text-center text-sm font-semibold text-slate-700"
+    >
+      {{ currentPage }} / {{ totalPages }}
+    </span>
+
+    <button
+      type="button"
+      (click)="nextPage()"
+      [disabled]="currentPage === totalPages"
+      class="w-full rounded-lg border border-pagination-200 bg-white px-4 py-2.5 text-sm font-semibold text-pagination-700 transition hover:bg-pagination-50 hover:text-pagination-700 focus:outline-none focus:ring-4 focus:ring-pagination-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+    >
+      {{ 'common.next' | translate }} ▶
+    </button>
+
+  </div>
+}
