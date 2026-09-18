@@ -9,12 +9,12 @@
   </div>
 
   <!-- Hiba / üzenet -->
-  <div
+  <app-message
     *ngIf="message && !loading"
-    class="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-700"
-  >
-    {{ message | translate }}
-  </div>
+    [message]="message | translate"
+    [type]="messageType"
+    class="block"
+  ></app-message>
 
   <!-- Keresés -->
   <div
@@ -41,17 +41,17 @@
   </div>
 
   <!-- Nincs találat -->
-  <div
+  <app-message
     *ngIf="
       !loading &&
       exercises?.length &&
       searchTerm &&
       !filteredExercises.length
     "
-    class="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-700"
-  >
-    {{ 'coachExercisesBoard.noSearchResults' | translate }}
-  </div>
+    [message]="'coachExercisesBoard.noSearchResults' | translate"
+    type="info"
+    class="mt-4 block"
+  ></app-message>
 
   <!-- Exercise lista -->
   <div

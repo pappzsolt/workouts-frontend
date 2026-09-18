@@ -5,12 +5,18 @@
 
   <div class="add-workout-section">
     <div class="add-workout-controls">
-      <app-user-select [(selectedUserId)]="selectedUserId"></app-user-select>
+      <app-user-select
+        [(selectedUserId)]="selectedUserId"
+      ></app-user-select>
 
       <label class="form-field">
-        <span>{{ 'userWorkoutExerciseManager.program' | translate }}:</span>
+        <span>
+          {{ 'userWorkoutExerciseManager.program' | translate }}:
+        </span>
 
-        <app-coach-program-select [(selectedProgramId)]="selectedProgramId">
+        <app-coach-program-select
+          [(selectedProgramId)]="selectedProgramId"
+        >
         </app-coach-program-select>
       </label>
 
@@ -36,7 +42,10 @@
       <div class="day-header">
         <div>
           <div class="day-title">
-            {{ day.date || ('userWorkoutExerciseManager.unscheduledDay' | translate) }}
+            {{
+              day.date ||
+              ('userWorkoutExerciseManager.unscheduledDay' | translate)
+            }}
           </div>
 
           <div class="day-index">
@@ -58,7 +67,11 @@
 
               <span
                 class="workout-status"
-                [ngClass]="w.workoutCompleted ? 'status-done' : 'status-not-done'"
+                [ngClass]="
+                  w.workoutCompleted
+                    ? 'status-done'
+                    : 'status-not-done'
+                "
               >
                 {{
                   w.workoutCompleted
@@ -97,12 +110,24 @@
               <thead>
               <tr>
                 <th>#</th>
-                <th>{{ 'userWorkoutExerciseManager.exercise' | translate }}</th>
-                <th>{{ 'userWorkoutExerciseManager.done' | translate }}</th>
-                <th>{{ 'userWorkoutExerciseManager.sets' | translate }}</th>
-                <th>{{ 'userWorkoutExerciseManager.feedback' | translate }}</th>
-                <th>{{ 'userWorkoutExerciseManager.notes' | translate }}</th>
-                <th>{{ 'userWorkoutExerciseManager.setsColumn' | translate }}</th>
+                <th>
+                  {{ 'userWorkoutExerciseManager.exercise' | translate }}
+                </th>
+                <th>
+                  {{ 'userWorkoutExerciseManager.done' | translate }}
+                </th>
+                <th>
+                  {{ 'userWorkoutExerciseManager.sets' | translate }}
+                </th>
+                <th>
+                  {{ 'userWorkoutExerciseManager.feedback' | translate }}
+                </th>
+                <th>
+                  {{ 'userWorkoutExerciseManager.notes' | translate }}
+                </th>
+                <th>
+                  {{ 'userWorkoutExerciseManager.setsColumn' | translate }}
+                </th>
               </tr>
               </thead>
 
@@ -121,12 +146,12 @@
                       <button
                         type="button"
                         (click)="
-    updateExerciseOrderIndex(
-      w.workoutId,
-      ex.exerciseId,
-      ex.order
-    )
-  "
+                            updateExerciseOrderIndex(
+                              w.workoutId,
+                              ex.exerciseId,
+                              ex.order
+                            )
+                          "
                         class="inline-flex min-h-10 items-center justify-center rounded-xl bg-save-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-save-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-save-200/50 active:scale-[0.98]"
                       >
                         {{ 'userWorkoutExerciseManager.save' | translate }}
@@ -179,13 +204,23 @@
 
                 <!-- SETS -->
 
-                <tr *ngIf="selectedUserWorkoutExerciseId === ex.userWorkoutExerciseId">
+                <tr
+                  *ngIf="
+                      selectedUserWorkoutExerciseId ===
+                      ex.userWorkoutExerciseId
+                    "
+                >
                   <td colspan="7" class="sets-container">
+
                     <!-- SETS PANEL -->
+
                     <div class="sets-panel">
                       <div class="sets-header">
                           <span>
-                            {{ 'userWorkoutExerciseManager.exerciseSets' | translate }}
+                            {{
+                              'userWorkoutExerciseManager.exerciseSets'
+                                | translate
+                            }}
                           </span>
 
                         <button
@@ -193,23 +228,67 @@
                           (click)="addSet()"
                           class="inline-flex min-h-10 items-center justify-center rounded-xl bg-add-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-add-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-add-200/50 active:scale-[0.98]"
                         >
-                          + {{ 'userWorkoutExerciseManager.newSet' | translate }}
+                          +
+                          {{
+                            'userWorkoutExerciseManager.newSet' | translate
+                          }}
                         </button>
                       </div>
 
                       <!-- SETS TABLE -->
-                      <div *ngIf="selectedSets.length" class="sets-table-wrapper">
+
+                      <div
+                        *ngIf="selectedSets.length"
+                        class="sets-table-wrapper"
+                      >
                         <table class="sets-table">
                           <thead>
                           <tr>
-                            <th>{{ 'userWorkoutExerciseManager.set' | translate }}</th>
-                            <th>{{ 'userWorkoutExerciseManager.targetReps' | translate }}</th>
-                            <th>{{ 'userWorkoutExerciseManager.targetWeight' | translate }}</th>
-                            <th>{{ 'userWorkoutExerciseManager.actualReps' | translate }}</th>
-                            <th>{{ 'userWorkoutExerciseManager.actualWeight' | translate }}</th>
-                            <th>{{ 'userWorkoutExerciseManager.completed' | translate }}</th>
-                            <th>{{ 'userWorkoutExerciseManager.notes' | translate }}</th>
-                            <th>{{ 'userWorkoutExerciseManager.action' | translate }}</th>
+                            <th>
+                              {{ 'userWorkoutExerciseManager.set' | translate }}
+                            </th>
+                            <th>
+                              {{
+                                'userWorkoutExerciseManager.targetReps'
+                                  | translate
+                              }}
+                            </th>
+                            <th>
+                              {{
+                                'userWorkoutExerciseManager.targetWeight'
+                                  | translate
+                              }}
+                            </th>
+                            <th>
+                              {{
+                                'userWorkoutExerciseManager.actualReps'
+                                  | translate
+                              }}
+                            </th>
+                            <th>
+                              {{
+                                'userWorkoutExerciseManager.actualWeight'
+                                  | translate
+                              }}
+                            </th>
+                            <th>
+                              {{
+                                'userWorkoutExerciseManager.completed'
+                                  | translate
+                              }}
+                            </th>
+                            <th>
+                              {{
+                                'userWorkoutExerciseManager.notes'
+                                  | translate
+                              }}
+                            </th>
+                            <th>
+                              {{
+                                'userWorkoutExerciseManager.action'
+                                  | translate
+                              }}
+                            </th>
                           </tr>
                           </thead>
 
@@ -236,7 +315,10 @@
                                 step="0.5"
                                 [(ngModel)]="set.targetWeightKg"
                                 class="number-input weight-input"
-                                [placeholder]="'userWorkoutExerciseManager.emptyValue' | translate"
+                                [placeholder]="
+                                      'userWorkoutExerciseManager.emptyValue'
+                                        | translate
+                                    "
                               />
                             </td>
 
@@ -245,7 +327,10 @@
                                 type="number"
                                 [(ngModel)]="set.actualRepetitions"
                                 class="number-input reps-input"
-                                [placeholder]="'userWorkoutExerciseManager.emptyValue' | translate"
+                                [placeholder]="
+                                      'userWorkoutExerciseManager.emptyValue'
+                                        | translate
+                                    "
                               />
                             </td>
 
@@ -255,7 +340,10 @@
                                 step="0.5"
                                 [(ngModel)]="set.actualWeightKg"
                                 class="number-input weight-input"
-                                [placeholder]="'userWorkoutExerciseManager.emptyValue' | translate"
+                                [placeholder]="
+                                      'userWorkoutExerciseManager.emptyValue'
+                                        | translate
+                                    "
                               />
                             </td>
 
@@ -272,7 +360,10 @@
                                 type="text"
                                 [(ngModel)]="set.notes"
                                 class="form-input notes-input"
-                                [placeholder]="'userWorkoutExerciseManager.notes' | translate"
+                                [placeholder]="
+                                      'userWorkoutExerciseManager.notes'
+                                        | translate
+                                    "
                               />
                             </td>
 
@@ -282,7 +373,10 @@
                                 (click)="updateSet(set)"
                                 class="inline-flex min-h-10 items-center justify-center rounded-xl bg-save-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-save-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-save-200/50 active:scale-[0.98]"
                               >
-                                {{ 'userWorkoutExerciseManager.save' | translate }}
+                                {{
+                                  'userWorkoutExerciseManager.save'
+                                    | translate
+                                }}
                               </button>
 
                               <button
@@ -290,7 +384,10 @@
                                 (click)="deleteSet(set)"
                                 class="inline-flex min-h-10 items-center justify-center rounded-xl bg-delete-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-delete-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-delete-200/50 active:scale-[0.98]"
                               >
-                                {{ 'userWorkoutExerciseManager.delete' | translate }}
+                                {{
+                                  'userWorkoutExerciseManager.delete'
+                                    | translate
+                                }}
                               </button>
                             </td>
                           </tr>
@@ -299,9 +396,15 @@
                       </div>
 
                       <!-- NO SETS -->
-                      <div *ngIf="!selectedSets.length" class="no-sets">
-                        {{ 'userWorkoutExerciseManager.noSets' | translate }}
-                      </div>
+
+                      <app-message
+                        *ngIf="!selectedSets.length"
+                        [message]="
+                            'userWorkoutExerciseManager.noSets' | translate
+                          "
+                        type="info"
+                      ></app-message>
+
                     </div>
                   </td>
                 </tr>
@@ -316,10 +419,10 @@
 
   <!-- NO DATA -->
 
-  <div
+  <app-message
     *ngIf="userProgramData && !userProgramData.length"
-    class="no-data"
-  >
-    {{ 'userWorkoutExerciseManager.noData' | translate }}
-  </div>
+    [message]="'userWorkoutExerciseManager.noData' | translate"
+    type="info"
+  ></app-message>
+
 </div>

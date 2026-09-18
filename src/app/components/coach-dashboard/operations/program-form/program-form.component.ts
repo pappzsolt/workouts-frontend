@@ -30,6 +30,8 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
 
   message = '';
 
+  messageType: 'success' | 'error' | 'info' | '' = '';
+
   constructor(
     private fb: FormBuilder,
     private programService: CoachProgramService,
@@ -72,6 +74,7 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
       .pipe(
         catchError(() => {
           this.message = 'programForm.loadError';
+          this.messageType = 'error';
 
           return of(null);
         }),
@@ -88,6 +91,7 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
           });
 
           this.message = 'programForm.loadSuccess';
+          this.messageType = 'success';
         }
       });
   }
@@ -101,6 +105,7 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
       this.form.markAllAsTouched();
 
       this.message = 'programForm.required';
+      this.messageType = 'error';
 
       return;
     }
@@ -133,6 +138,7 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
         .pipe(
           catchError(() => {
             this.message = 'programForm.updateError';
+            this.messageType = 'error';
 
             return of(null);
           }),
@@ -140,6 +146,7 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
         .subscribe((response) => {
           if (response?.success) {
             this.message = 'programForm.updateSuccess';
+            this.messageType = 'success';
           }
         });
 
@@ -155,6 +162,7 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
       .pipe(
         catchError(() => {
           this.message = 'programForm.createError';
+          this.messageType = 'error';
 
           return of(null);
         }),
@@ -162,6 +170,7 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
       .subscribe((response) => {
         if (response?.success) {
           this.message = 'programForm.createSuccess';
+          this.messageType = 'success';
 
           this.form.reset();
         }

@@ -72,6 +72,8 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges, OnDestro
 
   message = '';
 
+  messageType: 'success' | 'error' | 'info' | '' = '';
+
   // ==========================================================
   // KERESÉS
   // ==========================================================
@@ -144,11 +146,12 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges, OnDestro
   loadExercises(): void {
     this.loading = true;
 
+    this.message = '';
+    this.messageType = '';
+
     this.exerciseService.getAllExercises().subscribe({
       next: (response: ApiResponse<Exercise[]>) => {
         this.loading = false;
-
-        console.log('[CoachExercisesBoard] response:', response);
 
         this.exercises = response.data ?? [];
 
@@ -156,19 +159,20 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges, OnDestro
 
         if (!this.exercises.length) {
           this.message = 'coachExercisesBoard.noExercises';
+          this.messageType = 'info';
         } else {
           this.message = '';
+          this.messageType = '';
         }
       },
 
-      error: (err) => {
+      error: () => {
         this.loading = false;
 
         this.exercises = [];
 
         this.message = 'coachExercisesBoard.loadError';
-
-        console.error('❌ Exercise-ek betöltése sikertelen', err);
+        this.messageType = 'error';
       },
     });
   }
@@ -259,7 +263,8 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges, OnDestro
      * ha valamilyen módon meghívódna ez a metódus.
      */
     if (this.lockSelectedExercises) {
-      console.log('Az exercise lista zárolva van. ' + 'A meglévő workout nem módosítható.');
+      this.message = 'coachExercisesBoard.exercisesLocked';
+      this.messageType = 'info';
 
       return;
     }

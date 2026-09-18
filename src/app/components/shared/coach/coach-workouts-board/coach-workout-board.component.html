@@ -13,26 +13,12 @@
      ÜZENET
      ====================================================== -->
 
-<div
+<app-message
   *ngIf="message && !loading"
-  class="mb-5 rounded-xl px-4 py-3 text-center text-sm font-medium"
-  [ngClass]="{
-    'border border-red-200 bg-red-50 text-red-700':
-      messageType === 'error',
-    'border border-green-200 bg-green-50 text-green-700':
-      messageType === 'success',
-  }"
->
-  <span
-    *ngIf="messageType === 'error'; else translatedMessage"
-  >
-    {{ message }}
-  </span>
-
-  <ng-template #translatedMessage>
-    {{ message | translate }}
-  </ng-template>
-</div>
+  [message]="message | translate"
+  [type]="messageType"
+  class="mb-5 block"
+></app-message>
 
 <!-- ======================================================
      KERESÉS ÉS RENDEZÉS
@@ -76,8 +62,8 @@
       {{ 'coachWorkoutBoard.sortByName' | translate }}
 
       <span class="ml-2 text-base">
-    {{ sortDirection === 'asc' ? '↑' : '↓' }}
-  </span>
+        {{ sortDirection === 'asc' ? '↑' : '↓' }}
+      </span>
     </button>
   </div>
 </div>
@@ -94,13 +80,11 @@
     *ngFor="let workout of workouts"
     class="group relative flex min-h-40 min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md"
   >
-
     <!-- ==================================================
          KIVÁLASZTÁS
          ================================================== -->
 
     <div class="mb-4 flex items-center justify-between gap-3">
-
       <label
         for="workout-{{ workout.id }}"
         class="flex min-w-0 cursor-pointer items-center"
@@ -132,7 +116,6 @@
       >
         ID {{ workout.id }}
       </span>
-
     </div>
 
     <!-- ==================================================
@@ -161,7 +144,6 @@
     >
       {{ 'coachWorkoutBoard.workout' | translate }}
     </div>
-
   </div>
 </div>
 
@@ -169,18 +151,20 @@
      NINCS TALÁLAT
      ====================================================== -->
 
-<div
-  *ngIf="!loading && !workouts?.length"
-  class="flex min-h-24 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-6 text-center text-sm font-medium text-slate-500 shadow-sm"
->
-  <span *ngIf="searchTerm; else noWorkouts">
-    {{ 'coachWorkoutBoard.noSearchResults' | translate }}
-  </span>
+<ng-container *ngIf="!loading && !workouts?.length">
+  <app-message
+    *ngIf="searchTerm; else noWorkouts"
+    [message]="'coachWorkoutBoard.noSearchResults' | translate"
+    type="info"
+  ></app-message>
 
   <ng-template #noWorkouts>
-    {{ 'coachWorkoutBoard.noWorkouts' | translate }}
+    <app-message
+      [message]="'coachWorkoutBoard.noWorkouts' | translate"
+      type="info"
+    ></app-message>
   </ng-template>
-</div>
+</ng-container>
 
 <!-- ======================================================
      LAPOZÁS

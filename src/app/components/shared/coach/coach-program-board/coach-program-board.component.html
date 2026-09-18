@@ -7,12 +7,12 @@
 </div>
 
 <!-- Üzenet -->
-<div
+<app-message
   *ngIf="message && !loading"
-  class="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-700"
->
-  {{ message | translate }}
-</div>
+  [message]="message | translate"
+  [type]="messageType"
+  class="block"
+></app-message>
 
 <!-- Program oszlopok -->
 <div
@@ -62,9 +62,9 @@
 </div>
 
 <!-- Nincs program -->
-<div
+<app-message
   *ngIf="!loading && (!programs || !programs.length)"
-  class="flex min-h-24 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-6 text-center text-sm font-medium text-slate-500 shadow-sm"
->
-  {{ 'coachProgramBoard.noPrograms' | translate }}
-</div>
+  [message]="'coachProgramBoard.noPrograms' | translate"
+  type="info"
+  class="block"
+></app-message>
