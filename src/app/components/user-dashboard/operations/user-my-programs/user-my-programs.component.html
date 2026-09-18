@@ -1,112 +1,195 @@
+<!-- ======================================================
+     OLDAL
+     ====================================================== -->
+
 <div
-  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+  class="min-h-full bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50"
 >
-  <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
+  <div class="mx-auto w-full max-w-6xl px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
 
-    <!-- Cím -->
-    <div class="text-center">
-      <h2
-        class="break-words text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
-      >
-        {{ 'userMyPrograms.title' | translate }}
-      </h2>
-    </div>
+    <!-- ==================================================
+         OLDAL CÍM
+         ================================================== -->
 
-    <!-- Üzenet -->
+    <h2
+      class="mb-6 flex items-center justify-center gap-2 text-center text-2xl font-bold tracking-tight text-slate-800 sm:mb-8 sm:text-3xl"
+    >
+      <span>📋</span>
+      <span>{{ 'userMyPrograms.title' | translate }}</span>
+    </h2>
+
+    <!-- ==================================================
+         ÜZENET
+         ================================================== -->
+
     <app-message
       *ngIf="message"
       [message]="message | translate"
       type="info"
     ></app-message>
 
-    <!-- Program lista -->
+    <!-- ==================================================
+         PROGRAMOK
+         ================================================== -->
+
     <ng-container
       *ngIf="(programs$ | async)?.length; else noPrograms"
     >
+
+      <!-- ==================================================
+           PROGRAM KÁRTYÁK
+           ================================================== -->
+
       <div
-        class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
       >
+
         <div
           *ngFor="let program of programs$ | async"
-          class="group flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md"
+          class="group flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md shadow-slate-200/50 transition duration-200 hover:-translate-y-1 hover:border-primary-300 hover:shadow-xl hover:shadow-primary-100/60"
           (click)="goToWorkouts(program.id, program.name)"
         >
-          <!-- Emoji / ikon -->
+
+          <!-- ==================================================
+               PROGRAM FEJLÉC / KÉP
+               ================================================== -->
+
           <div
-            class="flex h-52 items-center justify-center overflow-hidden bg-slate-100"
+            class="relative flex h-36 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-600 to-primary-700"
           >
+
+            <!-- Dekoratív körök -->
+
+            <div
+              class="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/10"
+            ></div>
+
+            <div
+              class="absolute -bottom-12 -left-8 h-32 w-32 rounded-full bg-white/10"
+            ></div>
+
+            <!-- Ikon -->
+
             <span
-              class="text-7xl opacity-75 transition-transform duration-200 group-hover:scale-110"
+              class="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-white/95 text-5xl shadow-lg ring-1 ring-white/30 transition duration-200 group-hover:scale-105"
             >
               🏋️‍♂️
             </span>
+
           </div>
 
-          <!-- Program tartalom -->
-          <div class="flex flex-1 flex-col p-5">
+          <!-- ==================================================
+               PROGRAM TARTALOM
+               ================================================== -->
+
+          <div
+            class="flex min-w-0 flex-1 flex-col p-5"
+          >
 
             <!-- Program név -->
-            <div
-              class="break-words text-lg font-bold leading-snug text-slate-800"
+
+            <h3
+              class="mb-3 break-words text-lg font-bold leading-6 text-slate-800"
             >
               {{ program.name }}
-            </div>
+            </h3>
 
-            <!-- Időtartam -->
+            <!-- ==================================================
+                 IDŐTARTAM
+                 ================================================== -->
+
             <div
-              class="mt-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-600"
+              class="rounded-xl bg-slate-50 px-3 py-3"
             >
-              <span class="font-semibold text-slate-700">
-                {{ 'userMyPrograms.duration' | translate }}:
-              </span>
 
-              {{ program.durationWeeks }}
+              <div
+                class="mb-1 text-xs font-medium uppercase tracking-wide text-slate-500"
+              >
+                {{ 'userMyPrograms.duration' | translate }}
+              </div>
 
-              {{ 'userMyPrograms.weeks' | translate }}
+              <div
+                class="text-sm font-bold text-slate-800"
+              >
+                {{ program.durationWeeks }}
+                {{ 'userMyPrograms.weeks' | translate }}
+              </div>
+
             </div>
 
-            <!-- Progress -->
-            <div class="mt-4">
+            <!-- ==================================================
+                 PROGRESS
+                 ================================================== -->
+
+            <div class="mt-5">
 
               <!-- Progress label -->
+
               <div
                 class="mb-2 flex items-center justify-between gap-3 text-sm"
               >
-                <span class="font-semibold text-slate-700">
-                  {{ 'userMyPrograms.days' | translate }}:
+
+                <span
+                  class="font-semibold text-slate-700"
+                >
+                  {{ 'userMyPrograms.workouts' | translate }}:
                 </span>
 
                 <span
                   class="font-semibold text-slate-600"
                 >
-                  {{ program.durationWeeks }}
+                  {{ programProgress[program.id]?.completedWorkouts ?? 0 }}
                   /
-                  {{ program.durationWeeks }}
+                  {{ programProgress[program.id]?.totalWorkouts ?? 0 }}
                 </span>
+
               </div>
 
               <!-- Progress bar -->
+
               <div
                 class="h-2.5 w-full overflow-hidden rounded-full bg-slate-200"
               >
                 <div
-                  class="h-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-300"
-                  [style.width.%]="100"
+                  class="h-full rounded-full bg-gradient-to-r from-primary-600 to-primary-700 transition-all duration-300"
+                  [style.width.%]="programProgress[program.id]?.progressPercent ?? 0"
                 ></div>
               </div>
 
             </div>
+
           </div>
+
         </div>
+
       </div>
+
     </ng-container>
 
-    <!-- Nincs program -->
+    <!-- ======================================================
+         NINCS PROGRAM
+         ====================================================== -->
+
     <ng-template #noPrograms>
-      <app-message
-        [message]="'userMyPrograms.noPrograms' | translate"
-        type="info"
-      ></app-message>
+
+      <div
+        class="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center shadow-md shadow-slate-200/40"
+      >
+
+        <span
+          class="mb-3 text-5xl"
+        >
+          📋
+        </span>
+
+        <p
+          class="text-sm font-medium text-slate-500"
+        >
+          {{ 'userMyPrograms.noPrograms' | translate }}
+        </p>
+
+      </div>
+
     </ng-template>
 
   </div>

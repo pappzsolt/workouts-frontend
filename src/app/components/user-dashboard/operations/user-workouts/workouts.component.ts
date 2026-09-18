@@ -80,6 +80,16 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
           const frontendCompleted =
             localStorage.getItem(`workout-completed-${workout.workoutId}`) === 'true';
 
+          console.log(
+            'WORKOUT:',
+            workout.workoutId,
+            workout.workoutName,
+            'backend completed:',
+            workout.completed,
+            'localStorage:',
+            frontendCompleted,
+          );
+
           return {
             ...workout,
             completed: frontendCompleted || workout.completed,

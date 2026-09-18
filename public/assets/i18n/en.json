@@ -542,7 +542,8 @@
     "loadError": "An error occurred while loading programs!",
     "duration": "Duration",
     "weeks": "weeks",
-    "days": "Days"
+    "days": "Days",
+    "workouts": "Workouts"
   },
 
   "userProfile": {

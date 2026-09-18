@@ -69,3 +69,26 @@ export interface ProgramCreationRequest {
   durationDays?: number;
   difficultyLevel?: string;
 }
+
+/**
+ * A bejelentkezett userhez rendelt program.
+ */
+export interface UserProgram {
+  id: number;
+  name: string;
+  description: string;
+  durationWeeks: number;
+  difficulty: string;
+  status: string;
+  assignedAt: string;
+}
+
+/**
+ * Egy program workout-alapú haladása.
+ */
+export interface ProgramProgress {
+  programId: number;
+  completedWorkouts: number;
+  totalWorkouts: number;
+  progressPercent: number;
+}

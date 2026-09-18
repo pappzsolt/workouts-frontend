@@ -539,7 +539,8 @@
     "loadError": "Hiba történt a programok betöltése közben!",
     "duration": "Időtartam",
     "weeks": "hét",
-    "days": "Napok"
+    "days": "Napok",
+    "workouts": "Edzések"
   },
 
   "userProfile": {

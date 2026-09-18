@@ -1,19 +1,10 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map, catchError, of } from 'rxjs';
 
-import { USER_MESSAGES } from '../../../constants/user-messages';
 import { API_ENDPOINTS } from '../../../api-endpoints';
 
-export interface UserProgram {
-  id: number;
-  name: string;
-  description: string;
-  durationWeeks: number;
-  difficulty: string;
-  status: string;
-  assignedAt: string;
-}
+import { UserProgram, ProgramProgress } from '../../../models/program.model';
 
 @Injectable({
   providedIn: 'root',
@@ -42,5 +33,16 @@ export class UserMyProgramsService {
 
       catchError(() => of([])),
     );
+  }
+
+  getProgramProgress(programIds: number[]): Observable<ProgramProgress[]> {
+    const params = programIds.reduce(
+      (httpParams, programId) => httpParams.append('programIds', programId.toString()),
+      new HttpParams(),
+    );
+
+    return this.http
+      .get<any>(`${this.apiUrl}/progress`, { params })
+      .pipe(map((res) => res?.data ?? []));
   }
 }

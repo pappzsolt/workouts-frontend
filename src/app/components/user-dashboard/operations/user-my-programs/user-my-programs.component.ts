@@ -3,10 +3,9 @@ import { Router } from '@angular/router';
 
 import { Observable, Subject, takeUntil } from 'rxjs';
 
-import {
-  UserMyProgramsService,
-  UserProgram,
-} from '../../../../services/user/user-my-program/user-my-programs.service';
+import { UserMyProgramsService } from '../../../../services/user/user-my-program/user-my-programs.service';
+
+import { UserProgram, ProgramProgress } from '../../../../models/program.model';
 
 import { LanguageService } from '../../../../services/shared/language.service';
 
@@ -23,6 +22,14 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   programs$!: Observable<UserProgram[]>;
+
+  /**
+   * Programonként tárolja a haladási adatokat.
+   *
+   * Kulcs: programId
+   * Érték: az adott program progress adatai
+   */
+  programProgress: Record<number, ProgramProgress> = {};
 
   message = 'userMyPrograms.loading';
 
@@ -53,19 +60,47 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
   private loadPrograms(): void {
     this.message = 'userMyPrograms.loading';
 
+    this.programProgress = {};
+
     this.programs$ = this.programsService.getPrograms();
 
     this.programs$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (programs) => {
         if (!programs || programs.length === 0) {
           this.message = 'userMyPrograms.noPrograms';
-        } else {
-          this.message = '';
+          this.programProgress = {};
+          return;
         }
+
+        this.message = '';
+
+        /*
+         * Az összes program progress adatát
+         * egyetlen batch API-hívással kérjük le.
+         */
+        this.programsService
+          .getProgramProgress(programs.map((program) => program.id))
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (progress) => {
+              this.programProgress = Object.fromEntries(
+                progress.map((item) => [item.programId, item]),
+              );
+            },
+
+            error: () => {
+              /*
+               * Ha a progress lekérése nem sikerül,
+               * a programlista ettől még megjelenik.
+               */
+              this.programProgress = {};
+            },
+          });
       },
 
       error: () => {
         this.message = 'userMyPrograms.loadError';
+        this.programProgress = {};
       },
     });
   }
