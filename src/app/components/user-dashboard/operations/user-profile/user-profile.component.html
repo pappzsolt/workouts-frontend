@@ -1,209 +1,249 @@
+<!-- ======================================================
+     OLDAL
+     ====================================================== -->
 <div
-  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+  class="min-h-full bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50"
 >
-  <div class="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-6">
-
-    <!-- Cím -->
-    <div class="text-center">
-      <h2
-        class="break-words text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
-      >
-        {{ 'userProfile.title' | translate }}
-      </h2>
-    </div>
-
-    <!-- Üzenet -->
-    <app-message
-      *ngIf="message"
-      [message]="message | translate"
-      [type]="messageType"
-    ></app-message>
-
-    <!-- Profil form -->
-    <form
-      class="grid min-w-0 grid-cols-1 gap-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6 lg:p-8"
+  <div
+    class="mx-auto w-full max-w-6xl px-2.5 py-4 sm:px-6 sm:py-8 lg:px-8"
+  >
+    <!-- ==================================================
+         OLDAL CÍM
+         ================================================== -->
+    <h2
+      class="mb-5 flex items-center justify-center gap-2 break-words text-center text-xl font-bold leading-tight tracking-tight text-slate-800 sm:mb-8 sm:text-3xl"
     >
+      <span>👤</span>
+      <span>{{ 'userProfile.title' | translate }}</span>
+    </h2>
 
-      <!-- Username -->
-      <div class="min-w-0">
-        <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
-          for="username"
-        >
-          {{ 'userProfile.username' | translate }}
-        </label>
+    <!-- ==================================================
+         PROFIL TARTALOM
+         ================================================== -->
+    <div class="mx-auto w-full max-w-4xl">
 
-        <input
-          id="username"
-          name="username"
-          type="text"
-          [placeholder]="'userProfile.usernamePlaceholder' | translate"
-          [(ngModel)]="selectedUser.username"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
-        />
-      </div>
+      <!-- Üzenet -->
+      <app-message
+        *ngIf="message"
+        [message]="message | translate"
+        [type]="messageType"
+      ></app-message>
 
-      <!-- Email -->
-      <div class="min-w-0">
-        <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
-          for="email"
-        >
-          {{ 'userProfile.email' | translate }}
-        </label>
+      <!-- ==================================================
+           PROFIL KÁRTYA
+           ================================================== -->
+      <form
+        class="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md shadow-slate-200/50"
+      >
 
-        <input
-          id="email"
-          name="email"
-          type="email"
-          [placeholder]="'userProfile.emailPlaceholder' | translate"
-          [(ngModel)]="selectedUser.email"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
-        />
-      </div>
-
-      <!-- Password -->
-      <div class="min-w-0">
-        <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
-          for="password_hash"
-        >
-          {{ 'userProfile.password' | translate }}
-        </label>
-
-        <input
-          id="password_hash"
-          name="password_hash"
-          type="password"
-          [placeholder]="'userProfile.passwordPlaceholder' | translate"
-          [(ngModel)]="selectedUser.password"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
-        />
-      </div>
-
-      <!-- Age -->
-      <div class="min-w-0">
-        <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
-          for="age"
-        >
-          {{ 'userProfile.age' | translate }}
-        </label>
-
-        <input
-          id="age"
-          name="age"
-          type="number"
-          [placeholder]="'userProfile.agePlaceholder' | translate"
-          [(ngModel)]="selectedUser.age"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
-        />
-      </div>
-
-      <!-- Weight -->
-      <div class="min-w-0">
-        <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
-          for="weight"
-        >
-          {{ 'userProfile.weight' | translate }}
-        </label>
-
-        <input
-          id="weight"
-          name="weight"
-          type="number"
-          step="0.01"
-          [placeholder]="'userProfile.weightPlaceholder' | translate"
-          [(ngModel)]="selectedUser.weight"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
-        />
-      </div>
-
-      <!-- Height -->
-      <div class="min-w-0">
-        <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
-          for="height"
-        >
-          {{ 'userProfile.height' | translate }}
-        </label>
-
-        <input
-          id="height"
-          name="height"
-          type="number"
-          step="0.01"
-          [placeholder]="'userProfile.heightPlaceholder' | translate"
-          [(ngModel)]="selectedUser.height"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
-        />
-      </div>
-
-      <!-- Goals -->
-      <div class="min-w-0 sm:col-span-2">
-        <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
-          for="goals"
-        >
-          {{ 'userProfile.goals' | translate }}
-        </label>
-
-        <textarea
-          id="goals"
-          name="goals"
-          rows="4"
-          [placeholder]="'userProfile.goalsPlaceholder' | translate"
-          [(ngModel)]="selectedUser.goals"
-          class="w-full min-w-0 resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
-        ></textarea>
-      </div>
-
-      <!-- Avatar -->
-      <div class="min-w-0 sm:col-span-2">
-        <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
-          for="avatar_url"
-        >
-          {{ 'userProfile.avatarUrl' | translate }}
-        </label>
-
-        <input
-          id="avatar_url"
-          name="avatar_url"
-          type="text"
-          [placeholder]="'userProfile.avatarUrlPlaceholder' | translate"
-          [(ngModel)]="selectedUser.avatarUrl"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
-        />
-      </div>
-
-      <!-- Coach -->
-      <div class="min-w-0 sm:col-span-2">
-        <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
-        >
-          {{ 'userProfile.coach' | translate }}
-        </label>
-
+        <!-- Profil fejléc – a Program Workouts kártyastílusa -->
         <div
-          class="flex min-h-11 items-center rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-base font-medium text-slate-700 sm:text-sm"
+          class="relative flex h-24 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-600 to-primary-700 sm:h-36"
         >
-          {{ coachName }}
+          <!-- Dekoratív körök -->
+          <div
+            class="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/10"
+          ></div>
+
+          <div
+            class="absolute -bottom-12 -left-8 h-32 w-32 rounded-full bg-white/10"
+          ></div>
+
+          <!-- Profil ikon -->
+          <span
+            class="relative flex h-14 w-14 items-center justify-center rounded-xl bg-white/95 text-4xl shadow-lg ring-1 ring-white/30 sm:h-20 sm:w-20 sm:rounded-2xl sm:text-5xl"
+          >
+            👤
+          </span>
         </div>
-      </div>
 
-      <!-- Save -->
-      <div class="flex min-w-0 sm:col-span-2 sm:justify-end">
-        <button
-          type="button"
-          (click)="onSave()"
-          class="min-h-11 w-full rounded-xl bg-gradient-to-r from-save-600 to-save-700 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:from-save-700 hover:to-save-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-save-200/50 active:scale-[0.99] sm:w-auto"
-        >
-          {{ 'userProfile.save' | translate }}
-        </button>
-      </div>
+        <!-- ==================================================
+             PROFIL ADATOK
+             ================================================== -->
+        <div class="grid min-w-0 grid-cols-1 gap-4 p-3.5 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-4 sm:p-5">
 
-    </form>
+          <!-- Username -->
+          <div class="min-w-0">
+            <label
+              for="username"
+              class="mb-1.5 block text-xs font-semibold text-slate-700 sm:text-sm"
+            >
+              {{ 'userProfile.username' | translate }}
+            </label>
+
+            <input
+              id="username"
+              name="username"
+              type="text"
+              [placeholder]="'userProfile.usernamePlaceholder' | translate"
+              [(ngModel)]="selectedUser.username"
+              class="min-h-10 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm outline-none transition duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
+            />
+          </div>
+
+          <!-- Email -->
+          <div class="min-w-0">
+            <label
+              for="email"
+              class="mb-1.5 block text-xs font-semibold text-slate-700 sm:text-sm"
+            >
+              {{ 'userProfile.email' | translate }}
+            </label>
+
+            <input
+              id="email"
+              name="email"
+              type="email"
+              [placeholder]="'userProfile.emailPlaceholder' | translate"
+              [(ngModel)]="selectedUser.email"
+              class="min-h-10 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm outline-none transition duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
+            />
+          </div>
+
+          <!-- Password -->
+          <div class="min-w-0">
+            <label
+              for="password_hash"
+              class="mb-1.5 block text-xs font-semibold text-slate-700 sm:text-sm"
+            >
+              {{ 'userProfile.password' | translate }}
+            </label>
+
+            <input
+              id="password_hash"
+              name="password_hash"
+              type="password"
+              [placeholder]="'userProfile.passwordPlaceholder' | translate"
+              [(ngModel)]="selectedUser.password"
+              class="min-h-10 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm outline-none transition duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
+            />
+          </div>
+
+          <!-- Age -->
+          <div class="min-w-0">
+            <label
+              for="age"
+              class="mb-1.5 block text-xs font-semibold text-slate-700 sm:text-sm"
+            >
+              {{ 'userProfile.age' | translate }}
+            </label>
+
+            <input
+              id="age"
+              name="age"
+              type="number"
+              [placeholder]="'userProfile.agePlaceholder' | translate"
+              [(ngModel)]="selectedUser.age"
+              class="min-h-10 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm outline-none transition duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
+            />
+          </div>
+
+          <!-- Weight -->
+          <div class="min-w-0">
+            <label
+              for="weight"
+              class="mb-1.5 block text-xs font-semibold text-slate-700 sm:text-sm"
+            >
+              {{ 'userProfile.weight' | translate }}
+            </label>
+
+            <input
+              id="weight"
+              name="weight"
+              type="number"
+              step="0.01"
+              [placeholder]="'userProfile.weightPlaceholder' | translate"
+              [(ngModel)]="selectedUser.weight"
+              class="min-h-10 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm outline-none transition duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
+            />
+          </div>
+
+          <!-- Height -->
+          <div class="min-w-0">
+            <label
+              for="height"
+              class="mb-1.5 block text-xs font-semibold text-slate-700 sm:text-sm"
+            >
+              {{ 'userProfile.height' | translate }}
+            </label>
+
+            <input
+              id="height"
+              name="height"
+              type="number"
+              step="0.01"
+              [placeholder]="'userProfile.heightPlaceholder' | translate"
+              [(ngModel)]="selectedUser.height"
+              class="min-h-10 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm outline-none transition duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
+            />
+          </div>
+
+          <!-- Goals -->
+          <div class="min-w-0 sm:col-span-2">
+            <label
+              for="goals"
+              class="mb-1.5 block text-xs font-semibold text-slate-700 sm:text-sm"
+            >
+              {{ 'userProfile.goals' | translate }}
+            </label>
+
+            <textarea
+              id="goals"
+              name="goals"
+              rows="4"
+              [placeholder]="'userProfile.goalsPlaceholder' | translate"
+              [(ngModel)]="selectedUser.goals"
+              class="w-full min-w-0 resize-y rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm leading-5 text-slate-800 shadow-sm outline-none transition duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
+            ></textarea>
+          </div>
+
+          <!-- Avatar -->
+          <div class="min-w-0 sm:col-span-2">
+            <label
+              for="avatar_url"
+              class="mb-1.5 block text-xs font-semibold text-slate-700 sm:text-sm"
+            >
+              {{ 'userProfile.avatarUrl' | translate }}
+            </label>
+
+            <input
+              id="avatar_url"
+              name="avatar_url"
+              type="text"
+              [placeholder]="'userProfile.avatarUrlPlaceholder' | translate"
+              [(ngModel)]="selectedUser.avatarUrl"
+              class="min-h-10 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm outline-none transition duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
+            />
+          </div>
+
+          <!-- Coach -->
+          <div class="min-w-0 sm:col-span-2">
+            <label
+              class="mb-1.5 block text-xs font-semibold text-slate-700 sm:text-sm"
+            >
+              {{ 'userProfile.coach' | translate }}
+            </label>
+
+            <div
+              class="flex min-h-10 items-center rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700"
+            >
+              {{ coachName }}
+            </div>
+          </div>
+
+          <!-- Mentés -->
+          <div class="flex min-w-0 sm:col-span-2 sm:justify-end">
+            <button
+              type="button"
+              (click)="onSave()"
+              class="min-h-10 w-full rounded-xl bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:brightness-110 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-primary-500/20 active:scale-[0.99] sm:w-auto"
+            >
+              {{ 'userProfile.save' | translate }}
+            </button>
+          </div>
+
+        </div>
+      </form>
+    </div>
   </div>
 </div>
