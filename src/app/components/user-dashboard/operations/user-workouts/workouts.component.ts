@@ -32,6 +32,78 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
 
   completedWorkouts: Workout[] = [];
 
+  // ============================================================
+  // AKTÍV EDZÉS TAB
+  // ============================================================
+
+  activeTab: 'pending' | 'completed' = 'pending';
+
+  // ============================================================
+  // FÜGGŐBEN LÉVŐ EDZÉSEK LAPOZÁSA
+  // ============================================================
+
+  pendingCurrentPage = 1;
+
+  pendingPageSize = 6;
+
+  // ============================================================
+  // TELJESÍTETT EDZÉSEK LAPOZÁSA
+  // ============================================================
+
+  completedCurrentPage = 1;
+
+  completedPageSize = 6;
+
+  // ============================================================
+  // TABVÁLTÁS
+  // ============================================================
+
+  setActiveTab(tab: 'pending' | 'completed'): void {
+    this.activeTab = tab;
+  }
+
+  // ============================================================
+  // FÜGGŐBEN LÉVŐ EDZÉSEK LAPOZÁSA
+  // ============================================================
+
+  get paginatedPendingWorkouts(): Workout[] {
+    const startIndex = (this.pendingCurrentPage - 1) * this.pendingPageSize;
+
+    return this.pendingWorkouts.slice(startIndex, startIndex + this.pendingPageSize);
+  }
+
+  onPendingPageChange(page: number): void {
+    this.pendingCurrentPage = page;
+  }
+
+  onPendingPageSizeChange(pageSize: number): void {
+    this.pendingPageSize = pageSize;
+    this.pendingCurrentPage = 1;
+  }
+
+  // ============================================================
+  // TELJESÍTETT EDZÉSEK LAPOZÁSA
+  // ============================================================
+
+  get paginatedCompletedWorkouts(): Workout[] {
+    const startIndex = (this.completedCurrentPage - 1) * this.completedPageSize;
+
+    return this.completedWorkouts.slice(startIndex, startIndex + this.completedPageSize);
+  }
+
+  onCompletedPageChange(page: number): void {
+    this.completedCurrentPage = page;
+  }
+
+  onCompletedPageSizeChange(pageSize: number): void {
+    this.completedPageSize = pageSize;
+    this.completedCurrentPage = 1;
+  }
+
+  // ============================================================
+  // DESTROY SUBJECT
+  // ============================================================
+
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -83,9 +155,20 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
           completed: workout.completed,
         }));
 
+        // ----------------------------------------------------
+        // EDZÉSEK SZÉTVÁLASZTÁSA
+        // ----------------------------------------------------
+
         this.pendingWorkouts = mappedWorkouts.filter((workout: Workout) => !workout.completed);
 
         this.completedWorkouts = mappedWorkouts.filter((workout: Workout) => workout.completed);
+
+        // ----------------------------------------------------
+        // LAPOZÁS VISSZAÁLLÍTÁSA ADATBETÖLTÉSKOR
+        // ----------------------------------------------------
+
+        this.pendingCurrentPage = 1;
+        this.completedCurrentPage = 1;
 
         return mappedWorkouts;
       }),

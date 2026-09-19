@@ -23,6 +23,39 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
 
   programs$!: Observable<UserProgram[]>;
 
+  // ============================================================
+  // PAGINATION
+  // ============================================================
+
+  private allPrograms: UserProgram[] = [];
+
+  currentPage = 1;
+  pageSize = 6;
+
+  paginatedPrograms: UserProgram[] = [];
+
+  totalItems = 0;
+
+  // ============================================================
+  // PAGINATION GETTERS
+  // ============================================================
+
+  get totalPages(): number {
+    return Math.ceil(this.totalItems / this.pageSize);
+  }
+
+  get startItem(): number {
+    return this.totalItems === 0 ? 0 : (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get endItem(): number {
+    return Math.min(this.currentPage * this.pageSize, this.totalItems);
+  }
+
+  // ============================================================
+  // PROGRAM PROGRESS
+  // ============================================================
+
   /**
    * Programonként tárolja a haladási adatokat.
    *
@@ -33,11 +66,19 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
 
   message = 'userMyPrograms.loading';
 
+  // ============================================================
+  // CONSTRUCTOR
+  // ============================================================
+
   constructor(
     private programsService: UserMyProgramsService,
     private router: Router,
     private languageService: LanguageService,
   ) {}
+
+  // ============================================================
+  // INIT
+  // ============================================================
 
   ngOnInit(): void {
     /*
@@ -52,34 +93,58 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
     });
   }
 
+  // ============================================================
+  // DESTROY
+  // ============================================================
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
 
+  // ============================================================
+  // PROGRAMOK BETÖLTÉSE
+  // ============================================================
+
   private loadPrograms(): void {
     this.message = 'userMyPrograms.loading';
-
     this.programProgress = {};
 
     this.programs$ = this.programsService.getPrograms();
 
     this.programs$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (programs) => {
-        if (!programs || programs.length === 0) {
+        // TELJES PROGRAMLISTA ELTÁROLÁSA
+
+        this.allPrograms = programs ?? [];
+
+        // ÜRES LISTA KEZELÉSE
+
+        if (this.allPrograms.length === 0) {
           this.message = 'userMyPrograms.noPrograms';
           this.programProgress = {};
+
+          this.totalItems = 0;
+          this.currentPage = 1;
+          this.paginatedPrograms = [];
+
           return;
         }
 
         this.message = '';
 
-        /*
-         * Az összes program progress adatát
-         * egyetlen batch API-hívással kérjük le.
-         */
+        // PAGINATION ADATOK FRISSÍTÉSE
+
+        this.totalItems = this.allPrograms.length;
+        this.currentPage = 1;
+
+        this.updatePaginatedPrograms();
+
+        // PROGRESS ADATOK LEKÉRÉSE
+        // TOVÁBBRA IS AZ ÖSSZES PROGRAMHOZ
+
         this.programsService
-          .getProgramProgress(programs.map((program) => program.id))
+          .getProgramProgress(this.allPrograms.map((program) => program.id))
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (progress) => {
@@ -101,11 +166,59 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
       error: () => {
         this.message = 'userMyPrograms.loadError';
         this.programProgress = {};
+
+        this.allPrograms = [];
+        this.paginatedPrograms = [];
+        this.totalItems = 0;
+        this.currentPage = 1;
       },
     });
   }
 
-  /** Navigáció a programhoz tartozó workouts oldalára + programName átadás state-ben */
+  // ============================================================
+  // LAPOZOTT PROGRAMOK FRISSÍTÉSE
+  // ============================================================
+
+  private updatePaginatedPrograms(): void {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+
+    this.paginatedPrograms = this.allPrograms.slice(startIndex, endIndex);
+  }
+
+  // ============================================================
+  // LAPOZÁS
+  // ============================================================
+
+  onPageChange(page: number): void {
+    if (page < 1 || page > this.totalPages) {
+      return;
+    }
+
+    this.currentPage = page;
+
+    this.updatePaginatedPrograms();
+  }
+
+  // ============================================================
+  // OLDALANKÉNTI ELEMSZÁM VÁLTOZTATÁSA
+  // ============================================================
+
+  onPageSizeChange(size: number): void {
+    if (size <= 0) {
+      return;
+    }
+
+    this.pageSize = size;
+    this.currentPage = 1;
+
+    this.updatePaginatedPrograms();
+  }
+
+  // ============================================================
+  // NAVIGÁCIÓ A PROGRAM WORKOUTS OLDALÁRA
+  // ============================================================
+
   goToWorkouts(programId: number, programName: string): void {
     this.router.navigate(['/user/programs', programId, 'workouts'], {
       state: { programName },

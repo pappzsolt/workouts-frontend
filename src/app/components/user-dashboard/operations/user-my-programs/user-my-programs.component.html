@@ -1,3 +1,4 @@
+
 <!-- ======================================================
      OLDAL
      ====================================================== -->
@@ -8,9 +9,6 @@
   <div class="mx-auto w-full max-w-6xl px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
 
     <!-- ==================================================
-         OLDAL CÍM
-         ================================================== -->
-    <!-- ==================================================
          VISSZA GOMB
          ================================================== -->
 
@@ -19,6 +17,11 @@
         [targetUrl]="'/user/dashboard'"
       ></app-back-button>
     </div>
+
+    <!-- ==================================================
+         OLDAL CÍM
+         ================================================== -->
+
     <h2
       class="mb-6 flex items-center justify-center gap-2 text-center text-2xl font-bold tracking-tight text-slate-800 sm:mb-8 sm:text-3xl"
     >
@@ -40,9 +43,7 @@
          PROGRAMOK
          ================================================== -->
 
-    <ng-container
-      *ngIf="(programs$ | async)?.length; else noPrograms"
-    >
+    <ng-container *ngIf="totalItems > 0; else noPrograms">
 
       <!-- ==================================================
            PROGRAM KÁRTYÁK
@@ -53,7 +54,7 @@
       >
 
         <div
-          *ngFor="let program of programs$ | async"
+          *ngFor="let program of paginatedPrograms"
           class="group flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md shadow-slate-200/50 transition duration-200 hover:-translate-y-1 hover:border-primary-300 hover:shadow-xl hover:shadow-primary-100/60"
           (click)="goToWorkouts(program.id, program.name)"
         >
@@ -170,6 +171,25 @@
 
         </div>
 
+      </div>
+
+      <!-- ==================================================
+           LAPOZÓ
+           ================================================== -->
+
+      <div
+        class="mt-6 border-t border-slate-200 pt-4"
+      >
+        <app-pagination
+          [totalItems]="totalItems"
+          [pageSize]="pageSize"
+          [currentPage]="currentPage"
+          [pageSizeOptions]="[6, 12, 24, 48]"
+          [showPageSize]="true"
+          [showInfo]="true"
+          (pageChange)="onPageChange($event)"
+          (pageSizeChange)="onPageSizeChange($event)"
+        ></app-pagination>
       </div>
 
     </ng-container>
