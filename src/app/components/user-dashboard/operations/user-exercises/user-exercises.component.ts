@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Observable, Subject, map, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 
 import { UserExerciseService } from '../../../../services/user/user-exercise/user-exercise.service';
 import { LanguageService } from '../../../../services/shared/language.service';
@@ -21,12 +21,45 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   workoutId!: number;
-
   programId!: number;
-
   workoutName!: string;
 
-  exercises$!: Observable<WorkoutExercise[]>;
+  // ============================================================
+  // EXERCISE ADATOK
+  // ============================================================
+
+  private allExercises: WorkoutExercise[] = [];
+
+  // ============================================================
+  // PAGINATION
+  // ============================================================
+
+  currentPage = 1;
+  pageSize = 4;
+
+  paginatedExercises: WorkoutExercise[] = [];
+
+  totalItems = 0;
+
+  // ============================================================
+  // PAGINATION GETTERS
+  // ============================================================
+
+  get totalPages(): number {
+    return Math.ceil(this.totalItems / this.pageSize);
+  }
+
+  get startItem(): number {
+    return this.totalItems === 0 ? 0 : (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get endItem(): number {
+    return Math.min(this.currentPage * this.pageSize, this.totalItems);
+  }
+
+  // ============================================================
+  // CONSTRUCTOR
+  // ============================================================
 
   constructor(
     private route: ActivatedRoute,
@@ -40,15 +73,11 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
   // ============================================================
 
   ngOnInit(): void {
-    // ==========================================================
     // WORKOUT ID A ROUTE PARAMÉTERBŐL
-    // ==========================================================
 
     this.workoutId = Number(this.route.snapshot.paramMap.get('workoutId'));
 
-    // ==========================================================
     // NAVIGATION STATE
-    // ==========================================================
 
     const navState = history.state;
 
@@ -56,43 +85,27 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
 
     this.programId = Number(navState?.programId);
 
-    // ==========================================================
     // DEBUG
-    // ==========================================================
 
     console.log('=== UserExercisesComponent ===');
-
     console.log('workoutId:', this.workoutId);
-
     console.log('programId:', this.programId);
-
     console.log('workoutName:', this.workoutName);
-
     console.log('navigation state:', navState);
 
-    // ==========================================================
     // ID VALIDÁLÁS
-    // ==========================================================
 
     if (Number.isNaN(this.workoutId) || this.workoutId <= 0) {
       console.error('Érvénytelen workout ID:', this.workoutId);
-
       return;
     }
 
     if (Number.isNaN(this.programId) || this.programId <= 0) {
       console.error('Érvénytelen program ID:', this.programId);
-
       return;
     }
 
-    // ==========================================================
     // NYELVVÁLTÁS FIGYELÉSE
-    //
-    // A BehaviorSubject az aktuális nyelvet
-    // azonnal kibocsátja, ezért az első
-    // exercise betöltés is innen történik.
-    // ==========================================================
 
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.loadExercises();
@@ -109,10 +122,11 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
       workoutId: this.workoutId,
     });
 
-    this.exercises$ = this.exercisesService
+    this.exercisesService
       .getWorkoutExercises(this.programId, this.workoutId)
-      .pipe(
-        map((response) => {
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
           console.log('Workout exercise válasz:', response);
 
           const exercises = response.data?.exercises ?? [];
@@ -124,9 +138,67 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
             console.log('imageUrl:', item.exercise?.imageUrl);
           });
 
-          return exercises;
-        }),
-      );
+          // TELJES LISTA ELTÁROLÁSA
+
+          this.allExercises = exercises;
+
+          // PAGINATION ADATOK FRISSÍTÉSE
+
+          this.totalItems = this.allExercises.length;
+          this.currentPage = 1;
+
+          this.updatePaginatedExercises();
+        },
+
+        error: (error) => {
+          console.error('Hiba a gyakorlatok betöltésekor:', error);
+
+          this.allExercises = [];
+          this.paginatedExercises = [];
+          this.totalItems = 0;
+          this.currentPage = 1;
+        },
+      });
+  }
+
+  // ============================================================
+  // LAPOZOTT GYAKORLATOK FRISSÍTÉSE
+  // ============================================================
+
+  private updatePaginatedExercises(): void {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    const endIndex = startIndex + this.pageSize;
+
+    this.paginatedExercises = this.allExercises.slice(startIndex, endIndex);
+  }
+
+  // ============================================================
+  // LAPOZÁS
+  // ============================================================
+
+  onPageChange(page: number): void {
+    if (page < 1 || page > this.totalPages) {
+      return;
+    }
+
+    this.currentPage = page;
+
+    this.updatePaginatedExercises();
+  }
+
+  // ============================================================
+  // OLDALANKÉNTI ELEMSZÁM VÁLTOZTATÁSA
+  // ============================================================
+
+  onPageSizeChange(size: number): void {
+    if (size <= 0) {
+      return;
+    }
+
+    this.pageSize = size;
+    this.currentPage = 1;
+
+    this.updatePaginatedExercises();
   }
 
   // ============================================================
@@ -148,9 +220,13 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.destroy$.next();
-
     this.destroy$.complete();
   }
+
+  // ============================================================
+  // EXERCISE KÉPEK
+  // ============================================================
+
   getExerciseImages(exercise: Exercise): string[] {
     if (!exercise.imageUrl) {
       return [];
