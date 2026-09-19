@@ -12,10 +12,7 @@
     <div class="max-w-3xl mx-auto bg-white/95 rounded-2xl shadow-md border border-white/70 px-4 sm:px-6 py-4 sm:py-5">
 
       <app-back-button
-        [targetUrl]="'/user/workouts/' + workoutId + '/exercises'"
-        [targetState]="{
-    programId: programId
-  }"
+        [fallbackUrl]="'/user/workouts/' + workoutId + '/exercises'"
       ></app-back-button>
 
       <div class="text-center">
@@ -238,12 +235,16 @@
               <!-- Kész gomb: a sorozat minden adatát menti -->
               <button
                 type="button"
-                (click)="updateSetCompleted(set, true)"
+                (click)="updateSetCompleted(set, !set.completed)"
                 class="min-w-[110px] min-h-[52px] px-4 rounded-xl flex items-center justify-center gap-2
-                       bg-green-600 hover:bg-green-700 text-white font-bold text-base
-                       transition-all active:scale-95 focus:outline-none focus:ring-4 focus:ring-green-200"
+         text-white font-bold text-base transition-all active:scale-95
+         focus:outline-none focus:ring-4"
+                [ngClass]="{
+    'bg-green-600 hover:bg-green-700 focus:ring-green-200': set.completed,
+    'bg-gray-500 hover:bg-gray-600 focus:ring-gray-200': !set.completed
+  }"
               >
-                <span class="text-xl">✓</span>
+                <span class="text-xl">{{ set.completed ? '✓' : '○' }}</span>
                 <span>{{ 'userExerciseDetail.done' | translate }}</span>
               </button>
 
