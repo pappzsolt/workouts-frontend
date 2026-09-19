@@ -1,27 +1,18 @@
-
 <!-- ======================================================
      OLDAL
      ====================================================== -->
 
-<div
-  class="min-h-full bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50"
->
+<div class="min-h-full bg-slate-50">
   <div class="mx-auto w-full max-w-6xl px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
 
-    <!-- ==================================================
-         VISSZA GOMB
-         ================================================== -->
-
+    <!-- VISSZA GOMB -->
     <div class="mb-4">
       <app-back-button
         [targetUrl]="'/user/dashboard'"
       ></app-back-button>
     </div>
 
-    <!-- ==================================================
-         OLDAL CÍM
-         ================================================== -->
-
+    <!-- OLDAL CÍM -->
     <h2
       class="mb-6 flex items-center justify-center gap-2 text-center text-2xl font-bold tracking-tight text-slate-800 sm:mb-8 sm:text-3xl"
     >
@@ -29,46 +20,31 @@
       <span>{{ 'userMyPrograms.title' | translate }}</span>
     </h2>
 
-    <!-- ==================================================
-         ÜZENET
-         ================================================== -->
-
+    <!-- ÜZENET -->
     <app-message
       *ngIf="message"
       [message]="message | translate"
       type="info"
     ></app-message>
 
-    <!-- ==================================================
-         PROGRAMOK
-         ================================================== -->
-
+    <!-- PROGRAMOK -->
     <ng-container *ngIf="totalItems > 0; else noPrograms">
 
-      <!-- ==================================================
-           PROGRAM KÁRTYÁK
-           ================================================== -->
-
-      <div
-        class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
-      >
+      <!-- PROGRAM KÁRTYÁK -->
+      <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
 
         <div
           *ngFor="let program of paginatedPrograms"
-          class="group flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md shadow-slate-200/50 transition duration-200 hover:-translate-y-1 hover:border-primary-300 hover:shadow-xl hover:shadow-primary-100/60"
+          class="group flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-primary-300 hover:shadow-lg hover:shadow-slate-200/60"
           (click)="goToWorkouts(program.id, program.name)"
         >
 
-          <!-- ==================================================
-               PROGRAM FEJLÉC / KÉP
-               ================================================== -->
-
+          <!-- PROGRAM FEJLÉC / KÉP -->
           <div
             class="relative flex h-36 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-600 to-primary-700"
           >
 
             <!-- Dekoratív körök -->
-
             <div
               class="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/10"
             ></div>
@@ -78,7 +54,6 @@
             ></div>
 
             <!-- Ikon -->
-
             <span
               class="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-white/95 text-5xl shadow-lg ring-1 ring-white/30 transition duration-200 group-hover:scale-105"
             >
@@ -87,29 +62,18 @@
 
           </div>
 
-          <!-- ==================================================
-               PROGRAM TARTALOM
-               ================================================== -->
-
-          <div
-            class="flex min-w-0 flex-1 flex-col p-5"
-          >
+          <!-- PROGRAM TARTALOM -->
+          <div class="flex min-w-0 flex-1 flex-col p-5">
 
             <!-- Program név -->
-
             <h3
               class="mb-3 break-words text-lg font-bold leading-6 text-slate-800"
             >
               {{ program.name }}
             </h3>
 
-            <!-- ==================================================
-                 IDŐTARTAM
-                 ================================================== -->
-
-            <div
-              class="rounded-xl bg-slate-50 px-3 py-3"
-            >
+            <!-- IDŐTARTAM -->
+            <div class="rounded-xl bg-slate-50 px-3 py-3">
 
               <div
                 class="mb-1 text-xs font-medium uppercase tracking-wide text-slate-500"
@@ -117,45 +81,32 @@
                 {{ 'userMyPrograms.duration' | translate }}
               </div>
 
-              <div
-                class="text-sm font-bold text-slate-800"
-              >
+              <div class="text-sm font-bold text-slate-800">
                 {{ program.durationWeeks }}
                 {{ 'userMyPrograms.weeks' | translate }}
               </div>
 
             </div>
 
-            <!-- ==================================================
-                 PROGRESS
-                 ================================================== -->
-
+            <!-- PROGRESS -->
             <div class="mt-5">
 
               <!-- Progress label -->
-
               <div
                 class="mb-2 flex items-center justify-between gap-3 text-sm"
               >
-
-                <span
-                  class="font-semibold text-slate-700"
-                >
+                <span class="font-semibold text-slate-700">
                   {{ 'userMyPrograms.workouts' | translate }}:
                 </span>
 
-                <span
-                  class="font-semibold text-slate-600"
-                >
+                <span class="font-semibold text-slate-600">
                   {{ programProgress[program.id]?.completedWorkouts ?? 0 }}
                   /
                   {{ programProgress[program.id]?.totalWorkouts ?? 0 }}
                 </span>
-
               </div>
 
               <!-- Progress bar -->
-
               <div
                 class="h-2.5 w-full overflow-hidden rounded-full bg-slate-200"
               >
@@ -173,13 +124,8 @@
 
       </div>
 
-      <!-- ==================================================
-           LAPOZÓ
-           ================================================== -->
-
-      <div
-        class="mt-6 border-t border-slate-200 pt-4"
-      >
+      <!-- LAPOZÓ -->
+      <div class="mt-6 border-t border-slate-200 pt-4">
         <app-pagination
           [totalItems]="totalItems"
           [pageSize]="pageSize"
@@ -194,25 +140,18 @@
 
     </ng-container>
 
-    <!-- ======================================================
-         NINCS PROGRAM
-         ====================================================== -->
-
+    <!-- NINCS PROGRAM -->
     <ng-template #noPrograms>
 
       <div
-        class="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center shadow-md shadow-slate-200/40"
+        class="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center shadow-sm"
       >
 
-        <span
-          class="mb-3 text-5xl"
-        >
+        <span class="mb-3 text-5xl">
           📋
         </span>
 
-        <p
-          class="text-sm font-medium text-slate-500"
-        >
+        <p class="text-sm font-medium text-slate-500">
           {{ 'userMyPrograms.noPrograms' | translate }}
         </p>
 
