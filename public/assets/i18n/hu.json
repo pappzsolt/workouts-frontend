@@ -806,5 +806,13 @@
     "currentRepetitions": "Jelenlegi ismétlésszám",
     "repetitionsChange": "Ismétlésszám változás",
     "noExercises": "Ehhez a workouthoz nincs exercise."
+  },
+  "pagination": {
+    "records": "rekord",
+    "firstPage": "Első oldal",
+    "previousPage": "Előző oldal",
+    "nextPage": "Következő oldal",
+    "lastPage": "Utolsó oldal",
+    "pageSize": "Elem oldalanként"
   }
 }
