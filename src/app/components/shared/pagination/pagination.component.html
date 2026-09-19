@@ -1,0 +1,180 @@
+
+<!-- ======================================================
+     LAPOZÓ
+     ====================================================== -->
+
+<div
+  *ngIf="totalPages > 0"
+  class="flex w-full flex-col gap-4 rounded-xl
+         border border-primary-100 bg-primary-50/30
+         px-3 py-4 sm:px-4"
+>
+  <!-- ====================================================
+       FELSŐ SOR: REKORDINFORMÁCIÓ + OLDALMÉRET
+       ==================================================== -->
+
+  <div
+    class="flex flex-col items-center justify-between gap-3
+           sm:flex-row"
+  >
+    <!-- Rekordinformáció -->
+
+    <div
+      *ngIf="showInfo"
+      class="text-center text-xs font-medium text-slate-500
+             sm:text-left sm:text-sm"
+    >
+      <span class="font-semibold text-slate-700">
+        {{ startItem }}–{{ endItem }}
+      </span>
+
+      <span class="mx-1">/</span>
+
+      {{ totalItems }}
+      {{ 'pagination.records' | translate }}
+    </div>
+
+    <!-- Oldalméret -->
+
+    <div
+      *ngIf="showPageSize"
+      class="flex items-center gap-2 text-xs text-slate-500 sm:text-sm"
+    >
+      <label
+        for="pagination-page-size"
+        class="whitespace-nowrap"
+      >
+        {{ 'pagination.pageSize' | translate }}
+      </label>
+
+      <select
+        id="pagination-page-size"
+        [value]="pageSize"
+        (change)="onPageSizeChange($any($event.target).value)"
+        class="rounded-lg border border-primary-200
+               bg-white px-3 py-1.5 text-sm font-semibold
+               text-slate-700 shadow-sm transition
+               hover:border-primary-600
+               focus:outline-none focus:ring-2
+               focus:ring-primary-600/30"
+      >
+        <option
+          *ngFor="let size of pageSizeOptions"
+          [value]="size"
+        >
+          {{ size }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ====================================================
+       ALSÓ SOR: LAPOZÓ GOMBOK
+       ==================================================== -->
+
+  <div class="flex flex-wrap items-center justify-center gap-1.5">
+
+    <!-- Első oldal -->
+
+    <button
+      type="button"
+      (click)="firstPage()"
+      [disabled]="!hasPreviousPage"
+      [attr.aria-label]="'pagination.firstPage' | translate"
+      class="flex h-9 w-9 items-center justify-center
+             rounded-lg border border-primary-200 bg-white
+             text-primary-700 shadow-sm transition
+             hover:border-primary-600 hover:bg-primary-50
+             hover:text-primary-700
+             disabled:cursor-not-allowed
+             disabled:opacity-35
+             disabled:hover:border-primary-200
+             disabled:hover:bg-white
+             disabled:hover:text-primary-700"
+    >
+      <span aria-hidden="true" class="text-base">«</span>
+    </button>
+
+    <!-- Előző oldal -->
+
+    <button
+      type="button"
+      (click)="previousPage()"
+      [disabled]="!hasPreviousPage"
+      [attr.aria-label]="'pagination.previousPage' | translate"
+      class="flex h-9 w-9 items-center justify-center
+             rounded-lg border border-primary-200 bg-white
+             text-primary-700 shadow-sm transition
+             hover:border-primary-600 hover:bg-primary-50
+             hover:text-primary-700
+             disabled:cursor-not-allowed
+             disabled:opacity-35
+             disabled:hover:border-primary-200
+             disabled:hover:bg-white
+             disabled:hover:text-primary-700"
+    >
+      <span aria-hidden="true" class="text-lg leading-none">‹</span>
+    </button>
+
+    <!-- Oldalszámok -->
+
+    <button
+      *ngFor="let page of pages"
+      type="button"
+      (click)="goToPage(page)"
+      [disabled]="page === currentPage"
+      [attr.aria-current]="page === currentPage ? 'page' : null"
+      class="flex h-9 min-w-9 items-center justify-center
+             rounded-lg border px-3 text-sm font-semibold
+             shadow-sm transition disabled:cursor-default"
+      [ngClass]="page === currentPage
+        ? 'border-primary-600 bg-primary-600 text-white shadow-primary-600/20'
+        : 'border-primary-200 bg-white text-primary-700 hover:border-primary-600 hover:bg-primary-50 hover:text-primary-700'"
+    >
+      {{ page }}
+    </button>
+
+    <!-- Következő oldal -->
+
+    <button
+      type="button"
+      (click)="nextPage()"
+      [disabled]="!hasNextPage"
+      [attr.aria-label]="'pagination.nextPage' | translate"
+      class="flex h-9 w-9 items-center justify-center
+             rounded-lg border border-primary-200 bg-white
+             text-primary-700 shadow-sm transition
+             hover:border-primary-600 hover:bg-primary-50
+             hover:text-primary-700
+             disabled:cursor-not-allowed
+             disabled:opacity-35
+             disabled:hover:border-primary-200
+             disabled:hover:bg-white
+             disabled:hover:text-primary-700"
+    >
+      <span aria-hidden="true" class="text-lg leading-none">›</span>
+    </button>
+
+    <!-- Utolsó oldal -->
+
+    <button
+      type="button"
+      (click)="lastPage()"
+      [disabled]="!hasNextPage"
+      [attr.aria-label]="'pagination.lastPage' | translate"
+      class="flex h-9 w-9 items-center justify-center
+             rounded-lg border border-primary-200 bg-white
+             text-primary-700 shadow-sm transition
+             hover:border-primary-600 hover:bg-primary-50
+             hover:text-primary-700
+             disabled:cursor-not-allowed
+             disabled:opacity-35
+             disabled:hover:border-primary-200
+             disabled:hover:bg-white
+             disabled:hover:text-primary-700"
+    >
+      <span aria-hidden="true" class="text-base">»</span>
+    </button>
+
+  </div>
+</div>
