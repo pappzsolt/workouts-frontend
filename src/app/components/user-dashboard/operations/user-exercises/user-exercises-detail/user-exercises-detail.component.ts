@@ -91,6 +91,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
         if (!workout?.exercises || workout.exercises.length === 0) {
           this.message = 'userExerciseDetail.noExercise';
+
           this.messageType = 'info';
 
           return;
@@ -100,6 +101,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
         if (!found) {
           this.message = 'userExerciseDetail.noExercise';
+
           this.messageType = 'info';
 
           return;
@@ -123,6 +125,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
         };
 
         this.message = error.error?.message || 'userExerciseDetail.loadError';
+
         this.messageType = 'error';
       },
     });
@@ -174,11 +177,12 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
            * Exercise done újraszámolása.
            *
            * Ez automatikusan újraszámolja
-           * a workout completed állapotát is.
+           * a workout frontend állapotát is.
            */
           this.updateExerciseDone();
 
           this.message = 'userExerciseDetail.setUpdated';
+
           this.messageType = 'success';
         },
 
@@ -190,6 +194,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
           };
 
           this.message = error.error?.message || 'userExerciseDetail.setUpdateError';
+
           this.messageType = 'error';
         },
       });
@@ -228,9 +233,12 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
    * A workout akkor completed,
    * ha az összes exercise completed.
    *
-   * Ez csak frontend állapot.
-   * A backend workout completed mezőjét
-   * nem módosítjuk.
+   * A tényleges workout completed állapotot
+   * a backend kezeli és a USER_WORKOUTS táblában
+   * tárolja.
+   *
+   * Ez a metódus csak a jelenlegi frontend
+   * állapotot számolja újra.
    */
   updateWorkoutDone(): void {
     if (!this.workout) {
@@ -244,16 +252,6 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     }
 
     this.workout.done = this.workout.exercises.every((exercise) => exercise.done === true);
-
-    if (this.workout.done) {
-      localStorage.setItem(`workout-completed-${this.workoutId}`, 'true');
-    } else {
-      /*
-       * Ha valamelyik exercise újra incomplete,
-       * töröljük a frontend completed állapotot.
-       */
-      localStorage.removeItem(`workout-completed-${this.workoutId}`);
-    }
   }
 
   /**
@@ -292,6 +290,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
           this.updateExerciseDone();
 
           this.message = 'userExerciseDetail.saveSuccess';
+
           this.messageType = 'success';
         },
 
@@ -303,6 +302,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
           };
 
           this.message = error.error?.message || 'userExerciseDetail.saveError';
+
           this.messageType = 'error';
         },
       });

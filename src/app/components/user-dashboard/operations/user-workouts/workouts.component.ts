@@ -50,8 +50,6 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
     this.programId = Number(this.route.snapshot.paramMap.get('id'));
 
     if (Number.isNaN(this.programId) || this.programId <= 0) {
-      console.error('Érvénytelen program ID:', this.programId);
-
       return;
     }
 
@@ -76,25 +74,14 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
   private loadWorkouts(): void {
     this.workouts$ = this.workoutsService.getWorkoutsByProgram(this.programId).pipe(
       map((workouts: Workout[]) => {
-        const mappedWorkouts = workouts.map((workout: Workout): Workout => {
-          const frontendCompleted =
-            localStorage.getItem(`workout-completed-${workout.workoutId}`) === 'true';
-
-          console.log(
-            'WORKOUT:',
-            workout.workoutId,
-            workout.workoutName,
-            'backend completed:',
-            workout.completed,
-            'localStorage:',
-            frontendCompleted,
-          );
-
-          return {
-            ...workout,
-            completed: frontendCompleted || workout.completed,
-          };
-        });
+        /*
+         * A workout completed állapotát
+         * kizárólag a backend adja.
+         */
+        const mappedWorkouts = workouts.map((workout: Workout): Workout => ({
+          ...workout,
+          completed: workout.completed,
+        }));
 
         this.pendingWorkouts = mappedWorkouts.filter((workout: Workout) => !workout.completed);
 
@@ -124,7 +111,6 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.destroy$.next();
-
     this.destroy$.complete();
   }
 }
