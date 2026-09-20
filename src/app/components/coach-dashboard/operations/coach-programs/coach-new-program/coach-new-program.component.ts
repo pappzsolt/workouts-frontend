@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
-
+import { AppCardComponent } from '../../../../shared/components/app-card/app-card.component';
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
 import { skip } from 'rxjs';
 
@@ -12,7 +12,7 @@ import { Program, ProgramCreationRequest } from '../../../../../models/program.m
 @Component({
   selector: 'app-coach-new-program',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, AppCardComponent],
   templateUrl: './coach-new-program.component.html',
   styleUrls: ['./coach-new-program.component.css'],
 })

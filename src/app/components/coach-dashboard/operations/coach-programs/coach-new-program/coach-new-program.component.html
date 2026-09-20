@@ -29,10 +29,7 @@
          PROGRAM FORM KÁRTYA
          ================================================== -->
 
-    <div
-      class="mx-auto w-full overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-lg shadow-slate-200/60"
-    >
-
+    <app-card>
       <!-- ==================================================
            FEJLÉC
            ================================================== -->
@@ -41,11 +38,11 @@
         class="border-b border-blue-100 bg-gradient-to-r from-primary-600 to-primary-700 px-4 py-6 sm:px-6 sm:py-7"
       >
         <div class="flex items-center justify-center">
-          <span
-            class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/95 text-4xl shadow-lg ring-1 ring-white/30"
-          >
-            💪
-          </span>
+      <span
+        class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/95 text-4xl shadow-lg ring-1 ring-white/30"
+      >
+        💪
+      </span>
         </div>
       </div>
 
@@ -57,7 +54,6 @@
         (ngSubmit)="saveProgram()"
         class="grid min-w-0 grid-cols-1 gap-5 p-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-5 sm:p-6"
       >
-
         <!-- ==================================================
              PROGRAM NÉV
              ================================================== -->
@@ -177,8 +173,7 @@
             <span>{{ 'coachNewProgram.save' | translate }}</span>
           </button>
         </div>
-
       </form>
-    </div>
+    </app-card>
   </div>
 </div>
