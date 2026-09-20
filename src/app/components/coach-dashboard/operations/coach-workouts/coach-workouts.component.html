@@ -1,3 +1,7 @@
+<!-- ======================================================
+     OLDAL
+     ====================================================== -->
+
 <div
   class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
 >
@@ -32,25 +36,16 @@
       class="flex flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5 lg:flex-row lg:items-end"
     >
 
-      <!-- KERESÉS -->
+      <!-- KERESÉS KOMPONENS -->
 
       <div class="min-w-0 flex-1">
-        <label
-          for="workoutSearch"
-          class="mb-2 block text-sm font-semibold text-content-700"
-        >
-          {{ 'coachWorkouts.search' | translate }}
-        </label>
-
-        <input
-          id="workoutSearch"
-          type="text"
-          [(ngModel)]="searchTerm"
-          (ngModelChange)="onSearchChange()"
-          [placeholder]="'coachWorkouts.searchPlaceholder' | translate"
-          autocomplete="off"
-          class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
-        />
+        <app-search
+          inputId="workoutSearch"
+          [searchTerm]="searchTerm"
+          label="coachWorkouts.search"
+          placeholder="coachWorkouts.searchPlaceholder"
+          (searchTermChange)="searchTerm = $event; onSearchChange()"
+        ></app-search>
       </div>
 
       <!-- RENDEZÉS -->
@@ -88,6 +83,10 @@
       *ngIf="filteredWorkouts.length > 0; else noWorkouts"
     >
 
+      <!-- ======================================================
+           EDZÉSKÁRTYÁK
+           ====================================================== -->
+
       <div
         class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
       >
@@ -96,6 +95,7 @@
           *ngFor="let w of pagedWorkouts"
           class="group flex min-w-0 flex-col overflow-hidden"
         >
+
           <!-- ==================================================
                FEJLÉC
                ================================================== -->
@@ -103,11 +103,11 @@
           <div
             class="flex h-28 items-center justify-center bg-gradient-to-r from-primary-600 to-primary-700"
           >
-    <span
-      class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-3xl shadow-md transition duration-200 group-hover:scale-105"
-    >
-      🔥
-    </span>
+            <span
+              class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-3xl shadow-md transition duration-200 group-hover:scale-105"
+            >
+              🔥
+            </span>
           </div>
 
           <!-- ==================================================
@@ -145,26 +145,34 @@
               <!-- IDŐTARTAM -->
 
               <div class="rounded-lg bg-surface-50 px-3 py-2.5">
-        <span class="block text-xs font-medium text-content-500">
-          {{ 'coachWorkouts.duration' | translate }}
-        </span>
+                <span
+                  class="block text-xs font-medium text-content-500"
+                >
+                  {{ 'coachWorkouts.duration' | translate }}
+                </span>
 
-                <span class="mt-1 block text-sm font-semibold text-content-800">
-          {{ w.durationMinutes }}
+                <span
+                  class="mt-1 block text-sm font-semibold text-content-800"
+                >
+                  {{ w.durationMinutes }}
                   {{ 'common.minutes' | translate }}
-        </span>
+                </span>
               </div>
 
               <!-- GYAKORLATOK -->
 
               <div class="rounded-lg bg-surface-50 px-3 py-2.5">
-        <span class="block text-xs font-medium text-content-500">
-          {{ 'coachWorkouts.exercises' | translate }}
-        </span>
+                <span
+                  class="block text-xs font-medium text-content-500"
+                >
+                  {{ 'coachWorkouts.exercises' | translate }}
+                </span>
 
-                <span class="mt-1 block text-sm font-semibold text-content-800">
-          {{ w.exercises?.length || 0 }}
-        </span>
+                <span
+                  class="mt-1 block text-sm font-semibold text-content-800"
+                >
+                  {{ w.exercises?.length || 0 }}
+                </span>
               </div>
 
             </div>
@@ -197,45 +205,23 @@
             </div>
 
           </div>
+
         </app-card>
 
       </div>
 
       <!-- ======================================================
-           LAPOZÁS
+           LAPOZÁS KOMPONENS
            ====================================================== -->
 
-      @if (totalPages > 1) {
-        <div
-          class="flex flex-col items-center justify-center gap-3 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:flex-row"
-        >
-
-          <button
-            type="button"
-            (click)="prevPage()"
-            [disabled]="currentPage === 1"
-            class="w-full rounded-lg border border-surface-300 bg-white px-4 py-2.5 text-sm font-semibold text-content-700 transition hover:border-pagination-200 hover:bg-pagination-50 hover:text-pagination-700 focus:outline-none focus:ring-4 focus:ring-pagination-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
-          >
-            ◀ {{ 'common.previous' | translate }}
-          </button>
-
-          <span
-            class="min-w-20 text-center text-sm font-semibold text-content-700"
-          >
-            {{ currentPage }} / {{ totalPages }}
-          </span>
-
-          <button
-            type="button"
-            (click)="nextPage()"
-            [disabled]="currentPage === totalPages"
-            class="w-full rounded-lg border border-surface-300 bg-white px-4 py-2.5 text-sm font-semibold text-content-700 transition hover:border-pagination-200 hover:bg-pagination-50 hover:text-pagination-700 focus:outline-none focus:ring-4 focus:ring-pagination-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
-          >
-            {{ 'common.next' | translate }} ▶
-          </button>
-
-        </div>
-      }
+      <app-pagination
+        [totalItems]="filteredWorkouts.length"
+        [pageSize]="itemsPerPage"
+        [currentPage]="currentPage"
+        [showPageSize]="false"
+        [showInfo]="false"
+        (pageChange)="onPageChange($event)"
+      ></app-pagination>
 
     </ng-container>
 

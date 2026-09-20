@@ -2,7 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Subject, takeUntil } from 'rxjs';
+
 import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+
 import { Exercise } from '../../../../models/exercise.model';
 
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
@@ -18,7 +21,7 @@ import {
 @Component({
   selector: 'app-exercise-controller',
   standalone: true,
-  imports: [...SHARED_IMPORTS, ExerciseSearchFieldComponent, AppCardComponent],
+  imports: [...SHARED_IMPORTS, ExerciseSearchFieldComponent, AppCardComponent, PaginationComponent],
   templateUrl: './coach-exercises.component.html',
   styleUrls: ['./coach-exercises.component.css'],
 })
@@ -47,6 +50,7 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
 
   // ==========================================================
   // LAPOZÁS
+  // A backend 0-alapú oldalszámot használ.
   // ==========================================================
 
   currentPage = 0;
@@ -124,7 +128,6 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
 
   loadExercises(): void {
     this.loading = true;
-
     this.clearMessage();
 
     this.exerciseService
@@ -137,38 +140,25 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
         undefined,
         this.sortDirection,
       )
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          console.log('[CoachExercises] response:', response);
-
           const searchResponse = response.data;
 
           this.exercises = searchResponse?.content ?? [];
-
           this.totalElements = searchResponse?.totalElements ?? 0;
-
           this.totalPages = Math.max(1, searchResponse?.totalPages ?? 1);
 
           this.loading = false;
-
-          console.log('[CoachExercises] betöltött gyakorlatok:', this.exercises);
-
-          console.log('[CoachExercises] totalElements:', this.totalElements);
-
-          console.log('[CoachExercises] totalPages:', this.totalPages);
         },
 
         error: (error) => {
           console.error('[CoachExercises] Hiba a gyakorlatok betöltésekor:', error);
 
           this.exercises = [];
-
           this.totalElements = 0;
-
           this.currentPage = 0;
-
           this.totalPages = 1;
-
           this.loading = false;
 
           const backendMessage =
@@ -193,7 +183,6 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
 
   search(): void {
     this.currentPage = 0;
-
     this.loadExercises();
   }
 
@@ -205,7 +194,6 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
     this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
 
     this.currentPage = 0;
-
     this.loadExercises();
   }
 
@@ -218,27 +206,20 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   }
 
   // ==========================================================
-  // KÖVETKEZŐ OLDAL
+  // KÖZÖS LAPOZÓ KOMPONENS ESEMÉNYE
+  // A PaginationComponent 1-alapú oldalszámot küld.
+  // A backend 0-alapú oldalszámot vár.
   // ==========================================================
 
-  nextPage(): void {
-    if (this.currentPage < this.totalPages - 1) {
-      this.currentPage++;
+  onPageChange(page: number): void {
+    const newPage = page - 1;
 
-      this.loadExercises();
+    if (newPage < 0 || newPage >= this.totalPages || newPage === this.currentPage) {
+      return;
     }
-  }
 
-  // ==========================================================
-  // ELŐZŐ OLDAL
-  // ==========================================================
-
-  prevPage(): void {
-    if (this.currentPage > 0) {
-      this.currentPage--;
-
-      this.loadExercises();
-    }
+    this.currentPage = newPage;
+    this.loadExercises();
   }
 
   // ==========================================================
@@ -263,13 +244,11 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
 
   private showError(message: string): void {
     this.message = message;
-
     this.messageType = 'error';
   }
 
   private clearMessage(): void {
     this.message = '';
-
     this.messageType = '';
   }
 
@@ -279,7 +258,6 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.destroy$.next();
-
     this.destroy$.complete();
   }
 

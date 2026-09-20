@@ -1,10 +1,11 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { SHARED_IMPORTS } from '../../shared-imports';
-
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
 @Component({
   standalone: true,
   selector: 'app-pagination',
-  imports: [...SHARED_IMPORTS],
+  imports: [CommonModule, FormsModule, TranslatePipe],
   templateUrl: './pagination.component.html',
 })
 export class PaginationComponent {

@@ -10,7 +10,8 @@ import { Workout } from '../../../../models/workout.model';
 import { WorkoutDto } from '../../../../models/exercise.model';
 import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
-
+import { AppSearchComponent } from '../../../../components/shared/components/app-search/app-search.component';
+import { PaginationComponent } from '../../../../components/shared/components/pagination/pagination.component';
 import { NewWorkoutComponent } from '../../operations/coach-workouts/coach-workout-new/new-workout.component';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
@@ -18,7 +19,13 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 @Component({
   selector: 'app-coach-workouts',
   standalone: true,
-  imports: [...SHARED_IMPORTS, NewWorkoutComponent, AppCardComponent],
+  imports: [
+    ...SHARED_IMPORTS,
+    NewWorkoutComponent,
+    AppCardComponent,
+    AppSearchComponent,
+    PaginationComponent,
+  ],
   templateUrl: './coach-workouts.component.html',
   styleUrls: ['./coach-workouts.component.css'],
 })
@@ -268,6 +275,9 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
     if (this.currentPage > 1) {
       this.currentPage--;
     }
+  }
+  onPageChange(page: number): void {
+    this.currentPage = page;
   }
 
   // ==========================================================

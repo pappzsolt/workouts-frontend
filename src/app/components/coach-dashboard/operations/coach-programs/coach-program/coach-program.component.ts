@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-
+import { AppSearchComponent } from '../../../../shared/components/app-search/app-search.component';
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
 import { Program } from '../../../../../models/program.model';
 import { USER_MESSAGES } from '../../../../../constants/user-messages';
@@ -11,7 +11,7 @@ import { PaginationComponent } from '../../../../shared/components/pagination/pa
 @Component({
   selector: 'app-coach-program',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppCardComponent, PaginationComponent],
+  imports: [...SHARED_IMPORTS, AppCardComponent, PaginationComponent, AppSearchComponent],
   templateUrl: './coach-program.component.html',
   styleUrls: ['./coach-program.component.css'],
 })
