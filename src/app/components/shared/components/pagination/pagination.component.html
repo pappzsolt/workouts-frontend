@@ -1,0 +1,42 @@
+<!-- ==================================================
+     LAPOZÁS
+     ================================================== -->
+
+<div
+  *ngIf="totalPages > 1"
+  class="mt-6 flex flex-col items-center justify-center gap-3 rounded-2xl border border-surface-200 bg-white p-4 shadow-md shadow-slate-200/40 sm:flex-row"
+>
+
+  <!-- Előző -->
+
+  <button
+    type="button"
+    (click)="prevPage()"
+    [disabled]="currentPage === 1"
+    class="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-surface-200 bg-white px-4 py-2 text-sm font-semibold text-content-700 shadow-sm transition duration-150 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+  >
+    <span>◀</span>
+    <span>{{ 'common.previous' | translate }}</span>
+  </button>
+
+  <!-- Oldalszám -->
+
+  <span
+    class="flex min-h-10 items-center justify-center rounded-xl bg-blue-50 px-5 py-2 text-sm font-bold text-blue-700"
+  >
+    {{ currentPage }} / {{ totalPages }}
+  </span>
+
+  <!-- Következő -->
+
+  <button
+    type="button"
+    (click)="nextPage()"
+    [disabled]="currentPage === totalPages"
+    class="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-surface-200 bg-white px-4 py-2 text-sm font-semibold text-content-700 shadow-sm transition duration-150 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+  >
+    <span>{{ 'common.next' | translate }}</span>
+    <span>▶</span>
+  </button>
+
+</div>
