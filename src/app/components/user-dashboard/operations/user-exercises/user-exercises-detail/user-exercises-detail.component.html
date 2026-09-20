@@ -72,7 +72,7 @@
 
         <div
           *ngIf="workoutExercise.exercise.muscleGroup"
-          class="bg-slate-50 rounded-xl p-3 border border-slate-100"
+          class="bg-surface-50 rounded-xl p-3 border border-surface-100"
         >
           <div class="text-xs text-gray-500 mb-1">
             {{ 'userExerciseDetail.muscle' | translate }}
@@ -86,7 +86,7 @@
 
         <div
           *ngIf="workoutExercise.exercise.equipment"
-          class="bg-slate-50 rounded-xl p-3 border border-slate-100"
+          class="bg-surface-50 rounded-xl p-3 border border-surface-100"
         >
           <div class="text-xs text-gray-500 mb-1">
             {{ 'userExerciseDetail.equipment' | translate }}
@@ -100,7 +100,7 @@
 
         <div
           *ngIf="workoutExercise.exercise.difficultyLevel"
-          class="bg-slate-50 rounded-xl p-3 border border-slate-100"
+          class="bg-surface-50 rounded-xl p-3 border border-surface-100"
         >
           <div class="text-xs text-gray-500 mb-1">
             {{ 'userExerciseDetail.difficulty' | translate }}
@@ -114,7 +114,7 @@
 
         <div
           *ngIf="workoutExercise.exercise.category"
-          class="bg-slate-50 rounded-xl p-3 border border-slate-100"
+          class="bg-surface-50 rounded-xl p-3 border border-surface-100"
         >
           <div class="text-xs text-gray-500 mb-1">
             {{ 'userExerciseDetail.category' | translate }}
@@ -128,7 +128,7 @@
 
         <div
           *ngIf="workoutExercise.exercise.caloriesBurnedPerMinute != null"
-          class="bg-slate-50 rounded-xl p-3 border border-slate-100"
+          class="bg-surface-50 rounded-xl p-3 border border-surface-100"
         >
           <div class="text-xs text-gray-500 mb-1">
             {{ 'userExerciseDetail.caloriesPerMinute' | translate }}
@@ -142,7 +142,7 @@
 
         <div
           *ngIf="workoutExercise.exercise.durationSeconds != null"
-          class="bg-slate-50 rounded-xl p-3 border border-slate-100"
+          class="bg-surface-50 rounded-xl p-3 border border-surface-100"
         >
           <div class="text-xs text-gray-500 mb-1">
             {{ 'userExerciseDetail.duration' | translate }}
@@ -188,7 +188,7 @@
           *ngFor="
             let set of workoutExercise.userWorkoutExerciseSets
           "
-          class="rounded-2xl overflow-hidden border border-slate-200 bg-white shadow-md transition-all"
+          class="rounded-2xl overflow-hidden border border-surface-200 bg-white shadow-md transition-all"
           [ngClass]="{
             'ring-2 ring-green-400': set.completed,
             'ring-1 ring-slate-200': !set.completed
@@ -256,7 +256,7 @@
 
               <!-- Target repetitions -->
               <div
-                class="bg-white rounded-xl p-3 border border-slate-200 shadow-sm"
+                class="bg-white rounded-xl p-3 border border-surface-200 shadow-sm"
               >
 
                 <div class="text-xs text-gray-500 mb-1">
@@ -278,7 +278,7 @@
 
               <!-- Target weight -->
               <div
-                class="bg-white rounded-xl p-3 border border-slate-200 shadow-sm"
+                class="bg-white rounded-xl p-3 border border-surface-200 shadow-sm"
               >
 
                 <div class="text-xs text-gray-500 mb-1">

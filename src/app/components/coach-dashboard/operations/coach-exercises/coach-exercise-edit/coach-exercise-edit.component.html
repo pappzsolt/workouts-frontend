@@ -4,7 +4,7 @@
 
     <!-- Oldal címe -->
     <h2
-      class="mb-6 flex items-center justify-center gap-2 text-center text-2xl font-bold tracking-tight text-slate-800 sm:mb-8 sm:text-3xl"
+      class="mb-6 flex items-center justify-center gap-2 text-center text-2xl font-bold tracking-tight text-content-800 sm:mb-8 sm:text-3xl"
     >
       <span>✏️</span>
       <span>{{ 'coachExerciseEdit.title' | translate }}</span>
@@ -19,7 +19,7 @@
     <!-- Gyakorlat szerkesztési űrlap -->
     <div
       *ngIf="exerciseFound"
-      class="mx-auto w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg shadow-slate-200/60"
+      class="mx-auto w-full overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-lg shadow-slate-200/60"
     >
 
       <!-- Fejléc -->
@@ -49,7 +49,7 @@
         <div class="col-span-full flex min-w-0 flex-col gap-2">
           <label
             for="name"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.name' | translate }}
           </label>
@@ -60,7 +60,7 @@
             type="text"
             [(ngModel)]="exercise.name"
             required
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           />
         </div>
 
@@ -68,7 +68,7 @@
         <div class="col-span-full flex min-w-0 flex-col gap-2">
           <label
             for="description"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.description' | translate }}
           </label>
@@ -78,7 +78,7 @@
             name="description"
             rows="3"
             [(ngModel)]="exercise.description"
-            class="min-h-24 w-full min-w-0 resize-y rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base leading-6 text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-24 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           ></textarea>
         </div>
 
@@ -86,7 +86,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="bodyPart"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.bodyPart' | translate }}
           </label>
@@ -96,7 +96,7 @@
             name="bodyPart"
             type="text"
             [(ngModel)]="exercise.bodyPart"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           />
         </div>
 
@@ -104,7 +104,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="synonyms"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.synonyms' | translate }}
           </label>
@@ -114,7 +114,7 @@
             name="synonyms"
             type="text"
             [(ngModel)]="exercise.synonyms"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           />
         </div>
 
@@ -122,7 +122,7 @@
         <div class="col-span-full flex min-w-0 flex-col gap-2">
           <label
             for="instructions"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.instructions' | translate }}
           </label>
@@ -132,7 +132,7 @@
             name="instructions"
             rows="5"
             [(ngModel)]="exercise.instructions"
-            class="min-h-36 w-full min-w-0 resize-y rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base leading-6 text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-36 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           ></textarea>
         </div>
 
@@ -140,7 +140,7 @@
         <div class="col-span-full flex min-w-0 flex-col gap-2">
           <label
             for="tips"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.tips' | translate }}
           </label>
@@ -150,7 +150,7 @@
             name="tips"
             rows="4"
             [(ngModel)]="exercise.tips"
-            class="min-h-28 w-full min-w-0 resize-y rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base leading-6 text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-28 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           ></textarea>
         </div>
 
@@ -158,7 +158,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="primaryMuscles"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.primaryMuscles' | translate }}
           </label>
@@ -168,7 +168,7 @@
             name="primaryMuscles"
             type="text"
             [(ngModel)]="exercise.primaryMuscles"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           />
         </div>
 
@@ -176,7 +176,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="secondaryMuscles"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.secondaryMuscles' | translate }}
           </label>
@@ -186,7 +186,7 @@
             name="secondaryMuscles"
             type="text"
             [(ngModel)]="exercise.secondaryMuscles"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           />
         </div>
 
@@ -198,7 +198,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="imageUrl"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.imageUrl' | translate }}
           </label>
@@ -208,7 +208,7 @@
             name="imageUrl"
             type="text"
             [(ngModel)]="exercise.imageUrl"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           />
         </div>
 
@@ -216,7 +216,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="videoUrl"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.videoUrl' | translate }}
           </label>
@@ -226,7 +226,7 @@
             name="videoUrl"
             type="text"
             [(ngModel)]="exercise.videoUrl"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           />
         </div>
 
@@ -234,7 +234,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="muscleGroup"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.muscleGroup' | translate }}
           </label>
@@ -244,7 +244,7 @@
             name="muscleGroup"
             type="text"
             [(ngModel)]="exercise.muscleGroup"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           />
         </div>
 
@@ -252,7 +252,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="equipment"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.equipment' | translate }}
           </label>
@@ -262,7 +262,7 @@
             name="equipment"
             type="text"
             [(ngModel)]="exercise.equipment"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           />
         </div>
 
@@ -270,7 +270,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="difficultyLevel"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.difficultyLevel' | translate }}
           </label>
@@ -280,7 +280,7 @@
             name="difficultyLevel"
             type="text"
             [(ngModel)]="exercise.difficultyLevel"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           />
         </div>
 
@@ -288,7 +288,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="category"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.category' | translate }}
           </label>
@@ -298,7 +298,7 @@
             name="category"
             type="text"
             [(ngModel)]="exercise.category"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           />
         </div>
 
@@ -306,7 +306,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="caloriesBurnedPerMinute"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.caloriesPerMinute' | translate }}
           </label>
@@ -317,7 +317,7 @@
             type="number"
             step="0.01"
             [(ngModel)]="exercise.caloriesBurnedPerMinute"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           />
         </div>
 
@@ -325,7 +325,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="durationSeconds"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.durationSeconds' | translate }}
           </label>
@@ -335,7 +335,7 @@
             name="durationSeconds"
             type="number"
             [(ngModel)]="exercise.durationSeconds"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           />
         </div>
 
@@ -343,7 +343,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="forceType"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.forceType' | translate }}
           </label>
@@ -353,7 +353,7 @@
             name="forceType"
             type="text"
             [(ngModel)]="exercise.forceType"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           />
         </div>
 
@@ -361,7 +361,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="mechanic"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.mechanic' | translate }}
           </label>
@@ -371,7 +371,7 @@
             name="mechanic"
             type="text"
             [(ngModel)]="exercise.mechanic"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           />
         </div>
 
@@ -379,7 +379,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="variationGroup"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.variationGroup' | translate }}
           </label>
@@ -389,7 +389,7 @@
             name="variationGroup"
             type="text"
             [(ngModel)]="exercise.variationGroup"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:text-sm"
           />
         </div>
 
@@ -397,7 +397,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="isUnilateral"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.isUnilateral' | translate }}
           </label>
@@ -406,7 +406,7 @@
             id="isUnilateral"
             name="isUnilateral"
             [(ngModel)]="exercise.isUnilateral"
-            class="min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+            class="min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
           >
             <option [ngValue]="false">
               {{ 'common.no' | translate }}
@@ -422,7 +422,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="isBodyweight"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachExerciseEdit.isBodyweight' | translate }}
           </label>
@@ -431,7 +431,7 @@
             id="isBodyweight"
             name="isBodyweight"
             [(ngModel)]="exercise.isBodyweight"
-            class="min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+            class="min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
           >
             <option [ngValue]="false">
               {{ 'common.no' | translate }}

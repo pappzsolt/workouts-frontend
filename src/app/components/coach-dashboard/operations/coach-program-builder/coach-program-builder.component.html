@@ -52,12 +52,12 @@
 
     <div
       *ngIf="currentStep === 1"
-      class="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+      class="min-w-0 overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm"
     >
 
       <!-- Step header -->
       <div
-        class="flex items-start gap-4 border-b border-slate-100 px-5 py-5 sm:px-6"
+        class="flex items-start gap-4 border-b border-surface-100 px-5 py-5 sm:px-6"
       >
         <span
           class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white shadow-sm"
@@ -66,7 +66,7 @@
         </span>
 
         <div class="min-w-0">
-          <h3 class="text-lg font-bold text-slate-800 sm:text-xl">
+          <h3 class="text-lg font-bold text-content-800 sm:text-xl">
             {{
               isEditMode
                 ? ('coachProgramBuilder.editProgram' | translate)
@@ -74,7 +74,7 @@
             }}
           </h3>
 
-          <p class="mt-1 text-sm leading-6 text-slate-500">
+          <p class="mt-1 text-sm leading-6 text-content-500">
             {{
               isEditMode
                 ? ('coachProgramBuilder.editProgramDescription' | translate)
@@ -91,7 +91,7 @@
         <div class="min-w-0 sm:col-span-2">
           <label
             for="programName"
-            class="mb-2 block text-sm font-semibold text-slate-700"
+            class="mb-2 block text-sm font-semibold text-content-700"
           >
             {{ 'coachProgramBuilder.programName' | translate }}
           </label>
@@ -101,7 +101,7 @@
             type="text"
             [(ngModel)]="programName"
             [placeholder]="'coachProgramBuilder.programNamePlaceholder' | translate"
-            class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
+            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
           />
         </div>
 
@@ -109,7 +109,7 @@
         <div class="min-w-0 sm:col-span-2">
           <label
             for="programDescription"
-            class="mb-2 block text-sm font-semibold text-slate-700"
+            class="mb-2 block text-sm font-semibold text-content-700"
           >
             {{ 'coachProgramBuilder.programDescription' | translate }}
           </label>
@@ -119,7 +119,7 @@
             rows="5"
             [(ngModel)]="programDescription"
             [placeholder]="'coachProgramBuilder.programDescriptionPlaceholder' | translate"
-            class="block w-full resize-y rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base leading-6 text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
+            class="block w-full resize-y rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
           ></textarea>
         </div>
 
@@ -127,7 +127,7 @@
         <div class="min-w-0">
           <label
             for="durationDays"
-            class="mb-2 block text-sm font-semibold text-slate-700"
+            class="mb-2 block text-sm font-semibold text-content-700"
           >
             {{ 'coachProgramBuilder.programDuration' | translate }}
           </label>
@@ -139,11 +139,11 @@
               min="1"
               [(ngModel)]="durationDays"
               [placeholder]="'coachProgramBuilder.programDurationPlaceholder' | translate"
-              class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 pr-20 text-base text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
+              class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 pr-20 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
             />
 
             <span
-              class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm font-medium text-slate-500"
+              class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm font-medium text-content-500"
             >
               {{ 'coachProgramBuilder.days' | translate }}
             </span>
@@ -154,7 +154,7 @@
         <div class="min-w-0">
           <label
             for="difficultyLevel"
-            class="mb-2 block text-sm font-semibold text-slate-700"
+            class="mb-2 block text-sm font-semibold text-content-700"
           >
             {{ 'coachProgramBuilder.difficultyLevel' | translate }}
           </label>
@@ -162,7 +162,7 @@
           <select
             id="difficultyLevel"
             [(ngModel)]="difficultyLevel"
-            class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
+            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
           >
             <option value="">
               {{ 'coachProgramBuilder.selectDifficulty' | translate }}
@@ -226,12 +226,12 @@
 
     <div
       *ngIf="currentStep === 2"
-      class="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+      class="min-w-0 overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm"
     >
 
       <!-- Step header -->
       <div
-        class="flex items-start gap-4 border-b border-slate-100 px-5 py-5 sm:px-6"
+        class="flex items-start gap-4 border-b border-surface-100 px-5 py-5 sm:px-6"
       >
         <span
           class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white shadow-sm"
@@ -240,11 +240,11 @@
         </span>
 
         <div class="min-w-0">
-          <h3 class="text-lg font-bold text-slate-800 sm:text-xl">
+          <h3 class="text-lg font-bold text-content-800 sm:text-xl">
             {{ 'coachProgramBuilder.workouts' | translate }}
           </h3>
 
-          <p class="mt-1 text-sm leading-6 text-slate-500">
+          <p class="mt-1 text-sm leading-6 text-content-500">
             {{ 'coachProgramBuilder.workoutsDescription' | translate }}
           </p>
         </div>
@@ -262,7 +262,7 @@
           <!-- Meglévő workout -->
           <button
             type="button"
-            class="group flex min-w-0 items-center gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 text-left transition hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-sm"
+            class="group flex min-w-0 items-center gap-4 rounded-xl border border-surface-200 bg-surface-50 p-4 text-left transition hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-sm"
           >
             <span
               class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white text-xl shadow-sm"
@@ -272,20 +272,20 @@
 
             <span class="min-w-0 flex-1">
               <strong
-                class="block text-sm font-bold text-slate-800"
+                class="block text-sm font-bold text-content-800"
               >
                 {{ 'coachProgramBuilder.addExistingWorkout' | translate }}
               </strong>
 
               <small
-                class="mt-1 block text-xs leading-5 text-slate-500"
+                class="mt-1 block text-xs leading-5 text-content-500"
               >
                 {{ 'coachProgramBuilder.addExistingWorkoutDescription' | translate }}
               </small>
             </span>
 
             <span
-              class="shrink-0 text-lg text-slate-400 transition group-hover:translate-x-1 group-hover:text-blue-600"
+              class="shrink-0 text-lg text-content-400 transition group-hover:translate-x-1 group-hover:text-blue-600"
             >
               →
             </span>
@@ -296,7 +296,7 @@
           <button
             type="button"
             (click)="goToCreateWorkout()"
-            class="group flex min-w-0 items-center gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 text-left transition hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-sm"
+            class="group flex min-w-0 items-center gap-4 rounded-xl border border-surface-200 bg-surface-50 p-4 text-left transition hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-sm"
           >
             <span
               class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white text-xl shadow-sm"
@@ -306,20 +306,20 @@
 
             <span class="min-w-0 flex-1">
               <strong
-                class="block text-sm font-bold text-slate-800"
+                class="block text-sm font-bold text-content-800"
               >
                 {{ 'coachProgramBuilder.createNewWorkout' | translate }}
               </strong>
 
               <small
-                class="mt-1 block text-xs leading-5 text-slate-500"
+                class="mt-1 block text-xs leading-5 text-content-500"
               >
                 {{ 'coachProgramBuilder.createNewWorkoutDescription' | translate }}
               </small>
             </span>
 
             <span
-              class="shrink-0 text-lg text-slate-400 transition group-hover:translate-x-1 group-hover:text-blue-600"
+              class="shrink-0 text-lg text-content-400 transition group-hover:translate-x-1 group-hover:text-blue-600"
             >
               →
             </span>
@@ -333,15 +333,15 @@
              ================================================== -->
 
         <div
-          class="min-w-0 rounded-xl border border-slate-200 bg-slate-50/50 p-4 sm:p-5"
+          class="min-w-0 rounded-xl border border-surface-200 bg-slate-50/50 p-4 sm:p-5"
         >
 
           <div class="mb-5">
-            <h4 class="text-base font-bold text-slate-800 sm:text-lg">
+            <h4 class="text-base font-bold text-content-800 sm:text-lg">
               {{ 'coachProgramBuilder.availableWorkouts' | translate }}
             </h4>
 
-            <p class="mt-1 text-sm leading-6 text-slate-500">
+            <p class="mt-1 text-sm leading-6 text-content-500">
               {{ 'coachProgramBuilder.availableWorkoutsDescription' | translate }}
             </p>
           </div>
@@ -365,17 +365,17 @@
           <!-- NINCS WORKOUT -->
           <div
             *ngIf="!loadingWorkouts && workouts.length === 0"
-            class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center"
+            class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-surface-300 bg-white px-5 py-10 text-center"
           >
             <span class="text-3xl">
               📋
             </span>
 
-            <strong class="text-sm font-semibold text-slate-700">
+            <strong class="text-sm font-semibold text-content-700">
               {{ 'coachProgramBuilder.noWorkouts' | translate }}
             </strong>
 
-            <span class="max-w-md text-sm leading-6 text-slate-500">
+            <span class="max-w-md text-sm leading-6 text-content-500">
               {{ 'coachProgramBuilder.noWorkoutsDescription' | translate }}
             </span>
           </div>
@@ -389,7 +389,7 @@
 
             <div
               *ngFor="let workout of workouts"
-              class="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:shadow-md"
+              class="min-w-0 overflow-hidden rounded-xl border border-surface-200 bg-white shadow-sm transition hover:shadow-md"
               [ngClass]="{
                 'border-blue-400 ring-2 ring-blue-500/10':
                   selectedWorkoutId === workout.id
@@ -407,7 +407,7 @@
                     class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <h5
-                      class="break-words text-base font-bold text-slate-800"
+                      class="break-words text-base font-bold text-content-800"
                     >
                       {{ workout.name }}
                     </h5>
@@ -424,7 +424,7 @@
                   </div>
 
                   <p
-                    class="mt-2 break-words text-sm leading-6 text-slate-500"
+                    class="mt-2 break-words text-sm leading-6 text-content-500"
                   >
                     {{
                       workout.description ||
@@ -437,7 +437,7 @@
                     class="mt-3 flex flex-wrap gap-2"
                   >
                     <span
-                      class="rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-medium text-slate-600"
+                      class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600"
                     >
                       🏋️
                       {{ workout.exercises?.length || 0 }}
@@ -446,7 +446,7 @@
 
                     <span
                       *ngIf="workout.durationMinutes"
-                      class="rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-medium text-slate-600"
+                      class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600"
                     >
                       ⏱️
                       {{ workout.durationMinutes }}
@@ -455,7 +455,7 @@
 
                     <span
                       *ngIf="workout.intensityLevel"
-                      class="rounded-lg bg-slate-100 px-2.5 py-1.5 text-xs font-medium text-slate-600"
+                      class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600"
                     >
                       📊
                       {{ workout.intensityLevel }}
@@ -465,7 +465,7 @@
                 </div>
 
                 <span
-                  class="shrink-0 pt-1 text-sm font-bold text-slate-400"
+                  class="shrink-0 pt-1 text-sm font-bold text-content-400"
                 >
                   {{ selectedWorkoutId === workout.id ? '▲' : '▼' }}
                 </span>
@@ -478,7 +478,7 @@
 
               <div
                 *ngIf="selectedWorkoutId === workout.id"
-                class="border-t border-slate-100 bg-slate-50/50 p-4 sm:p-5"
+                class="border-t border-surface-100 bg-slate-50/50 p-4 sm:p-5"
               >
 
                 <!-- EXERCISE LOADING -->
@@ -501,14 +501,14 @@
                      ================================================= -->
 
                 <div
-                  class="min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
+                  class="min-w-0 rounded-xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5"
                 >
                   <div class="mb-5">
-                    <h4 class="text-base font-bold text-slate-800 sm:text-lg">
+                    <h4 class="text-base font-bold text-content-800 sm:text-lg">
                       {{ 'coachProgramBuilder.exercises' | translate }}
                     </h4>
 
-                    <p class="mt-1 text-sm leading-6 text-slate-500">
+                    <p class="mt-1 text-sm leading-6 text-content-500">
                       {{
                         lockSelectedExercises
                           ? ('coachProgramBuilder.exercisesLocked' | translate)
@@ -535,13 +535,13 @@
 
                 <div
                   *ngIf="!loadingExercises && selectedExercises.length === 0"
-                  class="mt-5 flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-white px-5 py-8 text-center"
+                  class="mt-5 flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-surface-300 bg-white px-5 py-8 text-center"
                 >
                   <span class="text-2xl">
                     🏋️
                   </span>
 
-                  <span class="text-sm font-medium text-slate-500">
+                  <span class="text-sm font-medium text-content-500">
                     {{ 'coachProgramBuilder.noExercises' | translate }}
                   </span>
                 </div>
@@ -549,13 +549,13 @@
 
                 <div
                   *ngIf="!loadingExercises && selectedExercises.length > 0"
-                  class="mt-5 min-w-0 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+                  class="mt-5 min-w-0 rounded-xl border border-surface-200 bg-white p-4 shadow-sm"
                 >
 
                   <div
                     class="mb-4 flex items-center justify-between gap-3"
                   >
-                    <strong class="text-sm font-bold text-slate-800">
+                    <strong class="text-sm font-bold text-content-800">
                       {{ 'coachProgramBuilder.selectedExercises' | translate }}
                     </strong>
 
@@ -571,12 +571,12 @@
 
                     <div
                       *ngFor="let exercise of selectedExercises"
-                      class="min-w-0 rounded-xl border border-slate-200 bg-slate-50 p-4"
+                      class="min-w-0 rounded-xl border border-surface-200 bg-surface-50 p-4"
                     >
 
                       <div>
                         <strong
-                          class="block break-words text-sm font-bold text-slate-800"
+                          class="block break-words text-sm font-bold text-content-800"
                         >
                           {{ exercise.name }}
                         </strong>
@@ -588,9 +588,9 @@
 
                         <span
                           *ngIf="exercise.muscleGroup"
-                          class="break-words text-slate-600"
+                          class="break-words text-content-600"
                         >
-                          <strong class="font-semibold text-slate-700">
+                          <strong class="font-semibold text-content-700">
                             {{ 'coachProgramBuilder.muscleGroup' | translate }}
                           </strong>
                           {{ exercise.muscleGroup }}
@@ -598,9 +598,9 @@
 
                         <span
                           *ngIf="exercise.equipment"
-                          class="break-words text-slate-600"
+                          class="break-words text-content-600"
                         >
-                          <strong class="font-semibold text-slate-700">
+                          <strong class="font-semibold text-content-700">
                             {{ 'coachProgramBuilder.equipment' | translate }}
                           </strong>
                           {{ exercise.equipment }}
@@ -608,9 +608,9 @@
 
                         <span
                           *ngIf="exercise.difficultyLevel"
-                          class="break-words text-slate-600"
+                          class="break-words text-content-600"
                         >
-                          <strong class="font-semibold text-slate-700">
+                          <strong class="font-semibold text-content-700">
                             {{ 'coachProgramBuilder.difficulty' | translate }}
                           </strong>
                           {{ exercise.difficultyLevel }}
@@ -618,9 +618,9 @@
 
                         <span
                           *ngIf="exercise.category"
-                          class="break-words text-slate-600"
+                          class="break-words text-content-600"
                         >
-                          <strong class="font-semibold text-slate-700">
+                          <strong class="font-semibold text-content-700">
                             {{ 'coachProgramBuilder.category' | translate }}
                           </strong>
                           {{ exercise.category }}
@@ -630,7 +630,7 @@
 
                       <div
                         *ngIf="exercise.description"
-                        class="mt-3 rounded-lg bg-white px-3 py-2.5 text-sm leading-6 text-slate-500"
+                        class="mt-3 rounded-lg bg-white px-3 py-2.5 text-sm leading-6 text-content-500"
                       >
                         {{ exercise.description }}
                       </div>
@@ -674,18 +674,18 @@
 
         <div
           *ngIf="selectedWorkouts.length > 0"
-          class="min-w-0 rounded-xl border border-slate-200 bg-slate-50/50 p-4 sm:p-5"
+          class="min-w-0 rounded-xl border border-surface-200 bg-slate-50/50 p-4 sm:p-5"
         >
 
           <div
             class="mb-5 flex items-start justify-between gap-4"
           >
             <div class="min-w-0">
-              <h4 class="text-base font-bold text-slate-800 sm:text-lg">
+              <h4 class="text-base font-bold text-content-800 sm:text-lg">
                 {{ 'coachProgramBuilder.selectedWorkouts' | translate }}
               </h4>
 
-              <p class="mt-1 text-sm leading-6 text-slate-500">
+              <p class="mt-1 text-sm leading-6 text-content-500">
                 {{ 'coachProgramBuilder.selectedWorkoutsDescription' | translate }}
               </p>
             </div>
@@ -702,7 +702,7 @@
 
             <div
               *ngFor="let workout of selectedWorkouts; let i = index"
-              class="flex min-w-0 flex-wrap items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:flex-nowrap sm:p-4"
+              class="flex min-w-0 flex-wrap items-center gap-3 rounded-xl border border-surface-200 bg-white p-3 shadow-sm sm:flex-nowrap sm:p-4"
             >
 
               <div
@@ -713,13 +713,13 @@
 
               <div class="min-w-0 flex-1">
                 <strong
-                  class="block break-words text-sm font-bold text-slate-800"
+                  class="block break-words text-sm font-bold text-content-800"
                 >
                   {{ workout.name }}
                 </strong>
 
                 <small
-                  class="mt-1 block text-xs text-slate-500"
+                  class="mt-1 block text-xs text-content-500"
                 >
                   {{ workout.exercises?.length || 0 }}
                   {{ 'coachProgramBuilder.exercise' | translate }}
@@ -730,7 +730,7 @@
                 type="button"
                 [attr.aria-label]="'coachProgramBuilder.copyWorkoutAria' | translate"
                 (click)="copyWorkout(workout)"
-                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-sm transition hover:border-blue-200 hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-blue-600/10"
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-surface-200 bg-white text-sm transition hover:border-blue-200 hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-blue-600/10"
               >
                 📋
               </button>
@@ -755,13 +755,13 @@
              ================================================== -->
 
         <div
-          class="flex flex-col gap-3 border-t border-slate-200 pt-5 lg:flex-row lg:items-center lg:justify-between"
+          class="flex flex-col gap-3 border-t border-surface-200 pt-5 lg:flex-row lg:items-center lg:justify-between"
         >
 
           <button
             type="button"
             (click)="previousStep()"
-            class="w-full rounded-lg border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-600/10 lg:w-auto"
+            class="w-full rounded-lg border border-surface-300 bg-white px-5 py-3 text-sm font-semibold text-content-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-600/10 lg:w-auto"
           >
             ←
             {{ 'coachProgramBuilder.back' | translate }}
@@ -808,25 +808,25 @@
     >
 
       <div
-        class="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-2xl"
+        class="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-surface-200 bg-white shadow-2xl"
       >
 
         <!-- Dialog header -->
         <div
-          class="flex items-start justify-between gap-4 border-b border-slate-100 px-5 py-4 sm:px-6"
+          class="flex items-start justify-between gap-4 border-b border-surface-100 px-5 py-4 sm:px-6"
         >
 
           <div class="min-w-0">
-            <h3 class="text-lg font-bold text-slate-800 sm:text-xl">
+            <h3 class="text-lg font-bold text-content-800 sm:text-xl">
               {{ 'coachProgramBuilder.copyWorkout' | translate }}
             </h3>
 
             <p
               *ngIf="copySourceWorkout"
-              class="mt-1 break-words text-sm text-slate-500"
+              class="mt-1 break-words text-sm text-content-500"
             >
               {{ 'coachProgramBuilder.originalWorkout' | translate }}
-              <strong class="font-semibold text-slate-700">
+              <strong class="font-semibold text-content-700">
                 {{ copySourceWorkout.name }}
               </strong>
             </p>
@@ -837,7 +837,7 @@
             [attr.aria-label]="'coachProgramBuilder.close' | translate"
             [disabled]="copyInProgress"
             (click)="cancelCopyWorkout()"
-            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-sm font-bold text-slate-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-4 focus:ring-red-600/10 disabled:cursor-not-allowed disabled:opacity-40"
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-surface-200 bg-white text-sm font-bold text-content-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-4 focus:ring-red-600/10 disabled:cursor-not-allowed disabled:opacity-40"
           >
             ✕
           </button>
@@ -852,7 +852,7 @@
           <div class="min-w-0">
             <label
               for="copyWorkoutName"
-              class="mb-2 block text-sm font-semibold text-slate-700"
+              class="mb-2 block text-sm font-semibold text-content-700"
             >
               {{ 'coachProgramBuilder.newWorkoutName' | translate }}
             </label>
@@ -863,7 +863,7 @@
               [(ngModel)]="copyWorkoutName"
               [disabled]="copyInProgress"
               [placeholder]="'coachProgramBuilder.newWorkoutNamePlaceholder' | translate"
-              class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:bg-slate-100 sm:text-sm"
+              class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:bg-slate-100 sm:text-sm"
             />
           </div>
 
@@ -872,7 +872,7 @@
           <div class="min-w-0">
             <label
               for="copyWorkoutDate"
-              class="mb-2 block text-sm font-semibold text-slate-700"
+              class="mb-2 block text-sm font-semibold text-content-700"
             >
               {{ 'coachProgramBuilder.newWorkoutDate' | translate }}
             </label>
@@ -882,7 +882,7 @@
               type="date"
               [(ngModel)]="copyWorkoutDate"
               [disabled]="copyInProgress"
-              class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:bg-slate-100 sm:text-sm"
+              class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:bg-slate-100 sm:text-sm"
             />
           </div>
 
@@ -891,7 +891,7 @@
           <div class="min-w-0">
             <label
               for="copyWorkoutDayIndex"
-              class="mb-2 block text-sm font-semibold text-slate-700"
+              class="mb-2 block text-sm font-semibold text-content-700"
             >
               {{ 'coachProgramBuilder.workoutDay' | translate }}
             </label>
@@ -902,7 +902,7 @@
               min="0"
               [(ngModel)]="copyWorkoutDayIndex"
               [disabled]="copyInProgress"
-              class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:bg-slate-100 sm:text-sm"
+              class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:bg-slate-100 sm:text-sm"
             />
           </div>
 
@@ -911,14 +911,14 @@
 
         <!-- Dialog actions -->
         <div
-          class="flex flex-col-reverse gap-3 border-t border-slate-100 px-5 py-4 sm:flex-row sm:justify-end sm:px-6"
+          class="flex flex-col-reverse gap-3 border-t border-surface-100 px-5 py-4 sm:flex-row sm:justify-end sm:px-6"
         >
 
           <button
             type="button"
             [disabled]="copyInProgress"
             (click)="cancelCopyWorkout()"
-            class="w-full rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+            class="w-full rounded-lg border border-surface-300 bg-white px-5 py-2.5 text-sm font-semibold text-content-700 transition hover:border-slate-400 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
           >
             {{ 'coachProgramBuilder.cancel' | translate }}
           </button>

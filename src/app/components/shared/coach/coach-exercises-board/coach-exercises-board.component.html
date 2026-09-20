@@ -6,7 +6,7 @@
 
   @if (loading) {
     <div
-      class="flex min-h-20 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-5 text-sm font-medium text-slate-600 shadow-sm"
+      class="flex min-h-20 items-center justify-center rounded-2xl border border-surface-200 bg-white px-4 py-5 text-sm font-medium text-content-600 shadow-sm"
     >
       {{ 'coachExercisesBoard.loading' | translate }}
     </div>
@@ -30,13 +30,13 @@
 
   @if (!loading) {
     <div
-      class="mb-6 flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
+      class="mb-6 flex flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5"
     >
       <div class="min-w-0 flex-1">
 
         <label
           for="exerciseSearch"
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'common.search' | translate }}
         </label>
@@ -50,7 +50,7 @@
             (input)="onSearchChange()"
             [placeholder]="'coachExercisesBoard.searchPlaceholder' | translate"
             autocomplete="off"
-            class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 pr-12 text-base text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
+            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 pr-12 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
           />
 
           @if (searchTerm) {
@@ -58,7 +58,7 @@
               type="button"
               (click)="clearSearch()"
               [title]="'common.clear' | translate"
-              class="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              class="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-lg text-content-400 transition hover:bg-slate-100 hover:text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             >
               ✕
             </button>
@@ -97,7 +97,7 @@
 
       @for (ex of pagedExercises; track ex.id) {
         <div
-          class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
+          class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
         >
 
           <!-- ==================================================
@@ -125,7 +125,7 @@
             <div class="flex items-start justify-between gap-4">
 
               <h2
-                class="min-w-0 flex-1 break-words text-lg font-bold leading-snug text-slate-800"
+                class="min-w-0 flex-1 break-words text-lg font-bold leading-snug text-content-800"
               >
                 {{ ex.name }}
               </h2>
@@ -135,7 +135,7 @@
                 [checked]="isExerciseSelected(ex)"
                 [disabled]="lockSelectedExercises"
                 (change)="onCheckboxChange(ex, $event)"
-                class="mt-1 h-5 w-5 shrink-0 cursor-pointer rounded border-slate-300 text-primary-600 accent-primary-600 focus:ring-2 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                class="mt-1 h-5 w-5 shrink-0 cursor-pointer rounded border-surface-300 text-primary-600 accent-primary-600 focus:ring-2 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:opacity-50"
               />
 
             </div>
@@ -144,7 +144,7 @@
 
             @if (ex.description) {
               <p
-                class="mt-3 line-clamp-3 break-words text-sm leading-6 text-slate-600"
+                class="mt-3 line-clamp-3 break-words text-sm leading-6 text-content-600"
               >
                 {{ ex.description }}
               </p>
@@ -160,7 +160,7 @@
 
               @if (ex.muscleGroup) {
                 <span
-                  class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-600"
+                  class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
                 >
                   {{ 'coachExercisesBoard.muscleGroup' | translate }}:
                   {{ ex.muscleGroup }}
@@ -169,7 +169,7 @@
 
               @if (ex.equipment) {
                 <span
-                  class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-600"
+                  class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
                 >
                   {{ 'coachExercisesBoard.equipment' | translate }}:
                   {{ ex.equipment }}
@@ -178,7 +178,7 @@
 
               @if (ex.difficultyLevel) {
                 <span
-                  class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-600"
+                  class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
                 >
                   {{ 'coachExercisesBoard.difficulty' | translate }}:
                   {{ ex.difficultyLevel }}
@@ -190,7 +190,7 @@
                 ex.repetitions !== undefined
                 ) {
                 <span
-                  class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-600"
+                  class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
                 >
                   {{ 'coachExercisesBoard.setsReps' | translate }}:
                   {{ ex.sets }}x{{ ex.repetitions }}
@@ -199,7 +199,7 @@
 
               @if (ex.duration_minutes) {
                 <span
-                  class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-600"
+                  class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
                 >
                   {{ 'coachExercisesBoard.duration' | translate }}:
                   {{ ex.duration_minutes }}
@@ -209,7 +209,7 @@
 
               @if (ex.intensity_level) {
                 <span
-                  class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-medium text-slate-600"
+                  class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
                 >
                   {{ 'coachExercisesBoard.intensity' | translate }}:
                   {{ ex.intensity_level }}
@@ -228,7 +228,7 @@
 
       @if (totalExercisePages > 1) {
         <div
-          class="col-span-1 mt-1 flex flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:col-span-2 sm:flex-row sm:gap-5 lg:col-span-3"
+          class="col-span-1 mt-1 flex flex-col items-center justify-center gap-3 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:col-span-2 sm:flex-row sm:gap-5 lg:col-span-3"
         >
 
           <button
@@ -241,7 +241,7 @@
           </button>
 
           <span
-            class="min-w-20 text-center text-sm font-semibold text-slate-700"
+            class="min-w-20 text-center text-sm font-semibold text-content-700"
           >
             {{ 'coachExercisesBoard.page' | translate }}
             {{ exercisePage }} / {{ totalExercisePages }}

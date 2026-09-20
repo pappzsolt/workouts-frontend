@@ -21,10 +21,10 @@
 
     <div
       *ngIf="showInfo"
-      class="text-center text-xs font-medium text-slate-500
+      class="text-center text-xs font-medium text-content-500
              sm:text-left sm:text-sm"
     >
-      <span class="font-semibold text-slate-700">
+      <span class="font-semibold text-content-700">
         {{ startItem }}–{{ endItem }}
       </span>
 
@@ -38,7 +38,7 @@
 
     <div
       *ngIf="showPageSize"
-      class="flex items-center gap-2 text-xs text-slate-500 sm:text-sm"
+      class="flex items-center gap-2 text-xs text-content-500 sm:text-sm"
     >
       <label
         for="pagination-page-size"
@@ -53,7 +53,7 @@
         (change)="onPageSizeChange($any($event.target).value)"
         class="rounded-lg border border-primary-200
                bg-white px-3 py-1.5 text-sm font-semibold
-               text-slate-700 shadow-sm transition
+               text-content-700 shadow-sm transition
                hover:border-primary-600
                focus:outline-none focus:ring-2
                focus:ring-primary-600/30"

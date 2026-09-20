@@ -19,7 +19,7 @@
          ====================================================== -->
 
     <h2
-      class="text-center text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
+      class="text-center text-2xl font-bold tracking-tight text-content-800 sm:text-3xl"
     >
       {{ 'coachWorkouts.title' | translate }}
     </h2>
@@ -29,7 +29,7 @@
          ====================================================== -->
 
     <div
-      class="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5 lg:flex-row lg:items-end"
+      class="flex flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5 lg:flex-row lg:items-end"
     >
 
       <!-- KERESÉS -->
@@ -37,7 +37,7 @@
       <div class="min-w-0 flex-1">
         <label
           for="workoutSearch"
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'coachWorkouts.search' | translate }}
         </label>
@@ -49,7 +49,7 @@
           (ngModelChange)="onSearchChange()"
           [placeholder]="'coachWorkouts.searchPlaceholder' | translate"
           autocomplete="off"
-          class="block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-800 shadow-sm outline-none transition placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
+          class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
         />
       </div>
 
@@ -94,7 +94,7 @@
 
         <div
           *ngFor="let w of pagedWorkouts"
-          class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
+          class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
         >
 
           <!-- ==================================================
@@ -120,7 +120,7 @@
             <!-- WORKOUT NÉV -->
 
             <h3
-              class="mb-2 break-words text-lg font-bold text-slate-800"
+              class="mb-2 break-words text-lg font-bold text-content-800"
             >
               {{ w.workoutName }}
             </h3>
@@ -129,7 +129,7 @@
 
             @if (w.description) {
               <p
-                class="mb-4 line-clamp-3 break-words text-sm leading-6 text-slate-600"
+                class="mb-4 line-clamp-3 break-words text-sm leading-6 text-content-600"
               >
                 {{ w.description }}
               </p>
@@ -140,22 +140,22 @@
                  ================================================== -->
 
             <div
-              class="mt-auto grid grid-cols-2 gap-3 border-t border-slate-100 pt-4"
+              class="mt-auto grid grid-cols-2 gap-3 border-t border-surface-100 pt-4"
             >
 
               <!-- IDŐTARTAM -->
 
               <div
-                class="rounded-lg bg-slate-50 px-3 py-2.5"
+                class="rounded-lg bg-surface-50 px-3 py-2.5"
               >
                 <span
-                  class="block text-xs font-medium text-slate-500"
+                  class="block text-xs font-medium text-content-500"
                 >
                   {{ 'coachWorkouts.duration' | translate }}
                 </span>
 
                 <span
-                  class="mt-1 block text-sm font-semibold text-slate-800"
+                  class="mt-1 block text-sm font-semibold text-content-800"
                 >
                   {{ w.durationMinutes }}
                   {{ 'common.minutes' | translate }}
@@ -165,16 +165,16 @@
               <!-- GYAKORLATOK -->
 
               <div
-                class="rounded-lg bg-slate-50 px-3 py-2.5"
+                class="rounded-lg bg-surface-50 px-3 py-2.5"
               >
                 <span
-                  class="block text-xs font-medium text-slate-500"
+                  class="block text-xs font-medium text-content-500"
                 >
                   {{ 'coachWorkouts.exercises' | translate }}
                 </span>
 
                 <span
-                  class="mt-1 block text-sm font-semibold text-slate-800"
+                  class="mt-1 block text-sm font-semibold text-content-800"
                 >
                   {{ w.exercises?.length || 0 }}
                 </span>
@@ -220,20 +220,20 @@
 
       @if (totalPages > 1) {
         <div
-          class="flex flex-col items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:flex-row"
+          class="flex flex-col items-center justify-center gap-3 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:flex-row"
         >
 
           <button
             type="button"
             (click)="prevPage()"
             [disabled]="currentPage === 1"
-            class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-pagination-200 hover:bg-pagination-50 hover:text-pagination-700 focus:outline-none focus:ring-4 focus:ring-pagination-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+            class="w-full rounded-lg border border-surface-300 bg-white px-4 py-2.5 text-sm font-semibold text-content-700 transition hover:border-pagination-200 hover:bg-pagination-50 hover:text-pagination-700 focus:outline-none focus:ring-4 focus:ring-pagination-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
           >
             ◀ {{ 'common.previous' | translate }}
           </button>
 
           <span
-            class="min-w-20 text-center text-sm font-semibold text-slate-700"
+            class="min-w-20 text-center text-sm font-semibold text-content-700"
           >
             {{ currentPage }} / {{ totalPages }}
           </span>
@@ -242,7 +242,7 @@
             type="button"
             (click)="nextPage()"
             [disabled]="currentPage === totalPages"
-            class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-pagination-200 hover:bg-pagination-50 hover:text-pagination-700 focus:outline-none focus:ring-4 focus:ring-pagination-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+            class="w-full rounded-lg border border-surface-300 bg-white px-4 py-2.5 text-sm font-semibold text-content-700 transition hover:border-pagination-200 hover:bg-pagination-50 hover:text-pagination-700 focus:outline-none focus:ring-4 focus:ring-pagination-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
           >
             {{ 'common.next' | translate }} ▶
           </button>

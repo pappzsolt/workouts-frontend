@@ -10,7 +10,7 @@
          ====================================================== -->
 
     <h1
-      class="text-center text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
+      class="text-center text-2xl font-bold tracking-tight text-content-800 sm:text-3xl"
     >
       {{ 'assignWorkoutExercises.title' | translate }}
     </h1>
@@ -34,7 +34,7 @@
     <div class="min-w-0">
 
       <h2
-        class="mb-4 text-xl font-bold text-slate-800 sm:text-2xl"
+        class="mb-4 text-xl font-bold text-content-800 sm:text-2xl"
       >
         {{ 'assignWorkoutExercises.availableWorkouts' | translate }}
       </h2>
@@ -56,13 +56,13 @@
 
     <div
       *ngIf="selectedWorkoutIds.length"
-      class="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+      class="min-w-0 overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm"
     >
       <div
-        class="border-b border-slate-100 px-5 py-4 sm:px-6"
+        class="border-b border-surface-100 px-5 py-4 sm:px-6"
       >
         <h2
-          class="text-xl font-bold tracking-tight text-slate-800 sm:text-2xl"
+          class="text-xl font-bold tracking-tight text-content-800 sm:text-2xl"
         >
           {{ 'assignWorkoutExercises.selectedWorkouts' | translate }}
         </h2>
@@ -74,7 +74,7 @@
           class="flex items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 transition hover:border-blue-200 hover:bg-blue-50"
         >
           <span
-            class="min-w-0 break-words text-sm font-semibold text-slate-700"
+            class="min-w-0 break-words text-sm font-semibold text-content-700"
           >
             {{ 'common.id' | translate }}: {{ wid }}
           </span>
@@ -99,7 +99,7 @@
     <div class="min-w-0">
 
       <h2
-        class="mb-4 text-xl font-bold tracking-tight text-slate-800 sm:text-2xl"
+        class="mb-4 text-xl font-bold tracking-tight text-content-800 sm:text-2xl"
       >
         {{ 'assignWorkoutExercises.availableExercises' | translate }}
       </h2>

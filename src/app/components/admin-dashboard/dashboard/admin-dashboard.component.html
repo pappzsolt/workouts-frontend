@@ -1,12 +1,12 @@
 <div
-  class="min-h-screen min-w-0 bg-slate-50 px-4 py-6 sm:px-6 lg:px-8"
+  class="min-h-screen min-w-0 bg-surface-50 px-4 py-6 sm:px-6 lg:px-8"
 >
   <div class="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-6">
 
     <!-- Cím -->
     <div class="text-center">
       <h2
-        class="break-words text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
+        class="break-words text-2xl font-bold tracking-tight text-content-800 sm:text-3xl"
       >
         {{ 'adminDashboard.title' | translate }}
       </h2>
@@ -25,17 +25,17 @@
       <!-- Felhasználók listája -->
       <button
         type="button"
-        class="group flex min-h-44 min-w-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-slate-400/20"
+        class="group flex min-h-44 min-w-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-surface-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-slate-400/20"
         (click)="navigateTo('admin/users')"
       >
         <div
-          class="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-4xl text-slate-700 transition-transform duration-200 group-hover:scale-110"
+          class="flex h-16 w-16 items-center justify-center rounded-2xl bg-surface-100 text-4xl text-content-700 transition-transform duration-200 group-hover:scale-110"
         >
           👥
         </div>
 
         <div
-          class="mt-5 break-words text-lg font-bold text-slate-800"
+          class="mt-5 break-words text-lg font-bold text-content-800"
         >
           {{ 'adminDashboard.usersList' | translate }}
         </div>
@@ -44,17 +44,17 @@
       <!-- Felhasználó keresés -->
       <button
         type="button"
-        class="group flex min-h-44 min-w-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-slate-400/20"
+        class="group flex min-h-44 min-w-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-surface-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-slate-400/20"
         (click)="navigateTo('admin/users/search')"
       >
         <div
-          class="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-4xl text-slate-700 transition-transform duration-200 group-hover:scale-110"
+          class="flex h-16 w-16 items-center justify-center rounded-2xl bg-surface-100 text-4xl text-content-700 transition-transform duration-200 group-hover:scale-110"
         >
           🔍
         </div>
 
         <div
-          class="mt-5 break-words text-lg font-bold text-slate-800"
+          class="mt-5 break-words text-lg font-bold text-content-800"
         >
           {{ 'adminDashboard.userSearch' | translate }}
         </div>
@@ -63,17 +63,17 @@
       <!-- Új felhasználó -->
       <button
         type="button"
-        class="group flex min-h-44 min-w-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-slate-400/20"
+        class="group flex min-h-44 min-w-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-surface-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-slate-400/20"
         (click)="navigateTo('admin/choice-users/new')"
       >
         <div
-          class="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-4xl text-slate-700 transition-transform duration-200 group-hover:scale-110"
+          class="flex h-16 w-16 items-center justify-center rounded-2xl bg-surface-100 text-4xl text-content-700 transition-transform duration-200 group-hover:scale-110"
         >
           ➕
         </div>
 
         <div
-          class="mt-5 break-words text-lg font-bold text-slate-800"
+          class="mt-5 break-words text-lg font-bold text-content-800"
         >
           {{ 'adminDashboard.newUser' | translate }}
         </div>
@@ -82,17 +82,17 @@
       <!-- Felhasználó módosítás -->
       <button
         type="button"
-        class="group flex min-h-44 min-w-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-slate-400/20"
+        class="group flex min-h-44 min-w-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-surface-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-slate-400/20"
         (click)="navigateTo('admin/choice-users/edit')"
       >
         <div
-          class="flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-4xl text-slate-700 transition-transform duration-200 group-hover:scale-110"
+          class="flex h-16 w-16 items-center justify-center rounded-2xl bg-surface-100 text-4xl text-content-700 transition-transform duration-200 group-hover:scale-110"
         >
           ✏️
         </div>
 
         <div
-          class="mt-5 break-words text-lg font-bold text-slate-800"
+          class="mt-5 break-words text-lg font-bold text-content-800"
         >
           {{ 'adminDashboard.editUser' | translate }}
         </div>

@@ -6,7 +6,7 @@
         <a
           *ngIf="!item.children && !item.action"
           [routerLink]="item.path"
-          class="flex w-full items-center rounded-xl px-4 py-3 text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-400/30"
+          class="flex w-full items-center rounded-xl px-4 py-3 text-sm font-medium text-content-700 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-400/30"
         >
           {{ item.label | translate }}
         </a>
@@ -14,7 +14,7 @@
         <!-- Action (logout) -->
         <span
           *ngIf="item.action"
-          class="flex w-full cursor-pointer items-center rounded-xl px-4 py-3 text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 focus:outline-none"
+          class="flex w-full cursor-pointer items-center rounded-xl px-4 py-3 text-sm font-medium text-content-700 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900 focus:outline-none"
           (click)="onAction(item)"
         >
           {{ item.label | translate }}
@@ -23,7 +23,7 @@
         <!-- Dropdown -->
         <div *ngIf="item.children" class="w-full">
           <span
-            class="flex w-full cursor-pointer items-center rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900"
+            class="flex w-full cursor-pointer items-center rounded-xl px-4 py-3 text-sm font-semibold text-content-700 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900"
             (click)="toggle(item)"
           >
             {{ item.label | translate }}
@@ -32,12 +32,12 @@
           <!-- Dropdown submenu -->
           <ul
             *ngIf="isOpen(item)"
-            class="mt-1 ml-3 flex flex-col gap-1 border-l-2 border-slate-200 pl-3"
+            class="mt-1 ml-3 flex flex-col gap-1 border-l-2 border-surface-200 pl-3"
           >
             <li *ngFor="let child of item.children">
               <a
                 [routerLink]="child.path"
-                class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900"
+                class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm text-content-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900"
               >
                 {{ child.label | translate }}
               </a>

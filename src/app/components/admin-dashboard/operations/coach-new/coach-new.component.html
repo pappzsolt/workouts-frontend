@@ -6,7 +6,7 @@
     <!-- Cím -->
     <div class="text-center">
       <h2
-        class="break-words text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
+        class="break-words text-2xl font-bold tracking-tight text-content-800 sm:text-3xl"
       >
         {{ 'adminCoachNew.title' | translate }}
       </h2>
@@ -31,14 +31,14 @@
     <form
       #coachForm="ngForm"
       (ngSubmit)="onSubmit(coachForm)"
-      class="grid min-w-0 grid-cols-1 gap-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6 lg:p-8"
+      class="grid min-w-0 grid-cols-1 gap-5 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6 lg:p-8"
     >
 
       <!-- Név -->
       <div class="min-w-0">
         <label
           for="name"
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'common.name' | translate }}*
         </label>
@@ -50,7 +50,7 @@
           [(ngModel)]="coach.name"
           required
           #nameModel="ngModel"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         />
 
         <div
@@ -65,7 +65,7 @@
       <div class="min-w-0">
         <label
           for="email"
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'common.email' | translate }}*
         </label>
@@ -78,7 +78,7 @@
           required
           email
           #emailModel="ngModel"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         />
 
         <div
@@ -93,7 +93,7 @@
       <div class="min-w-0">
         <label
           for="passwordHash"
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'common.password' | translate }}*
         </label>
@@ -106,7 +106,7 @@
           required
           minlength="6"
           #passwordModel="ngModel"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         />
 
         <div
@@ -124,7 +124,7 @@
       <div class="min-w-0">
         <label
           for="phone"
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'common.phone' | translate }}*
         </label>
@@ -137,7 +137,7 @@
           required
           pattern="^\+36\d{9}$"
           #phoneModel="ngModel"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         />
 
         <div
@@ -152,7 +152,7 @@
       <div class="min-w-0 sm:col-span-2">
         <label
           for="specialization"
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'adminCoachNew.specialization' | translate }}
         </label>
@@ -163,7 +163,7 @@
           rows="4"
           [placeholder]="'adminCoachNew.specialization' | translate"
           [(ngModel)]="coach.specialization"
-          class="w-full min-w-0 resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-4 py-3 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         ></textarea>
       </div>
 
@@ -171,7 +171,7 @@
       <div class="min-w-0 sm:col-span-2">
         <label
           for="avatarUrl"
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'adminCoachNew.avatarUrl' | translate }}
         </label>
@@ -182,7 +182,7 @@
           type="text"
           [placeholder]="'adminCoachNew.avatarImageUrl' | translate"
           [(ngModel)]="coach.avatarUrl"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         />
       </div>
 

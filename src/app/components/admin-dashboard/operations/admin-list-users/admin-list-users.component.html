@@ -6,7 +6,7 @@
     <!-- Cím -->
     <div class="text-center">
       <h2
-        class="break-words text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
+        class="break-words text-2xl font-bold tracking-tight text-content-800 sm:text-3xl"
       >
         {{ 'adminUsers.title' | translate }}
       </h2>
@@ -28,12 +28,12 @@
       >
         <div
           *ngFor="let user of paginatedUsers"
-          class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md"
+          class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md"
         >
 
           <!-- Avatar -->
           <div
-            class="flex h-40 items-center justify-center overflow-hidden bg-slate-100"
+            class="flex h-40 items-center justify-center overflow-hidden bg-surface-100"
           >
             <span
               class="text-6xl opacity-75 transition-transform duration-200 group-hover:scale-110"
@@ -47,23 +47,23 @@
 
             <!-- Username -->
             <div
-              class="break-words text-lg font-bold text-slate-800"
+              class="break-words text-lg font-bold text-content-800"
             >
               {{ user.username }}
             </div>
 
             <!-- Email -->
             <div
-              class="mt-2 break-words text-sm text-slate-600"
+              class="mt-2 break-words text-sm text-content-600"
             >
               {{ user.email }}
             </div>
 
             <!-- Roles -->
             <div
-              class="mt-4 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-600"
+              class="mt-4 rounded-xl border border-surface-200 bg-surface-50 px-3 py-2.5 text-sm text-content-600"
             >
-              <span class="font-semibold text-slate-700">
+              <span class="font-semibold text-content-700">
                 {{ 'adminUsers.role' | translate }}:
               </span>
 
@@ -82,13 +82,13 @@
           type="button"
           (click)="prevPage()"
           [disabled]="currentPage === 1"
-          class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none sm:w-auto"
+          class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-5 py-2.5 text-sm font-semibold text-content-700 shadow-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none sm:w-auto"
         >
           {{ 'common.previous' | translate }}
         </button>
 
         <span
-          class="inline-flex min-h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm"
+          class="inline-flex min-h-11 items-center justify-center rounded-xl border border-surface-200 bg-white px-5 py-2.5 text-sm font-semibold text-content-700 shadow-sm"
         >
           {{ currentPage }} / {{ totalPages }}
         </span>
@@ -97,7 +97,7 @@
           type="button"
           (click)="nextPage()"
           [disabled]="currentPage === totalPages"
-          class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none sm:w-auto"
+          class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-5 py-2.5 text-sm font-semibold text-content-700 shadow-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none sm:w-auto"
         >
           {{ 'common.next' | translate }}
         </button>
@@ -108,7 +108,7 @@
     <!-- Üres lista -->
     <ng-template #noUsers>
       <div
-        class="flex min-h-32 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-8 text-center text-sm font-medium text-slate-500 shadow-sm"
+        class="flex min-h-32 items-center justify-center rounded-2xl border border-surface-200 bg-white px-4 py-8 text-center text-sm font-medium text-content-500 shadow-sm"
       >
         {{ 'adminUsers.noUsers' | translate }}
       </div>

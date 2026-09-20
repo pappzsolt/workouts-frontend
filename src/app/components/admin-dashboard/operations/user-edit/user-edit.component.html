@@ -6,7 +6,7 @@
     <!-- Oldal címe -->
     <div class="text-center">
       <h2
-        class="break-words text-2xl font-bold tracking-tight text-slate-800 sm:text-3xl"
+        class="break-words text-2xl font-bold tracking-tight text-content-800 sm:text-3xl"
       >
         {{ 'adminUserEdit.title' | translate }}
       </h2>
@@ -21,7 +21,7 @@
 
     <!-- Felhasználó kiválasztása -->
     <div
-      class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+      class="rounded-2xl border border-surface-200 bg-white p-5 shadow-sm sm:p-6"
     >
       <app-user-select
         [(selectedUserId)]="selectedUserId"
@@ -33,13 +33,13 @@
     <!-- Form -->
     <form
       (ngSubmit)="onSave()"
-      class="grid min-w-0 grid-cols-1 gap-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6 lg:p-8"
+      class="grid min-w-0 grid-cols-1 gap-5 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-6 lg:p-8"
     >
 
       <!-- Felhasználónév -->
       <div class="min-w-0">
         <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'common.username' | translate }}
         </label>
@@ -48,14 +48,14 @@
           type="text"
           [(ngModel)]="selectedUser.username"
           name="username"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         />
       </div>
 
       <!-- Email -->
       <div class="min-w-0">
         <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'common.email' | translate }}
         </label>
@@ -64,14 +64,14 @@
           type="email"
           [(ngModel)]="selectedUser.email"
           name="email"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         />
       </div>
 
       <!-- Jelszó -->
       <div class="min-w-0">
         <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'common.password' | translate }}
         </label>
@@ -81,14 +81,14 @@
           [(ngModel)]="selectedUser.password"
           name="password"
           [placeholder]="'adminUserEdit.newPassword' | translate"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 placeholder:text-slate-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         />
       </div>
 
       <!-- Életkor -->
       <div class="min-w-0">
         <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'common.age' | translate }}
         </label>
@@ -97,14 +97,14 @@
           type="number"
           [(ngModel)]="selectedUser.age"
           name="age"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         />
       </div>
 
       <!-- Testsúly -->
       <div class="min-w-0">
         <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'common.weight' | translate }}
         </label>
@@ -114,14 +114,14 @@
           step="0.01"
           [(ngModel)]="selectedUser.weight"
           name="weight"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         />
       </div>
 
       <!-- Magasság -->
       <div class="min-w-0">
         <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'common.height' | translate }}
         </label>
@@ -131,14 +131,14 @@
           step="0.01"
           [(ngModel)]="selectedUser.height"
           name="height"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         />
       </div>
 
       <!-- Nem -->
       <div class="min-w-0">
         <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'common.gender' | translate }}
         </label>
@@ -147,14 +147,14 @@
           type="text"
           [(ngModel)]="selectedUser.gender"
           name="gender"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         />
       </div>
 
       <!-- Célok -->
       <div class="min-w-0 sm:col-span-2">
         <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'common.goals' | translate }}
         </label>
@@ -163,14 +163,14 @@
           [(ngModel)]="selectedUser.goals"
           name="goals"
           rows="4"
-          class="w-full min-w-0 resize-y rounded-xl border border-slate-300 bg-white px-4 py-3 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-4 py-3 text-base text-content-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         ></textarea>
       </div>
 
       <!-- Avatar URL -->
       <div class="min-w-0 sm:col-span-2">
         <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'adminUserEdit.avatarUrl' | translate }}
         </label>
@@ -179,14 +179,14 @@
           type="text"
           [(ngModel)]="selectedUser.avatarUrl"
           name="avatarUrl"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
         />
       </div>
 
       <!-- Edző -->
       <div class="min-w-0">
         <label
-          class="mb-2 block text-sm font-semibold text-slate-700"
+          class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'adminUserEdit.coach' | translate }}
         </label>

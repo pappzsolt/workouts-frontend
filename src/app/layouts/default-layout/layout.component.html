@@ -85,7 +85,7 @@
       [class.hidden]="!menuOpen && isMobile()"
       [class.translate-x-0]="menuOpen"
       [class.-translate-x-full]="!menuOpen && isMobile()"
-      class="absolute left-0 top-0 z-20 h-full w-72 shrink-0 -translate-x-full overflow-y-auto border-r border-slate-200 bg-white shadow-xl transition-transform duration-200 sm:relative sm:block sm:h-auto sm:w-64 sm:translate-x-0 sm:shadow-inner"
+      class="absolute left-0 top-0 z-20 h-full w-72 shrink-0 -translate-x-full overflow-y-auto border-r border-surface-200 bg-white shadow-xl transition-transform duration-200 sm:relative sm:block sm:h-auto sm:w-64 sm:translate-x-0 sm:shadow-inner"
     >
       <!-- Admin -->
       <ng-container *ngIf="isAdmin()">
@@ -130,7 +130,7 @@
       class="min-w-0 flex-1 p-4 sm:p-6 lg:p-8"
     >
       <div
-        class="min-h-[300px] min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:min-h-[400px] sm:p-6 lg:p-8"
+        class="min-h-[300px] min-w-0 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:min-h-[400px] sm:p-6 lg:p-8"
       >
         <router-outlet></router-outlet>
       </div>
@@ -142,7 +142,7 @@
   <!-- ===================================================== -->
 
   <footer
-    class="mt-auto border-t border-slate-200 bg-white px-4 py-4 text-center text-sm text-slate-500 shadow-sm"
+    class="mt-auto border-t border-surface-200 bg-white px-4 py-4 text-center text-sm text-content-500 shadow-sm"
   >
     &copy; {{ currentYear }} Fitness App. Minden jog fenntartva.
   </footer>

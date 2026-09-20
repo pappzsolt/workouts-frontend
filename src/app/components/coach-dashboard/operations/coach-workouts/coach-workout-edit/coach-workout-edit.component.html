@@ -12,7 +12,7 @@
          ================================================== -->
 
     <h2
-      class="mb-6 flex items-center justify-center gap-2 text-center text-2xl font-bold tracking-tight text-slate-800 sm:mb-8 sm:text-3xl"
+      class="mb-6 flex items-center justify-center gap-2 text-center text-2xl font-bold tracking-tight text-content-800 sm:mb-8 sm:text-3xl"
     >
       <span>🏋️</span>
       <span>{{ 'coachWorkoutEdit.title' | translate }}</span>
@@ -33,7 +33,7 @@
          ================================================== -->
 
     <div
-      class="mx-auto w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg shadow-slate-200/60"
+      class="mx-auto w-full overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-lg shadow-slate-200/60"
     >
 
       <!-- ==================================================
@@ -69,7 +69,7 @@
         <div class="col-span-full flex min-w-0 flex-col gap-2">
           <label
             for="workoutName"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachWorkoutEdit.workoutName' | translate }}
           </label>
@@ -80,7 +80,7 @@
             name="name"
             [(ngModel)]="workout.name"
             required
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
           />
         </div>
 
@@ -91,7 +91,7 @@
         <div class="col-span-full flex min-w-0 flex-col gap-2">
           <label
             for="description"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachWorkoutEdit.description' | translate }}
           </label>
@@ -101,7 +101,7 @@
             name="description"
             rows="3"
             [(ngModel)]="workout.description"
-            class="min-h-28 w-full min-w-0 resize-y rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base leading-6 text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+            class="min-h-28 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
           ></textarea>
         </div>
 
@@ -112,7 +112,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="workoutDate"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachWorkoutEdit.workoutDate' | translate }}
           </label>
@@ -123,7 +123,7 @@
             name="workoutDate"
             [(ngModel)]="workout.workoutDate"
             required
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
           />
         </div>
 
@@ -134,7 +134,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="durationMinutes"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachWorkoutEdit.duration' | translate }}
           </label>
@@ -145,7 +145,7 @@
             name="durationMinutes"
             [(ngModel)]="workout.durationMinutes"
             min="0"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
           />
         </div>
 
@@ -156,7 +156,7 @@
         <div class="flex min-w-0 flex-col gap-2">
           <label
             for="intensityLevel"
-            class="text-sm font-semibold text-slate-700"
+            class="text-sm font-semibold text-content-700"
           >
             {{ 'coachWorkoutEdit.intensityLevel' | translate }}
           </label>
@@ -165,7 +165,7 @@
             id="intensityLevel"
             name="intensityLevel"
             [(ngModel)]="workout.intensityLevel"
-            class="min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-base text-slate-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+            class="min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
           >
             <option value="">
               {{ 'coachWorkoutEdit.selectIntensity' | translate }}
@@ -190,19 +190,19 @@
              ================================================== -->
 
         <div
-          class="flex min-h-11 items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3"
+          class="flex min-h-11 items-center gap-3 rounded-xl border border-surface-200 bg-surface-50 px-4 py-3"
         >
           <input
             type="checkbox"
             name="done"
             id="done"
             [(ngModel)]="workout.done"
-            class="h-5 w-5 cursor-pointer rounded border-slate-300 text-blue-600 accent-blue-600 focus:ring-4 focus:ring-blue-500/10"
+            class="h-5 w-5 cursor-pointer rounded border-surface-300 text-blue-600 accent-blue-600 focus:ring-4 focus:ring-blue-500/10"
           />
 
           <label
             for="done"
-            class="cursor-pointer text-sm font-semibold text-slate-700"
+            class="cursor-pointer text-sm font-semibold text-content-700"
           >
             {{ 'coachWorkoutEdit.completed' | translate }}
           </label>
@@ -213,7 +213,7 @@
              ================================================== -->
 
         <div
-          class="col-span-full min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/70"
+          class="col-span-full min-w-0 overflow-hidden rounded-2xl border border-surface-200 bg-slate-50/70"
         >
 
           <!-- ==================================================
@@ -221,17 +221,17 @@
                ================================================== -->
 
           <div
-            class="border-b border-slate-200 bg-white px-4 py-5 sm:px-5"
+            class="border-b border-surface-200 bg-white px-4 py-5 sm:px-5"
           >
             <h3
-              class="flex items-center gap-2 text-lg font-bold text-slate-800"
+              class="flex items-center gap-2 text-lg font-bold text-content-800"
             >
               <span>🏋️</span>
               <span>{{ 'coachWorkoutEdit.exercises' | translate }}</span>
             </h3>
 
             <p
-              class="mt-1 text-sm leading-5 text-slate-500"
+              class="mt-1 text-sm leading-5 text-content-500"
             >
               {{ 'coachWorkoutEdit.exercisesDescription' | translate }}
             </p>
@@ -289,13 +289,13 @@
 
               <div class="min-w-0">
                 <strong
-                  class="block text-base font-bold text-slate-800"
+                  class="block text-base font-bold text-content-800"
                 >
                   {{ 'coachWorkoutEdit.addExercise' | translate }}
                 </strong>
 
                 <small
-                  class="mt-1 block text-sm leading-5 text-slate-500"
+                  class="mt-1 block text-sm leading-5 text-content-500"
                 >
                   {{ 'coachWorkoutEdit.addExerciseDescription' | translate }}
                 </small>
@@ -309,7 +309,7 @@
             <div class="flex min-w-0 flex-col gap-2">
               <label
                 for="exerciseSearch"
-                class="text-sm font-semibold text-slate-700"
+                class="text-sm font-semibold text-content-700"
               >
                 {{ 'coachWorkoutEdit.searchExercise' | translate }}
               </label>
@@ -329,7 +329,7 @@
                   [(ngModel)]="exerciseSearchTerm"
                   [placeholder]="'coachWorkoutEdit.searchExercisePlaceholder' | translate"
                   autocomplete="off"
-                  class="min-h-11 w-full min-w-0 rounded-xl border border-slate-300 bg-white py-2.5 pl-11 pr-11 text-base text-slate-900 shadow-sm outline-none transition duration-150 placeholder:text-slate-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+                  class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white py-2.5 pl-11 pr-11 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
                 />
 
                 <button
@@ -340,7 +340,7 @@
                     exerciseSearchTerm = '';
                     selectedExerciseId = null
                   "
-                  class="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-sm font-bold text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                  class="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-sm font-bold text-content-400 transition hover:bg-slate-100 hover:text-slate-700"
                 >
                   ✕
                 </button>
@@ -364,7 +364,7 @@
                 class="mb-2 flex items-center justify-between"
               >
                 <span
-                  class="text-sm font-semibold text-slate-700"
+                  class="text-sm font-semibold text-content-700"
                 >
                   {{ 'coachWorkoutEdit.exercises' | translate }}
                 </span>
@@ -385,7 +385,7 @@
                   !loadingExercises &&
                   availableExercises.length > 0
                 "
-                class="flex max-h-72 min-w-0 flex-col gap-2 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50 p-2"
+                class="flex max-h-72 min-w-0 flex-col gap-2 overflow-y-auto rounded-xl border border-surface-200 bg-surface-50 p-2"
               >
                 <button
                   type="button"
@@ -398,13 +398,13 @@
                 >
 
                   <span
-                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-lg group-hover:bg-white"
+                    class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-100 text-lg group-hover:bg-white"
                   >
                     🏋️
                   </span>
 
                   <span
-                    class="min-w-0 flex-1 break-words text-sm font-semibold text-slate-700"
+                    class="min-w-0 flex-1 break-words text-sm font-semibold text-content-700"
                   >
                     {{ exercise.name }}
                   </span>
@@ -497,7 +497,7 @@
                   </small>
 
                   <strong
-                    class="mt-0.5 block break-words text-sm font-bold text-slate-800"
+                    class="mt-0.5 block break-words text-sm font-bold text-content-800"
                   >
                     {{ getSelectedExerciseName() }}
                   </strong>
@@ -538,7 +538,7 @@
                ================================================== -->
 
           <div
-            class="m-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:m-5 sm:p-5"
+            class="m-4 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:m-5 sm:p-5"
           >
 
             <!-- HEADER -->
@@ -548,13 +548,13 @@
             >
               <div class="min-w-0">
                 <h4
-                  class="text-base font-bold text-slate-800"
+                  class="text-base font-bold text-content-800"
                 >
                   {{ 'coachWorkoutEdit.currentExercises' | translate }}
                 </h4>
 
                 <p
-                  class="mt-1 text-sm leading-5 text-slate-500"
+                  class="mt-1 text-sm leading-5 text-content-500"
                 >
                   {{ 'coachWorkoutEdit.currentExercisesDescription' | translate }}
                 </p>
@@ -583,14 +583,14 @@
             >
               <span
                 *ngIf="!workoutAssignedToProgram"
-                class="text-sm text-slate-500"
+                class="text-sm text-content-500"
               >
                 {{ 'coachWorkoutEdit.searchToAdd' | translate }}
               </span>
 
               <span
                 *ngIf="workoutAssignedToProgram"
-                class="text-sm text-slate-500"
+                class="text-sm text-content-500"
               >
                 {{ 'coachWorkoutEdit.assignedToProgram' | translate }}
               </span>
@@ -609,7 +609,7 @@
                   let workoutExercise of workoutExercises;
                   let i = index
                 "
-                class="flex min-w-0 items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 transition duration-150 hover:border-blue-200 hover:bg-blue-50/50"
+                class="flex min-w-0 items-center gap-3 rounded-xl border border-surface-200 bg-surface-50 px-3 py-3 transition duration-150 hover:border-blue-200 hover:bg-blue-50/50"
               >
 
                 <!-- Sorszám -->
@@ -626,7 +626,7 @@
                   class="min-w-0 flex-1"
                 >
                   <strong
-                    class="block break-words text-sm font-semibold text-slate-800"
+                    class="block break-words text-sm font-semibold text-content-800"
                   >
                     {{
                       workoutExercise.exercise?.name ||
@@ -664,7 +664,7 @@
           <button
             type="button"
             (click)="cancelEdit()"
-            class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-6 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition duration-150 hover:border-slate-400 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-500/10 active:scale-[0.98] sm:w-auto"
+            class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-surface-300 bg-white px-6 py-2.5 text-sm font-semibold text-content-700 shadow-sm transition duration-150 hover:border-slate-400 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-500/10 active:scale-[0.98] sm:w-auto"
           >
             <span>❌</span>
             <span>{{ 'coachWorkoutEdit.cancel' | translate }}</span>

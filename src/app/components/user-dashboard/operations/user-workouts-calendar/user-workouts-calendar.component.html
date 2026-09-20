@@ -11,7 +11,7 @@
          NAPTÁR FEJLÉC
          ================================================== -->
     <div
-      class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md shadow-slate-200/50"
+      class="overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-md shadow-slate-200/50"
     >
       <!-- Narancssárga fejléc -->
       <div
@@ -60,46 +60,46 @@
          HÉT NAPJAI
          ================================================== -->
     <div
-      class="grid grid-cols-7 overflow-hidden rounded-t-2xl border border-b-0 border-slate-200 bg-slate-100"
+      class="grid grid-cols-7 overflow-hidden rounded-t-2xl border border-b-0 border-surface-200 bg-surface-100"
     >
       <div
-        class="border-r border-slate-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-slate-600 last:border-r-0 sm:px-2 sm:text-xs"
+        class="border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 last:border-r-0 sm:px-2 sm:text-xs"
       >
         {{ 'userWorkoutsCalendar.monday' | translate }}
       </div>
 
       <div
-        class="border-r border-slate-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-slate-600 last:border-r-0 sm:px-2 sm:text-xs"
+        class="border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 last:border-r-0 sm:px-2 sm:text-xs"
       >
         {{ 'userWorkoutsCalendar.tuesday' | translate }}
       </div>
 
       <div
-        class="border-r border-slate-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-slate-600 last:border-r-0 sm:px-2 sm:text-xs"
+        class="border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 last:border-r-0 sm:px-2 sm:text-xs"
       >
         {{ 'userWorkoutsCalendar.wednesday' | translate }}
       </div>
 
       <div
-        class="border-r border-slate-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-slate-600 last:border-r-0 sm:px-2 sm:text-xs"
+        class="border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 last:border-r-0 sm:px-2 sm:text-xs"
       >
         {{ 'userWorkoutsCalendar.thursday' | translate }}
       </div>
 
       <div
-        class="border-r border-slate-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-slate-600 last:border-r-0 sm:px-2 sm:text-xs"
+        class="border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 last:border-r-0 sm:px-2 sm:text-xs"
       >
         {{ 'userWorkoutsCalendar.friday' | translate }}
       </div>
 
       <div
-        class="border-r border-slate-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-slate-600 sm:px-2 sm:text-xs"
+        class="border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 sm:px-2 sm:text-xs"
       >
         {{ 'userWorkoutsCalendar.saturday' | translate }}
       </div>
 
       <div
-        class="px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-slate-600 sm:px-2 sm:text-xs"
+        class="px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 sm:px-2 sm:text-xs"
       >
         {{ 'userWorkoutsCalendar.sunday' | translate }}
       </div>
@@ -109,11 +109,11 @@
          NAPTÁR
          ================================================== -->
     <div
-      class="-mt-5 grid grid-cols-7 overflow-hidden rounded-b-2xl border border-slate-200 bg-white shadow-md shadow-slate-200/50 sm:-mt-6"
+      class="-mt-5 grid grid-cols-7 overflow-hidden rounded-b-2xl border border-surface-200 bg-white shadow-md shadow-slate-200/50 sm:-mt-6"
     >
       <div
         *ngFor="let day of calendarDays"
-        class="relative min-h-24 min-w-0 border-b border-r border-slate-200 p-1 transition-colors duration-150 last:border-r-0 hover:bg-primary-50/40 sm:min-h-32 sm:p-2 lg:min-h-36"
+        class="relative min-h-24 min-w-0 border-b border-r border-surface-200 p-1 transition-colors duration-150 last:border-r-0 hover:bg-primary-50/40 sm:min-h-32 sm:p-2 lg:min-h-36"
         [class.bg-slate-50]="!day.currentMonth"
         [class.text-slate-400]="!day.currentMonth"
         [class.bg-primary-50]="day.isToday"
@@ -163,7 +163,7 @@
          ================================================== -->
     <div
       *ngIf="selectedWorkout"
-      class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md shadow-slate-200/50"
+      class="overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-md shadow-slate-200/50"
     >
       <!-- Narancssárga fejléc -->
       <div
@@ -210,7 +210,7 @@
            EXERCISE LISTA
            ================================================== -->
       <div class="p-3.5 sm:p-5">
-        <h4 class="text-base font-bold text-slate-800 sm:text-lg">
+        <h4 class="text-base font-bold text-content-800 sm:text-lg">
           {{ 'userWorkoutsCalendar.exercises' | translate }}
         </h4>
 
@@ -225,7 +225,7 @@
         <div class="mt-4 flex flex-col gap-3">
           <div
             *ngFor="let exercise of selectedExercises; let i = index"
-            class="flex min-w-0 items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 transition-colors duration-150 hover:border-primary-200 hover:bg-primary-50/40 sm:px-4"
+            class="flex min-w-0 items-center gap-3 rounded-xl border border-surface-200 bg-surface-50 px-3 py-3 transition-colors duration-150 hover:border-primary-200 hover:bg-primary-50/40 sm:px-4"
           >
             <!-- Sorszám -->
             <div
@@ -237,7 +237,7 @@
             <!-- Exercise neve -->
             <div class="min-w-0 flex-1">
               <div
-                class="break-words text-sm font-semibold text-slate-800 sm:text-base"
+                class="break-words text-sm font-semibold text-content-800 sm:text-base"
               >
                 {{ exercise.exercise_name }}
               </div>
