@@ -7,11 +7,11 @@ import { USER_MESSAGES } from '../../../../../constants/user-messages';
 import { LanguageService } from '../../../../../services/shared/language.service';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 import { AppCardComponent } from '../../../../shared/components/app-card/app-card.component';
-
+import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 @Component({
   selector: 'app-coach-program',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppCardComponent],
+  imports: [...SHARED_IMPORTS, AppCardComponent, PaginationComponent],
   templateUrl: './coach-program.component.html',
   styleUrls: ['./coach-program.component.css'],
 })
@@ -26,6 +26,7 @@ export class CoachProgramComponent implements OnInit {
   currentPage = 1;
   itemsPerPage = 6;
   totalPages = 1;
+  totalItems = 0;
 
   // Keresés
   searchTerm = '';
@@ -44,7 +45,6 @@ export class CoachProgramComponent implements OnInit {
       this.loadCoachPrograms();
     });
   }
-
   private loadCoachPrograms(): void {
     const backendPage = this.currentPage - 1;
 
@@ -59,6 +59,10 @@ export class CoachProgramComponent implements OnInit {
       .subscribe({
         next: (response) => {
           console.log('Coach program search response:', response);
+
+          // Backend lapozási adatok
+          this.totalItems = response.totalElements ?? 0;
+          this.totalPages = Math.max(1, response.totalPages ?? 0);
 
           if (response.content?.length) {
             this.programs = response.content.map((program: any): Program => ({
@@ -76,13 +80,13 @@ export class CoachProgramComponent implements OnInit {
               workouts: program.workouts,
             }));
 
-            this.totalPages = Math.max(1, response.totalPages);
-
             this.showProgramsList = true;
             this.clearMessage();
           } else {
             this.programs = [];
+            this.totalItems = 0;
             this.totalPages = 1;
+            this.currentPage = 1;
             this.showProgramsList = false;
 
             this.setMessage('coachPrograms.noPrograms', 'info');
@@ -93,6 +97,7 @@ export class CoachProgramComponent implements OnInit {
           console.error('Hiba a coach programok keresésekor:', error);
 
           this.programs = [];
+          this.totalItems = 0;
           this.totalPages = 1;
           this.currentPage = 1;
           this.showProgramsList = false;
@@ -164,16 +169,9 @@ export class CoachProgramComponent implements OnInit {
     return this.programs;
   }
 
-  nextPage(): void {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-      this.loadCoachPrograms();
-    }
-  }
-
-  prevPage(): void {
-    if (this.currentPage > 1) {
-      this.currentPage--;
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
       this.loadCoachPrograms();
     }
   }
