@@ -9,13 +9,12 @@ import { ApiResponse } from '../../../../models/api-response.model';
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 import { skip } from 'rxjs';
 import { ProgramWorkoutService } from '../../../../services/coach/program-workout.service';
-import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
 import { WorkoutExerciseService } from '../../../../services/coach/workout-exercises.service';
-
+import { AppCardComponent } from '../../../../components/shared/components/app-card/app-card.component';
 import { AssignProgramService } from '../../../../services/coach/assign-program/assignprogram.service';
 import { LanguageService } from '../../../../services/shared/language.service';
 import { UserSelectComponent } from '../../../shared/user/user-select.component';
-
+import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { Exercise, WorkoutDto, WorkoutExercise } from '../../../../models/exercise.model';
 
 import { ProgramCreationRequest } from '../../../../models/program.model';
@@ -29,7 +28,13 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 @Component({
   selector: 'app-coach-program-builder',
   standalone: true,
-  imports: [...SHARED_IMPORTS, CoachExercisesBoardComponent, UserSelectComponent, AppCardComponent],
+  imports: [
+    ...SHARED_IMPORTS,
+    CoachExercisesBoardComponent,
+    UserSelectComponent,
+    AppCardComponent,
+    AppSelectComponent,
+  ],
   templateUrl: './coach-program-builder.component.html',
   styleUrl: './coach-program-builder.component.css',
 })

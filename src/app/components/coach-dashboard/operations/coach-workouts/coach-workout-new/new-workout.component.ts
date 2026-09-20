@@ -5,9 +5,9 @@ import { Subject, takeUntil } from 'rxjs';
 
 import { CoachWorkoutsService } from '../../../../../services/coach/coach-workouts/coach-workouts.service';
 import { LanguageService } from '../../../../../services/shared/language.service';
-
+import { AppCardComponent } from '../../../../shared/components/app-card/app-card.component';
 import { Workout } from '../../../../../models/workout.model';
-
+import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
 @Component({
@@ -15,7 +15,7 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   templateUrl: './new-workout.component.html',
   styleUrls: ['./new-workout.component.css'],
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, AppCardComponent, AppSelectComponent],
 })
 export class NewWorkoutComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
