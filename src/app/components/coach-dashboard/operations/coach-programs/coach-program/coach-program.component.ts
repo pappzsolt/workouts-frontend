@@ -6,11 +6,12 @@ import { Program } from '../../../../../models/program.model';
 import { USER_MESSAGES } from '../../../../../constants/user-messages';
 import { LanguageService } from '../../../../../services/shared/language.service';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
+import { AppCardComponent } from '../../../../shared/components/app-card/app-card.component';
 
 @Component({
   selector: 'app-coach-program',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, AppCardComponent],
   templateUrl: './coach-program.component.html',
   styleUrls: ['./coach-program.component.css'],
 })
