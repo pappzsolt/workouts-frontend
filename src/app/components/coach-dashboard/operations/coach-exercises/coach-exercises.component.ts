@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Subject, takeUntil } from 'rxjs';
-
+import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
 import { Exercise } from '../../../../models/exercise.model';
 
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
@@ -18,7 +18,7 @@ import {
 @Component({
   selector: 'app-exercise-controller',
   standalone: true,
-  imports: [...SHARED_IMPORTS, ExerciseSearchFieldComponent],
+  imports: [...SHARED_IMPORTS, ExerciseSearchFieldComponent, AppCardComponent],
   templateUrl: './coach-exercises.component.html',
   styleUrls: ['./coach-exercises.component.css'],
 })

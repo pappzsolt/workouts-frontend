@@ -9,7 +9,7 @@ import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts
 import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exercises-board/coach-exercises-board.component';
 
 import { MessageComponent } from '../../../shared/message/message.component';
-
+import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
 import { Workout } from '../../../../models/workout.model';
 import { Exercise } from '../../../../models/exercise.model';
 
@@ -26,6 +26,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
     CoachWorkoutBoardComponent,
     CoachExercisesBoardComponent,
     MessageComponent,
+    AppCardComponent,
   ],
   styleUrl: './assign-workouts-exercises.component.css',
   templateUrl: './assign-workouts-exercises.component.html',

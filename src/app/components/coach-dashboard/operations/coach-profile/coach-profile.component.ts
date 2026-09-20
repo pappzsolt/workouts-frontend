@@ -3,7 +3,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { AuthService } from '../../../../services/auth/auth.service';
 import { CoachProfileService } from '../../../../services/coach/coach-profile.service';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
-
+import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 export interface CoachProfile {
@@ -20,7 +20,7 @@ export interface CoachProfile {
 @Component({
   selector: 'app-coach-profile',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, AppCardComponent],
   templateUrl: './coach-profile.component.html',
   styleUrls: ['./coach-profile.component.css'],
 })

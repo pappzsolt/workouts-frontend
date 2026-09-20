@@ -54,9 +54,9 @@
          KIVÁLASZTOTT WORKOUTOK
          ====================================================== -->
 
-    <div
+    <app-card
       *ngIf="selectedWorkoutIds.length"
-      class="min-w-0 overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm"
+      class="min-w-0 overflow-hidden"
     >
       <div
         class="border-b border-surface-100 px-5 py-4 sm:px-6"
@@ -73,11 +73,11 @@
           *ngFor="let wid of selectedWorkoutIds"
           class="flex items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 transition hover:border-blue-200 hover:bg-blue-50"
         >
-          <span
-            class="min-w-0 break-words text-sm font-semibold text-content-700"
-          >
-            {{ 'common.id' | translate }}: {{ wid }}
-          </span>
+      <span
+        class="min-w-0 break-words text-sm font-semibold text-content-700"
+      >
+        {{ 'common.id' | translate }}: {{ wid }}
+      </span>
 
           <button
             type="button"
@@ -89,8 +89,7 @@
           </button>
         </div>
       </div>
-    </div>
-
+    </app-card>
 
     <!-- ======================================================
          EXERCISES LISTA

@@ -8,7 +8,7 @@ import { LanguageService } from '../../../../services/shared/language.service';
 
 import { Workout } from '../../../../models/workout.model';
 import { WorkoutDto } from '../../../../models/exercise.model';
-
+import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
 
 import { NewWorkoutComponent } from '../../operations/coach-workouts/coach-workout-new/new-workout.component';
@@ -18,7 +18,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 @Component({
   selector: 'app-coach-workouts',
   standalone: true,
-  imports: [...SHARED_IMPORTS, NewWorkoutComponent],
+  imports: [...SHARED_IMPORTS, NewWorkoutComponent, AppCardComponent],
   templateUrl: './coach-workouts.component.html',
   styleUrls: ['./coach-workouts.component.css'],
 })

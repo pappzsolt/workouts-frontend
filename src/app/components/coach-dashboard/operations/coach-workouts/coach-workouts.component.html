@@ -92,11 +92,10 @@
         class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
       >
 
-        <div
+        <app-card
           *ngFor="let w of pagedWorkouts"
-          class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
+          class="group flex min-w-0 flex-col overflow-hidden"
         >
-
           <!-- ==================================================
                FEJLÉC
                ================================================== -->
@@ -104,11 +103,11 @@
           <div
             class="flex h-28 items-center justify-center bg-gradient-to-r from-primary-600 to-primary-700"
           >
-            <span
-              class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-3xl shadow-md transition duration-200 group-hover:scale-105"
-            >
-              🔥
-            </span>
+    <span
+      class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-3xl shadow-md transition duration-200 group-hover:scale-105"
+    >
+      🔥
+    </span>
           </div>
 
           <!-- ==================================================
@@ -145,39 +144,27 @@
 
               <!-- IDŐTARTAM -->
 
-              <div
-                class="rounded-lg bg-surface-50 px-3 py-2.5"
-              >
-                <span
-                  class="block text-xs font-medium text-content-500"
-                >
-                  {{ 'coachWorkouts.duration' | translate }}
-                </span>
+              <div class="rounded-lg bg-surface-50 px-3 py-2.5">
+        <span class="block text-xs font-medium text-content-500">
+          {{ 'coachWorkouts.duration' | translate }}
+        </span>
 
-                <span
-                  class="mt-1 block text-sm font-semibold text-content-800"
-                >
-                  {{ w.durationMinutes }}
+                <span class="mt-1 block text-sm font-semibold text-content-800">
+          {{ w.durationMinutes }}
                   {{ 'common.minutes' | translate }}
-                </span>
+        </span>
               </div>
 
               <!-- GYAKORLATOK -->
 
-              <div
-                class="rounded-lg bg-surface-50 px-3 py-2.5"
-              >
-                <span
-                  class="block text-xs font-medium text-content-500"
-                >
-                  {{ 'coachWorkouts.exercises' | translate }}
-                </span>
+              <div class="rounded-lg bg-surface-50 px-3 py-2.5">
+        <span class="block text-xs font-medium text-content-500">
+          {{ 'coachWorkouts.exercises' | translate }}
+        </span>
 
-                <span
-                  class="mt-1 block text-sm font-semibold text-content-800"
-                >
-                  {{ w.exercises?.length || 0 }}
-                </span>
+                <span class="mt-1 block text-sm font-semibold text-content-800">
+          {{ w.exercises?.length || 0 }}
+        </span>
               </div>
 
             </div>
@@ -210,7 +197,7 @@
             </div>
 
           </div>
-        </div>
+        </app-card>
 
       </div>
 
