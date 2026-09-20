@@ -17,13 +17,13 @@ import { LanguageService } from '../../../../services/shared/language.service';
 import { PaginationComponent } from '../../../../components/shared/components/pagination/pagination.component';
 import { Exercise } from '../../../../models/exercise.model';
 import { ApiResponse } from '../../../../models/api-response.model';
-
+import { AppCardComponent } from '../../../../components/shared/components/app-card/app-card.component';
 import { SHARED_IMPORTS } from '../../shared-imports';
 
 @Component({
   selector: 'app-coach-exercises-board',
   standalone: true,
-  imports: [...SHARED_IMPORTS, PaginationComponent, AppSearchComponent],
+  imports: [...SHARED_IMPORTS, PaginationComponent, AppSearchComponent, AppCardComponent],
   styleUrl: './coach-exercises-board.component.css',
   templateUrl: './coach-exercises-board.component.html',
 })

@@ -17,7 +17,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { Workout } from '../../../../models/workout.model';
 import { AppSearchComponent } from '../../components/app-search/app-search.component';
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
-
+import { AppCardComponent } from '../../../../components/shared/components/app-card/app-card.component';
 import { LanguageService } from '../../../../services/shared/language.service';
 
 import { SHARED_IMPORTS } from '../../shared-imports';
@@ -25,7 +25,7 @@ import { SHARED_IMPORTS } from '../../shared-imports';
 @Component({
   selector: 'app-coach-workout-board',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppSearchComponent],
+  imports: [...SHARED_IMPORTS, AppSearchComponent, AppCardComponent],
   templateUrl: './coach-workout-board.component.html',
   styleUrls: ['./coach-workout-board.component.css'],
 })

@@ -14,7 +14,7 @@ import { AppCardComponent } from '../../../../components/shared/components/app-c
 import { AssignProgramService } from '../../../../services/coach/assign-program/assignprogram.service';
 import { LanguageService } from '../../../../services/shared/language.service';
 import { UserSelectComponent } from '../../../shared/user/user-select.component';
-import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
+import { AppSelectComponent } from '../../../../components/shared/components/app-select/app-select.component';
 import { Exercise, WorkoutDto, WorkoutExercise } from '../../../../models/exercise.model';
 
 import { ProgramCreationRequest } from '../../../../models/program.model';

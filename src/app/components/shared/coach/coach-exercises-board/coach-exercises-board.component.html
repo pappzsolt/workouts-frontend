@@ -35,8 +35,7 @@
       [placeholder]="'coachExercisesBoard.searchPlaceholder'"
       inputId="exerciseSearch"
       (searchTermChange)="onSearchChange()"
-    >
-    </app-search>
+    ></app-search>
   }
 
   <!-- ======================================================
@@ -66,29 +65,25 @@
     >
 
       @for (ex of pagedExercises; track ex.id) {
-        <div
-          class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
-        >
+        <app-card class="block min-w-0">
 
-          <!-- ==================================================
-               FEJLÉC
-               ================================================== -->
+          <!-- FEJLÉC -->
 
           <div
-            class="flex h-20 items-center justify-center bg-gradient-to-r from-primary-600 to-primary-700"
+            header
+            class="flex h-20 items-center justify-center rounded-t-2xl bg-gradient-to-r from-primary-600 to-primary-700"
           >
-            <span
-              class="text-2xl"
-            >
+            <span class="text-2xl">
               🏋️
             </span>
           </div>
 
-          <!-- ==================================================
-               TARTALOM
-               ================================================== -->
+          <!-- TARTALOM -->
 
-          <div class="flex min-w-0 flex-1 flex-col p-5">
+          <div
+            content
+            class="flex min-w-0 flex-1 flex-col p-5"
+          >
 
             <!-- NÉV + KIVÁLASZTÁS -->
 
@@ -120,13 +115,9 @@
               </p>
             }
 
-            <!-- ==================================================
-                 EXERCISE ADATOK
-                 ================================================== -->
+            <!-- EXERCISE ADATOK -->
 
-            <div
-              class="mt-auto flex flex-wrap gap-2 pt-4"
-            >
+            <div class="mt-auto flex flex-wrap gap-2 pt-4">
 
               @if (ex.muscleGroup) {
                 <span
@@ -189,7 +180,8 @@
             </div>
 
           </div>
-        </div>
+
+        </app-card>
       }
 
       <!-- ====================================================
@@ -197,27 +189,16 @@
            ==================================================== -->
 
       @if (totalExercisePages > 1) {
-        <!-- ====================================================
-             KÖZÖS LAPOZÓ KOMPONENS
-             ==================================================== -->
-
-          <!-- ====================================================
-          KÖZÖS LAPOZÓ KOMPONENS
-          ==================================================== -->
-
-        @if (totalExercisePages > 1) {
-          <div class="col-span-1 mt-1 sm:col-span-2 lg:col-span-3">
-            <app-pagination
-              [totalItems]="filteredExercises.length"
-              [pageSize]="pageSize"
-              [currentPage]="exercisePage"
-              [showPageSize]="false"
-              [showInfo]="false"
-              (pageChange)="exercisePage = $event"
-            >
-            </app-pagination>
-          </div>
-        }
+        <div class="col-span-1 mt-1 sm:col-span-2 lg:col-span-3">
+          <app-pagination
+            [totalItems]="filteredExercises.length"
+            [pageSize]="pageSize"
+            [currentPage]="exercisePage"
+            [showPageSize]="false"
+            [showInfo]="false"
+            (pageChange)="exercisePage = $event"
+          ></app-pagination>
+        </div>
       }
 
     </div>

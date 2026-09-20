@@ -30,9 +30,6 @@
   <div
     class="mb-6 flex flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5 lg:flex-row lg:items-end"
   >
-
-    <!-- KERESÉS -->
-
     <!-- KERESÉS -->
 
     <div class="min-w-0 flex-1">
@@ -43,7 +40,6 @@
         inputId="workoutSearch"
         (searchTermChange)="searchTerm = $event; onSearchChange()"
       ></app-search>
-
     </div>
 
     <!-- RENDEZÉS -->
@@ -61,7 +57,6 @@
         {{ sortDirection === 'asc' ? '↑' : '↓' }}
       </span>
     </button>
-
   </div>
 }
 
@@ -73,32 +68,27 @@
   <div
     class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
   >
-
     @for (workout of workouts; track workout.id) {
-      <div
-        class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-md"
+      <app-card
+        class="block min-w-0"
       >
-
-        <!-- ==================================================
-             FEJLÉC
-             ================================================== -->
+        <!-- FEJLÉC -->
 
         <div
-          class="flex h-20 items-center justify-center bg-gradient-to-r from-primary-600 to-primary-700"
+          header
+          class="flex h-20 items-center justify-center rounded-t-2xl bg-gradient-to-r from-primary-600 to-primary-700"
         >
-          <span
-            class="text-2xl"
-          >
+          <span class="text-2xl">
             🔥
           </span>
         </div>
 
-        <!-- ==================================================
-             TARTALOM
-             ================================================== -->
+        <!-- TARTALOM -->
 
-        <div class="flex min-w-0 flex-1 flex-col p-5">
-
+        <div
+          content
+          class="flex min-w-0 flex-1 flex-col p-5"
+        >
           <!-- KIVÁLASZTÁS + ID -->
 
           <div class="mb-4 flex items-center justify-between gap-3">
@@ -156,11 +146,9 @@
           >
             {{ 'coachWorkoutBoard.workout' | translate }}
           </div>
-
         </div>
-      </div>
+      </app-card>
     }
-
   </div>
 }
 
@@ -187,19 +175,6 @@
      ====================================================== -->
 
 @if (!loading && totalPages > 1) {
-  <!-- ======================================================
-       LAPOZÁS
-       ====================================================== -->
-
-    <!-- ======================================================
-         LAPOZÁS
-         ====================================================== -->
-
-    <!-- ======================================================
-         LAPOZÁS
-         ====================================================== -->
-
-  @if (!loading && totalPages > 1) {
   <app-pagination
     [totalPagesOverride]="totalPages"
     [pageSize]="itemsPerPage"
@@ -208,5 +183,4 @@
     [showInfo]="false"
     (pageChange)="currentPage = $event; loadWorkouts()"
   ></app-pagination>
-  }
 }
