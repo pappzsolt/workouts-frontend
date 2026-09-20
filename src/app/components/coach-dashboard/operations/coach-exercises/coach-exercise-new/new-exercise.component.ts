@@ -6,13 +6,13 @@ import { ExerciseService } from '../../../../../services/coach/coach-exercises/c
 import { LanguageService } from '../../../../../services/shared/language.service';
 
 import { Exercise } from '../../../../../models/exercise.model';
-
+import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
 @Component({
   selector: 'app-new-exercise',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, AppSelectComponent],
   templateUrl: './new-exercise.component.html',
   styleUrls: ['./new-exercise.component.css'],
 })

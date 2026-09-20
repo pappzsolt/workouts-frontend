@@ -136,28 +136,28 @@
             {{ 'coachProgramEdit.difficultyLevel' | translate }}
           </label>
 
-          <select
-            id="difficultyLevel"
-            name="difficultyLevel"
-            [(ngModel)]="program.difficultyLevel"
-            class="min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
-          >
-            <option value="">
-              {{ 'coachProgramEdit.selectDifficulty' | translate }}
-            </option>
+          <div class="flex min-w-0 flex-col gap-2">
+            <label
+              for="difficultyLevel"
+              class="text-sm font-semibold text-content-700"
+            >
+              {{ 'coachProgramEdit.difficultyLevel' | translate }}
+            </label>
 
-            <option value="Easy">
-              {{ 'coachProgramEdit.easy' | translate }}
-            </option>
-
-            <option value="Medium">
-              {{ 'coachProgramEdit.medium' | translate }}
-            </option>
-
-            <option value="Hard">
-              {{ 'coachProgramEdit.hard' | translate }}
-            </option>
-          </select>
+            <app-select
+              id="difficultyLevel"
+              name="difficultyLevel"
+              [(value)]="program.difficultyLevel"
+              [placeholder]="'coachProgramEdit.selectDifficulty'"
+              placeholderValue=""
+              [className]="'min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm'"
+              [options]="[
+      { value: 'Easy', label: 'coachProgramEdit.easy' },
+      { value: 'Medium', label: 'coachProgramEdit.medium' },
+      { value: 'Hard', label: 'coachProgramEdit.hard' }
+    ]"
+            />
+          </div>
         </div>
 
         <!-- ==================================================

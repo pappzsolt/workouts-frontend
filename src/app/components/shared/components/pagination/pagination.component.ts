@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
+
 @Component({
   standalone: true,
   selector: 'app-pagination',
@@ -15,6 +16,9 @@ export class PaginationComponent {
 
   /** Összes megjelenítendő rekord */
   @Input() totalItems = 0;
+
+  /** Backendből érkező oldalszám (opcionális felülírás) */
+  @Input() totalPagesOverride: number | null = null;
 
   /** Rekordok száma oldalanként */
   @Input() pageSize = 6;
@@ -47,6 +51,10 @@ export class PaginationComponent {
 
   /** Összes oldal száma */
   get totalPages(): number {
+    if (this.totalPagesOverride !== null) {
+      return Math.max(0, this.totalPagesOverride);
+    }
+
     if (this.pageSize <= 0) {
       return 0;
     }

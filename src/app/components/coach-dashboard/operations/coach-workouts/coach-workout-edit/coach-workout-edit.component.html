@@ -160,29 +160,19 @@
           >
             {{ 'coachWorkoutEdit.intensityLevel' | translate }}
           </label>
-
-          <select
+          <app-select
             id="intensityLevel"
             name="intensityLevel"
-            [(ngModel)]="workout.intensityLevel"
-            class="min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
-          >
-            <option value="">
-              {{ 'coachWorkoutEdit.selectIntensity' | translate }}
-            </option>
-
-            <option value="low">
-              {{ 'coachWorkoutEdit.low' | translate }}
-            </option>
-
-            <option value="moderate">
-              {{ 'coachWorkoutEdit.moderate' | translate }}
-            </option>
-
-            <option value="high">
-              {{ 'coachWorkoutEdit.high' | translate }}
-            </option>
-          </select>
+            [(value)]="workout.intensityLevel"
+            [placeholder]="'coachWorkoutEdit.selectIntensity'"
+            placeholderValue=""
+            [className]="'min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm'"
+            [options]="[
+    { value: 'low', label: 'coachWorkoutEdit.low' },
+    { value: 'moderate', label: 'coachWorkoutEdit.moderate' },
+    { value: 'high', label: 'coachWorkoutEdit.high' }
+  ]"
+          />
         </div>
 
         <!-- ==================================================

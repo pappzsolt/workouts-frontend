@@ -134,28 +134,19 @@
             {{ 'coachNewProgram.difficultyLevel' | translate }}
           </label>
 
-          <select
+          <app-select
             id="difficultyLevel"
             name="difficultyLevel"
-            [(ngModel)]="program.difficultyLevel"
-            class="min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
-          >
-            <option value="">
-              {{ 'coachNewProgram.selectDifficulty' | translate }}
-            </option>
-
-            <option value="Easy">
-              {{ 'coachNewProgram.easy' | translate }}
-            </option>
-
-            <option value="Medium">
-              {{ 'coachNewProgram.medium' | translate }}
-            </option>
-
-            <option value="Hard">
-              {{ 'coachNewProgram.hard' | translate }}
-            </option>
-          </select>
+            [(value)]="program.difficultyLevel"
+            [placeholder]="'coachNewProgram.selectDifficulty'"
+            placeholderValue=""
+            [className]="'min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm'"
+            [options]="[
+    { value: 'Easy', label: 'coachNewProgram.easy' },
+    { value: 'Medium', label: 'coachNewProgram.medium' },
+    { value: 'Hard', label: 'coachNewProgram.hard' }
+  ]"
+          />
         </div>
 
         <!-- ==================================================

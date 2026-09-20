@@ -11,10 +11,10 @@ import {
 } from '@angular/core';
 
 import { Subject, takeUntil } from 'rxjs';
-
+import { AppSearchComponent } from '../../components/app-search/app-search.component';
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
 import { LanguageService } from '../../../../services/shared/language.service';
-
+import { PaginationComponent } from '../../../../components/shared/components/pagination/pagination.component';
 import { Exercise } from '../../../../models/exercise.model';
 import { ApiResponse } from '../../../../models/api-response.model';
 
@@ -23,7 +23,7 @@ import { SHARED_IMPORTS } from '../../shared-imports';
 @Component({
   selector: 'app-coach-exercises-board',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, PaginationComponent, AppSearchComponent],
   styleUrl: './coach-exercises-board.component.css',
   templateUrl: './coach-exercises-board.component.html',
 })

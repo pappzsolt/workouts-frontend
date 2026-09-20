@@ -15,7 +15,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Subject, takeUntil } from 'rxjs';
 
 import { Workout } from '../../../../models/workout.model';
-
+import { AppSearchComponent } from '../../components/app-search/app-search.component';
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 
 import { LanguageService } from '../../../../services/shared/language.service';
@@ -25,7 +25,7 @@ import { SHARED_IMPORTS } from '../../shared-imports';
 @Component({
   selector: 'app-coach-workout-board',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, AppSearchComponent],
   templateUrl: './coach-workout-board.component.html',
   styleUrls: ['./coach-workout-board.component.css'],
 })
@@ -220,6 +220,16 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
     if (this.currentPage > 1) {
       this.currentPage--;
 
+      this.loadWorkouts();
+    }
+  }
+  // ==========================================================
+  // LAPOZÁS
+  // ==========================================================
+
+  onPageChange(page: number): void {
+    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+      this.currentPage = page;
       this.loadWorkouts();
     }
   }

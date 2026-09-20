@@ -152,24 +152,16 @@
         {{ 'newExercise.difficulty' | translate }}:
       </label>
 
-      <select
+      <app-select
         id="difficultyLevel"
         name="difficultyLevel"
-        [(ngModel)]="newExercise.difficultyLevel"
-        class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
-      >
-        <option value="easy">
-          {{ 'newExercise.easy' | translate }}
-        </option>
-
-        <option value="medium">
-          {{ 'newExercise.medium' | translate }}
-        </option>
-
-        <option value="hard">
-          {{ 'newExercise.hard' | translate }}
-        </option>
-      </select>
+        [(value)]="newExercise.difficultyLevel"
+        [options]="[
+    { value: 'easy', label: 'newExercise.easy' },
+    { value: 'medium', label: 'newExercise.medium' },
+    { value: 'hard', label: 'newExercise.hard' }
+  ]"
+      />
     </div>
 
     <!-- Kategória -->

@@ -9,7 +9,7 @@ import { ExerciseService } from '../../../../../services/coach/coach-exercises/c
 
 import { ProgramWorkoutService } from '../../../../../services/coach/program-workout.service';
 import { skip } from 'rxjs';
-
+import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { LanguageService } from '../../../../../services/shared/language.service';
 import { USER_MESSAGES } from '../../../../../constants/user-messages';
 
@@ -22,7 +22,7 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 @Component({
   selector: 'app-coach-workout-edit',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, AppSelectComponent],
   templateUrl: './coach-workout-edit.component.html',
   styleUrls: ['./coach-workout-edit.component.css'],
 })
