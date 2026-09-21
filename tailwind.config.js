@@ -15,7 +15,7 @@ module.exports = {
           700: '#047857',
         },
 
-        // Edit gombok
+        // Edit gombok – kék
         edit: {
           50: '#eff6ff',
           100: '#dbeafe',
@@ -24,7 +24,7 @@ module.exports = {
           700: '#1d4ed8',
         },
 
-        // Search gombok
+        // Search gombok – zöld
         search: {
           50: '#f0fdf4',
           100: '#dcfce7',
@@ -33,7 +33,7 @@ module.exports = {
           700: '#15803d',
         },
 
-        // Sort gombok
+        // Sort gombok – indigókék
         sort: {
           50: '#eef2ff',
           100: '#e0e7ff',
@@ -42,7 +42,7 @@ module.exports = {
           700: '#4338ca',
         },
 
-        // Add gombok
+        // Add gombok – sárga
         add: {
           50: '#fefce8',
           100: '#fef9c3',
@@ -51,16 +51,16 @@ module.exports = {
           700: '#a16207',
         },
 
-        // Save gombok
+        // Save gombok – smaragdzöld (lila helyett)
         save: {
-          50: '#faf5ff',
-          100: '#f3e8ff',
-          200: '#e9d5ff',
-          600: '#9333ea',
-          700: '#7e22ce',
+          50: '#ECFDF5',
+          100: '#D1FAE5',
+          200: '#A7F3D0',
+          600: '#059669',
+          700: '#047857',
         },
 
-        // Delete gombok
+        // Delete gombok – piros
         delete: {
           50: '#fef2f2',
           100: '#fee2e2',
@@ -69,7 +69,7 @@ module.exports = {
           700: '#b91c1c',
         },
 
-        // Pagination gombok
+        // Pagination gombok – indigókék
         pagination: {
           50: '#eef2ff',
           100: '#e0e7ff',
