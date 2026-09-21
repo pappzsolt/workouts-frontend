@@ -768,47 +768,19 @@
              WORKOUT LAPOZÁS ALUL IS
              ====================================================== -->
 
-        <div
-          *ngIf="totalWorkouts > 1"
-          class="mt-5 flex flex-col items-center justify-center gap-3 rounded-xl border border-surface-200 bg-surface-50 p-4 sm:flex-row sm:gap-5"
-        >
+        <app-pagination
+          [totalItems]="totalWorkouts"
+          [pageSize]="1"
+          [currentPage]="currentWorkoutIndex + 1"
+          [pageSizeOptions]="[1]"
+          [showPageSize]="false"
+          [showInfo]="true"
+          (pageChange)="onWorkoutPageChange($event)"
+        ></app-pagination>
 
-          <button
-            type="button"
-            class="flex min-h-10 w-full items-center justify-center rounded-xl border border-surface-200 bg-white px-4 py-2 text-sm font-semibold text-content-700 transition-all duration-200 hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
-            (click)="previousWorkout()"
-            [disabled]="currentWorkoutIndex === 0"
-          >
-            ◀
-            {{ 'common.previous' | translate }}
-          </button>
+      </div> <!-- currentWorkout blokk vége -->
 
-          <span
-            class="whitespace-nowrap text-sm font-semibold text-content-600"
-          >
-            {{ 'userProgramStatistics.workout' | translate }}
-            {{ currentWorkoutIndex + 1 }}
-            /
-            {{ totalWorkouts }}
-          </span>
-
-          <button
-            type="button"
-            class="flex min-h-10 w-full items-center justify-center rounded-xl border border-surface-200 bg-white px-4 py-2 text-sm font-semibold text-content-700 transition-all duration-200 hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
-            (click)="nextWorkout()"
-            [disabled]="
-              currentWorkoutIndex === totalWorkouts - 1
-            "
-          >
-            {{ 'common.next' | translate }}
-            ▶
-          </button>
-
-        </div>
-
-      </div>
-
-    </section>
+    </section> <!-- selectedProgramId szekció vége -->
 
   </div>
 </div>

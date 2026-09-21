@@ -141,4 +141,5 @@ export class PaginationComponent {
 
     this.pageSizeChange.emit(newSize);
   }
+
 }

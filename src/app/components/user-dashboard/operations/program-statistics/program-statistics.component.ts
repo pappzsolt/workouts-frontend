@@ -503,4 +503,7 @@ export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
       exercise.repetitionsChange = exercise.currentRepetitions - exercise.startRepetitions;
     }
   }
+  onWorkoutPageChange(page: number): void {
+    this.currentWorkoutIndex = page - 1;
+  }
 }
