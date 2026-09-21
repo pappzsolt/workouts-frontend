@@ -33,17 +33,16 @@
       <!-- PROGRAM KÁRTYÁK -->
       <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
 
-        <div
+        <app-card
           *ngFor="let program of paginatedPrograms"
-          class="group flex min-w-0 cursor-pointer flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm transition duration-200 hover:-translate-y-1 hover:border-primary-300 hover:shadow-lg hover:shadow-slate-200/60"
+          variant="outlined"
+          class="group min-w-0 cursor-pointer"
           (click)="goToWorkouts(program.id, program.name)"
         >
-
           <!-- PROGRAM FEJLÉC / KÉP -->
           <div
             class="relative flex h-36 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-600 to-primary-700"
           >
-
             <!-- Dekoratív körök -->
             <div
               class="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/10"
@@ -57,14 +56,12 @@
             <span
               class="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-white/95 text-5xl shadow-lg ring-1 ring-white/30 transition duration-200 group-hover:scale-105"
             >
-              🏋️‍♂️
-            </span>
-
+      🏋️‍♂️
+    </span>
           </div>
 
           <!-- PROGRAM TARTALOM -->
           <div class="flex min-w-0 flex-1 flex-col p-5">
-
             <!-- Program név -->
             <h3
               class="mb-3 break-words text-lg font-bold leading-6 text-content-800"
@@ -74,7 +71,6 @@
 
             <!-- IDŐTARTAM -->
             <div class="rounded-xl bg-surface-50 px-3 py-3">
-
               <div
                 class="mb-1 text-xs font-medium uppercase tracking-wide text-content-500"
               >
@@ -85,25 +81,23 @@
                 {{ program.durationWeeks }}
                 {{ 'userMyPrograms.weeks' | translate }}
               </div>
-
             </div>
 
             <!-- PROGRESS -->
             <div class="mt-5">
-
               <!-- Progress label -->
               <div
                 class="mb-2 flex items-center justify-between gap-3 text-sm"
               >
-                <span class="font-semibold text-content-700">
-                  {{ 'userMyPrograms.workouts' | translate }}:
-                </span>
+        <span class="font-semibold text-content-700">
+          {{ 'userMyPrograms.workouts' | translate }}:
+        </span>
 
                 <span class="font-semibold text-content-600">
-                  {{ programProgress[program.id]?.completedWorkouts ?? 0 }}
+          {{ programProgress[program.id]?.completedWorkouts ?? 0 }}
                   /
                   {{ programProgress[program.id]?.totalWorkouts ?? 0 }}
-                </span>
+        </span>
               </div>
 
               <!-- Progress bar -->
@@ -115,12 +109,9 @@
                   [style.width.%]="programProgress[program.id]?.progressPercent ?? 0"
                 ></div>
               </div>
-
             </div>
-
           </div>
-
-        </div>
+        </app-card>
 
       </div>
 

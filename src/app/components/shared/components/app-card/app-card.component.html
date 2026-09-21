@@ -1,14 +1,12 @@
 <div
-  class="group flex min-w-0 flex-col
-         overflow-hidden rounded-2xl
-         border-4 border-purple-600
-         bg-purple-100
-         shadow-md shadow-purple-300/50
-         transition duration-200
-         hover:-translate-y-1
-         hover:border-purple-800
-         hover:shadow-xl
-         hover:shadow-purple-400/60"
+  class="group flex min-w-0 flex-col overflow-hidden rounded-2xl shadow-md transition duration-200"
+  [ngClass]="{
+    'border-4 border-purple-600 bg-purple-100 shadow-purple-300/50 hover:-translate-y-1 hover:border-purple-800 hover:shadow-xl hover:shadow-purple-400/60':
+      variant === 'default',
+
+    'border border-surface-200 bg-white shadow-sm':
+      variant === 'outlined'
+  }"
 >
   <ng-content></ng-content>
 </div>
