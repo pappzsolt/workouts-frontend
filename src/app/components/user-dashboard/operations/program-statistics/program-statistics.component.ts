@@ -183,16 +183,13 @@ export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
     return Math.ceil(this.programs.length / this.programPageSize);
   }
 
-  nextProgramPage(): void {
-    if (this.programPage < this.totalProgramPages) {
-      this.programPage++;
-    }
+  onPageChange(page: number): void {
+    this.programPage = page;
   }
 
-  prevProgramPage(): void {
-    if (this.programPage > 1) {
-      this.programPage--;
-    }
+  onPageSizeChange(pageSize: number): void {
+    this.programPageSize = pageSize;
+    this.programPage = 1;
   }
 
   // ============================================================
