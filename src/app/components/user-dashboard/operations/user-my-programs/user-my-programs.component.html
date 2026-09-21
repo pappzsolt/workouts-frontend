@@ -35,7 +35,7 @@
 
         <app-card
           *ngFor="let program of paginatedPrograms"
-          variant="outlined"
+          variant="default"
           class="group min-w-0 cursor-pointer"
           (click)="goToWorkouts(program.id, program.name)"
         >
@@ -56,12 +56,13 @@
             <span
               class="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-white/95 text-5xl shadow-lg ring-1 ring-white/30 transition duration-200 group-hover:scale-105"
             >
-      🏋️‍♂️
-    </span>
+              🏋️‍♂️
+            </span>
           </div>
 
           <!-- PROGRAM TARTALOM -->
           <div class="flex min-w-0 flex-1 flex-col p-5">
+
             <!-- Program név -->
             <h3
               class="mb-3 break-words text-lg font-bold leading-6 text-content-800"
@@ -85,19 +86,20 @@
 
             <!-- PROGRESS -->
             <div class="mt-5">
+
               <!-- Progress label -->
               <div
                 class="mb-2 flex items-center justify-between gap-3 text-sm"
               >
-        <span class="font-semibold text-content-700">
-          {{ 'userMyPrograms.workouts' | translate }}:
-        </span>
+                <span class="font-semibold text-content-700">
+                  {{ 'userMyPrograms.workouts' | translate }}:
+                </span>
 
                 <span class="font-semibold text-content-600">
-          {{ programProgress[program.id]?.completedWorkouts ?? 0 }}
+                  {{ programProgress[program.id]?.completedWorkouts ?? 0 }}
                   /
                   {{ programProgress[program.id]?.totalWorkouts ?? 0 }}
-        </span>
+                </span>
               </div>
 
               <!-- Progress bar -->
@@ -109,6 +111,7 @@
                   [style.width.%]="programProgress[program.id]?.progressPercent ?? 0"
                 ></div>
               </div>
+
             </div>
           </div>
         </app-card>

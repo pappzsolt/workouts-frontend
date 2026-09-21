@@ -32,217 +32,217 @@
       <!-- ==================================================
            PROFIL KÁRTYA
            ================================================== -->
-      <form
-        class="min-w-0 overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-md shadow-slate-200/50"
-      >
+      <app-card variant="default">
+        <form class="min-w-0">
 
-        <!-- Profil fejléc – a Program Workouts kártyastílusa -->
-        <div
-          class="relative flex h-24 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-600 to-primary-700 sm:h-36"
-        >
-          <!-- Dekoratív körök -->
+          <!-- Profil fejléc – a Program Workouts kártyastílusa -->
           <div
-            class="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/10"
-          ></div>
-
-          <div
-            class="absolute -bottom-12 -left-8 h-32 w-32 rounded-full bg-white/10"
-          ></div>
-
-          <!-- Profil ikon -->
-          <span
-            class="relative flex h-14 w-14 items-center justify-center rounded-xl bg-white/95 text-4xl shadow-lg ring-1 ring-white/30 sm:h-20 sm:w-20 sm:rounded-2xl sm:text-5xl"
+            class="relative flex h-24 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-600 to-primary-700 sm:h-36"
           >
-            👤
-          </span>
-        </div>
-
-        <!-- ==================================================
-             PROFIL ADATOK
-             ================================================== -->
-        <div class="grid min-w-0 grid-cols-1 gap-4 p-3.5 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-4 sm:p-5">
-
-          <!-- Username -->
-          <div class="min-w-0">
-            <label
-              for="username"
-              class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-            >
-              {{ 'userProfile.username' | translate }}
-            </label>
-
-            <input
-              id="username"
-              name="username"
-              type="text"
-              [placeholder]="'userProfile.usernamePlaceholder' | translate"
-              [(ngModel)]="selectedUser.username"
-              class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
-            />
-          </div>
-
-          <!-- Email -->
-          <div class="min-w-0">
-            <label
-              for="email"
-              class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-            >
-              {{ 'userProfile.email' | translate }}
-            </label>
-
-            <input
-              id="email"
-              name="email"
-              type="email"
-              [placeholder]="'userProfile.emailPlaceholder' | translate"
-              [(ngModel)]="selectedUser.email"
-              class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
-            />
-          </div>
-
-          <!-- Password -->
-          <div class="min-w-0">
-            <label
-              for="password_hash"
-              class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-            >
-              {{ 'userProfile.password' | translate }}
-            </label>
-
-            <input
-              id="password_hash"
-              name="password_hash"
-              type="password"
-              [placeholder]="'userProfile.passwordPlaceholder' | translate"
-              [(ngModel)]="selectedUser.password"
-              class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
-            />
-          </div>
-
-          <!-- Age -->
-          <div class="min-w-0">
-            <label
-              for="age"
-              class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-            >
-              {{ 'userProfile.age' | translate }}
-            </label>
-
-            <input
-              id="age"
-              name="age"
-              type="number"
-              [placeholder]="'userProfile.agePlaceholder' | translate"
-              [(ngModel)]="selectedUser.age"
-              class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
-            />
-          </div>
-
-          <!-- Weight -->
-          <div class="min-w-0">
-            <label
-              for="weight"
-              class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-            >
-              {{ 'userProfile.weight' | translate }}
-            </label>
-
-            <input
-              id="weight"
-              name="weight"
-              type="number"
-              step="0.01"
-              [placeholder]="'userProfile.weightPlaceholder' | translate"
-              [(ngModel)]="selectedUser.weight"
-              class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
-            />
-          </div>
-
-          <!-- Height -->
-          <div class="min-w-0">
-            <label
-              for="height"
-              class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-            >
-              {{ 'userProfile.height' | translate }}
-            </label>
-
-            <input
-              id="height"
-              name="height"
-              type="number"
-              step="0.01"
-              [placeholder]="'userProfile.heightPlaceholder' | translate"
-              [(ngModel)]="selectedUser.height"
-              class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
-            />
-          </div>
-
-          <!-- Goals -->
-          <div class="min-w-0 sm:col-span-2">
-            <label
-              for="goals"
-              class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-            >
-              {{ 'userProfile.goals' | translate }}
-            </label>
-
-            <textarea
-              id="goals"
-              name="goals"
-              rows="4"
-              [placeholder]="'userProfile.goalsPlaceholder' | translate"
-              [(ngModel)]="selectedUser.goals"
-              class="w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm leading-5 text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
-            ></textarea>
-          </div>
-
-          <!-- Avatar -->
-          <div class="min-w-0 sm:col-span-2">
-            <label
-              for="avatar_url"
-              class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-            >
-              {{ 'userProfile.avatarUrl' | translate }}
-            </label>
-
-            <input
-              id="avatar_url"
-              name="avatar_url"
-              type="text"
-              [placeholder]="'userProfile.avatarUrlPlaceholder' | translate"
-              [(ngModel)]="selectedUser.avatarUrl"
-              class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
-            />
-          </div>
-
-          <!-- Coach -->
-          <div class="min-w-0 sm:col-span-2">
-            <label
-              class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-            >
-              {{ 'userProfile.coach' | translate }}
-            </label>
+            <!-- Dekoratív körök -->
+            <div
+              class="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/10"
+            ></div>
 
             <div
-              class="flex min-h-10 items-center rounded-xl border border-surface-200 bg-surface-50 px-3 py-2 text-sm font-medium text-content-700"
+              class="absolute -bottom-12 -left-8 h-32 w-32 rounded-full bg-white/10"
+            ></div>
+
+            <!-- Profil ikon -->
+            <span
+              class="relative flex h-14 w-14 items-center justify-center rounded-xl bg-white/95 text-4xl shadow-lg ring-1 ring-white/30 sm:h-20 sm:w-20 sm:rounded-2xl sm:text-5xl"
             >
-              {{ coachName }}
+            👤
+          </span>
+          </div>
+
+          <!-- ==================================================
+               PROFIL ADATOK
+               ================================================== -->
+          <div class="grid min-w-0 grid-cols-1 gap-4 p-3.5 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-4 sm:p-5">
+
+            <!-- Username -->
+            <div class="min-w-0">
+              <label
+                for="username"
+                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
+              >
+                {{ 'userProfile.username' | translate }}
+              </label>
+
+              <input
+                id="username"
+                name="username"
+                type="text"
+                [placeholder]="'userProfile.usernamePlaceholder' | translate"
+                [(ngModel)]="selectedUser.username"
+                class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
+              />
             </div>
-          </div>
 
-          <!-- Mentés -->
-          <div class="flex min-w-0 sm:col-span-2 sm:justify-end">
-            <app-button
-              variant="primary"
-              type="button"
-              [label]="'userProfile.save' | translate"
-              (buttonClick)="onSave()"
-            ></app-button>
-          </div>
+            <!-- Email -->
+            <div class="min-w-0">
+              <label
+                for="email"
+                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
+              >
+                {{ 'userProfile.email' | translate }}
+              </label>
 
-        </div>
-      </form>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                [placeholder]="'userProfile.emailPlaceholder' | translate"
+                [(ngModel)]="selectedUser.email"
+                class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
+              />
+            </div>
+
+            <!-- Password -->
+            <div class="min-w-0">
+              <label
+                for="password_hash"
+                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
+              >
+                {{ 'userProfile.password' | translate }}
+              </label>
+
+              <input
+                id="password_hash"
+                name="password_hash"
+                type="password"
+                [placeholder]="'userProfile.passwordPlaceholder' | translate"
+                [(ngModel)]="selectedUser.password"
+                class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
+              />
+            </div>
+
+            <!-- Age -->
+            <div class="min-w-0">
+              <label
+                for="age"
+                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
+              >
+                {{ 'userProfile.age' | translate }}
+              </label>
+
+              <input
+                id="age"
+                name="age"
+                type="number"
+                [placeholder]="'userProfile.agePlaceholder' | translate"
+                [(ngModel)]="selectedUser.age"
+                class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
+              />
+            </div>
+
+            <!-- Weight -->
+            <div class="min-w-0">
+              <label
+                for="weight"
+                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
+              >
+                {{ 'userProfile.weight' | translate }}
+              </label>
+
+              <input
+                id="weight"
+                name="weight"
+                type="number"
+                step="0.01"
+                [placeholder]="'userProfile.weightPlaceholder' | translate"
+                [(ngModel)]="selectedUser.weight"
+                class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
+              />
+            </div>
+
+            <!-- Height -->
+            <div class="min-w-0">
+              <label
+                for="height"
+                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
+              >
+                {{ 'userProfile.height' | translate }}
+              </label>
+
+              <input
+                id="height"
+                name="height"
+                type="number"
+                step="0.01"
+                [placeholder]="'userProfile.heightPlaceholder' | translate"
+                [(ngModel)]="selectedUser.height"
+                class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
+              />
+            </div>
+
+            <!-- Goals -->
+            <div class="min-w-0 sm:col-span-2">
+              <label
+                for="goals"
+                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
+              >
+                {{ 'userProfile.goals' | translate }}
+              </label>
+
+              <textarea
+                id="goals"
+                name="goals"
+                rows="4"
+                [placeholder]="'userProfile.goalsPlaceholder' | translate"
+                [(ngModel)]="selectedUser.goals"
+                class="w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm leading-5 text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
+              ></textarea>
+            </div>
+
+            <!-- Avatar -->
+            <div class="min-w-0 sm:col-span-2">
+              <label
+                for="avatar_url"
+                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
+              >
+                {{ 'userProfile.avatarUrl' | translate }}
+              </label>
+
+              <input
+                id="avatar_url"
+                name="avatar_url"
+                type="text"
+                [placeholder]="'userProfile.avatarUrlPlaceholder' | translate"
+                [(ngModel)]="selectedUser.avatarUrl"
+                class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
+              />
+            </div>
+
+            <!-- Coach -->
+            <div class="min-w-0 sm:col-span-2">
+              <label
+                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
+              >
+                {{ 'userProfile.coach' | translate }}
+              </label>
+
+              <div
+                class="flex min-h-10 items-center rounded-xl border border-surface-200 bg-surface-50 px-3 py-2 text-sm font-medium text-content-700"
+              >
+                {{ coachName }}
+              </div>
+            </div>
+
+            <!-- Mentés -->
+            <div class="flex min-w-0 sm:col-span-2 sm:justify-end">
+              <app-button
+                variant="primary"
+                type="button"
+                [label]="'userProfile.save' | translate"
+                (buttonClick)="onSave()"
+              ></app-button>
+            </div>
+
+          </div>
+        </form>
+      </app-card>
     </div>
   </div>
 </div>
