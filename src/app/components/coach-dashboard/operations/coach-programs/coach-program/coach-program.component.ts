@@ -7,11 +7,18 @@ import { USER_MESSAGES } from '../../../../../constants/user-messages';
 import { LanguageService } from '../../../../../services/shared/language.service';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 import { AppCardComponent } from '../../../../shared/components/app-card/app-card.component';
+import { AppButtonComponent } from '../../../../../components/shared/components/app-button/app-button.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
 @Component({
   selector: 'app-coach-program',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppCardComponent, PaginationComponent, AppSearchComponent],
+  imports: [
+    ...SHARED_IMPORTS,
+    AppCardComponent,
+    PaginationComponent,
+    AppSearchComponent,
+    AppButtonComponent,
+  ],
   templateUrl: './coach-program.component.html',
   styleUrls: ['./coach-program.component.css'],
 })

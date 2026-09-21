@@ -5,7 +5,7 @@ import { Subject, takeUntil } from 'rxjs';
 
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { LanguageService } from '../../../../services/shared/language.service';
-
+import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 import { Workout } from '../../../../models/workout.model';
 import { WorkoutDto } from '../../../../models/exercise.model';
 import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
@@ -13,8 +13,7 @@ import { USER_MESSAGES } from '../../../../constants/user-messages';
 import { AppSearchComponent } from '../../../../components/shared/components/app-search/app-search.component';
 import { PaginationComponent } from '../../../../components/shared/components/pagination/pagination.component';
 import { NewWorkoutComponent } from '../../operations/coach-workouts/coach-workout-new/new-workout.component';
-
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppButtonComponent } from '../../../../components/shared/components/app-button/app-button.component';
 
 @Component({
   selector: 'app-coach-workouts',
@@ -25,6 +24,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
     AppCardComponent,
     AppSearchComponent,
     PaginationComponent,
+    AppButtonComponent,
   ],
   templateUrl: './coach-workouts.component.html',
   styleUrls: ['./coach-workouts.component.css'],

@@ -156,13 +156,12 @@
         <div
           class="col-span-full flex justify-end border-t border-blue-100 pt-5"
         >
-          <button
+          <app-button
+            variant="save"
             type="submit"
-            class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-save-600 to-save-700 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-save-600/20 transition duration-150 hover:from-save-700 hover:to-save-700 hover:shadow-lg hover:shadow-save-600/25 focus:outline-none focus:ring-4 focus:ring-save-200/50 active:scale-[0.98] sm:w-auto"
-          >
-            <span>💾</span>
-            <span>{{ 'coachNewProgram.save' | translate }}</span>
-          </button>
+            [label]="'coachNewProgram.save' | translate"
+            icon="💾"
+          ></app-button>
         </div>
       </form>
     </app-card>

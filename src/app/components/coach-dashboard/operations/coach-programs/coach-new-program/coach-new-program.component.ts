@@ -8,11 +8,11 @@ import { skip } from 'rxjs';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { LanguageService } from '../../../../../services/shared/language.service';
 import { Program, ProgramCreationRequest } from '../../../../../models/program.model';
-
+import { AppButtonComponent } from '../../../../../components/shared/components/app-button/app-button.component';
 @Component({
   selector: 'app-coach-new-program',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppCardComponent, AppSelectComponent],
+  imports: [...SHARED_IMPORTS, AppCardComponent, AppSelectComponent, AppButtonComponent],
   templateUrl: './coach-new-program.component.html',
   styleUrls: ['./coach-new-program.component.css'],
 })

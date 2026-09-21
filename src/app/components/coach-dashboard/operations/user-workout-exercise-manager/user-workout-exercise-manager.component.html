@@ -20,14 +20,13 @@
         </app-coach-program-select>
       </label>
 
-      <button
+      <app-button
+        variant="primary"
         type="button"
-        (click)="loadUserProgramWithExercises()"
-        class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-200/50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+        [label]="'userWorkoutExerciseManager.loadProgramData' | translate"
         [disabled]="!selectedUserId || !selectedProgramId"
-      >
-        {{ 'userWorkoutExerciseManager.loadProgramData' | translate }}
-      </button>
+        (buttonClick)="loadUserProgramWithExercises()"
+      ></app-button>
     </div>
   </div>
 
@@ -93,13 +92,12 @@
                 class="form-input form-input-small"
               />
 
-              <button
+              <app-button
+                variant="save"
                 type="button"
-                (click)="updateScheduledDate(w, w.scheduledAt)"
-                class="inline-flex min-h-10 items-center justify-center rounded-xl bg-save-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-save-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-save-200/50 active:scale-[0.98]"
-              >
-                {{ 'userWorkoutExerciseManager.saveDate' | translate }}
-              </button>
+                [label]="'userWorkoutExerciseManager.saveDate' | translate"
+                (buttonClick)="updateScheduledDate(w, w.scheduledAt)"
+              ></app-button>
             </div>
           </div>
 
@@ -142,20 +140,18 @@
                         [(ngModel)]="ex.order"
                         class="number-input"
                       />
-
-                      <button
+                      <app-button
+                        variant="save"
                         type="button"
-                        (click)="
-                            updateExerciseOrderIndex(
-                              w.workoutId,
-                              ex.exerciseId,
-                              ex.order
-                            )
-                          "
-                        class="inline-flex min-h-10 items-center justify-center rounded-xl bg-save-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-save-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-save-200/50 active:scale-[0.98]"
-                      >
-                        {{ 'userWorkoutExerciseManager.save' | translate }}
-                      </button>
+                        [label]="'userWorkoutExerciseManager.save' | translate"
+                        (buttonClick)="
+    updateExerciseOrderIndex(
+      w.workoutId,
+      ex.exerciseId,
+      ex.order
+    )
+  "
+                      ></app-button>
                     </div>
                   </td>
 
@@ -192,13 +188,12 @@
                   </td>
 
                   <td>
-                    <button
+                    <app-button
+                      variant="primary"
                       type="button"
-                      (click)="loadSets(ex.userWorkoutExerciseId)"
-                      class="inline-flex min-h-10 items-center justify-center rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-primary-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-primary-200/50 active:scale-[0.98]"
-                    >
-                      {{ 'userWorkoutExerciseManager.sets' | translate }}
-                    </button>
+                      [label]="'userWorkoutExerciseManager.sets' | translate"
+                      (buttonClick)="loadSets(ex.userWorkoutExerciseId)"
+                    ></app-button>
                   </td>
                 </tr>
 
@@ -223,16 +218,13 @@
                             }}
                           </span>
 
-                        <button
+                        <app-button
+                          variant="add"
                           type="button"
-                          (click)="addSet()"
-                          class="inline-flex min-h-10 items-center justify-center rounded-xl bg-add-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-add-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-add-200/50 active:scale-[0.98]"
-                        >
-                          +
-                          {{
-                            'userWorkoutExerciseManager.newSet' | translate
-                          }}
-                        </button>
+                          [label]="'userWorkoutExerciseManager.newSet' | translate"
+                          icon="+"
+                          (buttonClick)="addSet()"
+                        ></app-button>
                       </div>
 
                       <!-- SETS TABLE -->

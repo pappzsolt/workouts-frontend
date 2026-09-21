@@ -6,6 +6,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from './message/message.component';
 import { PaginationComponent } from '../../components/shared/components/pagination/pagination.component';
 import { BackButtonComponent } from '../shared/components/back-button/back-button.component';
+import { AppButtonComponent } from '../../components/shared/components/app-button/app-button.component';
 
 export const SHARED_IMPORTS = [
   CommonModule,
@@ -15,4 +16,5 @@ export const SHARED_IMPORTS = [
   MessageComponent,
   BackButtonComponent,
   PaginationComponent,
+  AppButtonComponent,
 ];

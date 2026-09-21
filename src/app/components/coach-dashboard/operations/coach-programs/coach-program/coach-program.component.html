@@ -2,7 +2,9 @@
      OLDAL
      ====================================================== -->
 
-<div class="min-h-full bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50">
+<div
+  class="min-h-full bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50"
+>
   <div class="mx-auto w-full max-w-6xl px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
 
     <!-- ==================================================
@@ -51,19 +53,16 @@
 
         <!-- Rendezés -->
 
-        <button
-          type="button"
-          (click)="toggleSort()"
-          class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-sort-200 bg-sort-50 px-4 py-2.5 text-sm font-semibold text-sort-700 shadow-sm transition duration-150 hover:border-sort-200 hover:bg-sort-100 focus:outline-none focus:ring-4 focus:ring-sort-600/10 lg:w-auto"
-        >
-          <span>
-            {{ 'coachPrograms.sortByName' | translate }}
-          </span>
-
-          <span class="text-lg font-bold leading-none">
-            {{ sortDirection === 'asc' ? '↑' : '↓' }}
-          </span>
-        </button>
+        <app-button
+          variant="sort"
+          [label]="'coachPrograms.sortByName' | translate"
+          [lucideIcon]="
+            sortDirection === 'asc'
+              ? 'arrow-up-narrow-wide'
+              : 'arrow-down-wide-narrow'
+          "
+          (buttonClick)="toggleSort()"
+        ></app-button>
 
       </div>
 
@@ -82,7 +81,7 @@
                ================================================== -->
 
           <div
-            class="relative flex h-36 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-600 to-primary-700"
+            class="group relative flex h-36 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-600 to-primary-700"
           >
             <div
               class="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/10"
@@ -232,13 +231,12 @@
        ÚJ PROGRAM – FLOATING ACTION BUTTON
        ====================================================== -->
 
-  <button
-    type="button"
-    (click)="createNewProgram()"
+  <app-button
+    variant="add"
+    [floating]="true"
     [title]="'coachPrograms.createNew' | translate"
-    class="fixed bottom-5 right-5 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-primary-600 to-primary-700 text-2xl text-white shadow-xl shadow-blue-500/30 transition duration-200 hover:scale-105 hover:from-blue-700 hover:to-indigo-700 hover:shadow-2xl hover:shadow-blue-500/30 focus:outline-none focus:ring-4 focus:ring-blue-500/20 active:scale-95 sm:bottom-7 sm:right-7"
-  >
-    ➕
-  </button>
+    icon="➕"
+    (buttonClick)="createNewProgram()"
+  ></app-button>
 
 </div>
