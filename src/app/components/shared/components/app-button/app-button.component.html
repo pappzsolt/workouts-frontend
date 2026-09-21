@@ -1,0 +1,53 @@
+<button
+  [type]="type"
+  [disabled]="disabled"
+  [attr.title]="title || null"
+  (click)="onClick($event)"
+  [ngClass]="[
+    'inline-flex items-center justify-center gap-2 font-semibold transition duration-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50',
+
+    floating
+      ? 'fixed bottom-5 right-5 z-50 h-14 w-14 rounded-full text-2xl text-white shadow-xl transition duration-200 hover:scale-105 focus:ring-4 active:scale-95 sm:bottom-7 sm:right-7'
+      : 'rounded-xl',
+
+    !floating && size === 'sm' ? 'px-3 py-1.5 text-xs' : '',
+
+    !floating && size === 'md' ? 'px-4 py-2.5 text-sm' : '',
+
+    !floating && size === 'lg' ? 'px-6 py-3 text-base' : '',
+
+    floating
+      ? getFloatingClasses()
+      : getVariantClasses()
+  ]"
+>
+  <!-- Lucide ikon: növekvő rendezés -->
+  @if (lucideIcon === 'arrow-up-narrow-wide') {
+    <svg
+      lucideArrowUpNarrowWide
+      class="h-[18px] w-[18px] shrink-0"
+      aria-hidden="true"
+    ></svg>
+  }
+
+  <!-- Lucide ikon: csökkenő rendezés -->
+  @else if (lucideIcon === 'arrow-down-wide-narrow') {
+    <svg
+      lucideArrowDownWideNarrow
+      class="h-[18px] w-[18px] shrink-0"
+      aria-hidden="true"
+    ></svg>
+  }
+
+  <!-- Emoji vagy szöveges ikon -->
+  @if (icon) {
+    <span class="inline-flex items-center justify-center">
+      {{ icon }}
+    </span>
+  }
+
+  <!-- Gomb felirata -->
+  @if (label) {
+    <span>{{ label }}</span>
+  }
+</button>
