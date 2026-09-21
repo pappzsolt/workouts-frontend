@@ -1,3 +1,18 @@
+tekepites menete :
+/home/svc_ansible
+git clone
+
+root@budsh:/home/svc_ansible# cd workouts-project/
+docker compose down --rmi all --remove-orphans
+docker compose build --no-cache
+docker compose up -d
+
+docker compose down --rmi all --remove-orphans && \
+docker compose build --no-cache && \
+docker compose up -d
+
+----------
+
 1.OK-a coach -nál kell, hogy tudja szerkeszetni a programot, workoustot, exercixe-t OK
 ---------
 2.coach workoutok szerkesztése OK
