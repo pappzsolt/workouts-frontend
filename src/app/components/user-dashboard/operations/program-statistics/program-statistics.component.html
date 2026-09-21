@@ -148,23 +148,17 @@
       ></app-message>
 
       <!-- Program lapozás -->
-      <div
-        *ngIf="!loadingPrograms && totalProgramPages > 1"
-        class="mt-6 border-t border-surface-200 pt-4"
-      >
-        <div class="mt-6 border-t border-surface-200 pt-4">
-          <app-pagination
-            [totalItems]="programs.length"
-            [pageSize]="programPageSize"
-            [currentPage]="programPage"
-            [pageSizeOptions]="[6, 12, 24, 48]"
-            [showPageSize]="true"
-            [showInfo]="true"
-            (pageChange)="onPageChange($event)"
-            (pageSizeChange)="onPageSizeChange($event)"
-          ></app-pagination>
-        </div>
-      </div>
+        <app-pagination
+          [totalItems]="programs.length"
+          [pageSize]="programPageSize"
+          [currentPage]="programPage"
+          [pageSizeOptions]="[6, 12, 24, 48]"
+          [showPageSize]="true"
+          [showInfo]="true"
+          (pageChange)="onPageChange($event)"
+          (pageSizeChange)="onPageSizeChange($event)"
+        ></app-pagination>
+
 
     </section>
 
