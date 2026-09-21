@@ -5,14 +5,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Általános alkalmazás színek
+        // Fő alkalmazásszín – sportos smaragdzöld
         primary: {
-          50: '#fff7ed',
-          100: '#ffedd5',
-          200: '#fed7aa',
-          300: '#fdba74',
-          600: '#ea580c',
-          700: '#c2410c',
+          50: '#ECFDF5',
+          100: '#D1FAE5',
+          200: '#A7F3D0',
+          300: '#6EE7B7',
+          600: '#059669',
+          700: '#047857',
         },
 
         // Edit gombok
@@ -68,6 +68,7 @@ module.exports = {
           600: '#dc2626',
           700: '#b91c1c',
         },
+
         // Pagination gombok
         pagination: {
           50: '#eef2ff',
