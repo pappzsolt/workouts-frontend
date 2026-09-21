@@ -18,26 +18,13 @@
     <div class="flex shrink-0 items-center gap-2 sm:gap-3">
 
       <!-- Hamburger menü mobilon -->
-      <button
-        type="button"
-        (click)="menuOpen = !menuOpen"
-        class="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-blue-600 shadow-sm transition-all duration-200 hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-white/30 sm:hidden"
-        aria-label="Menu"
-      >
-        <svg
-          class="h-6 w-6"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M4 6h16M4 12h16M4 18h16"
-          />
-        </svg>
-      </button>
+      <app-button
+        variant="primary"
+        [floating]="false"
+        [title]="'Menu'"
+        [lucideIcon]="''"
+        (buttonClick)="menuOpen = !menuOpen"
+      ></app-button>
 
       <!-- Username -->
       <span
@@ -61,13 +48,12 @@
       </div>
 
       <!-- Logout -->
-      <button
+      <app-button
+        variant="danger"
         type="button"
-        (click)="onLogout()"
-        class="rounded-xl bg-red-500 px-3 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-red-600 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-red-300/30 sm:px-4"
-      >
-        {{ 'menu.logout' | translate }}
-      </button>
+        [label]="'menu.logout' | translate"
+        (buttonClick)="onLogout()"
+      ></app-button>
     </div>
   </header>
 

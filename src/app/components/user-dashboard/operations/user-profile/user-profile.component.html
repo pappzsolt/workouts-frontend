@@ -233,13 +233,12 @@
 
           <!-- Mentés -->
           <div class="flex min-w-0 sm:col-span-2 sm:justify-end">
-            <button
+            <app-button
+              variant="primary"
               type="button"
-              (click)="onSave()"
-              class="min-h-10 w-full rounded-xl bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-2 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:brightness-110 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-primary-500/20 active:scale-[0.99] sm:w-auto"
-            >
-              {{ 'userProfile.save' | translate }}
-            </button>
+              [label]="'userProfile.save' | translate"
+              (buttonClick)="onSave()"
+            ></app-button>
           </div>
 
         </div>

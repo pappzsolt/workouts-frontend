@@ -188,17 +188,16 @@
 
       <!-- Submit -->
       <div class="flex min-w-0 sm:col-span-2 sm:justify-end">
-        <button
+        <app-button
+          variant="save"
           type="submit"
           [disabled]="loading"
-          class="min-h-11 w-full rounded-xl bg-gradient-to-r from-save-600 to-save-700 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:from-save-700 hover:to-save-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-save-200/50 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-        >
-          {{
-            loading
-              ? ('common.saving' | translate)
-              : ('adminCoachNew.createCoach' | translate)
-          }}
-        </button>
+          [label]="
+    loading
+      ? ('common.saving' | translate)
+      : ('adminCoachNew.createCoach' | translate)
+  "
+        ></app-button>
       </div>
 
     </form>

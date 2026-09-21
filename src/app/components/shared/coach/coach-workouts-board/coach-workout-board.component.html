@@ -44,19 +44,17 @@
 
     <!-- RENDEZÉS -->
 
-    <button
+    <app-button
+      variant="sort"
       type="button"
-      (click)="toggleSort()"
-      class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-sort-200 bg-sort-50 px-4 py-2.5 text-sm font-semibold text-sort-700 shadow-sm transition duration-150 hover:bg-sort-100 focus:outline-none focus:ring-4 focus:ring-sort-600/10 lg:w-auto"
-    >
-      <span>
-        {{ 'coachWorkoutBoard.sortByName' | translate }}
-      </span>
-
-      <span class="text-lg font-bold leading-none">
-        {{ sortDirection === 'asc' ? '↑' : '↓' }}
-      </span>
-    </button>
+      [label]="'coachWorkoutBoard.sortByName' | translate"
+      [lucideIcon]="
+    sortDirection === 'asc'
+      ? 'arrow-up-narrow-wide'
+      : 'arrow-down-wide-narrow'
+  "
+      (buttonClick)="toggleSort()"
+    ></app-button>
   </div>
 }
 

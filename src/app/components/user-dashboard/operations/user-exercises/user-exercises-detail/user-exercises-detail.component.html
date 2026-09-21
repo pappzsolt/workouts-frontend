@@ -233,20 +233,14 @@
 
 
               <!-- Kész gomb: a sorozat minden adatát menti -->
-              <button
+              <app-button
+                [variant]="set.completed ? 'save' : 'secondary'"
                 type="button"
-                (click)="updateSetCompleted(set, !set.completed)"
-                class="min-w-[110px] min-h-[52px] px-4 rounded-xl flex items-center justify-center gap-2
-         text-white font-bold text-base transition-all active:scale-95
-         focus:outline-none focus:ring-4"
-                [ngClass]="{
-    'bg-green-600 hover:bg-green-700 focus:ring-green-200': set.completed,
-    'bg-gray-500 hover:bg-gray-600 focus:ring-gray-200': !set.completed
-  }"
-              >
-                <span class="text-xl">{{ set.completed ? '✓' : '○' }}</span>
-                <span>{{ 'userExerciseDetail.done' | translate }}</span>
-              </button>
+                [label]="'userExerciseDetail.done' | translate"
+                [icon]="set.completed ? '✓' : '○'"
+                [disabled]="false"
+                (buttonClick)="updateSetCompleted(set, !set.completed)"
+              ></app-button>
 
             </div>
 

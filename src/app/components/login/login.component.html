@@ -61,17 +61,16 @@
       </div>
 
       <!-- Login button -->
-      <button
+      <app-button
+        variant="primary"
         type="submit"
         [disabled]="loading"
-        class="mt-2 flex min-h-11 w-full items-center justify-center rounded-xl bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:from-blue-700 hover:to-indigo-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-blue-500/20 disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        {{
-          loading
-            ? ('login.loading' | translate)
-            : ('login.login' | translate)
-        }}
-      </button>
+        [label]="
+    loading
+      ? ('login.loading' | translate)
+      : ('login.login' | translate)
+  "
+      ></app-button>
 
     </form>
   </div>
