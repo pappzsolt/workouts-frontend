@@ -7,6 +7,7 @@ import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
   standalone: true,
   imports: [CommonModule, LucideChevronLeft, LucideChevronRight],
   templateUrl: './side-pagination.component.html',
+  styleUrl: './side-pagination.component.css',
 })
 export class SidePaginationComponent {
   @Input() currentPage = 1;

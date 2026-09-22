@@ -1,4 +1,3 @@
-
 <!-- ======================================================
      LAPOZÓ ÉS KÁRTYA KÖZÖS KERETE
 ====================================================== -->
@@ -6,7 +5,7 @@
 <div class="mx-auto w-full max-w-6xl">
 
   <!-- KÁRTYA TERÜLETE + OLDALSÓ NYILAK -->
-  <div class="relative">
+  <div class="relative px-12 sm:px-0">
 
     <!-- PROGRAMKÁRTYA KÖZÉPEN -->
     <div class="mx-auto w-full min-w-0 max-w-md">
@@ -20,7 +19,7 @@
       aria-label="Előző oldal"
       [disabled]="currentPage <= 1"
       (click)="onPreviousPage()"
-      class="absolute left-0 top-1/2 z-10
+      class="absolute left-1 top-1/2 z-10
              flex h-10 w-10 -translate-y-1/2
              items-center justify-center
              rounded-full border border-surface-300
@@ -44,7 +43,7 @@
       aria-label="Következő oldal"
       [disabled]="currentPage >= totalPages"
       (click)="onNextPage()"
-      class="absolute right-0 top-1/2 z-10
+      class="absolute right-1 top-1/2 z-10
              flex h-10 w-10 -translate-y-1/2
              items-center justify-center
              rounded-full border border-surface-300
