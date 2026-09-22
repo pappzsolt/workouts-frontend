@@ -1,14 +1,15 @@
 <!-- ======================================================
-     LAPOZÓ ÉS KÁRTYA KÖZÖS KERETE
+     LAPOZÓ KÖZÖS KERETE
 ====================================================== -->
 
-<div class="mx-auto w-full max-w-6xl">
+<div class="mx-auto w-full">
 
   <!-- ====================================================
-       KÁRTYA TERÜLETE + OLDALSÓ NYILAK
+       KÁRTYA + OLDALSÓ NYILAK
        ==================================================== -->
+
   <div
-    class="relative"
+    class="relative w-full"
     [ngClass]="
       fullWidth
         ? 'px-6 sm:px-0'
@@ -19,32 +20,26 @@
   >
 
     <!-- ==================================================
-         KÁRTYA KÖZÉPEN
+         KÁRTYA TARTALOM
          ================================================== -->
-    <div
-      class="mx-auto w-full min-w-0"
-      [ngClass]="
-        fullWidth
-          ? 'max-w-none'
-          : fullWidthMobile
-            ? 'max-w-none sm:max-w-4xl'
-            : 'max-w-lg'
-      "
-    >
+
+    <div class="w-full min-w-0">
+
       <ng-content></ng-content>
+
     </div>
 
-
     <!-- ==================================================
-         ELŐZŐ OLDAL
+         ELŐZŐ
          ================================================== -->
+
     <button
       *ngIf="totalPages > 1"
       type="button"
       aria-label="Előző oldal"
       [disabled]="currentPage <= 1"
       (click)="onPreviousPage()"
-      class="absolute top-1/2 z-10
+      class="absolute left-0 top-1/2 z-10
              flex h-6 w-6 -translate-y-1/2
              items-center justify-center
              rounded-full
@@ -53,8 +48,8 @@
              text-white
              shadow-sm
              transition
-             hover:bg-primary-700
              hover:border-primary-700
+             hover:bg-primary-700
              disabled:cursor-not-allowed
              disabled:opacity-30
              sm:h-10 sm:w-10"
@@ -73,17 +68,17 @@
       ></svg>
     </button>
 
-
     <!-- ==================================================
-         KÖVETKEZŐ OLDAL
+         KÖVETKEZŐ
          ================================================== -->
+
     <button
       *ngIf="totalPages > 1"
       type="button"
       aria-label="Következő oldal"
       [disabled]="currentPage >= totalPages"
       (click)="onNextPage()"
-      class="absolute top-1/2 z-10
+      class="absolute right-0 top-1/2 z-10
              flex h-6 w-6 -translate-y-1/2
              items-center justify-center
              rounded-full
@@ -92,8 +87,8 @@
              text-white
              shadow-sm
              transition
-             hover:bg-primary-700
              hover:border-primary-700
+             hover:bg-primary-700
              disabled:cursor-not-allowed
              disabled:opacity-30
              sm:h-10 sm:w-10"
@@ -114,10 +109,10 @@
 
   </div>
 
+  <!-- ==================================================
+       OLDALSZÁM
+       ================================================== -->
 
-  <!-- ====================================================
-       OLDALSZÁM A KÁRTYA ALATT
-       ==================================================== -->
   <div
     *ngIf="totalPages > 1"
     class="mt-5 text-center text-sm font-medium text-content-600"
