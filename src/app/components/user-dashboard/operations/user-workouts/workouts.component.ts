@@ -44,7 +44,7 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
 
   pendingCurrentPage = 1;
 
-  pendingPageSize = 6;
+  pendingPageSize = 1;
 
   // ============================================================
   // TELJESÍTETT EDZÉSEK LAPOZÁSA
@@ -52,7 +52,7 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
 
   completedCurrentPage = 1;
 
-  completedPageSize = 6;
+  completedPageSize = 1;
 
   // ============================================================
   // TABVÁLTÁS

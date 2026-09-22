@@ -30,6 +30,8 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
   workoutId!: number;
   programId!: number;
+  private currentExerciseId!: number;
+  currentSetIndex = 0;
 
   message = '';
   messageType: 'success' | 'error' | 'info' | '' = '';
@@ -43,22 +45,58 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.workoutId = Number(this.route.snapshot.paramMap.get('workoutId'));
 
-    const exerciseId = Number(this.route.snapshot.paramMap.get('exerciseId'));
-
     const navState = history.state;
-
     this.programId = Number(navState['programId']);
 
-    this.loadExerciseDetail(exerciseId);
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      const exerciseId = Number(params.get('exerciseId'));
+
+      if (!exerciseId || Number.isNaN(exerciseId)) {
+        return;
+      }
+
+      this.currentExerciseId = exerciseId;
+      this.currentSetIndex = 0;
+      this.loadExerciseDetail(exerciseId);
+    });
 
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.loadExerciseDetail(exerciseId);
+      if (this.currentExerciseId) {
+        this.loadExerciseDetail(this.currentExerciseId);
+      }
     });
   }
 
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  get currentSet(): UserWorkoutExerciseSetDto | undefined {
+    return this.workoutExercise?.userWorkoutExerciseSets?.[this.currentSetIndex];
+  }
+
+  get hasPreviousSet(): boolean {
+    return this.currentSetIndex > 0;
+  }
+
+  get hasNextSet(): boolean {
+    return (
+      !!this.workoutExercise?.userWorkoutExerciseSets?.length &&
+      this.currentSetIndex < this.workoutExercise.userWorkoutExerciseSets.length - 1
+    );
+  }
+
+  previousSet(): void {
+    if (this.hasPreviousSet) {
+      this.currentSetIndex--;
+    }
+  }
+
+  nextSet(): void {
+    if (this.hasNextSet) {
+      this.currentSetIndex++;
+    }
   }
 
   /**
@@ -70,30 +108,13 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
     this.exercisesService.getWorkoutExercises(this.programId, this.workoutId).subscribe({
       next: (response) => {
-        /*
-         * Backend válasz:
-         *
-         * {
-         *   success: true,
-         *   data: {
-         *     ...
-         *   },
-         *   message: null
-         * }
-         *
-         * Ezért a tényleges workout:
-         *
-         * response.data
-         */
         const workout = response.data;
 
         this.workout = workout;
 
         if (!workout?.exercises || workout.exercises.length === 0) {
           this.message = 'userExerciseDetail.noExercise';
-
           this.messageType = 'info';
-
           return;
         }
 
@@ -101,19 +122,13 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
         if (!found) {
           this.message = 'userExerciseDetail.noExercise';
-
           this.messageType = 'info';
-
           return;
         }
 
         this.workoutExercise = found;
-
-        /*
-         * Az exercise done állapotának
-         * kiszámítása a saját setek
-         * completed állapotából.
-         */
+        const setCount = found.userWorkoutExerciseSets?.length || 0;
+        this.currentSetIndex = setCount > 0 ? Math.min(this.currentSetIndex, setCount - 1) : 0;
         this.updateExerciseDone();
       },
 
@@ -125,7 +140,6 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
         };
 
         this.message = error.error?.message || 'userExerciseDetail.loadError';
-
         this.messageType = 'error';
       },
     });
@@ -136,7 +150,6 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
    */
   onSetCompletedChange(set: UserWorkoutExerciseSetDto, event: Event): void {
     const input = event.target as HTMLInputElement;
-
     this.updateSetCompleted(set, input.checked);
   }
 
@@ -167,22 +180,9 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: () => {
-          /*
-           * Csak sikeres backend válasz után
-           * módosítjuk a frontend állapotát.
-           */
           set.completed = completed;
-
-          /*
-           * Exercise done újraszámolása.
-           *
-           * Ez automatikusan újraszámolja
-           * a workout frontend állapotát is.
-           */
           this.updateExerciseDone();
-
           this.message = 'userExerciseDetail.setUpdated';
-
           this.messageType = 'success';
         },
 
@@ -194,7 +194,6 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
           };
 
           this.message = error.error?.message || 'userExerciseDetail.setUpdateError';
-
           this.messageType = 'error';
         },
       });
@@ -213,9 +212,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
     if (!sets || sets.length === 0) {
       this.workoutExercise.done = false;
-
       this.updateWorkoutDone();
-
       return;
     }
 
@@ -223,9 +220,6 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       (set: UserWorkoutExerciseSetDto) => set.completed === true,
     );
 
-    /*
-     * Workout állapot újraszámolása.
-     */
     this.updateWorkoutDone();
   }
 
@@ -247,7 +241,6 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
     if (!this.workout.exercises?.length) {
       this.workout.done = false;
-
       return;
     }
 
@@ -283,14 +276,8 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: () => {
-          /*
-           * Sikeres mentés után frissítjük
-           * az exercise és workout állapotát.
-           */
           this.updateExerciseDone();
-
           this.message = 'userExerciseDetail.saveSuccess';
-
           this.messageType = 'success';
         },
 
@@ -302,7 +289,6 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
           };
 
           this.message = error.error?.message || 'userExerciseDetail.saveError';
-
           this.messageType = 'error';
         },
       });

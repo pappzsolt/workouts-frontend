@@ -30,7 +30,7 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
   private allPrograms: UserProgram[] = [];
 
   currentPage = 1;
-  pageSize = 6;
+  pageSize = 1;
 
   paginatedPrograms: UserProgram[] = [];
 
