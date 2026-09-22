@@ -62,7 +62,7 @@
       >
 
         <app-side-pagination
-          [fullWidthMobile]="true"
+          [fullWidth]="true"
           [currentPage]="currentSetIndex + 1"
           [totalPages]="workoutExercise.userWorkoutExerciseSets?.length || 0"
           (pageChange)="goToSet($event - 1)"

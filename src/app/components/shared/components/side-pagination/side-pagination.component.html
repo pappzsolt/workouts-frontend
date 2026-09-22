@@ -10,9 +10,11 @@
   <div
     class="relative"
     [ngClass]="
-      fullWidthMobile
+      fullWidth
         ? 'px-6 sm:px-0'
-        : 'px-12 sm:px-0'
+        : fullWidthMobile
+          ? 'px-6 sm:px-0'
+          : 'px-12 sm:px-0'
     "
   >
 
@@ -22,9 +24,11 @@
     <div
       class="mx-auto w-full min-w-0"
       [ngClass]="
-        fullWidthMobile
-          ? 'max-w-none sm:max-w-4xl'
-          : 'max-w-lg'
+        fullWidth
+          ? 'max-w-none'
+          : fullWidthMobile
+            ? 'max-w-none sm:max-w-4xl'
+            : 'max-w-lg'
       "
     >
       <ng-content></ng-content>
@@ -55,9 +59,11 @@
              disabled:opacity-30
              sm:h-10 sm:w-10"
       [ngClass]="
-        fullWidthMobile
-          ? '-left-2 sm:left-1'
-          : 'left-1 sm:left-5'
+        fullWidth
+          ? '-left-2'
+          : fullWidthMobile
+            ? '-left-2 sm:left-1'
+            : 'left-1 sm:left-5'
       "
     >
       <svg
@@ -92,9 +98,11 @@
              disabled:opacity-30
              sm:h-10 sm:w-10"
       [ngClass]="
-        fullWidthMobile
-          ? '-right-2 sm:right-1'
-          : 'right-1 sm:right-5'
+        fullWidth
+          ? '-right-2'
+          : fullWidthMobile
+            ? '-right-2 sm:right-1'
+            : 'right-1 sm:right-5'
       "
     >
       <svg

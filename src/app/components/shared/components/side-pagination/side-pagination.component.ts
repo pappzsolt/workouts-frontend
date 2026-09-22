@@ -10,24 +10,22 @@ import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
   styleUrl: './side-pagination.component.css',
 })
 export class SidePaginationComponent {
-  @Input()
-  currentPage = 1;
-
-  @Input()
-  totalPages = 0;
+  @Input() currentPage = 1;
+  @Input() totalPages = 0;
 
   /**
-   * Mobil nézetben a kártya teljes rendelkezésre álló
-   * szélességét használja.
-   *
-   * Alapértelmezés: false, így a meglévő oldalak
-   * viselkedése változatlan marad.
+   * A kártya teljes rendelkezésre álló szélességet használ.
+   * Alapértelmezés: false, így a meglévő oldalak viselkedése nem változik.
    */
-  @Input()
-  fullWidthMobile = false;
+  @Input() fullWidth = false;
 
-  @Output()
-  pageChange = new EventEmitter<number>();
+  /**
+   * Mobilon teljes szélességű kártya.
+   * Meglévő működés megtartása miatt marad.
+   */
+  @Input() fullWidthMobile = false;
+
+  @Output() pageChange = new EventEmitter<number>();
 
   onPreviousPage(): void {
     if (this.currentPage > 1) {
