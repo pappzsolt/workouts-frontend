@@ -35,7 +35,7 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
   // ============================================================
 
   currentPage = 1;
-  pageSize = 4;
+  pageSize = 1;
 
   paginatedExercises: WorkoutExercise[] = [];
 
@@ -184,6 +184,22 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
     this.currentPage = page;
 
     this.updatePaginatedExercises();
+  }
+
+  // ============================================================
+  // ELŐZŐ GYAKORLAT
+  // ============================================================
+
+  previousExercise(): void {
+    this.onPageChange(this.currentPage - 1);
+  }
+
+  // ============================================================
+  // KÖVETKEZŐ GYAKORLAT
+  // ============================================================
+
+  nextExercise(): void {
+    this.onPageChange(this.currentPage + 1);
   }
 
   // ============================================================
