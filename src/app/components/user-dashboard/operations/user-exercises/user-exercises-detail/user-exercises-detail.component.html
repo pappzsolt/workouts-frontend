@@ -1,3 +1,7 @@
+<!-- ======================================================
+     OLDAL
+====================================================== -->
+
 <div
   *ngIf="workoutExercise"
   class="min-h-full min-w-0"
@@ -6,14 +10,18 @@
   <!-- ======================================================
        FEJLÉC
        ====================================================== -->
+
   <div class="px-4 sm:px-6 py-4 sm:py-5">
 
     <!-- VISSZA GOMB -->
+
     <app-back-button
       [fallbackUrl]="'/user/workouts/' + workoutId + '/exercises'"
     ></app-back-button>
 
+
     <!-- GYAKORLAT FEJLÉC -->
+
     <div class="text-center">
 
       <div
@@ -44,6 +52,7 @@
   <!-- ======================================================
        TARTALOM
        ====================================================== -->
+
   <div
     class="px-2 sm:px-6 py-5 sm:py-6"
   >
@@ -51,18 +60,19 @@
     <!-- ====================================================
          SOROZATOK
          ==================================================== -->
+
     <div class="w-full">
 
       <!-- ==================================================
            SET LAPOZÁS
            ================================================== -->
+
       <div
         *ngIf="workoutExercise.userWorkoutExerciseSets?.length; else noSets"
         class="w-full"
       >
 
         <app-side-pagination
-          [fullWidth]="true"
           [currentPage]="currentSetIndex + 1"
           [totalPages]="workoutExercise.userWorkoutExerciseSets?.length || 0"
           (pageChange)="goToSet($event - 1)"
@@ -71,6 +81,7 @@
           <!-- =================================================
                AKTUÁLIS SET KÁRTYA
                ================================================= -->
+
           <app-card
             *ngIf="currentSet as set"
             variant="default"
@@ -88,6 +99,7 @@
               <!-- =================================================
                    CARD HEADER
                    ================================================= -->
+
               <div
                 class="relative flex h-28 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-600 via-primary-600 to-primary-700"
               >
@@ -117,16 +129,19 @@
               <!-- =================================================
                    CARD CONTENT
                    ================================================= -->
+
               <div class="p-4 sm:p-5">
 
                 <!-- =================================================
                      TOP ROW
                      ================================================= -->
+
                 <div
                   class="flex items-center justify-between"
                 >
 
                   <!-- SET NUMBER -->
+
                   <div>
 
                     <div
@@ -149,6 +164,7 @@
 
 
                   <!-- KÉSZ GOMB -->
+
                   <app-button
                     [variant]="set.completed ? 'save' : 'secondary'"
                     type="button"
@@ -164,11 +180,13 @@
                 <!-- =================================================
                      TARGET VALUES
                      ================================================= -->
+
                 <div
                   class="grid grid-cols-2 gap-3 mt-4"
                 >
 
                   <!-- TARGET REPETITIONS -->
+
                   <div
                     class="bg-white rounded-xl p-3 border border-surface-200 shadow-sm"
                   >
@@ -195,6 +213,7 @@
 
 
                   <!-- TARGET WEIGHT -->
+
                   <div
                     class="bg-white rounded-xl p-3 border border-surface-200 shadow-sm"
                   >
@@ -225,11 +244,13 @@
                 <!-- =================================================
                      ACTUAL VALUES
                      ================================================= -->
+
                 <div
                   class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4"
                 >
 
                   <!-- ACTUAL REPETITIONS -->
+
                   <div>
 
                     <label
@@ -249,6 +270,7 @@
 
 
                   <!-- ACTUAL WEIGHT -->
+
                   <div>
 
                     <label
@@ -279,6 +301,7 @@
                 <!-- =================================================
                      NOTES
                      ================================================= -->
+
                 <div class="mt-4">
 
                   <label
@@ -300,6 +323,7 @@
                 <!-- =================================================
                      SET STATUS
                      ================================================= -->
+
                 <div
                   class="mt-3 text-sm font-semibold"
                   [ngClass]="{
@@ -321,6 +345,7 @@
                      GYAKORLAT INFORMÁCIÓ
                      A ZÖLD KÁRTYA ALJÁN
                      ================================================= -->
+
                 <div
                   class="mt-5 pt-5 border-t border-white/70"
                 >
@@ -328,6 +353,7 @@
                   <!-- =================================================
                        LEÍRÁS
                        ================================================= -->
+
                   <div
                     *ngIf="workoutExercise.exercise.description"
                     class="mb-4"
@@ -351,11 +377,13 @@
                   <!-- =================================================
                        EXERCISE PROPERTIES
                        ================================================= -->
+
                   <div
                     class="grid grid-cols-2 gap-3 text-sm"
                   >
 
                     <!-- MUSCLE -->
+
                     <div
                       *ngIf="workoutExercise.exercise.muscleGroup"
                       class="bg-white/70 rounded-xl p-3 border border-white/80"
@@ -377,6 +405,7 @@
 
 
                     <!-- EQUIPMENT -->
+
                     <div
                       *ngIf="workoutExercise.exercise.equipment"
                       class="bg-white/70 rounded-xl p-3 border border-white/80"
@@ -398,6 +427,7 @@
 
 
                     <!-- DIFFICULTY -->
+
                     <div
                       *ngIf="workoutExercise.exercise.difficultyLevel"
                       class="bg-white/70 rounded-xl p-3 border border-white/80"
@@ -419,6 +449,7 @@
 
 
                     <!-- CATEGORY -->
+
                     <div
                       *ngIf="workoutExercise.exercise.category"
                       class="bg-white/70 rounded-xl p-3 border border-white/80"
@@ -440,6 +471,7 @@
 
 
                     <!-- CALORIES -->
+
                     <div
                       *ngIf="workoutExercise.exercise.caloriesBurnedPerMinute != null"
                       class="bg-white/70 rounded-xl p-3 border border-white/80"
@@ -461,6 +493,7 @@
 
 
                     <!-- DURATION -->
+
                     <div
                       *ngIf="workoutExercise.exercise.durationSeconds != null"
                       class="bg-white/70 rounded-xl p-3 border border-white/80"
@@ -490,6 +523,7 @@
                      EXERCISE STATUS
                      MOST MÁR A ZÖLD KÁRTYÁN BELÜL
                      ================================================= -->
+
                 <div
                   class="mt-5 pt-4 border-t border-white/70"
                 >
@@ -540,6 +574,7 @@
       <!-- =================================================
            KÉP ELLENŐRZÉS
            ================================================= -->
+
       <img
         *ngIf="workoutExercise.exercise.imageUrl"
         [src]="workoutExercise.exercise.imageUrl"
@@ -554,6 +589,7 @@
            IMAGE
            CSAK HA A KÉP TÉNYLEG BETÖLTŐDÖTT
            ================================================= -->
+
       <div
         *ngIf="workoutExercise.exercise.imageUrl && imageLoaded"
         class="bg-white rounded-2xl shadow-md border border-white/80 p-4 sm:p-5 mt-5"
@@ -577,6 +613,7 @@
       <!-- =================================================
            VIDEO
            ================================================= -->
+
       <div
         *ngIf="workoutExercise.exercise.videoUrl"
         class="bg-white rounded-2xl shadow-md border border-white/80 p-4 sm:p-5 mt-5"
@@ -607,6 +644,7 @@
 <!-- ======================================================
      NINCS SET
      ====================================================== -->
+
 <ng-template #noSets>
 
   <app-message
@@ -620,6 +658,7 @@
 <!-- ======================================================
      NINCS GYAKORLAT
      ====================================================== -->
+
 <div
   *ngIf="!workoutExercise"
   class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 flex items-center justify-center p-4"
