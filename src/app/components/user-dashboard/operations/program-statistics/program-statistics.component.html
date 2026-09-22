@@ -1,52 +1,77 @@
-<div
-  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-orange-50/30 to-amber-50/40 px-4 py-6 sm:px-6 lg:px-8"
->
-  <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
+<!-- ==========================================================
+     OLDAL
+     ========================================================== -->
+
+<div class="w-full min-w-0">
+
+  <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-4">
 
     <!-- ==========================================================
          FEJLÉC
          ========================================================== -->
 
-    <div class="relative isolate overflow-hidden rounded-2xl bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-6 text-center shadow-lg sm:px-8 sm:py-8">
+    <div
+      class="relative isolate overflow-hidden rounded-2xl bg-gradient-to-r from-primary-600 to-primary-700 px-4 py-4 text-center sm:px-6 sm:py-5"
+    >
+
       <!-- Dekoratív körök -->
-      <div class="pointer-events-none absolute -right-10 -top-12 -z-10 h-40 w-40 rounded-full bg-white/10"></div>
-      <div class="pointer-events-none absolute -bottom-16 -left-8 -z-10 h-36 w-36 rounded-full bg-white/10"></div>
+
+      <div
+        class="pointer-events-none absolute -right-8 -top-10 -z-10 h-32 w-32 rounded-full bg-white/10"
+      ></div>
+
+      <div
+        class="pointer-events-none absolute -bottom-12 -left-6 -z-10 h-28 w-28 rounded-full bg-white/10"
+      ></div>
 
       <div class="relative">
-        <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-white/20 bg-white/15 text-3xl shadow-sm backdrop-blur-sm">
+
+        <div
+          class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white/15 text-2xl backdrop-blur-sm sm:h-14 sm:w-14 sm:text-3xl"
+        >
           📊
         </div>
 
-        <h1 class="mt-4 break-words text-2xl font-bold tracking-tight text-white sm:text-3xl">
+        <h1
+          class="mt-2 break-words text-xl font-bold tracking-tight text-white sm:text-2xl"
+        >
           {{ 'userProgramStatistics.title' | translate }}
         </h1>
 
-        <p class="mx-auto mt-2 max-w-2xl text-sm leading-relaxed text-white/85 sm:text-base">
+        <p
+          class="mx-auto mt-1 max-w-2xl text-xs leading-relaxed text-white/85 sm:text-sm"
+        >
           {{ 'userProgramStatistics.subtitle' | translate }}
         </p>
+
       </div>
     </div>
+
 
     <!-- ==========================================================
          PROGRAMOK
          ========================================================== -->
 
-    <section
-      class="min-w-0 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-6"
-    >
+    <section class="min-w-0">
 
-      <h2 class="mb-5 text-xl font-bold text-content-800">
+      <h2
+        class="mb-3 text-lg font-bold text-content-800 sm:text-xl"
+      >
         {{ 'userProgramStatistics.selectProgram' | translate }}
       </h2>
 
+
       <!-- Programok betöltése -->
+
       <app-message
         *ngIf="loadingPrograms"
         [message]="'userProgramStatistics.loadingPrograms' | translate"
         type="info"
       ></app-message>
 
+
       <!-- Program betöltési hiba -->
+
       <app-message
         *ngIf="
           message &&
@@ -58,85 +83,118 @@
         [type]="messageType"
       ></app-message>
 
-      <!-- Program lista -->
+
+      <!-- ========================================================
+           PROGRAM LISTA
+           ======================================================== -->
+
       <div
         *ngIf="
           !loadingPrograms &&
           programs.length
         "
-        class="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        class="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3"
       >
 
-        <button
+        <!-- ======================================================
+             PROGRAM KÁRTYA
+             KÖZPONTI APP-CARD KOMPONENSSEL
+             ====================================================== -->
+
+        <app-card
           *ngFor="let program of pagedPrograms"
-          type="button"
-          [class.border-primary-600]="isProgramSelected(program.programId ?? program.id)"
-          [class.bg-primary-50]="isProgramSelected(program.programId ?? program.id)"
-          [class.ring-2]="isProgramSelected(program.programId ?? program.id)"
-          [class.ring-primary-600]="isProgramSelected(program.programId ?? program.id)"
-          class="group relative flex min-h-36 w-full min-w-0 cursor-pointer flex-col justify-center rounded-2xl border border-surface-200 bg-white p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary-200 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary-600/20"
-          (click)="selectProgram(program.programId ?? program.id)"
+          variant="outlined"
+          class="block min-h-28 w-full min-w-0 cursor-pointer"
+          [class.ring-2]="
+            isProgramSelected(program.programId ?? program.id)
+          "
+          [class.ring-primary-600]="
+            isProgramSelected(program.programId ?? program.id)
+          "
         >
 
-          <div class="min-w-0 pr-8">
+          <button
+            type="button"
+            class="relative flex min-h-28 w-full min-w-0 flex-col justify-center bg-transparent p-3 text-left focus:outline-none focus:ring-2 focus:ring-primary-600/20"
+            (click)="selectProgram(program.programId ?? program.id)"
+          >
 
-            <div
-              class="break-words text-base font-bold leading-snug text-content-800 sm:text-lg"
-            >
-              {{ program.programName ?? program.name }}
+            <!-- PROGRAM TARTALOM -->
+
+            <div class="min-w-0 pr-7">
+
+              <!-- PROGRAM NÉV -->
+
+              <div
+                class="break-words text-sm font-bold leading-snug text-content-800 sm:text-base"
+              >
+                {{ program.programName ?? program.name }}
+              </div>
+
+
+              <!-- PROGRAM LEÍRÁS -->
+
+              <div
+                *ngIf="
+                  program.programDesc ??
+                  program.description
+                "
+                class="mt-1 line-clamp-2 text-xs leading-relaxed text-content-600"
+              >
+                {{ program.programDesc ?? program.description }}
+              </div>
+
+
+              <!-- META -->
+
+              <div
+                class="mt-2 flex flex-wrap gap-1.5"
+              >
+
+                <span
+                  *ngIf="
+                    program.durationDays != null
+                  "
+                  class="rounded-md bg-surface-50 px-2 py-1 text-[11px] font-medium text-content-600"
+                >
+                  {{ program.durationDays }}
+                  {{ 'userProgramStatistics.days' | translate }}
+                </span>
+
+                <span
+                  *ngIf="program.difficultyLevel"
+                  class="rounded-md bg-surface-50 px-2 py-1 text-[11px] font-medium text-content-600"
+                >
+                  {{ program.difficultyLevel }}
+                </span>
+
+              </div>
+
             </div>
+
+
+            <!-- KIVÁLASZTVA -->
 
             <div
               *ngIf="
-                program.programDesc ??
-                program.description
+                isProgramSelected(
+                  program.programId ?? program.id
+                )
               "
-              class="mt-2 line-clamp-3 text-sm leading-relaxed text-content-600"
+              class="absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full bg-primary-600 text-xs font-bold text-white"
             >
-              {{ program.programDesc ?? program.description }}
+              ✓
             </div>
 
-            <div
-              class="mt-4 flex flex-wrap gap-2"
-            >
+          </button>
 
-              <span
-                *ngIf="
-                  program.durationDays != null
-                "
-                class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
-              >
-                {{ program.durationDays }}
-                {{ 'userProgramStatistics.days' | translate }}
-              </span>
-
-              <span
-                *ngIf="program.difficultyLevel"
-                class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
-              >
-                {{ program.difficultyLevel }}
-              </span>
-
-            </div>
-
-          </div>
-
-          <div
-            *ngIf="
-              isProgramSelected(
-                program.programId ?? program.id
-              )
-            "
-            class="absolute right-4 top-4 flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white shadow-sm"
-          >
-            ✓
-          </div>
-
-        </button>
+        </app-card>
 
       </div>
 
+
       <!-- Nincs program -->
+
       <app-message
         *ngIf="
           !loadingPrograms &&
@@ -147,7 +205,20 @@
         type="info"
       ></app-message>
 
-      <!-- Program lapozás -->
+
+      <!-- ======================================================
+           PROGRAM LAPOZÁS
+           CSAK AKKOR JELENIK MEG, HA TÖBB OLDAL VAN
+           ====================================================== -->
+
+      <div
+        *ngIf="
+          !loadingPrograms &&
+          programs.length > programPageSize
+        "
+        class="mt-3"
+      >
+
         <app-pagination
           [totalItems]="programs.length"
           [pageSize]="programPageSize"
@@ -159,8 +230,10 @@
           (pageSizeChange)="onPageSizeChange($event)"
         ></app-pagination>
 
+      </div>
 
     </section>
+
 
     <!-- ==========================================================
          STATISZTIKA
@@ -168,17 +241,20 @@
 
     <section
       *ngIf="selectedProgramId"
-      class="min-w-0 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-6"
+      class="min-w-0"
     >
 
       <!-- Betöltés -->
+
       <app-message
         *ngIf="loadingStatistics"
         [message]="'userProgramStatistics.loading' | translate"
         type="info"
       ></app-message>
 
+
       <!-- Backend hiba -->
+
       <app-message
         *ngIf="
           !loadingStatistics &&
@@ -189,7 +265,9 @@
         [type]="messageType"
       ></app-message>
 
+
       <!-- Nincs adat -->
+
       <app-message
         *ngIf="
           !loadingStatistics &&
@@ -199,6 +277,7 @@
         [message]="'userProgramStatistics.noData' | translate"
         type="info"
       ></app-message>
+
 
       <!-- ========================================================
            AKTUÁLIS WORKOUT
@@ -212,69 +291,22 @@
         class="min-w-0"
       >
 
-        <!-- Workout lapozó fejléc -->
-        <div
-          class="mb-5 flex flex-col items-center justify-between gap-3 rounded-xl border border-surface-200 bg-surface-50 p-4 sm:flex-row"
-        >
-
-          <button
-            type="button"
-            class="flex min-h-10 w-full items-center justify-center rounded-xl border border-surface-200 bg-white px-4 py-2 text-sm font-semibold text-content-700 transition-all duration-200 hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
-            (click)="previousWorkout()"
-            [disabled]="currentWorkoutIndex === 0"
-          >
-            ◀
-            {{ 'common.previous' | translate }}
-          </button>
-
-          <div
-            class="flex flex-col items-center gap-1 text-center"
-          >
-            <span
-              class="text-xs font-semibold uppercase tracking-wide text-content-400"
-            >
-              {{ 'userProgramStatistics.workout' | translate }}
-            </span>
-
-            <span
-              class="text-base font-bold text-content-700"
-            >
-              {{ currentWorkoutIndex + 1 }}
-              /
-              {{ totalWorkouts }}
-            </span>
-          </div>
-
-          <button
-            type="button"
-            class="flex min-h-10 w-full items-center justify-center rounded-xl border border-surface-200 bg-white px-4 py-2 text-sm font-semibold text-content-700 transition-all duration-200 hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
-            (click)="nextWorkout()"
-            [disabled]="
-              currentWorkoutIndex === totalWorkouts - 1
-            "
-          >
-            {{ 'common.next' | translate }}
-            ▶
-          </button>
-
-        </div>
-
         <!-- ======================================================
              WORKOUT
              ====================================================== -->
 
-        <div
-          class="min-w-0 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-6"
-        >
+        <div class="min-w-0">
 
           <!-- Workout fejléc -->
+
           <div
-            class="flex flex-col gap-4 border-b border-surface-200 pb-5 lg:flex-row lg:items-start lg:justify-between"
+            class="flex flex-col gap-2 border-b border-surface-200 pb-3 sm:flex-row sm:items-start sm:justify-between"
           >
 
             <div class="min-w-0">
+
               <h2
-                class="break-words text-xl font-bold text-content-800 sm:text-2xl"
+                class="break-words text-lg font-bold text-content-800 sm:text-xl"
               >
                 {{ currentWorkout.workoutName }}
               </h2>
@@ -283,11 +315,15 @@
                 *ngIf="
                   currentWorkout.workoutDescription
                 "
-                class="mt-2 text-sm leading-relaxed text-content-600"
+                class="mt-1 text-xs leading-relaxed text-content-600 sm:text-sm"
               >
                 {{ currentWorkout.workoutDescription }}
               </p>
+
             </div>
+
+
+            <!-- Workout státusz -->
 
             <div class="shrink-0">
 
@@ -295,19 +331,21 @@
                 *ngIf="
                   currentWorkout.userWorkoutCompleted
                 "
-                class="inline-flex items-center rounded-full border border-green-200 bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-700"
+                class="inline-flex items-center rounded-full bg-green-50 px-2.5 py-1 text-[11px] font-semibold text-green-700"
               >
                 ✓
-                <span class="ml-1.5">
+
+                <span class="ml-1">
                   {{ 'userProgramStatistics.completed' | translate }}
                 </span>
+
               </span>
 
               <span
                 *ngIf="
                   !currentWorkout.userWorkoutCompleted
                 "
-                class="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-700"
+                class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-1 text-[11px] font-semibold text-amber-700"
               >
                 {{ 'userProgramStatistics.notCompleted' | translate }}
               </span>
@@ -316,90 +354,120 @@
 
           </div>
 
+
           <!-- ====================================================
                WORKOUT ADATOK
                ==================================================== -->
 
           <div
-            class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2"
+            class="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-4"
           >
+
+            <!-- DÁTUM -->
 
             <span
               *ngIf="
                 currentWorkout.workoutDate
               "
-              class="rounded-xl border border-surface-200 bg-surface-50 px-4 py-3 text-sm text-content-600"
+              class="rounded-lg bg-surface-50 px-2.5 py-2 text-xs text-content-600"
             >
               <strong class="font-semibold text-content-700">
                 {{ 'userProgramStatistics.workoutDate' | translate }}:
               </strong>
+
               {{ currentWorkout.workoutDate }}
+
             </span>
+
+
+            <!-- IDŐTARTAM -->
 
             <span
               *ngIf="
                 currentWorkout.durationMinutes != null
               "
-              class="rounded-xl border border-surface-200 bg-surface-50 px-4 py-3 text-sm text-content-600"
+              class="rounded-lg bg-surface-50 px-2.5 py-2 text-xs text-content-600"
             >
               <strong class="font-semibold text-content-700">
                 {{ 'userProgramStatistics.duration' | translate }}:
               </strong>
+
               {{ currentWorkout.durationMinutes }}
+
               {{ 'userProgramStatistics.minutes' | translate }}
+
             </span>
+
+
+            <!-- INTENZITÁS -->
 
             <span
               *ngIf="
                 currentWorkout.intensityLevel
               "
-              class="rounded-xl border border-surface-200 bg-surface-50 px-4 py-3 text-sm text-content-600"
+              class="rounded-lg bg-surface-50 px-2.5 py-2 text-xs text-content-600"
             >
               <strong class="font-semibold text-content-700">
                 {{ 'userProgramStatistics.intensity' | translate }}:
               </strong>
+
               {{ currentWorkout.intensityLevel }}
+
             </span>
+
+
+            <!-- VÉGREHAJTÁS -->
 
             <span
               *ngIf="
                 currentWorkout.userWorkoutPerformedAt
               "
-              class="rounded-xl border border-surface-200 bg-surface-50 px-4 py-3 text-sm text-content-600"
+              class="rounded-lg bg-surface-50 px-2.5 py-2 text-xs text-content-600"
             >
               <strong class="font-semibold text-content-700">
                 {{ 'userProgramStatistics.performedAt' | translate }}:
               </strong>
+
               {{ currentWorkout.userWorkoutPerformedAt }}
+
             </span>
 
           </div>
 
+
           <!-- Workout feedback -->
+
           <div
             *ngIf="
               currentWorkout.userWorkoutFeedback
             "
-            class="mt-4 rounded-xl border border-primary-100 bg-primary-50/60 px-4 py-3 text-sm leading-relaxed text-content-700"
+            class="mt-2 rounded-lg bg-primary-50/60 px-2.5 py-2 text-xs leading-relaxed text-content-700"
           >
             <strong class="font-semibold text-content-800">
               {{ 'userProgramStatistics.feedback' | translate }}:
             </strong>
+
             {{ currentWorkout.userWorkoutFeedback }}
+
           </div>
 
+
           <!-- Workout notes -->
+
           <div
             *ngIf="
               currentWorkout.userWorkoutNotes
             "
-            class="mt-3 rounded-xl border border-surface-200 bg-surface-50 px-4 py-3 text-sm leading-relaxed text-content-700"
+            class="mt-2 rounded-lg bg-surface-50 px-2.5 py-2 text-xs leading-relaxed text-content-700"
           >
             <strong class="font-semibold text-content-800">
               {{ 'userProgramStatistics.notes' | translate }}:
             </strong>
+
             {{ currentWorkout.userWorkoutNotes }}
+
           </div>
+
 
           <!-- ====================================================
                EXERCISE-EK
@@ -409,38 +477,46 @@
             *ngIf="
               currentWorkout.exercises.length
             "
-            class="mt-6 flex min-w-0 flex-col gap-4"
+            class="mt-4 flex min-w-0 flex-col gap-3"
           >
+
+            <!-- ==================================================
+                 EXERCISE
+                 ================================================== -->
 
             <div
               *ngFor="
                 let exercise of currentWorkout.exercises
               "
-              class="min-w-0 rounded-2xl border border-surface-200 bg-slate-50/70 p-4 sm:p-5"
+              class="min-w-0 border-b border-surface-200 pb-3 last:border-b-0"
             >
 
               <!-- Exercise fejléc -->
+
               <div
-                class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between"
+                class="flex items-start justify-between gap-2"
               >
 
                 <div class="min-w-0">
 
                   <h3
-                    class="break-words text-lg font-bold text-content-800"
+                    class="break-words text-base font-bold text-content-800 sm:text-lg"
                   >
                     {{ exercise.exerciseName }}
                   </h3>
 
+
+                  <!-- Exercise meta -->
+
                   <div
-                    class="mt-2 flex flex-wrap gap-2"
+                    class="mt-1.5 flex flex-wrap gap-1.5"
                   >
 
                     <span
                       *ngIf="
                         exercise.muscleGroup
                       "
-                      class="rounded-lg border border-surface-200 bg-white px-2.5 py-1.5 text-xs font-medium text-content-600"
+                      class="rounded-md bg-surface-50 px-2 py-1 text-[10px] font-medium text-content-600 sm:text-xs"
                     >
                       {{ 'userProgramStatistics.muscleGroup' | translate }}:
                       {{ exercise.muscleGroup }}
@@ -450,7 +526,7 @@
                       *ngIf="
                         exercise.equipment
                       "
-                      class="rounded-lg border border-surface-200 bg-white px-2.5 py-1.5 text-xs font-medium text-content-600"
+                      class="rounded-md bg-surface-50 px-2 py-1 text-[10px] font-medium text-content-600 sm:text-xs"
                     >
                       {{ 'userProgramStatistics.equipment' | translate }}:
                       {{ exercise.equipment }}
@@ -460,7 +536,7 @@
                       *ngIf="
                         exercise.difficultyLevel
                       "
-                      class="rounded-lg border border-surface-200 bg-white px-2.5 py-1.5 text-xs font-medium text-content-600"
+                      class="rounded-md bg-surface-50 px-2 py-1 text-[10px] font-medium text-content-600 sm:text-xs"
                     >
                       {{ exercise.difficultyLevel }}
                     </span>
@@ -469,16 +545,20 @@
 
                 </div>
 
+
+                <!-- Exercise státusz -->
+
                 <div
                   *ngIf="
                     exercise.userWorkoutExerciseCompleted
                   "
-                  class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-green-100 text-sm font-bold text-green-700"
+                  class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700"
                 >
                   ✓
                 </div>
 
               </div>
+
 
               <!-- ==================================================
                    FEJLŐDÉS
@@ -491,136 +571,161 @@
                   exercise.startRepetitions != null ||
                   exercise.currentRepetitions != null
                 "
-                class="mt-5 rounded-xl border border-surface-200 bg-white p-4"
+                class="mt-3 pt-3"
               >
 
                 <h4
-                  class="text-sm font-bold uppercase tracking-wide text-content-700"
+                  class="text-[11px] font-bold uppercase tracking-wide text-content-700 sm:text-xs"
                 >
                   {{ 'userProgramStatistics.progress' | translate }}
                 </h4>
 
+
                 <div
-                  class="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2"
+                  class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2"
                 >
 
-                  <!-- Súly -->
+                  <!-- SÚLY -->
+
                   <div
                     *ngIf="
                       exercise.startWeight != null ||
                       exercise.currentWeight != null
                     "
-                    class="flex flex-col gap-2 rounded-xl border border-surface-200 bg-surface-50 p-4"
+                    class="rounded-lg bg-surface-50 p-2"
                   >
 
                     <span
-                      class="text-sm font-bold text-content-700"
+                      class="text-xs font-bold text-content-700"
                     >
                       {{ 'userProgramStatistics.weight' | translate }}
                     </span>
 
-                    <span
-                      *ngIf="
-                        exercise.startWeight != null
-                      "
-                      class="text-sm text-content-600"
+                    <div
+                      class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-content-600 sm:text-xs"
                     >
-                      {{ 'userProgramStatistics.startWeight' | translate }}:
-                      {{ exercise.startWeight }} kg
-                    </span>
 
-                    <span
-                      *ngIf="
-                        exercise.currentWeight != null
-                      "
-                      class="text-sm text-content-600"
-                    >
-                      {{ 'userProgramStatistics.currentWeight' | translate }}:
-                      {{ exercise.currentWeight }} kg
-                    </span>
+                      <span
+                        *ngIf="
+                          exercise.startWeight != null
+                        "
+                      >
+                        {{ 'userProgramStatistics.startWeight' | translate }}:
 
-                    <span
-                      *ngIf="
-                        exercise.weightChange != null
-                      "
-                      class="text-sm font-semibold text-green-700"
-                      [class.text-red-700]="
-                        exercise.weightChange < 0
-                      "
-                    >
-                      {{ 'userProgramStatistics.weightChange' | translate }}:
+                        <strong>
+                          {{ exercise.startWeight }} kg
+                        </strong>
+                      </span>
 
-                      {{
-                        exercise.weightChange > 0
-                          ? '+'
-                          : ''
-                      }}
+                      <span
+                        *ngIf="
+                          exercise.currentWeight != null
+                        "
+                      >
+                        {{ 'userProgramStatistics.currentWeight' | translate }}:
 
-                      {{ exercise.weightChange }} kg
-                    </span>
+                        <strong>
+                          {{ exercise.currentWeight }} kg
+                        </strong>
+                      </span>
+
+                      <span
+                        *ngIf="
+                          exercise.weightChange != null
+                        "
+                        class="font-semibold text-green-700"
+                        [class.text-red-700]="
+                          exercise.weightChange < 0
+                        "
+                      >
+                        {{ 'userProgramStatistics.weightChange' | translate }}:
+
+                        {{
+                          exercise.weightChange > 0
+                            ? '+'
+                            : ''
+                        }}
+
+                        {{ exercise.weightChange }} kg
+                      </span>
+
+                    </div>
 
                   </div>
 
-                  <!-- Ismétlés -->
+
+                  <!-- ISMÉTLÉS -->
+
                   <div
                     *ngIf="
                       exercise.startRepetitions != null ||
                       exercise.currentRepetitions != null
                     "
-                    class="flex flex-col gap-2 rounded-xl border border-surface-200 bg-surface-50 p-4"
+                    class="rounded-lg bg-surface-50 p-2"
                   >
 
                     <span
-                      class="text-sm font-bold text-content-700"
+                      class="text-xs font-bold text-content-700"
                     >
                       {{ 'userProgramStatistics.repetitions' | translate }}
                     </span>
 
-                    <span
-                      *ngIf="
-                        exercise.startRepetitions != null
-                      "
-                      class="text-sm text-content-600"
+                    <div
+                      class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-content-600 sm:text-xs"
                     >
-                      {{ 'userProgramStatistics.startRepetitions' | translate }}:
-                      {{ exercise.startRepetitions }}
-                    </span>
 
-                    <span
-                      *ngIf="
-                        exercise.currentRepetitions != null
-                      "
-                      class="text-sm text-content-600"
-                    >
-                      {{ 'userProgramStatistics.currentRepetitions' | translate }}:
-                      {{ exercise.currentRepetitions }}
-                    </span>
+                      <span
+                        *ngIf="
+                          exercise.startRepetitions != null
+                        "
+                      >
+                        {{ 'userProgramStatistics.startRepetitions' | translate }}:
 
-                    <span
-                      *ngIf="
-                        exercise.repetitionsChange != null
-                      "
-                      class="text-sm font-semibold text-green-700"
-                      [class.text-red-700]="
-                        exercise.repetitionsChange < 0
-                      "
-                    >
-                      {{ 'userProgramStatistics.repetitionsChange' | translate }}:
+                        <strong>
+                          {{ exercise.startRepetitions }}
+                        </strong>
+                      </span>
 
-                      {{
-                        exercise.repetitionsChange > 0
-                          ? '+'
-                          : ''
-                      }}
+                      <span
+                        *ngIf="
+                          exercise.currentRepetitions != null
+                        "
+                      >
+                        {{ 'userProgramStatistics.currentRepetitions' | translate }}:
 
-                      {{ exercise.repetitionsChange }}
-                    </span>
+                        <strong>
+                          {{ exercise.currentRepetitions }}
+                        </strong>
+                      </span>
+
+                      <span
+                        *ngIf="
+                          exercise.repetitionsChange != null
+                        "
+                        class="font-semibold text-green-700"
+                        [class.text-red-700]="
+                          exercise.repetitionsChange < 0
+                        "
+                      >
+                        {{ 'userProgramStatistics.repetitionsChange' | translate }}:
+
+                        {{
+                          exercise.repetitionsChange > 0
+                            ? '+'
+                            : ''
+                        }}
+
+                        {{ exercise.repetitionsChange }}
+                      </span>
+
+                    </div>
 
                   </div>
 
                 </div>
 
               </div>
+
 
               <!-- ==================================================
                    SETEK
@@ -630,35 +735,41 @@
                 *ngIf="
                   exercise.sets.length
                 "
-                class="mt-5 rounded-xl border border-surface-200 bg-white p-4"
+                class="mt-3 pt-3"
               >
 
                 <h4
-                  class="text-sm font-bold uppercase tracking-wide text-content-700"
+                  class="text-[11px] font-bold uppercase tracking-wide text-content-700 sm:text-xs"
                 >
                   {{ 'userProgramStatistics.sets' | translate }}
                 </h4>
 
+
                 <div
-                  class="mt-3 flex flex-col gap-2"
+                  class="mt-2 flex flex-col gap-1.5"
                 >
 
                   <div
                     *ngFor="
                       let set of exercise.sets
                     "
-                    class="flex flex-col gap-3 rounded-xl border border-surface-200 bg-surface-50 p-3 sm:flex-row sm:items-center sm:justify-between"
+                    class="grid grid-cols-2 items-center gap-x-3 gap-y-1.5 rounded-lg bg-surface-50 px-2.5 py-2 sm:grid-cols-[auto_1fr_1fr_auto]"
                   >
 
+                    <!-- SET -->
+
                     <span
-                      class="shrink-0 text-sm font-bold text-content-700"
+                      class="text-xs font-bold text-content-700"
                     >
                       {{ 'userProgramStatistics.set' | translate }}
                       {{ set.setNumber }}
                     </span>
 
+
+                    <!-- TARGET -->
+
                     <span
-                      class="text-sm text-content-600"
+                      class="text-[11px] text-content-600 sm:text-xs"
                     >
                       <strong class="font-semibold text-content-700">
                         {{ 'userProgramStatistics.target' | translate }}:
@@ -681,8 +792,11 @@
                       </span>
                     </span>
 
+
+                    <!-- ACTUAL -->
+
                     <span
-                      class="text-sm text-content-600"
+                      class="text-[11px] text-content-600 sm:text-xs"
                     >
                       <strong class="font-semibold text-content-700">
                         {{ 'userProgramStatistics.actual' | translate }}:
@@ -705,11 +819,14 @@
                       </span>
                     </span>
 
+
+                    <!-- STATUS -->
+
                     <span
                       *ngIf="
                         set.setCompleted
                       "
-                      class="flex h-7 w-7 shrink-0 items-center justify-center self-start rounded-full bg-green-100 text-sm font-bold text-green-700 sm:self-auto"
+                      class="flex h-6 w-6 shrink-0 items-center justify-center justify-self-end rounded-full bg-green-100 text-xs font-bold text-green-700"
                     >
                       ✓
                     </span>
@@ -720,67 +837,80 @@
 
               </div>
 
+
               <!-- Exercise feedback -->
+
               <div
                 *ngIf="
                   exercise.userWorkoutExerciseFeedback
                 "
-                class="mt-4 rounded-xl border border-primary-100 bg-primary-50/60 px-4 py-3 text-sm leading-relaxed text-content-700"
+                class="mt-2 rounded-lg bg-primary-50/60 px-2.5 py-2 text-xs leading-relaxed text-content-700"
               >
                 <strong class="font-semibold text-content-800">
                   {{ 'userProgramStatistics.feedback' | translate }}:
                 </strong>
 
                 {{ exercise.userWorkoutExerciseFeedback }}
+
               </div>
 
+
               <!-- Exercise notes -->
+
               <div
                 *ngIf="
                   exercise.userWorkoutExerciseNotes
                 "
-                class="mt-3 rounded-xl border border-surface-200 bg-white px-4 py-3 text-sm leading-relaxed text-content-700"
+                class="mt-2 rounded-lg bg-surface-50 px-2.5 py-2 text-xs leading-relaxed text-content-700"
               >
                 <strong class="font-semibold text-content-800">
                   {{ 'userProgramStatistics.notes' | translate }}:
                 </strong>
 
                 {{ exercise.userWorkoutExerciseNotes }}
+
               </div>
 
             </div>
 
+
+            <!-- ====================================================
+                 NINCS EXERCISE
+                 ==================================================== -->
+
+            <app-message
+              *ngIf="!currentWorkout.exercises.length"
+              [message]="'userProgramStatistics.noExercises' | translate"
+              type="info"
+            ></app-message>
+
           </div>
 
-          <!-- ====================================================
-               NINCS EXERCISE
-               ==================================================== -->
 
-          <app-message
-            *ngIf="!currentWorkout.exercises.length"
-            [message]="'userProgramStatistics.noExercises' | translate"
-            type="info"
-          ></app-message>
+          <!-- ======================================================
+               WORKOUT LAPOZÁS ALUL
+               ====================================================== -->
+
+          <div class="mt-3">
+
+            <app-pagination
+              [totalItems]="totalWorkouts"
+              [pageSize]="1"
+              [currentPage]="currentWorkoutIndex + 1"
+              [pageSizeOptions]="[1]"
+              [showPageSize]="false"
+              [showInfo]="true"
+              (pageChange)="onWorkoutPageChange($event)"
+            ></app-pagination>
+
+          </div>
 
         </div>
 
-        <!-- ======================================================
-             WORKOUT LAPOZÁS ALUL IS
-             ====================================================== -->
+      </div>
 
-        <app-pagination
-          [totalItems]="totalWorkouts"
-          [pageSize]="1"
-          [currentPage]="currentWorkoutIndex + 1"
-          [pageSizeOptions]="[1]"
-          [showPageSize]="false"
-          [showInfo]="true"
-          (pageChange)="onWorkoutPageChange($event)"
-        ></app-pagination>
-
-      </div> <!-- currentWorkout blokk vége -->
-
-    </section> <!-- selectedProgramId szekció vége -->
+    </section>
 
   </div>
+
 </div>
