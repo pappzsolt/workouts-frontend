@@ -7,17 +7,24 @@
   <!-- ====================================================
        KÁRTYA TERÜLETE + OLDALSÓ NYILAK
        ==================================================== -->
-  <div class="relative">
+  <div
+    class="relative"
+    [ngClass]="
+      fullWidthMobile
+        ? 'px-6 sm:px-0'
+        : 'px-12 sm:px-0'
+    "
+  >
 
     <!-- ==================================================
-         PROGRAMKÁRTYA KÖZÉPEN
+         KÁRTYA KÖZÉPEN
          ================================================== -->
     <div
       class="mx-auto w-full min-w-0"
       [ngClass]="
         fullWidthMobile
-          ? 'max-w-none'
-          : 'max-w-md'
+          ? 'max-w-none sm:max-w-4xl'
+          : 'max-w-lg'
       "
     >
       <ng-content></ng-content>
@@ -34,23 +41,22 @@
       [disabled]="currentPage <= 1"
       (click)="onPreviousPage()"
       class="absolute top-1/2 z-10
-             flex h-10 w-10 -translate-y-1/2
+             flex h-6 w-6 -translate-y-1/2
              items-center justify-center
              rounded-full border border-surface-300
              bg-white text-content-700 shadow-sm
              transition hover:bg-surface-100
              disabled:cursor-not-allowed disabled:opacity-30
-             sm:h-12 sm:w-12"
+             sm:h-10 sm:w-10"
       [ngClass]="
         fullWidthMobile
-          ? 'left-0 -translate-x-1/2'
+          ? '-left-2 sm:left-1'
           : 'left-1 sm:left-5'
       "
     >
-      <!-- LUCIDE CHEVRON LEFT -->
       <svg
         lucideChevronLeft
-        class="h-5 w-5 sm:h-6 sm:w-6"
+        class="h-4 w-4 sm:h-5 sm:w-5"
         aria-hidden="true"
       ></svg>
     </button>
@@ -66,23 +72,22 @@
       [disabled]="currentPage >= totalPages"
       (click)="onNextPage()"
       class="absolute top-1/2 z-10
-             flex h-10 w-10 -translate-y-1/2
+             flex h-6 w-6 -translate-y-1/2
              items-center justify-center
              rounded-full border border-surface-300
              bg-white text-content-700 shadow-sm
              transition hover:bg-surface-100
              disabled:cursor-not-allowed disabled:opacity-30
-             sm:h-12 sm:w-12"
+             sm:h-10 sm:w-10"
       [ngClass]="
         fullWidthMobile
-          ? 'right-0 translate-x-1/2'
+          ? '-right-2 sm:right-1'
           : 'right-1 sm:right-5'
       "
     >
-      <!-- LUCIDE CHEVRON RIGHT -->
       <svg
         lucideChevronRight
-        class="h-5 w-5 sm:h-6 sm:w-6"
+        class="h-4 w-4 sm:h-5 sm:w-5"
         aria-hidden="true"
       ></svg>
     </button>

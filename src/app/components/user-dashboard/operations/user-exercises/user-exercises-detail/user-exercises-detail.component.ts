@@ -32,7 +32,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   programId!: number;
   private currentExerciseId!: number;
   currentSetIndex = 0;
-
+  imageLoaded = false;
   message = '';
   messageType: 'success' | 'error' | 'info' | '' = '';
 
