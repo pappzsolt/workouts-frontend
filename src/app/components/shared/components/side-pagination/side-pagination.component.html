@@ -4,29 +4,55 @@
 
 <div class="mx-auto w-full max-w-6xl">
 
-  <!-- KÁRTYA TERÜLETE + OLDALSÓ NYILAK -->
-  <div class="relative px-12 sm:px-0">
+  <!-- ====================================================
+       KÁRTYA TERÜLETE + OLDALSÓ NYILAK
+       ==================================================== -->
+  <div
+    class="relative"
+    [ngClass]="
+      fullWidthMobile
+        ? 'px-0'
+        : 'px-12 sm:px-0'
+    "
+  >
 
-    <!-- PROGRAMKÁRTYA KÖZÉPEN -->
-    <div class="mx-auto w-full min-w-0 max-w-md">
+    <!-- ==================================================
+         PROGRAMKÁRTYA KÖZÉPEN
+         ================================================== -->
+    <div
+      class="mx-auto w-full min-w-0"
+      [ngClass]="
+        fullWidthMobile
+          ? 'max-w-none'
+          : 'max-w-md'
+      "
+    >
       <ng-content></ng-content>
     </div>
 
-    <!-- ELŐZŐ OLDAL -->
+
+    <!-- ==================================================
+         ELŐZŐ OLDAL
+         ================================================== -->
     <button
       *ngIf="totalPages > 1"
       type="button"
       aria-label="Előző oldal"
       [disabled]="currentPage <= 1"
       (click)="onPreviousPage()"
-      class="absolute left-1 top-1/2 z-10
+      class="absolute top-1/2 z-10
              flex h-10 w-10 -translate-y-1/2
              items-center justify-center
              rounded-full border border-surface-300
              bg-white text-content-700 shadow-sm
              transition hover:bg-surface-100
              disabled:cursor-not-allowed disabled:opacity-30
-             sm:left-5 sm:h-12 sm:w-12"
+             sm:h-12 sm:w-12"
+      [ngClass]="
+        fullWidthMobile
+          ? 'left-0 sm:left-5'
+          : 'left-1 sm:left-5'
+      "
     >
       <!-- LUCIDE CHEVRON LEFT -->
       <svg
@@ -36,21 +62,29 @@
       ></svg>
     </button>
 
-    <!-- KÖVETKEZŐ OLDAL -->
+
+    <!-- ==================================================
+         KÖVETKEZŐ OLDAL
+         ================================================== -->
     <button
       *ngIf="totalPages > 1"
       type="button"
       aria-label="Következő oldal"
       [disabled]="currentPage >= totalPages"
       (click)="onNextPage()"
-      class="absolute right-1 top-1/2 z-10
-             flex h-10 w-10 -translate-y-1/2
+      class="absolute top-1/2 z-10
+             flex h-10 w-10 w-10 -translate-y-1/2
              items-center justify-center
              rounded-full border border-surface-300
              bg-white text-content-700 shadow-sm
              transition hover:bg-surface-100
              disabled:cursor-not-allowed disabled:opacity-30
-             sm:right-5 sm:h-12 sm:w-12"
+             sm:h-12 sm:w-12"
+      [ngClass]="
+        fullWidthMobile
+          ? 'right-0 sm:right-5'
+          : 'right-1 sm:right-5'
+      "
     >
       <!-- LUCIDE CHEVRON RIGHT -->
       <svg
@@ -62,11 +96,13 @@
 
   </div>
 
-  <!-- OLDALSZÁM A KÁRTYA ALATT -->
+
+  <!-- ====================================================
+       OLDALSZÁM A KÁRTYA ALATT
+       ==================================================== -->
   <div
     *ngIf="totalPages > 1"
-    class="mt-5 text-center text-sm font-medium
-           text-content-600"
+    class="mt-5 text-center text-sm font-medium text-content-600"
     aria-live="polite"
   >
     {{ currentPage }} / {{ totalPages }}
