@@ -1,0 +1,398 @@
+BEGIN;
+
+-- =========================================================
+-- 1. ELŐKÉSZÍTÉS
+-- Futtatás helye: workouts (CÉL adatbázis)
+-- Forrás: workouts_test
+-- Program ID: 175
+-- =========================================================
+
+CREATE EXTENSION IF NOT EXISTS dblink;
+
+-- Korábbi staging táblák eltávolítása, ha ugyanabban
+-- a munkamenetben újrafuttatjuk a scriptet.
+
+DROP TABLE IF EXISTS pg_temp.stg_user_workout_exercise_sets;
+DROP TABLE IF EXISTS pg_temp.stg_user_workout_exercises;
+DROP TABLE IF EXISTS pg_temp.stg_user_workouts;
+DROP TABLE IF EXISTS pg_temp.stg_user_programs;
+DROP TABLE IF EXISTS pg_temp.stg_program_workouts;
+DROP TABLE IF EXISTS pg_temp.stg_workout_exercises;
+DROP TABLE IF EXISTS pg_temp.stg_exercise_translations;
+DROP TABLE IF EXISTS pg_temp.stg_exercises;
+DROP TABLE IF EXISTS pg_temp.stg_workout_translations;
+DROP TABLE IF EXISTS pg_temp.stg_workouts;
+DROP TABLE IF EXISTS pg_temp.stg_program_translations;
+DROP TABLE IF EXISTS pg_temp.stg_programs;
+
+
+-- =========================================================
+-- 2. IDEIGLENES TÁBLÁK
+-- =========================================================
+
+CREATE TEMP TABLE stg_programs
+    AS SELECT * FROM public.programs WHERE false;
+
+CREATE TEMP TABLE stg_program_translations
+    AS SELECT * FROM public.program_translations WHERE false;
+
+CREATE TEMP TABLE stg_workouts
+    AS SELECT * FROM public.workouts WHERE false;
+
+CREATE TEMP TABLE stg_workout_translations
+    AS SELECT * FROM public.workout_translations WHERE false;
+
+CREATE TEMP TABLE stg_exercises
+    AS SELECT * FROM public.exercises WHERE false;
+
+CREATE TEMP TABLE stg_exercise_translations
+    AS SELECT * FROM public.exercise_translations WHERE false;
+
+CREATE TEMP TABLE stg_workout_exercises
+    AS SELECT * FROM public.workout_exercises WHERE false;
+
+CREATE TEMP TABLE stg_program_workouts
+    AS SELECT * FROM public.program_workouts WHERE false;
+
+CREATE TEMP TABLE stg_user_programs
+    AS SELECT * FROM public.user_programs WHERE false;
+
+CREATE TEMP TABLE stg_user_workouts
+    AS SELECT * FROM public.user_workouts WHERE false;
+
+CREATE TEMP TABLE stg_user_workout_exercises
+    AS SELECT * FROM public.user_workout_exercises WHERE false;
+
+CREATE TEMP TABLE stg_user_workout_exercise_sets
+    AS SELECT * FROM public.user_workout_exercise_sets WHERE false;
+
+
+-- =========================================================
+-- 3. FORRÁSREKORDOK BEOLVASÁSA
+-- Közvetlen dblink kapcsolat minden hívásnál
+-- =========================================================
+
+
+-- PROGRAM
+
+INSERT INTO stg_programs
+SELECT (jsonb_populate_record(
+    NULL::public.programs, payload
+)).*
+FROM dblink(
+    'host=192.168.1.37 port=5432 dbname=workouts_test user=postgres password=2EdrufrU',
+    'SELECT to_jsonb(p)
+     FROM public.programs p
+     WHERE p.id = 175'
+) AS r(payload jsonb);
+
+
+-- PROGRAM FORDÍTÁSOK
+
+INSERT INTO stg_program_translations
+SELECT (jsonb_populate_record(
+    NULL::public.program_translations, payload
+)).*
+FROM dblink(
+    'host=192.168.1.37 port=5432 dbname=workouts_test user=postgres password=<JELSZO>',
+    'SELECT to_jsonb(t)
+     FROM public.program_translations t
+     WHERE t.program_id = 175'
+) AS r(payload jsonb);
+
+
+-- PROGRAM WORKOUTJAI
+
+INSERT INTO stg_workouts
+SELECT (jsonb_populate_record(
+    NULL::public.workouts, payload
+)).*
+FROM dblink(
+    'host=192.168.1.37 port=5432 dbname=workouts_test user=postgres password=<JELSZO>',
+    'SELECT to_jsonb(w)
+     FROM public.workouts w
+     WHERE w.id IN (
+         SELECT pw.workout_id
+         FROM public.program_workouts pw
+         WHERE pw.program_id = 175
+     )'
+) AS r(payload jsonb);
+
+
+-- WORKOUT FORDÍTÁSOK
+
+INSERT INTO stg_workout_translations
+SELECT (jsonb_populate_record(
+    NULL::public.workout_translations, payload
+)).*
+FROM dblink(
+    'host=192.168.1.37 port=5432 dbname=workouts_test user=postgres password=<JELSZO>',
+    'SELECT to_jsonb(t)
+     FROM public.workout_translations t
+     WHERE t.workout_id IN (
+         SELECT pw.workout_id
+         FROM public.program_workouts pw
+         WHERE pw.program_id = 175
+     )'
+) AS r(payload jsonb);
+
+
+-- GYAKORLATOK
+
+INSERT INTO stg_exercises
+SELECT (jsonb_populate_record(
+    NULL::public.exercises, payload
+)).*
+FROM dblink(
+    'host=192.168.1.37 port=5432 dbname=workouts_test user=postgres password=<JELSZO>',
+    'SELECT to_jsonb(e)
+     FROM public.exercises e
+     WHERE e.id IN (
+         SELECT DISTINCT we.exercise_id
+         FROM public.workout_exercises we
+         WHERE we.workout_id IN (
+             SELECT pw.workout_id
+             FROM public.program_workouts pw
+             WHERE pw.program_id = 175
+         )
+     )'
+) AS r(payload jsonb);
+
+
+-- GYAKORLAT FORDÍTÁSOK
+
+INSERT INTO stg_exercise_translations
+SELECT (jsonb_populate_record(
+    NULL::public.exercise_translations, payload
+)).*
+FROM dblink(
+    'host=192.168.1.37 port=5432 dbname=workouts_test user=postgres password=<JELSZO>',
+    'SELECT to_jsonb(t)
+     FROM public.exercise_translations t
+     WHERE t.exercise_id IN (
+         SELECT DISTINCT we.exercise_id
+         FROM public.workout_exercises we
+         WHERE we.workout_id IN (
+             SELECT pw.workout_id
+             FROM public.program_workouts pw
+             WHERE pw.program_id = 175
+         )
+     )'
+) AS r(payload jsonb);
+
+
+-- WORKOUT_EXERCISES
+
+INSERT INTO stg_workout_exercises
+SELECT (jsonb_populate_record(
+    NULL::public.workout_exercises, payload
+)).*
+FROM dblink(
+    'host=192.168.1.37 port=5432 dbname=workouts_test user=postgres password=<JELSZO>',
+    'SELECT to_jsonb(we)
+     FROM public.workout_exercises we
+     WHERE we.workout_id IN (
+         SELECT pw.workout_id
+         FROM public.program_workouts pw
+         WHERE pw.program_id = 175
+     )'
+) AS r(payload jsonb);
+
+
+-- PROGRAM_WORKOUTS
+
+INSERT INTO stg_program_workouts
+SELECT (jsonb_populate_record(
+    NULL::public.program_workouts, payload
+)).*
+FROM dblink(
+    'host=192.168.1.37 port=5432 dbname=workouts_test user=postgres password=<JELSZO>',
+    'SELECT to_jsonb(pw)
+     FROM public.program_workouts pw
+     WHERE pw.program_id = 175'
+) AS r(payload jsonb);
+
+
+-- USER_PROGRAMS
+
+INSERT INTO stg_user_programs
+SELECT (jsonb_populate_record(
+    NULL::public.user_programs, payload
+)).*
+FROM dblink(
+    'host=192.168.1.37 port=5432 dbname=workouts_test user=postgres password=<JELSZO>',
+    'SELECT to_jsonb(up)
+     FROM public.user_programs up
+     WHERE up.program_id = 175'
+) AS r(payload jsonb);
+
+
+-- USER_WORKOUTS
+-- A 175-ös programhoz tartozó felhasználói naplók
+
+INSERT INTO stg_user_workouts
+SELECT (jsonb_populate_record(
+    NULL::public.user_workouts, payload
+)).*
+FROM dblink(
+    'host=192.168.1.37 port=5432 dbname=workouts_test user=postgres password=<JELSZO>',
+    'SELECT to_jsonb(uw)
+     FROM public.user_workouts uw
+     WHERE uw.program_id = 175'
+) AS r(payload jsonb);
+
+
+-- USER_WORKOUT_EXERCISES
+
+INSERT INTO stg_user_workout_exercises
+SELECT (jsonb_populate_record(
+    NULL::public.user_workout_exercises, payload
+)).*
+FROM dblink(
+    'host=192.168.1.37 port=5432 dbname=workouts_test user=postgres password=<JELSZO>',
+    'SELECT to_jsonb(uwe)
+     FROM public.user_workout_exercises uwe
+     WHERE uwe.user_workout_id IN (
+         SELECT uw.id
+         FROM public.user_workouts uw
+         WHERE uw.program_id = 175
+     )'
+) AS r(payload jsonb);
+
+
+-- USER_WORKOUT_EXERCISE_SETS
+
+INSERT INTO stg_user_workout_exercise_sets
+SELECT (jsonb_populate_record(
+    NULL::public.user_workout_exercise_sets, payload
+)).*
+FROM dblink(
+    'host=192.168.1.37 port=5432 dbname=workouts_test user=postgres password=<JELSZO>',
+    'SELECT to_jsonb(s)
+     FROM public.user_workout_exercise_sets s
+     WHERE s.user_workout_exercise_id IN (
+         SELECT uwe.id
+         FROM public.user_workout_exercises uwe
+         WHERE uwe.user_workout_id IN (
+             SELECT uw.id
+             FROM public.user_workouts uw
+             WHERE uw.program_id = 175
+         )
+     )'
+) AS r(payload jsonb);
+
+
+-- =========================================================
+-- 4. MIGRÁCIÓ A CÉLADATBÁZISBA
+-- =========================================================
+
+INSERT INTO public.programs
+SELECT * FROM stg_programs
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.program_translations
+SELECT * FROM stg_program_translations
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.workouts
+SELECT * FROM stg_workouts
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.workout_translations
+SELECT * FROM stg_workout_translations
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.exercises
+SELECT * FROM stg_exercises
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.exercise_translations
+SELECT * FROM stg_exercise_translations
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.workout_exercises
+SELECT * FROM stg_workout_exercises
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.program_workouts
+SELECT * FROM stg_program_workouts
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.user_programs
+SELECT * FROM stg_user_programs
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.user_workouts
+SELECT * FROM stg_user_workouts
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.user_workout_exercises
+SELECT * FROM stg_user_workout_exercises
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO public.user_workout_exercise_sets
+SELECT * FROM stg_user_workout_exercise_sets
+ON CONFLICT (id) DO NOTHING;
+
+
+-- =========================================================
+-- 5. STAGING REKORDSZÁMOK ELLENŐRZÉSE
+-- =========================================================
+
+SELECT 'programs' AS table_name, count(*) AS rows_loaded
+FROM stg_programs
+
+UNION ALL
+SELECT 'program_translations', count(*)
+FROM stg_program_translations
+
+UNION ALL
+SELECT 'workouts', count(*)
+FROM stg_workouts
+
+UNION ALL
+SELECT 'workout_translations', count(*)
+FROM stg_workout_translations
+
+UNION ALL
+SELECT 'exercises', count(*)
+FROM stg_exercises
+
+UNION ALL
+SELECT 'exercise_translations', count(*)
+FROM stg_exercise_translations
+
+UNION ALL
+SELECT 'workout_exercises', count(*)
+FROM stg_workout_exercises
+
+UNION ALL
+SELECT 'program_workouts', count(*)
+FROM stg_program_workouts
+
+UNION ALL
+SELECT 'user_programs', count(*)
+FROM stg_user_programs
+
+UNION ALL
+SELECT 'user_workouts', count(*)
+FROM stg_user_workouts
+
+UNION ALL
+SELECT 'user_workout_exercises', count(*)
+FROM stg_user_workout_exercises
+
+UNION ALL
+SELECT 'user_workout_exercise_sets', count(*)
+FROM stg_user_workout_exercise_sets;
+
+
+-- =========================================================
+-- 6. TRANZAKCIÓ
+-- =========================================================
+
+-- Ha minden rekordszám és adat megfelelő:
+-- COMMIT;
+
+-- Ha hibát észlelsz:
+-- ROLLBACK;

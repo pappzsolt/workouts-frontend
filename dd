@@ -1,0 +1,12 @@
+SELECT *
+FROM dblink(
+    'host=192.168.1.37 port=5432 dbname=workouts_test user=postgre password=2EdrufrU',
+    'SELECT id, duration_days, difficulty_level, coach_id
+     FROM public.programs
+     WHERE id = 175'
+) AS t(
+    id integer,
+    duration_days integer,
+    difficulty_level varchar,
+    coach_id integer
+);
