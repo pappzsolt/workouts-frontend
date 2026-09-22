@@ -193,6 +193,7 @@
           <ng-container *ngIf="completedWorkouts.length; else noCompletedWorkouts">
 
             <app-side-pagination
+              [fullWidth]="true"
               [currentPage]="completedCurrentPage"
               [totalPages]="completedWorkouts.length"
               (pageChange)="onCompletedPageChange($event)"
