@@ -7,13 +7,13 @@ import { UserExerciseService } from '../../../../services/user/user-exercise/use
 import { LanguageService } from '../../../../services/shared/language.service';
 
 import { WorkoutExercise, Exercise } from '../../../../models/exercise.model';
-
+import { SidePaginationComponent } from '../../../../components/shared/components/side-pagination/side-pagination.component';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
   standalone: true,
   selector: 'app-user-exercises',
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, SidePaginationComponent],
   styleUrl: './user-exercises.component.css',
   templateUrl: './user-exercises.component.html',
 })
@@ -85,14 +85,6 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
 
     this.programId = Number(navState?.programId);
 
-    // DEBUG
-
-    console.log('=== UserExercisesComponent ===');
-    console.log('workoutId:', this.workoutId);
-    console.log('programId:', this.programId);
-    console.log('workoutName:', this.workoutName);
-    console.log('navigation state:', navState);
-
     // ID VALIDÁLÁS
 
     if (Number.isNaN(this.workoutId) || this.workoutId <= 0) {
@@ -117,26 +109,12 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
   // ============================================================
 
   private loadExercises(): void {
-    console.log('Exercise-ek betöltése:', {
-      programId: this.programId,
-      workoutId: this.workoutId,
-    });
-
     this.exercisesService
       .getWorkoutExercises(this.programId, this.workoutId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          console.log('Workout exercise válasz:', response);
-
           const exercises = response.data?.exercises ?? [];
-
-          exercises.forEach((item) => {
-            console.log('=== USER EXERCISE ===');
-            console.log('exercise id:', item.exercise?.id);
-            console.log('exercise name:', item.exercise?.name);
-            console.log('imageUrl:', item.exercise?.imageUrl);
-          });
 
           // TELJES LISTA ELTÁROLÁSA
 
@@ -173,46 +151,15 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
   }
 
   // ============================================================
-  // LAPOZÁS
+  // KÖZÖS LAPOZÓ ESEMÉNYKEZELŐ
   // ============================================================
 
-  onPageChange(page: number): void {
+  onExercisePageChange(page: number): void {
     if (page < 1 || page > this.totalPages) {
       return;
     }
 
     this.currentPage = page;
-
-    this.updatePaginatedExercises();
-  }
-
-  // ============================================================
-  // ELŐZŐ GYAKORLAT
-  // ============================================================
-
-  previousExercise(): void {
-    this.onPageChange(this.currentPage - 1);
-  }
-
-  // ============================================================
-  // KÖVETKEZŐ GYAKORLAT
-  // ============================================================
-
-  nextExercise(): void {
-    this.onPageChange(this.currentPage + 1);
-  }
-
-  // ============================================================
-  // OLDALANKÉNTI ELEMSZÁM VÁLTOZTATÁSA
-  // ============================================================
-
-  onPageSizeChange(size: number): void {
-    if (size <= 0) {
-      return;
-    }
-
-    this.pageSize = size;
-    this.currentPage = 1;
 
     this.updatePaginatedExercises();
   }

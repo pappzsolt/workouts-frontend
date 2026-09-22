@@ -1,10 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 
 @Component({
   selector: 'app-side-pagination',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LucideChevronLeft, LucideChevronRight],
   templateUrl: './side-pagination.component.html',
 })
 export class SidePaginationComponent {

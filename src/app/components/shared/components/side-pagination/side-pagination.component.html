@@ -1,73 +1,76 @@
-<!-- OLDALSÓ LAPOZÓ -->
-<div
-  class="flex w-full items-center justify-center gap-1 sm:gap-5"
-  *ngIf="totalPages > 1"
->
 
-  <!-- ELŐZŐ OLDAL -->
-  <button
-    type="button"
-    class="flex h-11 w-11 shrink-0 items-center justify-center
-           rounded-full border border-surface-300 bg-white
-           text-content-700 shadow-sm transition
-           hover:bg-surface-100
-           disabled:cursor-not-allowed disabled:opacity-30
-           sm:h-12 sm:w-12"
-    [disabled]="currentPage <= 1"
-    (click)="onPreviousPage()"
-    aria-label="Előző oldal"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      class="h-5 w-5 sm:h-6 sm:w-6"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      stroke-width="2"
+<!-- ======================================================
+     LAPOZÓ ÉS KÁRTYA KÖZÖS KERETE
+====================================================== -->
+
+<div class="mx-auto w-full max-w-6xl">
+
+  <!-- KÁRTYA TERÜLETE + OLDALSÓ NYILAK -->
+  <div class="relative">
+
+    <!-- PROGRAMKÁRTYA KÖZÉPEN -->
+    <div class="mx-auto w-full min-w-0 max-w-md">
+      <ng-content></ng-content>
+    </div>
+
+    <!-- ELŐZŐ OLDAL -->
+    <button
+      *ngIf="totalPages > 1"
+      type="button"
+      aria-label="Előző oldal"
+      [disabled]="currentPage <= 1"
+      (click)="onPreviousPage()"
+      class="absolute left-0 top-1/2 z-10
+             flex h-10 w-10 -translate-y-1/2
+             items-center justify-center
+             rounded-full border border-surface-300
+             bg-white text-content-700 shadow-sm
+             transition hover:bg-surface-100
+             disabled:cursor-not-allowed disabled:opacity-30
+             sm:left-5 sm:h-12 sm:w-12"
     >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        d="M15 19l-7-7 7-7"
-      />
-    </svg>
-  </button>
+      <!-- LUCIDE CHEVRON LEFT -->
+      <svg
+        lucideChevronLeft
+        class="h-5 w-5 sm:h-6 sm:w-6"
+        aria-hidden="true"
+      ></svg>
+    </button>
 
-  <!-- OLDALSZÁM -->
-  <span
-    class="whitespace-nowrap text-sm font-medium text-content-500"
+    <!-- KÖVETKEZŐ OLDAL -->
+    <button
+      *ngIf="totalPages > 1"
+      type="button"
+      aria-label="Következő oldal"
+      [disabled]="currentPage >= totalPages"
+      (click)="onNextPage()"
+      class="absolute right-0 top-1/2 z-10
+             flex h-10 w-10 -translate-y-1/2
+             items-center justify-center
+             rounded-full border border-surface-300
+             bg-white text-content-700 shadow-sm
+             transition hover:bg-surface-100
+             disabled:cursor-not-allowed disabled:opacity-30
+             sm:right-5 sm:h-12 sm:w-12"
+    >
+      <!-- LUCIDE CHEVRON RIGHT -->
+      <svg
+        lucideChevronRight
+        class="h-5 w-5 sm:h-6 sm:w-6"
+        aria-hidden="true"
+      ></svg>
+    </button>
+
+  </div>
+
+  <!-- OLDALSZÁM A KÁRTYA ALATT -->
+  <div
+    *ngIf="totalPages > 1"
+    class="mt-5 text-center text-sm font-medium
+           text-content-600"
     aria-live="polite"
   >
     {{ currentPage }} / {{ totalPages }}
-  </span>
-
-  <!-- KÖVETKEZŐ OLDAL -->
-  <button
-    type="button"
-    class="flex h-11 w-11 shrink-0 items-center justify-center
-           rounded-full border border-surface-300 bg-white
-           text-content-700 shadow-sm transition
-           hover:bg-surface-100
-           disabled:cursor-not-allowed disabled:opacity-30
-           sm:h-12 sm:w-12"
-    [disabled]="currentPage >= totalPages"
-    (click)="onNextPage()"
-    aria-label="Következő oldal"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      class="h-5 w-5 sm:h-6 sm:w-6"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      stroke-width="2"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        d="M9 5l7 7-7 7"
-      />
-    </svg>
-  </button>
+  </div>
 
 </div>

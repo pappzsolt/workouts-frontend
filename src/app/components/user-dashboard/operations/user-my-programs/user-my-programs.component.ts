@@ -6,7 +6,7 @@ import { Observable, Subject, takeUntil } from 'rxjs';
 import { UserMyProgramsService } from '../../../../services/user/user-my-program/user-my-programs.service';
 
 import { UserProgram, ProgramProgress } from '../../../../models/program.model';
-
+import { SidePaginationComponent } from '../../../shared/components/side-pagination/side-pagination.component';
 import { LanguageService } from '../../../../services/shared/language.service';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
@@ -14,7 +14,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 @Component({
   selector: 'app-user-my-programs',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, SidePaginationComponent],
   templateUrl: './user-my-programs.component.html',
   styleUrls: ['./user-my-programs.component.css'],
 })
