@@ -171,6 +171,7 @@
             >
               <!-- Sorozatok lapozása a közös SidePagination komponenssel -->
               <app-side-pagination
+                class="-mx-12 sm:mx-0"
                 [currentPage]="currentSetIndex + 1"
                 [totalPages]="workoutExercise.userWorkoutExerciseSets?.length || 0"
                 (pageChange)="goToSet($event - 1)"
