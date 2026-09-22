@@ -1,492 +1,525 @@
 <div
   *ngIf="workoutExercise"
-  class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 pb-8 px-3 sm:px-4 pt-4 sm:pt-6"
+  class="min-h-full min-w-0"
 >
+
   <!-- ======================================================
-       EGYETLEN KÖZÖS FŐPANEL
+       FEJLÉC
        ====================================================== -->
-  <div
-    class="max-w-6xl mx-auto bg-white/95 rounded-2xl shadow-md border border-white/70 overflow-hidden"
-  >
+  <div class="px-4 sm:px-6 py-4 sm:py-5">
 
-    <!-- ======================================================
-         FEJLÉC
-         ====================================================== -->
-    <div class="px-4 sm:px-6 py-4 sm:py-5">
+    <!-- VISSZA GOMB -->
+    <app-back-button
+      [fallbackUrl]="'/user/workouts/' + workoutId + '/exercises'"
+    ></app-back-button>
 
-      <!-- VISSZA GOMB -->
-      <app-back-button
-        [fallbackUrl]="'/user/workouts/' + workoutId + '/exercises'"
-      ></app-back-button>
+    <!-- GYAKORLAT FEJLÉC -->
+    <div class="text-center">
 
-      <!-- GYAKORLAT FEJLÉC -->
-      <div class="text-center">
+      <div
+        class="text-xs font-semibold uppercase tracking-widest text-primary-700 mb-1"
+      >
+        {{ 'userExerciseDetail.exercise' | translate }}
+      </div>
 
-        <div
-          class="text-xs font-semibold uppercase tracking-widest text-primary-700 mb-1"
-        >
-          {{ 'userExerciseDetail.exercise' | translate }}
-        </div>
+      <h2
+        class="text-2xl font-bold text-gray-900 leading-tight"
+      >
+        {{ workoutExercise.exercise.name || 'N/A' }}
+      </h2>
 
-        <h2
-          class="text-2xl font-bold text-gray-900 leading-tight"
-        >
-          {{ workoutExercise.exercise.name || 'N/A' }}
-        </h2>
-
-        <div class="mt-2 text-sm text-gray-500">
-          {{ workoutExercise.sets }}
-          {{ 'userExerciseDetail.sets' | translate }}
-          ·
-          {{ workoutExercise.repetitions }}
-          {{ 'userExerciseDetail.reps' | translate }}
-        </div>
-
+      <div class="mt-2 text-sm text-gray-500">
+        {{ workoutExercise.sets }}
+        {{ 'userExerciseDetail.sets' | translate }}
+        ·
+        {{ workoutExercise.repetitions }}
+        {{ 'userExerciseDetail.reps' | translate }}
       </div>
 
     </div>
 
+  </div>
 
-    <!-- ======================================================
-         TARTALOM
-         ====================================================== -->
-    <div
-      class="relative px-2 sm:px-6 py-5 sm:py-6 border-t border-gray-100"
-    >
 
-      <!-- ====================================================
-           SOROZATOK
-           NINCS KÜLÖN FEJLÉC / DARABSZÁM
-           ==================================================== -->
-      <div class="w-full">
+  <!-- ======================================================
+       TARTALOM
+       ====================================================== -->
+  <div
+    class="px-2 sm:px-6 py-5 sm:py-6"
+  >
 
-        <!-- ==================================================
-             SET LAPOZÁS
-             ================================================== -->
-        <div
-          *ngIf="workoutExercise.userWorkoutExerciseSets?.length; else noSets"
-          class="w-full"
+    <!-- ====================================================
+         SOROZATOK
+         ==================================================== -->
+    <div class="w-full">
+
+      <!-- ==================================================
+           SET LAPOZÁS
+           ================================================== -->
+      <div
+        *ngIf="workoutExercise.userWorkoutExerciseSets?.length; else noSets"
+        class="w-full"
+      >
+
+        <app-side-pagination
+          [fullWidthMobile]="true"
+          [currentPage]="currentSetIndex + 1"
+          [totalPages]="workoutExercise.userWorkoutExerciseSets?.length || 0"
+          (pageChange)="goToSet($event - 1)"
         >
 
-          <app-side-pagination
-            [fullWidthMobile]="true"
-            [currentPage]="currentSetIndex + 1"
-            [totalPages]="workoutExercise.userWorkoutExerciseSets?.length || 0"
-            (pageChange)="goToSet($event - 1)"
+          <!-- =================================================
+               AKTUÁLIS SET KÁRTYA
+               ================================================= -->
+          <app-card
+            *ngIf="currentSet as set"
+            variant="default"
+            class="block w-full min-w-0"
           >
 
-            <!-- =================================================
-                 AKTUÁLIS SET
-                 ================================================= -->
-            <app-card
-              *ngIf="currentSet as set"
-              variant="default"
-              class="block w-full min-w-0"
+            <div
+              class="rounded-2xl overflow-hidden transition-all"
+              [ngClass]="{
+                'ring-2 ring-green-400': set.completed,
+                'ring-1 ring-slate-200': !set.completed
+              }"
             >
 
+              <!-- =================================================
+                   CARD HEADER
+                   ================================================= -->
               <div
-                class="rounded-2xl overflow-hidden transition-all"
-                [ngClass]="{
-                  'ring-2 ring-green-400': set.completed,
-                  'ring-1 ring-slate-200': !set.completed
-                }"
+                class="relative flex h-28 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-600 via-primary-600 to-primary-700"
               >
 
+                <div
+                  class="absolute -left-8 -bottom-12 h-28 w-28 rounded-full bg-white/10"
+                ></div>
+
+                <div
+                  class="absolute -right-8 -top-12 h-28 w-28 rounded-full bg-white/10"
+                ></div>
+
+                <div
+                  class="relative flex h-20 w-20 items-center justify-center rounded-2xl border border-amber-100 bg-white shadow-md"
+                >
+                  <span
+                    class="text-4xl"
+                    aria-hidden="true"
+                  >
+                    🏋️
+                  </span>
+                </div>
+
+              </div>
+
+
+              <!-- =================================================
+                   CARD CONTENT
+                   ================================================= -->
+              <div class="p-4 sm:p-5">
+
                 <!-- =================================================
-                     CARD HEADER
+                     TOP ROW
                      ================================================= -->
                 <div
-                  class="relative flex h-28 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-600 via-primary-600 to-primary-700"
+                  class="flex items-center justify-between"
                 >
 
-                  <div
-                    class="absolute -left-8 -bottom-12 h-28 w-28 rounded-full bg-white/10"
-                  ></div>
+                  <!-- SET NUMBER -->
+                  <div>
 
-                  <div
-                    class="absolute -right-8 -top-12 h-28 w-28 rounded-full bg-white/10"
-                  ></div>
-
-                  <div
-                    class="relative flex h-20 w-20 items-center justify-center rounded-2xl border border-amber-100 bg-white shadow-md"
-                  >
-                    <span
-                      class="text-4xl"
-                      aria-hidden="true"
+                    <div
+                      class="text-xs uppercase tracking-wide text-gray-500"
                     >
-                      🏋️
-                    </span>
+                      {{ 'userExerciseDetail.set' | translate }}
+                    </div>
+
+                    <div
+                      class="text-2xl font-bold"
+                      [ngClass]="{
+                        'text-green-700': set.completed,
+                        'text-gray-900': !set.completed
+                      }"
+                    >
+                      {{ set.setNumber }}
+                    </div>
+
+                  </div>
+
+
+                  <!-- KÉSZ GOMB -->
+                  <app-button
+                    [variant]="set.completed ? 'save' : 'secondary'"
+                    type="button"
+                    [label]="'userExerciseDetail.done' | translate"
+                    [icon]="set.completed ? '✓' : '○'"
+                    [disabled]="false"
+                    (buttonClick)="updateSetCompleted(set, !set.completed)"
+                  ></app-button>
+
+                </div>
+
+
+                <!-- =================================================
+                     TARGET VALUES
+                     ================================================= -->
+                <div
+                  class="grid grid-cols-2 gap-3 mt-4"
+                >
+
+                  <!-- TARGET REPETITIONS -->
+                  <div
+                    class="bg-white rounded-xl p-3 border border-surface-200 shadow-sm"
+                  >
+
+                    <div
+                      class="text-xs text-gray-500 mb-1"
+                    >
+                      {{ 'userExerciseDetail.repetitions' | translate }}
+                    </div>
+
+                    <div
+                      class="text-xl font-bold text-gray-900"
+                    >
+                      {{ set.targetRepetitions ?? '-' }}
+                    </div>
+
+                    <div
+                      class="text-xs text-gray-500"
+                    >
+                      {{ 'userExerciseDetail.reps' | translate }}
+                    </div>
+
+                  </div>
+
+
+                  <!-- TARGET WEIGHT -->
+                  <div
+                    class="bg-white rounded-xl p-3 border border-surface-200 shadow-sm"
+                  >
+
+                    <div
+                      class="text-xs text-gray-500 mb-1"
+                    >
+                      {{ 'userExerciseDetail.weight' | translate }}
+                    </div>
+
+                    <div
+                      class="text-xl font-bold text-gray-900"
+                    >
+                      {{ set.targetWeightKg ?? '-' }}
+                    </div>
+
+                    <div
+                      class="text-xs text-gray-500"
+                    >
+                      kg
+                    </div>
+
                   </div>
 
                 </div>
 
 
                 <!-- =================================================
-                     CARD CONTENT
+                     ACTUAL VALUES
                      ================================================= -->
-                <div class="p-4 sm:p-5">
+                <div
+                  class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4"
+                >
 
-                  <!-- =================================================
-                       TOP ROW
-                       ================================================= -->
-                  <div
-                    class="flex items-center justify-between"
-                  >
-
-                    <!-- Set number -->
-                    <div>
-
-                      <div
-                        class="text-xs uppercase tracking-wide text-gray-500"
-                      >
-                        {{ 'userExerciseDetail.set' | translate }}
-                      </div>
-
-                      <div
-                        class="text-2xl font-bold"
-                        [ngClass]="{
-                          'text-green-700': set.completed,
-                          'text-gray-900': !set.completed
-                        }"
-                      >
-                        {{ set.setNumber }}
-                      </div>
-
-                    </div>
-
-
-                    <!-- Kész gomb -->
-                    <app-button
-                      [variant]="set.completed ? 'save' : 'secondary'"
-                      type="button"
-                      [label]="'userExerciseDetail.done' | translate"
-                      [icon]="set.completed ? '✓' : '○'"
-                      [disabled]="false"
-                      (buttonClick)="updateSetCompleted(set, !set.completed)"
-                    ></app-button>
-
-                  </div>
-
-
-                  <!-- =================================================
-                       TARGET VALUES
-                       ================================================= -->
-                  <div
-                    class="grid grid-cols-2 gap-3 mt-4"
-                  >
-
-                    <!-- Target repetitions -->
-                    <div
-                      class="bg-white rounded-xl p-3 border border-surface-200 shadow-sm"
-                    >
-
-                      <div
-                        class="text-xs text-gray-500 mb-1"
-                      >
-                        {{ 'userExerciseDetail.repetitions' | translate }}
-                      </div>
-
-                      <div
-                        class="text-xl font-bold text-gray-900"
-                      >
-                        {{ set.targetRepetitions ?? '-' }}
-                      </div>
-
-                      <div
-                        class="text-xs text-gray-500"
-                      >
-                        {{ 'userExerciseDetail.reps' | translate }}
-                      </div>
-
-                    </div>
-
-
-                    <!-- Target weight -->
-                    <div
-                      class="bg-white rounded-xl p-3 border border-surface-200 shadow-sm"
-                    >
-
-                      <div
-                        class="text-xs text-gray-500 mb-1"
-                      >
-                        {{ 'userExerciseDetail.weight' | translate }}
-                      </div>
-
-                      <div
-                        class="text-xl font-bold text-gray-900"
-                      >
-                        {{ set.targetWeightKg ?? '-' }}
-                      </div>
-
-                      <div
-                        class="text-xs text-gray-500"
-                      >
-                        kg
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
-                  <!-- =================================================
-                       ACTUAL VALUES
-                       ================================================= -->
-                  <div
-                    class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4"
-                  >
-
-                    <!-- Actual repetitions -->
-                    <div>
-
-                      <label
-                        class="block text-sm font-semibold text-gray-700 mb-2"
-                      >
-                        {{ 'userExerciseDetail.actualRepetitions' | translate }}
-                      </label>
-
-                      <input
-                        type="number"
-                        min="0"
-                        [(ngModel)]="set.actualRepetitions"
-                        class="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      />
-
-                    </div>
-
-
-                    <!-- Actual weight -->
-                    <div>
-
-                      <label
-                        class="block text-sm font-semibold text-gray-700 mb-2"
-                      >
-                        {{ 'userExerciseDetail.actualWeight' | translate }}
-                      </label>
-
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.5"
-                        [(ngModel)]="set.actualWeightKg"
-                        class="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
-                      />
-
-                      <div
-                        class="mt-1 text-xs text-gray-500"
-                      >
-                        kg
-                      </div>
-
-                    </div>
-
-                  </div>
-
-
-                  <!-- =================================================
-                       NOTES
-                       ================================================= -->
-                  <div class="mt-4">
+                  <!-- ACTUAL REPETITIONS -->
+                  <div>
 
                     <label
                       class="block text-sm font-semibold text-gray-700 mb-2"
                     >
-                      {{ 'userExerciseDetail.notes' | translate }}
+                      {{ 'userExerciseDetail.actualRepetitions' | translate }}
                     </label>
 
-                    <textarea
-                      [(ngModel)]="set.notes"
-                      rows="3"
-                      placeholder="Pl.: Ez a sorozat nehéz volt..."
-                      class="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 resize-none focus:outline-none focus:ring-2 focus:ring-orange-500"
-                    ></textarea>
+                    <input
+                      type="number"
+                      min="0"
+                      [(ngModel)]="set.actualRepetitions"
+                      class="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
 
                   </div>
 
 
-                  <!-- =================================================
-                       SET STATUS
-                       ================================================= -->
-                  <div
-                    class="mt-3 text-sm font-semibold"
-                    [ngClass]="{
-                      'text-green-700': set.completed,
-                      'text-gray-500': !set.completed
-                    }"
-                  >
-                    {{
-                      set.completed
-                        ? ('userExerciseDetail.setCompleted' | translate)
-                        : ('userExerciseDetail.tapDone' | translate)
-                    }}
+                  <!-- ACTUAL WEIGHT -->
+                  <div>
 
-                    {{ set.completed ? '✓' : '' }}
-                  </div>
+                    <label
+                      class="block text-sm font-semibold text-gray-700 mb-2"
+                    >
+                      {{ 'userExerciseDetail.actualWeight' | translate }}
+                    </label>
 
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.5"
+                      [(ngModel)]="set.actualWeightKg"
+                      class="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    />
 
-                  <!-- =================================================
-                       GYAKORLAT INFORMÁCIÓ A ZÖLD KÁRTYA ALJÁN
-                       ================================================= -->
-                  <div
-                    class="mt-5 pt-5 border-t border-white/70"
-                  >
-
-                    <!-- =================================================
-                         LEÍRÁS
-                         ================================================= -->
                     <div
-                      *ngIf="workoutExercise.exercise.description"
-                      class="mb-4"
+                      class="mt-1 text-xs text-gray-500"
+                    >
+                      kg
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     NOTES
+                     ================================================= -->
+                <div class="mt-4">
+
+                  <label
+                    class="block text-sm font-semibold text-gray-700 mb-2"
+                  >
+                    {{ 'userExerciseDetail.notes' | translate }}
+                  </label>
+
+                  <textarea
+                    [(ngModel)]="set.notes"
+                    rows="3"
+                    placeholder="Pl.: Ez a sorozat nehéz volt..."
+                    class="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 resize-none focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  ></textarea>
+
+                </div>
+
+
+                <!-- =================================================
+                     SET STATUS
+                     ================================================= -->
+                <div
+                  class="mt-3 text-sm font-semibold"
+                  [ngClass]="{
+                    'text-green-700': set.completed,
+                    'text-gray-500': !set.completed
+                  }"
+                >
+                  {{
+                    set.completed
+                      ? ('userExerciseDetail.setCompleted' | translate)
+                      : ('userExerciseDetail.tapDone' | translate)
+                  }}
+
+                  {{ set.completed ? '✓' : '' }}
+                </div>
+
+
+                <!-- =================================================
+                     GYAKORLAT INFORMÁCIÓ
+                     A ZÖLD KÁRTYA ALJÁN
+                     ================================================= -->
+                <div
+                  class="mt-5 pt-5 border-t border-white/70"
+                >
+
+                  <!-- =================================================
+                       LEÍRÁS
+                       ================================================= -->
+                  <div
+                    *ngIf="workoutExercise.exercise.description"
+                    class="mb-4"
+                  >
+
+                    <div
+                      class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1"
+                    >
+                      {{ 'userExerciseDetail.description' | translate }}
+                    </div>
+
+                    <p
+                      class="text-gray-800 leading-relaxed"
+                    >
+                      {{ workoutExercise.exercise.description }}
+                    </p>
+
+                  </div>
+
+
+                  <!-- =================================================
+                       EXERCISE PROPERTIES
+                       ================================================= -->
+                  <div
+                    class="grid grid-cols-2 gap-3 text-sm"
+                  >
+
+                    <!-- MUSCLE -->
+                    <div
+                      *ngIf="workoutExercise.exercise.muscleGroup"
+                      class="bg-white/70 rounded-xl p-3 border border-white/80"
                     >
 
                       <div
-                        class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1"
+                        class="text-xs text-gray-500 mb-1"
                       >
-                        {{ 'userExerciseDetail.description' | translate }}
+                        {{ 'userExerciseDetail.muscle' | translate }}
                       </div>
 
-                      <p
-                        class="text-gray-800 leading-relaxed"
+                      <div
+                        class="font-semibold text-gray-900"
                       >
-                        {{ workoutExercise.exercise.description }}
-                      </p>
+                        {{ workoutExercise.exercise.muscleGroup }}
+                      </div>
 
                     </div>
 
 
-                    <!-- =================================================
-                         EXERCISE PROPERTIES
-                         ================================================= -->
+                    <!-- EQUIPMENT -->
                     <div
-                      class="grid grid-cols-2 gap-3 text-sm"
+                      *ngIf="workoutExercise.exercise.equipment"
+                      class="bg-white/70 rounded-xl p-3 border border-white/80"
                     >
 
-                      <!-- Muscle -->
                       <div
-                        *ngIf="workoutExercise.exercise.muscleGroup"
-                        class="bg-white/70 rounded-xl p-3 border border-white/80"
+                        class="text-xs text-gray-500 mb-1"
                       >
-
-                        <div
-                          class="text-xs text-gray-500 mb-1"
-                        >
-                          {{ 'userExerciseDetail.muscle' | translate }}
-                        </div>
-
-                        <div
-                          class="font-semibold text-gray-900"
-                        >
-                          {{ workoutExercise.exercise.muscleGroup }}
-                        </div>
-
+                        {{ 'userExerciseDetail.equipment' | translate }}
                       </div>
 
-
-                      <!-- Equipment -->
                       <div
-                        *ngIf="workoutExercise.exercise.equipment"
-                        class="bg-white/70 rounded-xl p-3 border border-white/80"
+                        class="font-semibold text-gray-900"
                       >
-
-                        <div
-                          class="text-xs text-gray-500 mb-1"
-                        >
-                          {{ 'userExerciseDetail.equipment' | translate }}
-                        </div>
-
-                        <div
-                          class="font-semibold text-gray-900"
-                        >
-                          {{ workoutExercise.exercise.equipment }}
-                        </div>
-
+                        {{ workoutExercise.exercise.equipment }}
                       </div>
 
+                    </div>
 
-                      <!-- Difficulty -->
+
+                    <!-- DIFFICULTY -->
+                    <div
+                      *ngIf="workoutExercise.exercise.difficultyLevel"
+                      class="bg-white/70 rounded-xl p-3 border border-white/80"
+                    >
+
                       <div
-                        *ngIf="workoutExercise.exercise.difficultyLevel"
-                        class="bg-white/70 rounded-xl p-3 border border-white/80"
+                        class="text-xs text-gray-500 mb-1"
                       >
-
-                        <div
-                          class="text-xs text-gray-500 mb-1"
-                        >
-                          {{ 'userExerciseDetail.difficulty' | translate }}
-                        </div>
-
-                        <div
-                          class="font-semibold text-gray-900"
-                        >
-                          {{ workoutExercise.exercise.difficultyLevel }}
-                        </div>
-
+                        {{ 'userExerciseDetail.difficulty' | translate }}
                       </div>
 
-
-                      <!-- Category -->
                       <div
-                        *ngIf="workoutExercise.exercise.category"
-                        class="bg-white/70 rounded-xl p-3 border border-white/80"
+                        class="font-semibold text-gray-900"
                       >
-
-                        <div
-                          class="text-xs text-gray-500 mb-1"
-                        >
-                          {{ 'userExerciseDetail.category' | translate }}
-                        </div>
-
-                        <div
-                          class="font-semibold text-gray-900"
-                        >
-                          {{ workoutExercise.exercise.category }}
-                        </div>
-
+                        {{ workoutExercise.exercise.difficultyLevel }}
                       </div>
 
+                    </div>
 
-                      <!-- Calories -->
+
+                    <!-- CATEGORY -->
+                    <div
+                      *ngIf="workoutExercise.exercise.category"
+                      class="bg-white/70 rounded-xl p-3 border border-white/80"
+                    >
+
                       <div
-                        *ngIf="workoutExercise.exercise.caloriesBurnedPerMinute != null"
-                        class="bg-white/70 rounded-xl p-3 border border-white/80"
+                        class="text-xs text-gray-500 mb-1"
                       >
-
-                        <div
-                          class="text-xs text-gray-500 mb-1"
-                        >
-                          {{ 'userExerciseDetail.caloriesPerMinute' | translate }}
-                        </div>
-
-                        <div
-                          class="font-semibold text-gray-900"
-                        >
-                          {{ workoutExercise.exercise.caloriesBurnedPerMinute }}
-                        </div>
-
+                        {{ 'userExerciseDetail.category' | translate }}
                       </div>
 
-
-                      <!-- Duration -->
                       <div
-                        *ngIf="workoutExercise.exercise.durationSeconds != null"
-                        class="bg-white/70 rounded-xl p-3 border border-white/80"
+                        class="font-semibold text-gray-900"
                       >
-
-                        <div
-                          class="text-xs text-gray-500 mb-1"
-                        >
-                          {{ 'userExerciseDetail.duration' | translate }}
-                        </div>
-
-                        <div
-                          class="font-semibold text-gray-900"
-                        >
-                          {{ workoutExercise.exercise.durationSeconds }}
-                          {{ 'userExerciseDetail.seconds' | translate }}
-                        </div>
-
+                        {{ workoutExercise.exercise.category }}
                       </div>
 
+                    </div>
+
+
+                    <!-- CALORIES -->
+                    <div
+                      *ngIf="workoutExercise.exercise.caloriesBurnedPerMinute != null"
+                      class="bg-white/70 rounded-xl p-3 border border-white/80"
+                    >
+
+                      <div
+                        class="text-xs text-gray-500 mb-1"
+                      >
+                        {{ 'userExerciseDetail.caloriesPerMinute' | translate }}
+                      </div>
+
+                      <div
+                        class="font-semibold text-gray-900"
+                      >
+                        {{ workoutExercise.exercise.caloriesBurnedPerMinute }}
+                      </div>
+
+                    </div>
+
+
+                    <!-- DURATION -->
+                    <div
+                      *ngIf="workoutExercise.exercise.durationSeconds != null"
+                      class="bg-white/70 rounded-xl p-3 border border-white/80"
+                    >
+
+                      <div
+                        class="text-xs text-gray-500 mb-1"
+                      >
+                        {{ 'userExerciseDetail.duration' | translate }}
+                      </div>
+
+                      <div
+                        class="font-semibold text-gray-900"
+                      >
+                        {{ workoutExercise.exercise.durationSeconds }}
+                        {{ 'userExerciseDetail.seconds' | translate }}
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                <!-- =================================================
+                     EXERCISE STATUS
+                     MOST MÁR A ZÖLD KÁRTYÁN BELÜL
+                     ================================================= -->
+                <div
+                  class="mt-5 pt-4 border-t border-white/70"
+                >
+
+                  <div
+                    class="rounded-xl px-4 py-3 text-center"
+                    [ngClass]="{
+                      'bg-green-50 text-green-700':
+                        workoutExercise.done,
+                      'bg-white/70 text-gray-600':
+                        !workoutExercise.done
+                    }"
+                  >
+
+                    <div
+                      class="text-xs uppercase tracking-wide mb-1"
+                    >
+                      {{ 'userExerciseDetail.exerciseStatus' | translate }}
+                    </div>
+
+                    <div
+                      class="text-lg font-bold"
+                    >
+                      {{
+                        workoutExercise.done
+                          ? ('userExerciseDetail.completed' | translate)
+                          : ('userExerciseDetail.inProgress' | translate)
+                      }}
+
+                      {{ workoutExercise.done ? '✅' : '⏳' }}
                     </div>
 
                   </div>
@@ -495,107 +528,72 @@
 
               </div>
 
-            </app-card>
+            </div>
 
-          </app-side-pagination>
+          </app-card>
 
-        </div>
+        </app-side-pagination>
+
+      </div>
 
 
-        <!-- =================================================
-             EXERCISE STATUS
-             ================================================= -->
+      <!-- =================================================
+           KÉP ELLENŐRZÉS
+           ================================================= -->
+      <img
+        *ngIf="workoutExercise.exercise.imageUrl"
+        [src]="workoutExercise.exercise.imageUrl"
+        [alt]="workoutExercise.exercise.name"
+        class="hidden"
+        (load)="imageLoaded = true"
+        (error)="imageLoaded = false"
+      />
+
+
+      <!-- =================================================
+           IMAGE
+           CSAK HA A KÉP TÉNYLEG BETÖLTŐDÖTT
+           ================================================= -->
+      <div
+        *ngIf="workoutExercise.exercise.imageUrl && imageLoaded"
+        class="bg-white rounded-2xl shadow-md border border-white/80 p-4 sm:p-5 mt-5"
+      >
+
         <div
-          class="rounded-2xl p-5 text-center border-2 mt-5"
-          [ngClass]="{
-            'bg-green-50 border-green-500 text-green-700':
-              workoutExercise.done,
-            'bg-white border-gray-200 text-gray-600':
-              !workoutExercise.done
-          }"
+          class="text-sm font-semibold text-gray-700 mb-3"
         >
-
-          <div
-            class="text-sm uppercase tracking-wide mb-1"
-          >
-            {{ 'userExerciseDetail.exerciseStatus' | translate }}
-          </div>
-
-          <div
-            class="text-xl font-bold"
-          >
-            {{
-              workoutExercise.done
-                ? ('userExerciseDetail.completed' | translate)
-                : ('userExerciseDetail.inProgress' | translate)
-            }}
-
-            {{ workoutExercise.done ? '✅' : '⏳' }}
-          </div>
-
+          {{ 'userExerciseDetail.exerciseImage' | translate }}
         </div>
 
-
-        <!-- =================================================
-             IMAGE ELLENŐRZŐ KÉP
-             CSAK A BETÖLTŐDÖTT KÉPET MUTATJUK
-             ================================================= -->
         <img
-          *ngIf="workoutExercise.exercise.imageUrl"
           [src]="workoutExercise.exercise.imageUrl"
           [alt]="workoutExercise.exercise.name"
-          class="hidden"
-          (load)="imageLoaded = true"
-          (error)="imageLoaded = false"
+          class="w-full rounded-xl object-cover"
         />
 
+      </div>
 
-        <!-- =================================================
-             IMAGE
-             CSAK AKKOR JELENIK MEG, HA A KÉP BETÖLTŐDÖTT
-             ================================================= -->
+
+      <!-- =================================================
+           VIDEO
+           ================================================= -->
+      <div
+        *ngIf="workoutExercise.exercise.videoUrl"
+        class="bg-white rounded-2xl shadow-md border border-white/80 p-4 sm:p-5 mt-5"
+      >
+
         <div
-          *ngIf="workoutExercise.exercise.imageUrl && imageLoaded"
-          class="bg-white rounded-2xl shadow-md border border-white/80 p-4 sm:p-5 mt-5"
+          class="text-sm font-semibold text-gray-700 mb-3"
         >
-
-          <div
-            class="text-sm font-semibold text-gray-700 mb-3"
-          >
-            {{ 'userExerciseDetail.exerciseImage' | translate }}
-          </div>
-
-          <img
-            [src]="workoutExercise.exercise.imageUrl"
-            [alt]="workoutExercise.exercise.name"
-            class="w-full rounded-xl object-cover"
-          />
-
+          {{ 'userExerciseDetail.exerciseVideo' | translate }}
         </div>
 
-
-        <!-- =================================================
-             VIDEO
-             ================================================= -->
-        <div
-          *ngIf="workoutExercise.exercise.videoUrl"
-          class="bg-white rounded-2xl shadow-md border border-white/80 p-4 sm:p-5 mt-5"
-        >
-
-          <div
-            class="text-sm font-semibold text-gray-700 mb-3"
-          >
-            {{ 'userExerciseDetail.exerciseVideo' | translate }}
-          </div>
-
-          <video
-            [src]="workoutExercise.exercise.videoUrl"
-            controls
-            playsinline
-            class="w-full rounded-xl"
-          ></video>
-
-        </div>
+        <video
+          [src]="workoutExercise.exercise.videoUrl"
+          controls
+          playsinline
+          class="w-full rounded-xl"
+        ></video>
 
       </div>
 

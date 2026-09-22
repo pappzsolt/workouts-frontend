@@ -2,10 +2,11 @@
      OLDAL
      ====================================================== -->
 <div
-  class="min-h-full min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50"
+  class="min-h-full min-w-0"
 >
+
   <div
-    class="mx-auto w-full max-w-6xl min-w-0 px-2.5 py-4 sm:px-6 sm:py-8 lg:px-8"
+    class="mx-auto w-full max-w-6xl min-w-0 px-3 py-4 sm:px-6 sm:py-8 lg:px-8"
   >
 
     <!-- ==================================================
@@ -24,12 +25,14 @@
     <h2
       class="mb-5 flex items-center justify-center gap-2 break-words text-center text-xl font-bold leading-tight tracking-tight text-content-800 sm:mb-8 sm:text-3xl"
     >
+
       <span>🏋️‍♂️</span>
 
       <span>
         {{ workoutName }} –
         {{ 'userExercises.exercises' | translate }}
       </span>
+
     </h2>
 
 
@@ -41,7 +44,7 @@
     >
 
       <!-- ==================================================
-           KÖZÖS LAPOZÓ + AKTUÁLIS GYAKORLATKÁRTYA
+           LAPOZÓ + AKTUÁLIS GYAKORLATKÁRTYA
            NINCS KÜLÖN KÜLSŐ KERET
            ================================================== -->
       <app-side-pagination
@@ -271,4 +274,5 @@
     </ng-template>
 
   </div>
+
 </div>
