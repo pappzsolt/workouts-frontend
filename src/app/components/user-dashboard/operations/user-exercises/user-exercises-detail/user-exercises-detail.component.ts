@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 
 import { UserExerciseDetailService } from '../../../../../services/user/user-exercises-detail/user-exercises-detail.service';
-
+import { SidePaginationComponent } from '../../../../../components/shared/components/side-pagination/side-pagination.component';
 import { LanguageService } from '../../../../../services/shared/language.service';
 
 import {
@@ -17,7 +17,7 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 @Component({
   selector: 'app-user-exercise-detail',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, SidePaginationComponent],
   templateUrl: './user-exercises-detail.component.html',
   styleUrls: ['./user-exercises-detail.component.css'],
 })
@@ -292,5 +292,14 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
           this.messageType = 'error';
         },
       });
+  }
+  goToSet(index: number): void {
+    const sets = this.workoutExercise?.userWorkoutExerciseSets;
+
+    if (!sets?.length || index < 0 || index >= sets.length) {
+      return;
+    }
+
+    this.currentSetIndex = index;
   }
 }

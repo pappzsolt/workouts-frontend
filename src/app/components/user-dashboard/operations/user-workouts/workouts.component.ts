@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, map, takeUntil } from 'rxjs';
 
 import { TranslateService } from '@ngx-translate/core';
-
+import { SidePaginationComponent } from '../../../../components/shared/components/side-pagination/side-pagination.component';
 import {
   UserWorkoutsService,
   Workout,
@@ -17,7 +17,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 @Component({
   standalone: true,
   selector: 'app-workouts',
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, SidePaginationComponent],
   styleUrl: './workouts.component.css',
   templateUrl: './workouts.component.html',
 })
