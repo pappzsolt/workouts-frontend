@@ -26,7 +26,6 @@ import { CoachProgramBuilderComponent } from './components/coach-dashboard/opera
 import { UserDashboardComponent } from './components/user-dashboard/dashboard/user-dashboard.component';
 import { UserProfileComponent } from './components/user-dashboard/operations/user-profile/user-profile.component';
 import { UserMyProgramsComponent } from './components/user-dashboard/operations/user-my-programs/user-my-programs.component';
-import { UserStatisticsComponent } from './components/user-dashboard/operations/user-statistics/user-statistics.component';
 import { WorkoutsComponent } from './components/user-dashboard/operations/user-workouts/workouts.component';
 import { UserExercisesComponent } from './components/user-dashboard/operations/user-exercises/user-exercises.component';
 import { UserExerciseDetailComponent } from './components/user-dashboard/operations/user-exercises/user-exercises-detail/user-exercises-detail.component';
@@ -234,10 +233,6 @@ export const routes: Routes = [
         component: UserMyProgramsComponent,
       },
 
-      {
-        path: 'statistics',
-        component: UserStatisticsComponent,
-      },
       {
         path: 'program-statistics',
         component: UserProgramStatisticsComponent,
