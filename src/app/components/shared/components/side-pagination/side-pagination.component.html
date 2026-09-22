@@ -1,32 +1,23 @@
 <!-- ======================================================
-     LAPOZÓ KÖZÖS KERETE
+     KÖZÖS LAPOZÓ
 ====================================================== -->
 
-<div class="mx-auto w-full">
+<div class="w-full">
 
   <!-- ====================================================
        KÁRTYA + OLDALSÓ NYILAK
        ==================================================== -->
 
   <div
-    class="relative w-full"
-    [ngClass]="
-      fullWidth
-        ? 'px-6 sm:px-0'
-        : fullWidthMobile
-          ? 'px-6 sm:px-0'
-          : 'px-12 sm:px-0'
-    "
+    class="relative mx-auto w-full max-w-sm"
   >
 
     <!-- ==================================================
-         KÁRTYA TARTALOM
+         KÁRTYA
          ================================================== -->
 
     <div class="w-full min-w-0">
-
       <ng-content></ng-content>
-
     </div>
 
     <!-- ==================================================
@@ -39,8 +30,8 @@
       aria-label="Előző oldal"
       [disabled]="currentPage <= 1"
       (click)="onPreviousPage()"
-      class="absolute left-0 top-1/2 z-10
-             flex h-6 w-6 -translate-y-1/2
+      class="absolute -left-3 top-1/2 z-10
+             flex h-8 w-8 -translate-y-1/2
              items-center justify-center
              rounded-full
              border border-primary-600
@@ -52,14 +43,8 @@
              hover:bg-primary-700
              disabled:cursor-not-allowed
              disabled:opacity-30
+             sm:-left-5
              sm:h-10 sm:w-10"
-      [ngClass]="
-        fullWidth
-          ? '-left-2'
-          : fullWidthMobile
-            ? '-left-2 sm:left-1'
-            : 'left-1 sm:left-5'
-      "
     >
       <svg
         lucideChevronLeft
@@ -78,8 +63,8 @@
       aria-label="Következő oldal"
       [disabled]="currentPage >= totalPages"
       (click)="onNextPage()"
-      class="absolute right-0 top-1/2 z-10
-             flex h-6 w-6 -translate-y-1/2
+      class="absolute -right-3 top-1/2 z-10
+             flex h-8 w-8 -translate-y-1/2
              items-center justify-center
              rounded-full
              border border-primary-600
@@ -91,14 +76,8 @@
              hover:bg-primary-700
              disabled:cursor-not-allowed
              disabled:opacity-30
+             sm:-right-5
              sm:h-10 sm:w-10"
-      [ngClass]="
-        fullWidth
-          ? '-right-2'
-          : fullWidthMobile
-            ? '-right-2 sm:right-1'
-            : 'right-1 sm:right-5'
-      "
     >
       <svg
         lucideChevronRight

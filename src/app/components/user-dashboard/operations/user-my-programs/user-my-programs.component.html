@@ -1,4 +1,3 @@
-
 <!-- ======================================================
      OLDAL
 ====================================================== -->
@@ -9,49 +8,67 @@
   >
 
     <!-- VISSZA GOMB -->
+
     <div class="mb-4">
       <app-back-button
         [targetUrl]="'/user/dashboard'"
       ></app-back-button>
     </div>
 
+
     <!-- OLDAL CÍM -->
+
     <h2
       class="mb-6 flex items-center justify-center gap-2
              text-center text-2xl font-bold tracking-tight
              text-content-800 sm:mb-8 sm:text-3xl"
     >
       <span>📋</span>
-      <span>{{ 'userMyPrograms.title' | translate }}</span>
+
+      <span>
+        {{ 'userMyPrograms.title' | translate }}
+      </span>
     </h2>
 
+
     <!-- ÜZENET -->
+
     <app-message
       *ngIf="message"
       [message]="message | translate"
       type="info"
     ></app-message>
 
+
     <!-- PROGRAMOK -->
+
     <ng-container *ngIf="totalItems > 0; else noPrograms">
 
-      <!-- LAPOZÓ + PROGRAMKÁRTYA -->
+      <!-- ==================================================
+           LAPOZÓ + PROGRAMKÁRTYA
+           ================================================== -->
+
       <app-side-pagination
-        [fullWidth]="true"
         [currentPage]="currentPage"
         [totalPages]="totalPages"
         (pageChange)="onPageChange($event)"
       >
 
-        <!-- AKTUÁLIS PROGRAMKÁRTYA -->
+        <!-- =================================================
+             AKTUÁLIS PROGRAMKÁRTYA
+             ================================================= -->
+
         <app-card
           *ngFor="let program of paginatedPrograms"
           variant="default"
-          class="group block min-w-0 cursor-pointer"
+          class="block w-full min-w-0 cursor-pointer"
           (click)="goToWorkouts(program.id, program.name)"
         >
 
-          <!-- PROGRAM FEJLÉC / KÉP -->
+          <!-- =================================================
+               PROGRAM FEJLÉC / KÉP
+               ================================================= -->
+
           <div
             class="relative flex h-36 items-center justify-center
                    overflow-hidden bg-gradient-to-br
@@ -59,6 +76,7 @@
           >
 
             <!-- DEKORATÍV KÖRÖK -->
+
             <div
               class="absolute -right-8 -top-8 h-28 w-28
                      rounded-full bg-white/10"
@@ -69,7 +87,9 @@
                      rounded-full bg-white/10"
             ></div>
 
+
             <!-- IKON -->
+
             <span
               class="relative flex h-20 w-20 items-center
                      justify-center rounded-2xl bg-white/95
@@ -81,10 +101,17 @@
 
           </div>
 
-          <!-- PROGRAM TARTALOM -->
-          <div class="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
+
+          <!-- =================================================
+               PROGRAM TARTALOM
+               ================================================= -->
+
+          <div
+            class="flex min-w-0 flex-1 flex-col p-4 sm:p-5"
+          >
 
             <!-- PROGRAM NÉV -->
+
             <h3
               class="mb-3 break-words text-lg font-bold
                      leading-6 text-content-800"
@@ -92,8 +119,12 @@
               {{ program.name }}
             </h3>
 
+
             <!-- IDŐTARTAM -->
-            <div class="rounded-xl bg-surface-50 px-3 py-3">
+
+            <div
+              class="rounded-xl bg-surface-50 px-3 py-3"
+            >
 
               <div
                 class="mb-1 text-xs font-medium uppercase
@@ -102,37 +133,52 @@
                 {{ 'userMyPrograms.duration' | translate }}
               </div>
 
-              <div class="text-sm font-bold text-content-800">
+              <div
+                class="text-sm font-bold text-content-800"
+              >
                 {{ program.durationWeeks }}
+
                 {{ 'userMyPrograms.weeks' | translate }}
               </div>
 
             </div>
 
+
             <!-- PROGRESS -->
+
             <div class="mt-5">
 
               <!-- PROGRESS LABEL -->
+
               <div
                 class="mb-2 flex items-center justify-between
                        gap-3 text-sm"
               >
-                <span class="font-semibold text-content-700">
+
+                <span
+                  class="font-semibold text-content-700"
+                >
                   {{ 'userMyPrograms.workouts' | translate }}:
                 </span>
 
-                <span class="font-semibold text-content-600">
+                <span
+                  class="font-semibold text-content-600"
+                >
                   {{ programProgress[program.id]?.completedWorkouts ?? 0 }}
                   /
                   {{ programProgress[program.id]?.totalWorkouts ?? 0 }}
                 </span>
+
               </div>
 
+
               <!-- PROGRESS BAR -->
+
               <div
                 class="h-2.5 w-full overflow-hidden rounded-full
                        bg-slate-200"
               >
+
                 <div
                   class="h-full rounded-full
                          bg-gradient-to-r from-primary-600
@@ -141,6 +187,7 @@
                     programProgress[program.id]?.progressPercent ?? 0
                   "
                 ></div>
+
               </div>
 
             </div>
@@ -153,7 +200,11 @@
 
     </ng-container>
 
-    <!-- NINCS PROGRAM -->
+
+    <!-- ======================================================
+         NINCS PROGRAM
+         ====================================================== -->
+
     <ng-template #noPrograms>
 
       <div
@@ -166,7 +217,9 @@
           📋
         </span>
 
-        <p class="text-sm font-medium text-content-500">
+        <p
+          class="text-sm font-medium text-content-500"
+        >
           {{ 'userMyPrograms.noPrograms' | translate }}
         </p>
 

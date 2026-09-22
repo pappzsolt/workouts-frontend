@@ -1,6 +1,7 @@
 <!-- ======================================================
      OLDAL
      ====================================================== -->
+
 <div
   class="min-h-full min-w-0"
 >
@@ -12,6 +13,7 @@
     <!-- ==================================================
          EGYSÉGES VISSZA GOMB
          ================================================== -->
+
     <div class="mb-4 sm:mb-6">
       <app-back-button
         [fallbackUrl]="'/user/dashboard'"
@@ -22,6 +24,7 @@
     <!-- ==================================================
          OLDAL CÍM
          ================================================== -->
+
     <h2
       class="mb-5 flex items-center justify-center gap-2 break-words text-center text-xl font-bold leading-tight tracking-tight text-content-800 sm:mb-8 sm:text-3xl"
     >
@@ -39,16 +42,16 @@
     <!-- ==================================================
          GYAKORLATOK
          ================================================== -->
+
     <ng-container
       *ngIf="totalItems > 0; else noExercises"
     >
 
       <!-- ==================================================
            LAPOZÓ + AKTUÁLIS GYAKORLATKÁRTYA
-           NINCS KÜLÖN KÜLSŐ KERET
            ================================================== -->
+
       <app-side-pagination
-        [fullWidth]="true"
         [currentPage]="currentPage"
         [totalPages]="totalPages"
         (pageChange)="onExercisePageChange($event)"
@@ -57,10 +60,11 @@
         <!-- =================================================
              AKTUÁLIS GYAKORLATKÁRTYA
              ================================================= -->
+
         <app-card
           *ngFor="let exercise of paginatedExercises"
           variant="default"
-          class="mx-auto block w-full max-w-sm min-w-0"
+          class="block w-full min-w-0"
         >
 
           <div
@@ -71,11 +75,13 @@
             <!-- ==========================================
                  KÁRTYA FEJLÉC / GYAKORLAT KÉPE
                  ========================================== -->
+
             <div
               class="relative flex h-24 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-600 to-primary-700 sm:h-36"
             >
 
               <!-- Dekoratív körök -->
+
               <div
                 class="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/10"
               ></div>
@@ -88,6 +94,7 @@
               <!-- ==========================================
                    GYAKORLAT KÉPEI
                    ========================================== -->
+
               <ng-container
                 *ngIf="
                   getExerciseImages(exercise.exercise).length > 0;
@@ -122,6 +129,7 @@
               <!-- ==========================================
                    NINCS KÉP
                    ========================================== -->
+
               <ng-template #noImage>
 
                 <span
@@ -138,11 +146,13 @@
             <!-- ==========================================
                  KÁRTYA TARTALOM
                  ========================================== -->
+
             <div
               class="flex min-w-0 flex-1 flex-col p-3.5 sm:p-5"
             >
 
               <!-- GYAKORLAT NEVE -->
+
               <h3
                 class="mb-2 break-words text-base font-bold leading-5 text-content-800 sm:text-lg sm:leading-6"
               >
@@ -151,6 +161,7 @@
 
 
               <!-- GYAKORLAT LEÍRÁSA -->
+
               <p
                 class="mb-3 min-w-0 break-words text-sm leading-5 text-content-600 sm:mb-4 sm:leading-6"
               >
@@ -164,11 +175,13 @@
               <!-- ========================================
                    META ADATOK
                    ======================================== -->
+
               <div
                 class="mt-auto flex flex-col gap-2 border-t border-surface-100 pt-3 sm:gap-3 sm:pt-4"
               >
 
                 <!-- SOROZAT / ISMÉTLÉS -->
+
                 <div
                   class="rounded-xl bg-surface-50 px-2.5 py-2.5 sm:px-3 sm:py-3"
                 >
@@ -195,6 +208,7 @@
 
 
                 <!-- PIHENŐ -->
+
                 <div
                   class="rounded-xl bg-surface-50 px-2.5 py-2.5 sm:px-3 sm:py-3"
                 >
@@ -221,6 +235,7 @@
               <!-- ========================================
                    TELJESÍTÉSI STÁTUSZ
                    ======================================== -->
+
               <div
                 class="mt-3 rounded-xl border px-3 py-2 text-center text-xs font-semibold sm:py-2.5 sm:text-sm"
                 [class.border-green-200]="exercise.done"
@@ -255,6 +270,7 @@
     <!-- ======================================================
          NINCS GYAKORLAT
          ====================================================== -->
+
     <ng-template #noExercises>
 
       <div
