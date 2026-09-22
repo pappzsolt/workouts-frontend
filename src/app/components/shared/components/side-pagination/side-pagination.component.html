@@ -7,14 +7,7 @@
   <!-- ====================================================
        KÁRTYA TERÜLETE + OLDALSÓ NYILAK
        ==================================================== -->
-  <div
-    class="relative"
-    [ngClass]="
-      fullWidthMobile
-        ? 'px-0'
-        : 'px-12 sm:px-0'
-    "
-  >
+  <div class="relative">
 
     <!-- ==================================================
          PROGRAMKÁRTYA KÖZÉPEN
@@ -50,7 +43,7 @@
              sm:h-12 sm:w-12"
       [ngClass]="
         fullWidthMobile
-          ? 'left-0 sm:left-5'
+          ? 'left-0 -translate-x-1/2'
           : 'left-1 sm:left-5'
       "
     >
@@ -73,7 +66,7 @@
       [disabled]="currentPage >= totalPages"
       (click)="onNextPage()"
       class="absolute top-1/2 z-10
-             flex h-10 w-10 w-10 -translate-y-1/2
+             flex h-10 w-10 -translate-y-1/2
              items-center justify-center
              rounded-full border border-surface-300
              bg-white text-content-700 shadow-sm
@@ -82,7 +75,7 @@
              sm:h-12 sm:w-12"
       [ngClass]="
         fullWidthMobile
-          ? 'right-0 sm:right-5'
+          ? 'right-0 translate-x-1/2'
           : 'right-1 sm:right-5'
       "
     >
