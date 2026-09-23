@@ -1,0 +1,130 @@
+/* Phosphor Icons Duotone, MIT licensed. Copyright (c) 2020-2021 Phosphor Icons. */
+@font-face {
+  font-family: "Phosphor-Duotone";
+  src: url("/assets/fonts/phosphor-duotone.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+.ph-duotone {
+  font-family: "Phosphor-Duotone" !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.ph-duotone.ph-barbell:before {
+  content: "\e0b6";
+    opacity: 0.2;
+}
+
+.ph-duotone.ph-barbell:after {
+  content: "\e0b7";
+    margin-left: -1em;
+}
+
+.ph-duotone.ph-book-open-text:before {
+  content: "\e8f2";
+    opacity: 0.2;
+}
+
+.ph-duotone.ph-book-open-text:after {
+  content: "\e8f3";
+    margin-left: -1em;
+}
+
+.ph-duotone.ph-calendar-blank:before {
+  content: "\e10a";
+    opacity: 0.2;
+}
+
+.ph-duotone.ph-calendar-blank:after {
+  content: "\e10b";
+    margin-left: -1em;
+}
+
+.ph-duotone.ph-chart-bar:before {
+  content: "\e150";
+    opacity: 0.2;
+}
+
+.ph-duotone.ph-chart-bar:after {
+  content: "\e151";
+    margin-left: -1em;
+}
+
+.ph-duotone.ph-chart-line-up:before {
+  content: "\e156";
+    opacity: 0.2;
+}
+
+.ph-duotone.ph-chart-line-up:after {
+  content: "\e157";
+    margin-left: -1em;
+}
+
+.ph-duotone.ph-fire:before {
+  content: "\e242";
+    opacity: 0.2;
+}
+
+.ph-duotone.ph-fire:after {
+  content: "\e243";
+    margin-left: -1em;
+}
+
+.ph-duotone.ph-link:before {
+  content: "\e2e2";
+    opacity: 0.2;
+}
+
+.ph-duotone.ph-link:after {
+  content: "\e2e3";
+    margin-left: -1em;
+}
+
+.ph-duotone.ph-magnifying-glass:before {
+  content: "\e30c";
+    opacity: 0.2;
+}
+
+.ph-duotone.ph-magnifying-glass:after {
+  content: "\e30d";
+    margin-left: -1em;
+}
+
+.ph-duotone.ph-pencil-simple:before {
+  content: "\e3b4";
+    opacity: 0.2;
+}
+
+.ph-duotone.ph-pencil-simple:after {
+  content: "\e3b5";
+    margin-left: -1em;
+}
+
+.ph-duotone.ph-user-plus:before {
+  content: "\e4d0";
+    opacity: 0.2;
+}
+
+.ph-duotone.ph-user-plus:after {
+  content: "\e4d1";
+    margin-left: -1em;
+}
+
+.ph-duotone.ph-users-three:before {
+  content: "\e68e";
+    opacity: 0.2;
+}
+
+.ph-duotone.ph-users-three:after {
+  content: "\e68f";
+    margin-left: -1em;
+}

@@ -14,31 +14,36 @@
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 
       <app-dashboard-action
-        icon="dumbbell"
+        icon="barbell"
+        tone="primary"
         label="coachDashboard.programs"
         (activated)="togglePrograms()"
       ></app-dashboard-action>
 
       <app-dashboard-action
-        icon="flame"
+        icon="fire"
+        tone="add"
         label="coachDashboard.workouts"
         (activated)="toggleWorkouts()"
       ></app-dashboard-action>
 
       <app-dashboard-action
-        icon="dumbbell"
+        icon="barbell"
+        tone="primary"
         label="coachDashboard.exercises"
         (activated)="toggleExercises()"
       ></app-dashboard-action>
 
       <app-dashboard-action
         icon="link"
+        tone="edit"
         label="coachDashboard.assignWorkoutExercises"
         (activated)="toggleWorkoutExercises()"
       ></app-dashboard-action>
 
       <app-dashboard-action
-        icon="chart-column-increasing"
+        icon="chart-line-up"
+        tone="sort"
         label="coachDashboard.workoutExerciseManager"
         (activated)="toggleWorkoutExerciseManager()"
       ></app-dashboard-action>

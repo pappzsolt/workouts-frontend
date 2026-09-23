@@ -24,7 +24,11 @@
                 "input": "public"
               }
             ],
-            "styles": ["@angular/material/prebuilt-themes/azure-blue.css", "src/styles.css"],
+            "styles": [
+              "@angular/material/prebuilt-themes/azure-blue.css",
+              "src/styles/phosphor-duotone.css",
+              "src/styles.css"
+            ],
             "scripts": []
           },
           "configurations": {
@@ -89,7 +93,11 @@
                 "input": "public"
               }
             ],
-            "styles": ["@angular/material/prebuilt-themes/azure-blue.css", "src/styles.css"],
+            "styles": [
+              "@angular/material/prebuilt-themes/azure-blue.css",
+              "src/styles/phosphor-duotone.css",
+              "src/styles.css"
+            ],
             "scripts": []
           }
         }

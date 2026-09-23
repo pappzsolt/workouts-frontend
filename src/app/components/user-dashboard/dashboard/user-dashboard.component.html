@@ -16,19 +16,22 @@
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
 
       <app-dashboard-action
-        icon="book-open"
+        icon="book-open-text"
+        tone="primary"
         label="userDashboard.myPrograms"
         (activated)="navigateTo('user/my-programs')"
       ></app-dashboard-action>
 
       <app-dashboard-action
-        icon="chart-column-increasing"
+        icon="chart-line-up"
+        tone="sort"
         label="userDashboard.programStatistics"
         (activated)="navigateTo('user/program-statistics')"
       ></app-dashboard-action>
 
       <app-dashboard-action
-        icon="calendar-days"
+        icon="calendar-blank"
+        tone="search"
         label="userDashboard.myWorkouts"
         (activated)="navigateTo('user/workouts')"
       ></app-dashboard-action>
