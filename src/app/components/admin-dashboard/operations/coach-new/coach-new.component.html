@@ -1,5 +1,5 @@
 <div
-  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+  class="min-h-screen min-w-0 bg-gradient-to-br from-surface-50 via-primary-50/40 to-primary-50/50 px-4 py-6 sm:px-6 lg:px-8"
 >
   <div class="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-6">
 
@@ -22,7 +22,7 @@
     <!-- Betöltés -->
     <div
       *ngIf="loading"
-      class="flex min-h-20 items-center justify-center rounded-xl border border-blue-200 bg-blue-50 px-4 py-4 text-center text-sm font-medium text-blue-700"
+      class="flex min-h-20 items-center justify-center rounded-xl border border-info-200 bg-info-50 px-4 py-4 text-center text-sm font-medium text-info-700"
     >
       {{ 'common.loading' | translate }}
     </div>
@@ -50,12 +50,12 @@
           [(ngModel)]="coach.name"
           required
           #nameModel="ngModel"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
 
         <div
           *ngIf="nameModel.invalid && (nameModel.dirty || nameModel.touched)"
-          class="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700"
+          class="mt-2 rounded-lg border border-delete-200 bg-delete-50 px-3 py-2 text-sm font-medium text-delete-700"
         >
           {{ 'adminCoachNew.nameRequired' | translate }}
         </div>
@@ -78,12 +78,12 @@
           required
           email
           #emailModel="ngModel"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
 
         <div
           *ngIf="emailModel.invalid && (emailModel.dirty || emailModel.touched)"
-          class="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700"
+          class="mt-2 rounded-lg border border-delete-200 bg-delete-50 px-3 py-2 text-sm font-medium text-delete-700"
         >
           {{ 'adminCoachNew.validEmailRequired' | translate }}
         </div>
@@ -106,7 +106,7 @@
           required
           minlength="6"
           #passwordModel="ngModel"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
 
         <div
@@ -114,7 +114,7 @@
             passwordModel.invalid &&
             (passwordModel.dirty || passwordModel.touched)
           "
-          class="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700"
+          class="mt-2 rounded-lg border border-delete-200 bg-delete-50 px-3 py-2 text-sm font-medium text-delete-700"
         >
           {{ 'adminCoachNew.minimumSixCharacters' | translate }}
         </div>
@@ -137,12 +137,12 @@
           required
           pattern="^\+36\d{9}$"
           #phoneModel="ngModel"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
 
         <div
           *ngIf="phoneModel.invalid && (phoneModel.dirty || phoneModel.touched)"
-          class="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700"
+          class="mt-2 rounded-lg border border-delete-200 bg-delete-50 px-3 py-2 text-sm font-medium text-delete-700"
         >
           {{ 'adminCoachNew.validHungarianPhoneRequired' | translate }}
         </div>
@@ -163,7 +163,7 @@
           rows="4"
           [placeholder]="'adminCoachNew.specialization' | translate"
           [(ngModel)]="coach.specialization"
-          class="w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-4 py-3 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-4 py-3 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         ></textarea>
       </div>
 
@@ -182,7 +182,7 @@
           type="text"
           [placeholder]="'adminCoachNew.avatarImageUrl' | translate"
           [(ngModel)]="coach.avatarUrl"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
       </div>
 

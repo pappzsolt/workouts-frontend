@@ -82,6 +82,12 @@ export class LayoutComponent implements OnInit {
     return window.innerWidth < 640;
   }
 
+  closeMobileMenu(): void {
+    if (this.isMobile()) {
+      this.menuOpen = false;
+    }
+  }
+
   @HostListener('window:resize', ['$event'])
   onResize(): void {
     if (!this.isMobile()) {

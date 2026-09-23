@@ -15,63 +15,23 @@
     <!-- Dashboard kártyák -->
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
 
-      <!-- My Programs -->
-      <button
-        type="button"
-        class="group flex min-h-44 flex-col items-center justify-center rounded-2xl border border-surface-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-slate-400/20"
-        (click)="navigateTo('user/my-programs')"
-      >
-        <div
-          class="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-surface-100 text-3xl text-content-700 shadow-sm transition-transform duration-200 group-hover:scale-105"
-        >
-          📚
-        </div>
+      <app-dashboard-action
+        icon="📚"
+        label="userDashboard.myPrograms"
+        (activated)="navigateTo('user/my-programs')"
+      ></app-dashboard-action>
 
-        <div
-          class="text-base font-semibold text-content-800 sm:text-lg"
-        >
-          {{ 'userDashboard.myPrograms' | translate }}
-        </div>
-      </button>
+      <app-dashboard-action
+        icon="📈"
+        label="userDashboard.programStatistics"
+        (activated)="navigateTo('user/program-statistics')"
+      ></app-dashboard-action>
 
-
-      <!-- Program Statistics -->
-      <button
-        type="button"
-        class="group flex min-h-44 flex-col items-center justify-center rounded-2xl border border-surface-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-slate-400/20"
-        (click)="navigateTo('user/program-statistics')"
-      >
-        <div
-          class="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-surface-100 text-3xl text-content-700 shadow-sm transition-transform duration-200 group-hover:scale-105"
-        >
-          📈
-        </div>
-
-        <div
-          class="text-base font-semibold text-content-800 sm:text-lg"
-        >
-          {{ 'userDashboard.programStatistics' | translate }}
-        </div>
-      </button>
-
-      <!-- My Workouts -->
-      <button
-        type="button"
-        class="group flex min-h-44 flex-col items-center justify-center rounded-2xl border border-surface-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-slate-400/20"
-        (click)="navigateTo('user/workouts')"
-      >
-        <div
-          class="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-surface-100 text-3xl text-content-700 shadow-sm transition-transform duration-200 group-hover:scale-105"
-        >
-          📅
-        </div>
-
-        <div
-          class="text-base font-semibold text-content-800 sm:text-lg"
-        >
-          {{ 'userDashboard.myWorkouts' | translate }}
-        </div>
-      </button>
+      <app-dashboard-action
+        icon="📅"
+        label="userDashboard.myWorkouts"
+        (activated)="navigateTo('user/workouts')"
+      ></app-dashboard-action>
 
     </div>
 

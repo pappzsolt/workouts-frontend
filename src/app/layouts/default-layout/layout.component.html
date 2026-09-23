@@ -1,5 +1,5 @@
 <div
-  class="flex min-h-screen min-w-0 flex-col bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50"
+  class="flex min-h-screen min-w-0 flex-col bg-gradient-to-br from-surface-50 via-primary-50/40 to-primary-50/50"
 >
   <!-- ===================================================== -->
   <!-- FEJLÉC -->
@@ -19,17 +19,18 @@
 
       <!-- Hamburger menü mobilon -->
       <app-button
+        class="sm:hidden"
         variant="primary"
         [floating]="false"
-        [title]="'Menu'"
-        [lucideIcon]="''"
+        [title]="menuOpen ? 'Close menu' : 'Open menu'"
+        [icon]="menuOpen ? '×' : '☰'"
         (buttonClick)="menuOpen = !menuOpen"
       ></app-button>
 
       <!-- Username -->
       <span
         *ngIf="username"
-        class="hidden max-w-48 truncate rounded-full bg-white px-3 py-1.5 text-sm font-medium text-blue-600 shadow-sm sm:inline-block"
+        class="hidden max-w-48 truncate rounded-full bg-white px-3 py-1.5 text-sm font-medium text-info-600 shadow-sm sm:inline-block"
       >
         {{ 'header.user' | translate }}: {{ username }}
       </span>
@@ -37,7 +38,7 @@
       <!-- Role -->
       <span
         *ngIf="role"
-        class="hidden max-w-40 truncate rounded-full bg-white px-3 py-1.5 text-sm font-medium text-blue-600 shadow-sm sm:inline-block"
+        class="hidden max-w-40 truncate rounded-full bg-white px-3 py-1.5 text-sm font-medium text-info-600 shadow-sm sm:inline-block"
       >
         {{ 'header.role' | translate }}: {{ role }}
       </span>
@@ -78,6 +79,7 @@
         <app-dynamic-menu
           [menuItems]="adminMenuItems"
           (menuAction)="handleMenuAction($event)"
+          (menuNavigate)="closeMobileMenu()"
         ></app-dynamic-menu>
       </ng-container>
 
@@ -86,6 +88,7 @@
         <app-dynamic-menu
           [menuItems]="coachMenuItems"
           (menuAction)="handleMenuAction($event)"
+          (menuNavigate)="closeMobileMenu()"
         ></app-dynamic-menu>
       </ng-container>
 
@@ -94,6 +97,7 @@
         <app-dynamic-menu
           [menuItems]="userMenuItems"
           (menuAction)="handleMenuAction($event)"
+          (menuNavigate)="closeMobileMenu()"
         ></app-dynamic-menu>
       </ng-container>
     </aside>
@@ -105,7 +109,7 @@
     <div
       *ngIf="menuOpen && isMobile()"
       (click)="menuOpen = false"
-      class="fixed inset-0 z-10 bg-slate-900/30 backdrop-blur-[1px]"
+      class="fixed inset-0 z-10 bg-surface-900/30 backdrop-blur-[1px]"
     ></div>
 
     <!-- ===================================================== -->

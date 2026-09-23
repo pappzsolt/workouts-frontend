@@ -2,7 +2,7 @@
      OLDAL
      ====================================================== -->
 <div
-  class="min-h-full min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50"
+  class="min-h-full min-w-0 bg-gradient-to-br from-surface-50 via-primary-50/40 to-primary-50/50"
 >
   <div
     class="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-5 px-2.5 py-4 sm:gap-6 sm:px-6 sm:py-8 lg:px-8"
@@ -11,7 +11,7 @@
          NAPTÁR FEJLÉC
          ================================================== -->
     <div
-      class="overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-md shadow-slate-200/50"
+      class="overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-md shadow-surface-200/50"
     >
       <!-- Narancssárga fejléc -->
       <div
@@ -63,43 +63,43 @@
       class="grid grid-cols-7 overflow-hidden rounded-t-2xl border border-b-0 border-surface-200 bg-surface-100"
     >
       <div
-        class="border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 last:border-r-0 sm:px-2 sm:text-xs"
+        class="min-w-0 truncate border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 last:border-r-0 sm:px-2 sm:text-xs"
       >
         {{ 'userWorkoutsCalendar.monday' | translate }}
       </div>
 
       <div
-        class="border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 last:border-r-0 sm:px-2 sm:text-xs"
+        class="min-w-0 truncate border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 last:border-r-0 sm:px-2 sm:text-xs"
       >
         {{ 'userWorkoutsCalendar.tuesday' | translate }}
       </div>
 
       <div
-        class="border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 last:border-r-0 sm:px-2 sm:text-xs"
+        class="min-w-0 truncate border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 last:border-r-0 sm:px-2 sm:text-xs"
       >
         {{ 'userWorkoutsCalendar.wednesday' | translate }}
       </div>
 
       <div
-        class="border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 last:border-r-0 sm:px-2 sm:text-xs"
+        class="min-w-0 truncate border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 last:border-r-0 sm:px-2 sm:text-xs"
       >
         {{ 'userWorkoutsCalendar.thursday' | translate }}
       </div>
 
       <div
-        class="border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 last:border-r-0 sm:px-2 sm:text-xs"
+        class="min-w-0 truncate border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 last:border-r-0 sm:px-2 sm:text-xs"
       >
         {{ 'userWorkoutsCalendar.friday' | translate }}
       </div>
 
       <div
-        class="border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 sm:px-2 sm:text-xs"
+        class="min-w-0 truncate border-r border-surface-200 px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 sm:px-2 sm:text-xs"
       >
         {{ 'userWorkoutsCalendar.saturday' | translate }}
       </div>
 
       <div
-        class="px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 sm:px-2 sm:text-xs"
+        class="min-w-0 truncate px-0.5 py-3 text-center text-[9px] font-bold uppercase tracking-wide text-content-600 sm:px-2 sm:text-xs"
       >
         {{ 'userWorkoutsCalendar.sunday' | translate }}
       </div>
@@ -109,13 +109,13 @@
          NAPTÁR
          ================================================== -->
     <div
-      class="-mt-5 grid grid-cols-7 overflow-hidden rounded-b-2xl border border-surface-200 bg-white shadow-md shadow-slate-200/50 sm:-mt-6"
+      class="-mt-5 grid grid-cols-7 overflow-hidden rounded-b-2xl border border-surface-200 bg-white shadow-md shadow-surface-200/50 sm:-mt-6"
     >
       <div
         *ngFor="let day of calendarDays"
         class="relative min-h-24 min-w-0 border-b border-r border-surface-200 p-1 transition-colors duration-150 last:border-r-0 hover:bg-primary-50/40 sm:min-h-32 sm:p-2 lg:min-h-36"
-        [class.bg-slate-50]="!day.currentMonth"
-        [class.text-slate-400]="!day.currentMonth"
+        [class.bg-surface-50]="!day.currentMonth"
+        [class.text-content-400]="!day.currentMonth"
         [class.bg-primary-50]="day.isToday"
       >
         <!-- Dátum -->
@@ -124,8 +124,8 @@
             class="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-bold sm:h-8 sm:w-8 sm:text-sm"
             [class.bg-primary-600]="day.isToday"
             [class.text-white]="day.isToday"
-            [class.text-slate-700]="!day.isToday && day.currentMonth"
-            [class.text-slate-400]="!day.isToday && !day.currentMonth"
+            [class.text-content-700]="!day.isToday && day.currentMonth"
+            [class.text-content-400]="!day.isToday && !day.currentMonth"
           >
             {{ day.date.getDate() }}
           </div>
@@ -136,13 +136,13 @@
           <div
             *ngFor="let workout of getWorkoutsForDay(day.date)"
             class="group flex min-w-0 cursor-pointer items-center gap-1 rounded-lg border px-1 py-1.5 text-[10px] font-semibold transition-all duration-150 sm:gap-2 sm:px-2 sm:text-xs"
-            [class.border-green-200]="workout.completed"
-            [class.bg-green-50]="workout.completed"
-            [class.text-green-700]="workout.completed"
+            [class.border-success-200]="workout.completed"
+            [class.bg-success-50]="workout.completed"
+            [class.text-success-700]="workout.completed"
             [class.border-primary-200]="!workout.completed"
             [class.bg-primary-50]="!workout.completed"
             [class.text-primary-700]="!workout.completed"
-            [class.hover:border-green-300]="workout.completed"
+            [class.hover:border-success-300]="workout.completed"
             [class.hover:border-primary-300]="!workout.completed"
             (click)="selectWorkout(workout)"
           >
@@ -163,7 +163,7 @@
          ================================================== -->
     <div
       *ngIf="selectedWorkout"
-      class="overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-md shadow-slate-200/50"
+      class="overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-md shadow-surface-200/50"
     >
       <!-- Narancssárga fejléc -->
       <div
@@ -181,14 +181,14 @@
 
           <div
             *ngIf="selectedWorkout.scheduled_at"
-            class="mt-2 break-words text-sm text-orange-100"
+            class="mt-2 break-words text-sm text-warning-100"
           >
             📅 {{ selectedWorkout.scheduled_at }}
           </div>
 
           <div
             *ngIf="!selectedWorkout.scheduled_at"
-            class="mt-2 text-sm text-orange-100"
+            class="mt-2 text-sm text-warning-100"
           >
             📅
             {{ 'userWorkoutsCalendar.noScheduledDate' | translate }}

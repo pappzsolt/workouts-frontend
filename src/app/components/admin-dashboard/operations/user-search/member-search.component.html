@@ -1,5 +1,5 @@
 <div
-  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+  class="min-h-screen min-w-0 bg-gradient-to-br from-surface-50 via-primary-50/40 to-primary-50/50 px-4 py-6 sm:px-6 lg:px-8"
 >
   <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
 
@@ -27,7 +27,7 @@
         type="text"
         [(ngModel)]="keyword"
         [placeholder]="'adminMemberSearch.searchPlaceholder' | translate"
-        class="min-h-11 min-w-0 flex-1 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        class="min-h-11 min-w-0 flex-1 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
       />
 
       <app-button
@@ -62,10 +62,10 @@
       <button
         type="button"
         (click)="viewMode = 'table'"
-        [class.bg-blue-600]="viewMode === 'table'"
+        [class.bg-primary-600]="viewMode === 'table'"
         [class.text-white]="viewMode === 'table'"
-        [class.border-blue-600]="viewMode === 'table'"
-        class="rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-sm font-semibold text-content-700 transition-all duration-200 hover:border-blue-300 hover:bg-blue-50"
+        [class.border-primary-600]="viewMode === 'table'"
+        class="rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-sm font-semibold text-content-700 transition-all duration-200 hover:border-primary-300 hover:bg-primary-50"
       >
         {{ 'adminMemberSearch.tableView' | translate }}
       </button>
@@ -84,15 +84,15 @@
         >
           <div
             *ngFor="let member of displayedMembers"
-            class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md"
+            class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary-200 hover:shadow-md"
           >
 
             <!-- Avatar -->
             <div
-              class="flex h-40 items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-50"
+              class="flex h-40 items-center justify-center bg-gradient-to-br from-surface-50 to-primary-50"
             >
               <div
-                class="flex h-20 w-20 items-center justify-center rounded-full bg-white text-4xl shadow-sm ring-1 ring-slate-200 transition-transform duration-200 group-hover:scale-105"
+                class="flex h-20 w-20 items-center justify-center rounded-full bg-white text-4xl shadow-sm ring-1 ring-surface-200 transition-transform duration-200 group-hover:scale-105"
               >
                 👤
               </div>
@@ -116,7 +116,7 @@
 
               <!-- Role -->
               <div
-                class="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-3 py-2.5 text-sm text-blue-700"
+                class="mt-4 rounded-xl border border-info-100 bg-info-50 px-3 py-2.5 text-sm text-info-700"
               >
                 <span class="font-semibold">
                   {{ 'adminMemberSearch.role' | translate }}:
@@ -149,10 +149,10 @@
               <!-- Coach -->
               <div
                 *ngIf="member.coach"
-                class="mt-3 rounded-xl border border-indigo-100 bg-indigo-50 px-3 py-3 text-sm text-content-600"
+                class="mt-3 rounded-xl border border-info-100 bg-info-50 px-3 py-3 text-sm text-content-600"
               >
                 <div class="break-words">
-                  <strong class="font-semibold text-indigo-700">
+                  <strong class="font-semibold text-info-700">
                     {{ 'adminMemberSearch.coach' | translate }}:
                   </strong>
 
@@ -212,7 +212,7 @@
               <tbody>
               <tr
                 *ngFor="let member of displayedMembers"
-                class="border-b border-surface-100 transition-colors duration-150 last:border-b-0 hover:bg-blue-50/40"
+                class="border-b border-surface-100 transition-colors duration-150 last:border-b-0 hover:bg-surface-100/40"
               >
 
                 <!-- Név -->
@@ -238,7 +238,7 @@
                   class="px-5 py-4 align-top text-sm text-content-600"
                 >
                     <span
-                      class="inline-flex rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700"
+                      class="inline-flex rounded-full border border-info-200 bg-info-50 px-3 py-1 text-xs font-semibold text-info-700"
                     >
                       {{ member.roles.join(', ') }}
                     </span>
@@ -312,7 +312,7 @@
         type="button"
         (click)="prevPage()"
         [disabled]="currentPage === 1"
-        class="min-h-10 rounded-xl border border-surface-300 bg-white px-4 py-2 text-sm font-semibold text-content-700 shadow-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
+        class="min-h-10 rounded-xl border border-surface-300 bg-white px-4 py-2 text-sm font-semibold text-content-700 shadow-sm transition-all duration-200 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 disabled:cursor-not-allowed disabled:opacity-40"
       >
         {{ 'common.previous' | translate }}
       </button>
@@ -327,10 +327,10 @@
         <button
           type="button"
           (click)="goToPage(i + 1)"
-          [class.bg-blue-600]="currentPage === i + 1"
+          [class.bg-primary-600]="currentPage === i + 1"
           [class.text-white]="currentPage === i + 1"
-          [class.border-blue-600]="currentPage === i + 1"
-          class="min-h-10 min-w-10 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm font-semibold text-content-700 shadow-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+          [class.border-primary-600]="currentPage === i + 1"
+          class="min-h-10 min-w-10 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm font-semibold text-content-700 shadow-sm transition-all duration-200 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700"
         >
           {{ i + 1 }}
         </button>
@@ -341,7 +341,7 @@
         type="button"
         (click)="nextPage()"
         [disabled]="currentPage === totalPages"
-        class="min-h-10 rounded-xl border border-surface-300 bg-white px-4 py-2 text-sm font-semibold text-content-700 shadow-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
+        class="min-h-10 rounded-xl border border-surface-300 bg-white px-4 py-2 text-sm font-semibold text-content-700 shadow-sm transition-all duration-200 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 disabled:cursor-not-allowed disabled:opacity-40"
       >
         {{ 'common.next' | translate }}
       </button>

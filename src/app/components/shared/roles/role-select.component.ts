@@ -11,7 +11,7 @@ import { SHARED_IMPORTS } from '../shared-imports';
   imports: [...SHARED_IMPORTS],
   template: `
     <div class="w-full">
-      <label for="roleSelect" class="mb-2 block text-sm font-semibold text-slate-700">
+      <label for="roleSelect" class="mb-2 block text-sm font-semibold text-content-700">
         {{ 'roleSelect.role' | translate }}
       </label>
 
@@ -19,7 +19,7 @@ import { SHARED_IMPORTS } from '../shared-imports';
         id="roleSelect"
         [(ngModel)]="selectedRole"
         (change)="onRoleChange()"
-        class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-base text-slate-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
       >
         <option [ngValue]="undefined">
           {{ 'roleSelect.select' | translate }}
@@ -32,7 +32,7 @@ import { SHARED_IMPORTS } from '../shared-imports';
 
       <div
         *ngIf="errorMessage"
-        class="mt-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700"
+        class="mt-3 rounded-xl border border-delete-200 bg-delete-50 px-4 py-3 text-sm font-medium text-delete-700"
       >
         {{ errorMessage | translate }}
       </div>

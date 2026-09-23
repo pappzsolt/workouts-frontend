@@ -8,12 +8,14 @@ import { AssignWorkoutsExercisesComponent } from '../operations/assign-workouts-
 import { UserWorkoutExerciseManagerComponent } from '../operations/user-workout-exercise-manager/user-workout-exercise-manager';
 
 import { SHARED_IMPORTS } from '../../shared/shared-imports';
+import { DashboardActionComponent } from '../../shared/components/dashboard-action/dashboard-action.component';
 
 @Component({
   selector: 'app-coach-dashboard',
   standalone: true,
   imports: [
     ...SHARED_IMPORTS,
+    DashboardActionComponent,
     WorkoutListComponent,
     CoachProgramComponent,
     ExerciseControllerComponent,

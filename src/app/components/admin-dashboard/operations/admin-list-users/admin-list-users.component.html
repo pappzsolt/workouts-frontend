@@ -1,5 +1,5 @@
 <div
-  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+  class="min-h-screen min-w-0 bg-gradient-to-br from-surface-50 via-primary-50/40 to-primary-50/50 px-4 py-6 sm:px-6 lg:px-8"
 >
   <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
 
@@ -28,7 +28,7 @@
       >
         <div
           *ngFor="let user of paginatedUsers"
-          class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-200 hover:shadow-md"
+          class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary-200 hover:shadow-md"
         >
 
           <!-- Avatar -->
@@ -82,7 +82,7 @@
           type="button"
           (click)="prevPage()"
           [disabled]="currentPage === 1"
-          class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-5 py-2.5 text-sm font-semibold text-content-700 shadow-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none sm:w-auto"
+          class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-5 py-2.5 text-sm font-semibold text-content-700 shadow-sm transition-all duration-200 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 disabled:cursor-not-allowed disabled:border-surface-200 disabled:bg-surface-100 disabled:text-content-400 disabled:shadow-none sm:w-auto"
         >
           {{ 'common.previous' | translate }}
         </button>
@@ -97,7 +97,7 @@
           type="button"
           (click)="nextPage()"
           [disabled]="currentPage === totalPages"
-          class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-5 py-2.5 text-sm font-semibold text-content-700 shadow-sm transition-all duration-200 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-400 disabled:shadow-none sm:w-auto"
+          class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-5 py-2.5 text-sm font-semibold text-content-700 shadow-sm transition-all duration-200 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 disabled:cursor-not-allowed disabled:border-surface-200 disabled:bg-surface-100 disabled:text-content-400 disabled:shadow-none sm:w-auto"
         >
           {{ 'common.next' | translate }}
         </button>

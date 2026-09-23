@@ -62,7 +62,7 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
    * Kulcs: programId
    * Érték: az adott program progress adatai
    */
-  programProgress: Record<number, ProgramProgress> = {};
+  programProgress: Partial<Record<number, ProgramProgress>> = {};
 
   message = 'userMyPrograms.loading';
 

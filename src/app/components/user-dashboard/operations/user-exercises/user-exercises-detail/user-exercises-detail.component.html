@@ -31,12 +31,12 @@
       </div>
 
       <h2
-        class="text-2xl font-bold text-gray-900 leading-tight"
+        class="text-2xl font-bold text-content-900 leading-tight"
       >
         {{ workoutExercise.exercise.name || 'N/A' }}
       </h2>
 
-      <div class="mt-2 text-sm text-gray-500">
+      <div class="mt-2 text-sm text-content-500">
         {{ workoutExercise.sets }}
         {{ 'userExerciseDetail.sets' | translate }}
         ·
@@ -68,13 +68,13 @@
            ================================================== -->
 
       <div
-        *ngIf="workoutExercise.userWorkoutExerciseSets?.length; else noSets"
+        *ngIf="workoutExercise.userWorkoutExerciseSets.length; else noSets"
         class="w-full"
       >
 
         <app-side-pagination
           [currentPage]="currentSetIndex + 1"
-          [totalPages]="workoutExercise.userWorkoutExerciseSets?.length || 0"
+          [totalPages]="workoutExercise.userWorkoutExerciseSets.length"
           (pageChange)="goToSet($event - 1)"
         >
 
@@ -91,8 +91,8 @@
             <div
               class="rounded-2xl overflow-hidden transition-all"
               [ngClass]="{
-                'ring-2 ring-green-400': set.completed,
-                'ring-1 ring-slate-200': !set.completed
+                'ring-2 ring-success-400': set.completed,
+                'ring-1 ring-surface-200': !set.completed
               }"
             >
 
@@ -113,7 +113,7 @@
                 ></div>
 
                 <div
-                  class="relative flex h-20 w-20 items-center justify-center rounded-2xl border border-amber-100 bg-white shadow-md"
+                  class="relative flex h-20 w-20 items-center justify-center rounded-2xl border border-warning-100 bg-white shadow-md"
                 >
                   <span
                     class="text-4xl"
@@ -145,7 +145,7 @@
                   <div>
 
                     <div
-                      class="text-xs uppercase tracking-wide text-gray-500"
+                      class="text-xs uppercase tracking-wide text-content-500"
                     >
                       {{ 'userExerciseDetail.set' | translate }}
                     </div>
@@ -153,8 +153,8 @@
                     <div
                       class="text-2xl font-bold"
                       [ngClass]="{
-                        'text-green-700': set.completed,
-                        'text-gray-900': !set.completed
+                        'text-success-700': set.completed,
+                        'text-content-900': !set.completed
                       }"
                     >
                       {{ set.setNumber }}
@@ -192,19 +192,19 @@
                   >
 
                     <div
-                      class="text-xs text-gray-500 mb-1"
+                      class="text-xs text-content-500 mb-1"
                     >
                       {{ 'userExerciseDetail.repetitions' | translate }}
                     </div>
 
                     <div
-                      class="text-xl font-bold text-gray-900"
+                      class="text-xl font-bold text-content-900"
                     >
-                      {{ set.targetRepetitions ?? '-' }}
+                      {{ set.targetRepetitions }}
                     </div>
 
                     <div
-                      class="text-xs text-gray-500"
+                      class="text-xs text-content-500"
                     >
                       {{ 'userExerciseDetail.reps' | translate }}
                     </div>
@@ -219,19 +219,19 @@
                   >
 
                     <div
-                      class="text-xs text-gray-500 mb-1"
+                      class="text-xs text-content-500 mb-1"
                     >
                       {{ 'userExerciseDetail.weight' | translate }}
                     </div>
 
                     <div
-                      class="text-xl font-bold text-gray-900"
+                      class="text-xl font-bold text-content-900"
                     >
                       {{ set.targetWeightKg ?? '-' }}
                     </div>
 
                     <div
-                      class="text-xs text-gray-500"
+                      class="text-xs text-content-500"
                     >
                       kg
                     </div>
@@ -254,7 +254,7 @@
                   <div>
 
                     <label
-                      class="block text-sm font-semibold text-gray-700 mb-2"
+                      class="block text-sm font-semibold text-content-700 mb-2"
                     >
                       {{ 'userExerciseDetail.actualRepetitions' | translate }}
                     </label>
@@ -263,7 +263,7 @@
                       type="number"
                       min="0"
                       [(ngModel)]="set.actualRepetitions"
-                      class="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      class="w-full rounded-xl border border-surface-300 px-4 py-3 text-content-900 focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
 
                   </div>
@@ -274,7 +274,7 @@
                   <div>
 
                     <label
-                      class="block text-sm font-semibold text-gray-700 mb-2"
+                      class="block text-sm font-semibold text-content-700 mb-2"
                     >
                       {{ 'userExerciseDetail.actualWeight' | translate }}
                     </label>
@@ -284,11 +284,11 @@
                       min="0"
                       step="0.5"
                       [(ngModel)]="set.actualWeightKg"
-                      class="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-500"
+                      class="w-full rounded-xl border border-surface-300 px-4 py-3 text-content-900 focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
 
                     <div
-                      class="mt-1 text-xs text-gray-500"
+                      class="mt-1 text-xs text-content-500"
                     >
                       kg
                     </div>
@@ -305,7 +305,7 @@
                 <div class="mt-4">
 
                   <label
-                    class="block text-sm font-semibold text-gray-700 mb-2"
+                    class="block text-sm font-semibold text-content-700 mb-2"
                   >
                     {{ 'userExerciseDetail.notes' | translate }}
                   </label>
@@ -314,7 +314,7 @@
                     [(ngModel)]="set.notes"
                     rows="3"
                     placeholder="Pl.: Ez a sorozat nehéz volt..."
-                    class="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 resize-none focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    class="w-full rounded-xl border border-surface-300 px-4 py-3 text-content-900 resize-none focus:outline-none focus:ring-2 focus:ring-primary-500"
                   ></textarea>
 
                 </div>
@@ -327,8 +327,8 @@
                 <div
                   class="mt-3 text-sm font-semibold"
                   [ngClass]="{
-                    'text-green-700': set.completed,
-                    'text-gray-500': !set.completed
+                    'text-success-700': set.completed,
+                    'text-content-500': !set.completed
                   }"
                 >
                   {{
@@ -360,13 +360,13 @@
                   >
 
                     <div
-                      class="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1"
+                      class="text-xs font-semibold uppercase tracking-wide text-content-500 mb-1"
                     >
                       {{ 'userExerciseDetail.description' | translate }}
                     </div>
 
                     <p
-                      class="text-gray-800 leading-relaxed"
+                      class="text-content-800 leading-relaxed"
                     >
                       {{ workoutExercise.exercise.description }}
                     </p>
@@ -390,13 +390,13 @@
                     >
 
                       <div
-                        class="text-xs text-gray-500 mb-1"
+                        class="text-xs text-content-500 mb-1"
                       >
                         {{ 'userExerciseDetail.muscle' | translate }}
                       </div>
 
                       <div
-                        class="font-semibold text-gray-900"
+                        class="font-semibold text-content-900"
                       >
                         {{ workoutExercise.exercise.muscleGroup }}
                       </div>
@@ -412,13 +412,13 @@
                     >
 
                       <div
-                        class="text-xs text-gray-500 mb-1"
+                        class="text-xs text-content-500 mb-1"
                       >
                         {{ 'userExerciseDetail.equipment' | translate }}
                       </div>
 
                       <div
-                        class="font-semibold text-gray-900"
+                        class="font-semibold text-content-900"
                       >
                         {{ workoutExercise.exercise.equipment }}
                       </div>
@@ -434,13 +434,13 @@
                     >
 
                       <div
-                        class="text-xs text-gray-500 mb-1"
+                        class="text-xs text-content-500 mb-1"
                       >
                         {{ 'userExerciseDetail.difficulty' | translate }}
                       </div>
 
                       <div
-                        class="font-semibold text-gray-900"
+                        class="font-semibold text-content-900"
                       >
                         {{ workoutExercise.exercise.difficultyLevel }}
                       </div>
@@ -456,13 +456,13 @@
                     >
 
                       <div
-                        class="text-xs text-gray-500 mb-1"
+                        class="text-xs text-content-500 mb-1"
                       >
                         {{ 'userExerciseDetail.category' | translate }}
                       </div>
 
                       <div
-                        class="font-semibold text-gray-900"
+                        class="font-semibold text-content-900"
                       >
                         {{ workoutExercise.exercise.category }}
                       </div>
@@ -478,13 +478,13 @@
                     >
 
                       <div
-                        class="text-xs text-gray-500 mb-1"
+                        class="text-xs text-content-500 mb-1"
                       >
                         {{ 'userExerciseDetail.caloriesPerMinute' | translate }}
                       </div>
 
                       <div
-                        class="font-semibold text-gray-900"
+                        class="font-semibold text-content-900"
                       >
                         {{ workoutExercise.exercise.caloriesBurnedPerMinute }}
                       </div>
@@ -500,13 +500,13 @@
                     >
 
                       <div
-                        class="text-xs text-gray-500 mb-1"
+                        class="text-xs text-content-500 mb-1"
                       >
                         {{ 'userExerciseDetail.duration' | translate }}
                       </div>
 
                       <div
-                        class="font-semibold text-gray-900"
+                        class="font-semibold text-content-900"
                       >
                         {{ workoutExercise.exercise.durationSeconds }}
                         {{ 'userExerciseDetail.seconds' | translate }}
@@ -531,9 +531,9 @@
                   <div
                     class="rounded-xl px-4 py-3 text-center"
                     [ngClass]="{
-                      'bg-green-50 text-green-700':
+                      'bg-success-50 text-success-700':
                         workoutExercise.done,
-                      'bg-white/70 text-gray-600':
+                      'bg-white/70 text-content-600':
                         !workoutExercise.done
                     }"
                   >
@@ -596,7 +596,7 @@
       >
 
         <div
-          class="text-sm font-semibold text-gray-700 mb-3"
+          class="text-sm font-semibold text-content-700 mb-3"
         >
           {{ 'userExerciseDetail.exerciseImage' | translate }}
         </div>
@@ -620,7 +620,7 @@
       >
 
         <div
-          class="text-sm font-semibold text-gray-700 mb-3"
+          class="text-sm font-semibold text-content-700 mb-3"
         >
           {{ 'userExerciseDetail.exerciseVideo' | translate }}
         </div>
@@ -661,7 +661,7 @@
 
 <div
   *ngIf="!workoutExercise"
-  class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 flex items-center justify-center p-4"
+  class="min-h-screen bg-gradient-to-br from-surface-50 via-primary-50/40 to-primary-50/50 flex items-center justify-center p-4"
 >
 
   <app-message

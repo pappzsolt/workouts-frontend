@@ -2,7 +2,7 @@
      OLDAL
      ====================================================== -->
 
-<div class="min-h-full bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50">
+<div class="min-h-full bg-gradient-to-br from-surface-50 via-primary-50/40 to-primary-50/50">
   <div class="mx-auto w-full max-w-5xl px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
 
     <!-- ==================================================
@@ -36,7 +36,7 @@
            ================================================== -->
 
       <div
-        class="border-b border-blue-100 bg-gradient-to-r from-primary-600 to-primary-700 px-4 py-6 sm:px-6 sm:py-7"
+        class="border-b border-info-100 bg-gradient-to-r from-primary-600 to-primary-700 px-4 py-6 sm:px-6 sm:py-7"
       >
         <div class="flex items-center justify-center">
           <span
@@ -75,7 +75,7 @@
             [placeholder]="'coachProgramEdit.programNamePlaceholder' | translate"
             [(ngModel)]="program.programName"
             required
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
           />
         </div>
 
@@ -97,7 +97,7 @@
             rows="3"
             [placeholder]="'coachProgramEdit.descriptionPlaceholder' | translate"
             [(ngModel)]="program.programDescription"
-            class="min-h-28 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+            class="min-h-28 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
           ></textarea>
         </div>
 
@@ -120,7 +120,7 @@
             [placeholder]="'coachProgramEdit.durationPlaceholder' | translate"
             [(ngModel)]="program.durationDays"
             min="1"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
           />
         </div>
 
@@ -150,7 +150,7 @@
               [(value)]="program.difficultyLevel"
               [placeholder]="'coachProgramEdit.selectDifficulty'"
               placeholderValue=""
-              [className]="'min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-blue-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm'"
+              [className]="'min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm'"
               [options]="[
       { value: 'Easy', label: 'coachProgramEdit.easy' },
       { value: 'Medium', label: 'coachProgramEdit.medium' },
@@ -165,11 +165,11 @@
              ================================================== -->
 
         <div
-          class="col-span-full flex justify-end border-t border-blue-100 pt-5"
+          class="col-span-full flex justify-end border-t border-info-100 pt-5"
         >
           <button
             type="submit"
-            class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition duration-150 hover:from-blue-700 hover:to-indigo-700 hover:shadow-lg hover:shadow-blue-500/25 focus:outline-none focus:ring-4 focus:ring-blue-500/20 active:scale-[0.98] sm:w-auto"
+            class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-info-500/20 transition duration-150 hover:from-primary-700 hover:to-primary-700 hover:shadow-lg hover:shadow-info-500/25 focus:outline-none focus:ring-4 focus:ring-primary-500/20 active:scale-[0.98] sm:w-auto"
           >
             <span>💾</span>
             <span>{{ 'coachProgramEdit.save' | translate }}</span>

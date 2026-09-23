@@ -9,7 +9,7 @@ import { LanguageService } from '../../../services/shared/language.service';
     <select
       [value]="languageService.getCurrentLanguage()"
       (change)="onLanguageChange($event)"
-      class="bg-white text-blue-600 px-3 py-1 rounded-full font-medium shadow-sm"
+      class="bg-white text-primary-600 px-3 py-1 rounded-full font-medium shadow-sm"
     >
       <option value="hu">Magyar</option>
       <option value="en">English</option>

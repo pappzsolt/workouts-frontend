@@ -1,5 +1,5 @@
 <div
-  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+  class="min-h-screen min-w-0 bg-gradient-to-br from-surface-50 via-primary-50/40 to-primary-50/50 px-4 py-6 sm:px-6 lg:px-8"
 >
   <div class="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-6">
 
@@ -31,7 +31,7 @@
 
     <div
       *ngIf="loading"
-      class="flex min-h-20 items-center justify-center rounded-xl border border-blue-200 bg-blue-50 px-4 py-4 text-center text-sm font-medium text-blue-700"
+      class="flex min-h-20 items-center justify-center rounded-xl border border-info-200 bg-info-50 px-4 py-4 text-center text-sm font-medium text-info-700"
     >
       {{ 'common.loading' | translate }}
     </div>
@@ -54,7 +54,7 @@
         id="coachSelect"
         [(ngModel)]="selectedCoachId"
         (change)="onSelectCoach()"
-        class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+        class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
       >
         <option [ngValue]="null">
           -- {{ 'adminCoachEdit.selectCoach' | translate }} --
@@ -93,7 +93,7 @@
           type="text"
           [placeholder]="'common.name' | translate"
           [(ngModel)]="selectedCoach.name"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
       </div>
 
@@ -112,7 +112,7 @@
           type="email"
           [placeholder]="'common.email' | translate"
           [(ngModel)]="selectedCoach.email"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
       </div>
 
@@ -131,7 +131,7 @@
           type="password"
           [placeholder]="'adminCoachEdit.passwordPlaceholder' | translate"
           [(ngModel)]="selectedCoach.password"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
       </div>
 
@@ -150,7 +150,7 @@
           type="text"
           [placeholder]="'common.phone' | translate"
           [(ngModel)]="selectedCoach.phone"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
       </div>
 
@@ -169,7 +169,7 @@
           rows="4"
           [placeholder]="'common.specialization' | translate"
           [(ngModel)]="selectedCoach.specialization"
-          class="w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-4 py-3 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-4 py-3 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         ></textarea>
       </div>
 
@@ -188,7 +188,7 @@
           type="text"
           placeholder="Avatar kép URL"
           [(ngModel)]="selectedCoach.avatarUrl"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 sm:text-sm"
+          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
       </div>
 

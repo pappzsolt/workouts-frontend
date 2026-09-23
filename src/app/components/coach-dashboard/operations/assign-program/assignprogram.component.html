@@ -1,5 +1,5 @@
 <div
-  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+  class="min-h-screen min-w-0 bg-gradient-to-br from-surface-50 via-primary-50/40 to-primary-50/50 px-4 py-6 sm:px-6 lg:px-8"
 >
   <div
     class="mx-auto flex w-full max-w-5xl min-w-0 flex-col gap-6"
@@ -27,7 +27,7 @@
 
         <select
           [(ngModel)]="userId"
-          class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
+          class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
         >
           <option [ngValue]="null">
             {{ 'assignProgram.selectUser' | translate }}
@@ -57,7 +57,7 @@
         type="button"
         (click)="assignProgram()"
         [disabled]="loading"
-        class="w-full rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+        class="w-full rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
       >
         {{ 'assignProgram.assign' | translate }}
       </button>
@@ -66,7 +66,7 @@
     <!-- Loading -->
     <div
       *ngIf="loading"
-      class="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-center text-sm font-medium text-blue-700 shadow-sm"
+      class="rounded-xl border border-info-200 bg-info-50 px-4 py-3 text-center text-sm font-medium text-info-700 shadow-sm"
     >
       {{ 'assignProgram.loading' | translate }}
     </div>

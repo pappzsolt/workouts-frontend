@@ -1,10 +1,8 @@
 import { Component, Input } from '@angular/core';
-import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-message',
   standalone: true,
-  imports: [TranslatePipe],
   templateUrl: './message.component.html',
   styleUrls: ['./message.component.css'],
 })
@@ -18,16 +16,16 @@ export class MessageComponent {
   get messageClasses(): string {
     switch (this.type) {
       case 'success':
-        return 'border-green-200 bg-green-50 text-green-700';
+        return 'border-success-200 bg-success-50 text-success-700';
 
       case 'error':
-        return 'border-red-200 bg-red-50 text-red-700';
+        return 'border-delete-200 bg-delete-50 text-delete-700';
 
       case 'info':
-        return 'border-blue-200 bg-blue-50 text-blue-700';
+        return 'border-info-200 bg-info-50 text-info-700';
 
       default:
-        return 'border-gray-200 bg-gray-50 text-gray-700';
+        return 'border-surface-200 bg-surface-50 text-content-700';
     }
   }
 }

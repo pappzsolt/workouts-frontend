@@ -21,6 +21,7 @@ export interface MenuItem {
 export class DynamicMenuComponent {
   @Input() menuItems: MenuItem[] = [];
   @Output() menuAction = new EventEmitter<string>();
+  @Output() menuNavigate = new EventEmitter<void>();
 
   toggle(item: MenuItem) {
     item.open = !item.open;

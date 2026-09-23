@@ -238,12 +238,12 @@
 
               <div
                 class="mt-3 rounded-xl border px-3 py-2 text-center text-xs font-semibold sm:py-2.5 sm:text-sm"
-                [class.border-green-200]="exercise.done"
-                [class.bg-green-50]="exercise.done"
-                [class.text-green-700]="exercise.done"
-                [class.border-amber-200]="!exercise.done"
-                [class.bg-amber-50]="!exercise.done"
-                [class.text-amber-700]="!exercise.done"
+                [class.border-success-200]="exercise.done"
+                [class.bg-success-50]="exercise.done"
+                [class.text-success-700]="exercise.done"
+                [class.border-warning-200]="!exercise.done"
+                [class.bg-warning-50]="!exercise.done"
+                [class.text-warning-700]="!exercise.done"
               >
 
                 {{
@@ -274,7 +274,7 @@
     <ng-template #noExercises>
 
       <div
-        class="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-surface-300 bg-white px-5 py-10 text-center shadow-md shadow-slate-200/40"
+        class="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-surface-300 bg-white px-5 py-10 text-center shadow-md shadow-surface-200/40"
       >
 
         <span class="mb-3 text-5xl">

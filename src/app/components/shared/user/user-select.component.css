@@ -24,7 +24,7 @@
 
   margin: 0;
 
-  color: #475569;
+  color: var(--app-content-600);
 
   font-size: 12px;
   font-weight: 600;
@@ -52,17 +52,17 @@
   -webkit-appearance: none;
   -moz-appearance: none;
 
-  background-color: #ffffff;
+  background-color: var(--app-white);
 
   background-image:
     linear-gradient(
       45deg,
       transparent 50%,
-      #64748b 50%
+      var(--app-content-500) 50%
     ),
     linear-gradient(
       135deg,
-      #64748b 50%,
+      var(--app-content-500) 50%,
       transparent 50%
     );
 
@@ -76,10 +76,10 @@
 
   background-repeat: no-repeat;
 
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--app-surface-300);
   border-radius: 9px;
 
-  color: #334155;
+  color: var(--app-content-700);
 
   font-size: 14px;
   font-weight: 500;
@@ -99,7 +99,7 @@
    ========================================================== */
 
 .user-select-control:hover {
-  border-color: #94a3b8;
+  border-color: var(--app-surface-400);
 }
 
 
@@ -110,10 +110,10 @@
 .user-select-control:focus {
   outline: none;
 
-  border-color: #64748b;
+  border-color: var(--app-primary-600);
 
   box-shadow:
-    0 0 0 3px rgba(100, 116, 139, 0.12);
+    0 0 0 3px color-mix(in srgb, var(--app-primary-600) 12%, transparent);
 }
 
 
@@ -122,9 +122,9 @@
    ========================================================== */
 
 .user-select-control:disabled {
-  background-color: #f8fafc;
+  background-color: var(--app-surface-50);
 
-  color: #94a3b8;
+  color: var(--app-content-400);
 
   cursor: not-allowed;
 
@@ -139,9 +139,9 @@
 .user-select-control option {
   padding: 8px;
 
-  background: #ffffff;
+  background: var(--app-white);
 
-  color: #334155;
+  color: var(--app-content-700);
 
   font-size: 14px;
 }

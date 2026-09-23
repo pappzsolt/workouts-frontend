@@ -13,90 +13,40 @@
     <!-- Dashboard kártyák -->
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
 
-      <!-- Programs -->
-      <button
-        type="button"
-        (click)="togglePrograms()"
-        class="group flex min-h-36 flex-col items-center justify-center rounded-2xl border border-surface-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-slate-400/30"
-      >
-        <div
-          class="mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-surface-100 text-2xl text-content-700 shadow-sm transition-transform duration-200 group-hover:scale-105"
-        >
-          💪
-        </div>
+      <app-dashboard-action
+        size="compact"
+        icon="💪"
+        label="coachDashboard.programs"
+        (activated)="togglePrograms()"
+      ></app-dashboard-action>
 
-        <div class="text-base font-semibold text-content-800">
-          {{ 'coachDashboard.programs' | translate }}
-        </div>
-      </button>
+      <app-dashboard-action
+        size="compact"
+        icon="🔥"
+        label="coachDashboard.workouts"
+        (activated)="toggleWorkouts()"
+      ></app-dashboard-action>
 
-      <!-- Workouts -->
-      <button
-        type="button"
-        (click)="toggleWorkouts()"
-        class="group flex min-h-36 flex-col items-center justify-center rounded-2xl border border-surface-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-slate-400/30"
-      >
-        <div
-          class="mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-surface-100 text-2xl text-content-700 shadow-sm transition-transform duration-200 group-hover:scale-105"
-        >
-          🔥
-        </div>
+      <app-dashboard-action
+        size="compact"
+        icon="🏋️"
+        label="coachDashboard.exercises"
+        (activated)="toggleExercises()"
+      ></app-dashboard-action>
 
-        <div class="text-base font-semibold text-content-800">
-          {{ 'coachDashboard.workouts' | translate }}
-        </div>
-      </button>
+      <app-dashboard-action
+        size="compact"
+        icon="🔗🏋️"
+        label="coachDashboard.assignWorkoutExercises"
+        (activated)="toggleWorkoutExercises()"
+      ></app-dashboard-action>
 
-      <!-- Exercises -->
-      <button
-        type="button"
-        (click)="toggleExercises()"
-        class="group flex min-h-36 flex-col items-center justify-center rounded-2xl border border-surface-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-slate-400/30"
-      >
-        <div
-          class="mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-surface-100 text-2xl text-content-700 shadow-sm transition-transform duration-200 group-hover:scale-105"
-        >
-          🏋️
-        </div>
-
-        <div class="text-base font-semibold text-content-800">
-          {{ 'coachDashboard.exercises' | translate }}
-        </div>
-      </button>
-
-      <!-- Workout → Exercise hozzárendelés -->
-      <button
-        type="button"
-        (click)="toggleWorkoutExercises()"
-        class="group flex min-h-36 flex-col items-center justify-center rounded-2xl border border-surface-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-slate-400/30"
-      >
-        <div
-          class="mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-surface-100 text-2xl text-content-700 shadow-sm transition-transform duration-200 group-hover:scale-105"
-        >
-          🔗🏋️
-        </div>
-
-        <div class="text-base font-semibold text-content-800">
-          {{ 'coachDashboard.assignWorkoutExercises' | translate }}
-        </div>
-      </button>
-
-      <!-- Workout Exercise Manager -->
-      <button
-        type="button"
-        (click)="toggleWorkoutExerciseManager()"
-        class="group flex min-h-36 flex-col items-center justify-center rounded-2xl border border-surface-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-slate-400/30"
-      >
-        <div
-          class="mb-3 flex h-14 w-14 items-center justify-center rounded-xl bg-surface-100 text-2xl text-content-700 shadow-sm transition-transform duration-200 group-hover:scale-105"
-        >
-          📊🏋️
-        </div>
-
-        <div class="text-base font-semibold text-content-800">
-          {{ 'coachDashboard.workoutExerciseManager' | translate }}
-        </div>
-      </button>
+      <app-dashboard-action
+        size="compact"
+        icon="📊🏋️"
+        label="coachDashboard.workoutExerciseManager"
+        (activated)="toggleWorkoutExerciseManager()"
+      ></app-dashboard-action>
 
     </div>
 

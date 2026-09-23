@@ -9,9 +9,120 @@
 }
 
 body {
-  @apply bg-gray-50 text-gray-800 p-0;
+  @apply bg-surface-50 text-content-800 p-0;
 
   font-family: 'Inter', sans-serif;
   height: 100%;
   margin: 0;
+}
+
+@layer base {
+  :root {
+    --app-white: theme('colors.white');
+    --app-primary-500: theme('colors.primary.500');
+    --app-primary-600: theme('colors.primary.600');
+    --app-primary-700: theme('colors.primary.700');
+    --app-primary-50: theme('colors.primary.50');
+    --app-primary-100: theme('colors.primary.100');
+    --app-primary-300: theme('colors.primary.300');
+    --app-primary-200: theme('colors.primary.200');
+    --app-primary-800: theme('colors.primary.800');
+    --app-primary-900: theme('colors.primary.900');
+    --app-surface-50: theme('colors.surface.50');
+    --app-surface-100: theme('colors.surface.100');
+    --app-surface-200: theme('colors.surface.200');
+    --app-surface-300: theme('colors.surface.300');
+    --app-surface-400: theme('colors.surface.400');
+    --app-content-400: theme('colors.content.400');
+    --app-content-500: theme('colors.content.500');
+    --app-content-600: theme('colors.content.600');
+    --app-content-700: theme('colors.content.700');
+    --app-content-800: theme('colors.content.800');
+    --app-content-900: theme('colors.content.900');
+    --app-success-500: theme('colors.success.500');
+    --app-success-100: theme('colors.success.100');
+    --app-success-600: theme('colors.success.600');
+    --app-success-700: theme('colors.success.700');
+    --app-delete-500: theme('colors.delete.500');
+    --app-delete-600: theme('colors.delete.600');
+
+    /* Angular Material M3 color roles, sourced from the Tailwind palette above. */
+    --mat-sys-primary: var(--app-primary-600);
+    --mat-sys-on-primary: var(--app-white);
+    --mat-sys-primary-container: var(--app-primary-50);
+    --mat-sys-on-primary-container: var(--app-primary-900);
+    --mat-sys-primary-fixed: var(--app-primary-100);
+    --mat-sys-primary-fixed-dim: var(--app-primary-200);
+    --mat-sys-on-primary-fixed: var(--app-primary-900);
+    --mat-sys-on-primary-fixed-variant: var(--app-primary-800);
+    --mat-sys-inverse-primary: var(--app-primary-300);
+    --mat-sys-secondary: var(--app-primary-700);
+    --mat-sys-on-secondary: var(--app-white);
+    --mat-sys-secondary-container: var(--app-primary-100);
+    --mat-sys-on-secondary-container: var(--app-primary-900);
+    --mat-sys-secondary-fixed: var(--app-primary-100);
+    --mat-sys-secondary-fixed-dim: var(--app-primary-200);
+    --mat-sys-on-secondary-fixed: var(--app-primary-900);
+    --mat-sys-on-secondary-fixed-variant: var(--app-primary-800);
+    --mat-sys-tertiary: theme('colors.sort.600');
+    --mat-sys-on-tertiary: var(--app-white);
+    --mat-sys-tertiary-container: theme('colors.sort.50');
+    --mat-sys-on-tertiary-container: theme('colors.sort.700');
+    --mat-sys-tertiary-fixed: theme('colors.sort.100');
+    --mat-sys-tertiary-fixed-dim: theme('colors.sort.200');
+    --mat-sys-on-tertiary-fixed: theme('colors.sort.700');
+    --mat-sys-on-tertiary-fixed-variant: theme('colors.sort.700');
+    --mat-sys-background: var(--app-surface-50);
+    --mat-sys-on-background: var(--app-content-800);
+    --mat-sys-surface: var(--app-white);
+    --mat-sys-on-surface: var(--app-content-800);
+    --mat-sys-surface-variant: var(--app-surface-100);
+    --mat-sys-on-surface-variant: var(--app-content-600);
+    --mat-sys-outline: var(--app-content-500);
+    --mat-sys-outline-variant: var(--app-surface-300);
+    --mat-sys-neutral: var(--app-content-800);
+    --mat-sys-neutral-variant: var(--app-content-500);
+    --mat-sys-error: var(--app-delete-600);
+    --mat-sys-on-error: var(--app-white);
+    --mat-sys-error-container: theme('colors.delete.50');
+    --mat-sys-on-error-container: theme('colors.delete.700');
+    --mat-sys-surface-container-lowest: var(--app-white);
+    --mat-sys-surface-container-low: var(--app-surface-50);
+    --mat-sys-surface-container: var(--app-surface-100);
+    --mat-sys-surface-container-high: var(--app-surface-200);
+    --mat-sys-surface-container-highest: var(--app-surface-300);
+    --mat-sys-surface-bright: var(--app-white);
+    --mat-sys-surface-dim: var(--app-surface-100);
+    --mat-sys-surface-tint: var(--app-primary-600);
+    --mat-sys-inverse-surface: var(--app-content-800);
+    --mat-sys-inverse-on-surface: var(--app-white);
+    --mat-sys-scrim: var(--app-content-900);
+    --mat-sys-shadow: var(--app-content-900);
+  }
+
+  input:not([type='checkbox']):not([type='radio']),
+  select,
+  textarea {
+    border-color: var(--app-surface-300);
+    background-color: var(--app-white);
+    color: var(--app-content-800);
+  }
+
+  input:not([type='checkbox']):not([type='radio'])::placeholder,
+  textarea::placeholder {
+    color: var(--app-content-400);
+  }
+
+  input[type='checkbox'],
+  input[type='radio'] {
+    accent-color: var(--app-primary-600);
+  }
+
+  input:not([type='checkbox']):not([type='radio']):focus,
+  select:focus,
+  textarea:focus {
+    border-color: var(--app-primary-500);
+    outline-color: var(--app-primary-500);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-primary-600) 10%, transparent);
+  }
 }

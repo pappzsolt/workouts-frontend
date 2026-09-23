@@ -1,5 +1,5 @@
 <div
-  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+  class="min-h-screen min-w-0 bg-gradient-to-br from-surface-50 via-primary-50/40 to-primary-50/50 px-4 py-6 sm:px-6 lg:px-8"
 >
   <div
     class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6"
@@ -71,7 +71,7 @@
       <div class="space-y-3 p-5 sm:p-6">
         <div
           *ngFor="let wid of selectedWorkoutIds"
-          class="flex items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 transition hover:border-blue-200 hover:bg-blue-50"
+          class="flex items-center justify-between gap-3 rounded-xl border border-info-100 bg-info-50/60 px-4 py-3 transition hover:border-primary-200 hover:bg-primary-50"
         >
       <span
         class="min-w-0 break-words text-sm font-semibold text-content-700"
@@ -121,7 +121,7 @@
       <button
         type="button"
         (click)="saveSelectedWorkoutsAndExercises()"
-        class="w-full rounded-xl bg-gradient-to-r from-save-600 to-save-700 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-save-700 hover:to-save-700 focus:outline-none focus:ring-4 focus:ring-save-600/20 sm:w-auto"
+        class="w-full rounded-xl bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 sm:w-auto"
       >
         {{ 'assignWorkoutExercises.save' | translate }}
       </button>

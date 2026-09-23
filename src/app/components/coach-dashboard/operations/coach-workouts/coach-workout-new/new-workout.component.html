@@ -1,5 +1,5 @@
 <div
-  class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+  class="min-h-screen bg-gradient-to-br from-surface-50 via-primary-50/40 to-primary-50/50 px-4 py-6 sm:px-6 lg:px-8"
 >
   <div class="mx-auto flex w-full max-w-5xl min-w-0 flex-col gap-6">
 
@@ -53,7 +53,7 @@
             name="name"
             [(ngModel)]="newWorkout.name"
             required
-            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
+            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
           />
         </div>
 
@@ -71,7 +71,7 @@
             name="description"
             rows="3"
             [(ngModel)]="newWorkout.description"
-            class="block w-full resize-y rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
+            class="block w-full resize-y rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
           ></textarea>
         </div>
 
@@ -90,7 +90,7 @@
             name="workoutDate"
             [(ngModel)]="newWorkout.workoutDate"
             required
-            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
+            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
           />
         </div>
 
@@ -108,7 +108,7 @@
             id="durationMinutes"
             name="durationMinutes"
             [(ngModel)]="newWorkout.durationMinutes"
-            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
+            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
           />
         </div>
 
@@ -127,7 +127,7 @@
             [(value)]="newWorkout.intensityLevel"
             [placeholder]="'newWorkout.select'"
             placeholderValue=""
-            [className]="'block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm'"
+            [className]="'block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm'"
             [options]="[
           { value: 'Low', label: 'newWorkout.low' },
           { value: 'Medium', label: 'newWorkout.medium' },
@@ -141,7 +141,7 @@
           <button
             type="submit"
             [disabled]="!workoutForm.form.valid"
-            class="w-full rounded-lg bg-gradient-to-r from-save-600 to-save-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-save-700 hover:to-save-700 focus:outline-none focus:ring-4 focus:ring-save-200/50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            class="w-full rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-200/50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             ➕ {{ 'newWorkout.createWorkout' | translate }}
           </button>

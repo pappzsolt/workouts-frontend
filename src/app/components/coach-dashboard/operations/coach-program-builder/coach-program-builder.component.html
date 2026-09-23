@@ -1,6 +1,6 @@
 ```
 <div
-  class="min-h-screen min-w-0 bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50 px-4 py-6 sm:px-6 lg:px-8"
+  class="min-h-screen min-w-0 bg-gradient-to-br from-surface-50 via-primary-50/40 to-primary-50/50 px-4 py-6 sm:px-6 lg:px-8"
 >
   <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
 
@@ -25,7 +25,7 @@
             {{ 'coachProgramBuilder.title' | translate }}
           </h1>
 
-          <p class="mt-1 text-sm text-blue-100 sm:text-base">
+          <p class="mt-1 text-sm text-info-100 sm:text-base">
             {{
               isEditMode
                 ? ('coachProgramBuilder.editSubtitle' | translate)
@@ -58,7 +58,7 @@
         class="flex items-start gap-4 border-b border-surface-100 px-5 py-5 sm:px-6"
       >
         <span
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white shadow-sm"
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-600 text-sm font-bold text-white shadow-sm"
         >
           1
         </span>
@@ -99,7 +99,7 @@
             type="text"
             [(ngModel)]="programName"
             [placeholder]="'coachProgramBuilder.programNamePlaceholder' | translate"
-            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
+            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
           />
         </div>
 
@@ -117,7 +117,7 @@
             rows="5"
             [(ngModel)]="programDescription"
             [placeholder]="'coachProgramBuilder.programDescriptionPlaceholder' | translate"
-            class="block w-full resize-y rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
+            class="block w-full resize-y rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
           ></textarea>
         </div>
 
@@ -137,7 +137,7 @@
               min="1"
               [(ngModel)]="durationDays"
               [placeholder]="'coachProgramBuilder.programDurationPlaceholder' | translate"
-              class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 pr-20 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm"
+              class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 pr-20 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
             />
 
             <span
@@ -163,7 +163,7 @@
             [(value)]="difficultyLevel"
             [placeholder]="'coachProgramBuilder.selectDifficulty'"
             placeholderValue=""
-            [className]="'block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 sm:text-sm'"
+            [className]="'block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm'"
             [options]="[
     { value: 'BEGINNER', label: 'coachProgramBuilder.beginner' },
     { value: 'INTERMEDIATE', label: 'coachProgramBuilder.intermediate' },
@@ -186,7 +186,7 @@
               !difficultyLevel
             "
             (click)="nextStep()"
-            class="w-full rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            class="w-full rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             <span>
               {{
@@ -221,7 +221,7 @@
         class="flex items-start gap-4 border-b border-surface-100 px-5 py-5 sm:px-6"
       >
     <span
-      class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white shadow-sm"
+      class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-600 text-sm font-bold text-white shadow-sm"
     >
       2
     </span>
@@ -249,7 +249,7 @@
           <!-- Meglévő workout -->
           <button
             type="button"
-            class="group flex min-w-0 items-center gap-4 rounded-xl border border-surface-200 bg-surface-50 p-4 text-left transition hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-sm"
+            class="group flex min-w-0 items-center gap-4 rounded-xl border border-surface-200 bg-surface-50 p-4 text-left transition hover:border-primary-200 hover:bg-primary-50/50 hover:shadow-sm"
           >
         <span
           class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white text-xl shadow-sm"
@@ -272,7 +272,7 @@
         </span>
 
             <span
-              class="shrink-0 text-lg text-content-400 transition group-hover:translate-x-1 group-hover:text-blue-600"
+              class="shrink-0 text-lg text-content-400 transition group-hover:translate-x-1 group-hover:text-primary-600"
             >
           →
         </span>
@@ -283,7 +283,7 @@
           <button
             type="button"
             (click)="goToCreateWorkout()"
-            class="group flex min-w-0 items-center gap-4 rounded-xl border border-surface-200 bg-surface-50 p-4 text-left transition hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-sm"
+            class="group flex min-w-0 items-center gap-4 rounded-xl border border-surface-200 bg-surface-50 p-4 text-left transition hover:border-primary-200 hover:bg-primary-50/50 hover:shadow-sm"
           >
         <span
           class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white text-xl shadow-sm"
@@ -306,7 +306,7 @@
         </span>
 
             <span
-              class="shrink-0 text-lg text-content-400 transition group-hover:translate-x-1 group-hover:text-blue-600"
+              class="shrink-0 text-lg text-content-400 transition group-hover:translate-x-1 group-hover:text-primary-600"
             >
           →
         </span>
@@ -320,7 +320,7 @@
              ================================================== -->
 
         <div
-          class="min-w-0 rounded-xl border border-surface-200 bg-slate-50/50 p-4 sm:p-5"
+          class="min-w-0 rounded-xl border border-surface-200 bg-surface-50/50 p-4 sm:p-5"
         >
 
           <div class="mb-5">
@@ -337,10 +337,10 @@
           <!-- LOADING -->
           <div
             *ngIf="loadingWorkouts"
-            class="flex items-center justify-center gap-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-5 text-sm font-medium text-blue-700"
+            class="flex items-center justify-center gap-3 rounded-xl border border-info-100 bg-info-50 px-4 py-5 text-sm font-medium text-info-700"
           >
         <span
-          class="h-5 w-5 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600"
+          class="h-5 w-5 animate-spin rounded-full border-2 border-info-200 border-t-primary-600"
         ></span>
 
             <span>
@@ -378,7 +378,7 @@
               *ngFor="let workout of workouts"
               class="min-w-0 overflow-hidden rounded-xl border border-surface-200 bg-white shadow-sm transition hover:shadow-md"
               [ngClass]="{
-            'border-blue-400 ring-2 ring-blue-500/10':
+            'border-info-400 ring-2 ring-info-500/10':
               selectedWorkoutId === workout.id
           }"
             >
@@ -386,7 +386,7 @@
               <!-- WORKOUT FEJLÉC -->
               <div
                 (click)="selectWorkout(workout.id)"
-                class="flex cursor-pointer items-start gap-4 p-4 transition hover:bg-slate-50 sm:p-5"
+                class="flex cursor-pointer items-start gap-4 p-4 transition hover:bg-surface-50 sm:p-5"
               >
                 <div class="min-w-0 flex-1">
 
@@ -401,7 +401,7 @@
 
                     <span
                       *ngIf="isWorkoutSelected(workout.id)"
-                      class="inline-flex w-fit shrink-0 items-center rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-700"
+                      class="inline-flex w-fit shrink-0 items-center rounded-full bg-success-100 px-2.5 py-1 text-xs font-semibold text-success-700"
                     >
                   ✓
                   <span class="ml-1">
@@ -427,7 +427,7 @@
                   class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600"
                 >
                   🏋️
-                  {{ workout.exercises?.length || 0 }}
+                  {{ workout.exercises.length }}
                   {{ 'coachProgramBuilder.exercise' | translate }}
                 </span>
 
@@ -465,16 +465,16 @@
 
               <div
                 *ngIf="selectedWorkoutId === workout.id"
-                class="border-t border-surface-100 bg-slate-50/50 p-4 sm:p-5"
+                class="border-t border-surface-100 bg-surface-50/50 p-4 sm:p-5"
               >
 
                 <!-- EXERCISE LOADING -->
                 <div
                   *ngIf="loadingExercises"
-                  class="mb-5 flex items-center justify-center gap-3 rounded-xl border border-blue-100 bg-blue-50 px-4 py-5 text-sm font-medium text-blue-700"
+                  class="mb-5 flex items-center justify-center gap-3 rounded-xl border border-info-100 bg-info-50 px-4 py-5 text-sm font-medium text-info-700"
                 >
               <span
-                class="h-5 w-5 animate-spin rounded-full border-2 border-blue-200 border-t-blue-600"
+                class="h-5 w-5 animate-spin rounded-full border-2 border-info-200 border-t-primary-600"
               ></span>
 
                   <span>
@@ -547,7 +547,7 @@
                     </strong>
 
                     <span
-                      class="flex h-7 min-w-7 items-center justify-center rounded-full bg-blue-100 px-2 text-xs font-bold text-blue-700"
+                      class="flex h-7 min-w-7 items-center justify-center rounded-full bg-info-100 px-2 text-xs font-bold text-info-700"
                     >
                   {{ selectedExercises.length }}
                 </span>
@@ -636,7 +636,7 @@
                     type="button"
                     [disabled]="isWorkoutSelected(workout.id)"
                     (click)="addSelectedWorkout()"
-                    class="w-full rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                    class="w-full rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
                   >
                 <span>
                   {{
@@ -661,7 +661,7 @@
 
         <div
           *ngIf="selectedWorkouts.length > 0"
-          class="min-w-0 rounded-xl border border-surface-200 bg-slate-50/50 p-4 sm:p-5"
+          class="min-w-0 rounded-xl border border-surface-200 bg-surface-50/50 p-4 sm:p-5"
         >
 
           <div
@@ -678,7 +678,7 @@
             </div>
 
             <span
-              class="flex h-8 min-w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 px-2 text-xs font-bold text-blue-700"
+              class="flex h-8 min-w-8 shrink-0 items-center justify-center rounded-full bg-info-100 px-2 text-xs font-bold text-info-700"
             >
           {{ selectedWorkouts.length }}
         </span>
@@ -693,7 +693,7 @@
             >
 
               <div
-                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700"
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-info-100 text-sm font-bold text-info-700"
               >
                 {{ i + 1 }}
               </div>
@@ -708,7 +708,7 @@
                 <small
                   class="mt-1 block text-xs text-content-500"
                 >
-                  {{ workout.exercises?.length || 0 }}
+                  {{ workout.exercises.length }}
                   {{ 'coachProgramBuilder.exercise' | translate }}
                 </small>
               </div>
@@ -717,7 +717,7 @@
                 type="button"
                 [attr.aria-label]="'coachProgramBuilder.copyWorkoutAria' | translate"
                 (click)="copyWorkout(workout)"
-                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-surface-200 bg-white text-sm transition hover:border-blue-200 hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-blue-600/10"
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-surface-200 bg-white text-sm transition hover:border-primary-200 hover:bg-primary-50 focus:outline-none focus:ring-4 focus:ring-primary-600/10"
               >
                 📋
               </button>
@@ -726,7 +726,7 @@
                 type="button"
                 [attr.aria-label]="'coachProgramBuilder.removeWorkoutAria' | translate"
                 (click)="removeWorkout(workout.id)"
-                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-red-200 bg-white text-sm font-bold text-red-600 transition hover:border-red-300 hover:bg-red-50 focus:outline-none focus:ring-4 focus:ring-red-600/10"
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-delete-200 bg-white text-sm font-bold text-delete-600 transition hover:border-delete-300 hover:bg-delete-50 focus:outline-none focus:ring-4 focus:ring-delete-600/10"
               >
                 ✕
               </button>
@@ -748,7 +748,7 @@
           <button
             type="button"
             (click)="previousStep()"
-            class="w-full rounded-lg border border-surface-300 bg-white px-5 py-3 text-sm font-semibold text-content-700 shadow-sm transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-600/10 lg:w-auto"
+            class="w-full rounded-lg border border-surface-300 bg-white px-5 py-3 text-sm font-semibold text-content-700 shadow-sm transition hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/10 lg:w-auto"
           >
             ←
             {{ 'coachProgramBuilder.back' | translate }}
@@ -768,7 +768,7 @@
             type="button"
             [disabled]="programId === null || !selectedUserId"
             (click)="finishProgram()"
-            class="w-full rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto"
+            class="w-full rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto"
           >
         <span>
           {{ 'coachProgramBuilder.finishProgram' | translate }}
@@ -792,7 +792,7 @@
 
     <div
       *ngIf="copyDialogOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-surface-900/50 p-4 backdrop-blur-sm"
     >
 
       <div
@@ -825,7 +825,7 @@
             [attr.aria-label]="'coachProgramBuilder.close' | translate"
             [disabled]="copyInProgress"
             (click)="cancelCopyWorkout()"
-            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-surface-200 bg-white text-sm font-bold text-content-500 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-4 focus:ring-red-600/10 disabled:cursor-not-allowed disabled:opacity-40"
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-surface-200 bg-white text-sm font-bold text-content-500 transition hover:border-delete-200 hover:bg-delete-50 hover:text-delete-600 focus:outline-none focus:ring-4 focus:ring-delete-600/10 disabled:cursor-not-allowed disabled:opacity-40"
           >
             ✕
           </button>
@@ -851,7 +851,7 @@
               [(ngModel)]="copyWorkoutName"
               [disabled]="copyInProgress"
               [placeholder]="'coachProgramBuilder.newWorkoutNamePlaceholder' | translate"
-              class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:bg-slate-100 sm:text-sm"
+              class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 disabled:cursor-not-allowed disabled:bg-surface-100 sm:text-sm"
             />
           </div>
 
@@ -870,7 +870,7 @@
               type="date"
               [(ngModel)]="copyWorkoutDate"
               [disabled]="copyInProgress"
-              class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:bg-slate-100 sm:text-sm"
+              class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 disabled:cursor-not-allowed disabled:bg-surface-100 sm:text-sm"
             />
           </div>
 
@@ -890,7 +890,7 @@
               min="0"
               [(ngModel)]="copyWorkoutDayIndex"
               [disabled]="copyInProgress"
-              class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:bg-slate-100 sm:text-sm"
+              class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 disabled:cursor-not-allowed disabled:bg-surface-100 sm:text-sm"
             />
           </div>
 
@@ -906,7 +906,7 @@
             type="button"
             [disabled]="copyInProgress"
             (click)="cancelCopyWorkout()"
-            class="w-full rounded-lg border border-surface-300 bg-white px-5 py-2.5 text-sm font-semibold text-content-700 transition hover:border-slate-400 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-blue-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+            class="w-full rounded-lg border border-surface-300 bg-white px-5 py-2.5 text-sm font-semibold text-content-700 transition hover:border-surface-400 hover:bg-surface-50 focus:outline-none focus:ring-4 focus:ring-primary-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
           >
             {{ 'coachProgramBuilder.cancel' | translate }}
           </button>
@@ -920,7 +920,7 @@
               copyWorkoutDayIndex < 0
             "
             (click)="confirmCopyWorkout()"
-            class="w-full rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            class="w-full rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
             <span>
               {{

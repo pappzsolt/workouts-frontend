@@ -3,7 +3,7 @@
      ====================================================== -->
 
 <div
-  class="min-h-full bg-gradient-to-br from-slate-50 via-blue-50/40 to-indigo-50/50"
+  class="min-h-full bg-gradient-to-br from-surface-50 via-primary-50/40 to-primary-50/50"
 >
   <div class="mx-auto w-full max-w-6xl px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
 
@@ -38,7 +38,7 @@
            ================================================== -->
 
       <div
-        class="mb-6 grid grid-cols-1 gap-4 rounded-2xl border border-surface-200 bg-white p-4 shadow-md shadow-slate-200/50 sm:p-5 lg:grid-cols-[1fr_auto] lg:items-end"
+        class="mb-6 grid grid-cols-1 gap-4 rounded-2xl border border-surface-200 bg-white p-4 shadow-md shadow-surface-200/50 sm:p-5 lg:grid-cols-[1fr_auto] lg:items-end"
       >
 
         <!-- Keresés komponens -->
@@ -146,14 +146,14 @@
 
               <!-- Edzések -->
 
-              <div class="rounded-xl bg-blue-50 px-3 py-3">
+              <div class="rounded-xl bg-info-50 px-3 py-3">
                 <div
-                  class="mb-1 text-xs font-medium uppercase tracking-wide text-blue-600"
+                  class="mb-1 text-xs font-medium uppercase tracking-wide text-info-600"
                 >
                   {{ 'coachPrograms.workouts' | translate }}
                 </div>
 
-                <div class="text-sm font-bold text-blue-800">
+                <div class="text-sm font-bold text-info-800">
                   {{ program.workoutCount || 0 }}
                 </div>
               </div>
@@ -168,7 +168,7 @@
               <button
                 type="button"
                 (click)="editProgram(program.id, $event)"
-                class="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-blue-200 bg-white px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm transition duration-150 hover:border-blue-300 hover:bg-blue-50 focus:outline-none focus:ring-4 focus:ring-blue-500/10 active:scale-[0.98]"
+                class="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-info-200 bg-white px-4 py-2 text-sm font-semibold text-info-700 shadow-sm transition duration-150 hover:border-primary-300 hover:bg-primary-50 focus:outline-none focus:ring-4 focus:ring-primary-500/10 active:scale-[0.98]"
               >
                 <span>✏️</span>
                 <span>{{ 'coachPrograms.edit' | translate }}</span>
@@ -213,7 +213,7 @@
 
     <ng-template #noPrograms>
       <div
-        class="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-surface-300 bg-white px-5 py-10 text-center shadow-md shadow-slate-200/40"
+        class="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-surface-300 bg-white px-5 py-10 text-center shadow-md shadow-surface-200/40"
       >
         <span class="mb-3 text-5xl">
           📋
