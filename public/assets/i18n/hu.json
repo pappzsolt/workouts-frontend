@@ -53,6 +53,8 @@
     "unknownError": "Ismeretlen hiba",
     "male": "Férfi",
     "female": "Nő",
+    "yes": "Igen",
+    "no": "Nem",
     "avatarUrl": "Avatar URL",
     "avatarImageUrl": "Avatar kép URL",
     "search": "Keresés",
@@ -110,7 +112,10 @@
     "roles": "Szerepkörök",
     "updateSuccess": "Felhasználó sikeresen frissítve!",
     "updateError": "Hiba a frissítés során",
-    "saveError": "Hiba a mentés során"
+    "saveError": "Hiba a mentés során",
+    "loadCoachesError": "Nem sikerült betölteni az edzőket.",
+    "loadRolesError": "Nem sikerült betölteni a szerepköröket.",
+    "loadUsersError": "Nem sikerült betölteni a felhasználókat."
   },
 
   "adminUserNew": {
@@ -164,6 +169,17 @@
     "category": "Kategória",
     "caloriesPerMinute": "Elégetett kalória / perc",
     "durationSeconds": "Időtartam (másodperc)",
+    "bodyPart": "Testrész",
+    "synonyms": "Szinonimák",
+    "instructions": "Utasítások",
+    "tips": "Tippek",
+    "primaryMuscles": "Elsődleges izmok",
+    "secondaryMuscles": "Másodlagos izmok",
+    "forceType": "Erőtípus",
+    "mechanic": "Mozgásmechanika",
+    "variationGroup": "Variációs csoport",
+    "isUnilateral": "Egyoldalas gyakorlat",
+    "isBodyweight": "Testsúlyos gyakorlat",
     "save": "Gyakorlat mentése",
     "notFound": "A kiválasztott gyakorlat nem található",
     "loadError": "Hiba a gyakorlat betöltésénél",
@@ -200,7 +216,8 @@
     "noWorkouts": "Nincsenek edzések.",
     "addWorkout": "Új edzés hozzáadása",
     "loadError": "Nem sikerült betölteni a workoutokat.",
-    "addError": "Hiba történt a workout hozzáadásakor."
+    "addError": "Hiba történt a workout hozzáadásakor.",
+    "addSuccess": "Az edzés sikeresen hozzáadva."
   },
 
   "coachProfile": {
@@ -285,7 +302,15 @@
     "copyDateRequired": "Az új workout dátuma kötelező.",
     "invalidWorkoutDay": "Érvénytelen workout nap.",
     "copySuccess": "Workout sikeresen lemásolva.",
-    "copyError": "Hiba történt a workout másolásakor."
+    "copyError": "Hiba történt a workout másolásakor.",
+    "invalidProgramId": "Érvénytelen programazonosító.",
+    "invalidWorkoutId": "Érvénytelen edzésazonosító.",
+    "loadAssignedUserError": "Nem sikerült betölteni a hozzárendelt felhasználót.",
+    "loadProgramError": "Nem sikerült betölteni a programot.",
+    "loadProgramWorkoutsError": "Nem sikerült betölteni a program edzéseit.",
+    "newWorkoutNotFound": "Az új edzés nem található.",
+    "noWorkoutSelected": "Előbb válassz ki egy edzést.",
+    "saveExerciseError": "Nem sikerült menteni a gyakorlatot."
   },
 
   "coachNewProgram": {
@@ -363,6 +388,7 @@
     "workoutDate": "Workout dátuma",
     "duration": "Időtartam (perc)",
     "intensityLevel": "Intenzitás",
+    "save": "Edzés mentése",
     "selectIntensity": "-- Válassz intenzitást --",
     "low": "Alacsony",
     "moderate": "Közepes",
@@ -436,7 +462,8 @@
     "intensity": "Intenzitás",
     "page": "Oldal",
     "searchPlaceholder": "Exercise keresése...",
-    "noSearchResults": "Nincs találat."
+    "noSearchResults": "Nincs találat.",
+    "exercisesLocked": "Ennek az edzésnek a gyakorlatai nem módosíthatók."
   },
 
   "coachProgramSelect": {
@@ -615,7 +642,8 @@
     "notes": "Megjegyzések",
     "noWorkouts": "Nincsenek workoutok ehhez a programhoz.",
     "pendingWorkouts": "Elvégzendő edzések",
-    "completedWorkouts": "Elvégzett edzések"
+    "completedWorkouts": "Elvégzett edzések",
+    "unknownProgram": "Ismeretlen program"
   },
   "coachProgramBoard": {
     "loading": "Betöltés...",
@@ -704,14 +732,19 @@
     "workoutIdMissing": "A workout azonosítója hiányzik.",
     "exerciseIdMissing": "Az exercise azonosítója hiányzik.",
     "orderIndexRequired": "Az order index megadása kötelező.",
-    "orderUpdateError": "Hiba történt az exercise sorrendjének módosításakor."
+    "orderUpdateError": "Hiba történt az exercise sorrendjének módosításakor.",
+    "createUserWorkoutError": "Hiba történt a felhasználói edzés létrehozásakor."
   },
   "assignProgram": {
     "title": "Program hozzárendelés",
     "user": "Felhasználó",
     "selectUser": "-- Válassz felhasználót --",
     "assign": "Hozzárendelés",
-    "loading": "Betöltés..."
+    "loading": "Betöltés...",
+    "success": "A program hozzárendelése sikerült.",
+    "error": "Nem sikerült hozzárendelni a programot.",
+    "loadUsersError": "Nem sikerült betölteni a felhasználókat.",
+    "selectUserAndProgram": "Előbb válassz felhasználót és programot."
   },
   "coachDashboard": {
     "title": "Coach Dashboard",
@@ -729,7 +762,11 @@
     "noName": "Nincs név",
     "id": "ID",
     "select": "Kiválasztás",
-    "workout": "Workout"
+    "workout": "Workout",
+    "sortByName": "Workout neve",
+    "noSearchResults": "Nincs a keresésnek megfelelő workout.",
+    "search": "Edzések keresése",
+    "searchPlaceholder": "Edzés neve..."
   },
   "userProgramStatistics": {
     "title": "Program statisztika",
@@ -779,11 +816,13 @@
     "incompleteWorkouts": "Hátralévő",
     "inProgress": "Folyamatban",
     "selectProgram": "Válassz programot",
+    "selectProgramOption": "-- Válassz programot --",
     "loadingPrograms": "Programok betöltése...",
     "loading": "Statisztika betöltése...",
     "loadError": "Hiba történt a program statisztikájának betöltésekor.",
     "noPrograms": "Nincsenek hozzárendelt programok.",
     "noData": "Ehhez a programhoz még nincs statisztikai adat.",
+    "program": "Program",
     "days": "nap",
     "page": "Oldal",
     "workout": "Workout",
@@ -800,6 +839,8 @@
     "weight": "Súly",
     "target": "Cél",
     "actual": "Tényleges",
+    "noWeightData": "Nincs súlyadat",
+    "noRepetitionData": "Nincs ismétlésszám adat",
     "completed": "Teljesítve",
     "notCompleted": "Nincs teljesítve",
     "performedAt": "Elvégzés dátuma",

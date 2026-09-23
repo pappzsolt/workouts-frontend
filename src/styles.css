@@ -51,6 +51,9 @@ body {
     --app-success-700: theme('colors.success.700');
     --app-delete-500: theme('colors.delete.500');
     --app-delete-600: theme('colors.delete.600');
+    --app-pagination-600: theme('colors.pagination.600');
+    --app-pagination-700: theme('colors.pagination.700');
+    --app-shadow-color: var(--app-content-900);
 
     /* Angular Material M3 color roles, sourced from the Tailwind palette above. */
     --mat-sys-primary: var(--app-primary-600);
@@ -88,6 +91,32 @@ body {
     --mat-sys-outline-variant: var(--app-surface-300);
     --mat-sys-neutral: var(--app-content-800);
     --mat-sys-neutral-variant: var(--app-content-500);
+    --mat-sys-neutral10: var(--app-content-900);
+    --mat-sys-neutral-variant20: var(--app-content-700);
+    --mat-sys-level0:
+      0 0 0 0 color-mix(in srgb, var(--app-shadow-color) 20%, transparent),
+      0 0 0 0 color-mix(in srgb, var(--app-shadow-color) 14%, transparent),
+      0 0 0 0 color-mix(in srgb, var(--app-shadow-color) 12%, transparent);
+    --mat-sys-level1:
+      0 2px 1px -1px color-mix(in srgb, var(--app-shadow-color) 20%, transparent),
+      0 1px 1px 0 color-mix(in srgb, var(--app-shadow-color) 14%, transparent),
+      0 1px 3px 0 color-mix(in srgb, var(--app-shadow-color) 12%, transparent);
+    --mat-sys-level2:
+      0 3px 3px -2px color-mix(in srgb, var(--app-shadow-color) 20%, transparent),
+      0 3px 4px 0 color-mix(in srgb, var(--app-shadow-color) 14%, transparent),
+      0 1px 8px 0 color-mix(in srgb, var(--app-shadow-color) 12%, transparent);
+    --mat-sys-level3:
+      0 3px 5px -1px color-mix(in srgb, var(--app-shadow-color) 20%, transparent),
+      0 6px 10px 0 color-mix(in srgb, var(--app-shadow-color) 14%, transparent),
+      0 1px 18px 0 color-mix(in srgb, var(--app-shadow-color) 12%, transparent);
+    --mat-sys-level4:
+      0 5px 5px -3px color-mix(in srgb, var(--app-shadow-color) 20%, transparent),
+      0 8px 10px 1px color-mix(in srgb, var(--app-shadow-color) 14%, transparent),
+      0 3px 14px 2px color-mix(in srgb, var(--app-shadow-color) 12%, transparent);
+    --mat-sys-level5:
+      0 7px 8px -4px color-mix(in srgb, var(--app-shadow-color) 20%, transparent),
+      0 12px 17px 2px color-mix(in srgb, var(--app-shadow-color) 14%, transparent),
+      0 5px 22px 4px color-mix(in srgb, var(--app-shadow-color) 12%, transparent);
     --mat-sys-error: var(--app-delete-600);
     --mat-sys-on-error: var(--app-white);
     --mat-sys-error-container: theme('colors.delete.50');

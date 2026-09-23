@@ -8,6 +8,7 @@ import { PaginationComponent } from '../../components/shared/components/paginati
 import { BackButtonComponent } from '../shared/components/back-button/back-button.component';
 import { AppButtonComponent } from '../../components/shared/components/app-button/app-button.component';
 import { AppCardComponent } from '../../components/shared/components/app-card/app-card.component';
+import { FormFieldComponent } from './components/form-field/form-field.component';
 
 export const SHARED_IMPORTS = [
   CommonModule,
@@ -19,4 +20,5 @@ export const SHARED_IMPORTS = [
   PaginationComponent,
   AppButtonComponent,
   AppCardComponent,
+  FormFieldComponent,
 ];

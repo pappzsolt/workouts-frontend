@@ -62,14 +62,7 @@
           <div class="grid min-w-0 grid-cols-1 gap-4 p-3.5 sm:grid-cols-2 sm:gap-x-5 sm:gap-y-4 sm:p-5">
 
             <!-- Username -->
-            <div class="min-w-0">
-              <label
-                for="username"
-                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-              >
-                {{ 'userProfile.username' | translate }}
-              </label>
-
+            <app-form-field labelKey="userProfile.username" controlId="username">
               <input
                 id="username"
                 name="username"
@@ -78,17 +71,10 @@
                 [(ngModel)]="selectedUser.username"
                 class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
               />
-            </div>
+            </app-form-field>
 
             <!-- Email -->
-            <div class="min-w-0">
-              <label
-                for="email"
-                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-              >
-                {{ 'userProfile.email' | translate }}
-              </label>
-
+            <app-form-field labelKey="userProfile.email" controlId="email">
               <input
                 id="email"
                 name="email"
@@ -97,17 +83,10 @@
                 [(ngModel)]="selectedUser.email"
                 class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
               />
-            </div>
+            </app-form-field>
 
             <!-- Password -->
-            <div class="min-w-0">
-              <label
-                for="password_hash"
-                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-              >
-                {{ 'userProfile.password' | translate }}
-              </label>
-
+            <app-form-field labelKey="userProfile.password" controlId="password_hash">
               <input
                 id="password_hash"
                 name="password_hash"
@@ -116,17 +95,10 @@
                 [(ngModel)]="selectedUser.password"
                 class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
               />
-            </div>
+            </app-form-field>
 
             <!-- Age -->
-            <div class="min-w-0">
-              <label
-                for="age"
-                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-              >
-                {{ 'userProfile.age' | translate }}
-              </label>
-
+            <app-form-field labelKey="userProfile.age" controlId="age">
               <input
                 id="age"
                 name="age"
@@ -135,17 +107,10 @@
                 [(ngModel)]="selectedUser.age"
                 class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
               />
-            </div>
+            </app-form-field>
 
             <!-- Weight -->
-            <div class="min-w-0">
-              <label
-                for="weight"
-                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-              >
-                {{ 'userProfile.weight' | translate }}
-              </label>
-
+            <app-form-field labelKey="userProfile.weight" controlId="weight">
               <input
                 id="weight"
                 name="weight"
@@ -155,17 +120,10 @@
                 [(ngModel)]="selectedUser.weight"
                 class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
               />
-            </div>
+            </app-form-field>
 
             <!-- Height -->
-            <div class="min-w-0">
-              <label
-                for="height"
-                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-              >
-                {{ 'userProfile.height' | translate }}
-              </label>
-
+            <app-form-field labelKey="userProfile.height" controlId="height">
               <input
                 id="height"
                 name="height"
@@ -175,17 +133,14 @@
                 [(ngModel)]="selectedUser.height"
                 class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
               />
-            </div>
+            </app-form-field>
 
             <!-- Goals -->
-            <div class="min-w-0 sm:col-span-2">
-              <label
-                for="goals"
-                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-              >
-                {{ 'userProfile.goals' | translate }}
-              </label>
-
+            <app-form-field
+              class="min-w-0 sm:col-span-2"
+              labelKey="userProfile.goals"
+              controlId="goals"
+            >
               <textarea
                 id="goals"
                 name="goals"
@@ -194,17 +149,14 @@
                 [(ngModel)]="selectedUser.goals"
                 class="w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm leading-5 text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
               ></textarea>
-            </div>
+            </app-form-field>
 
             <!-- Avatar -->
-            <div class="min-w-0 sm:col-span-2">
-              <label
-                for="avatar_url"
-                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-              >
-                {{ 'userProfile.avatarUrl' | translate }}
-              </label>
-
+            <app-form-field
+              class="min-w-0 sm:col-span-2"
+              labelKey="userProfile.avatarUrl"
+              controlId="avatar_url"
+            >
               <input
                 id="avatar_url"
                 name="avatar_url"
@@ -213,22 +165,19 @@
                 [(ngModel)]="selectedUser.avatarUrl"
                 class="min-h-10 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 shadow-sm outline-none transition duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10"
               />
-            </div>
+            </app-form-field>
 
             <!-- Coach -->
-            <div class="min-w-0 sm:col-span-2">
-              <label
-                class="mb-1.5 block text-xs font-semibold text-content-700 sm:text-sm"
-              >
-                {{ 'userProfile.coach' | translate }}
-              </label>
-
+            <app-form-field
+              class="min-w-0 sm:col-span-2"
+              labelKey="userProfile.coach"
+            >
               <div
                 class="flex min-h-10 items-center rounded-xl border border-surface-200 bg-surface-50 px-3 py-2 text-sm font-medium text-content-700"
               >
                 {{ coachName }}
               </div>
-            </div>
+            </app-form-field>
 
             <!-- Mentés -->
             <div class="flex min-w-0 sm:col-span-2 sm:justify-end">

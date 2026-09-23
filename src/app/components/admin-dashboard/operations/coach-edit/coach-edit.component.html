@@ -79,14 +79,7 @@
     >
 
       <!-- Név -->
-      <div class="min-w-0">
-        <label
-          class="mb-2 block text-sm font-semibold text-content-700"
-          for="name"
-        >
-          {{ 'common.name' | translate }}
-        </label>
-
+      <app-form-field class="min-w-0" labelKey="common.name" controlId="name">
         <input
           id="name"
           name="name"
@@ -95,17 +88,10 @@
           [(ngModel)]="selectedCoach.name"
           class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
-      </div>
+      </app-form-field>
 
       <!-- Email -->
-      <div class="min-w-0">
-        <label
-          class="mb-2 block text-sm font-semibold text-content-700"
-          for="email"
-        >
-          {{ 'common.email' | translate }}
-        </label>
-
+      <app-form-field class="min-w-0" labelKey="common.email" controlId="email">
         <input
           id="email"
           name="email"
@@ -114,17 +100,10 @@
           [(ngModel)]="selectedCoach.email"
           class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
-      </div>
+      </app-form-field>
 
       <!-- Jelszó -->
-      <div class="min-w-0">
-        <label
-          class="mb-2 block text-sm font-semibold text-content-700"
-          for="password"
-        >
-          {{ 'common.password' | translate }}
-        </label>
-
+      <app-form-field class="min-w-0" labelKey="common.password" controlId="password">
         <input
           id="password"
           name="password"
@@ -133,17 +112,10 @@
           [(ngModel)]="selectedCoach.password"
           class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
-      </div>
+      </app-form-field>
 
       <!-- Telefonszám -->
-      <div class="min-w-0">
-        <label
-          class="mb-2 block text-sm font-semibold text-content-700"
-          for="phone"
-        >
-          {{ 'common.phone' | translate }}
-        </label>
-
+      <app-form-field class="min-w-0" labelKey="common.phone" controlId="phone">
         <input
           id="phone"
           name="phone"
@@ -152,17 +124,10 @@
           [(ngModel)]="selectedCoach.phone"
           class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
-      </div>
+      </app-form-field>
 
       <!-- Specializáció -->
-      <div class="min-w-0 sm:col-span-2">
-        <label
-          class="mb-2 block text-sm font-semibold text-content-700"
-          for="specialization"
-        >
-          {{ 'common.specialization' | translate }}
-        </label>
-
+      <app-form-field class="min-w-0 sm:col-span-2" labelKey="common.specialization" controlId="specialization">
         <textarea
           id="specialization"
           name="specialization"
@@ -171,17 +136,10 @@
           [(ngModel)]="selectedCoach.specialization"
           class="w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-4 py-3 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         ></textarea>
-      </div>
+      </app-form-field>
 
       <!-- Avatar URL -->
-      <div class="min-w-0 sm:col-span-2">
-        <label
-          class="mb-2 block text-sm font-semibold text-content-700"
-          for="avatar_url"
-        >
-          Avatar URL
-        </label>
-
+      <app-form-field class="min-w-0 sm:col-span-2" labelKey="common.avatarUrl" controlId="avatar_url">
         <input
           id="avatar_url"
           name="avatarUrl"
@@ -190,7 +148,7 @@
           [(ngModel)]="selectedCoach.avatarUrl"
           class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
-      </div>
+      </app-form-field>
 
       <!-- ============================= -->
       <!-- MENTÉS -->

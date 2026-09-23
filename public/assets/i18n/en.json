@@ -53,6 +53,8 @@
     "unknownError": "Unknown error",
     "male": "Male",
     "female": "Female",
+    "yes": "Yes",
+    "no": "No",
     "avatarUrl": "Avatar URL",
     "avatarImageUrl": "Avatar image URL",
     "search": "Search",
@@ -110,7 +112,10 @@
     "roles": "Roles",
     "updateSuccess": "User updated successfully!",
     "updateError": "Error while updating",
-    "saveError": "Error while saving"
+    "saveError": "Error while saving",
+    "loadCoachesError": "Failed to load coaches.",
+    "loadRolesError": "Failed to load roles.",
+    "loadUsersError": "Failed to load users."
   },
 
   "adminUserNew": {
@@ -166,6 +171,17 @@
     "category": "Category",
     "caloriesPerMinute": "Calories Burned / Minute",
     "durationSeconds": "Duration (seconds)",
+    "bodyPart": "Body part",
+    "synonyms": "Synonyms",
+    "instructions": "Instructions",
+    "tips": "Tips",
+    "primaryMuscles": "Primary muscles",
+    "secondaryMuscles": "Secondary muscles",
+    "forceType": "Force type",
+    "mechanic": "Mechanic",
+    "variationGroup": "Variation group",
+    "isUnilateral": "Unilateral exercise",
+    "isBodyweight": "Bodyweight exercise",
     "save": "Save Exercise",
     "notFound": "The selected exercise was not found",
     "loadError": "Error loading exercise",
@@ -202,7 +218,8 @@
     "noWorkouts": "No workouts found.",
     "addWorkout": "Add new workout",
     "loadError": "Failed to load workouts.",
-    "addError": "Error adding workout."
+    "addError": "Error adding workout.",
+    "addSuccess": "Workout added successfully."
   },
 
   "coachProfile": {
@@ -287,7 +304,15 @@
     "copyDateRequired": "The new workout date is required.",
     "invalidWorkoutDay": "Invalid workout day.",
     "copySuccess": "Workout copied successfully.",
-    "copyError": "An error occurred while copying the workout."
+    "copyError": "An error occurred while copying the workout.",
+    "invalidProgramId": "Invalid program ID.",
+    "invalidWorkoutId": "Invalid workout ID.",
+    "loadAssignedUserError": "Failed to load the assigned user.",
+    "loadProgramError": "Failed to load the program.",
+    "loadProgramWorkoutsError": "Failed to load the program workouts.",
+    "newWorkoutNotFound": "The new workout could not be found.",
+    "noWorkoutSelected": "Select a workout first.",
+    "saveExerciseError": "Failed to save the exercise."
   },
 
   "coachNewProgram": {
@@ -365,6 +390,7 @@
     "workoutDate": "Workout Date",
     "duration": "Duration (minutes)",
     "intensityLevel": "Intensity Level",
+    "save": "Save Workout",
     "selectIntensity": "-- Select Intensity --",
     "low": "Low",
     "moderate": "Moderate",
@@ -438,7 +464,8 @@
     "intensity": "Intensity",
     "page": "Page",
     "searchPlaceholder": "Search exercises...",
-    "noSearchResults": "No results found."
+    "noSearchResults": "No results found.",
+    "exercisesLocked": "The exercise list of this workout cannot be modified."
   },
 
   "coachProgramSelect": {
@@ -618,7 +645,8 @@
     "notes": "Notes",
     "noWorkouts": "There are no workouts for this program.",
     "pendingWorkouts": "Pending Workouts",
-    "completedWorkouts": "Completed Workouts"
+    "completedWorkouts": "Completed Workouts",
+    "unknownProgram": "Unknown program"
   },
   "coachProgramBoard": {
     "loading": "Loading...",
@@ -707,14 +735,19 @@
     "workoutIdMissing": "The workout ID is missing.",
     "exerciseIdMissing": "The exercise ID is missing.",
     "orderIndexRequired": "The order index is required.",
-    "orderUpdateError": "An error occurred while updating the exercise order."
+    "orderUpdateError": "An error occurred while updating the exercise order.",
+    "createUserWorkoutError": "An error occurred while creating the user's workout."
   },
   "assignProgram": {
     "title": "Assign Program",
     "user": "User",
     "selectUser": "-- Select user --",
     "assign": "Assign",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "success": "Program assigned successfully.",
+    "error": "Failed to assign the program.",
+    "loadUsersError": "Failed to load users.",
+    "selectUserAndProgram": "Select a user and a program first."
   },
   "coachDashboard": {
     "title": "Coach Dashboard",
@@ -722,7 +755,8 @@
     "workouts": "Workouts",
     "exercises": "Exercises",
     "workoutExerciseManager": "Workout and Set Configuration",
-    "assignWorkoutExercises": "Assign Workout → Exercise"
+    "assignWorkoutExercises": "Assign Workout → Exercise",
+    "exerciseNotFound": "The exercise is not available in the current language."
   },
   "coachWorkoutBoard": {
     "noWorkouts": "No workouts are available.",
@@ -731,7 +765,11 @@
     "noName": "No name",
     "id": "ID",
     "select": "Select",
-    "workout": "Workout"
+    "workout": "Workout",
+    "sortByName": "Workout name",
+    "noSearchResults": "No workouts match the search.",
+    "search": "Search workouts",
+    "searchPlaceholder": "Workout name..."
   },
   "userProgramStatistics": {
     "title": "Program Statistics",
@@ -781,11 +819,13 @@
     "incompleteWorkouts": "Remaining",
     "inProgress": "In progress",
     "selectProgram": "Select program",
+    "selectProgramOption": "-- Select program --",
     "loadingPrograms": "Loading programs...",
     "loading": "Loading statistics...",
     "loadError": "An error occurred while loading program statistics.",
     "noPrograms": "No assigned programs.",
     "noData": "There is no statistical data available for this program yet.",
+    "program": "Program",
     "days": "days",
     "page": "Page",
     "workout": "Workout",
@@ -802,6 +842,8 @@
     "weight": "Weight",
     "target": "Target",
     "actual": "Actual",
+    "noWeightData": "No weight data",
+    "noRepetitionData": "No repetition data",
     "completed": "Completed",
     "notCompleted": "Not completed",
     "performedAt": "Performed at",

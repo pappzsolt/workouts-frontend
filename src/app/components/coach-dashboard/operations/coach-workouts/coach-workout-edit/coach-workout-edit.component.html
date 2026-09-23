@@ -66,14 +66,7 @@
              NAME
              ================================================== -->
 
-        <div class="col-span-full flex min-w-0 flex-col gap-2">
-          <label
-            for="workoutName"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachWorkoutEdit.workoutName' | translate }}
-          </label>
-
+        <app-form-field class="col-span-full min-w-0" labelKey="coachWorkoutEdit.workoutName" controlId="workoutName">
           <input
             id="workoutName"
             type="text"
@@ -82,20 +75,13 @@
             required
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- ==================================================
              DESCRIPTION
              ================================================== -->
 
-        <div class="col-span-full flex min-w-0 flex-col gap-2">
-          <label
-            for="description"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachWorkoutEdit.description' | translate }}
-          </label>
-
+        <app-form-field class="col-span-full min-w-0" labelKey="coachWorkoutEdit.description" controlId="description">
           <textarea
             id="description"
             name="description"
@@ -103,20 +89,13 @@
             [(ngModel)]="workout.description"
             class="min-h-28 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
           ></textarea>
-        </div>
+        </app-form-field>
 
         <!-- ==================================================
              DATE
              ================================================== -->
 
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="workoutDate"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachWorkoutEdit.workoutDate' | translate }}
-          </label>
-
+        <app-form-field class="min-w-0" labelKey="coachWorkoutEdit.workoutDate" controlId="workoutDate">
           <input
             id="workoutDate"
             type="date"
@@ -125,20 +104,13 @@
             required
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- ==================================================
              DURATION
              ================================================== -->
 
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="durationMinutes"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachWorkoutEdit.duration' | translate }}
-          </label>
-
+        <app-form-field class="min-w-0" labelKey="coachWorkoutEdit.duration" controlId="durationMinutes">
           <input
             id="durationMinutes"
             type="number"
@@ -147,19 +119,13 @@
             min="0"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- ==================================================
              INTENSITY
              ================================================== -->
 
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="intensityLevel"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachWorkoutEdit.intensityLevel' | translate }}
-          </label>
+        <app-form-field class="min-w-0" labelKey="coachWorkoutEdit.intensityLevel" controlId="intensityLevel">
           <app-select
             id="intensityLevel"
             name="intensityLevel"
@@ -173,7 +139,7 @@
     { value: 'high', label: 'coachWorkoutEdit.high' }
   ]"
           />
-        </div>
+        </app-form-field>
 
         <!-- ==================================================
              DONE

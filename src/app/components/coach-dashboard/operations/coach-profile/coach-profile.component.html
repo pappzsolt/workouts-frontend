@@ -61,14 +61,7 @@
              NÉV
              ================================================== -->
 
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="name"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'common.name' | translate }}
-          </label>
-
+        <app-form-field labelKey="common.name" controlId="name">
           <input
             id="name"
             name="name"
@@ -77,20 +70,13 @@
             [(ngModel)]="profile.name"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- ==================================================
              EMAIL
              ================================================== -->
 
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="email"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'common.email' | translate }}
-          </label>
-
+        <app-form-field labelKey="common.email" controlId="email">
           <input
             id="email"
             name="email"
@@ -99,20 +85,13 @@
             [(ngModel)]="profile.email"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- ==================================================
              JELSZÓ
              ================================================== -->
 
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="password_hash"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'common.password' | translate }}
-          </label>
-
+        <app-form-field labelKey="common.password" controlId="password_hash">
           <input
             id="password_hash"
             name="password_hash"
@@ -121,20 +100,13 @@
             [(ngModel)]="profile.password_hash"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- ==================================================
              TELEFON
              ================================================== -->
 
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="phone"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'common.phone' | translate }}
-          </label>
-
+        <app-form-field labelKey="common.phone" controlId="phone">
           <input
             id="phone"
             name="phone"
@@ -143,20 +115,17 @@
             [(ngModel)]="profile.phone"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- ==================================================
              SPECIALIZÁCIÓ
              ================================================== -->
 
-        <div class="col-span-full flex min-w-0 flex-col gap-2">
-          <label
-            for="specialization"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'common.specialization' | translate }}
-          </label>
-
+        <app-form-field
+          class="col-span-full"
+          labelKey="common.specialization"
+          controlId="specialization"
+        >
           <textarea
             id="specialization"
             name="specialization"
@@ -165,20 +134,17 @@
             [(ngModel)]="profile.specialization"
             class="min-h-28 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
           ></textarea>
-        </div>
+        </app-form-field>
 
         <!-- ==================================================
              AVATAR URL
              ================================================== -->
 
-        <div class="col-span-full flex min-w-0 flex-col gap-2">
-          <label
-            for="avatar_url"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'common.avatarUrl' | translate }}
-          </label>
-
+        <app-form-field
+          class="col-span-full"
+          labelKey="common.avatarUrl"
+          controlId="avatar_url"
+        >
           <input
             id="avatar_url"
             name="avatar_url"
@@ -187,7 +153,7 @@
             [(ngModel)]="profile.avatar_url"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- ==================================================
              MENTÉS

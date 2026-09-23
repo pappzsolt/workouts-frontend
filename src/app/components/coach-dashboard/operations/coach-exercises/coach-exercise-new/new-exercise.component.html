@@ -35,14 +35,7 @@
   >
 
     <!-- Név -->
-    <div class="min-w-0 sm:col-span-2">
-      <label
-        for="name"
-        class="mb-2 block text-sm font-semibold text-content-700"
-      >
-        {{ 'newExercise.name' | translate }}:
-      </label>
-
+    <app-form-field class="min-w-0 sm:col-span-2" labelKey="newExercise.name" controlId="name" labelSuffix=":">
       <input
         type="text"
         id="name"
@@ -51,17 +44,10 @@
         required
         class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
       />
-    </div>
+    </app-form-field>
 
     <!-- Leírás -->
-    <div class="min-w-0 sm:col-span-2">
-      <label
-        for="description"
-        class="mb-2 block text-sm font-semibold text-content-700"
-      >
-        {{ 'newExercise.description' | translate }}:
-      </label>
-
+    <app-form-field class="min-w-0 sm:col-span-2" labelKey="newExercise.description" controlId="description" labelSuffix=":">
       <textarea
         id="description"
         name="description"
@@ -69,17 +55,10 @@
         rows="3"
         class="block w-full resize-y rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
       ></textarea>
-    </div>
+    </app-form-field>
 
     <!-- Kép URL -->
-    <div class="min-w-0">
-      <label
-        for="imageUrl"
-        class="mb-2 block text-sm font-semibold text-content-700"
-      >
-        {{ 'newExercise.imageUrl' | translate }}:
-      </label>
-
+    <app-form-field labelKey="newExercise.imageUrl" controlId="imageUrl" labelSuffix=":">
       <input
         type="text"
         id="imageUrl"
@@ -87,17 +66,10 @@
         [(ngModel)]="newExercise.imageUrl"
         class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
       />
-    </div>
+    </app-form-field>
 
     <!-- Videó URL -->
-    <div class="min-w-0">
-      <label
-        for="videoUrl"
-        class="mb-2 block text-sm font-semibold text-content-700"
-      >
-        {{ 'newExercise.videoUrl' | translate }}:
-      </label>
-
+    <app-form-field labelKey="newExercise.videoUrl" controlId="videoUrl" labelSuffix=":">
       <input
         type="text"
         id="videoUrl"
@@ -105,17 +77,10 @@
         [(ngModel)]="newExercise.videoUrl"
         class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
       />
-    </div>
+    </app-form-field>
 
     <!-- Izomcsoport -->
-    <div class="min-w-0">
-      <label
-        for="muscleGroup"
-        class="mb-2 block text-sm font-semibold text-content-700"
-      >
-        {{ 'newExercise.muscleGroup' | translate }}:
-      </label>
-
+    <app-form-field labelKey="newExercise.muscleGroup" controlId="muscleGroup" labelSuffix=":">
       <input
         type="text"
         id="muscleGroup"
@@ -123,17 +88,10 @@
         [(ngModel)]="newExercise.muscleGroup"
         class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
       />
-    </div>
+    </app-form-field>
 
     <!-- Eszköz -->
-    <div class="min-w-0">
-      <label
-        for="equipment"
-        class="mb-2 block text-sm font-semibold text-content-700"
-      >
-        {{ 'newExercise.equipment' | translate }}:
-      </label>
-
+    <app-form-field labelKey="newExercise.equipment" controlId="equipment" labelSuffix=":">
       <input
         type="text"
         id="equipment"
@@ -141,17 +99,10 @@
         [(ngModel)]="newExercise.equipment"
         class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
       />
-    </div>
+    </app-form-field>
 
     <!-- Nehézség -->
-    <div class="min-w-0">
-      <label
-        for="difficultyLevel"
-        class="mb-2 block text-sm font-semibold text-content-700"
-      >
-        {{ 'newExercise.difficulty' | translate }}:
-      </label>
-
+    <app-form-field labelKey="newExercise.difficulty" controlId="difficultyLevel" labelSuffix=":">
       <app-select
         id="difficultyLevel"
         name="difficultyLevel"
@@ -162,17 +113,10 @@
     { value: 'hard', label: 'newExercise.hard' }
   ]"
       />
-    </div>
+    </app-form-field>
 
     <!-- Kategória -->
-    <div class="min-w-0">
-      <label
-        for="category"
-        class="mb-2 block text-sm font-semibold text-content-700"
-      >
-        {{ 'newExercise.category' | translate }}:
-      </label>
-
+    <app-form-field labelKey="newExercise.category" controlId="category" labelSuffix=":">
       <input
         type="text"
         id="category"
@@ -180,17 +124,10 @@
         [(ngModel)]="newExercise.category"
         class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
       />
-    </div>
+    </app-form-field>
 
     <!-- Kalória / perc -->
-    <div class="min-w-0">
-      <label
-        for="caloriesBurnedPerMinute"
-        class="mb-2 block text-sm font-semibold text-content-700"
-      >
-        {{ 'newExercise.caloriesPerMinute' | translate }}:
-      </label>
-
+    <app-form-field labelKey="newExercise.caloriesPerMinute" controlId="caloriesBurnedPerMinute" labelSuffix=":">
       <input
         type="number"
         id="caloriesBurnedPerMinute"
@@ -199,17 +136,10 @@
         step="0.01"
         class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
       />
-    </div>
+    </app-form-field>
 
     <!-- Időtartam -->
-    <div class="min-w-0">
-      <label
-        for="durationSeconds"
-        class="mb-2 block text-sm font-semibold text-content-700"
-      >
-        {{ 'newExercise.duration' | translate }}:
-      </label>
-
+    <app-form-field labelKey="newExercise.duration" controlId="durationSeconds" labelSuffix=":">
       <input
         type="number"
         id="durationSeconds"
@@ -217,7 +147,7 @@
         [(ngModel)]="newExercise.durationSeconds"
         class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
       />
-    </div>
+    </app-form-field>
 
     <!-- Kész -->
     <div

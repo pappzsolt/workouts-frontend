@@ -39,14 +39,12 @@
       >
 
         <!-- Workout név -->
-        <div class="min-w-0 sm:col-span-2">
-          <label
-            for="workoutName"
-            class="mb-2 block text-sm font-semibold text-content-700"
-          >
-            {{ 'newWorkout.workoutName' | translate }}
-          </label>
-
+        <app-form-field
+          class="min-w-0 sm:col-span-2"
+          labelKey="newWorkout.workoutName"
+          controlId="workoutName"
+          [required]="true"
+        >
           <input
             type="text"
             id="workoutName"
@@ -55,17 +53,14 @@
             required
             class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Leírás -->
-        <div class="min-w-0 sm:col-span-2">
-          <label
-            for="description"
-            class="mb-2 block text-sm font-semibold text-content-700"
-          >
-            {{ 'newWorkout.description' | translate }}
-          </label>
-
+        <app-form-field
+          class="min-w-0 sm:col-span-2"
+          labelKey="newWorkout.description"
+          controlId="description"
+        >
           <textarea
             id="description"
             name="description"
@@ -73,17 +68,10 @@
             [(ngModel)]="newWorkout.description"
             class="block w-full resize-y rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
           ></textarea>
-        </div>
+        </app-form-field>
 
         <!-- Dátum -->
-        <div class="min-w-0">
-          <label
-            for="workoutDate"
-            class="mb-2 block text-sm font-semibold text-content-700"
-          >
-            {{ 'newWorkout.date' | translate }}
-          </label>
-
+        <app-form-field labelKey="newWorkout.date" controlId="workoutDate">
           <input
             type="date"
             id="workoutDate"
@@ -92,17 +80,10 @@
             required
             class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Időtartam -->
-        <div class="min-w-0">
-          <label
-            for="durationMinutes"
-            class="mb-2 block text-sm font-semibold text-content-700"
-          >
-            {{ 'newWorkout.duration' | translate }}
-          </label>
-
+        <app-form-field labelKey="newWorkout.duration" controlId="durationMinutes">
           <input
             type="number"
             id="durationMinutes"
@@ -110,17 +91,14 @@
             [(ngModel)]="newWorkout.durationMinutes"
             class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Intenzitás -->
-        <div class="min-w-0 sm:col-span-2">
-          <label
-            for="intensityLevel"
-            class="mb-2 block text-sm font-semibold text-content-700"
-          >
-            {{ 'newWorkout.intensityLevel' | translate }}
-          </label>
-
+        <app-form-field
+          class="min-w-0 sm:col-span-2"
+          labelKey="newWorkout.intensityLevel"
+          controlId="intensityLevel"
+        >
           <app-select
             id="intensityLevel"
             name="intensityLevel"
@@ -134,7 +112,7 @@
           { value: 'High', label: 'newWorkout.high' }
         ]"
           />
-        </div>
+        </app-form-field>
 
         <!-- Gomb -->
         <div class="flex min-w-0 justify-end pt-1 sm:col-span-2">

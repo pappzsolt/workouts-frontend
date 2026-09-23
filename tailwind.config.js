@@ -24,6 +24,22 @@ const blue = {
   900: '#1E3A8A',
 };
 
+const search = {
+  50: '#F0FDF4',
+  100: '#DCFCE7',
+  200: '#BBF7D0',
+  600: '#16A34A',
+  700: '#15803D',
+};
+
+const add = {
+  50: '#FEFCE8',
+  100: '#FEF9C3',
+  200: '#FEF08A',
+  600: '#CA8A04',
+  700: '#A16207',
+};
+
 const neutral = {
   50: '#F8FAFC',
   100: '#F1F5F9',
@@ -83,11 +99,25 @@ module.exports = {
         success: primary,
         edit: blue,
         info: blue,
+        search,
+        add,
+        save: primary,
         surface: neutral,
         content: neutral,
         sort: indigo,
+        pagination: indigo,
         warning,
         delete: danger,
+      },
+      boxShadow: {
+        sm: '0 1px 2px 0 color-mix(in srgb, var(--app-shadow-color) 5%, transparent)',
+        DEFAULT:
+          '0 1px 3px 0 color-mix(in srgb, var(--app-shadow-color) 10%, transparent), 0 1px 2px -1px color-mix(in srgb, var(--app-shadow-color) 10%, transparent)',
+        md: '0 4px 6px -1px color-mix(in srgb, var(--app-shadow-color) 10%, transparent), 0 2px 4px -2px color-mix(in srgb, var(--app-shadow-color) 10%, transparent)',
+        lg: '0 10px 15px -3px color-mix(in srgb, var(--app-shadow-color) 10%, transparent), 0 4px 6px -4px color-mix(in srgb, var(--app-shadow-color) 10%, transparent)',
+        xl: '0 20px 25px -5px color-mix(in srgb, var(--app-shadow-color) 10%, transparent), 0 8px 10px -6px color-mix(in srgb, var(--app-shadow-color) 10%, transparent)',
+        '2xl': '0 25px 50px -12px color-mix(in srgb, var(--app-shadow-color) 25%, transparent)',
+        inner: 'inset 0 2px 4px 0 color-mix(in srgb, var(--app-shadow-color) 5%, transparent)',
       },
     },
   },
