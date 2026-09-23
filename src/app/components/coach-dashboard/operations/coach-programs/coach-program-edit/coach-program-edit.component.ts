@@ -6,11 +6,12 @@ import { AppCardComponent } from '../../../../shared/components/app-card/app-car
 import { Program, ProgramDto, ProgramCreationRequest } from '../../../../../models/program.model';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
+import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
 
 @Component({
   selector: 'app-coach-program-edit',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppCardComponent, AppSelectComponent],
+  imports: [...SHARED_IMPORTS, AppCardComponent, AppSelectComponent, FormFieldComponent],
   templateUrl: './coach-program-edit.component.html',
   styleUrls: ['./coach-program-edit.component.css'],
 })

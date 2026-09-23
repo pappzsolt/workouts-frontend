@@ -5,11 +5,12 @@ import { CoachNewService } from '../../../../services/admin/coach-new.service';
 import { CreateCoachRequest } from '../../../../models/create-coach-request.model';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { FormFieldComponent } from '../../../shared/components/form-field/form-field.component';
 
 @Component({
   selector: 'app-coach-new',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, FormFieldComponent],
   templateUrl: './coach-new.component.html',
   styleUrls: ['./coach-new.component.css'],
 })

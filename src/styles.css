@@ -16,6 +16,12 @@ body {
   margin: 0;
 }
 
+@layer components {
+  .form-field-error {
+    @apply rounded-lg border border-delete-200 bg-delete-50 px-3 py-2 text-sm font-medium text-delete-700;
+  }
+}
+
 @layer base {
   :root {
     --app-white: theme('colors.white');

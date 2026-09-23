@@ -60,14 +60,12 @@
              PROGRAM NÉV
              ================================================== -->
 
-        <div class="col-span-full flex min-w-0 flex-col gap-2">
-          <label
-            for="programName"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachProgramEdit.programName' | translate }}
-          </label>
-
+        <app-form-field
+          class="col-span-full"
+          labelKey="coachProgramEdit.programName"
+          controlId="programName"
+          [required]="true"
+        >
           <input
             type="text"
             id="programName"
@@ -77,20 +75,17 @@
             required
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- ==================================================
              LEÍRÁS
              ================================================== -->
 
-        <div class="col-span-full flex min-w-0 flex-col gap-2">
-          <label
-            for="programDescription"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachProgramEdit.description' | translate }}
-          </label>
-
+        <app-form-field
+          class="col-span-full"
+          labelKey="coachProgramEdit.description"
+          controlId="programDescription"
+        >
           <textarea
             id="programDescription"
             name="programDescription"
@@ -99,20 +94,16 @@
             [(ngModel)]="program.programDescription"
             class="min-h-28 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
           ></textarea>
-        </div>
+        </app-form-field>
 
         <!-- ==================================================
              IDŐTARTAM
              ================================================== -->
 
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="durationDays"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachProgramEdit.duration' | translate }}
-          </label>
-
+        <app-form-field
+          labelKey="coachProgramEdit.duration"
+          controlId="durationDays"
+        >
           <input
             type="number"
             id="durationDays"
@@ -122,43 +113,30 @@
             min="1"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- ==================================================
              NEHÉZSÉGI SZINT
              ================================================== -->
 
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="difficultyLevel"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachProgramEdit.difficultyLevel' | translate }}
-          </label>
-
-          <div class="flex min-w-0 flex-col gap-2">
-            <label
-              for="difficultyLevel"
-              class="text-sm font-semibold text-content-700"
-            >
-              {{ 'coachProgramEdit.difficultyLevel' | translate }}
-            </label>
-
-            <app-select
-              id="difficultyLevel"
-              name="difficultyLevel"
-              [(value)]="program.difficultyLevel"
-              [placeholder]="'coachProgramEdit.selectDifficulty'"
-              placeholderValue=""
-              [className]="'min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm'"
-              [options]="[
+        <app-form-field
+          labelKey="coachProgramEdit.difficultyLevel"
+          controlId="difficultyLevel"
+        >
+          <app-select
+            id="difficultyLevel"
+            name="difficultyLevel"
+            [(value)]="program.difficultyLevel"
+            [placeholder]="'coachProgramEdit.selectDifficulty'"
+            placeholderValue=""
+            [className]="'min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm'"
+            [options]="[
       { value: 'Easy', label: 'coachProgramEdit.easy' },
       { value: 'Medium', label: 'coachProgramEdit.medium' },
       { value: 'Hard', label: 'coachProgramEdit.hard' }
     ]"
-            />
-          </div>
-        </div>
+          />
+        </app-form-field>
 
         <!-- ==================================================
              MENTÉS

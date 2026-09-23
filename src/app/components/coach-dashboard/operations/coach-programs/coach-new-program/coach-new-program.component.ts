@@ -9,10 +9,11 @@ import { AppSelectComponent } from '../../../../../components/shared/components/
 import { LanguageService } from '../../../../../services/shared/language.service';
 import { Program, ProgramCreationRequest } from '../../../../../models/program.model';
 import { AppButtonComponent } from '../../../../../components/shared/components/app-button/app-button.component';
+import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
 @Component({
   selector: 'app-coach-new-program',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppCardComponent, AppSelectComponent, AppButtonComponent],
+  imports: [...SHARED_IMPORTS, AppCardComponent, AppSelectComponent, AppButtonComponent, FormFieldComponent],
   templateUrl: './coach-new-program.component.html',
   styleUrls: ['./coach-new-program.component.css'],
 })

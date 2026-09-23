@@ -35,14 +35,11 @@
     >
 
       <!-- Név -->
-      <div class="min-w-0">
-        <label
-          for="name"
-          class="mb-2 block text-sm font-semibold text-content-700"
-        >
-          {{ 'common.name' | translate }}*
-        </label>
-
+      <app-form-field
+        labelKey="common.name"
+        controlId="name"
+        [required]="true"
+      >
         <input
           id="name"
           name="name"
@@ -52,24 +49,21 @@
           #nameModel="ngModel"
           class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
-
-        <div
+        <p
           *ngIf="nameModel.invalid && (nameModel.dirty || nameModel.touched)"
-          class="mt-2 rounded-lg border border-delete-200 bg-delete-50 px-3 py-2 text-sm font-medium text-delete-700"
+          class="form-field-error"
+          role="alert"
         >
           {{ 'adminCoachNew.nameRequired' | translate }}
-        </div>
-      </div>
+        </p>
+      </app-form-field>
 
       <!-- Email -->
-      <div class="min-w-0">
-        <label
-          for="email"
-          class="mb-2 block text-sm font-semibold text-content-700"
-        >
-          {{ 'common.email' | translate }}*
-        </label>
-
+      <app-form-field
+        labelKey="common.email"
+        controlId="email"
+        [required]="true"
+      >
         <input
           id="email"
           name="email"
@@ -80,24 +74,21 @@
           #emailModel="ngModel"
           class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
-
-        <div
+        <p
           *ngIf="emailModel.invalid && (emailModel.dirty || emailModel.touched)"
-          class="mt-2 rounded-lg border border-delete-200 bg-delete-50 px-3 py-2 text-sm font-medium text-delete-700"
+          class="form-field-error"
+          role="alert"
         >
           {{ 'adminCoachNew.validEmailRequired' | translate }}
-        </div>
-      </div>
+        </p>
+      </app-form-field>
 
       <!-- Jelszó -->
-      <div class="min-w-0">
-        <label
-          for="passwordHash"
-          class="mb-2 block text-sm font-semibold text-content-700"
-        >
-          {{ 'common.password' | translate }}*
-        </label>
-
+      <app-form-field
+        labelKey="common.password"
+        controlId="passwordHash"
+        [required]="true"
+      >
         <input
           id="passwordHash"
           name="passwordHash"
@@ -108,27 +99,21 @@
           #passwordModel="ngModel"
           class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
-
-        <div
-          *ngIf="
-            passwordModel.invalid &&
-            (passwordModel.dirty || passwordModel.touched)
-          "
-          class="mt-2 rounded-lg border border-delete-200 bg-delete-50 px-3 py-2 text-sm font-medium text-delete-700"
+        <p
+          *ngIf="passwordModel.invalid && (passwordModel.dirty || passwordModel.touched)"
+          class="form-field-error"
+          role="alert"
         >
           {{ 'adminCoachNew.minimumSixCharacters' | translate }}
-        </div>
-      </div>
+        </p>
+      </app-form-field>
 
       <!-- Telefon -->
-      <div class="min-w-0">
-        <label
-          for="phone"
-          class="mb-2 block text-sm font-semibold text-content-700"
-        >
-          {{ 'common.phone' | translate }}*
-        </label>
-
+      <app-form-field
+        labelKey="common.phone"
+        controlId="phone"
+        [required]="true"
+      >
         <input
           id="phone"
           name="phone"
@@ -139,24 +124,21 @@
           #phoneModel="ngModel"
           class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
-
-        <div
+        <p
           *ngIf="phoneModel.invalid && (phoneModel.dirty || phoneModel.touched)"
-          class="mt-2 rounded-lg border border-delete-200 bg-delete-50 px-3 py-2 text-sm font-medium text-delete-700"
+          class="form-field-error"
+          role="alert"
         >
           {{ 'adminCoachNew.validHungarianPhoneRequired' | translate }}
-        </div>
-      </div>
+        </p>
+      </app-form-field>
 
       <!-- Szakterület -->
-      <div class="min-w-0 sm:col-span-2">
-        <label
-          for="specialization"
-          class="mb-2 block text-sm font-semibold text-content-700"
-        >
-          {{ 'adminCoachNew.specialization' | translate }}
-        </label>
-
+      <app-form-field
+        class="min-w-0 sm:col-span-2"
+        labelKey="adminCoachNew.specialization"
+        controlId="specialization"
+      >
         <textarea
           id="specialization"
           name="specialization"
@@ -165,17 +147,14 @@
           [(ngModel)]="coach.specialization"
           class="w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-4 py-3 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         ></textarea>
-      </div>
+      </app-form-field>
 
       <!-- Avatar URL -->
-      <div class="min-w-0 sm:col-span-2">
-        <label
-          for="avatarUrl"
-          class="mb-2 block text-sm font-semibold text-content-700"
-        >
-          {{ 'adminCoachNew.avatarUrl' | translate }}
-        </label>
-
+      <app-form-field
+        class="min-w-0 sm:col-span-2"
+        labelKey="adminCoachNew.avatarUrl"
+        controlId="avatarUrl"
+      >
         <input
           id="avatarUrl"
           name="avatarUrl"
@@ -184,7 +163,7 @@
           [(ngModel)]="coach.avatarUrl"
           class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
-      </div>
+      </app-form-field>
 
       <!-- Submit -->
       <div class="flex min-w-0 sm:col-span-2 sm:justify-end">
