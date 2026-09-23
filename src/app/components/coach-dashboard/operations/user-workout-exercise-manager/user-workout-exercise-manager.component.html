@@ -164,14 +164,14 @@
                         *ngIf="ex.exerciseCompleted"
                         class="exercise-done"
                       >
-                        ✔
+                        <app-icon name="circle-check" sizeClass="h-5 w-5" />
                       </span>
 
                     <span
                       *ngIf="!ex.exerciseCompleted"
                       class="exercise-not-done"
                     >
-                        ✖
+                        <app-icon name="circle-x" sizeClass="h-5 w-5" />
                       </span>
                   </td>
 
@@ -222,7 +222,7 @@
                           variant="add"
                           type="button"
                           [label]="'userWorkoutExerciseManager.newSet' | translate"
-                          icon="+"
+                          [lucideIcon]="'plus'"
                           (buttonClick)="addSet()"
                         ></app-button>
                       </div>

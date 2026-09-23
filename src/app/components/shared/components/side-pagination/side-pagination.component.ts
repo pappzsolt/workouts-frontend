@@ -1,12 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
 import { TranslatePipe } from '@ngx-translate/core';
+import { AppIconComponent } from '../app-icon/app-icon.component';
 
 @Component({
   selector: 'app-side-pagination',
   standalone: true,
-  imports: [CommonModule, LucideChevronLeft, LucideChevronRight, TranslatePipe],
+  imports: [CommonModule, AppIconComponent, TranslatePipe],
   templateUrl: './side-pagination.component.html',
   styleUrl: './side-pagination.component.css',
 })

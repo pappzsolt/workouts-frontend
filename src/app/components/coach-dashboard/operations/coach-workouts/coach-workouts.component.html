@@ -103,7 +103,7 @@
             <span
               class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-3xl shadow-md transition duration-200 group-hover:scale-105"
             >
-              🔥
+              <app-icon name="flame" sizeClass="h-5 w-5" />
             </span>
           </div>
 
@@ -247,7 +247,7 @@
   <app-button
     variant="add"
     [floating]="true"
-    icon="➕"
+    [lucideIcon]="'circle-plus'"
     [title]="'coachWorkouts.addWorkout' | translate"
     (buttonClick)="goToNewWorkout()"
   ></app-button>

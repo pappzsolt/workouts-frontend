@@ -7,7 +7,7 @@
     <h2
       class="text-center text-2xl font-bold text-content-800 sm:text-3xl"
     >
-      ➕ {{ 'newWorkout.title' | translate }}
+      <app-icon name="circle-plus" sizeClass="h-5 w-5" /> {{ 'newWorkout.title' | translate }}
     </h2>
 
     <!-- Üzenet -->
@@ -27,7 +27,7 @@
     <span
       class="flex h-12 w-12 items-center justify-center rounded-full bg-white text-2xl shadow-md"
     >
-      🏋️‍♂️
+      <app-icon name="dumbbell" sizeClass="h-5 w-5" />
     </span>
       </div>
 
@@ -121,7 +121,7 @@
             [disabled]="!workoutForm.form.valid"
             class="w-full rounded-lg bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-200/50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
           >
-            ➕ {{ 'newWorkout.createWorkout' | translate }}
+            <app-icon name="circle-plus" sizeClass="h-5 w-5" /> {{ 'newWorkout.createWorkout' | translate }}
           </button>
         </div>
 

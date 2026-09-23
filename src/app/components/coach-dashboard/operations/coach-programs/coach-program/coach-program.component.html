@@ -14,7 +14,7 @@
     <h2
       class="mb-6 flex items-center justify-center gap-2 text-center text-2xl font-bold tracking-tight text-content-800 sm:mb-8 sm:text-3xl"
     >
-      <span>📋</span>
+      <span><app-icon name="clipboard-list" sizeClass="h-5 w-5" /></span>
       <span>{{ 'coachPrograms.title' | translate }}</span>
     </h2>
 
@@ -94,7 +94,7 @@
             <span
               class="relative flex h-20 w-20 items-center justify-center rounded-2xl bg-white/95 text-5xl shadow-lg ring-1 ring-white/30 transition duration-200 group-hover:scale-105"
             >
-              💪
+              <app-icon name="dumbbell" sizeClass="h-5 w-5" />
             </span>
           </div>
 
@@ -170,7 +170,7 @@
                 (click)="editProgram(program.id, $event)"
                 class="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-info-200 bg-white px-4 py-2 text-sm font-semibold text-info-700 shadow-sm transition duration-150 hover:border-primary-300 hover:bg-primary-50 focus:outline-none focus:ring-4 focus:ring-primary-500/10 active:scale-[0.98]"
               >
-                <span>✏️</span>
+                <span><app-icon name="pencil" sizeClass="h-5 w-5" /></span>
                 <span>{{ 'coachPrograms.edit' | translate }}</span>
               </button>
             </div>
@@ -216,7 +216,7 @@
         class="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-surface-300 bg-white px-5 py-10 text-center shadow-md shadow-surface-200/40"
       >
         <span class="mb-3 text-5xl">
-          📋
+          <app-icon name="clipboard-list" sizeClass="h-5 w-5" />
         </span>
 
         <p class="text-sm font-medium text-content-500">
@@ -235,7 +235,7 @@
     variant="add"
     [floating]="true"
     [title]="'coachPrograms.createNew' | translate"
-    icon="➕"
+    [lucideIcon]="'circle-plus'"
     (buttonClick)="createNewProgram()"
   ></app-button>
 

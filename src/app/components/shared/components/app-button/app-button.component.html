@@ -24,37 +24,8 @@
       : getVariantClasses()
   ]"
 >
-  <!-- Lucide ikon: növekvő rendezés -->
-  @if (lucideIcon === 'arrow-up-narrow-wide') {
-    <svg
-      lucideArrowUpNarrowWide
-      class="h-[18px] w-[18px] shrink-0"
-      aria-hidden="true"
-    ></svg>
-  }
-
-  <!-- Lucide ikon: csökkenő rendezés -->
-  @else if (lucideIcon === 'arrow-down-wide-narrow') {
-    <svg
-      lucideArrowDownWideNarrow
-      class="h-[18px] w-[18px] shrink-0"
-      aria-hidden="true"
-    ></svg>
-  }
-
-  @else if (lucideIcon === 'pencil') {
-    <svg
-      lucidePencil
-      class="h-[18px] w-[18px] shrink-0"
-      aria-hidden="true"
-    ></svg>
-  }
-
-  <!-- Emoji vagy szöveges ikon -->
-  @if (icon) {
-    <span class="inline-flex items-center justify-center">
-      {{ icon }}
-    </span>
+  @if (lucideIcon) {
+    <app-icon [name]="lucideIcon" sizeClass="h-[18px] w-[18px]" />
   }
 
   <!-- Gomb felirata -->

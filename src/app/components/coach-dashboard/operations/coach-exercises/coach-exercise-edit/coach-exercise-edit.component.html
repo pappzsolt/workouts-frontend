@@ -6,7 +6,7 @@
     <h2
       class="mb-6 flex items-center justify-center gap-2 text-center text-2xl font-bold tracking-tight text-content-800 sm:mb-8 sm:text-3xl"
     >
-      <span>✏️</span>
+      <span><app-icon name="pencil" sizeClass="h-5 w-5" /></span>
       <span>{{ 'coachExerciseEdit.title' | translate }}</span>
     </h2>
 
@@ -30,7 +30,7 @@
           <span
             class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/95 text-4xl shadow-lg ring-1 ring-white/30"
           >
-            🏋️‍♀️
+            <app-icon name="dumbbell" sizeClass="h-5 w-5" />
           </span>
         </div>
       </div>
@@ -455,7 +455,7 @@
             [disabled]="!exerciseForm.form.valid || saving"
             class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-info-500/20 transition duration-150 hover:from-primary-700 hover:to-primary-700 hover:shadow-lg hover:shadow-info-500/25 focus:outline-none focus:ring-4 focus:ring-primary-500/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:from-surface-300 disabled:to-surface-300 disabled:shadow-none sm:w-auto"
           >
-            <span>💾</span>
+            <span><app-icon name="save" sizeClass="h-5 w-5" /></span>
             <span>{{ 'coachExerciseEdit.save' | translate }}</span>
           </button>
         </div>

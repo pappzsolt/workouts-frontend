@@ -14,6 +14,7 @@ import { CoachProgram } from '../../../../models/coach-program.model';
 
 import { ProgramWorkoutService } from '../../../../services/coach/program-workout.service';
 import { LanguageService } from '../../../../services/shared/language.service';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 
 @Component({
   selector: 'app-program-workouts-ass',
@@ -24,6 +25,7 @@ import { LanguageService } from '../../../../services/shared/language.service';
     MessageComponent,
     CoachProgramBoardComponent,
     CoachWorkoutBoardComponent,
+    AppIconComponent,
   ],
   templateUrl: './program-workouts-ass.component.html',
 })

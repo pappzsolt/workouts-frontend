@@ -12,7 +12,7 @@
     <h1
       class="mb-6 flex items-center justify-center gap-2 text-center text-2xl font-bold tracking-tight text-content-800 sm:mb-8 sm:text-3xl"
     >
-      <span>➕</span>
+      <span><app-icon name="circle-plus" sizeClass="h-5 w-5" /></span>
       <span>{{ 'coachNewProgram.title' | translate }}</span>
     </h1>
 
@@ -41,7 +41,7 @@
       <span
         class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/95 text-4xl shadow-lg ring-1 ring-white/30"
       >
-        💪
+        <app-icon name="dumbbell" sizeClass="h-5 w-5" />
       </span>
         </div>
       </div>
@@ -147,7 +147,7 @@
             variant="save"
             type="submit"
             [label]="'coachNewProgram.save' | translate"
-            icon="💾"
+            [lucideIcon]="'save'"
           ></app-button>
         </div>
       </form>

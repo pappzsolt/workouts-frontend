@@ -1,11 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import {
-  LucideArrowDownWideNarrow,
-  LucideArrowUpNarrowWide,
-  LucidePencil,
-} from '@lucide/angular';
+import { AppIconComponent, AppIconName } from '../app-icon/app-icon.component';
 
 export type AppButtonVariant =
   'primary' | 'save' | 'edit' | 'search' | 'sort' | 'add' | 'delete' | 'secondary' | 'danger';
@@ -14,16 +10,12 @@ export type AppButtonSize = 'sm' | 'md' | 'lg';
 
 export type AppButtonType = 'button' | 'submit' | 'reset';
 
-export type AppButtonLucideIcon =
-  | 'arrow-up-narrow-wide'
-  | 'arrow-down-wide-narrow'
-  | 'pencil'
-  | '';
+export type AppButtonLucideIcon = AppIconName | '';
 
 @Component({
   selector: 'app-button',
   standalone: true,
-  imports: [CommonModule, LucideArrowUpNarrowWide, LucideArrowDownWideNarrow, LucidePencil],
+  imports: [CommonModule, AppIconComponent],
   templateUrl: './app-button.component.html',
   styleUrl: './app-button.component.css',
 })
@@ -35,9 +27,6 @@ export class AppButtonComponent {
 
   // Gomb felirata
   @Input() label = '';
-
-  // Opcionális emoji vagy szöveges ikon
-  @Input() icon = '';
 
   // Opcionális Lucide ikon
   @Input() lucideIcon: AppButtonLucideIcon = '';

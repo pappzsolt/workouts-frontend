@@ -14,7 +14,7 @@
     <h2
       class="mb-6 flex items-center justify-center gap-2 text-center text-2xl font-bold tracking-tight text-content-800 sm:mb-8 sm:text-3xl"
     >
-      <span>🏋️</span>
+      <span><app-icon name="dumbbell" sizeClass="h-5 w-5" /></span>
       <span>{{ 'coachWorkoutEdit.title' | translate }}</span>
     </h2>
 
@@ -47,7 +47,7 @@
           <span
             class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/95 text-4xl shadow-lg ring-1 ring-white/30"
           >
-            💪
+            <app-icon name="dumbbell" sizeClass="h-5 w-5" />
           </span>
         </div>
       </div>
@@ -182,7 +182,7 @@
             <h3
               class="flex items-center gap-2 text-lg font-bold text-content-800"
             >
-              <span>🏋️</span>
+              <span><app-icon name="dumbbell" sizeClass="h-5 w-5" /></span>
               <span>{{ 'coachWorkoutEdit.exercises' | translate }}</span>
             </h3>
 
@@ -201,7 +201,7 @@
             *ngIf="checkingProgramAssignment"
             class="mx-4 mt-4 flex items-center gap-3 rounded-xl border border-warning-200 bg-warning-50 px-4 py-3 text-sm text-warning-700 sm:mx-5"
           >
-            <span class="text-lg">⏳</span>
+            <span class="text-lg"><app-icon name="timer" sizeClass="h-5 w-5" /></span>
 
             <span>
               {{ 'coachWorkoutEdit.checkingAssignment' | translate }}
@@ -240,7 +240,7 @@
               <span
                 class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-info-50 text-xl text-info-600"
               >
-                ➕
+                <app-icon name="circle-plus" sizeClass="h-5 w-5" />
               </span>
 
               <div class="min-w-0">
@@ -298,7 +298,7 @@
                   "
                   class="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-sm font-bold text-content-400 transition hover:bg-surface-100 hover:text-content-700"
                 >
-                  ✕
+                  <app-icon name="x" sizeClass="h-5 w-5" />
                 </button>
 
               </div>
@@ -356,7 +356,7 @@
                   <span
                     class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-100 text-lg group-hover:bg-white"
                   >
-                    🏋️
+                    <app-icon name="dumbbell" sizeClass="h-5 w-5" />
                   </span>
 
                   <span
@@ -473,7 +473,7 @@
                 class="inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-info-500/20 transition duration-150 hover:from-primary-700 hover:to-primary-700 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-primary-500/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:from-surface-300 disabled:to-surface-300 disabled:shadow-none sm:w-auto"
               >
                 <span *ngIf="!addingExercise">
-                  ➕
+                  <app-icon name="circle-plus" sizeClass="h-5 w-5" />
                 </span>
 
                 <span>
@@ -622,7 +622,7 @@
             (click)="cancelEdit()"
             class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-surface-300 bg-white px-6 py-2.5 text-sm font-semibold text-content-700 shadow-sm transition duration-150 hover:border-surface-400 hover:bg-surface-50 focus:outline-none focus:ring-4 focus:ring-surface-500/10 active:scale-[0.98] sm:w-auto"
           >
-            <span>❌</span>
+            <span><app-icon name="circle-x" sizeClass="h-5 w-5" /></span>
             <span>{{ 'coachWorkoutEdit.cancel' | translate }}</span>
           </button>
 
@@ -633,7 +633,7 @@
             [disabled]="!workoutForm.form.valid"
             class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-info-500/20 transition duration-150 hover:from-primary-700 hover:to-primary-700 hover:shadow-lg hover:shadow-info-500/25 focus:outline-none focus:ring-4 focus:ring-primary-500/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:from-surface-300 disabled:to-surface-300 disabled:shadow-none sm:w-auto"
           >
-            <span>💾</span>
+            <span><app-icon name="save" sizeClass="h-5 w-5" /></span>
             <span>{{ 'coachWorkoutEdit.save' | translate }}</span>
           </button>
 

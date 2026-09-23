@@ -140,7 +140,7 @@
               <span
                 class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-3xl shadow-md transition duration-200 group-hover:scale-105"
               >
-                🏋️‍♂️
+                <app-icon name="dumbbell" sizeClass="h-5 w-5" />
               </span>
             </div>
 
@@ -164,7 +164,7 @@
 
               <ng-template #noImage>
                 <span class="text-5xl">
-                  🏋️‍♂️
+                  <app-icon name="dumbbell" sizeClass="h-5 w-5" />
                 </span>
               </ng-template>
             </div>
@@ -198,7 +198,7 @@
                   class="w-full rounded-lg border border-info-200 bg-info-50 px-4 py-2.5 text-sm font-semibold text-info-700 transition hover:border-primary-300 hover:bg-info-100 focus:outline-none focus:ring-4 focus:ring-primary-600/10"
                   (click)="editExercise(ex.id!)"
                 >
-                  ✏️ {{ 'common.edit' | translate }}
+                  <app-icon name="pencil" sizeClass="h-5 w-5" /> {{ 'common.edit' | translate }}
                 </button>
               </div>
 
@@ -255,7 +255,7 @@
       (click)="goToNewExercise()"
       [title]="'coachExercises.addExercise' | translate"
     >
-      ➕
+      <app-icon name="circle-plus" sizeClass="h-5 w-5" />
     </button>
 
   </div>

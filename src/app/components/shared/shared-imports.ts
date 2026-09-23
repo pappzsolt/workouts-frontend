@@ -9,6 +9,7 @@ import { BackButtonComponent } from '../shared/components/back-button/back-butto
 import { AppButtonComponent } from '../../components/shared/components/app-button/app-button.component';
 import { AppCardComponent } from '../../components/shared/components/app-card/app-card.component';
 import { FormFieldComponent } from './components/form-field/form-field.component';
+import { AppIconComponent } from './components/app-icon/app-icon.component';
 
 export const SHARED_IMPORTS = [
   CommonModule,
@@ -21,4 +22,5 @@ export const SHARED_IMPORTS = [
   AppButtonComponent,
   AppCardComponent,
   FormFieldComponent,
+  AppIconComponent,
 ];
