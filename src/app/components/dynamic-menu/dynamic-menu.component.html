@@ -1,4 +1,4 @@
-<nav class="w-full">
+<nav class="w-full" [attr.aria-label]="'menu.navigation' | translate">
   <ul class="flex flex-col gap-1.5">
     <ng-container *ngFor="let item of menuItems">
       <li class="w-full">
@@ -6,6 +6,9 @@
         <a
           *ngIf="!item.children && !item.action"
           [routerLink]="item.path"
+          routerLinkActive="bg-primary-50 text-primary-700"
+          [routerLinkActiveOptions]="{ exact: true }"
+          ariaCurrentWhenActive="page"
           (click)="menuNavigate.emit()"
           class="flex w-full items-center rounded-xl px-4 py-3 text-sm font-medium text-content-700 transition-all duration-200 hover:bg-surface-100 hover:text-content-900 focus:outline-none focus:ring-2 focus:ring-surface-400/30"
         >
@@ -13,22 +16,25 @@
         </a>
 
         <!-- Action (logout) -->
-        <span
+        <button
+          type="button"
           *ngIf="item.action"
-          class="flex w-full cursor-pointer items-center rounded-xl px-4 py-3 text-sm font-medium text-content-700 transition-all duration-200 hover:bg-surface-100 hover:text-content-900 focus:outline-none"
+          class="flex w-full cursor-pointer items-center rounded-xl border-0 bg-transparent px-4 py-3 text-left text-sm font-medium text-content-700 transition-all duration-200 hover:bg-surface-100 hover:text-content-900 focus:outline-none focus:ring-2 focus:ring-primary-300"
           (click)="onAction(item)"
         >
           {{ item.label | translate }}
-        </span>
+        </button>
 
         <!-- Dropdown -->
         <ng-container *ngIf="item.children">
-          <span
-            class="flex w-full cursor-pointer items-center rounded-xl px-4 py-3 text-sm font-semibold text-content-700 transition-all duration-200 hover:bg-surface-100 hover:text-content-900"
+          <button
+            type="button"
+            [attr.aria-expanded]="isOpen(item)"
+            class="flex w-full cursor-pointer items-center rounded-xl border-0 bg-transparent px-4 py-3 text-left text-sm font-semibold text-content-700 transition-all duration-200 hover:bg-surface-100 hover:text-content-900 focus:outline-none focus:ring-2 focus:ring-primary-300"
             (click)="toggle(item)"
           >
             {{ item.label | translate }}
-          </span>
+          </button>
 
           <!-- Dropdown submenu -->
           <ul
@@ -38,6 +44,9 @@
             <li *ngFor="let child of item.children">
               <a
                 [routerLink]="child.path"
+                routerLinkActive="bg-primary-50 text-primary-700"
+                [routerLinkActiveOptions]="{ exact: true }"
+                ariaCurrentWhenActive="page"
                 (click)="menuNavigate.emit()"
                 class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm text-content-600 transition-all duration-200 hover:bg-surface-100 hover:text-content-900"
               >

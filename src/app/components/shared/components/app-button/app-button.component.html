@@ -2,6 +2,9 @@
   [type]="type"
   [disabled]="disabled"
   [attr.title]="title || null"
+  [attr.aria-label]="ariaLabel || label || title || null"
+  [attr.aria-expanded]="ariaExpanded"
+  [attr.aria-controls]="ariaControls || null"
   (click)="onClick($event)"
   [ngClass]="[
     'inline-flex items-center justify-center gap-2 font-semibold transition duration-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50',

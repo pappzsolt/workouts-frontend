@@ -5,6 +5,7 @@
   },
 
   "menu": {
+    "navigation": "Main navigation",
     "adminDashboard": "Admin Dashboard",
     "users": "User List",
     "coachDashboard": "Coach Dashboard",
@@ -16,7 +17,10 @@
 
   "header": {
     "user": "User",
-    "role": "Role"
+    "role": "Role",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu",
+    "copyright": "All rights reserved."
   },
 
   "adminDashboard": {
@@ -140,15 +144,7 @@
     "noResults": "No results found."
   },
 
-  "coachDashboard": {
-    "title": "Coach Dashboard",
-    "programs": "Programs",
-    "workouts": "Workouts",
-    "exercises": "Exercises",
-    "workoutExerciseManager": "Workout and Set Configuration",
-    "assignWorkoutExercises": "Assign Workout → Exercise",
-    "exerciseNotFound": "The exercise is not available in the current language."
-  },
+
 
   "assignWorkoutExercises": {
     "title": "Workout → Exercise Assignment",
@@ -496,13 +492,7 @@
     "select": "-- Select --"
   },
 
-  "coachWorkoutBoard": {
-    "noWorkouts": "No workouts are available.",
-    "loadError": "Error loading workouts.",
-    "loading": "Loading...",
-    "noName": "No name",
-    "id": "ID"
-  },
+
 
   "userDashboard": {
     "title": "User Dashboard",
@@ -629,7 +619,12 @@
     "noScheduledDate": "No scheduled date",
     "close": "Close",
     "exercises": "Exercises",
-    "noExercises": "No exercises for this workout."
+    "noExercises": "No exercises for this workout.",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "monthAgenda": "Workouts this month",
+    "noMonthWorkouts": "No workouts scheduled this month.",
+    "completed": "Completed"
   },
   "userWorkouts": {
     "program": "Program",
@@ -771,6 +766,7 @@
     "search": "Search workouts",
     "searchPlaceholder": "Workout name..."
   },
+
   "userProgramStatistics": {
     "title": "Program Statistics",
     "selectProgram": "Select program",
@@ -806,10 +802,7 @@
     "currentRepetitions": "Current repetitions",
     "repetitionsChange": "Repetitions change",
     "noWeightData": "No weight data",
-    "noRepetitionData": "No repetition data"
-  },
-  "userProgramStatistics": {
-    "title": "Program Statistics",
+    "noRepetitionData": "No repetition data",
     "subtitle": "Review completion across your programs and workouts.",
     "overview": "Program overview",
     "totalPrograms": "Total programs",
@@ -818,44 +811,10 @@
     "completedWorkouts": "Completed",
     "incompleteWorkouts": "Remaining",
     "inProgress": "In progress",
-    "selectProgram": "Select program",
-    "selectProgramOption": "-- Select program --",
     "loadingPrograms": "Loading programs...",
-    "loading": "Loading statistics...",
-    "loadError": "An error occurred while loading program statistics.",
     "noPrograms": "No assigned programs.",
-    "noData": "There is no statistical data available for this program yet.",
-    "program": "Program",
     "days": "days",
     "page": "Page",
-    "workout": "Workout",
-    "workoutDate": "Workout date",
-    "duration": "Duration",
-    "minutes": "minutes",
-    "intensity": "Intensity",
-    "exercise": "Exercise",
-    "muscleGroup": "Muscle group",
-    "equipment": "Equipment",
-    "sets": "Sets",
-    "set": "Set",
-    "repetitions": "Repetitions",
-    "weight": "Weight",
-    "target": "Target",
-    "actual": "Actual",
-    "noWeightData": "No weight data",
-    "noRepetitionData": "No repetition data",
-    "completed": "Completed",
-    "notCompleted": "Not completed",
-    "performedAt": "Performed at",
-    "feedback": "Feedback",
-    "notes": "Notes",
-    "progress": "Progress",
-    "startWeight": "Starting weight",
-    "currentWeight": "Current weight",
-    "weightChange": "Weight change",
-    "startRepetitions": "Starting repetitions",
-    "currentRepetitions": "Current repetitions",
-    "repetitionsChange": "Repetitions change",
     "noExercises": "There are no exercises in this workout."
   },
   "pagination": {

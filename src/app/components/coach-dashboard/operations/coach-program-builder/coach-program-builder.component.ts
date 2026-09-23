@@ -24,6 +24,7 @@ import { ProgramWorkout } from '../../../../models/program-workout.model';
 import { WorkoutCopyRequest } from '../../../../models/workout-copy.model';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { WorkoutCopyDialogComponent } from './workout-copy-dialog.component';
 
 @Component({
   selector: 'app-coach-program-builder',
@@ -34,6 +35,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
     UserSelectComponent,
     AppCardComponent,
     AppSelectComponent,
+    WorkoutCopyDialogComponent,
   ],
   templateUrl: './coach-program-builder.component.html',
   styleUrl: './coach-program-builder.component.css',

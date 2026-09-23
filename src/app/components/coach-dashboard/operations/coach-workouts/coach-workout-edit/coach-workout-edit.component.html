@@ -3,7 +3,7 @@
      ====================================================== -->
 
 <div
-  class="min-h-full bg-gradient-to-br from-surface-50 via-primary-50/40 to-primary-50/50"
+  class="min-h-full bg-transparent"
 >
   <div class="mx-auto w-full max-w-6xl px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
 
@@ -41,7 +41,7 @@
            ================================================== -->
 
       <div
-        class="border-b border-info-100 bg-gradient-to-r from-primary-600 to-primary-700 px-4 py-6 sm:px-6 sm:py-7"
+        class="border-b border-info-100 bg-gradient-to-r from-primary-700 to-primary-800 px-4 py-6 sm:px-6 sm:py-7"
       >
         <div class="flex items-center justify-center">
           <span
@@ -470,7 +470,7 @@
                   workoutAssignedToProgram
                 "
                 (click)="addExerciseToWorkout()"
-                class="inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-600 to-primary-700 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-info-500/20 transition duration-150 hover:from-primary-700 hover:to-primary-700 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-primary-500/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:from-surface-300 disabled:to-surface-300 disabled:shadow-none sm:w-auto"
+                class="inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-info-500/20 transition duration-150 hover:from-primary-700 hover:to-primary-700 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-primary-500/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:from-surface-300 disabled:to-surface-300 disabled:shadow-none sm:w-auto"
               >
                 <span *ngIf="!addingExercise">
                   ➕
@@ -631,7 +631,7 @@
           <button
             type="submit"
             [disabled]="!workoutForm.form.valid"
-            class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-info-500/20 transition duration-150 hover:from-primary-700 hover:to-primary-700 hover:shadow-lg hover:shadow-info-500/25 focus:outline-none focus:ring-4 focus:ring-primary-500/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:from-surface-300 disabled:to-surface-300 disabled:shadow-none sm:w-auto"
+            class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-info-500/20 transition duration-150 hover:from-primary-700 hover:to-primary-700 hover:shadow-lg hover:shadow-info-500/25 focus:outline-none focus:ring-4 focus:ring-primary-500/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:from-surface-300 disabled:to-surface-300 disabled:shadow-none sm:w-auto"
           >
             <span>💾</span>
             <span>{{ 'coachWorkoutEdit.save' | translate }}</span>

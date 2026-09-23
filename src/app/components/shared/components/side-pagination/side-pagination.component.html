@@ -9,7 +9,10 @@
        ==================================================== -->
 
   <div
-    class="relative mx-auto w-full max-w-sm"
+    class="relative mx-auto w-full"
+    [class.max-w-sm]="!fullWidth && !fullWidthMobile"
+    [class.max-w-none]="fullWidth || fullWidthMobile"
+    [ngClass]="{ 'sm:max-w-sm': fullWidthMobile && !fullWidth }"
   >
 
     <!-- ==================================================
@@ -27,24 +30,24 @@
     <button
       *ngIf="totalPages > 1"
       type="button"
-      aria-label="Előző oldal"
+      [attr.aria-label]="'common.previous' | translate"
       [disabled]="currentPage <= 1"
       (click)="onPreviousPage()"
       class="absolute -left-3 top-1/2 z-10
-             flex h-8 w-8 -translate-y-1/2
+             flex h-11 w-11 -translate-y-1/2
              items-center justify-center
              rounded-full
-             border border-primary-600
-             bg-primary-600
+             border border-primary-700
+             bg-primary-700
              text-white
              shadow-sm
              transition
-             hover:border-primary-700
-             hover:bg-primary-700
+             hover:border-primary-800
+             hover:bg-primary-800
              disabled:cursor-not-allowed
              disabled:opacity-30
              sm:-left-5
-             sm:h-10 sm:w-10"
+             sm:h-11 sm:w-11"
     >
       <svg
         lucideChevronLeft
@@ -60,24 +63,24 @@
     <button
       *ngIf="totalPages > 1"
       type="button"
-      aria-label="Következő oldal"
+      [attr.aria-label]="'common.next' | translate"
       [disabled]="currentPage >= totalPages"
       (click)="onNextPage()"
       class="absolute -right-3 top-1/2 z-10
-             flex h-8 w-8 -translate-y-1/2
+             flex h-11 w-11 -translate-y-1/2
              items-center justify-center
              rounded-full
-             border border-primary-600
-             bg-primary-600
+             border border-primary-700
+             bg-primary-700
              text-white
              shadow-sm
              transition
-             hover:border-primary-700
-             hover:bg-primary-700
+             hover:border-primary-800
+             hover:bg-primary-800
              disabled:cursor-not-allowed
              disabled:opacity-30
              sm:-right-5
-             sm:h-10 sm:w-10"
+             sm:h-11 sm:w-11"
     >
       <svg
         lucideChevronRight

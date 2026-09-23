@@ -256,6 +256,12 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
     });
   }
 
+  hasWorkoutsInCurrentMonth(): boolean {
+    return this.calendarDays.some(
+      (day) => day.currentMonth && this.getWorkoutsForDay(day.date).length > 0,
+    );
+  }
+
   // =========================================================
   // WORKOUT KIVÁLASZTÁSA
   // =========================================================

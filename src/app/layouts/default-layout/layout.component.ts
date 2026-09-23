@@ -48,10 +48,6 @@ export class LayoutComponent implements OnInit {
     this.username = this.authService.getUserName();
     this.role = this.authService.getUserRole();
 
-    // Dátum frissítése másodpercenként
-    setInterval(() => {
-      this.currentDate = new Date();
-    }, 1000);
   }
 
   onLogout(): void {

@@ -5,6 +5,7 @@
   },
 
   "menu": {
+    "navigation": "Fő navigáció",
     "adminDashboard": "Admin Dashboard",
     "users": "Felhasználók listája",
     "coachDashboard": "Coach Dashboard",
@@ -16,7 +17,10 @@
 
   "header": {
     "user": "Felhasználó",
-    "role": "Jogosultság"
+    "role": "Jogosultság",
+    "openMenu": "Menü megnyitása",
+    "closeMenu": "Menü bezárása",
+    "copyright": "Minden jog fenntartva."
   },
 
   "adminDashboard": {
@@ -140,13 +144,7 @@
     "noResults": "Nincs találat a keresésre."
   },
 
-  "coachDashboard": {
-    "title": "Coach Dashboard",
-    "programs": "Programok",
-    "workouts": "Edzések",
-    "exercises": "Gyakorlatok",
-    "workoutExerciseManager": "Edzés és sorozatok beállítása"
-  },
+
 
   "assignWorkoutExercises": {
     "title": "Workout → Exercise hozzárendelés",
@@ -494,13 +492,7 @@
     "select": "-- Válassz --"
   },
 
-  "coachWorkoutBoard": {
-    "noWorkouts": "Nincsenek elérhető workoutok.",
-    "loadError": "Hiba a workoutok lekérése során.",
-    "loading": "Betöltés...",
-    "noName": "Nincs név",
-    "id": "ID"
-  },
+
 
   "userDashboard": {
     "title": "Felhasználói Dashboard",
@@ -626,7 +618,12 @@
     "noScheduledDate": "Nincs tervezett dátum",
     "close": "Bezárás",
     "exercises": "Gyakorlatok",
-    "noExercises": "Ehhez a workouthoz nincs gyakorlat."
+    "noExercises": "Ehhez a workouthoz nincs gyakorlat.",
+    "previousMonth": "Előző hónap",
+    "nextMonth": "Következő hónap",
+    "monthAgenda": "E havi edzések",
+    "noMonthWorkouts": "Ebben a hónapban nincs betervezett edzés.",
+    "completed": "Teljesítve"
   },
   "userWorkouts": {
     "program": "Program",
@@ -768,13 +765,14 @@
     "search": "Edzések keresése",
     "searchPlaceholder": "Edzés neve..."
   },
+
   "userProgramStatistics": {
     "title": "Program statisztika",
     "selectProgram": "Válassz programot",
     "selectProgramOption": "-- Válassz programot --",
     "loading": "Statisztika betöltése...",
     "loadError": "Hiba történt a program statisztikájának betöltésekor.",
-    "noData": "Ehhez a programhoz még nincs elérhető statisztikai adat.",
+    "noData": "Ehhez a programhoz még nincs statisztikai adat.",
     "program": "Program",
     "workout": "Workout",
     "workoutDate": "Workout dátuma",
@@ -803,10 +801,7 @@
     "currentRepetitions": "Jelenlegi ismétlésszám",
     "repetitionsChange": "Ismétlésszám változás",
     "noWeightData": "Nincs súlyadat",
-    "noRepetitionData": "Nincs ismétlésszám adat"
-  },
-  "userProgramStatistics": {
-    "title": "Program statisztika",
+    "noRepetitionData": "Nincs ismétlésszám adat",
     "subtitle": "Tekintsd át programjaid és workoutjaid teljesítését.",
     "overview": "Program áttekintés",
     "totalPrograms": "Programok összesen",
@@ -815,44 +810,10 @@
     "completedWorkouts": "Teljesített",
     "incompleteWorkouts": "Hátralévő",
     "inProgress": "Folyamatban",
-    "selectProgram": "Válassz programot",
-    "selectProgramOption": "-- Válassz programot --",
     "loadingPrograms": "Programok betöltése...",
-    "loading": "Statisztika betöltése...",
-    "loadError": "Hiba történt a program statisztikájának betöltésekor.",
     "noPrograms": "Nincsenek hozzárendelt programok.",
-    "noData": "Ehhez a programhoz még nincs statisztikai adat.",
-    "program": "Program",
     "days": "nap",
     "page": "Oldal",
-    "workout": "Workout",
-    "workoutDate": "Workout dátuma",
-    "duration": "Időtartam",
-    "minutes": "perc",
-    "intensity": "Intenzitás",
-    "exercise": "Exercise",
-    "muscleGroup": "Izomcsoport",
-    "equipment": "Eszköz",
-    "sets": "Sorozatok",
-    "set": "Sorozat",
-    "repetitions": "Ismétlés",
-    "weight": "Súly",
-    "target": "Cél",
-    "actual": "Tényleges",
-    "noWeightData": "Nincs súlyadat",
-    "noRepetitionData": "Nincs ismétlésszám adat",
-    "completed": "Teljesítve",
-    "notCompleted": "Nincs teljesítve",
-    "performedAt": "Elvégzés dátuma",
-    "feedback": "Visszajelzés",
-    "notes": "Megjegyzések",
-    "progress": "Fejlődés",
-    "startWeight": "Kezdő súly",
-    "currentWeight": "Jelenlegi súly",
-    "weightChange": "Súly változás",
-    "startRepetitions": "Kezdő ismétlésszám",
-    "currentRepetitions": "Jelenlegi ismétlésszám",
-    "repetitionsChange": "Ismétlésszám változás",
     "noExercises": "Ehhez a workouthoz nincs exercise."
   },
   "pagination": {

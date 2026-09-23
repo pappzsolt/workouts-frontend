@@ -44,6 +44,9 @@ export class AppButtonComponent {
 
   // Tooltip
   @Input() title = '';
+  @Input() ariaLabel = '';
+  @Input() ariaExpanded: boolean | null = null;
+  @Input() ariaControls = '';
 
   // Állapot
   @Input() disabled = false;
@@ -70,13 +73,13 @@ export class AppButtonComponent {
    */
   getVariantClasses(): string {
     const variants: Record<AppButtonVariant, string> = {
-      primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-300',
+      primary: 'bg-primary-700 text-white hover:bg-primary-800 focus:ring-primary-300',
 
-      save: 'bg-save-600 text-white hover:bg-save-700 focus:ring-save-300',
+      save: 'bg-save-700 text-white hover:bg-save-800 focus:ring-save-300',
 
       edit: 'bg-edit-600 text-white hover:bg-edit-700 focus:ring-edit-300',
 
-      search: 'bg-search-600 text-white hover:bg-search-700 focus:ring-search-200',
+      search: 'bg-search-700 text-white hover:bg-search-800 focus:ring-search-200',
 
       sort: 'bg-sort-600 text-white hover:bg-sort-700 focus:ring-sort-300',
 
@@ -97,10 +100,10 @@ export class AppButtonComponent {
    */
   getFloatingClasses(): string {
     const variants: Record<AppButtonVariant, string> = {
-      primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-300',
-      save: 'bg-save-600 text-white hover:bg-save-700 focus:ring-save-300',
+      primary: 'bg-primary-700 text-white hover:bg-primary-800 focus:ring-primary-300',
+      save: 'bg-save-700 text-white hover:bg-save-800 focus:ring-save-300',
       edit: 'bg-edit-600 text-white hover:bg-edit-700 focus:ring-edit-300',
-      search: 'bg-search-600 text-white hover:bg-search-700 focus:ring-search-200',
+      search: 'bg-search-700 text-white hover:bg-search-800 focus:ring-search-200',
       sort: 'bg-sort-600 text-white hover:bg-sort-700 focus:ring-sort-300',
       add: 'bg-add-600 text-content-900 hover:bg-add-700 hover:text-white focus:ring-add-200',
       delete: 'bg-delete-600 text-white hover:bg-delete-700 focus:ring-delete-300',
