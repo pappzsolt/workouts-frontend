@@ -59,11 +59,30 @@ export class ExerciseService {
   // EXERCISE MÓDOSÍTÁSA
   // ==========================================================
 
-  updateExercise(exercise: Exercise): Observable<Exercise> {
+  updateExercise(
+    exercise: Exercise,
+    language: string = 'hu',
+  ): Observable<ApiResponse<Exercise>> {
     const payload = {
       id: exercise.id,
+
+      // ==========================================================
+      // FORDÍTOTT MEZŐK
+      // Ezeket az /update endpoint a language alapján
+      // az exercise_translations táblában frissíti.
+      // ==========================================================
       name: exercise.name,
       description: exercise.description,
+      bodyPart: exercise.bodyPart,
+      synonyms: exercise.synonyms,
+      instructions: exercise.instructions,
+      tips: exercise.tips,
+      primaryMuscles: exercise.primaryMuscles,
+      secondaryMuscles: exercise.secondaryMuscles,
+
+      // ==========================================================
+      // KÖZÖS EXERCISE MEZŐK
+      // ==========================================================
       imageUrl: exercise.imageUrl,
       videoUrl: exercise.videoUrl,
       muscleGroup: exercise.muscleGroup,
@@ -72,9 +91,21 @@ export class ExerciseService {
       category: exercise.category,
       caloriesBurnedPerMinute: exercise.caloriesBurnedPerMinute,
       durationSeconds: exercise.durationSeconds,
+      done: exercise.done,
+      forceType: exercise.forceType,
+      mechanic: exercise.mechanic,
+      isUnilateral: exercise.isUnilateral,
+      isBodyweight: exercise.isBodyweight,
+      variationGroup: exercise.variationGroup,
     };
 
-    return this.http.put<Exercise>(`${API_ENDPOINTS.exercises}/update`, payload);
+    const params = new HttpParams().set('language', language);
+
+    return this.http.put<ApiResponse<Exercise>>(
+      `${API_ENDPOINTS.exercises}/update`,
+      payload,
+      { params },
+    );
   }
 
   // ==========================================================

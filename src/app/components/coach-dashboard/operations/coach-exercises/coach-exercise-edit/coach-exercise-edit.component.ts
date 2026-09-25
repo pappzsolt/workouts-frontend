@@ -68,6 +68,7 @@ export class CoachExerciseEditComponent implements OnInit {
   loading = false;
   saving = false;
   exerciseFound = false;
+  currentLanguage = 'hu';
 
   // ==========================================================
   // ÜZENET
@@ -107,6 +108,7 @@ export class CoachExerciseEditComponent implements OnInit {
     this.languageService.language$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((language) => {
+        this.currentLanguage = language;
         this.loadExercise(id, language);
       });
   }
@@ -172,16 +174,28 @@ export class CoachExerciseEditComponent implements OnInit {
     this.saving = true;
     this.clearMessage();
 
-    this.exerciseService.updateExercise(this.exercise).subscribe({
-      next: (updated) => {
-        console.log('Exercise frissítve:', updated);
+    this.exerciseService
+      .updateExercise(this.exercise, this.currentLanguage)
+      .subscribe({
+        next: (response) => {
+          console.log('Exercise frissítve:', response.data);
 
-        this.showSuccess('coachExerciseEdit.saveSuccess');
+          // A backend a módosított ExerciseDto-t az ApiResponse.data
+          // mezőben adja vissza. Ezt visszatesszük a form modelljébe,
+          // hogy a szerver által normalizált értékek is megjelenjenek.
+          if (response.data) {
+            this.exercise = {
+              ...this.exercise,
+              ...response.data,
+            };
+          }
 
-        this.saving = false;
-      },
+          this.showSuccess('coachExerciseEdit.saveSuccess');
 
-      error: (err) => {
+          this.saving = false;
+        },
+
+        error: (err) => {
         console.error('Hiba az exercise frissítésénél:', err);
 
         this.showError('coachExerciseEdit.saveError');
