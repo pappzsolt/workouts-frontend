@@ -15,14 +15,19 @@ export class UserExerciseService {
   private readonly baseUrl = API_ENDPOINTS.exercises;
 
   /**
-   * Lekéri a belépett user adott programjához tartozó workout
-   * exercise-eit.
+   * Lekéri a konkrét USER_WORKOUT execution exercise-eit.
    *
-   * GET /api/exercises/my-workout/{programId}/{workoutId}
+   * GET /api/exercises/my-workout/user-workout/{userWorkoutId}
    */
-  getWorkoutExercises(programId: number, workoutId: number): Observable<ApiResponse<WorkoutDto>> {
+  getWorkoutExercises(
+    userWorkoutId: number,
+    language: string,
+  ): Observable<ApiResponse<WorkoutDto>> {
     return this.http.get<ApiResponse<WorkoutDto>>(
-      `${this.baseUrl}/my-workout/${programId}/${workoutId}`,
+      `${this.baseUrl}/my-workout/user-workout/${userWorkoutId}`,
+      {
+        params: { language },
+      },
     );
   }
 }

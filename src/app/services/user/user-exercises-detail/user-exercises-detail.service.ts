@@ -29,11 +29,14 @@ export class UserExerciseDetailService {
    * }
    */
   getWorkoutExercises(
-    programId: number,
-    workoutId: number,
+    userWorkoutId: number,
+    language: string,
   ): Observable<ApiResponse<UserWorkoutDetailDto>> {
     return this.http.get<ApiResponse<UserWorkoutDetailDto>>(
-      `${API_ENDPOINTS.exercises}/my-workout/${programId}/${workoutId}`,
+      `${API_ENDPOINTS.exercises}/my-workout/user-workout/${userWorkoutId}`,
+      {
+        params: { language },
+      },
     );
   }
 
@@ -47,6 +50,7 @@ export class UserExerciseDetailService {
    * - notes
    */
   updateSetCompleted(
+    userWorkoutId: number,
     programId: number,
     workoutId: number,
     exerciseId: number,
@@ -57,6 +61,7 @@ export class UserExerciseDetailService {
     notes: string | null,
   ): Observable<void> {
     return this.http.patch<void>(`${API_ENDPOINTS.exercises}/set-completed`, {
+      userWorkoutId,
       programId,
       workoutId,
       exerciseId,

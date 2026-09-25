@@ -30,6 +30,8 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
   workoutId!: number;
   programId!: number;
+  userWorkoutId!: number;
+  programWorkoutId?: number;
   private currentExerciseId!: number;
   currentSetIndex = 0;
   imageLoaded = false;
@@ -47,6 +49,13 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
     const navState = history.state;
     this.programId = Number(navState['programId']);
+    this.userWorkoutId = Number(navState['userWorkoutId']);
+    this.programWorkoutId = Number(navState['programWorkoutId']);
+
+    if (!this.userWorkoutId || Number.isNaN(this.userWorkoutId)) {
+      console.error('[UserExerciseDetail] Érvénytelen userWorkoutId:', navState['userWorkoutId']);
+      return;
+    }
 
     this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       const exerciseId = Number(params.get('exerciseId'));
@@ -106,7 +115,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     this.message = '';
     this.messageType = '';
 
-    this.exercisesService.getWorkoutExercises(this.programId, this.workoutId).subscribe({
+    this.exercisesService.getWorkoutExercises(this.userWorkoutId, this.languageService.getCurrentLanguage()).subscribe({
       next: (response) => {
         const workout = response.data;
 
@@ -169,6 +178,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
     this.exercisesService
       .updateSetCompleted(
+        this.userWorkoutId,
         this.programId,
         this.workoutId,
         exerciseId,
@@ -265,6 +275,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
     this.exercisesService
       .updateSetCompleted(
+        this.userWorkoutId,
         this.programId,
         this.workoutId,
         exerciseId,

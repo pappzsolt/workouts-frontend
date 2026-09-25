@@ -22,6 +22,8 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
 
   workoutId!: number;
   programId!: number;
+  userWorkoutId!: number;
+  programWorkoutId?: number;
   workoutName!: string;
 
   // ============================================================
@@ -84,6 +86,8 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
     this.workoutName = navState?.workoutName || 'userExercises.unknownWorkout';
 
     this.programId = Number(navState?.programId);
+    this.userWorkoutId = Number(navState?.userWorkoutId);
+    this.programWorkoutId = Number(navState?.programWorkoutId);
 
     // ID VALIDÁLÁS
 
@@ -94,6 +98,11 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
 
     if (Number.isNaN(this.programId) || this.programId <= 0) {
       console.error('Érvénytelen program ID:', this.programId);
+      return;
+    }
+
+    if (Number.isNaN(this.userWorkoutId) || this.userWorkoutId <= 0) {
+      console.error('Érvénytelen userWorkout ID:', this.userWorkoutId);
       return;
     }
 
@@ -110,7 +119,7 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
 
   private loadExercises(): void {
     this.exercisesService
-      .getWorkoutExercises(this.programId, this.workoutId)
+       .getWorkoutExercises(this.userWorkoutId, this.languageService.getCurrentLanguage())
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
@@ -173,6 +182,8 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
       state: {
         workoutName: this.workoutName,
         programId: this.programId,
+        programWorkoutId: this.programWorkoutId,
+        userWorkoutId: this.userWorkoutId,
       },
     });
   }

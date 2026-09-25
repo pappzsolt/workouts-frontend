@@ -8,6 +8,8 @@ export interface Workout {
   durationMinutes?: number;
   difficultyLevel?: string;
   programId?: number;
+  programWorkoutId?: number;
+  userWorkoutId?: number;
 
   workoutDescription?: string;
   workoutDate?: string;

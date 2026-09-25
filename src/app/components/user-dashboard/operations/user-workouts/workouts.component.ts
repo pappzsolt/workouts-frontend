@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Observable, Subject, map, takeUntil } from 'rxjs';
+import { Observable, Subject, forkJoin, map, takeUntil } from 'rxjs';
 
 import { TranslateService } from '@ngx-translate/core';
 import { SidePaginationComponent } from '../../../../components/shared/components/side-pagination/side-pagination.component';
@@ -144,28 +144,44 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
   // ============================================================
 
   private loadWorkouts(): void {
-    this.workouts$ = this.workoutsService.getWorkoutsByProgram(this.programId).pipe(
-      map((workouts: Workout[]) => {
-        /*
-         * A workout completed állapotát
-         * kizárólag a backend adja.
-         */
-        const mappedWorkouts = workouts.map((workout: Workout): Workout => ({
-          ...workout,
-          completed: workout.completed,
-        }));
+    this.workouts$ = forkJoin({
+      workouts: this.workoutsService.getWorkoutsByProgram(this.programId),
+      scheduled: this.workoutsService.getScheduledWorkouts(),
+    }).pipe(
+      map(({ workouts, scheduled }) => {
+        const programScheduled = scheduled.filter(
+          (item) => item.programId === this.programId,
+        );
 
-        // ----------------------------------------------------
-        // EDZÉSEK SZÉTVÁLASZTÁSA
-        // ----------------------------------------------------
+        const mappedWorkouts = workouts.map((workout: Workout): Workout => {
+          const candidates = programScheduled.filter(
+            (item) => item.workoutId === workout.workoutId,
+          );
 
-        this.pendingWorkouts = mappedWorkouts.filter((workout: Workout) => !workout.completed);
+          /*
+           * Az új backend modellben a program_workout_id az occurrence
+           * valódi azonosítója. Ha a /workouts/program válasz már ezt
+           * tartalmazza, azt használjuk; egyébként csak akkor használunk
+           * workoutId alapú fallbacket, ha egyetlen occurrence létezik.
+           */
+          const exact = workout.programWorkoutId
+            ? candidates.find(
+                (item) => item.programWorkoutId === workout.programWorkoutId,
+              )
+            : candidates.length === 1
+              ? candidates[0]
+              : undefined;
 
-        this.completedWorkouts = mappedWorkouts.filter((workout: Workout) => workout.completed);
+          return {
+            ...workout,
+            programWorkoutId: workout.programWorkoutId ?? exact?.programWorkoutId,
+            userWorkoutId: workout.userWorkoutId ?? exact?.userWorkoutId,
+            completed: workout.completed,
+          };
+        });
 
-        // ----------------------------------------------------
-        // LAPOZÁS VISSZAÁLLÍTÁSA ADATBETÖLTÉSKOR
-        // ----------------------------------------------------
+        this.pendingWorkouts = mappedWorkouts.filter((workout) => !workout.completed);
+        this.completedWorkouts = mappedWorkouts.filter((workout) => workout.completed);
 
         this.pendingCurrentPage = 1;
         this.completedCurrentPage = 1;
@@ -179,11 +195,25 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
   // NAVIGÁCIÓ EXERCISE-OKHOZ
   // ============================================================
 
-  goToExercises(workoutId: number, workoutName: string): void {
-    this.router.navigate(['/user/workouts', workoutId, 'exercises'], {
+  goToExercises(workout: Workout): void {
+    if (!workout.userWorkoutId) {
+      console.error(
+        '[UserWorkouts] Nem található a konkrét userWorkoutId.',
+        {
+          programId: this.programId,
+          workoutId: workout.workoutId,
+          programWorkoutId: workout.programWorkoutId,
+        },
+      );
+      return;
+    }
+
+    this.router.navigate(['/user/workouts', workout.workoutId, 'exercises'], {
       state: {
-        workoutName,
+        workoutName: workout.workoutName,
         programId: this.programId,
+        programWorkoutId: workout.programWorkoutId,
+        userWorkoutId: workout.userWorkoutId,
       },
     });
   }
