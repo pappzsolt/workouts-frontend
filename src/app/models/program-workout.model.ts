@@ -1,4 +1,5 @@
 export interface ProgramWorkout {
+  /** A program_workout occurrence elsődleges azonosítója. */
   id?: number;
   programId: number;
   workoutId: number;

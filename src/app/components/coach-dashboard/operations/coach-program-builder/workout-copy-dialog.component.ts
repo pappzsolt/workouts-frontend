@@ -14,7 +14,7 @@ export class WorkoutCopyDialogComponent {
   @Output() workoutNameChange = new EventEmitter<string>();
   @Input() workoutDate = '';
   @Output() workoutDateChange = new EventEmitter<string>();
-  @Input() dayIndex = 0;
+  @Input() dayIndex = 1;
   @Output() dayIndexChange = new EventEmitter<number>();
   @Input() inProgress = false;
 

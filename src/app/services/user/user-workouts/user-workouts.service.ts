@@ -46,7 +46,27 @@ export class UserWorkoutsService {
   getWorkoutsByProgram(programId: number): Observable<Workout[]> {
     return this.http
       .get<ApiResponse<Workout[]>>(`${this.apiUrl}/program/${programId}`)
-      .pipe(map((response) => response.data));
+      .pipe(
+        map((response) =>
+          (response.data ?? []).map((item: any) => ({
+            ...item,
+            workoutId: Number(item.workoutId ?? item.workout_id ?? item.id),
+            programWorkoutId:
+              item.programWorkoutId != null
+                ? Number(item.programWorkoutId)
+                : item.program_workout_id != null
+                  ? Number(item.program_workout_id)
+                  : undefined,
+            userWorkoutId:
+              item.userWorkoutId != null
+                ? Number(item.userWorkoutId)
+                : item.user_workout_id != null
+                  ? Number(item.user_workout_id)
+                  : undefined,
+            completed: item.completed ?? null,
+          })),
+        ),
+      );
   }
 
   /**
@@ -63,15 +83,39 @@ export class UserWorkoutsService {
       )
       .pipe(
         map((response) =>
-          (response.data ?? []).map((item: any) => ({
-            userWorkoutId: Number(item.user_workout_id ?? item.userWorkoutId),
-            programWorkoutId: Number(item.program_workout_id ?? item.programWorkoutId),
-            workoutId: Number(item.workout_id ?? item.workoutId),
-            programId: Number(item.program_id ?? item.programId),
-            scheduledAt: item.scheduled_at ?? item.scheduledAt ?? null,
-            completed: item.completed ?? null,
-            workoutName: item.workout_name ?? item.workoutName ?? null,
-          })),
+          (response.data ?? []).map((item: any) => {
+            const programWorkoutId = Number(
+              item.programWorkoutId ?? item.program_workout_id,
+            );
+
+            if (!Number.isFinite(programWorkoutId) || programWorkoutId <= 0) {
+              throw new Error(
+                'A scheduled workout válaszban hiányzik az érvényes programWorkoutId.',
+              );
+            }
+
+            return {
+              userWorkoutId: Number(
+                item.user_workout_id ?? item.userWorkoutId,
+              ),
+              programWorkoutId,
+              workoutId:
+                item.workoutId != null
+                  ? Number(item.workoutId)
+                  : item.workout_id != null
+                    ? Number(item.workout_id)
+                    : 0,
+              programId:
+                item.programId != null
+                  ? Number(item.programId)
+                  : item.program_id != null
+                    ? Number(item.program_id)
+                    : 0,
+              scheduledAt: item.scheduled_at ?? item.scheduledAt ?? null,
+              completed: item.completed ?? null,
+              workoutName: item.workout_name ?? item.workoutName ?? null,
+            };
+          }),
         ),
       );
   }

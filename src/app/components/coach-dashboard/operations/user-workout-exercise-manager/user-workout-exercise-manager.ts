@@ -292,17 +292,40 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
 
       const day = groupedDays.get(dateKey);
 
-      let workout = day.workouts.find(
-        (currentWorkout: any) => currentWorkout.workoutId === row.workout_id,
-      );
+      const rowUserWorkoutId = Number(row.user_workout_id ?? row.userWorkoutId);
+      const rowProgramWorkoutId = Number(row.program_workout_id ?? row.programWorkoutId);
+      const rowWorkoutId = Number(row.workout_id ?? row.workoutId);
+
+      /*
+       * A workoutId önmagában NEM azonosít egy occurrence-t.
+       * Ugyanaz a workout több program_workout / user_workout occurrence-ben
+       * is szerepelhet, ezért a csoportosítás elsődleges kulcsa a konkrét
+       * userWorkoutId, másodsorban a programWorkoutId.
+       */
+      let workout = day.workouts.find((currentWorkout: any) => {
+        if (rowUserWorkoutId > 0 && currentWorkout.userWorkoutId === rowUserWorkoutId) {
+          return true;
+        }
+
+        if (
+          rowUserWorkoutId <= 0 &&
+          rowProgramWorkoutId > 0 &&
+          currentWorkout.programWorkoutId === rowProgramWorkoutId
+        ) {
+          return true;
+        }
+
+        return false;
+      });
 
       if (!workout) {
         workout = {
-          userWorkoutId: row.user_workout_id,
-          workoutId: row.workout_id,
-          workoutName: row.workout_name,
-          scheduledAt: row.scheduled_date,
-          workoutCompleted: row.workout_completed === true,
+          userWorkoutId: rowUserWorkoutId > 0 ? rowUserWorkoutId : undefined,
+          programWorkoutId: rowProgramWorkoutId > 0 ? rowProgramWorkoutId : undefined,
+          workoutId: rowWorkoutId,
+          workoutName: row.workout_name ?? row.workoutName,
+          scheduledAt: row.scheduled_date ?? row.scheduledAt ?? null,
+          workoutCompleted: (row.workout_completed ?? row.workoutCompleted) === true,
           exercises: [],
         };
 
@@ -389,7 +412,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
   }
 
   trackByWorkout(index: number, workout: any): any {
-    return workout.workoutId ?? index;
+    return workout.userWorkoutId ?? workout.programWorkoutId ?? workout.workoutId ?? index;
   }
 
   trackByExercise(index: number, exercise: any): any {

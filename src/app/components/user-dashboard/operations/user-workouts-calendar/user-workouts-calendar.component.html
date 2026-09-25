@@ -152,7 +152,7 @@
             </span>
 
             <span class="min-w-0 truncate">
-              {{ workout.workout_name }}
+              {{ workout.workoutName }}
             </span>
           </button>
         </div>
@@ -189,7 +189,7 @@
               [class.text-primary-700]="!workout.completed"
             >
               <span aria-hidden="true"><app-icon name="dumbbell" sizeClass="h-5 w-5" /></span>
-              <span class="min-w-0 flex-1 break-words">{{ workout.workout_name }}</span>
+              <span class="min-w-0 flex-1 break-words">{{ workout.workoutName }}</span>
               <span class="sr-only" *ngIf="workout.completed">{{ 'userWorkoutsCalendar.completed' | translate }}</span>
             </button>
           </div>
@@ -220,18 +220,18 @@
 
         <div class="relative min-w-0">
           <div class="break-words text-base font-bold sm:text-xl">
-            <app-icon name="dumbbell" sizeClass="h-5 w-5" /> {{ selectedWorkout.workout_name }}
+            <app-icon name="dumbbell" sizeClass="h-5 w-5" /> {{ selectedWorkout.workoutName }}
           </div>
 
           <div
-            *ngIf="selectedWorkout.scheduled_at"
+            *ngIf="selectedWorkout.scheduledAt"
             class="mt-2 break-words text-sm text-warning-100"
           >
-            <app-icon name="calendar-days" sizeClass="h-5 w-5" /> {{ selectedWorkout.scheduled_at }}
+            <app-icon name="calendar-days" sizeClass="h-5 w-5" /> {{ selectedWorkout.scheduledAt }}
           </div>
 
           <div
-            *ngIf="!selectedWorkout.scheduled_at"
+            *ngIf="!selectedWorkout.scheduledAt"
             class="mt-2 text-sm text-warning-100"
           >
             <app-icon name="calendar-days" sizeClass="h-5 w-5" />

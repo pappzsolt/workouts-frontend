@@ -77,7 +77,7 @@
       >{{ 'coachProgramBuilder.cancel' | translate }}</button>
       <button
         type="button"
-        [disabled]="inProgress || !workoutName.trim() || !workoutDate || dayIndex < 0"
+        [disabled]="inProgress || !workoutName.trim() || !workoutDate || dayIndex < 1"
         (click)="confirm.emit()"
         class="min-h-11 w-full rounded-lg bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:from-primary-800 hover:to-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
       >

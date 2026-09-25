@@ -20,12 +20,9 @@ export class AssignProgramService {
     return this.http.get<ApiResponse<UserProgramDto[]>>(API_ENDPOINTS.assignedPrograms);
   }
 
-  /**
-   * Lekéri, hogy az adott program melyik userhez van rendelve.
-   */
-  getAssignedUserId(programId: number): Observable<ApiResponse<number | null>> {
-    return this.http.get<ApiResponse<number | null>>(
-      `${API_ENDPOINTS.programs}/${programId}/assigned-user`,
+  getAssignedUserIds(programId: number): Observable<ApiResponse<number[]>> {
+    return this.http.get<ApiResponse<number[]>>(
+      `${API_ENDPOINTS.assignedProgramUsers}/${programId}/assigned-users`,
     );
   }
 

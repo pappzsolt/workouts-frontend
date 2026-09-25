@@ -44,6 +44,7 @@ export const API_ENDPOINTS = {
   createProgram: `${environment.apiUrl}/user-programs/create`,
 
   assignProgram: `${environment.apiUrl}/programs/assign`,
+  assignedProgramUsers: `${environment.apiUrl}/programs`,
 
   // ============================================================
   // EXERCISES

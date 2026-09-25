@@ -242,11 +242,11 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
 
   getWorkoutsForDay(date: Date): any[] {
     return this.scheduledWorkouts.filter((workout) => {
-      if (!workout.scheduled_at) {
+      if (!workout.scheduledAt) {
         return false;
       }
 
-      const scheduledDate = this.parseDate(workout.scheduled_at);
+      const scheduledDate = this.parseDate(workout.scheduledAt);
 
       return (
         scheduledDate.getFullYear() === date.getFullYear() &&
@@ -281,13 +281,13 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   // =========================================================
 
   private loadSelectedWorkoutExercises(): void {
-    if (!this.selectedWorkout?.user_workout_id) {
+    if (!this.selectedWorkout?.userWorkoutId) {
       this.selectedExercises = [];
       return;
     }
 
     this.workoutService
-      .getExercisesForUserWorkout(this.selectedWorkout.user_workout_id)
+      .getExercisesForUserWorkout(this.selectedWorkout.userWorkoutId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (exercises) => {

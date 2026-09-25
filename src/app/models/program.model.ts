@@ -58,6 +58,14 @@ export interface ProgramDto {
   durationDays: number;
   difficultyLevel: string;
   workouts?: any[];
+
+  /**
+   * Opcionális kompatibilitási mezők.
+   * A coach program builder a hozzárendelést a
+   * /programs/{id}/assigned-users endpointból tölti.
+   */
+  assignedUserId?: number | null;
+  userId?: number | null;
 }
 
 /**

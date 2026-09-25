@@ -16,11 +16,8 @@ import { LanguageService } from '../../../../services/shared/language.service';
 import { UserSelectComponent } from '../../../shared/user/user-select.component';
 import { AppSelectComponent } from '../../../../components/shared/components/app-select/app-select.component';
 import { Exercise, WorkoutDto, WorkoutExercise } from '../../../../models/exercise.model';
-
-import { ProgramCreationRequest } from '../../../../models/program.model';
-
+import { ProgramCreationRequest, ProgramDto } from '../../../../models/program.model';
 import { ProgramWorkout } from '../../../../models/program-workout.model';
-
 import { WorkoutCopyRequest } from '../../../../models/workout-copy.model';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
@@ -126,7 +123,7 @@ export class CoachProgramBuilderComponent implements OnInit {
 
   copyWorkoutDate = '';
 
-  copyWorkoutDayIndex = 0;
+  copyWorkoutDayIndex = 1;
 
   copyInProgress = false;
 
@@ -270,21 +267,16 @@ export class CoachProgramBuilderComponent implements OnInit {
           this.difficultyLevel = program.difficultyLevel ?? '';
 
           // ==================================================
-          // PROGRAMHOZ RENDELT USER BETÖLTÉSE
+          // PROGRAMHOZ RENDELT USER
           // ==================================================
-
-          this.assignProgramService.getAssignedUserId(this.programId!).subscribe({
-            next: (userResponse) => {
-              this.selectedUserId = userResponse.data ?? undefined;
-            },
-
-            error: () => {
-              this.selectedUserId = undefined;
-
-              this.message = 'coachProgramBuilder.loadAssignedUserError';
-              this.messageType = 'error';
-            },
-          });
+          //
+          // A backend a hozzárendelt user(eke)t külön endpointon adja:
+          // GET /api/programs/{programId}/assigned-users
+          //
+          // A builder UI jelenleg egy felhasználót tud megjeleníteni,
+          // ezért meglévő program szerkesztésekor az első hozzárendelt
+          // usert állítjuk be a select értékének.
+          this.loadAssignedUser();
         } else {
           this.message = 'coachProgramBuilder.loadProgramError';
           this.messageType = 'error';
@@ -297,6 +289,31 @@ export class CoachProgramBuilderComponent implements OnInit {
       },
     });
   }
+  private loadAssignedUser(): void {
+    if (this.programId === null) {
+      this.selectedUserId = undefined;
+      return;
+    }
+
+    this.assignProgramService.getAssignedUserIds(this.programId).subscribe({
+      next: (response) => {
+        const assignedUserIds = response?.data ?? [];
+
+        this.selectedUserId =
+          assignedUserIds.length > 0
+            ? Number(assignedUserIds[0])
+            : undefined;
+      },
+      error: (err) => {
+        console.error(
+          'Hiba a programhoz rendelt felhasználó lekérésekor:',
+          err,
+        );
+        this.selectedUserId = undefined;
+      },
+    });
+  }
+
   // ==========================================================
   // ÚJ WORKOUT LÉTREHOZÁSA
   // ==========================================================
@@ -764,7 +781,7 @@ export class CoachProgramBuilderComponent implements OnInit {
 
     const workout = this.selectedWorkout;
 
-    const dayIndex = this.selectedWorkouts.length;
+    const dayIndex = this.selectedWorkouts.length + 1;
 
     this.programWorkoutService.addWorkoutToProgram(this.programId, workout.id, dayIndex).subscribe({
       next: (response: ApiResponse<ProgramWorkout>) => {
@@ -848,10 +865,42 @@ export class CoachProgramBuilderComponent implements OnInit {
       return;
     }
 
-    this.programWorkouts = this.programWorkouts.map((programWorkout, index) => ({
+    const updates = this.programWorkouts.map((programWorkout, index) => ({
       ...programWorkout,
-      dayIndex: index,
+      dayIndex: index + 1,
     }));
+
+    this.programWorkouts = updates;
+
+    // A reindexelésnek a backendben is meg kell jelennie.
+    updates.forEach((programWorkout) => {
+      if (programWorkout.id == null) {
+        return;
+      }
+
+      this.programWorkoutService
+        .updateProgramWorkout(programWorkout.id, programWorkout.dayIndex)
+        .subscribe({
+          next: (response) => {
+            if (response.success && response.data) {
+              const current = this.programWorkouts.find(
+                (pw) => pw.id === programWorkout.id,
+              );
+
+              if (current) {
+                current.dayIndex = response.data.dayIndex;
+              }
+            }
+          },
+          error: (error) => {
+            console.error(
+              'Program workout dayIndex frissítési hiba:',
+              programWorkout.id,
+              error,
+            );
+          },
+        });
+    });
   }
 
   // ==========================================================
@@ -909,7 +958,7 @@ export class CoachProgramBuilderComponent implements OnInit {
   getWorkoutDayIndex(workoutId: number): number {
     const programWorkout = this.programWorkouts.find((pw) => pw.workoutId === workoutId);
 
-    return programWorkout?.dayIndex ?? 0;
+    return programWorkout?.dayIndex ?? 1;
   }
 
   // ==========================================================
@@ -969,7 +1018,7 @@ export class CoachProgramBuilderComponent implements OnInit {
 
     this.copyWorkoutDate = workout.workoutDate ?? '';
 
-    this.copyWorkoutDayIndex = this.selectedWorkouts.length;
+    this.copyWorkoutDayIndex = this.selectedWorkouts.length + 1;
 
     this.copyDialogOpen = true;
 
@@ -993,7 +1042,7 @@ export class CoachProgramBuilderComponent implements OnInit {
 
     this.copyWorkoutDate = '';
 
-    this.copyWorkoutDayIndex = 0;
+    this.copyWorkoutDayIndex = 1;
   }
 
   confirmCopyWorkout(): void {
@@ -1025,7 +1074,7 @@ export class CoachProgramBuilderComponent implements OnInit {
       return;
     }
 
-    if (!Number.isInteger(this.copyWorkoutDayIndex) || this.copyWorkoutDayIndex < 0) {
+    if (!Number.isInteger(this.copyWorkoutDayIndex) || this.copyWorkoutDayIndex < 1) {
       this.message = 'coachProgramBuilder.invalidWorkoutDay';
       this.messageType = 'error';
 

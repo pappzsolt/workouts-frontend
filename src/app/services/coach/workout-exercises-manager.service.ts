@@ -100,7 +100,43 @@ export class WorkoutExercisesManagerService {
    * A belépett user számára ütemezett workoutok lekérése.
    */
   getScheduledWorkouts(): Observable<ApiResponse<any[]>> {
-    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/scheduled-workouts`);
+    return this.http
+      .get<ApiResponse<any[]>>(`${this.baseUrl}/scheduled-workouts`)
+      .pipe(
+        map((response) => ({
+          ...response,
+          data: (response.data ?? []).map((item: any) => ({
+            ...item,
+            userWorkoutId:
+              item.userWorkoutId != null
+                ? Number(item.userWorkoutId)
+                : item.user_workout_id != null
+                  ? Number(item.user_workout_id)
+                  : 0,
+            programWorkoutId:
+              item.programWorkoutId != null
+                ? Number(item.programWorkoutId)
+                : item.program_workout_id != null
+                  ? Number(item.program_workout_id)
+                  : undefined,
+            workoutId:
+              item.workoutId != null
+                ? Number(item.workoutId)
+                : item.workout_id != null
+                  ? Number(item.workout_id)
+                  : 0,
+            programId:
+              item.programId != null
+                ? Number(item.programId)
+                : item.program_id != null
+                  ? Number(item.program_id)
+                  : 0,
+            scheduledAt: item.scheduledAt ?? item.scheduled_at ?? null,
+            completed: item.completed ?? null,
+            workoutName: item.workoutName ?? item.workout_name ?? null,
+          })),
+        })),
+      );
   }
 
   /**

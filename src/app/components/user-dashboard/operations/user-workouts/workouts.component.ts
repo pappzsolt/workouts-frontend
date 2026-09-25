@@ -159,24 +159,33 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
           );
 
           /*
-           * Az új backend modellben a program_workout_id az occurrence
-           * valódi azonosítója. Ha a /workouts/program válasz már ezt
-           * tartalmazza, azt használjuk; egyébként csak akkor használunk
-           * workoutId alapú fallbacket, ha egyetlen occurrence létezik.
+           * Az occurrence valódi azonosítója a programWorkoutId, a konkrét
+           * user oldali végrehajtásé pedig a userWorkoutId.
+           *
+           * A /workouts/program endpoint az új backendben ezeket már
+           * közvetlenül visszaadhatja. A scheduled-workouts fallbacket
+           * kizárólag akkor használjuk, ha a párosítás egyértelmű.
            */
-          const exact = workout.programWorkoutId
+          const exactByProgramWorkoutId = workout.programWorkoutId
             ? candidates.find(
                 (item) => item.programWorkoutId === workout.programWorkoutId,
               )
-            : candidates.length === 1
-              ? candidates[0]
-              : undefined;
+            : undefined;
+
+          const exactByUserWorkoutId = workout.userWorkoutId
+            ? candidates.find((item) => item.userWorkoutId === workout.userWorkoutId)
+            : undefined;
+
+          const exact =
+            exactByProgramWorkoutId ??
+            exactByUserWorkoutId ??
+            (candidates.length === 1 ? candidates[0] : undefined);
 
           return {
             ...workout,
             programWorkoutId: workout.programWorkoutId ?? exact?.programWorkoutId,
             userWorkoutId: workout.userWorkoutId ?? exact?.userWorkoutId,
-            completed: workout.completed,
+            completed: workout.completed ?? exact?.completed ?? null,
           };
         });
 

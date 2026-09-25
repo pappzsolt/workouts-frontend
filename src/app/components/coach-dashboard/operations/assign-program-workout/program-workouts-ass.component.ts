@@ -112,7 +112,7 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
 
     this.selectedWorkoutIds.forEach((workoutId, index) => {
       this.programWorkoutService
-        .addWorkoutToProgram(this.selectedProgramId!, workoutId, index)
+        .addWorkoutToProgram(this.selectedProgramId!, workoutId, index + 1)
         .subscribe({
           next: (res) => {
             this.message = res.message;

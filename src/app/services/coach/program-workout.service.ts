@@ -21,7 +21,7 @@ export class ProgramWorkoutService {
   addWorkoutToProgram(
     programId: number,
     workoutId: number,
-    dayIndex: number = 0,
+    dayIndex: number = 1,
   ): Observable<ApiResponse<ProgramWorkout>> {
     const payload: ProgramWorkout = {
       programId,

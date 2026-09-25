@@ -14,4 +14,5 @@ export interface UserWorkoutExerciseDto {
   userId?: number;
   workoutId?: number;
   scheduledAt?: string | null; // ISO string formátumban
+  programWorkoutId?: number;
 }
