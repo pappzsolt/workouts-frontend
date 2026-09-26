@@ -38,9 +38,9 @@ export class AuthInterceptor implements HttpInterceptor {
   ) {}
 
   intercept(
-    req: HttpRequest<any>,
+    req: HttpRequest<unknown>,
     next: HttpHandler,
-  ): Observable<HttpEvent<any>> {
+  ): Observable<HttpEvent<unknown>> {
     // A login és a refresh kérés nem függhet lejárt access tokentől.
     if (this.isAuthEndpoint(req.url)) {
       return next.handle(req);
@@ -66,9 +66,9 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   private handleUnauthorized(
-    req: HttpRequest<any>,
+    req: HttpRequest<unknown>,
     next: HttpHandler,
-  ): Observable<HttpEvent<any>> {
+  ): Observable<HttpEvent<unknown>> {
     if (!this.authService.getRefreshToken()) {
       this.clearSessionAndRedirect();
       return throwError(() => new Error('Nincs refresh token.'));
@@ -119,7 +119,7 @@ export class AuthInterceptor implements HttpInterceptor {
     );
   }
 
-  private addAccessToken(req: HttpRequest<any>): HttpRequest<any> {
+  private addAccessToken(req: HttpRequest<unknown>): HttpRequest<unknown> {
     const token = this.authService.getAccessToken();
 
     if (!token) {

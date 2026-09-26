@@ -10,7 +10,7 @@ import { environment } from '../../environments/environment';
 export class LanguageInterceptor implements HttpInterceptor {
   private readonly defaultLanguage = 'hu';
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     /*
      * Csak a saját backend API hívásokat módosítjuk.
      */

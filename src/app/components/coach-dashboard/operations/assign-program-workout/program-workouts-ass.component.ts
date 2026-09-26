@@ -98,7 +98,8 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
   // ==========================================================
 
   saveSelectedWorkouts(): void {
-    if (!this.selectedProgramId) {
+    const selectedProgramId = this.selectedProgramId;
+    if (!selectedProgramId) {
       this.message = 'Nincs kiválasztott program!';
       this.messageStatus = 'error';
       return;
@@ -112,7 +113,7 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
 
     this.selectedWorkoutIds.forEach((workoutId, index) => {
       this.programWorkoutService
-        .addWorkoutToProgram(this.selectedProgramId!, workoutId, index + 1)
+        .addWorkoutToProgram(selectedProgramId, workoutId, index + 1)
         .subscribe({
           next: (res) => {
             this.message = res.message;

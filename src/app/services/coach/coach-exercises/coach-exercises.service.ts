@@ -156,7 +156,7 @@ export class ExerciseService {
 
   updateExercise(
     exercise: Exercise,
-    language: string = 'hu',
+    language?: string,
   ): Observable<ApiResponse<ExerciseDto>> {
     const payload = {
       id: exercise.id,
@@ -194,7 +194,7 @@ export class ExerciseService {
       variationGroup: exercise.variationGroup,
     };
 
-    const params = new HttpParams().set('language', language);
+    const params = new HttpParams().set('language', language ?? this.languageService.getCurrentLanguage());
 
     return this.http.put<ApiResponse<ExerciseDto>>(
       API_ENDPOINTS.exerciseUpdate,
@@ -215,8 +215,8 @@ export class ExerciseService {
   // ÖSSZES GYAKORLAT LEKÉRÉSE
   // ==========================================================
 
-  getAllExercises(language: string = 'hu'): Observable<ApiResponse<Exercise[]>> {
-    const params = new HttpParams().set('language', language);
+  getAllExercises(language?: string): Observable<ApiResponse<Exercise[]>> {
+    const params = new HttpParams().set('language', language ?? this.languageService.getCurrentLanguage());
 
     return this.http
       .get<ApiResponse<ExerciseDto[]>>(API_ENDPOINTS.allExercises, { params })

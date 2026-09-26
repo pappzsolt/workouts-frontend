@@ -104,7 +104,7 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
         this.searchTerm.trim(),
         backendPage,
         this.itemsPerPage,
-        'hu',
+        this.languageService.getCurrentLanguage(),
         this.sortDirection,
       )
       .subscribe({

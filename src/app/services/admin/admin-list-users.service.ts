@@ -3,7 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
-import { MembersResponse } from '../../models/member.model';
+import type { ApiResponse } from '../../models/backend-dto/common/api-response';
+import type { MemberResponse } from '../../models/backend-dto/members/member-response';
 import { User } from '../../models/user.model';
 import { API_ENDPOINTS } from '../../api-endpoints';
 
@@ -15,20 +16,27 @@ export class AdminListUsersService {
 
   constructor(private readonly http: HttpClient) {}
 
-  /**
-   * Felhasználók lekérése az admin felülethez.
-   */
   getUsers(): Observable<User[]> {
-    return this.http.get<MembersResponse>(this.apiUrl).pipe(
+    return this.http.get<ApiResponse<MemberResponse[]>>(this.apiUrl).pipe(
       map((response) =>
-        response.data.map((member) => ({
-          id: member.id,
-          username: member.usernameOrName,
-          email: member.email,
-          roles: member.roles,
-        })),
+        (response.data ?? [])
+          .filter(
+            (member): member is MemberResponse & {
+              id: number;
+              usernameOrName: string;
+              email: string;
+            } =>
+              member.id != null &&
+              member.usernameOrName != null &&
+              member.email != null,
+          )
+          .map((member) => ({
+            id: member.id,
+            username: member.usernameOrName,
+            email: member.email,
+            roles: member.roles ?? [],
+          })),
       ),
-
       catchError(() =>
         throwError(() => new Error('A felhasználók listájának betöltése nem sikerült.')),
       ),

@@ -198,7 +198,7 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
 
       const nameB = b.workoutName?.trim().toLowerCase() ?? '';
 
-      const comparison = nameA.localeCompare(nameB, 'hu', {
+      const comparison = nameA.localeCompare(nameB, this.languageService.getCurrentLanguage(), {
         sensitivity: 'base',
       });
 

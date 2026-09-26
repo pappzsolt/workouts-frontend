@@ -64,12 +64,12 @@ export class MemberSearchService {
             avatarUrl: member.avatarUrl,
             roles: member.roles ?? [],
             extraFields: {
-              ...(typeof member.extraFields?.['coach_id'] === 'number' ? { coach_id: member.extraFields['coach_id'] as number } : {}),
-              ...(typeof member.extraFields?.['gender'] === 'string' ? { gender: member.extraFields['gender'] as string } : {}),
-              ...(typeof member.extraFields?.['weight'] === 'number' ? { weight: member.extraFields['weight'] as number } : {}),
-              ...(typeof member.extraFields?.['age'] === 'number' ? { age: member.extraFields['age'] as number } : {}),
-              ...(typeof member.extraFields?.['height'] === 'number' ? { height: member.extraFields['height'] as number } : {}),
-              ...(typeof member.extraFields?.['goals'] === 'string' ? { goals: member.extraFields['goals'] as string } : {}),
+              ...this.numberExtraField('coach_id', member.extraFields?.['coach_id']),
+              ...this.stringExtraField('gender', member.extraFields?.['gender']),
+              ...this.numberExtraField('weight', member.extraFields?.['weight']),
+              ...this.numberExtraField('age', member.extraFields?.['age']),
+              ...this.numberExtraField('height', member.extraFields?.['height']),
+              ...this.stringExtraField('goals', member.extraFields?.['goals']),
             },
           })),
       })),
@@ -232,4 +232,35 @@ export class MemberSearchService {
 
     return throwError(() => errorMsg);
   }
+  private numberExtraField(
+    key: 'coach_id' | 'weight' | 'age' | 'height',
+    value: unknown,
+  ): Partial<Record<'coach_id' | 'weight' | 'age' | 'height', number>> {
+    if (typeof value !== 'number') {
+      return {};
+    }
+
+    switch (key) {
+      case 'coach_id':
+        return { coach_id: value };
+      case 'weight':
+        return { weight: value };
+      case 'age':
+        return { age: value };
+      case 'height':
+        return { height: value };
+    }
+  }
+
+  private stringExtraField(
+    key: 'gender' | 'goals',
+    value: unknown,
+  ): Partial<Record<'gender' | 'goals', string>> {
+    if (typeof value !== 'string') {
+      return {};
+    }
+
+    return key === 'gender' ? { gender: value } : { goals: value };
+  }
+
 }

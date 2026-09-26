@@ -395,7 +395,8 @@
     "searchToAdd": "Search for an exercise above to add it.",
     "assignedToProgram": "This workout is assigned to a program.",
     "exercise": "Exercise",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "workoutIdMissing": "Workout ID is missing."
   },
   "newWorkout": {
     "loadError": "Failed to load workouts.",
@@ -426,7 +427,9 @@
     "difficultyLevel": "Difficulty Level",
     "coachId": "Coach ID",
     "updateProgram": "Update Program",
-    "createProgram": "Create Program"
+    "createProgram": "Create Program",
+    "startDate": "Start date",
+    "endDate": "End date"
   },
   "coachExercisesBoard": {
     "noExercises": "No exercises available.",

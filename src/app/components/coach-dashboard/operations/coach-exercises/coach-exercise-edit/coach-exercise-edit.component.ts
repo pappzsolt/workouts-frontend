@@ -7,7 +7,7 @@ import { Exercise } from '../../../../../models/exercise.model';
 import type { ApiResponse } from '../../../../../models/backend-dto/common/api-response';
 import type { ExerciseDto } from '../../../../../models/backend-dto/exercise/exercise-dto';
 
-import { LanguageService } from '../../../../../services/shared/language.service';
+import { LanguageCode, LanguageService } from '../../../../../services/shared/language.service';
 
 import { MessageComponent } from '../../../../shared/message/message.component';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
@@ -69,7 +69,7 @@ export class CoachExerciseEditComponent implements OnInit {
   loading = false;
   saving = false;
   exerciseFound = false;
-  currentLanguage = 'hu';
+  currentLanguage: LanguageCode = 'hu';
 
   // ==========================================================
   // ÜZENET
@@ -118,7 +118,7 @@ export class CoachExerciseEditComponent implements OnInit {
   // EXERCISE BETÖLTÉS
   // ==========================================================
 
-  loadExercise(exerciseId: number, language: string): void {
+  loadExercise(exerciseId: number, language: LanguageCode): void {
     this.loading = true;
     this.clearMessage();
 

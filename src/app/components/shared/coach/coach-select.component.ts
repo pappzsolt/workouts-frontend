@@ -63,6 +63,11 @@ export class CoachSelectComponent implements OnInit {
       this.coachSelected.emit(selected);
     }
 
-    this.selectedCoachIdChange.emit(this.selectedCoachId!);
+    const selectedCoachId = this.selectedCoachId;
+    if (selectedCoachId == null) {
+      return;
+    }
+
+    this.selectedCoachIdChange.emit(selectedCoachId);
   }
 }

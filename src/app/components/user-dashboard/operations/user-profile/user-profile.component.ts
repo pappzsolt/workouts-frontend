@@ -17,7 +17,7 @@ import { MatInputModule } from '@angular/material/input';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
-  selector: 'app-user-edit',
+  selector: 'app-user-profile',
   standalone: true,
   imports: [...SHARED_IMPORTS, MatFormFieldModule, MatSelectModule, MatInputModule],
   templateUrl: './user-profile.component.html',

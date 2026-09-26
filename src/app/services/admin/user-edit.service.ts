@@ -43,12 +43,12 @@ export class UserEditService {
           avatarUrl: user.avatarUrl ?? undefined,
           roles: user.roles ?? [],
           extraFields: {
-            coach_id: typeof user.extraFields?.['coach_id'] === 'number' ? user.extraFields['coach_id'] as number : undefined,
-            age: typeof user.extraFields?.['age'] === 'number' ? user.extraFields['age'] as number : undefined,
-            weight: typeof user.extraFields?.['weight'] === 'number' ? user.extraFields['weight'] as number : undefined,
-            height: typeof user.extraFields?.['height'] === 'number' ? user.extraFields['height'] as number : undefined,
-            gender: typeof user.extraFields?.['gender'] === 'string' ? user.extraFields['gender'] as string : undefined,
-            goals: typeof user.extraFields?.['goals'] === 'string' ? user.extraFields['goals'] as string : undefined,
+            coach_id: this.getNumberExtraField(user.extraFields?.['coach_id']),
+            age: this.getNumberExtraField(user.extraFields?.['age']),
+            weight: this.getNumberExtraField(user.extraFields?.['weight']),
+            height: this.getNumberExtraField(user.extraFields?.['height']),
+            gender: this.getStringExtraField(user.extraFields?.['gender']),
+            goals: this.getStringExtraField(user.extraFields?.['goals']),
           },
         }))),
     );
@@ -98,4 +98,16 @@ export class UserEditService {
 
     return this.http.post<ApiResponse<void>>(this.apiUrl, payload);
   }
+  private getNumberExtraField(value: unknown): number | undefined {
+    return typeof value === 'number' ? value : undefined;
+  }
+
+  private getNumberExtraField(value: unknown): number | undefined {
+    return typeof value === 'number' ? value : undefined;
+  }
+
+  private getStringExtraField(value: unknown): string | undefined {
+    return typeof value === 'string' ? value : undefined;
+  }
+
 }

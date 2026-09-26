@@ -448,7 +448,8 @@ export class CoachWorkoutEditComponent implements OnInit {
   // ==========================================================
 
   get availableExercises(): Exercise[] {
-    const search = this.exerciseSearchTerm.trim().toLocaleLowerCase('hu-HU');
+    const locale = this.languageService.getCurrentLanguage();
+    const search = this.exerciseSearchTerm.trim().toLocaleLowerCase(locale);
 
     /*
      * Ha a workout már programban van,
@@ -470,7 +471,7 @@ export class CoachWorkoutEditComponent implements OnInit {
             return true;
           }
 
-          const name = (exercise.name || '').toLocaleLowerCase('hu-HU');
+          const name = (exercise.name || '').toLocaleLowerCase(locale);
 
           return name.includes(search);
         })
@@ -481,7 +482,7 @@ export class CoachWorkoutEditComponent implements OnInit {
 
           const nameB = (b.name || '').trim();
 
-          return nameA.localeCompare(nameB, 'hu-HU', {
+          return nameA.localeCompare(nameB, locale, {
             sensitivity: 'base',
           });
         })

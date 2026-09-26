@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 
-import { LanguageService } from '../../../services/shared/language.service';
+import { LanguageCode, LanguageService } from '../../../services/shared/language.service';
 
 @Component({
   selector: 'app-language-selector',
@@ -13,6 +13,7 @@ import { LanguageService } from '../../../services/shared/language.service';
     >
       <option value="hu">Magyar</option>
       <option value="en">English</option>
+      <option value="de">Deutsch</option>
     </select>
   `,
 })
@@ -20,10 +21,20 @@ export class LanguageSelectorComponent {
   constructor(public languageService: LanguageService) {}
 
   onLanguageChange(event: Event): void {
-    const select = event.target as HTMLSelectElement;
+    const target = event.target;
+    if (!(target instanceof HTMLSelectElement)) {
+      return;
+    }
 
-    const newLanguage = select.value as 'hu' | 'en';
+    const value = target.value;
+    if (!isLanguageCode(value)) {
+      return;
+    }
 
-    this.languageService.setLanguage(newLanguage);
+    this.languageService.setLanguage(value);
   }
+}
+
+function isLanguageCode(value: string): value is LanguageCode {
+  return value === 'hu' || value === 'en' || value === 'de';
 }

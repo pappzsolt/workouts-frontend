@@ -11,12 +11,14 @@ import type { ProgramCreationRequest as BackendProgramCreationRequest } from '..
 
 import type { CoachProgramSearchResponse } from '../../../models/program.model';
 import type { CoachProgram } from '../../../models/coach-program.model';
+import { LanguageService } from '../../shared/language.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CoachProgramService {
   private readonly http = inject(HttpClient);
+  private readonly languageService = inject(LanguageService);
 
   /**
    * Bejelentkezett coach programjai.
@@ -113,14 +115,14 @@ export class CoachProgramService {
     search: string,
     page: number = 0,
     size: number = 6,
-    language: string = 'hu',
+    language?: string,
     sortDirection: 'asc' | 'desc' = 'asc',
   ): Observable<CoachProgramSearchResponse> {
     const params = new HttpParams()
       .set('search', search)
       .set('page', page)
       .set('size', size)
-      .set('language', language)
+      .set('language', language ?? this.languageService.getCurrentLanguage())
       .set('sortDirection', sortDirection);
 
     return this.http

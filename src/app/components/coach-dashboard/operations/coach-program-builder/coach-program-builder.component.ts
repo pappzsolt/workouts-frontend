@@ -759,7 +759,8 @@ export class CoachProgramBuilderComponent implements OnInit {
   // EXERCISE-EK MENTÉSE AZ AKTUÁLIS WORKOUT-HOZ
   // ==========================================================
   saveSelectedExercises(): void {
-    if (this.selectedWorkoutId === null) {
+    const selectedWorkoutId = this.selectedWorkoutId;
+    if (selectedWorkoutId === null) {
       this.message = 'coachProgramBuilder.noWorkoutSelected';
       this.messageType = 'error';
 
@@ -782,7 +783,7 @@ export class CoachProgramBuilderComponent implements OnInit {
       }
 
       this.workoutExerciseService
-        .assignExerciseToWorkout(this.selectedWorkoutId, exercise.id)
+        .assignExerciseToWorkout(selectedWorkoutId, exercise.id)
         .subscribe({
           next: (response: ApiResponse<void>) => {
             const alreadyExists = this.selectedWorkoutExercises.some(
@@ -792,7 +793,7 @@ export class CoachProgramBuilderComponent implements OnInit {
             if (!alreadyExists) {
               this.selectedWorkoutExercises.push({
                 id: Number(response) || 0,
-                workoutId: this.selectedWorkoutId!,
+                workoutId: selectedWorkoutId,
                 exercise,
                 sets: 0,
                 repetitions: 0,

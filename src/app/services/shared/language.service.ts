@@ -8,25 +8,25 @@ import { BehaviorSubject, Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class LanguageService {
-  private readonly defaultLanguage = 'hu';
+  private readonly defaultLanguage: LanguageCode = 'hu';
 
-  private readonly languageSubject = new BehaviorSubject<string>(this.defaultLanguage);
+  private readonly languageSubject = new BehaviorSubject<LanguageCode>(this.defaultLanguage);
 
-  public readonly language$: Observable<string> = this.languageSubject.asObservable();
+  public readonly language$: Observable<LanguageCode> = this.languageSubject.asObservable();
 
   constructor(private translate: TranslateService) {
     this.translate.setFallbackLang(this.defaultLanguage);
 
     const savedLanguage = localStorage.getItem('language');
 
-    const language = savedLanguage || this.defaultLanguage;
+    const language: LanguageCode = isLanguageCode(savedLanguage) ? savedLanguage : this.defaultLanguage;
 
     this.translate.use(language);
 
     this.languageSubject.next(language);
   }
 
-  setLanguage(language: 'hu' | 'en'): void {
+  setLanguage(language: LanguageCode): void {
     localStorage.setItem('language', language);
 
     this.translate.use(language);
@@ -34,7 +34,13 @@ export class LanguageService {
     this.languageSubject.next(language);
   }
 
-  getCurrentLanguage(): string {
+  getCurrentLanguage(): LanguageCode {
     return this.translate.currentLang() || this.defaultLanguage;
   }
+}
+
+export type LanguageCode = 'hu' | 'en' | 'de';
+
+function isLanguageCode(value: string | null): value is LanguageCode {
+  return value === 'hu' || value === 'en' || value === 'de';
 }

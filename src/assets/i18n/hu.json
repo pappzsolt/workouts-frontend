@@ -395,7 +395,8 @@
     "searchToAdd": "Keress egy exercise-t fent a hozzáadáshoz.",
     "assignedToProgram": "Ez a workout hozzá van rendelve egy programhoz.",
     "exercise": "Exercise",
-    "cancel": "Mégse"
+    "cancel": "Mégse",
+    "workoutIdMissing": "Hiányzik a workout azonosító."
   },
   "newWorkout": {
     "loadError": "Nem sikerült betölteni a workoutokat.",
@@ -426,7 +427,9 @@
     "difficultyLevel": "Nehézségi szint",
     "coachId": "Coach ID",
     "updateProgram": "Program frissítése",
-    "createProgram": "Program létrehozása"
+    "createProgram": "Program létrehozása",
+    "startDate": "Kezdés dátuma",
+    "endDate": "Befejezés dátuma"
   },
   "coachExercisesBoard": {
     "noExercises": "Nincsenek elérhető exercise-ek.",
@@ -519,7 +522,8 @@
     "setUpdated": "A sorozat sikeresen frissítve.",
     "setUpdateError": "Hiba történt a sorozat frissítésekor.",
     "saveSuccess": "A sorozat sikeresen mentve.",
-    "saveError": "Hiba történt a sorozat mentésekor."
+    "saveError": "Hiba történt a sorozat mentésekor.",
+    "save": "Mentés"
   },
   "userMyPrograms": {
     "title": "Programjaim",
