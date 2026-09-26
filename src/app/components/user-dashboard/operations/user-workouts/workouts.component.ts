@@ -218,11 +218,15 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
     }
 
     this.router.navigate(['/user/workouts', workout.workoutId, 'exercises'], {
-      state: {
-        workoutName: workout.workoutName,
+      queryParams: {
         programId: this.programId,
         programWorkoutId: workout.programWorkoutId,
         userWorkoutId: workout.userWorkoutId,
+      },
+      state: {
+        // A query param az elsődleges, a history.state csak a megjelenítési
+        // adatokhoz és visszafelé kompatibilitáshoz marad.
+        workoutName: workout.workoutName,
       },
     });
   }

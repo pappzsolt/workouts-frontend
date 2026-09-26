@@ -120,6 +120,28 @@
             </h3>
 
 
+            <!-- KEZDÉS / BEFEJEZÉS -->
+
+            <div class="mb-4 grid grid-cols-2 gap-3">
+              <div class="rounded-xl bg-primary-50 px-3 py-3">
+                <div class="mb-1 text-xs font-medium uppercase tracking-wide text-primary-600">
+                  Kezdés
+                </div>
+                <div class="text-sm font-bold text-primary-800">
+                  {{ program.startDate | date:'yyyy.MM.dd' }}
+                </div>
+              </div>
+
+              <div class="rounded-xl bg-success-50 px-3 py-3">
+                <div class="mb-1 text-xs font-medium uppercase tracking-wide text-success-600">
+                  Befejezés
+                </div>
+                <div class="text-sm font-bold text-success-800">
+                  {{ program.endDate | date:'yyyy.MM.dd' }}
+                </div>
+              </div>
+            </div>
+
             <!-- IDŐTARTAM -->
 
             <div

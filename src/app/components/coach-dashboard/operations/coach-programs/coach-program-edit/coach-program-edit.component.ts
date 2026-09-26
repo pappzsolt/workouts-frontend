@@ -18,6 +18,8 @@ export class CoachProgramEditComponent implements OnInit {
   program: Program = {
     programName: '',
     programDescription: '',
+    startDate: '',
+    endDate: '',
     durationDays: 0,
     difficultyLevel: '',
   };
@@ -48,6 +50,8 @@ export class CoachProgramEditComponent implements OnInit {
             id: dto.programId,
             programName: dto.programName,
             programDescription: dto.programDescription,
+            startDate: dto.startDate ?? '',
+            endDate: dto.endDate ?? '',
             durationDays: dto.durationDays,
             difficultyLevel: dto.difficultyLevel,
           };
@@ -64,6 +68,21 @@ export class CoachProgramEditComponent implements OnInit {
     });
   }
 
+  calculateEndDate(startDate?: string, durationDays?: number): string {
+    if (!startDate || !durationDays || durationDays <= 0) {
+      return '';
+    }
+
+    const date = new Date(`${startDate}T00:00:00`);
+    date.setDate(date.getDate() + durationDays);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
   saveProgram(): void {
     if (!this.program.id) {
       this.setMessage('coachProgramEdit.idNotFound', 'error');
@@ -74,6 +93,7 @@ export class CoachProgramEditComponent implements OnInit {
     const request: ProgramCreationRequest = {
       programName: this.program.programName ?? '',
       programDescription: this.program.programDescription ?? '',
+      startDate: this.program.startDate || null,
       durationDays: this.program.durationDays ?? 0,
       difficultyLevel: this.program.difficultyLevel ?? '',
     };

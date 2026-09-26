@@ -48,9 +48,20 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     this.workoutId = Number(this.route.snapshot.paramMap.get('workoutId'));
 
     const navState = history.state;
-    this.programId = Number(navState['programId']);
-    this.userWorkoutId = Number(navState['userWorkoutId']);
-    this.programWorkoutId = Number(navState['programWorkoutId']);
+    const queryParams = this.route.snapshot.queryParamMap;
+
+    const programIdParam = queryParams.get('programId') ?? navState['programId'];
+    const userWorkoutIdParam = queryParams.get('userWorkoutId') ?? navState['userWorkoutId'];
+    const programWorkoutIdParam =
+      queryParams.get('programWorkoutId') ?? navState['programWorkoutId'];
+
+    this.programId = Number(programIdParam);
+    this.userWorkoutId = Number(userWorkoutIdParam);
+
+    const parsedProgramWorkoutId = Number(programWorkoutIdParam);
+    this.programWorkoutId = Number.isFinite(parsedProgramWorkoutId) && parsedProgramWorkoutId > 0
+      ? parsedProgramWorkoutId
+      : undefined;
 
     if (!this.userWorkoutId || Number.isNaN(this.userWorkoutId)) {
       console.error('[UserExerciseDetail] Érvénytelen userWorkoutId:', navState['userWorkoutId']);

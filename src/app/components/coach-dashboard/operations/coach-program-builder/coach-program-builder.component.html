@@ -121,6 +121,43 @@
           ></textarea>
         </div>
 
+        <!-- PROGRAM KEZDÉS DÁTUMA -->
+        <div class="min-w-0">
+          <label
+            for="startDate"
+            class="mb-2 block text-sm font-semibold text-content-700"
+          >
+            Kezdés dátuma
+          </label>
+
+          <input
+            id="startDate"
+            name="startDate"
+            type="date"
+            [(ngModel)]="startDate"
+            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
+          />
+        </div>
+
+        <!-- PROGRAM KALKULÁLT BEFEJEZÉS -->
+        <div class="min-w-0">
+          <label
+            for="endDate"
+            class="mb-2 block text-sm font-semibold text-content-700"
+          >
+            Befejezés dátuma
+          </label>
+
+          <input
+            id="endDate"
+            name="endDate"
+            type="date"
+            [value]="calculatedEndDate || endDate"
+            readonly
+            class="block w-full rounded-lg border border-surface-300 bg-surface-100 px-3.5 py-2.5 text-base text-content-600 shadow-sm outline-none sm:text-sm"
+          />
+        </div>
+
         <!-- PROGRAM IDŐTARTAMA -->
         <div class="min-w-0">
           <label
@@ -181,6 +218,7 @@
             [disabled]="
               creatingProgram ||
               !programName.trim() ||
+              !startDate ||
               durationDays === null ||
               durationDays <= 0 ||
               !difficultyLevel

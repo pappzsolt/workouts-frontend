@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpBackend } from '@angular/common/http';
 import { Observable, map, tap } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 
@@ -14,7 +14,16 @@ import { ApiResponse } from '../../models/api-response.model';
 export class AuthService {
   private readonly apiUrl = API_ENDPOINTS.auth;
 
-  constructor(private http: HttpClient) {}
+  private readonly rawHttp: HttpClient;
+
+  constructor(
+    private readonly http: HttpClient,
+    httpBackend: HttpBackend,
+  ) {
+    // A refresh kérést az interceptor megkerülésével küldjük,
+    // hogy a lejárt access token ne kerüljön rá a /auth/refresh kérésre.
+    this.rawHttp = new HttpClient(httpBackend);
+  }
 
   /**
    * Bejelentkezés.
@@ -59,6 +68,57 @@ export class AuthService {
       );
   }
 
+  /**
+   * Ellenőrzi, hogy az access token létezik, értelmezhető és még nem járt le.
+   *
+   * Az exp JWT-ben másodpercben értendő.
+   */
+  hasValidAccessToken(): boolean {
+    const token = this.getAccessToken();
+
+    if (!token) {
+      return false;
+    }
+
+    try {
+      const decodedToken = jwtDecode<TokenPayload>(token);
+
+      return Number.isFinite(decodedToken.exp) && decodedToken.exp > Math.floor(Date.now() / 1000);
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Access + refresh token frissítése.
+   *
+   * A backend refresh endpointja új access és új refresh tokent ad vissza
+   * (refresh-token rotation).
+   */
+  refreshAccessToken(): Observable<LoginResponse> {
+    const refreshToken = localStorage.getItem('refreshToken');
+
+    if (!refreshToken) {
+      throw new Error('Nincs refresh token.');
+    }
+
+    return this.rawHttp
+      .post<ApiResponse<LoginResponse>>(`${this.apiUrl}/refresh`, { refreshToken })
+      .pipe(
+        map((response) => {
+          if (!response.success || !response.data) {
+            throw new Error(response.message ?? 'A token frissítése sikertelen.');
+          }
+
+          return response.data;
+        }),
+        tap((response) => {
+          localStorage.setItem('accessToken', response.accessToken);
+          localStorage.setItem('refreshToken', response.refreshToken);
+        }),
+      );
+  }
+
   logout(): void {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
@@ -67,6 +127,11 @@ export class AuthService {
   getAccessToken(): string | null {
     return localStorage.getItem('accessToken');
   }
+
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refreshToken');
+  }
+
 
   getUserRole(): string | null {
     const token = this.getAccessToken();

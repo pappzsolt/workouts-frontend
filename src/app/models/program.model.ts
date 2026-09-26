@@ -55,6 +55,8 @@ export interface ProgramDto {
   programId: number;
   programName: string;
   programDescription: string;
+  startDate?: string | null;
+  endDate?: string | null;
   durationDays: number;
   difficultyLevel: string;
   workouts?: any[];
@@ -74,6 +76,7 @@ export interface ProgramDto {
 export interface ProgramCreationRequest {
   programName: string;
   programDescription?: string;
+  startDate?: string | null;
   durationDays?: number;
   difficultyLevel?: string;
 }
@@ -85,6 +88,8 @@ export interface UserProgram {
   id: number;
   name: string;
   description: string;
+  startDate?: string | null;
+  endDate?: string | null;
   durationWeeks: number;
   difficulty: string;
   status: string;

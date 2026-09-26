@@ -49,12 +49,23 @@
           ></span>
         </span>
 
-        <!-- Program név -->
-        <span
-          class="min-w-0 flex-1 break-words text-base font-semibold leading-snug text-content-800 sm:text-lg"
-        >
-          {{ program.programName }}
-        </span>
+        <!-- Program név + dátumok -->
+        <div class="min-w-0 flex-1">
+          <span
+            class="block break-words text-base font-semibold leading-snug text-content-800 sm:text-lg"
+          >
+            {{ program.programName }}
+          </span>
+
+          <span
+            *ngIf="program.startDate || program.endDate"
+            class="mt-1 block text-xs text-content-500"
+          >
+            {{ program.startDate | date:'yyyy.MM.dd' }}
+            –
+            {{ program.endDate | date:'yyyy.MM.dd' }}
+          </span>
+        </div>
       </label>
 
     </div>

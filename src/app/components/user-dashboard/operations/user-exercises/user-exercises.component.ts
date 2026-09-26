@@ -82,12 +82,22 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
     // NAVIGATION STATE
 
     const navState = history.state;
+    const queryParams = this.route.snapshot.queryParamMap;
 
     this.workoutName = navState?.workoutName || 'userExercises.unknownWorkout';
 
-    this.programId = Number(navState?.programId);
-    this.userWorkoutId = Number(navState?.userWorkoutId);
-    this.programWorkoutId = Number(navState?.programWorkoutId);
+    const programIdParam = queryParams.get('programId') ?? navState?.programId;
+    const userWorkoutIdParam = queryParams.get('userWorkoutId') ?? navState?.userWorkoutId;
+    const programWorkoutIdParam =
+      queryParams.get('programWorkoutId') ?? navState?.programWorkoutId;
+
+    this.programId = Number(programIdParam);
+    this.userWorkoutId = Number(userWorkoutIdParam);
+
+    const parsedProgramWorkoutId = Number(programWorkoutIdParam);
+    this.programWorkoutId = Number.isFinite(parsedProgramWorkoutId) && parsedProgramWorkoutId > 0
+      ? parsedProgramWorkoutId
+      : undefined;
 
     // ID VALIDÁLÁS
 
@@ -179,11 +189,13 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
 
   goToExercise(exerciseId: number): void {
     this.router.navigate(['/user/workouts', this.workoutId, 'exercises', exerciseId], {
-      state: {
-        workoutName: this.workoutName,
+      queryParams: {
         programId: this.programId,
         programWorkoutId: this.programWorkoutId,
         userWorkoutId: this.userWorkoutId,
+      },
+      state: {
+        workoutName: this.workoutName,
       },
     });
   }

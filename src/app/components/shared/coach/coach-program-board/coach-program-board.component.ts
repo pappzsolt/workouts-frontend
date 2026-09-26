@@ -71,6 +71,8 @@ export class CoachProgramBoardComponent implements OnInit, OnDestroy {
           programId: p.programId,
           programName: p.programName,
           programDescription: p.programDescription,
+          startDate: p.startDate,
+          endDate: p.endDate,
           durationDays: p.durationDays,
           difficultyLevel: p.difficultyLevel,
           workouts: p.workouts ?? [],

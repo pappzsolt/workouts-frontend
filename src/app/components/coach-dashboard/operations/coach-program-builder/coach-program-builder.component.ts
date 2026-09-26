@@ -48,6 +48,10 @@ export class CoachProgramBuilderComponent implements OnInit {
 
   programDescription = '';
 
+  startDate = '';
+
+  endDate = '';
+
   selectedUserId?: number;
 
   durationDays: number | null = null;
@@ -263,6 +267,8 @@ export class CoachProgramBuilderComponent implements OnInit {
 
           this.programName = program.programName ?? '';
           this.programDescription = program.programDescription ?? '';
+          this.startDate = program.startDate ?? '';
+          this.endDate = program.endDate ?? '';
           this.durationDays = program.durationDays ?? null;
           this.difficultyLevel = program.difficultyLevel ?? '';
 
@@ -429,9 +435,34 @@ export class CoachProgramBuilderComponent implements OnInit {
   }
 
   // ==========================================================
+  // KALKULÁLT BEFEJEZÉSI DÁTUM
+  // ==========================================================
+
+  get calculatedEndDate(): string {
+    if (!this.startDate || !this.durationDays || this.durationDays <= 0) {
+      return '';
+    }
+
+    const date = new Date(`${this.startDate}T00:00:00`);
+    date.setDate(date.getDate() + this.durationDays);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
+  // ==========================================================
   // PROGRAM LÉTREHOZÁSA
   createProgram(): void {
     if (!this.programName.trim()) {
+      return;
+    }
+
+    if (!this.startDate) {
+      this.message = 'coachProgramBuilder.startDateRequired';
+      this.messageType = 'error';
       return;
     }
 
@@ -448,6 +479,7 @@ export class CoachProgramBuilderComponent implements OnInit {
     const request: ProgramCreationRequest = {
       programName: this.programName.trim(),
       programDescription: this.programDescription.trim(),
+      startDate: this.startDate || null,
       durationDays: this.durationDays,
       difficultyLevel: this.difficultyLevel,
     };
@@ -495,6 +527,12 @@ export class CoachProgramBuilderComponent implements OnInit {
       return;
     }
 
+    if (!this.startDate) {
+      this.message = 'coachProgramBuilder.startDateRequired';
+      this.messageType = 'error';
+      return;
+    }
+
     if (this.durationDays === null || this.durationDays <= 0) {
       return;
     }
@@ -508,6 +546,7 @@ export class CoachProgramBuilderComponent implements OnInit {
     const request: ProgramCreationRequest = {
       programName: this.programName.trim(),
       programDescription: this.programDescription.trim(),
+      startDate: this.startDate || null,
       durationDays: this.durationDays,
       difficultyLevel: this.difficultyLevel,
     };

@@ -61,7 +61,6 @@ export class LoginComponent {
         this.loading = false;
 
         if (res) {
-          console.log('Bejelentkezve!', res);
 
           const role = this.authService.getUserRole() ?? '';
 

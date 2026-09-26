@@ -20,6 +20,8 @@ export class CoachNewProgramComponent implements OnInit {
   program: Program = {
     programName: '',
     programDescription: '',
+    startDate: '',
+    endDate: '',
     durationDays: 0,
     difficultyLevel: '',
   };
@@ -39,8 +41,29 @@ export class CoachNewProgramComponent implements OnInit {
     });
   }
 
+  calculateEndDate(startDate?: string, durationDays?: number): string {
+    if (!startDate || !durationDays || durationDays <= 0) {
+      return '';
+    }
+
+    const date = new Date(`${startDate}T00:00:00`);
+    date.setDate(date.getDate() + durationDays);
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
+
   saveProgram(): void {
     this.message = '';
+
+    if (!this.program.startDate) {
+      this.messageType = 'error';
+      this.message = 'coachNewProgram.startDateRequired';
+      return;
+    }
 
     /*
      * Backend DTO:
@@ -48,7 +71,9 @@ export class CoachNewProgramComponent implements OnInit {
      * ProgramCreationRequest {
      *   String programName;
      *   String programDescription;
+     *   LocalDate startDate;
      *   Integer durationDays;
+     *   LocalDate endDate; // backend számítja ki
      *   String difficultyLevel;
      * }
      */
@@ -56,6 +81,7 @@ export class CoachNewProgramComponent implements OnInit {
     const requestBody: ProgramCreationRequest = {
       programName: this.program.programName ?? '',
       programDescription: this.program.programDescription ?? '',
+      startDate: this.program.startDate || null,
       durationDays: this.program.durationDays,
       difficultyLevel: this.program.difficultyLevel ?? '',
     };

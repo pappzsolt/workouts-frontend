@@ -97,6 +97,43 @@
         </app-form-field>
 
         <!-- ==================================================
+             KEZDÉS DÁTUMA
+             ================================================== -->
+
+        <app-form-field
+          labelKey="coachProgramEdit.startDate"
+          controlId="startDate"
+          [required]="true"
+        >
+          <input
+            type="date"
+            id="startDate"
+            name="startDate"
+            [(ngModel)]="program.startDate"
+            required
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
+          />
+        </app-form-field>
+
+        <!-- ==================================================
+             BEFEJEZÉS DÁTUMA
+             ================================================== -->
+
+        <app-form-field
+          labelKey="coachProgramEdit.endDate"
+          controlId="endDate"
+        >
+          <input
+            type="date"
+            id="endDate"
+            name="endDate"
+            [value]="calculateEndDate(program.startDate, program.durationDays) || program.endDate || ''"
+            readonly
+            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-surface-100 px-3.5 py-2.5 text-base text-content-600 shadow-sm outline-none sm:text-sm"
+          />
+        </app-form-field>
+
+        <!-- ==================================================
              IDŐTARTAM
              ================================================== -->
 
@@ -131,9 +168,9 @@
             placeholderValue=""
             [className]="'min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm'"
             [options]="[
-      { value: 'Easy', label: 'coachProgramEdit.easy' },
-      { value: 'Medium', label: 'coachProgramEdit.medium' },
-      { value: 'Hard', label: 'coachProgramEdit.hard' }
+      { value: 'BEGINNER', label: 'coachProgramEdit.beginner' },
+      { value: 'INTERMEDIATE', label: 'coachProgramEdit.intermediate' },
+      { value: 'ADVANCED', label: 'coachProgramEdit.advanced' }
     ]"
           />
         </app-form-field>

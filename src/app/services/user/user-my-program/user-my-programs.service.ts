@@ -24,6 +24,8 @@ export class UserMyProgramsService {
           id: p.id,
           name: p.name,
           description: p.description,
+          startDate: p.startDate ?? null,
+          endDate: p.endDate ?? null,
           durationWeeks: Math.ceil(p.durationDays / 7),
           difficulty: p.difficulty,
           status: p.status,
