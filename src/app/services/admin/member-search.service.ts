@@ -2,28 +2,16 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 
 import { Observable, forkJoin, map, of, throwError } from 'rxjs';
-
 import { catchError, switchMap } from 'rxjs/operators';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
 
 import { Coach, SearchResponse } from '../../models/member-search-model';
+import type { ExtraFields } from '../../models/extra-fields.model';
 
-import { ApiResponse } from '../../models/backend-dto/common/api-response';
+import type { ApiResponse } from '../../models/backend-dto/common/api-response';
+import type { CoachLookupDto } from '../../models/backend-dto/coach/coach-lookup-dto';
 import type { MemberResponse } from '../../models/backend-dto/members/member-response';
-import { ExtraFields } from '../../models/member.model';
-
-/**
- * A backend által visszaadott coach adat.
- */
-interface CoachApiResponse {
-  id: number;
-  name: string;
-  email: string;
-  avatarUrl: string | null;
-  roles: string[];
-  extraFields: ExtraFields;
-}
 
 @Injectable({
   providedIn: 'root',
@@ -31,9 +19,7 @@ interface CoachApiResponse {
 export class MemberSearchService {
   private readonly memberSearchApiUrl = API_ENDPOINTS.memberSearch;
 
-  private readonly coachApiUrl = API_ENDPOINTS.coach;
-
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   /**
    * Member keresés.
@@ -44,173 +30,139 @@ export class MemberSearchService {
   searchMembers(keyword: string): Observable<SearchResponse> {
     const params = new HttpParams().set('keyword', keyword.trim());
 
-    return this.http.get<ApiResponse<MemberResponse[]>>(this.memberSearchApiUrl, { params }).pipe(
-      map((response) => ({
-        success: response.success,
-        message: response.message ?? '',
-        data: (response.data ?? [])
-          .filter(
-            (member): member is MemberResponse & { id: number; type: 'user' | 'coach'; usernameOrName: string; email: string } =>
-              member.id != null &&
-              (member.type === 'user' || member.type === 'coach') &&
-              member.usernameOrName != null &&
-              member.email != null,
-          )
-          .map((member) => ({
-            id: member.id,
-            type: member.type,
-            usernameOrName: member.usernameOrName,
-            email: member.email,
-            avatarUrl: member.avatarUrl,
-            roles: member.roles ?? [],
-            extraFields: {
-              ...this.numberExtraField('coach_id', member.extraFields?.['coach_id']),
-              ...this.stringExtraField('gender', member.extraFields?.['gender']),
-              ...this.numberExtraField('weight', member.extraFields?.['weight']),
-              ...this.numberExtraField('age', member.extraFields?.['age']),
-              ...this.numberExtraField('height', member.extraFields?.['height']),
-              ...this.stringExtraField('goals', member.extraFields?.['goals']),
-            },
-          })),
-      })),
-      switchMap((response) => {
-        const members = response.data;
+    return this.http
+      .get<ApiResponse<MemberResponse[]>>(this.memberSearchApiUrl, { params })
+      .pipe(
+        map((response) => ({
+          success: response.success,
+          message: response.message ?? '',
+          data: (response.data ?? [])
+            .filter(this.hasRequiredMemberFields)
+            .map((member) => ({
+              id: member.id,
+              type: member.type,
+              usernameOrName: member.usernameOrName,
+              email: member.email,
+              avatarUrl: member.avatarUrl,
+              roles: member.roles ?? [],
+              extraFields: this.mapExtraFields(member.extraFields),
+            })),
+        })),
+        switchMap((response) => {
+          const coachIds = [
+            ...new Set(
+              response.data
+                .map((member) => member.extraFields.coach_id)
+                .filter((id): id is number => id != null),
+            ),
+          ];
 
-        /*
-         * A keresési eredményből kigyűjtjük
-         * a coach ID-kat.
-         *
-         * Set miatt ugyanazt a coachot csak egyszer
-         * fogjuk lekérni.
-         */
-        const coachIds = [
-          ...new Set(
-            members
-              .map((member) => member.extraFields?.coach_id)
-              .filter((id): id is number => id != null),
-          ),
-        ];
+          if (coachIds.length === 0) {
+            return of(response);
+          }
 
-        /*
-         * Ha egyik felhasználónak sincs coach-a,
-         * nincs szükség további HTTP kérésre.
-         */
-        if (coachIds.length === 0) {
-          return of(response);
-        }
+          const coachRequests: Observable<Coach | undefined>[] = coachIds.map((coachId) =>
+            this.http
+              .get<ApiResponse<CoachLookupDto>>(API_ENDPOINTS.coachById(coachId))
+              .pipe(
+                map((response) => this.mapCoach(response.data)),
+                catchError(() => of(undefined)),
+              ),
+          );
 
-        /*
-         * Coach-ok lekérése párhuzamosan.
-         */
-        const coachRequests: Observable<Coach | undefined>[] = coachIds.map((coachId) =>
-          /*
-           * FONTOS:
-           *
-           * A backend már nem közvetlenül
-           * a Coach objektumot adja vissza.
-           *
-           * Backend válasz:
-           *
-           * {
-           *   success: true,
-           *   data: {
-           *     id: ...,
-           *     name: ...
-           *   },
-           *   message: null
-           * }
-           */
-          this.http.get<ApiResponse<CoachApiResponse>>(API_ENDPOINTS.coachById(coachId)).pipe(
-            /*
-             * ApiResponse
-             * ↓
-             *
-             * response.data
-             * ↓
-             *
-             * Coach
-             */
-            map((response) => {
-              const coach = response.data;
-              if (!coach) {
-                return undefined;
-              }
+          return forkJoin(coachRequests).pipe(
+            map((coaches) => {
+              const coachMap = new Map<number, Coach>();
 
-              /*
-               * Backend → frontend modell
-               * átalakítás.
-               *
-               * Backend:
-               *   name
-               *
-               * Frontend:
-               *   usernameOrName
-               */
+              coaches.forEach((coach) => {
+                if (coach) {
+                  coachMap.set(coach.id, coach);
+                }
+              });
+
               return {
-                id: coach.id,
+                ...response,
+                data: response.data.map((member) => {
+                  const coachId = member.extraFields.coach_id;
 
-                usernameOrName: coach.name,
-
-                email: coach.email,
-
-                avatarUrl: coach.avatarUrl,
-
-                roles: coach.roles,
-
-                extraFields: coach.extraFields,
+                  return {
+                    ...member,
+                    coach: coachId != null ? coachMap.get(coachId) : undefined,
+                  };
+                }),
               };
             }),
+          );
+        }),
+        catchError((error: HttpErrorResponse) => this.handleError(error)),
+      );
+  }
 
-            /*
-             * Ha egy coach lekérése hibázik,
-             * attól még a többi találat
-             * megjelenjen.
-             */
-            catchError(() => of(undefined)),
-          ),
-        );
+  private mapCoach(coach: CoachLookupDto | null): Coach | undefined {
+    if (coach?.id == null || coach.name == null || coach.email == null) {
+      return undefined;
+    }
 
-        return forkJoin(coachRequests).pipe(
-          map((coaches) => {
-            /*
-             * Coach ID → Coach Map
-             *
-             * Így nem kell minden membernél
-             * coaches.find(...) keresést csinálni.
-             */
-            const coachMap = new Map<number, Coach>();
+    return {
+      id: coach.id,
+      usernameOrName: coach.name,
+      email: coach.email,
+      avatarUrl: coach.avatarUrl,
+    };
+  }
 
-            coaches.forEach((coach) => {
-              if (coach) {
-                coachMap.set(coach.id, coach);
-              }
-            });
+  private mapExtraFields(
+    extraFields: Record<string, unknown> | null,
+  ): ExtraFields {
+    if (extraFields == null) {
+      return {};
+    }
 
-            /*
-             * A member objektumokat nem módosítjuk
-             * közvetlenül, hanem új objektumokat
-             * hozunk létre.
-             */
-            const enrichedMembers = members.map((member) => {
-              const coachId = member.extraFields?.coach_id;
+    return {
+      ...this.numberExtraField('coach_id', extraFields['coach_id']),
+      ...this.stringExtraField('gender', extraFields['gender']),
+      ...this.numberExtraField('weight', extraFields['weight']),
+      ...this.numberExtraField('age', extraFields['age']),
+      ...this.numberExtraField('height', extraFields['height']),
+      ...this.stringExtraField('goals', extraFields['goals']),
+    };
+  }
 
-              return {
-                ...member,
+  private numberExtraField(
+    key: 'coach_id' | 'weight' | 'age' | 'height',
+    value: unknown,
+  ): Partial<Pick<ExtraFields, 'coach_id' | 'weight' | 'age' | 'height'>> {
+    if (typeof value !== 'number') {
+      return {};
+    }
 
-                coach: coachId != null ? coachMap.get(coachId) : undefined,
-              };
-            });
+    return { [key]: value };
+  }
 
-            return {
-              ...response,
+  private stringExtraField(
+    key: 'gender' | 'goals',
+    value: unknown,
+  ): Partial<Pick<ExtraFields, 'gender' | 'goals'>> {
+    if (typeof value !== 'string') {
+      return {};
+    }
 
-              data: enrichedMembers,
-            };
-          }),
-        );
-      }),
+    return { [key]: value };
+  }
 
-      catchError((error) => this.handleError(error)),
+  private hasRequiredMemberFields(
+    member: MemberResponse,
+  ): member is MemberResponse & {
+    id: number;
+    type: 'user' | 'coach';
+    usernameOrName: string;
+    email: string;
+  } {
+    return (
+      member.id != null &&
+      (member.type === 'user' || member.type === 'coach') &&
+      member.usernameOrName != null &&
+      member.email != null
     );
   }
 
@@ -227,40 +179,9 @@ export class MemberSearchService {
     } else if (error.error?.message) {
       errorMsg = error.error.message;
     } else {
-      errorMsg = `Szerver hiba: ${error.status}, ` + `üzenet: ${error.message}`;
+      errorMsg = `Szerver hiba: ${error.status}, üzenet: ${error.message}`;
     }
 
     return throwError(() => errorMsg);
   }
-  private numberExtraField(
-    key: 'coach_id' | 'weight' | 'age' | 'height',
-    value: unknown,
-  ): Partial<Record<'coach_id' | 'weight' | 'age' | 'height', number>> {
-    if (typeof value !== 'number') {
-      return {};
-    }
-
-    switch (key) {
-      case 'coach_id':
-        return { coach_id: value };
-      case 'weight':
-        return { weight: value };
-      case 'age':
-        return { age: value };
-      case 'height':
-        return { height: value };
-    }
-  }
-
-  private stringExtraField(
-    key: 'gender' | 'goals',
-    value: unknown,
-  ): Partial<Record<'gender' | 'goals', string>> {
-    if (typeof value !== 'string') {
-      return {};
-    }
-
-    return key === 'gender' ? { gender: value } : { goals: value };
-  }
-
 }

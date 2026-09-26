@@ -21,7 +21,7 @@ import { AppSelectComponent } from '../../../../components/shared/components/app
 import { Exercise, WorkoutDto, WorkoutExercise } from '../../../../models/exercise.model';
 import type { ProgramDto } from '../../../../models/backend-dto/programs/program-dto';
 import type { ProgramCreationRequest } from '../../../../models/backend-dto/programcreator/program-creation-request';
-import { ProgramWorkout } from '../../../../models/program-workout.model';
+import type { ProgramWorkoutAssignment } from '../../../../models/program-workout-assignment.model';
 import type { WorkoutCopyRequest } from '../../../../models/backend-dto/workout/workout-copy-request';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
@@ -151,7 +151,7 @@ export class CoachProgramBuilderComponent implements OnInit {
    * - workoutId
    * - dayIndex
    */
-  programWorkouts: ProgramWorkout[] = [];
+  programWorkouts: ProgramWorkoutAssignment[] = [];
 
   constructor(
     private exerciseService: ExerciseService,
@@ -611,11 +611,11 @@ export class CoachProgramBuilderComponent implements OnInit {
     }
 
     this.programWorkoutService.getWorkoutsForProgram(this.programId).subscribe({
-      next: (response: ApiResponse<ProgramWorkout[]>) => {
+      next: (response: ApiResponse<ProgramWorkoutAssignment[]>) => {
         const data = response.data ?? [];
 
         this.programWorkouts = [...data].sort(
-          (a: ProgramWorkout, b: ProgramWorkout) => a.dayIndex - b.dayIndex,
+          (a: ProgramWorkoutAssignment, b: ProgramWorkoutAssignment) => a.dayIndex - b.dayIndex,
         );
 
         this.exerciseService.getWorkoutsWithExercises().subscribe({
@@ -844,7 +844,7 @@ export class CoachProgramBuilderComponent implements OnInit {
     const dayIndex = this.selectedWorkouts.length + 1;
 
     this.programWorkoutService.addWorkoutToProgram(this.programId, workout.id, dayIndex).subscribe({
-      next: (response: ApiResponse<ProgramWorkout>) => {
+      next: (response: ApiResponse<ProgramWorkoutAssignment>) => {
         if (!response.success || !response.data) {
           this.message = response.message || 'coachProgramBuilder.addWorkoutError';
 
@@ -985,7 +985,7 @@ export class CoachProgramBuilderComponent implements OnInit {
     }
 
     this.programWorkoutService.updateProgramWorkout(programWorkout.id, dayIndex).subscribe({
-      next: (response: ApiResponse<ProgramWorkout>) => {
+      next: (response: ApiResponse<ProgramWorkoutAssignment>) => {
         if (!response.success || !response.data) {
           this.message = response.message || 'coachProgramBuilder.updateWorkoutDayError';
 

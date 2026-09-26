@@ -13,10 +13,10 @@ export interface Program {
   durationDays?: number;
   difficultyLevel?: string;
   workoutCount?: number;
-  workouts?: ProgramWorkout[];
+  workouts?: ProgramWorkoutSummary[];
 }
 
-export interface ProgramWorkout {
+export interface ProgramWorkoutSummary {
   workoutId: number;
   exercises?: ProgramExercise[];
 }
@@ -50,7 +50,7 @@ export interface CoachProgramSearchItem {
   durationDays?: number;
   difficultyLevel?: string;
   workoutCount?: number;
-  workouts?: ProgramWorkout[];
+  workouts?: ProgramWorkoutSummary[];
 }
 
 export interface CoachProgramSearchResponse {
