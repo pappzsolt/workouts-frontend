@@ -1,5 +1,3 @@
-import type { ProgramWorkoutSummary } from './program.model';
-
 export interface CoachProgram {
   programId: number;
   programName: string;
@@ -9,5 +7,4 @@ export interface CoachProgram {
   durationDays?: number;
   difficultyLevel?: string;
   workoutCount?: number;
-  workouts?: ProgramWorkoutSummary[];
 }

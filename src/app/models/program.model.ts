@@ -3,27 +3,11 @@ export interface Program {
 
   programName?: string;
   programDescription?: string;
-
-  name?: string;
-  description?: string;
-
-  coachId?: number;
   startDate?: string;
   endDate?: string;
   durationDays?: number;
   difficultyLevel?: string;
   workoutCount?: number;
-  workouts?: ProgramWorkoutSummary[];
-}
-
-export interface ProgramWorkoutSummary {
-  workoutId: number;
-  exercises?: ProgramExercise[];
-}
-
-export interface ProgramExercise {
-  exerciseId: number;
-  orderIndex?: number;
 }
 
 export interface UserProgram {

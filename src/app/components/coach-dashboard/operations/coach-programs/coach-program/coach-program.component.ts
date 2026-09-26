@@ -86,7 +86,6 @@ export class CoachProgramComponent implements OnInit {
               durationDays: program.durationDays,
               difficultyLevel: program.difficultyLevel,
               workoutCount: program.workoutCount,
-              workouts: program.workouts,
             }));
 
             this.showProgramsList = true;
