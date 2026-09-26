@@ -8,5 +8,6 @@ export interface CoachProgram {
   endDate?: string | null;
   durationDays?: number;
   difficultyLevel?: string;
+  workoutCount?: number;
   workouts?: ProgramWorkoutSummary[];
 }

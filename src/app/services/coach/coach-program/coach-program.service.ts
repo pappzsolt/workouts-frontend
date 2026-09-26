@@ -54,6 +54,7 @@ export class CoachProgramService {
                   endDate: program.endDate,
                   durationDays: program.durationDays ?? undefined,
                   difficultyLevel: program.difficultyLevel ?? undefined,
+                  workoutCount: program.workoutCount,
                   workouts: [],
                 }))
             : null,
@@ -133,7 +134,7 @@ export class CoachProgramService {
             .filter(
               (
                 program,
-              ): program is BackendProgramDto & {
+              ): program is GetProgramsForLoggedInCoachDto & {
                 programId: number;
                 programName: string;
               } =>
@@ -148,6 +149,7 @@ export class CoachProgramService {
               endDate: program.endDate ?? undefined,
               durationDays: program.durationDays ?? undefined,
               difficultyLevel: program.difficultyLevel ?? undefined,
+              workoutCount: program.workoutCount,
               workouts: [],
             })),
           page: response.page,

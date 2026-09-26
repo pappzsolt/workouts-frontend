@@ -7,5 +7,5 @@ export interface GetProgramsForLoggedInCoachDto {
   difficultyLevel: string | null;
   startDate: string | null;
   endDate: string | null;
-  workoutCount: number | null;
+  workoutCount: number;
 }
