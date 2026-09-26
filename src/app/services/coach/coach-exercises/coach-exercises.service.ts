@@ -7,8 +7,8 @@ import type { WorkoutDto as BackendWorkoutDto } from '../../../models/backend-dt
 import type { ExerciseDto } from '../../../models/backend-dto/exercise/exercise-dto';
 import type { ExerciseRequest } from '../../../models/backend-dto/exercise/exercise-request';
 import type { ExerciseResponse } from '../../../models/backend-dto/exercise/exercise-response';
-import type { ExerciseSearchResponse as BackendExerciseSearchResponse } from '../../../models/backend-dto/exercise/exercise-search-response';
 import type { ApiResponse } from '../../../models/backend-dto/common/api-response';
+import type { PageResponse } from '../../../models/backend-dto/common/page-response';
 import { API_ENDPOINTS } from '../../../api-endpoints';
 import { LanguageService } from '../../shared/language.service';
 
@@ -239,15 +239,7 @@ export class ExerciseService {
     programId?: number,
     workoutId?: number,
     sortDirection: 'asc' | 'desc' = 'asc',
-  ): Observable<
-    ApiResponse<{
-      content: Exercise[];
-      page: number;
-      size: number;
-      totalElements: number;
-      totalPages: number;
-    }>
-  > {
+  ): Observable<ApiResponse<PageResponse<Exercise>>> {
     let params = new HttpParams()
       .set('language', this.languageService.getCurrentLanguage())
       .set('search', search)
@@ -265,7 +257,7 @@ export class ExerciseService {
     }
 
     return this.http
-      .get<ApiResponse<BackendExerciseSearchResponse>>(API_ENDPOINTS.exerciseSearch, { params })
+      .get<ApiResponse<PageResponse<ExerciseDto>>>(API_ENDPOINTS.exerciseSearch, { params })
       .pipe(
         map((response) => ({
           ...response,

@@ -1,10 +1,6 @@
+import type { SelectOption } from '../../../../models/app-types.model';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { SHARED_IMPORTS } from '../../shared-imports';
-
-export interface SelectOption {
-  value: string;
-  label: string;
-}
 
 @Component({
   selector: 'app-exercise-search-field',

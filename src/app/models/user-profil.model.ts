@@ -16,11 +16,6 @@ export interface RawUser {
   };
 }
 
-export interface UserProfileCoach {
-  id: number;
-  name: string;
-}
-
 export interface UserProfile {
   id: number;
   username: string;

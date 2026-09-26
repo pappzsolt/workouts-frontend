@@ -1,8 +1,8 @@
-/** GENERATED FROM BACKEND JAVA DTO. Do not add UI-only fields here. */
+/** GENERATED FROM BACKEND Java WorkoutRequest JSON contract. */
 export interface WorkoutRequest {
   id: number | null;
-  workoutName: string | null;
-  workoutDescription: string | null;
+  name: string | null;
+  description: string | null;
   workoutDate: string | null;
   durationMinutes: number | null;
   intensityLevel: string | null;

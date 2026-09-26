@@ -1,3 +1,4 @@
+import type { SelectOption } from '../../../../models/app-types.model';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -13,10 +14,7 @@ import { LanguageService } from '../../../../services/shared/language.service';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
-import {
-  ExerciseSearchFieldComponent,
-  SelectOption,
-} from '../../../shared/components/exercise-search-field/exercise-search-field.component';
+import { ExerciseSearchFieldComponent } from '../../../shared/components/exercise-search-field/exercise-search-field.component';
 
 @Component({
   selector: 'app-exercise-controller',

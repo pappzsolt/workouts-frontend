@@ -1,3 +1,4 @@
+import type { UserNameId } from '../../models/app-types.model';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
@@ -5,11 +6,6 @@ import { Observable, map } from 'rxjs';
 import { API_ENDPOINTS } from '../../api-endpoints';
 import { ApiResponse } from '../../models/backend-dto/common/api-response';
 import type { UserDto } from '../../models/backend-dto/members/user-dto';
-
-export interface UserNameId {
-  id: number;
-  username: string;
-}
 
 @Injectable({
   providedIn: 'root',

@@ -9,9 +9,9 @@ import type { MemberResponse } from '../../models/backend-dto/members/member-res
 import type { RoleDto } from '../../models/backend-dto/roles/role-dto';
 import type { Role } from '../../models/role.model';
 
+import type { CoachNameId } from '../../models/app-types.model';
 import {
   RawUser,
-  UserProfileCoach,
   UpdateUserRequest,
 } from '../../models/user-edit-model';
 
@@ -51,7 +51,7 @@ export class UserEditService {
     );
   }
 
-  getCoaches(): Observable<UserProfileCoach[]> {
+  getCoaches(): Observable<CoachNameId[]> {
     return this.http.get<ApiResponse<MemberResponse[]>>(this.coachesUrl).pipe(
       map((response) =>
         (response.data ?? []).filter((coach): coach is MemberResponse & { id: number } => coach.id != null).map((coach) => ({

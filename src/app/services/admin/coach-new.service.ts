@@ -5,7 +5,8 @@ import { Observable, catchError, throwError } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
 
-import { CreateCoachRequest, CreateCoachResponse } from '../../models/create-coach-request.model';
+import { CreateCoachRequest } from '../../models/create-coach-request.model';
+import type { ApiResponse } from '../../models/backend-dto/common/api-response';
 
 @Injectable({
   providedIn: 'root',
@@ -18,8 +19,8 @@ export class CoachNewService {
   /**
    * Új edző létrehozása.
    */
-  createCoach(coachData: CreateCoachRequest): Observable<CreateCoachResponse> {
-    return this.http.post<CreateCoachResponse>(this.apiUrl, coachData).pipe(
+  createCoach(coachData: CreateCoachRequest): Observable<ApiResponse<void>> {
+    return this.http.post<ApiResponse<void>>(this.apiUrl, coachData).pipe(
       catchError((error: HttpErrorResponse) => {
         const message = error.error?.message ?? 'Az edző létrehozása nem sikerült.';
 

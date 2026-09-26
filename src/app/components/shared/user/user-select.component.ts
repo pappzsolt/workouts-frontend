@@ -1,6 +1,7 @@
+import type { UserNameId } from '../../../models/app-types.model';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
-import { UserNameIdService, UserNameId } from '../../../services/user/user-name-id.service';
+import { UserNameIdService } from '../../../services/user/user-name-id.service';
 
 import { SHARED_IMPORTS } from '../shared-imports';
 

@@ -1,3 +1,4 @@
+import type { UserNameId } from '../../../../models/app-types.model';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -5,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 
 import { AssignProgramService } from '../../../../services/coach/assign-program/assignprogram.service';
-import { UserNameIdService, UserNameId } from '../../../../services/user/user-name-id.service';
+import { UserNameIdService } from '../../../../services/user/user-name-id.service';
 
 import { LanguageService } from '../../../../services/shared/language.service';
 

@@ -1,3 +1,4 @@
+import type { CoachNameId } from '../../../../models/app-types.model';
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
@@ -8,9 +9,9 @@ import { CoachSelectComponent } from '../../../shared/coach/coach-select.compone
 import { MessageComponent } from '../../../shared/message/message.component';
 
 import { Role } from '../../../../models/role.model';
-import { CoachNameId } from '../../../../services/coach/coach-name-id.service';
 
-import { CreateUserRequest, CreateUserResponse } from '../../../../models/user-new-model';
+import { CreateUserRequest } from '../../../../models/user-new-model';
+import type { ApiResponse } from '../../../../models/backend-dto/common/api-response';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
@@ -129,7 +130,7 @@ export class UserNewComponent {
     };
 
     this.userNewService.createUser(payload).subscribe({
-      next: (res: CreateUserResponse) => {
+      next: (res: ApiResponse<void>) => {
         if (res.success) {
           this.showSuccess(res.message || 'adminUserNew.createSuccess');
 

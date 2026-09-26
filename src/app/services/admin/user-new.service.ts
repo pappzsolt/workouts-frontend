@@ -5,7 +5,8 @@ import { catchError } from 'rxjs/operators';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
 
-import { CreateUserRequest, CreateUserResponse } from '../../models/user-new-model';
+import { CreateUserRequest } from '../../models/user-new-model';
+import type { ApiResponse } from '../../models/backend-dto/common/api-response';
 
 @Injectable({
   providedIn: 'root',
@@ -15,9 +16,9 @@ export class UserNewService {
 
   constructor(private readonly http: HttpClient) {}
 
-  createUser(userData: CreateUserRequest): Observable<CreateUserResponse> {
+  createUser(userData: CreateUserRequest): Observable<ApiResponse<void>> {
     return this.http
-      .post<CreateUserResponse>(this.apiUrl, userData)
+      .post<ApiResponse<void>>(this.apiUrl, userData)
       .pipe(catchError(this.handleError));
   }
 

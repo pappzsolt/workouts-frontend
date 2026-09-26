@@ -1,3 +1,4 @@
+import type { UserNameId } from '../../../../models/app-types.model';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 
 import { UserSelectComponent } from '../../../../components/shared/user/user-select.component';
@@ -5,13 +6,13 @@ import { CoachSelectComponent } from '../../../shared/coach/coach-select.compone
 import { MessageComponent } from '../../../shared/message/message.component';
 
 import { RoleService } from '../../../../services/roles/role.service';
-import { UserNameId } from '../../../../services/user/user-name-id.service';
 
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 
-import { UserProfile, RawUser, UserProfileCoach } from '../../../../models/user-profil.model';
+import { UserProfile, RawUser } from '../../../../models/user-profil.model';
+import type { CoachNameId } from '../../../../models/app-types.model';
 import { Role } from '../../../../models/role.model';
 
 import { UserEditService } from '../../../../services/admin/user-edit.service';
@@ -40,7 +41,7 @@ export class UserEditComponent implements OnInit {
 
   users: RawUser[] = [];
 
-  coaches: UserProfileCoach[] = [];
+  coaches: CoachNameId[] = [];
 
   roles: Role[] = [];
 
@@ -66,7 +67,7 @@ export class UserEditComponent implements OnInit {
     roleIds: [],
   };
 
-  selectedCoach?: UserProfileCoach;
+  selectedCoach?: CoachNameId;
 
   selectedRoles: Role[] = [];
 
@@ -212,7 +213,7 @@ export class UserEditComponent implements OnInit {
   // COACH KIVÁLASZTÁSA
   // =============================
 
-  onCoachSelected(coach: UserProfileCoach): void {
+  onCoachSelected(coach: CoachNameId): void {
     this.selectedCoach = coach;
 
     this.selectedUser.coachId = coach.id;

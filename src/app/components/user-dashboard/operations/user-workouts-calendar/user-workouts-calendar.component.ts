@@ -1,18 +1,12 @@
+import type { CalendarDay, ScheduledWorkout } from '../../../../models/app-types.model';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { Subject, takeUntil } from 'rxjs';
 
 import { WorkoutExercisesManagerService } from '../../../../services/coach/workout-exercises-manager.service';
-import { ScheduledWorkout } from '../../../../services/user/user-workouts/user-workouts.service';
 import { UserWorkoutExerciseDto } from '../../../../models/user-workout-exercise.dto';
 import { LanguageService } from '../../../../services/shared/language.service';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
-
-interface CalendarDay {
-  date: Date;
-  currentMonth: boolean;
-  isToday: boolean;
-}
 
 @Component({
   selector: 'app-user-workouts-calendar',

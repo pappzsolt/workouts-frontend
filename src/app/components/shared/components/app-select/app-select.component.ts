@@ -1,11 +1,7 @@
+import type { SelectOption } from '../../../../models/app-types.model';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
-
-export interface AppSelectOption {
-  value: string;
-  label: string;
-}
 
 @Component({
   selector: 'app-select',
@@ -20,7 +16,7 @@ export class AppSelectComponent {
 
   @Input() value: string | undefined = '';
 
-  @Input() options: AppSelectOption[] = [];
+  @Input() options: SelectOption[] = [];
 
   @Input() placeholder = '';
   @Input() placeholderValue = '';

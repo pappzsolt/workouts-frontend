@@ -2,12 +2,14 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
-import { PagedWorkoutResponse, Workout } from '../../../models/workout.model';
+import type { Workout } from '../../../models/workout.model';
 import type { WorkoutWithExercises as WorkoutUiDto } from '../../../models/exercise.model';
 import type { WorkoutDto as BackendWorkoutDto } from '../../../models/backend-dto/exercise/workout-dto';
+import type { UserWorkoutDto } from '../../../models/backend-dto/workout/user-workout-dto';
 import type { WorkoutRequest } from '../../../models/backend-dto/workout/workout-request';
 import type { WorkoutResponse } from '../../../models/backend-dto/workout/workout-response';
 import type { ApiResponse } from '../../../models/backend-dto/common/api-response';
+import type { PageResponse } from '../../../models/backend-dto/common/page-response';
 import { LanguageService } from '../../shared/language.service';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
@@ -148,8 +150,8 @@ export class CoachWorkoutsService {
   addWorkout(workout: Workout): Observable<WorkoutResponse> {
     const payload: WorkoutRequest = {
       id: workout.id ?? null,
-      workoutName: workout.workoutName ?? workout.name ?? null,
-      workoutDescription: workout.workoutDescription ?? workout.description ?? null,
+      name: workout.name ?? workout.workoutName ?? null,
+      description: workout.description ?? workout.workoutDescription ?? null,
       workoutDate: workout.workoutDate ?? null,
       durationMinutes: workout.durationMinutes ?? null,
       intensityLevel: workout.intensityLevel ?? null,
@@ -157,14 +159,31 @@ export class CoachWorkoutsService {
       done: workout.done ?? null,
     };
 
-    return this.http.post<WorkoutResponse>(API_ENDPOINTS.workoutAdd, payload);
+    const params = new HttpParams().set(
+      'language',
+      this.languageService.getCurrentLanguage(),
+    );
+
+    return this.http.post<WorkoutResponse>(
+      API_ENDPOINTS.workoutAdd,
+      payload,
+      { params },
+    );
   }
 
   /**
    * Workout lekérése ID alapján.
    */
-  getWorkoutById(id: number): Observable<ApiResponse<BackendWorkoutDto>> {
-    return this.http.get<ApiResponse<BackendWorkoutDto>>(API_ENDPOINTS.workoutById(id));
+  getWorkoutById(id: number): Observable<ApiResponse<UserWorkoutDto>> {
+    const params = new HttpParams().set(
+      'language',
+      this.languageService.getCurrentLanguage(),
+    );
+
+    return this.http.get<ApiResponse<UserWorkoutDto>>(
+      API_ENDPOINTS.workoutById(id),
+      { params },
+    );
   }
 
   /**
@@ -173,8 +192,8 @@ export class CoachWorkoutsService {
   updateWorkout(id: number, workout: Workout): Observable<WorkoutResponse> {
     const payload: WorkoutRequest = {
       id,
-      workoutName: workout.workoutName ?? workout.name ?? null,
-      workoutDescription: workout.workoutDescription ?? workout.description ?? null,
+      name: workout.name ?? workout.workoutName ?? null,
+      description: workout.description ?? workout.workoutDescription ?? null,
       workoutDate: workout.workoutDate ?? null,
       durationMinutes: workout.durationMinutes ?? null,
       intensityLevel: workout.intensityLevel ?? null,
@@ -182,7 +201,16 @@ export class CoachWorkoutsService {
       done: workout.done ?? null,
     };
 
-    return this.http.put<WorkoutResponse>(API_ENDPOINTS.workoutUpdate, payload);
+    const params = new HttpParams().set(
+      'language',
+      this.languageService.getCurrentLanguage(),
+    );
+
+    return this.http.put<WorkoutResponse>(
+      API_ENDPOINTS.workoutUpdate,
+      payload,
+      { params },
+    );
   }
 
   /**
@@ -203,7 +231,7 @@ export class CoachWorkoutsService {
     size: number = 6,
     language?: string,
     sortDirection: 'asc' | 'desc' = 'asc',
-  ): Observable<PagedWorkoutResponse> {
+  ): Observable<PageResponse<Workout>> {
     const params = new HttpParams()
       .set('search', search)
       .set('page', page)
@@ -211,6 +239,6 @@ export class CoachWorkoutsService {
       .set('language', language ?? this.languageService.getCurrentLanguage())
       .set('sortDirection', sortDirection);
 
-    return this.http.get<PagedWorkoutResponse>(API_ENDPOINTS.myWorkoutsSearch, { params });
+    return this.http.get<PageResponse<Workout>>(API_ENDPOINTS.myWorkoutsSearch, { params });
   }
 }

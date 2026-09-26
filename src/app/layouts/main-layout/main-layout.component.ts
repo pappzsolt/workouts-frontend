@@ -1,10 +1,8 @@
+import type { MenuItem } from '../../models/app-types.model';
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import {
-  DynamicMenuComponent,
-  MenuItem,
-} from '../../components/dynamic-menu/dynamic-menu.component';
+import { DynamicMenuComponent } from '../../components/dynamic-menu/dynamic-menu.component';
 import { AuthService } from '../../services/auth/auth.service';
 
 @Component({

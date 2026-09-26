@@ -1,5 +1,3 @@
-import { ApiResponse } from './backend-dto/common/api-response';
-
 export interface CreateUserRequest {
   type: 'user';
   username: string;
@@ -15,4 +13,3 @@ export interface CreateUserRequest {
   roleIds: number[];
 }
 
-export type CreateUserResponse = ApiResponse<void>;

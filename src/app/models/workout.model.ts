@@ -28,22 +28,3 @@ export interface Workout {
   // Workouthoz tartozó gyakorlatok
   exercises?: WorkoutExercise[];
 }
-
-
-export interface WorkoutListResponse {
-  status: string;
-  workouts: Workout[];
-  message?: string;
-}
-
-
-/**
- * Lapozott coach workout keresési válasz.
- */
-export interface PagedWorkoutResponse {
-  content: Workout[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-}

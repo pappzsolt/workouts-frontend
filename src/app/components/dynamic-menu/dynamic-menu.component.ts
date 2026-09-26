@@ -1,15 +1,8 @@
+import type { MenuItem } from '../../models/app-types.model';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-
-export interface MenuItem {
-  label: string;
-  path?: string;
-  children?: MenuItem[];
-  open?: boolean;
-  action?: string;
-}
 
 @Component({
   selector: 'app-dynamic-menu',

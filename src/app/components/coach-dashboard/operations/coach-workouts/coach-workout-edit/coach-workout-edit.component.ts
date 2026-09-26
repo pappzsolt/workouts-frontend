@@ -1,9 +1,10 @@
+import type { WorkoutExerciseView } from '../../../../../models/app-types.model';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { CoachWorkoutsService } from '../../../../../services/coach/coach-workouts/coach-workouts.service';
 import type { ApiResponse } from '../../../../../models/backend-dto/common/api-response';
-import type { WorkoutDto as BackendWorkoutDto } from '../../../../../models/backend-dto/exercise/workout-dto';
+import type { UserWorkoutDto } from '../../../../../models/backend-dto/workout/user-workout-dto';
 import type { WorkoutWithExercises as WorkoutUiDto } from '../../../../../models/exercise.model';
 import { WorkoutExerciseService } from '../../../../../services/coach/workout-exercises.service';
 
@@ -22,20 +23,6 @@ import { Exercise } from '../../../../../models/exercise.model';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
-
-interface WorkoutExerciseView {
-  id?: number;
-  workoutId: number;
-  exerciseId?: number;
-  exercise?: Exercise;
-  sets?: number;
-  repetitions?: number;
-  orderIndex?: number;
-  restSeconds?: number;
-  notes?: string;
-  done?: boolean;
-  name?: string;
-}
 
 @Component({
   selector: 'app-coach-workout-edit',
@@ -223,7 +210,7 @@ export class CoachWorkoutEditComponent implements OnInit {
     }
 
     this.coachWorkoutsService.getWorkoutById(this.workoutId).subscribe({
-      next: (res: ApiResponse<BackendWorkoutDto>) => {
+      next: (res: ApiResponse<UserWorkoutDto>) => {
         if (!res.success || !res.data) {
           this.setMessage(res.message || 'coachWorkoutEdit.notFound', 'error');
           return;
@@ -237,15 +224,25 @@ export class CoachWorkoutEditComponent implements OnInit {
 
         this.workout = {
           ...this.workout,
-          id: w.id ?? this.workout.id,
-          name: w.name ?? '',
-          workoutName: w.name ?? '',
-          description: w.description ?? '',
-          workoutDescription: w.description ?? '',
+          id: w.workoutId ?? this.workout.id,
+          name: w.workoutName ?? '',
+          workoutName: w.workoutName ?? '',
+          description: w.workoutDescription ?? '',
+          workoutDescription: w.workoutDescription ?? '',
           durationMinutes: w.durationMinutes ?? 0,
           workoutDate: workoutDateFormatted,
           intensityLevel: w.intensityLevel ?? undefined,
           done: w.done ?? undefined,
+          programId: w.programId ?? undefined,
+          dayIndex: w.dayIndex ?? undefined,
+          completed: w.completed ?? undefined,
+          performedAt: w.performedAt ?? undefined,
+          actualSets: w.actualSets ?? undefined,
+          actualRepetitions: w.actualRepetitions ?? undefined,
+          weightUsed: w.weightUsed ?? undefined,
+          durationSeconds: w.durationSeconds ?? undefined,
+          feedback: w.feedback ?? undefined,
+          notes: w.notes ?? undefined,
           exercises: [],
         };
       },

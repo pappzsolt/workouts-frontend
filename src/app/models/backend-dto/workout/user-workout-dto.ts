@@ -1,4 +1,4 @@
-/** GENERATED FROM BACKEND JAVA DTO. Do not add UI-only fields here. */
+/** GENERATED FROM BACKEND JAVA DTO: UserWorkoutDto. Do not add UI-only fields here. */
 export interface UserWorkoutDto {
   userWorkoutId: number | null;
   programWorkoutId: number | null;

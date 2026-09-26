@@ -6,11 +6,10 @@ import { API_ENDPOINTS } from '../../../api-endpoints';
 import type { ApiResponse } from '../../../models/backend-dto/common/api-response';
 import type { GetProgramsForLoggedInCoachDto } from '../../../models/backend-dto/programs/get-programs-for-logged-in-coach-dto';
 import type { ProgramDto as BackendProgramDto } from '../../../models/backend-dto/programs/program-dto';
-import type { ProgramSearchResponse } from '../../../models/backend-dto/programs/program-search-response';
 import type { ProgramCreationRequest as BackendProgramCreationRequest } from '../../../models/backend-dto/programcreator/program-creation-request';
 
-import type { CoachProgramSearchResponse } from '../../../models/program.model';
 import type { CoachProgram } from '../../../models/coach-program.model';
+import type { PageResponse } from '../../../models/backend-dto/common/page-response';
 import { LanguageService } from '../../shared/language.service';
 
 @Injectable({
@@ -118,7 +117,7 @@ export class CoachProgramService {
     size: number = 6,
     language?: string,
     sortDirection: 'asc' | 'desc' = 'asc',
-  ): Observable<CoachProgramSearchResponse> {
+  ): Observable<PageResponse<CoachProgram>> {
     const params = new HttpParams()
       .set('search', search)
       .set('page', page)
@@ -127,7 +126,7 @@ export class CoachProgramService {
       .set('sortDirection', sortDirection);
 
     return this.http
-      .get<ProgramSearchResponse>(API_ENDPOINTS.coachProgramSearch, { params })
+      .get<PageResponse<GetProgramsForLoggedInCoachDto>>(API_ENDPOINTS.coachProgramSearch, { params })
       .pipe(
         map((response) => ({
           content: (response.content ?? [])

@@ -1,3 +1,4 @@
+import type { RawScheduledWorkout, RawWorkoutRecord, ScheduledWorkout } from '../../../models/app-types.model';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
@@ -6,33 +7,6 @@ import { API_ENDPOINTS } from '../../../api-endpoints';
 import type { UserWorkoutOccurrence } from '../../../models/user-workout-occurrence.model';
 import { ApiResponse } from '../../../models/backend-dto/common/api-response';
 
-interface RawWorkoutRecord extends Partial<UserWorkoutOccurrence> {
-  id?: number;
-  workout_id?: number;
-  program_workout_id?: number;
-  user_workout_id?: number;
-}
-
-interface RawScheduledWorkout extends Partial<ScheduledWorkout> {
-  user_workout_id?: number;
-  program_workout_id?: number;
-  workout_id?: number;
-  program_id?: number;
-  scheduled_at?: string | null;
-  workout_name?: string | null;
-}
-
-
-
-export interface ScheduledWorkout {
-  userWorkoutId: number;
-  programWorkoutId: number;
-  workoutId: number;
-  programId: number;
-  scheduledAt: string | null;
-  completed: boolean | null;
-  workoutName?: string | null;
-}
 
 @Injectable({
   providedIn: 'root',

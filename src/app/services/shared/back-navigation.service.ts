@@ -1,11 +1,7 @@
+import type { NavigationHistoryEntry } from '../../models/app-types.model';
 import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
-
-interface NavigationHistoryEntry {
-  url: string;
-  state: Record<string, unknown>;
-}
 
 @Injectable({
   providedIn: 'root',

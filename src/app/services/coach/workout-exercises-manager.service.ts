@@ -1,60 +1,12 @@
+import type { ScheduledWorkout, ScheduledWorkoutRecord, UserProgramExerciseRow } from '../../models/app-types.model';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 import { ApiResponse } from '../../models/backend-dto/common/api-response';
+import type { PageResponse } from '../../models/backend-dto/common/page-response';
 import { UserWorkoutExerciseDto } from '../../models/user-workout-exercise.dto';
-import { ScheduledWorkout } from '../user/user-workouts/user-workouts.service';
 
-interface UserProgramExerciseRow {
-  scheduled_date?: string | null;
-  scheduledAt?: string | null;
-  program_day_index?: number;
-  user_workout_id?: number;
-  userWorkoutId?: number;
-  program_workout_id?: number;
-  programWorkoutId?: number;
-  workout_id?: number;
-  workoutId?: number;
-  workout_name?: string | null;
-  workoutName?: string | null;
-  workout_completed?: boolean;
-  workoutCompleted?: boolean;
-  user_workout_exercise_id?: number;
-  workout_exercise_id?: number;
-  exercise_order?: number;
-  exercise_id?: number;
-  exercise_name?: string | null;
-  exercise_completed?: boolean;
-  sets_done?: number | null;
-  feedback?: string | null;
-  notes?: string | null;
-  performed_at?: string | null;
-}
-
-interface ScheduledWorkoutRecord {
-  userWorkoutId?: number;
-  user_workout_id?: number;
-  programWorkoutId?: number;
-  program_workout_id?: number;
-  workoutId?: number;
-  workout_id?: number;
-  programId?: number;
-  program_id?: number;
-  scheduledAt?: string | null;
-  scheduled_at?: string | null;
-  completed?: boolean | null;
-  workoutName?: string | null;
-  workout_name?: string | null;
-}
-
-interface ScheduledWorkoutsSearchResponse {
-  content?: ScheduledWorkoutRecord[];
-  page?: number;
-  size?: number;
-  totalElements?: number;
-  totalPages?: number;
-}
 import { API_ENDPOINTS } from '../../api-endpoints';
 
 @Injectable({
@@ -214,9 +166,9 @@ export class WorkoutExercisesManagerService {
     search: string,
     page: number = 0,
     size: number = 6,
-  ): Observable<ApiResponse<ScheduledWorkoutsSearchResponse>> {
+  ): Observable<ApiResponse<PageResponse<ScheduledWorkoutRecord>>> {
     const params = new HttpParams().set('search', search).set('page', page).set('size', size);
 
-    return this.http.get<ApiResponse<ScheduledWorkoutsSearchResponse>>(API_ENDPOINTS.scheduledUserWorkoutsSearch, { params });
+    return this.http.get<ApiResponse<PageResponse<ScheduledWorkoutRecord>>>(API_ENDPOINTS.scheduledUserWorkoutsSearch, { params });
   }
 }

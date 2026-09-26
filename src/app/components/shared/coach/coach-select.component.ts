@@ -1,6 +1,7 @@
+import type { CoachNameId } from '../../../models/app-types.model';
 import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 
-import { CoachNameId, CoachNameIdService } from '../../../services/coach/coach-name-id.service';
+import { CoachNameIdService } from '../../../services/coach/coach-name-id.service';
 
 import { SHARED_IMPORTS } from '../shared-imports';
 

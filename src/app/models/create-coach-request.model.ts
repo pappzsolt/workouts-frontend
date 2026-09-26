@@ -1,5 +1,3 @@
-import { ApiResponse } from './backend-dto/common/api-response';
-
 export interface CreateCoachRequest {
   type: 'coach';
   name: string;
@@ -11,4 +9,3 @@ export interface CreateCoachRequest {
   roleIds: number[];
 }
 
-export type CreateCoachResponse = ApiResponse<void>;

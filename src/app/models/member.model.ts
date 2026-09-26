@@ -9,9 +9,3 @@ export interface Member {
   roles: string[];
   extraFields: ExtraFields;
 }
-
-export interface MembersResponse {
-  success: boolean;
-  message: string;
-  data: Member[];
-}
