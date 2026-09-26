@@ -303,7 +303,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
         this.workoutId,
         exerciseId,
         set.id,
-        set.completed,
+        set.completed === true,
         set.actualRepetitions,
         set.actualWeightKg,
         set.notes,

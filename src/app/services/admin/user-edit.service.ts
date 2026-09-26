@@ -5,16 +5,13 @@ import { Observable, map } from 'rxjs';
 import { API_ENDPOINTS } from '../../api-endpoints';
 
 import { ApiResponse } from '../../models/backend-dto/common/api-response';
-import type { UserWithRolesDto } from '../../models/backend-dto/members/user-with-roles-dto';
 import type { MemberResponse } from '../../models/backend-dto/members/member-response';
 import type { RoleDto } from '../../models/backend-dto/roles/role-dto';
+import type { Role } from '../../models/role.model';
 
 import {
   RawUser,
   Coach,
-  Role,
-  UserListResponse,
-  CoachListResponse,
   UpdateUserRequest,
 } from '../../models/user-edit-model';
 
@@ -98,10 +95,6 @@ export class UserEditService {
 
     return this.http.post<ApiResponse<void>>(this.apiUrl, payload);
   }
-  private getNumberExtraField(value: unknown): number | undefined {
-    return typeof value === 'number' ? value : undefined;
-  }
-
   private getNumberExtraField(value: unknown): number | undefined {
     return typeof value === 'number' ? value : undefined;
   }

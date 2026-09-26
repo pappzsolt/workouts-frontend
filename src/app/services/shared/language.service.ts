@@ -35,7 +35,11 @@ export class LanguageService {
   }
 
   getCurrentLanguage(): LanguageCode {
-    return this.translate.currentLang() || this.defaultLanguage;
+    const currentLanguage = this.translate.currentLang();
+
+    return isLanguageCode(currentLanguage)
+      ? currentLanguage
+      : this.defaultLanguage;
   }
 }
 

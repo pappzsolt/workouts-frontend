@@ -152,6 +152,19 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
   // WORKOUT KIVÁLASZTÁS
   // ==========================================================
 
+  onWorkoutCheckboxChange(event: Event, workoutId: number | undefined): void {
+    if (workoutId == null) {
+      return;
+    }
+
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement)) {
+      return;
+    }
+
+    this.toggleWorkoutSelection(workoutId, target.checked);
+  }
+
   toggleWorkoutSelection(id: number, checked: boolean): void {
     if (this.multiSelect) {
       if (checked) {

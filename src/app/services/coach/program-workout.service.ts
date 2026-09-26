@@ -50,10 +50,6 @@ export class ProgramWorkoutService {
     return this.http.get<ApiResponse<ProgramWorkout[]>>(API_ENDPOINTS.programWorkoutsByProgram(programId));
   }
 
-  getWorkoutsForProgramByQuery(programId: number): Observable<ApiResponse<ProgramWorkout[]>> {
-    return this.http.get<ApiResponse<ProgramWorkout[]>>(API_ENDPOINTS.programWorkoutsByProgram(programId));
-  }
-
   // ==========================================================
   // EGY WORKOUT TÖRLÉSE A PROGRAMBÓL
   // ==========================================================

@@ -96,13 +96,8 @@
             >
               <input
                 type="checkbox"
-                [checked]="selectedWorkoutIds.includes(workout.id!)"
-                (change)="
-                  toggleWorkoutSelection(
-                    workout.id!,
-                    $any($event.target).checked
-                  )
-                "
+                [checked]="workout.id != null && selectedWorkoutIds.includes(workout.id)"
+                (change)="onWorkoutCheckboxChange($event, workout.id)"
                 id="workout-{{ workout.id }}"
                 class="h-5 w-5 shrink-0 cursor-pointer rounded border-surface-300 text-primary-600 accent-primary-600 focus:ring-2 focus:ring-primary-500/20"
               />
