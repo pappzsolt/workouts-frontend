@@ -7,4 +7,6 @@ export interface ExtraFields {
   age?: number;
   height?: number;
   goals?: string;
+  phone?: string;
+  specialization?: string;
 }

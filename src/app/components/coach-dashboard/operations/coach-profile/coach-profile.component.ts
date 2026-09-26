@@ -7,16 +7,7 @@ import { UpdateCoachRequest } from '../../../../models/update-coach-request.mode
 import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
-export interface CoachProfile {
-  id?: number;
-  name: string;
-  email: string;
-  password_hash: string;
-  phone: string;
-  specialization?: string;
-  avatar_url?: string;
-  created_at?: string;
-}
+import type { CoachProfile } from '../../../../models/coach-profile.model';
 
 @Component({
   selector: 'app-coach-profile',

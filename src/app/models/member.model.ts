@@ -1,13 +1,4 @@
-export interface ExtraFields extends Record<string, string | number | undefined> {
-  coach_id?: number;
-  gender?: string;
-  weight?: number;
-  age?: number;
-  height?: number;
-  goals?: string;
-  phone?: string;
-  specialization?: string;
-}
+import type { ExtraFields } from './extra-fields.model';
 
 export interface Member {
   id: number;
@@ -24,4 +15,3 @@ export interface MembersResponse {
   message: string;
   data: Member[];
 }
-//adnin-list-users service
