@@ -4,7 +4,8 @@ import { Observable } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
 
-import { ApiResponse, ProgramDto, UserProgramDto } from '../../../models/assign-program-model';
+import { ProgramDto, UserProgramDto } from '../../../models/assign-program-model';
+import { ApiResponse } from '../../../models/api-response.model';
 
 @Injectable({
   providedIn: 'root',

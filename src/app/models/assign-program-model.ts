@@ -38,9 +38,3 @@ export interface UserProgramDto {
   assignedAt: string;
 }
 
-export interface ApiResponse<T> {
-  status: string;
-  data: T;
-  message?: string;
-  count?: number;
-}

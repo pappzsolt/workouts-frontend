@@ -3,7 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
-import { ApiResponse } from '../../models/api-response.model';
+import { ApiResponse } from '../../models/backend-dto/common/api-response';
+import type { CoachDto } from '../../models/backend-dto/coach/coach-dto';
 
 export interface CoachNameId {
   id: number;
@@ -30,13 +31,18 @@ export class CoachNameIdService {
    * CoachNameId[]
    */
   getAllCoaches(): Observable<CoachNameId[]> {
-    return this.http.get<ApiResponse<CoachNameId[]>>(this.apiUrl).pipe(
+    return this.http.get<ApiResponse<CoachDto[]>>(this.apiUrl).pipe(
       map((response) => {
         if (!response.success) {
           throw new Error(response.message ?? 'A coach-ok lekérése sikertelen.');
         }
 
-        return response.data;
+        return (response.data ?? [])
+          .filter((coach): coach is CoachDto & { id: number } => coach.id != null)
+          .map((coach) => ({
+            id: coach.id,
+            name: coach.name ?? '',
+          }));
       }),
     );
   }

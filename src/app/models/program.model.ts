@@ -111,14 +111,14 @@ export interface UserProgramApiItem {
 
 export interface UserProgram {
   id: number;
-  name: string;
-  description: string;
+  name: string | null;
+  description: string | null;
   startDate?: string | null;
   endDate?: string | null;
   durationWeeks: number;
-  difficulty: string;
-  status: string;
-  assignedAt: string;
+  difficulty: string | null;
+  status: string | null;
+  assignedAt: string | null;
 }
 
 /**

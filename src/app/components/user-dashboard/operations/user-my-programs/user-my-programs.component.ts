@@ -219,7 +219,7 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
   // NAVIGÁCIÓ A PROGRAM WORKOUTS OLDALÁRA
   // ============================================================
 
-  goToWorkouts(programId: number, programName: string): void {
+  goToWorkouts(programId: number, programName: string | null): void {
     this.router.navigate(['/user/programs', programId, 'workouts'], {
       state: { programName },
     });

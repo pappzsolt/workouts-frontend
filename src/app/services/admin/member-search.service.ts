@@ -9,7 +9,8 @@ import { API_ENDPOINTS } from '../../api-endpoints';
 
 import { Coach, SearchResponse } from '../../models/member-search-model';
 
-import { ApiResponse } from '../../models/api-response.model';
+import { ApiResponse } from '../../models/backend-dto/common/api-response';
+import type { MemberResponse } from '../../models/backend-dto/members/member-response';
 import { ExtraFields } from '../../models/member.model';
 
 /**
@@ -43,7 +44,35 @@ export class MemberSearchService {
   searchMembers(keyword: string): Observable<SearchResponse> {
     const params = new HttpParams().set('keyword', keyword.trim());
 
-    return this.http.get<SearchResponse>(this.memberSearchApiUrl, { params }).pipe(
+    return this.http.get<ApiResponse<MemberResponse[]>>(this.memberSearchApiUrl, { params }).pipe(
+      map((response) => ({
+        success: response.success,
+        message: response.message ?? '',
+        data: (response.data ?? [])
+          .filter(
+            (member): member is MemberResponse & { id: number; type: 'user' | 'coach'; usernameOrName: string; email: string } =>
+              member.id != null &&
+              (member.type === 'user' || member.type === 'coach') &&
+              member.usernameOrName != null &&
+              member.email != null,
+          )
+          .map((member) => ({
+            id: member.id,
+            type: member.type,
+            usernameOrName: member.usernameOrName,
+            email: member.email,
+            avatarUrl: member.avatarUrl,
+            roles: member.roles ?? [],
+            extraFields: {
+              ...(typeof member.extraFields?.['coach_id'] === 'number' ? { coach_id: member.extraFields['coach_id'] as number } : {}),
+              ...(typeof member.extraFields?.['gender'] === 'string' ? { gender: member.extraFields['gender'] as string } : {}),
+              ...(typeof member.extraFields?.['weight'] === 'number' ? { weight: member.extraFields['weight'] as number } : {}),
+              ...(typeof member.extraFields?.['age'] === 'number' ? { age: member.extraFields['age'] as number } : {}),
+              ...(typeof member.extraFields?.['height'] === 'number' ? { height: member.extraFields['height'] as number } : {}),
+              ...(typeof member.extraFields?.['goals'] === 'string' ? { goals: member.extraFields['goals'] as string } : {}),
+            },
+          })),
+      })),
       switchMap((response) => {
         const members = response.data;
 
@@ -103,6 +132,9 @@ export class MemberSearchService {
              */
             map((response) => {
               const coach = response.data;
+              if (!coach) {
+                return undefined;
+              }
 
               /*
                * Backend → frontend modell

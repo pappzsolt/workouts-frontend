@@ -6,12 +6,14 @@ import { Exercise, WorkoutDto, ExerciseSearchResponse } from '../../../models/ex
 
 import { ApiResponse } from '../../../models/api-response.model';
 import { API_ENDPOINTS } from '../../../api-endpoints';
+import { LanguageService } from '../../shared/language.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ExerciseService {
   private http = inject(HttpClient);
+  private languageService = inject(LanguageService);
 
   // ==========================================================
   // WORKOUTOK EXERCISE-EKKEL
@@ -139,7 +141,7 @@ export class ExerciseService {
     sortDirection: 'asc' | 'desc' = 'asc',
   ): Observable<ApiResponse<ExerciseSearchResponse>> {
     let params = new HttpParams()
-      .set('language', 'hu')
+      .set('language', this.languageService.getCurrentLanguage())
       .set('search', search)
       .set('searchField', searchField)
       .set('page', page)

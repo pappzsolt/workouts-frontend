@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subject, takeUntil } from 'rxjs';
 
-import { ApiResponse } from '../../../../models/api-response.model';
+import type { ApiResponse } from '../../../../models/backend-dto/common/api-response';
 import {
   ProgramStatistics,
   ProgramStatisticsProgram,
