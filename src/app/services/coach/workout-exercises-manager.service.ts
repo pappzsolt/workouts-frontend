@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
-import { ApiResponse } from '../../models/api-response.model';
+import { ApiResponse } from '../../models/backend-dto/common/api-response';
 import { UserWorkoutExerciseDto } from '../../models/user-workout-exercise.dto';
 import { ScheduledWorkout } from '../user/user-workouts/user-workouts.service';
 
@@ -73,7 +73,7 @@ export class WorkoutExercisesManagerService {
   getExercisesForUserWorkout(userWorkoutId: number): Observable<UserWorkoutExerciseDto[]> {
     return this.http
       .get<ApiResponse<UserWorkoutExerciseDto[]>>(API_ENDPOINTS.userWorkoutExerciseByWorkout(userWorkoutId))
-      .pipe(map((response: ApiResponse<UserWorkoutExerciseDto[]>) => response.data));
+      .pipe(map((response: ApiResponse<UserWorkoutExerciseDto[]>) => response.data ?? []));
   }
 
   /**

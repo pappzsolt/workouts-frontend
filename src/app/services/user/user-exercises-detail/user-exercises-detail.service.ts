@@ -6,7 +6,7 @@ import { API_ENDPOINTS } from '../../../api-endpoints';
 
 import { UserWorkoutDetailDto } from '../../../models/user-workout-exercise-detail.dto';
 
-import { ApiResponse } from '../../../models/api-response.model';
+import { ApiResponse } from '../../../models/backend-dto/common/api-response';
 
 @Injectable({
   providedIn: 'root',

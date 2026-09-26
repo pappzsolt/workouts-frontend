@@ -130,7 +130,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       next: (response) => {
         const workout = response.data;
 
-        this.workout = workout;
+        this.workout = workout ?? undefined;
 
         if (!workout?.exercises || workout.exercises.length === 0) {
           this.message = 'userExerciseDetail.noExercise';

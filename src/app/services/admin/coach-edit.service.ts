@@ -12,7 +12,7 @@ import {
   SingleCoachResponse,
 } from '../../models/coach-response.model';
 
-import { ApiResponse } from '../../models/api-response.model';
+import { ApiResponse } from '../../models/backend-dto/common/api-response';
 
 import { UpdateCoachRequest } from '../../models/update-coach-request.model';
 
@@ -31,7 +31,12 @@ export class CoachEditService {
    */
   getCoaches(): Observable<Coach[]> {
     return this.http.get<CoachesResponse>(this.coachesUrl).pipe(
-      map((response) => response.data.map((item) => this.mapCoach(item))),
+      map((response) => {
+        if (response.data == null) {
+          throw new Error('Az edzők válaszában nincs adat.');
+        }
+        return response.data.map((item) => this.mapCoach(item));
+      }),
 
       catchError(() => throwError(() => new Error('Az edzők listájának betöltése nem sikerült.'))),
     );
@@ -42,7 +47,12 @@ export class CoachEditService {
    */
   getCoach(id: number): Observable<Coach> {
     return this.http.get<SingleCoachResponse>(API_ENDPOINTS.memberById(id)).pipe(
-      map((response) => this.mapCoach(response.data)),
+      map((response) => {
+        if (response.data == null) {
+          throw new Error('Az edző válaszában nincs adat.');
+        }
+        return this.mapCoach(response.data);
+      }),
 
       catchError(() => throwError(() => new Error('Az edző adatainak betöltése nem sikerült.'))),
     );

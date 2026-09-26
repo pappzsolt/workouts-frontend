@@ -6,7 +6,7 @@ import { jwtDecode } from 'jwt-decode';
 import { API_ENDPOINTS } from '../../api-endpoints';
 
 import { LoginResponse, TokenPayload } from '../../models/auth-model';
-import { ApiResponse } from '../../models/api-response.model';
+import { ApiResponse } from '../../models/backend-dto/common/api-response';
 
 @Injectable({
   providedIn: 'root',

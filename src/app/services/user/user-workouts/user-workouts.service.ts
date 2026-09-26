@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
-import { ApiResponse } from '../../../models/api-response.model';
+import { ApiResponse } from '../../../models/backend-dto/common/api-response';
 
 interface RawWorkoutRecord extends Partial<Workout> {
   id?: number;

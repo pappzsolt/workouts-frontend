@@ -290,7 +290,7 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
 
     this.coachWorkoutsService.addWorkout(this.newWorkout).subscribe({
       next: (res) => {
-        if (res.success) {
+        if (res.done === true) {
           this.setMessage(res.message || 'coachWorkouts.addSuccess', 'success');
 
           this.newWorkout = {

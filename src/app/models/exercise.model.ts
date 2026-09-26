@@ -68,10 +68,3 @@ export interface WorkoutDto {
   exercises: WorkoutExercise[];
 }
 
-export interface ExerciseSearchResponse {
-  content: Exercise[];
-  page: number;
-  size: number;
-  totalElements: number;
-  totalPages: number;
-}

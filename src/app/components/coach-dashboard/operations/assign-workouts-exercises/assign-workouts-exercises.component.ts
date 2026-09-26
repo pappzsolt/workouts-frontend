@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 
 import { HttpErrorResponse } from '@angular/common/http';
-import { ApiResponse } from '../../../../models/api-response.model';
+import { ApiResponse } from '../../../../models/backend-dto/common/api-response';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Subject, takeUntil } from 'rxjs';

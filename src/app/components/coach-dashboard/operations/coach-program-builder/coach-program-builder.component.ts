@@ -7,7 +7,7 @@ import { WorkoutCopyService } from '../../../../services/coach/workout-copy.serv
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exercises-board/coach-exercises-board.component';
-import { ApiResponse } from '../../../../models/api-response.model';
+import { ApiResponse } from '../../../../models/backend-dto/common/api-response';
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 import { skip } from 'rxjs';
 import { ProgramWorkoutService } from '../../../../services/coach/program-workout.service';

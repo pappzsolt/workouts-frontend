@@ -1,4 +1,4 @@
-import { ApiResponse } from './api-response.model';
+import { ApiResponse } from './backend-dto/common/api-response';
 
 export interface CreateUserRequest {
   type: 'user';

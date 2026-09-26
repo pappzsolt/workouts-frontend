@@ -4,7 +4,7 @@ import { Observable, map } from 'rxjs';
 
 import { AuthService } from '../auth/auth.service';
 import { API_ENDPOINTS } from '../../api-endpoints';
-import { ApiResponse } from '../../models/api-response.model';
+import { ApiResponse } from '../../models/backend-dto/common/api-response';
 import { Member } from '../../models/member.model';
 import { UpdateCoachRequest } from '../../models/update-coach-request.model';
 
@@ -18,7 +18,14 @@ export class CoachProfileService {
   getMemberById(id: number): Observable<Member & { createdAt?: string }> {
     return this.http
       .get<ApiResponse<Member & { createdAt?: string }>>(API_ENDPOINTS.memberById(id))
-      .pipe(map((response) => response.data));
+      .pipe(
+        map((response) => {
+          if (response.data == null) {
+            throw new Error('A coach profil válaszában nincs adat.');
+          }
+          return response.data;
+        }),
+      );
   }
 
   getLoggedInMemberProfile(): Observable<Member & { createdAt?: string }> {

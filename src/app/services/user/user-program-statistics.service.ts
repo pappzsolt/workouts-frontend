@@ -34,9 +34,14 @@ export class UserProgramStatisticsService {
               totalPrograms: response.data.totalPrograms ?? 0,
               completedPrograms: response.data.completedPrograms ?? 0,
               programs: (response.data.programs ?? [])
-                .filter((program) => program.programId != null)
+                .filter(
+                  (
+                    program,
+                  ): program is typeof program & { programId: number } =>
+                    program.programId != null,
+                )
                 .map((program) => ({
-                  programId: program.programId as number,
+                  programId: program.programId,
                   programName: program.programName ?? '',
                   totalWorkouts: program.totalWorkouts ?? 0,
                   completedWorkouts: program.completedWorkouts ?? 0,

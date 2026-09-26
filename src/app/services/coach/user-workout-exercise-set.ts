@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
-import { ApiResponse } from '../../models/api-response.model';
+import { ApiResponse } from '../../models/backend-dto/common/api-response';
 import { UserWorkoutExerciseSetModel } from '../../models/user-workout-exercise-set.model';
 
 @Injectable({

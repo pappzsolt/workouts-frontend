@@ -4,7 +4,7 @@ import { Observable, map } from 'rxjs';
 
 import { RawUser, Coach, Role } from '../../../models/user-profil.model';
 import { API_ENDPOINTS } from '../../../api-endpoints';
-import { ApiResponse } from '../../../models/api-response.model';
+import { ApiResponse } from '../../../models/backend-dto/common/api-response';
 
 @Injectable({
   providedIn: 'root',
@@ -23,7 +23,7 @@ export class UserProfilService {
   getUsers(): Observable<RawUser[]> {
     return this.http
       .get<ApiResponse<RawUser[]>>(this.usersUrl)
-      .pipe(map((response) => response.data));
+      .pipe(map((response) => response.data ?? []));
   }
 
   /**
@@ -32,7 +32,7 @@ export class UserProfilService {
   getCoaches(): Observable<Coach[]> {
     return this.http.get<ApiResponse<RawUser[]>>(this.coachesUrl).pipe(
       map((response) =>
-        response.data.map((coach) => ({
+        (response.data ?? []).map((coach) => ({
           id: coach.id,
           name: coach.usernameOrName,
         })),
@@ -44,7 +44,7 @@ export class UserProfilService {
    * Összes role lekérése.
    */
   getRoles(): Observable<Role[]> {
-    return this.http.get<ApiResponse<Role[]>>(this.rolesUrl).pipe(map((response) => response.data));
+    return this.http.get<ApiResponse<Role[]>>(this.rolesUrl).pipe(map((response) => response.data ?? []));
   }
 
   /**
@@ -53,7 +53,14 @@ export class UserProfilService {
   getMemberById(id: number): Observable<RawUser> {
     return this.http
       .get<ApiResponse<RawUser>>(API_ENDPOINTS.memberById(id))
-      .pipe(map((response) => response.data));
+      .pipe(
+        map((response) => {
+          if (response.data == null) {
+            throw new Error('A user profil válaszában nincs adat.');
+          }
+          return response.data;
+        }),
+      );
   }
 
   /**

@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { CoachWorkoutsService } from '../../../../../services/coach/coach-workouts/coach-workouts.service';
-import { ApiResponse } from '../../../../../models/api-response.model';
+import type { ApiResponse } from '../../../../../models/backend-dto/common/api-response';
+import type { WorkoutDto as BackendWorkoutDto } from '../../../../../models/backend-dto/exercise/workout-dto';
+import type { WorkoutDto as WorkoutUiDto } from '../../../../../models/exercise.model';
 import { WorkoutExerciseService } from '../../../../../services/coach/workout-exercises.service';
 
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
@@ -216,60 +218,31 @@ export class CoachWorkoutEditComponent implements OnInit {
     }
 
     this.coachWorkoutsService.getWorkoutById(this.workoutId).subscribe({
-      next: (res) => {
-        if (res.success && res.data) {
-          const w = res.data;
-
-          /**
-           * Backend ISO dátum ->
-           * HTML date inputhoz YYYY-MM-DD.
-           */
-          const workoutDateFormatted = w.workoutDate ? w.workoutDate.split('T')[0] : undefined;
-
-          this.workout = {
-            ...this.workout,
-
-            name: w.workoutName || '',
-
-            workoutName: w.workoutName || '',
-
-            description: w.workoutDescription || '',
-
-            workoutDescription: w.workoutDescription || '',
-
-            durationMinutes: w.durationMinutes || 0,
-
-            difficultyLevel: w.difficultyLevel || '',
-
-            programId: w.programId,
-
-            workoutDate: workoutDateFormatted,
-
-            intensityLevel: w.intensityLevel,
-
-            dayIndex: w.dayIndex,
-
-            completed: w.completed,
-
-            performedAt: w.performedAt,
-
-            actualSets: w.actualSets,
-
-            actualRepetitions: w.actualRepetitions,
-
-            weightUsed: w.weightUsed,
-
-            durationSeconds: w.durationSeconds,
-
-            feedback: w.feedback,
-
-            notes: w.notes,
-
-            done: w.done,
-          };
-        } else {
+      next: (res: ApiResponse<BackendWorkoutDto>) => {
+        if (!res.success || !res.data) {
           this.setMessage(res.message || 'coachWorkoutEdit.notFound', 'error');
+          return;
         }
+
+        const w = res.data;
+
+        const workoutDateFormatted = w.workoutDate
+          ? w.workoutDate.split('T')[0]
+          : undefined;
+
+        this.workout = {
+          ...this.workout,
+          id: w.id ?? this.workout.id,
+          name: w.name ?? '',
+          workoutName: w.name ?? '',
+          description: w.description ?? '',
+          workoutDescription: w.description ?? '',
+          durationMinutes: w.durationMinutes ?? 0,
+          workoutDate: workoutDateFormatted,
+          intensityLevel: w.intensityLevel ?? undefined,
+          done: w.done ?? undefined,
+          exercises: [],
+        };
       },
 
       error: (error) => {
@@ -321,14 +294,48 @@ export class CoachWorkoutEditComponent implements OnInit {
     }
 
     this.exerciseService.getWorkoutExercises(this.workoutId).subscribe({
-      next: (workout: Workout) => {
-
-        /**
-         * A backend a teljes workoutot adja vissza,
-         * benne az exercises listával.
-         */
-        this.workoutExercises = workout?.exercises || [];
-
+      next: (workout: WorkoutUiDto) => {
+        this.workoutExercises = (workout.exercises ?? [])
+          .filter((item) => item.id != null && item.workoutId != null)
+          .map((item) => ({
+            id: item.id ?? undefined,
+            workoutId: item.workoutId ?? this.workoutId!,
+            exerciseId: item.exercise?.id ?? undefined,
+            exercise: item.exercise
+              ? {
+                  id: item.exercise.id ?? undefined,
+                  name: item.exercise.name ?? '',
+                  description: item.exercise.description ?? undefined,
+                  bodyPart: item.exercise.bodyPart ?? undefined,
+                  synonyms: item.exercise.synonyms ?? undefined,
+                  instructions: item.exercise.instructions ?? undefined,
+                  tips: item.exercise.tips ?? undefined,
+                  primaryMuscles: item.exercise.primaryMuscles ?? undefined,
+                  secondaryMuscles: item.exercise.secondaryMuscles ?? undefined,
+                  imageUrl: item.exercise.imageUrl ?? undefined,
+                  videoUrl: item.exercise.videoUrl ?? undefined,
+                  muscleGroup: item.exercise.muscleGroup ?? undefined,
+                  equipment: item.exercise.equipment ?? undefined,
+                  difficultyLevel: item.exercise.difficultyLevel ?? undefined,
+                  category: item.exercise.category ?? undefined,
+                  caloriesBurnedPerMinute: item.exercise.caloriesBurnedPerMinute ?? undefined,
+                  durationSeconds: item.exercise.durationSeconds ?? undefined,
+                  done: item.exercise.done ?? undefined,
+                  forceType: item.exercise.forceType ?? undefined,
+                  mechanic: item.exercise.mechanic ?? undefined,
+                  isUnilateral: item.exercise.isUnilateral ?? undefined,
+                  isBodyweight: item.exercise.isBodyweight ?? undefined,
+                  variationGroup: item.exercise.variationGroup ?? undefined,
+                }
+              : undefined,
+            sets: item.sets ?? undefined,
+            repetitions: item.repetitions ?? undefined,
+            orderIndex: item.orderIndex ?? undefined,
+            restSeconds: item.restSeconds ?? undefined,
+            notes: item.notes ?? undefined,
+            done: item.done ?? undefined,
+            name: item.exercise?.name ?? undefined,
+          }));
       },
 
       error: (error: HttpErrorResponse) => {
@@ -601,7 +608,7 @@ export class CoachWorkoutEditComponent implements OnInit {
 
     this.coachWorkoutsService.updateWorkout(this.workoutId, payload).subscribe({
       next: (res) => {
-        if (res.success && res.data) {
+        if (res.done === true) {
           this.setMessage('coachWorkoutEdit.updateSuccess', 'success');
 
           setTimeout(() => {

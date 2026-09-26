@@ -29,11 +29,6 @@ export interface Workout {
   exercises?: WorkoutExercise[];
 }
 
-export interface WorkoutResponse {
-  success: boolean;
-  message?: string;
-  data?: Workout;
-}
 
 export interface WorkoutListResponse {
   status: string;

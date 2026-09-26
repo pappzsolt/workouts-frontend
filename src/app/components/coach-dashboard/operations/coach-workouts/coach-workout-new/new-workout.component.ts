@@ -101,9 +101,9 @@ export class NewWorkoutComponent implements OnInit, OnDestroy {
            * A WorkoutResponse modell alapján
            * az új workout azonosítója:
            *
-           * res.data.id
+           * res.id
            */
-          const workoutId = res.data?.id;
+          const workoutId = res.id;
 
           if (workoutId === undefined || workoutId === null) {
             this.message = 'newWorkout.createIdMissing';
@@ -132,7 +132,7 @@ export class NewWorkoutComponent implements OnInit, OnDestroy {
         // NORMÁL WORKOUT LÉTREHOZÁS
         // ==================================================
 
-        const workoutId = res.data?.id;
+        const workoutId = res.id;
 
         if (workoutId === undefined || workoutId === null) {
           this.message = 'newWorkout.createIdMissing';

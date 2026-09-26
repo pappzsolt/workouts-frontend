@@ -16,7 +16,7 @@ import { ExerciseService } from '../../../../services/coach/coach-exercises/coac
 import { LanguageService } from '../../../../services/shared/language.service';
 import { PaginationComponent } from '../../../../components/shared/components/pagination/pagination.component';
 import { Exercise } from '../../../../models/exercise.model';
-import { ApiResponse } from '../../../../models/api-response.model';
+import { ApiResponse } from '../../../../models/backend-dto/common/api-response';
 import { AppCardComponent } from '../../../../components/shared/components/app-card/app-card.component';
 import { SHARED_IMPORTS } from '../../shared-imports';
 

@@ -1,9 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, DestroyRef, Input, OnInit, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 import { LanguageService } from '../../../../../services/shared/language.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Exercise } from '../../../../../models/exercise.model';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
@@ -17,6 +18,7 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   styleUrls: ['./new-exercise.component.css'],
 })
 export class NewExerciseComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
   @Input()
   workoutId!: number;
 
@@ -43,7 +45,7 @@ export class NewExerciseComponent implements OnInit {
       this.showError(this.translate.instant('newExercise.workoutIdRequired'));
     }
 
-    this.languageService.language$.subscribe(() => {
+    this.languageService.language$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.refreshMessage();
     });
   }
@@ -99,7 +101,7 @@ export class NewExerciseComponent implements OnInit {
 
         this.showSuccess(
           this.translate.instant('newExercise.success', {
-            name: res.name,
+            name: this.newExercise.name,
           }),
         );
 

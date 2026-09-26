@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { ProgramWorkout } from '../../models/program-workout.model';
-import { ApiResponse } from '../../models/api-response.model';
+import { ApiResponse } from '../../models/backend-dto/common/api-response';
 import { API_ENDPOINTS } from '../../api-endpoints';
 
 @Injectable({

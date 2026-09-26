@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
 import { AppCardComponent } from '../../../../shared/components/app-card/app-card.component';
-import { Program, ProgramDto, ProgramCreationRequest } from '../../../../../models/program.model';
+import { Program, ProgramCreationRequest } from '../../../../../models/program.model';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
@@ -44,16 +44,21 @@ export class CoachProgramEditComponent implements OnInit {
     this.programService.getProgramById(id).subscribe({
       next: (res) => {
         if (res?.success && res.data) {
-          const dto: ProgramDto = res.data;
+          const dto = res.data;
+
+          if (dto.programId == null || dto.programName == null) {
+            this.setMessage('coachProgramEdit.notFound', 'error');
+            return;
+          }
 
           this.program = {
             id: dto.programId,
             programName: dto.programName,
-            programDescription: dto.programDescription,
+            programDescription: dto.programDescription ?? '',
             startDate: dto.startDate ?? '',
             endDate: dto.endDate ?? '',
-            durationDays: dto.durationDays,
-            difficultyLevel: dto.difficultyLevel,
+            durationDays: dto.durationDays ?? undefined,
+            difficultyLevel: dto.difficultyLevel ?? undefined,
           };
         } else {
           this.setMessage('coachProgramEdit.notFound', 'error');

@@ -46,7 +46,7 @@ export class CoachProgramSelectComponent implements OnInit {
           return;
         }
 
-        this.programs = response.data;
+        this.programs = response.data ?? [];
 
         this.loading = false;
       },

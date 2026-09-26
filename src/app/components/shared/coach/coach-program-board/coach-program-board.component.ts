@@ -6,7 +6,6 @@ import { CoachProgramService } from '../../../../services/coach/coach-program/co
 import { LanguageService } from '../../../../services/shared/language.service';
 
 import { CoachProgram } from '../../../../models/coach-program.model';
-import { ProgramDto } from '../../../../models/program.model';
 
 import { SHARED_IMPORTS } from '../../shared-imports';
 
@@ -67,16 +66,7 @@ export class CoachProgramBoardComponent implements OnInit, OnDestroy {
       next: (res) => {
         this.loading = false;
 
-        this.programs = (res.data as ProgramDto[]).map((p) => ({
-          programId: p.programId,
-          programName: p.programName,
-          programDescription: p.programDescription,
-          startDate: p.startDate,
-          endDate: p.endDate,
-          durationDays: p.durationDays,
-          difficultyLevel: p.difficultyLevel,
-          workouts: p.workouts ?? [],
-        }));
+        this.programs = res.data ?? [];
 
       },
 

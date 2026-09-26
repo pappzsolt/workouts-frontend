@@ -4,7 +4,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 import { Exercise } from '../../../../../models/exercise.model';
-import { ApiResponse } from '../../../../../models/api-response.model';
+import type { ApiResponse } from '../../../../../models/backend-dto/common/api-response';
+import type { ExerciseDto } from '../../../../../models/backend-dto/exercise/exercise-dto';
 
 import { LanguageService } from '../../../../../services/shared/language.service';
 
@@ -176,9 +177,33 @@ export class CoachExerciseEditComponent implements OnInit {
           // mezőben adja vissza. Ezt visszatesszük a form modelljébe,
           // hogy a szerver által normalizált értékek is megjelenjenek.
           if (response.data) {
+            const updated: ExerciseDto = response.data;
+
             this.exercise = {
               ...this.exercise,
-              ...response.data,
+              id: updated.id ?? this.exercise.id,
+              name: updated.name ?? this.exercise.name,
+              description: updated.description ?? undefined,
+              bodyPart: updated.bodyPart ?? undefined,
+              synonyms: updated.synonyms ?? undefined,
+              instructions: updated.instructions ?? undefined,
+              tips: updated.tips ?? undefined,
+              primaryMuscles: updated.primaryMuscles ?? undefined,
+              secondaryMuscles: updated.secondaryMuscles ?? undefined,
+              imageUrl: updated.imageUrl ?? undefined,
+              videoUrl: updated.videoUrl ?? undefined,
+              muscleGroup: updated.muscleGroup ?? undefined,
+              equipment: updated.equipment ?? undefined,
+              difficultyLevel: updated.difficultyLevel ?? undefined,
+              category: updated.category ?? undefined,
+              caloriesBurnedPerMinute: updated.caloriesBurnedPerMinute ?? undefined,
+              durationSeconds: updated.durationSeconds ?? undefined,
+              done: updated.done ?? undefined,
+              forceType: updated.forceType ?? undefined,
+              mechanic: updated.mechanic ?? undefined,
+              isUnilateral: updated.isUnilateral ?? undefined,
+              isBodyweight: updated.isBodyweight ?? undefined,
+              variationGroup: updated.variationGroup ?? undefined,
             };
           }
 

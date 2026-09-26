@@ -26,8 +26,8 @@ export interface ProgramExercise {
   orderIndex?: number;
 }
 
-import type { ApiResponse } from './api-response.model';
-export type { ApiResponse } from './api-response.model';
+import type { ApiResponse } from './backend-dto/common/api-response';
+export type { ApiResponse } from './backend-dto/common/api-response';
 
 /**
  * A bejelentkezett coach programjainak válasza.
