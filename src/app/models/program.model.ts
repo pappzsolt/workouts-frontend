@@ -62,39 +62,6 @@ export interface CoachProgramSearchResponse {
 }
 
 /**
- * Program DTO.
- */
-export interface ProgramDto {
-  programId: number;
-  programName: string;
-  programDescription: string;
-  startDate?: string | null;
-  endDate?: string | null;
-  durationDays: number;
-  difficultyLevel: string;
-  workouts?: ProgramWorkout[];
-
-  /**
-   * Opcionális kompatibilitási mezők.
-   * A coach program builder a hozzárendelést a
-   * /programs/{id}/assigned-users endpointból tölti.
-   */
-  assignedUserId?: number | null;
-  userId?: number | null;
-}
-
-/**
- * Program létrehozási / módosítási kérés.
- */
-export interface ProgramCreationRequest {
-  programName: string;
-  programDescription?: string;
-  startDate?: string | null;
-  durationDays?: number;
-  difficultyLevel?: string;
-}
-
-/**
  * A bejelentkezett userhez rendelt program.
  */
 export interface UserProgramApiItem {

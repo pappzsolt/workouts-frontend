@@ -9,10 +9,7 @@ import type { ProgramDto as BackendProgramDto } from '../../../models/backend-dt
 import type { ProgramSearchResponse } from '../../../models/backend-dto/programs/program-search-response';
 import type { ProgramCreationRequest as BackendProgramCreationRequest } from '../../../models/backend-dto/programcreator/program-creation-request';
 
-import type {
-  ProgramCreationRequest,
-  CoachProgramSearchResponse,
-} from '../../../models/program.model';
+import type { CoachProgramSearchResponse } from '../../../models/program.model';
 import type { CoachProgram } from '../../../models/coach-program.model';
 
 @Injectable({
@@ -88,26 +85,11 @@ export class CoachProgramService {
    * A meglévő UI requestet explicit backend request DTO-vá alakítjuk.
    */
   createProgram(
-    request: ProgramCreationRequest,
+    request: BackendProgramCreationRequest,
   ): Observable<ApiResponse<number>> {
-    const backendRequest: BackendProgramCreationRequest = {
-      userId: null,
-      programName: request.programName ?? null,
-      programDescription: request.programDescription ?? null,
-      durationDays: request.durationDays ?? null,
-      startDate: request.startDate ?? null,
-      difficultyLevel: request.difficultyLevel ?? null,
-      languageCode: null,
-      workouts: null,
-      workoutId: null,
-      exercises: null,
-      exerciseId: null,
-      orderIndex: null,
-    };
-
     return this.http.post<ApiResponse<number>>(
       API_ENDPOINTS.createProgram,
-      backendRequest,
+      request,
     );
   }
 
@@ -116,26 +98,11 @@ export class CoachProgramService {
    */
   updateProgram(
     id: number,
-    request: ProgramCreationRequest,
+    request: BackendProgramCreationRequest,
   ): Observable<ApiResponse<number>> {
-    const backendRequest: BackendProgramCreationRequest = {
-      userId: null,
-      programName: request.programName ?? null,
-      programDescription: request.programDescription ?? null,
-      durationDays: request.durationDays ?? null,
-      startDate: request.startDate ?? null,
-      difficultyLevel: request.difficultyLevel ?? null,
-      languageCode: null,
-      workouts: null,
-      workoutId: null,
-      exercises: null,
-      exerciseId: null,
-      orderIndex: null,
-    };
-
     return this.http.put<ApiResponse<number>>(
       API_ENDPOINTS.updateUserProgram(id),
-      backendRequest,
+      request,
     );
   }
 

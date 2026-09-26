@@ -184,6 +184,12 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
     const exerciseId = this.workoutExercise.exercise.id;
 
+    if (exerciseId == null || set.id == null) {
+      this.message = 'userExerciseDetail.invalidSet';
+      this.messageType = 'error';
+      return;
+    }
+
     this.message = '';
     this.messageType = '';
 
@@ -280,6 +286,12 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     }
 
     const exerciseId = this.workoutExercise.exercise.id;
+
+    if (exerciseId == null || set.id == null) {
+      this.message = 'userExerciseDetail.invalidSet';
+      this.messageType = 'error';
+      return;
+    }
 
     this.message = '';
     this.messageType = '';

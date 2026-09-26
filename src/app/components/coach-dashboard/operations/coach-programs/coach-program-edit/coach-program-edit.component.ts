@@ -3,7 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
 import { AppCardComponent } from '../../../../shared/components/app-card/app-card.component';
-import { Program, ProgramCreationRequest } from '../../../../../models/program.model';
+import { Program } from '../../../../../models/program.model';
+import type { ProgramCreationRequest } from '../../../../../models/backend-dto/programcreator/program-creation-request';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
@@ -96,11 +97,18 @@ export class CoachProgramEditComponent implements OnInit {
     }
 
     const request: ProgramCreationRequest = {
-      programName: this.program.programName ?? '',
-      programDescription: this.program.programDescription ?? '',
+      programName: this.program.programName ?? null,
+      programDescription: this.program.programDescription ?? null,
       startDate: this.program.startDate || null,
-      durationDays: this.program.durationDays ?? 0,
-      difficultyLevel: this.program.difficultyLevel ?? '',
+      durationDays: this.program.durationDays ?? null,
+      difficultyLevel: this.program.difficultyLevel ?? null,
+      userId: null,
+      languageCode: null,
+      workouts: null,
+      workoutId: null,
+      exercises: null,
+      exerciseId: null,
+      orderIndex: null,
     };
 
     this.programService.updateProgram(this.program.id, request).subscribe({

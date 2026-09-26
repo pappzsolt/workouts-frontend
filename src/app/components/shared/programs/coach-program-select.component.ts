@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter, inject } from '@angular
 
 import { CoachProgramSelectService } from '../../../services/coach/coach-program-select/coach-program-select.service';
 
-import { CoachProgram } from '../../../models/coach-program-select-model';
+import type { CoachProgram } from '../../../models/coach-program.model';
 
 import { SHARED_IMPORTS } from '../shared-imports';
 

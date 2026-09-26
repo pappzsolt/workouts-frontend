@@ -4,7 +4,8 @@ import { Observable } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
 
-import { WorkoutCopyRequest, WorkoutCopyResponse } from '../../models/workout-copy.model';
+import type { WorkoutCopyRequest } from '../../models/backend-dto/workout/workout-copy-request';
+import type { WorkoutCopyResponse } from '../../models/backend-dto/workout/workout-copy-response';
 
 @Injectable({
   providedIn: 'root',

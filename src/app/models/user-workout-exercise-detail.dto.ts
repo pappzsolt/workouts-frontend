@@ -1,37 +1,7 @@
-export interface ExerciseDetailDto {
-  id: number;
-  name: string;
-  description: string;
-  imageUrl: string | null;
-  videoUrl: string | null;
-  muscleGroup: string;
-  equipment: string;
-  difficultyLevel: string;
-  category: string;
-  caloriesBurnedPerMinute: number | null;
-  durationSeconds: number;
-}
+import type { ExerciseDetailDto } from './backend-dto/exercise/exercise-detail-dto';
+import type { UserWorkoutExerciseSetDto } from './backend-dto/userworkoutexerciseset/user-workout-exercise-set-dto';
 
-export interface UserWorkoutExerciseSetDto {
-  id: number;
-  userWorkoutExerciseId: number;
-
-  setNumber: number;
-
-  targetRepetitions: number;
-  targetWeightKg: number | null;
-
-  actualRepetitions: number | null;
-  actualWeightKg: number | null;
-
-  startedAt: string | null;
-  completedAt: string | null;
-
-  completed: boolean;
-
-  notes: string | null;
-}
-
+/** UI composite model. Nested API objects use the canonical backend DTOs. */
 export interface UserWorkoutExerciseDetailDto {
   id: number;
   workoutId: number;
@@ -48,10 +18,10 @@ export interface UserWorkoutExerciseDetailDto {
 
   userWorkoutExerciseId: number | null;
 
-  // EZ A BACKEND MEZŐNEVE
   userWorkoutExerciseSets: UserWorkoutExerciseSetDto[];
 }
 
+/** UI composite model for the workout detail response. */
 export interface UserWorkoutDetailDto {
   id: number;
   name: string;
@@ -64,3 +34,5 @@ export interface UserWorkoutDetailDto {
 
   exercises: UserWorkoutExerciseDetailDto[];
 }
+
+export type { ExerciseDetailDto, UserWorkoutExerciseSetDto };

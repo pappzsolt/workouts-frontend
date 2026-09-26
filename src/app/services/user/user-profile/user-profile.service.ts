@@ -2,7 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
-import { RawUser, Coach, Role } from '../../../models/user-profil.model';
+import { RawUser, Coach } from '../../../models/user-profil.model';
+import { Role } from '../../../models/role.model';
 import { API_ENDPOINTS } from '../../../api-endpoints';
 import { ApiResponse } from '../../../models/backend-dto/common/api-response';
 

@@ -7,7 +7,8 @@ import { catchError, of, Subject, takeUntil } from 'rxjs';
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 import { LanguageService } from '../../../../services/shared/language.service';
 
-import { Program, ProgramCreationRequest } from '../../../../models/program.model';
+import { Program } from '../../../../models/program.model';
+import type { ProgramCreationRequest } from '../../../../models/backend-dto/programcreator/program-creation-request';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
@@ -140,6 +141,13 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
       startDate: this.form.value.startDate || null,
       durationDays: this.form.value.durationDays,
       difficultyLevel: this.form.value.difficultyLevel,
+      userId: null,
+      languageCode: null,
+      workouts: null,
+      workoutId: null,
+      exercises: null,
+      exerciseId: null,
+      orderIndex: null,
     };
 
     // ==========================================================
@@ -147,11 +155,18 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
     // ==========================================================
 
     const request: ProgramCreationRequest = {
-      programName: program.programName ?? '',
-      programDescription: program.programDescription,
-      startDate: program.startDate || null,
-      durationDays: program.durationDays,
-      difficultyLevel: program.difficultyLevel,
+      userId: null,
+      programName: program.programName ?? null,
+      programDescription: program.programDescription ?? null,
+      durationDays: program.durationDays ?? null,
+      startDate: program.startDate ?? null,
+      difficultyLevel: program.difficultyLevel ?? null,
+      languageCode: null,
+      workouts: null,
+      workoutId: null,
+      exercises: null,
+      exerciseId: null,
+      orderIndex: null,
     };
 
     // ==========================================================

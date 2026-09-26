@@ -1,4 +1,4 @@
-import { ProgramWorkout } from './program.model';
+import type { ProgramWorkout } from './program.model';
 
 export interface CoachProgram {
   programId: number;
@@ -8,5 +8,5 @@ export interface CoachProgram {
   endDate?: string | null;
   durationDays?: number;
   difficultyLevel?: string;
-  workouts: ProgramWorkout[]; // kötelező a board komponens számára
+  workouts?: ProgramWorkout[];
 }

@@ -32,11 +32,6 @@ export interface Coach {
   name: string;
 }
 
-export interface Role {
-  id: number;
-  name: string;
-}
-
 export interface UserListResponse {
   success: boolean;
   message: string;

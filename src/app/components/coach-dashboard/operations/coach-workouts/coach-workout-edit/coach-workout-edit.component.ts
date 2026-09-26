@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { CoachWorkoutsService } from '../../../../../services/coach/coach-workouts/coach-workouts.service';
@@ -11,6 +11,7 @@ import { ExerciseService } from '../../../../../services/coach/coach-exercises/c
 
 import { ProgramWorkoutService } from '../../../../../services/coach/program-workout.service';
 import { skip } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { LanguageService } from '../../../../../services/shared/language.service';
 import { USER_MESSAGES } from '../../../../../constants/user-messages';
@@ -44,6 +45,8 @@ interface WorkoutExerciseView {
   styleUrls: ['./coach-workout-edit.component.css'],
 })
 export class CoachWorkoutEditComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   // ==========================================================
   // WORKOUT
   // ==========================================================
@@ -151,7 +154,9 @@ export class CoachWorkoutEditComponent implements OnInit {
   // ==========================================================
 
   ngOnInit(): void {
-    this.languageService.language$.pipe(skip(1)).subscribe(() => {
+    this.languageService.language$
+      .pipe(skip(1), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
       this.loadWorkout();
       this.loadExercises();
       this.loadWorkoutExercises();

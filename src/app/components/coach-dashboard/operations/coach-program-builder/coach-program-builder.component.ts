@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { WorkoutCopyService } from '../../../../services/coach/workout-copy.service';
@@ -10,6 +10,7 @@ import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exerci
 import { ApiResponse } from '../../../../models/backend-dto/common/api-response';
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 import { skip } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ProgramWorkoutService } from '../../../../services/coach/program-workout.service';
 import { WorkoutExerciseService } from '../../../../services/coach/workout-exercises.service';
 import { AppCardComponent } from '../../../../components/shared/components/app-card/app-card.component';
@@ -18,9 +19,10 @@ import { LanguageService } from '../../../../services/shared/language.service';
 import { UserSelectComponent } from '../../../shared/user/user-select.component';
 import { AppSelectComponent } from '../../../../components/shared/components/app-select/app-select.component';
 import { Exercise, WorkoutDto, WorkoutExercise } from '../../../../models/exercise.model';
-import { ProgramCreationRequest, ProgramDto } from '../../../../models/program.model';
+import type { ProgramDto } from '../../../../models/backend-dto/programs/program-dto';
+import type { ProgramCreationRequest } from '../../../../models/backend-dto/programcreator/program-creation-request';
 import { ProgramWorkout } from '../../../../models/program-workout.model';
-import { WorkoutCopyRequest } from '../../../../models/workout-copy.model';
+import type { WorkoutCopyRequest } from '../../../../models/backend-dto/workout/workout-copy-request';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 import { WorkoutCopyDialogComponent } from './workout-copy-dialog.component';
@@ -40,6 +42,8 @@ import { WorkoutCopyDialogComponent } from './workout-copy-dialog.component';
   styleUrl: './coach-program-builder.component.css',
 })
 export class CoachProgramBuilderComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   currentStep = 1;
 
   // ==========================================================
@@ -171,7 +175,9 @@ export class CoachProgramBuilderComponent implements OnInit {
     // NYELVVÁLTÁS FIGYELÉSE
     // ==========================================================
 
-    this.languageService.language$.pipe(skip(1)).subscribe(() => {
+    this.languageService.language$
+      .pipe(skip(1), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
       this.loadExercises();
 
       if (this.programId !== null) {
@@ -482,6 +488,13 @@ export class CoachProgramBuilderComponent implements OnInit {
       startDate: this.startDate || null,
       durationDays: this.durationDays,
       difficultyLevel: this.difficultyLevel,
+      userId: null,
+      languageCode: null,
+      workouts: null,
+      workoutId: null,
+      exercises: null,
+      exerciseId: null,
+      orderIndex: null,
     };
 
     this.coachProgramService.createProgram(request).subscribe({
@@ -549,6 +562,13 @@ export class CoachProgramBuilderComponent implements OnInit {
       startDate: this.startDate || null,
       durationDays: this.durationDays,
       difficultyLevel: this.difficultyLevel,
+      userId: null,
+      languageCode: null,
+      workouts: null,
+      workoutId: null,
+      exercises: null,
+      exerciseId: null,
+      orderIndex: null,
     };
 
     this.coachProgramService.updateProgram(this.programId, request).subscribe({

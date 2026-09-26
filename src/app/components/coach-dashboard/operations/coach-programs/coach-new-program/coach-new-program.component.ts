@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 import { AppCardComponent } from '../../../../shared/components/app-card/app-card.component';
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
 import { skip } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { LanguageService } from '../../../../../services/shared/language.service';
-import { Program, ProgramCreationRequest } from '../../../../../models/program.model';
+import { Program } from '../../../../../models/program.model';
+import type { ProgramCreationRequest } from '../../../../../models/backend-dto/programcreator/program-creation-request';
 import { AppButtonComponent } from '../../../../../components/shared/components/app-button/app-button.component';
 @Component({
   selector: 'app-coach-new-program',
@@ -17,6 +19,8 @@ import { AppButtonComponent } from '../../../../../components/shared/components/
   styleUrls: ['./coach-new-program.component.css'],
 })
 export class CoachNewProgramComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   program: Program = {
     programName: '',
     programDescription: '',
@@ -36,7 +40,9 @@ export class CoachNewProgramComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.languageService.language$.pipe(skip(1)).subscribe(() => {
+    this.languageService.language$
+      .pipe(skip(1), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
       this.message = '';
     });
   }
@@ -79,11 +85,18 @@ export class CoachNewProgramComponent implements OnInit {
      */
 
     const requestBody: ProgramCreationRequest = {
-      programName: this.program.programName ?? '',
-      programDescription: this.program.programDescription ?? '',
+      programName: this.program.programName ?? null,
+      programDescription: this.program.programDescription ?? null,
       startDate: this.program.startDate || null,
-      durationDays: this.program.durationDays,
-      difficultyLevel: this.program.difficultyLevel ?? '',
+      durationDays: this.program.durationDays ?? null,
+      difficultyLevel: this.program.difficultyLevel ?? null,
+      userId: null,
+      languageCode: null,
+      workouts: null,
+      workoutId: null,
+      exercises: null,
+      exerciseId: null,
+      orderIndex: null,
     };
 
 

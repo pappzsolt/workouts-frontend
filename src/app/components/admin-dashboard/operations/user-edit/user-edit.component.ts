@@ -12,7 +12,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 
 import { User } from '../../../../models/user-profil.model';
-import { RawUser, Coach, Role } from '../../../../models/user-edit-model';
+import { RawUser, Coach } from '../../../../models/user-edit-model';
+import { Role } from '../../../../models/role.model';
 
 import { UserEditService } from '../../../../services/admin/user-edit.service';
 
