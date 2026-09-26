@@ -86,11 +86,9 @@ export class CoachNewProgramComponent implements OnInit {
       difficultyLevel: this.program.difficultyLevel ?? '',
     };
 
-    console.log('Program request:', requestBody);
 
     this.programService.createProgram(requestBody).subscribe({
       next: (response) => {
-        console.log('Program created:', response);
 
         if (response.success) {
           this.messageType = 'success';

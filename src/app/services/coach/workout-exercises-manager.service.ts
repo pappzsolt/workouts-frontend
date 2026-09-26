@@ -4,6 +4,57 @@ import { Observable, map } from 'rxjs';
 
 import { ApiResponse } from '../../models/api-response.model';
 import { UserWorkoutExerciseDto } from '../../models/user-workout-exercise.dto';
+import { ScheduledWorkout } from '../user/user-workouts/user-workouts.service';
+
+interface UserProgramExerciseRow {
+  scheduled_date?: string | null;
+  scheduledAt?: string | null;
+  program_day_index?: number;
+  user_workout_id?: number;
+  userWorkoutId?: number;
+  program_workout_id?: number;
+  programWorkoutId?: number;
+  workout_id?: number;
+  workoutId?: number;
+  workout_name?: string | null;
+  workoutName?: string | null;
+  workout_completed?: boolean;
+  workoutCompleted?: boolean;
+  user_workout_exercise_id?: number;
+  workout_exercise_id?: number;
+  exercise_order?: number;
+  exercise_id?: number;
+  exercise_name?: string | null;
+  exercise_completed?: boolean;
+  sets_done?: number | null;
+  feedback?: string | null;
+  notes?: string | null;
+  performed_at?: string | null;
+}
+
+interface ScheduledWorkoutRecord {
+  userWorkoutId?: number;
+  user_workout_id?: number;
+  programWorkoutId?: number;
+  program_workout_id?: number;
+  workoutId?: number;
+  workout_id?: number;
+  programId?: number;
+  program_id?: number;
+  scheduledAt?: string | null;
+  scheduled_at?: string | null;
+  completed?: boolean | null;
+  workoutName?: string | null;
+  workout_name?: string | null;
+}
+
+interface ScheduledWorkoutsSearchResponse {
+  content?: ScheduledWorkoutRecord[];
+  page?: number;
+  size?: number;
+  totalElements?: number;
+  totalPages?: number;
+}
 import { API_ENDPOINTS } from '../../api-endpoints';
 
 @Injectable({
@@ -21,7 +72,7 @@ export class WorkoutExercisesManagerService {
    */
   getExercisesForUserWorkout(userWorkoutId: number): Observable<UserWorkoutExerciseDto[]> {
     return this.http
-      .get<ApiResponse<UserWorkoutExerciseDto[]>>(`${this.baseUrl}/workout/${userWorkoutId}`)
+      .get<ApiResponse<UserWorkoutExerciseDto[]>>(API_ENDPOINTS.userWorkoutExerciseByWorkout(userWorkoutId))
       .pipe(map((response: ApiResponse<UserWorkoutExerciseDto[]>) => response.data));
   }
 
@@ -31,7 +82,7 @@ export class WorkoutExercisesManagerService {
   updateCompleted(id: number, completed: boolean): Observable<void> {
     const params = new HttpParams().set('completed', completed);
 
-    return this.http.patch<void>(`${this.baseUrl}/${id}/completed`, null, { params });
+    return this.http.patch<void>(API_ENDPOINTS.userWorkoutExerciseCompleted(id), null, { params });
   }
 
   /**
@@ -48,7 +99,7 @@ export class WorkoutExercisesManagerService {
       params = params.set('notes', notes);
     }
 
-    return this.http.patch<void>(`${this.baseUrl}/${id}/details`, null, { params });
+    return this.http.patch<void>(API_ENDPOINTS.userWorkoutExerciseDetails(id), null, { params });
   }
 
   /**
@@ -78,8 +129,8 @@ export class WorkoutExercisesManagerService {
   /**
    * Teljes program + workout + exercise + user adatok lekérése.
    */
-  getUserProgramWithExercises(userId: number, programId: number): Observable<ApiResponse<any[]>> {
-    return this.http.get<ApiResponse<any[]>>(`${this.baseUrl}/user-program/${userId}/${programId}`);
+  getUserProgramWithExercises(userId: number, programId: number): Observable<ApiResponse<UserProgramExerciseRow[]>> {
+    return this.http.get<ApiResponse<UserProgramExerciseRow[]>>(API_ENDPOINTS.userWorkoutExercisesByUserProgram(userId, programId));
   }
 
   /**
@@ -90,7 +141,7 @@ export class WorkoutExercisesManagerService {
     userWorkoutId: number,
     scheduledAt: string,
   ): Observable<ApiResponse<void>> {
-    return this.http.patch<ApiResponse<void>>(`${this.baseUrl}/reschedule-user-workout`, {
+    return this.http.patch<ApiResponse<void>>(API_ENDPOINTS.rescheduleUserWorkout, {
       userWorkoutId,
       scheduledAt,
     });
@@ -99,42 +150,43 @@ export class WorkoutExercisesManagerService {
   /**
    * A belépett user számára ütemezett workoutok lekérése.
    */
-  getScheduledWorkouts(): Observable<ApiResponse<any[]>> {
+  getScheduledWorkouts(): Observable<ApiResponse<ScheduledWorkout[]>> {
     return this.http
-      .get<ApiResponse<any[]>>(`${this.baseUrl}/scheduled-workouts`)
+      .get<ApiResponse<ScheduledWorkoutRecord[]>>(API_ENDPOINTS.scheduledUserWorkouts)
       .pipe(
         map((response) => ({
           ...response,
-          data: (response.data ?? []).map((item: any) => ({
-            ...item,
-            userWorkoutId:
-              item.userWorkoutId != null
-                ? Number(item.userWorkoutId)
-                : item.user_workout_id != null
-                  ? Number(item.user_workout_id)
-                  : 0,
-            programWorkoutId:
-              item.programWorkoutId != null
-                ? Number(item.programWorkoutId)
-                : item.program_workout_id != null
-                  ? Number(item.program_workout_id)
-                  : undefined,
-            workoutId:
-              item.workoutId != null
-                ? Number(item.workoutId)
-                : item.workout_id != null
-                  ? Number(item.workout_id)
-                  : 0,
-            programId:
-              item.programId != null
-                ? Number(item.programId)
-                : item.program_id != null
-                  ? Number(item.program_id)
-                  : 0,
-            scheduledAt: item.scheduledAt ?? item.scheduled_at ?? null,
-            completed: item.completed ?? null,
-            workoutName: item.workoutName ?? item.workout_name ?? null,
-          })),
+          data: (response.data ?? []).reduce<ScheduledWorkout[]>((workouts, item) => {
+            const userWorkoutId = Number(
+              item.userWorkoutId ?? item.user_workout_id,
+            );
+            const programWorkoutId = Number(
+              item.programWorkoutId ?? item.program_workout_id,
+            );
+            const workoutId = Number(item.workoutId ?? item.workout_id);
+            const programId = Number(item.programId ?? item.program_id);
+
+            if (
+              !Number.isFinite(userWorkoutId) || userWorkoutId <= 0 ||
+              !Number.isFinite(programWorkoutId) || programWorkoutId <= 0 ||
+              !Number.isFinite(workoutId) || workoutId <= 0 ||
+              !Number.isFinite(programId) || programId <= 0
+            ) {
+              return workouts;
+            }
+
+            workouts.push({
+              userWorkoutId,
+              programWorkoutId,
+              workoutId,
+              programId,
+              scheduledAt: item.scheduledAt ?? item.scheduled_at ?? null,
+              completed: item.completed ?? null,
+              workoutName: item.workoutName ?? item.workout_name ?? null,
+            });
+
+            return workouts;
+          }, []),
         })),
       );
   }
@@ -152,7 +204,7 @@ export class WorkoutExercisesManagerService {
       .set('exerciseId', exerciseId)
       .set('orderIndex', orderIndex);
 
-    return this.http.put<void>(`${API_ENDPOINTS.workoutExercises}/order-index`, null, { params });
+    return this.http.put<void>(API_ENDPOINTS.workoutExerciseOrderIndex, null, { params });
   }
   /**
    * A belépett user számára ütemezett workoutok
@@ -162,9 +214,9 @@ export class WorkoutExercisesManagerService {
     search: string,
     page: number = 0,
     size: number = 6,
-  ): Observable<ApiResponse<any>> {
+  ): Observable<ApiResponse<ScheduledWorkoutsSearchResponse>> {
     const params = new HttpParams().set('search', search).set('page', page).set('size', size);
 
-    return this.http.get<ApiResponse<any>>(`${this.baseUrl}/scheduled-workouts/search`, { params });
+    return this.http.get<ApiResponse<ScheduledWorkoutsSearchResponse>>(API_ENDPOINTS.scheduledUserWorkoutsSearch, { params });
   }
 }

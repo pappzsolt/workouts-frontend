@@ -135,11 +135,9 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
   // ==========================================================
 
   loadWorkouts(): void {
-    console.log('[CoachWorkouts] loadWorkouts()');
 
     this.coachWorkoutsService.getUniqueWorkoutsWithExercises().subscribe({
       next: (response) => {
-        console.log('[CoachWorkouts] response:', response);
 
         const res = response.data;
 
@@ -162,7 +160,6 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
 
         this.updatePagination();
 
-        console.log('[CoachWorkouts] betöltött workoutok:', this.workouts);
       },
 
       error: (error) => {

@@ -41,7 +41,7 @@ export class CoachEditService {
    * Egy edző lekérése ID alapján.
    */
   getCoach(id: number): Observable<Coach> {
-    return this.http.get<SingleCoachResponse>(`${this.membersUrl}/${id}`).pipe(
+    return this.http.get<SingleCoachResponse>(API_ENDPOINTS.memberById(id)).pipe(
       map((response) => this.mapCoach(response.data)),
 
       catchError(() => throwError(() => new Error('Az edző adatainak betöltése nem sikerült.'))),

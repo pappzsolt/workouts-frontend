@@ -7,6 +7,7 @@ import {
   ApiResponse,
   ProgramDto,
   ProgramCreationRequest,
+  CoachProgramSearchResponse,
 } from '../../../models/program.model';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
@@ -21,21 +22,21 @@ export class CoachProgramService {
    * Bejelentkezett coach programjai.
    */
   getProgramsForLoggedInCoach(): Observable<CoachProgramsResponse> {
-    return this.http.get<CoachProgramsResponse>(`${API_ENDPOINTS.programs}/coach/programs`);
+    return this.http.get<CoachProgramsResponse>(API_ENDPOINTS.coachProgramsList);
   }
 
   /**
    * Összes program.
    */
   getAllPrograms(): Observable<ApiResponse<Program[]>> {
-    return this.http.get<ApiResponse<Program[]>>(`${API_ENDPOINTS.programs}/all`);
+    return this.http.get<ApiResponse<Program[]>>(API_ENDPOINTS.allProgramsList);
   }
 
   /**
    * Program lekérése ID alapján.
    */
   getProgramById(id: number): Observable<ApiResponse<ProgramDto>> {
-    return this.http.get<ApiResponse<ProgramDto>>(`${API_ENDPOINTS.programs}/${id}`);
+    return this.http.get<ApiResponse<ProgramDto>>(API_ENDPOINTS.programById(id));
   }
 
   /**
@@ -54,7 +55,7 @@ export class CoachProgramService {
    */
   updateProgram(id: number, request: ProgramCreationRequest): Observable<ApiResponse<number>> {
     return this.http.put<ApiResponse<number>>(
-      `${API_ENDPOINTS.updateProgram}?programId=${id}`,
+      API_ENDPOINTS.updateUserProgram(id),
       request,
     );
   }
@@ -67,7 +68,7 @@ export class CoachProgramService {
     size: number = 6,
     language: string = 'hu',
     sortDirection: 'asc' | 'desc' = 'asc',
-  ): Observable<any> {
+  ): Observable<CoachProgramSearchResponse> {
     const params = new HttpParams()
       .set('search', search)
       .set('page', page)
@@ -75,6 +76,6 @@ export class CoachProgramService {
       .set('language', language)
       .set('sortDirection', sortDirection);
 
-    return this.http.get<any>(`${API_ENDPOINTS.programs}/coach/search`, { params });
+    return this.http.get<CoachProgramSearchResponse>(API_ENDPOINTS.coachProgramSearch, { params });
   }
 }

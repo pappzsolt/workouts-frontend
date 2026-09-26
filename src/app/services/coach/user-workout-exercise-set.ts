@@ -19,7 +19,7 @@ export class UserWorkoutExerciseSetService {
     userWorkoutExerciseId: number,
   ): Observable<ApiResponse<UserWorkoutExerciseSetModel[]>> {
     return this.http.get<ApiResponse<UserWorkoutExerciseSetModel[]>>(
-      `${API_ENDPOINTS.userWorkoutExerciseSets}/${userWorkoutExerciseId}`,
+      API_ENDPOINTS.userWorkoutExerciseSetsByExercise(userWorkoutExerciseId),
     );
   }
 
@@ -28,7 +28,7 @@ export class UserWorkoutExerciseSetService {
    */
   addSet(userWorkoutExerciseId: number): Observable<ApiResponse<number>> {
     return this.http.post<ApiResponse<number>>(
-      `${API_ENDPOINTS.userWorkoutExerciseSets}/${userWorkoutExerciseId}/add`,
+      API_ENDPOINTS.addUserWorkoutExerciseSet(userWorkoutExerciseId),
       {},
     );
   }
@@ -37,13 +37,13 @@ export class UserWorkoutExerciseSetService {
    * Egy set módosítása.
    */
   updateSet(id: number, data: Partial<UserWorkoutExerciseSetModel>): Observable<ApiResponse<void>> {
-    return this.http.put<ApiResponse<void>>(`${API_ENDPOINTS.userWorkoutExerciseSets}/${id}`, data);
+    return this.http.put<ApiResponse<void>>(API_ENDPOINTS.userWorkoutExerciseSetById(id), data);
   }
 
   /**
    * Set törlése ID alapján.
    */
   deleteSet(id: number): Observable<ApiResponse<void>> {
-    return this.http.delete<ApiResponse<void>>(`${API_ENDPOINTS.userWorkoutExerciseSets}/${id}`);
+    return this.http.delete<ApiResponse<void>>(API_ENDPOINTS.userWorkoutExerciseSetById(id));
   }
 }

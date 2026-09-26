@@ -1,3 +1,5 @@
+import { HttpErrorResponse } from '@angular/common/http';
+
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -210,7 +212,6 @@ export class CoachProgramBuilderComponent implements OnInit {
 
       this.programId = parsedProgramId;
 
-      console.log('Meglévő program betöltése:', this.programId);
 
       this.loadProgram();
 
@@ -218,7 +219,6 @@ export class CoachProgramBuilderComponent implements OnInit {
         const workoutId = Number(newWorkoutId);
 
         if (!Number.isNaN(workoutId) && workoutId > 0) {
-          console.log('Újonnan létrehozott workout ID:', workoutId);
 
           this.isNewWorkout = true;
           this.currentStep = 2;
@@ -368,7 +368,7 @@ export class CoachProgramBuilderComponent implements OnInit {
         });
       },
 
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         const backendMessage = err?.error?.message ?? err?.message;
 
         this.message = backendMessage || 'coachProgramBuilder.assignError';
@@ -485,7 +485,7 @@ export class CoachProgramBuilderComponent implements OnInit {
     };
 
     this.coachProgramService.createProgram(request).subscribe({
-      next: (response: any) => {
+      next: (response: ApiResponse<number>) => {
         if (response.success && response.data !== null) {
           this.programId = response.data;
 
@@ -501,7 +501,7 @@ export class CoachProgramBuilderComponent implements OnInit {
         this.creatingProgram = false;
       },
 
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         this.message = error?.error?.message || 'coachProgramBuilder.createError';
 
         this.messageType = 'error';
@@ -568,7 +568,7 @@ export class CoachProgramBuilderComponent implements OnInit {
         }
       },
 
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         this.message = error?.error?.message || 'coachProgramBuilder.updateError';
 
         this.messageType = 'error';
@@ -764,7 +764,7 @@ export class CoachProgramBuilderComponent implements OnInit {
       this.workoutExerciseService
         .assignExerciseToWorkout(this.selectedWorkoutId, exercise.id)
         .subscribe({
-          next: (response: any) => {
+          next: (response: ApiResponse<void>) => {
             const alreadyExists = this.selectedWorkoutExercises.some(
               (workoutExercise) => workoutExercise.exercise?.id === exercise.id,
             );
@@ -841,7 +841,7 @@ export class CoachProgramBuilderComponent implements OnInit {
         }
       },
 
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         this.message = error.error?.message || 'coachProgramBuilder.addWorkoutError';
 
         this.messageType = 'error';
@@ -887,7 +887,7 @@ export class CoachProgramBuilderComponent implements OnInit {
         this.reindexProgramWorkouts();
       },
 
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         this.message = error.error?.message || 'coachProgramBuilder.removeWorkoutError';
 
         this.messageType = 'error';
@@ -982,7 +982,7 @@ export class CoachProgramBuilderComponent implements OnInit {
           .filter((workout): workout is WorkoutDto => workout !== undefined);
       },
 
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         this.message = error.error?.message || 'coachProgramBuilder.updateWorkoutDayError';
 
         this.messageType = 'error';
@@ -1061,17 +1061,9 @@ export class CoachProgramBuilderComponent implements OnInit {
 
     this.copyDialogOpen = true;
 
-    console.log('Workout másoló ablak megnyitva:', {
-      sourceWorkoutId: workout.id,
-      programId: this.programId,
-      workoutName: this.copyWorkoutName,
-      workoutDate: this.copyWorkoutDate,
-      dayIndex: this.copyWorkoutDayIndex,
-    });
   }
 
   cancelCopyWorkout(): void {
-    console.log('Workout másolás megszakítva.');
 
     this.copyDialogOpen = false;
 
@@ -1147,7 +1139,7 @@ export class CoachProgramBuilderComponent implements OnInit {
         }
       },
 
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         this.copyInProgress = false;
 
         this.message = error?.error?.message || 'coachProgramBuilder.copyError';

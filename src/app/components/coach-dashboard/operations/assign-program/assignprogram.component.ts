@@ -51,7 +51,6 @@ export class AssignProgramComponent implements OnInit, OnDestroy {
       if (programId) {
         this.selectedProgramId = Number(programId);
 
-        console.log('Automatikusan kiválasztott program ID:', this.selectedProgramId);
       }
     });
 

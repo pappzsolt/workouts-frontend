@@ -1,6 +1,7 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 
 import { HttpErrorResponse } from '@angular/common/http';
+import { ApiResponse } from '../../../../models/api-response.model';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Subject, takeUntil } from 'rxjs';
@@ -78,7 +79,9 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
   ) {
     const fromProgramBuilder = this.route.snapshot.queryParamMap.get('fromProgramBuilder');
 
-    const programId = this.route.snapshot.queryParamMap.get('programId');
+    const routeProgramId = this.route.snapshot.paramMap.get('id');
+    const programId =
+      this.route.snapshot.queryParamMap.get('programId') ?? routeProgramId;
 
     const workoutId = this.route.snapshot.queryParamMap.get('workoutId');
 
@@ -208,7 +211,7 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
       this.workoutExerciseService
         .addWorkoutExerciseSimple(request.workoutId, request.exerciseId)
         .subscribe({
-          next: (res: any) => {
+          next: (res: ApiResponse<void>) => {
             completedRequests++;
 
             successCount++;

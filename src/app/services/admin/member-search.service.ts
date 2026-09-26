@@ -10,6 +10,7 @@ import { API_ENDPOINTS } from '../../api-endpoints';
 import { Coach, SearchResponse } from '../../models/member-search-model';
 
 import { ApiResponse } from '../../models/api-response.model';
+import { ExtraFields } from '../../models/member.model';
 
 /**
  * A backend által visszaadott coach adat.
@@ -20,7 +21,7 @@ interface CoachApiResponse {
   email: string;
   avatarUrl: string | null;
   roles: string[];
-  extraFields: any;
+  extraFields: ExtraFields;
 }
 
 @Injectable({
@@ -90,7 +91,7 @@ export class MemberSearchService {
            *   message: null
            * }
            */
-          this.http.get<ApiResponse<CoachApiResponse>>(`${this.coachApiUrl}/${coachId}`).pipe(
+          this.http.get<ApiResponse<CoachApiResponse>>(API_ENDPOINTS.coachById(coachId)).pipe(
             /*
              * ApiResponse
              * ↓

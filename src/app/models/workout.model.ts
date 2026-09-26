@@ -40,3 +40,15 @@ export interface WorkoutListResponse {
   workouts: Workout[];
   message?: string;
 }
+
+
+/**
+ * Lapozott coach workout keresési válasz.
+ */
+export interface PagedWorkoutResponse {
+  content: Workout[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}

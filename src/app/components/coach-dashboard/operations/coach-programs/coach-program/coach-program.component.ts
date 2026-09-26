@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppSearchComponent } from '../../../../shared/components/app-search/app-search.component';
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
@@ -9,6 +9,7 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 import { AppCardComponent } from '../../../../shared/components/app-card/app-card.component';
 import { AppButtonComponent } from '../../../../../components/shared/components/app-button/app-button.component';
 import { PaginationComponent } from '../../../../shared/components/pagination/pagination.component';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 @Component({
   selector: 'app-coach-program',
   standalone: true,
@@ -47,12 +48,18 @@ export class CoachProgramComponent implements OnInit {
     private languageService: LanguageService,
   ) {}
 
+  private readonly destroyRef = inject(DestroyRef);
+
   ngOnInit(): void {
-    this.languageService.language$.subscribe(() => {
-      this.loadCoachPrograms();
-    });
+    this.languageService.language$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((language) => {
+        this.currentPage = 1;
+        this.loadCoachPrograms(language);
+      });
   }
-  private loadCoachPrograms(): void {
+
+  private loadCoachPrograms(language = this.languageService.getCurrentLanguage()): void {
     const backendPage = this.currentPage - 1;
 
     this.programService
@@ -60,19 +67,17 @@ export class CoachProgramComponent implements OnInit {
         this.searchTerm.trim(),
         backendPage,
         this.itemsPerPage,
-        'hu',
+        language,
         this.sortDirection,
       )
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
-          console.log('Coach program search response:', response);
-
-          // Backend lapozási adatok
           this.totalItems = response.totalElements ?? 0;
           this.totalPages = Math.max(1, response.totalPages ?? 0);
 
           if (response.content?.length) {
-            this.programs = response.content.map((program: any): Program => ({
+            this.programs = response.content.map((program): Program => ({
               id: program.programId,
               programName: program.programName,
               programDescription: program.programDescription,
@@ -115,48 +120,11 @@ export class CoachProgramComponent implements OnInit {
   }
 
   /**
-   * Keresett és rendezett programok.
-   */
-  get filteredPrograms(): Program[] {
-    const search = this.searchTerm.trim().toLowerCase();
-
-    const result = this.programs.filter((program) => {
-      const programName = program.programName?.toLowerCase() ?? '';
-
-      return programName.includes(search);
-    });
-
-    return result.sort((a, b) => {
-      const nameA = a.programName?.toLowerCase() ?? '';
-      const nameB = b.programName?.toLowerCase() ?? '';
-
-      const comparison = nameA.localeCompare(nameB, 'hu', {
-        sensitivity: 'base',
-      });
-
-      return this.sortDirection === 'asc' ? comparison : -comparison;
-    });
-  }
-
-  /**
-   * Lapozás előtt frissítjük az oldalak számát.
-   */
-  private updatePagination(): void {
-    const count = this.filteredPrograms.length;
-
-    this.totalPages = Math.max(1, Math.ceil(count / this.itemsPerPage));
-
-    if (this.currentPage > this.totalPages) {
-      this.currentPage = this.totalPages;
-    }
-  }
-
-  /**
    * Keresés megváltozott.
    */
   onSearchChange(): void {
     this.currentPage = 1;
-    this.loadCoachPrograms();
+    this.loadCoachPrograms(this.languageService.getCurrentLanguage());
   }
 
   /**
@@ -166,20 +134,13 @@ export class CoachProgramComponent implements OnInit {
     this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
 
     this.currentPage = 1;
-    this.loadCoachPrograms();
-  }
-
-  /**
-   * Aktuális oldal programjai.
-   */
-  get pagedPrograms(): Program[] {
-    return this.programs;
+    this.loadCoachPrograms(this.languageService.getCurrentLanguage());
   }
 
   onPageChange(page: number): void {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
-      this.loadCoachPrograms();
+      this.loadCoachPrograms(this.languageService.getCurrentLanguage());
     }
   }
 
@@ -194,7 +155,6 @@ export class CoachProgramComponent implements OnInit {
   editProgram(programId: number | undefined, event: MouseEvent): void {
     event.stopPropagation();
 
-    console.log('Szerkesztés gomb megnyomva. programId =', programId);
 
     if (programId === undefined || programId === null || programId <= 0) {
       console.error('Érvénytelen program ID:', programId);
@@ -210,9 +170,8 @@ export class CoachProgramComponent implements OnInit {
           programId,
         },
       })
-      .then((success) => {
-        console.log('Program Builder navigáció eredménye:', success);
-      })
+      .then(() => {
+    })
       .catch((error) => {
         console.error('Hiba a Program Builder megnyitásakor:', error);
 
@@ -225,7 +184,11 @@ export class CoachProgramComponent implements OnInit {
       return;
     }
 
-    this.router.navigate(['/coach/programs', programId, 'workouts']);
+    this.router.navigate(['/coach/programs', programId, 'workouts'], {
+      queryParams: {
+        programId,
+      },
+    });
   }
 
   private setMessage(message: string, type: 'success' | 'error' | 'info'): void {

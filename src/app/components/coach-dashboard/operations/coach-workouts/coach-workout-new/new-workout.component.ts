@@ -47,9 +47,7 @@ export class NewWorkoutComponent implements OnInit, OnDestroy {
 
     const programId = this.route.snapshot.queryParamMap.get('programId');
 
-    console.log('Program Builderből érkezett:', fromProgramBuilder);
 
-    console.log('Program ID:', programId);
 
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.loadWorkouts();

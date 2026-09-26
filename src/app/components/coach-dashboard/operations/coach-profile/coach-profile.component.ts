@@ -3,6 +3,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { AuthService } from '../../../../services/auth/auth.service';
 import { CoachProfileService } from '../../../../services/coach/coach-profile.service';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
+import { UpdateCoachRequest } from '../../../../models/update-coach-request.model';
 import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
@@ -11,7 +12,7 @@ export interface CoachProfile {
   name: string;
   email: string;
   password_hash: string;
-  phone?: string;
+  phone: string;
   specialization?: string;
   avatar_url?: string;
   created_at?: string;
@@ -111,7 +112,7 @@ export class CoachProfileComponent implements OnInit {
       return;
     }
 
-    const payload = {
+    const payload: Omit<UpdateCoachRequest, 'roleIds'> = {
       id: this.profile.id,
       type: 'coach',
       name: this.profile.name,

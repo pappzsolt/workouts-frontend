@@ -1,4 +1,4 @@
-export interface ExtraFields {
+export interface ExtraFields extends Record<string, string | number | undefined> {
   coach_id?: number;
   gender?: string;
   weight?: number;

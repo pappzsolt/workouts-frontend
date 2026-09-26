@@ -1,10 +1,12 @@
+import { ExtraFields } from './member.model';
+
 export interface Coach {
   id: number;
   usernameOrName: string; // HTML-hez igazítva
   email: string;
   avatarUrl: string | null;
   roles: string[];
-  extraFields: any;
+  extraFields: ExtraFields;
 }
 
 export interface Member {
@@ -14,7 +16,7 @@ export interface Member {
   email: string;
   avatarUrl: string | null;
   roles: string[];
-  extraFields: any;
+  extraFields: ExtraFields;
   coach?: Coach; // ide kerül a coach adata, ha van
 }
 

@@ -14,7 +14,7 @@ export class UserProfilService {
 
   private readonly apiUrl = API_ENDPOINTS.members;
   private readonly coachesUrl = API_ENDPOINTS.allCoaches;
-  private readonly usersUrl = `${this.apiUrl}/all-users`;
+  private readonly usersUrl = API_ENDPOINTS.allUsers;
   private readonly rolesUrl = API_ENDPOINTS.roles;
 
   /**
@@ -52,7 +52,7 @@ export class UserProfilService {
    */
   getMemberById(id: number): Observable<RawUser> {
     return this.http
-      .get<ApiResponse<RawUser>>(`${this.apiUrl}/${id}`)
+      .get<ApiResponse<RawUser>>(API_ENDPOINTS.memberById(id))
       .pipe(map((response) => response.data));
   }
 
@@ -80,6 +80,6 @@ export class UserProfilService {
       ...(user.password?.trim() ? { passwordHash: user.password } : {}),
     };
 
-    return this.http.post<ApiResponse<void>>(`${this.apiUrl}/my-profile`, payload);
+    return this.http.post<ApiResponse<void>>(API_ENDPOINTS.myProfile, payload);
   }
 }

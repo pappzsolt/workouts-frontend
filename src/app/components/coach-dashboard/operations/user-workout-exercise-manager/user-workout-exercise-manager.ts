@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { TranslateService } from '@ngx-translate/core';
 
@@ -15,6 +16,63 @@ import { UserSelectComponent } from '../../../shared/user/user-select.component'
 import { CoachProgramSelectComponent } from '../../../shared/programs/coach-program-select.component';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+
+
+interface UserProgramExerciseRow {
+  scheduled_date?: string | null;
+  scheduledAt?: string | null;
+  program_day_index?: number;
+  user_workout_id?: number;
+  userWorkoutId?: number;
+  program_workout_id?: number;
+  programWorkoutId?: number;
+  workout_id?: number;
+  workoutId?: number;
+  workout_name?: string | null;
+  workoutName?: string | null;
+  workout_completed?: boolean;
+  workoutCompleted?: boolean;
+  user_workout_exercise_id?: number;
+  workout_exercise_id?: number;
+  exercise_order?: number;
+  exercise_id?: number;
+  exerciseName?: string | null;
+  exercise_name?: string | null;
+  exercise_completed?: boolean;
+  sets_done?: number | null;
+  feedback?: string | null;
+  notes?: string | null;
+  performed_at?: string | null;
+}
+
+interface UserProgramExercise {
+  userWorkoutExerciseId?: number;
+  workoutExerciseId?: number;
+  order?: number;
+  exerciseId?: number;
+  exerciseName?: string | null;
+  exerciseCompleted: boolean;
+  setsDone?: number | null;
+  feedback?: string | null;
+  notes?: string | null;
+  performedAt?: string | null;
+}
+
+interface UserProgramWorkout {
+  userWorkoutId?: number;
+  programWorkoutId?: number;
+  workoutId: number;
+  workoutName?: string | null;
+  scheduledAt: string | null;
+  workoutCompleted: boolean;
+  exercises: UserProgramExercise[];
+}
+
+interface UserProgramDay {
+  date?: string | null;
+  programDayIndex?: number;
+  workouts: UserProgramWorkout[];
+}
 
 @Component({
   selector: 'app-user-workout-exercise-manager',
@@ -41,8 +99,8 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
   // PROGRAM DATA
   // ============================
 
-  userProgramData: any[] = [];
-  dayGroups: any[] = [];
+  userProgramData: UserProgramExerciseRow[] = [];
+  dayGroups: UserProgramDay[] = [];
 
   // ============================
   // SETS
@@ -119,7 +177,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
       next: () => {
         this.loadSets(userWorkoutExerciseId);
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         alert(
           err?.error?.message || this.translate.instant('userWorkoutExerciseManager.addSetError'),
         );
@@ -155,7 +213,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
           }),
         );
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         alert(
           err?.error?.message ||
             this.translate.instant('userWorkoutExerciseManager.updateSetError'),
@@ -195,7 +253,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
           this.loadUserProgramWithExercises();
         }
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         alert(
           err?.error?.message ||
             this.translate.instant('userWorkoutExerciseManager.deleteSetError'),
@@ -234,7 +292,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
           }
         },
 
-        error: (err: any) => {
+        error: (err: HttpErrorResponse) => {
           alert(
             err?.error?.message ||
               this.translate.instant('userWorkoutExerciseManager.createUserWorkoutError'),
@@ -276,8 +334,8 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
   // DAY → WORKOUT → EXERCISE
   // ============================
 
-  private groupByDayAndWorkout(rows: any[]): any[] {
-    const groupedDays = new Map<string, any>();
+  private groupByDayAndWorkout(rows: UserProgramExerciseRow[]): UserProgramDay[] {
+    const groupedDays = new Map<string, UserProgramDay>();
 
     for (const row of rows) {
       const dateKey = row.scheduled_date ?? 'nincs_datum';
@@ -291,6 +349,9 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
       }
 
       const day = groupedDays.get(dateKey);
+      if (!day) {
+        continue;
+      }
 
       const rowUserWorkoutId = Number(row.user_workout_id ?? row.userWorkoutId);
       const rowProgramWorkoutId = Number(row.program_workout_id ?? row.programWorkoutId);
@@ -302,7 +363,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
        * is szerepelhet, ezért a csoportosítás elsődleges kulcsa a konkrét
        * userWorkoutId, másodsorban a programWorkoutId.
        */
-      let workout = day.workouts.find((currentWorkout: any) => {
+      let workout = day.workouts.find((currentWorkout) => {
         if (rowUserWorkoutId > 0 && currentWorkout.userWorkoutId === rowUserWorkoutId) {
           return true;
         }
@@ -355,9 +416,9 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
         return (a.programDayIndex ?? 0) - (b.programDayIndex ?? 0);
       })
       .map((day) => {
-        day.workouts = day.workouts.map((workout: any) => {
+        day.workouts = day.workouts.map((workout) => {
           workout.exercises = workout.exercises.sort(
-            (a: any, b: any) => (a.order ?? 0) - (b.order ?? 0),
+            (a, b) => (a.order ?? 0) - (b.order ?? 0),
           );
 
           return workout;
@@ -371,7 +432,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
   // SCHEDULED DATE FRISSÍTÉSE
   // ============================
 
-  updateScheduledDate(workout: any, scheduledAt: string): void {
+  updateScheduledDate(workout: UserProgramWorkout, scheduledAt: string | null): void {
     if (!workout.userWorkoutId) {
       alert(this.translate.instant('userWorkoutExerciseManager.userWorkoutIdMissing'));
       return;
@@ -395,7 +456,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
         }
       },
 
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         alert(
           err?.error?.message ||
             this.translate.instant('userWorkoutExerciseManager.scheduledDateUpdateError'),
@@ -407,19 +468,19 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
   // ANGULAR TRACK BY
   // ============================
 
-  trackByDay(index: number, day: any): any {
+  trackByDay(index: number, day: UserProgramDay): number {
     return day.programDayIndex ?? index;
   }
 
-  trackByWorkout(index: number, workout: any): any {
+  trackByWorkout(index: number, workout: UserProgramWorkout): number {
     return workout.userWorkoutId ?? workout.programWorkoutId ?? workout.workoutId ?? index;
   }
 
-  trackByExercise(index: number, exercise: any): any {
+  trackByExercise(index: number, exercise: UserProgramExercise): number {
     return exercise.userWorkoutExerciseId ?? index;
   }
 
-  trackBySet(index: number, set: UserWorkoutExerciseSetModel): any {
+  trackBySet(index: number, set: UserWorkoutExerciseSetModel): number {
     return set.id ?? index;
   }
 
@@ -427,7 +488,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
   // WORKOUT EXERCISE SORREND
   // ============================
 
-  updateExerciseOrderIndex(workoutId: number, exerciseId: number, orderIndex: number): void {
+  updateExerciseOrderIndex(workoutId: number, exerciseId: number, orderIndex: number | undefined): void {
     if (!workoutId) {
       alert(this.translate.instant('userWorkoutExerciseManager.workoutIdMissing'));
       return;
@@ -447,14 +508,14 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
       next: () => {
         const workout = this.dayGroups
           .flatMap((day) => day.workouts)
-          .find((currentWorkout: any) => currentWorkout.workoutId === workoutId);
+          .find((currentWorkout) => currentWorkout.workoutId === workoutId);
 
         if (!workout) {
           return;
         }
 
         const exercise = workout.exercises.find(
-          (currentExercise: any) => currentExercise.exerciseId === exerciseId,
+          (currentExercise) => currentExercise.exerciseId === exerciseId,
         );
 
         if (!exercise) {
@@ -464,10 +525,10 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
         exercise.order = orderIndex;
 
         workout.exercises = workout.exercises.sort(
-          (a: any, b: any) => (a.order ?? 0) - (b.order ?? 0),
+          (a, b) => (a.order ?? 0) - (b.order ?? 0),
         );
       },
-      error: (err: any) => {
+      error: (err: HttpErrorResponse) => {
         alert(
           err?.error?.message ||
             this.translate.instant('userWorkoutExerciseManager.orderUpdateError'),

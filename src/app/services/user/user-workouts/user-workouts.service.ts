@@ -5,6 +5,22 @@ import { Observable, map } from 'rxjs';
 import { API_ENDPOINTS } from '../../../api-endpoints';
 import { ApiResponse } from '../../../models/api-response.model';
 
+interface RawWorkoutRecord extends Partial<Workout> {
+  id?: number;
+  workout_id?: number;
+  program_workout_id?: number;
+  user_workout_id?: number;
+}
+
+interface RawScheduledWorkout extends Partial<ScheduledWorkout> {
+  user_workout_id?: number;
+  program_workout_id?: number;
+  workout_id?: number;
+  program_id?: number;
+  scheduled_at?: string | null;
+  workout_name?: string | null;
+}
+
 export interface Workout {
   workoutId: number;
   workoutName: string;
@@ -45,12 +61,17 @@ export class UserWorkoutsService {
   /** Backend hívás – Workouts by program */
   getWorkoutsByProgram(programId: number): Observable<Workout[]> {
     return this.http
-      .get<ApiResponse<Workout[]>>(`${this.apiUrl}/program/${programId}`)
+      .get<ApiResponse<RawWorkoutRecord[]>>(API_ENDPOINTS.workoutsByProgram(programId))
       .pipe(
         map((response) =>
-          (response.data ?? []).map((item: any) => ({
-            ...item,
+          (response.data ?? []).map((item) => ({
             workoutId: Number(item.workoutId ?? item.workout_id ?? item.id),
+            workoutName: item.workoutName ?? '',
+            workoutDescription: item.workoutDescription ?? '',
+            workoutDate: item.workoutDate ?? '',
+            durationMinutes: item.durationMinutes ?? 0,
+            intensityLevel: item.intensityLevel ?? '',
+            dayIndex: item.dayIndex ?? 0,
             programWorkoutId:
               item.programWorkoutId != null
                 ? Number(item.programWorkoutId)
@@ -64,6 +85,13 @@ export class UserWorkoutsService {
                   ? Number(item.user_workout_id)
                   : undefined,
             completed: item.completed ?? null,
+            performedAt: item.performedAt ?? null,
+            actualSets: item.actualSets ?? null,
+            actualRepetitions: item.actualRepetitions ?? null,
+            weightUsed: item.weightUsed ?? null,
+            durationSeconds: item.durationSeconds ?? null,
+            feedback: item.feedback ?? null,
+            notes: item.notes ?? null,
           })),
         ),
       );
@@ -78,44 +106,46 @@ export class UserWorkoutsService {
    */
   getScheduledWorkouts(): Observable<ScheduledWorkout[]> {
     return this.http
-      .get<ApiResponse<ScheduledWorkout[]>>(
-        `${API_ENDPOINTS.userWorkoutExercises}/scheduled-workouts`,
+       .get<ApiResponse<RawScheduledWorkout[]>>(
+        API_ENDPOINTS.scheduledUserWorkouts,
       )
       .pipe(
         map((response) =>
-          (response.data ?? []).map((item: any) => {
-            const programWorkoutId = Number(
-              item.programWorkoutId ?? item.program_workout_id,
-            );
-
-            if (!Number.isFinite(programWorkoutId) || programWorkoutId <= 0) {
-              throw new Error(
-                'A scheduled workout válaszban hiányzik az érvényes programWorkoutId.',
-              );
-            }
-
-            return {
-              userWorkoutId: Number(
+          (response.data ?? [])
+            .map((item): ScheduledWorkout | null => {
+              const userWorkoutId = Number(
                 item.user_workout_id ?? item.userWorkoutId,
-              ),
-              programWorkoutId,
-              workoutId:
-                item.workoutId != null
-                  ? Number(item.workoutId)
-                  : item.workout_id != null
-                    ? Number(item.workout_id)
-                    : 0,
-              programId:
-                item.programId != null
-                  ? Number(item.programId)
-                  : item.program_id != null
-                    ? Number(item.program_id)
-                    : 0,
-              scheduledAt: item.scheduled_at ?? item.scheduledAt ?? null,
-              completed: item.completed ?? null,
-              workoutName: item.workout_name ?? item.workoutName ?? null,
-            };
-          }),
+              );
+              const programWorkoutId = Number(
+                item.programWorkoutId ?? item.program_workout_id,
+              );
+              const workoutId = Number(
+                item.workoutId ?? item.workout_id,
+              );
+              const programId = Number(
+                item.programId ?? item.program_id,
+              );
+
+              if (
+                !Number.isFinite(userWorkoutId) || userWorkoutId <= 0 ||
+                !Number.isFinite(programWorkoutId) || programWorkoutId <= 0 ||
+                !Number.isFinite(workoutId) || workoutId <= 0 ||
+                !Number.isFinite(programId) || programId <= 0
+              ) {
+                return null;
+              }
+
+              return {
+                userWorkoutId,
+                programWorkoutId,
+                workoutId,
+                programId,
+                scheduledAt: item.scheduled_at ?? item.scheduledAt ?? null,
+                completed: item.completed ?? null,
+                workoutName: item.workout_name ?? item.workoutName ?? null,
+              };
+            })
+            .filter((item): item is ScheduledWorkout => item !== null),
         ),
       );
   }

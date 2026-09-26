@@ -4,7 +4,8 @@ import { Observable, map, catchError, of } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
 
-import { UserProgram, ProgramProgress } from '../../../models/program.model';
+import { ApiResponse } from '../../../models/api-response.model';
+import { UserProgram, UserProgramApiItem, ProgramProgress } from '../../../models/program.model';
 
 @Injectable({
   providedIn: 'root',
@@ -14,13 +15,13 @@ export class UserMyProgramsService {
   private readonly apiUrl = API_ENDPOINTS.assignedPrograms;
 
   getPrograms(): Observable<UserProgram[]> {
-    return this.http.get<any>(this.apiUrl).pipe(
+    return this.http.get<ApiResponse<UserProgramApiItem[]>>(this.apiUrl).pipe(
       map((res) => {
         if (!res?.data) {
           return [];
         }
 
-        return res.data.map((p: any) => ({
+        return res.data.map((p: UserProgramApiItem) => ({
           id: p.id,
           name: p.name,
           description: p.description,
@@ -44,7 +45,7 @@ export class UserMyProgramsService {
     );
 
     return this.http
-      .get<any>(`${this.apiUrl}/progress`, { params })
+      .get<ApiResponse<ProgramProgress[]>>(API_ENDPOINTS.assignedProgramsProgress, { params })
       .pipe(map((res) => res?.data ?? []));
   }
 }

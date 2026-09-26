@@ -48,7 +48,6 @@ export class CoachSelectComponent implements OnInit {
   ngOnInit(): void {
     this.coachService.getAllCoaches().subscribe({
       next: (coaches) => {
-        console.log('Coaches loaded:', coaches);
 
         this.coaches = coaches;
       },

@@ -145,6 +145,7 @@
                         type="button"
                         [label]="'userWorkoutExerciseManager.save' | translate"
                         (buttonClick)="
+    ex.exerciseId != null &&
     updateExerciseOrderIndex(
       w.workoutId,
       ex.exerciseId,
@@ -192,7 +193,7 @@
                       variant="primary"
                       type="button"
                       [label]="'userWorkoutExerciseManager.sets' | translate"
-                      (buttonClick)="loadSets(ex.userWorkoutExerciseId)"
+                      (buttonClick)="ex.userWorkoutExerciseId != null && loadSets(ex.userWorkoutExerciseId)"
                     ></app-button>
                   </td>
                 </tr>

@@ -111,16 +111,12 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
         next: (res) => {
           this.loading = false;
 
-          console.log('=== searchMyWorkouts válasz ===');
-          console.log('Teljes válasz:', res);
-          console.log('Workoutok:', res.content);
 
           if (res.content?.length) {
             this.workouts = [...res.content];
 
             this.totalPages = Math.max(1, res.totalPages);
 
-            console.log('Betöltött workoutok:', this.workouts);
           } else {
             this.workouts = [];
             this.totalPages = 1;
@@ -128,7 +124,6 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
             this.message = 'coachWorkoutBoard.noWorkouts';
             this.messageType = 'error';
 
-            console.log('Nincs workout a válaszban.');
           }
         },
 

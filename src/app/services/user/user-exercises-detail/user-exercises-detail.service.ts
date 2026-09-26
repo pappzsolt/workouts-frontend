@@ -33,7 +33,7 @@ export class UserExerciseDetailService {
     language: string,
   ): Observable<ApiResponse<UserWorkoutDetailDto>> {
     return this.http.get<ApiResponse<UserWorkoutDetailDto>>(
-      `${API_ENDPOINTS.exercises}/my-workout/user-workout/${userWorkoutId}`,
+      API_ENDPOINTS.userWorkoutExercisesByWorkout(userWorkoutId),
       {
         params: { language },
       },
@@ -60,7 +60,7 @@ export class UserExerciseDetailService {
     actualWeightKg: number | null,
     notes: string | null,
   ): Observable<void> {
-    return this.http.patch<void>(`${API_ENDPOINTS.exercises}/set-completed`, {
+    return this.http.patch<void>(API_ENDPOINTS.exerciseSetCompleted, {
       userWorkoutId,
       programId,
       workoutId,

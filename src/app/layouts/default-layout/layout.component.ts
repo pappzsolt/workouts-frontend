@@ -67,7 +67,7 @@ export class LayoutComponent implements OnInit {
     return this.role === 'ROLE_USER';
   }
 
-  handleMenuAction(action: string | any): void {
+  handleMenuAction(action: string): void {
     if (action === 'logout') {
       this.onLogout();
     }

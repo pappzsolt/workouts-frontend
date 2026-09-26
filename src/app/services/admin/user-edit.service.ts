@@ -21,9 +21,9 @@ import {
 export class UserEditService {
   private readonly apiUrl = API_ENDPOINTS.members;
 
-  private readonly coachesUrl = `${this.apiUrl}/all-coaches`;
+  private readonly coachesUrl = API_ENDPOINTS.allCoaches;
 
-  private readonly usersUrl = `${this.apiUrl}/all-users`;
+  private readonly usersUrl = API_ENDPOINTS.allUsers;
 
   private readonly rolesUrl = API_ENDPOINTS.roles;
 

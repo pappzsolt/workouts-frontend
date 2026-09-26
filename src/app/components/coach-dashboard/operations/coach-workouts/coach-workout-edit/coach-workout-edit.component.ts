@@ -16,8 +16,23 @@ import { USER_MESSAGES } from '../../../../../constants/user-messages';
 import { Workout } from '../../../../../models/workout.model';
 
 import { Exercise } from '../../../../../models/exercise.model';
+import { HttpErrorResponse } from '@angular/common/http';
 
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
+
+interface WorkoutExerciseView {
+  id?: number;
+  workoutId: number;
+  exerciseId?: number;
+  exercise?: Exercise;
+  sets?: number;
+  repetitions?: number;
+  orderIndex?: number;
+  restSeconds?: number;
+  notes?: string;
+  done?: boolean;
+  name?: string;
+}
 
 @Component({
   selector: 'app-coach-workout-edit',
@@ -93,7 +108,7 @@ export class CoachWorkoutEditComponent implements OnInit {
    * Az aktuális workoutban már meglévő
    * WorkoutExercise kapcsolatok.
    */
-  workoutExercises: any[] = [];
+  workoutExercises: WorkoutExerciseView[] = [];
 
   /**
    * Kiválasztott exercise ID.
@@ -179,10 +194,9 @@ export class CoachWorkoutEditComponent implements OnInit {
 
         this.checkingProgramAssignment = false;
 
-        console.log('Workout programhoz tartozik:', this.workoutAssignedToProgram);
       },
 
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         console.error('Hiba a workout programhoz tartozásának ellenőrzésekor:', error);
 
         this.workoutAssignedToProgram = false;
@@ -279,7 +293,6 @@ export class CoachWorkoutEditComponent implements OnInit {
 
     this.exerciseService.getAllExercises().subscribe({
       next: (response: ApiResponse<Exercise[]>) => {
-        console.log('[CoachWorkoutEdit] exercises response:', response);
 
         this.exercises = response.data ?? [];
 
@@ -308,8 +321,7 @@ export class CoachWorkoutEditComponent implements OnInit {
     }
 
     this.exerciseService.getWorkoutExercises(this.workoutId).subscribe({
-      next: (workout: any) => {
-        console.log('Workout exercise-ek:', workout);
+      next: (workout: Workout) => {
 
         /**
          * A backend a teljes workoutot adja vissza,
@@ -317,10 +329,9 @@ export class CoachWorkoutEditComponent implements OnInit {
          */
         this.workoutExercises = workout?.exercises || [];
 
-        console.log('Betöltött WorkoutExercise-ek:', this.workoutExercises);
       },
 
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         console.error('Hiba a workout exercise-ek betöltésekor:', error);
 
         this.workoutExercises = [];
@@ -334,7 +345,7 @@ export class CoachWorkoutEditComponent implements OnInit {
   // WORKOUT EXERCISE ID LEKÉRÉSE
   // ==========================================================
 
-  private getWorkoutExerciseId(workoutExercise: any): number | null {
+  private getWorkoutExerciseId(workoutExercise: WorkoutExerciseView): number | null {
     if (!workoutExercise) {
       return null;
     }
@@ -516,16 +527,17 @@ export class CoachWorkoutEditComponent implements OnInit {
     }
 
     const exerciseId = this.selectedExerciseId;
+    const workoutId = this.workoutId;
+
+    if (workoutId == null) {
+      this.setMessage('coachWorkoutEdit.workoutIdMissing', 'error');
+      return;
+    }
 
     this.addingExercise = true;
 
-    this.workoutExerciseService.assignExerciseToWorkout(this.workoutId, exerciseId).subscribe({
-      next: (response: any) => {
-        console.log('Exercise sikeresen hozzáadva a workouthoz:', {
-          workoutId: this.workoutId,
-          exerciseId,
-          response,
-        });
+    this.workoutExerciseService.assignExerciseToWorkout(workoutId, exerciseId).subscribe({
+      next: (response: ApiResponse<void>) => {
 
         const addedExercise = this.exercises.find(
           (exercise) => Number(exercise.id) === Number(exerciseId),
@@ -540,9 +552,14 @@ export class CoachWorkoutEditComponent implements OnInit {
          */
         if (addedExercise && !this.isExerciseAlreadyAdded(exerciseId)) {
           this.workoutExercises.push({
-            workoutId: this.workoutId,
+            workoutId,
             exerciseId: addedExercise.id,
             exercise: addedExercise,
+            sets: addedExercise.sets ?? 0,
+            repetitions: addedExercise.repetitions ?? 0,
+            orderIndex: this.workoutExercises.length,
+            restSeconds: 0,
+            done: false,
           });
         }
 
@@ -553,7 +570,7 @@ export class CoachWorkoutEditComponent implements OnInit {
         this.setMessage('coachWorkoutEdit.addSuccess', 'success');
       },
 
-      error: (error: any) => {
+      error: (error: HttpErrorResponse) => {
         console.error('Hiba az exercise workoutba adásakor:', error);
 
         this.addingExercise = false;

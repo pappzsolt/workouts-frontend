@@ -18,7 +18,7 @@ export class ExerciseService {
   // ==========================================================
 
   getWorkoutsWithExercises(): Observable<ApiResponse<WorkoutDto[]>> {
-    return this.http.get<ApiResponse<WorkoutDto[]>>(`${API_ENDPOINTS.exercises}/workouts`);
+    return this.http.get<ApiResponse<WorkoutDto[]>>(API_ENDPOINTS.exercisesForWorkouts);
   }
 
   // ==========================================================
@@ -27,7 +27,7 @@ export class ExerciseService {
 
   getWorkoutExercises(workoutId: number): Observable<WorkoutDto> {
     return this.http
-      .get<ApiResponse<WorkoutDto>>(`${API_ENDPOINTS.exercises}/workout/${workoutId}`)
+      .get<ApiResponse<WorkoutDto>>(API_ENDPOINTS.exerciseForWorkout(workoutId))
       .pipe(map((response: ApiResponse<WorkoutDto>) => response.data));
   }
 
@@ -40,7 +40,7 @@ export class ExerciseService {
     exerciseId: number,
     done: boolean,
   ): Observable<string> {
-    return this.http.patch<string>(`${API_ENDPOINTS.exercises}/done`, {
+    return this.http.patch<string>(API_ENDPOINTS.exerciseDone, {
       workoutId,
       exerciseId,
       done,
@@ -52,7 +52,7 @@ export class ExerciseService {
   // ==========================================================
 
   addExercise(exercise: Exercise): Observable<Exercise> {
-    return this.http.post<Exercise>(`${API_ENDPOINTS.exercises}/add`, exercise);
+    return this.http.post<Exercise>(API_ENDPOINTS.exerciseAdd, exercise);
   }
 
   // ==========================================================
@@ -102,7 +102,7 @@ export class ExerciseService {
     const params = new HttpParams().set('language', language);
 
     return this.http.put<ApiResponse<Exercise>>(
-      `${API_ENDPOINTS.exercises}/update`,
+      API_ENDPOINTS.exerciseUpdate,
       payload,
       { params },
     );
@@ -113,7 +113,7 @@ export class ExerciseService {
   // ==========================================================
 
   deleteExercise(exerciseId: number): Observable<string> {
-    return this.http.delete<string>(`${API_ENDPOINTS.exercises}/delete/${exerciseId}`);
+    return this.http.delete<string>(API_ENDPOINTS.exerciseDelete(exerciseId));
   }
 
   // ==========================================================
@@ -123,7 +123,7 @@ export class ExerciseService {
   getAllExercises(language: string = 'hu'): Observable<ApiResponse<Exercise[]>> {
     const params = new HttpParams().set('language', language);
 
-    return this.http.get<ApiResponse<Exercise[]>>(`${API_ENDPOINTS.exercises}/all`, { params });
+    return this.http.get<ApiResponse<Exercise[]>>(API_ENDPOINTS.allExercises, { params });
   }
   // ==========================================================
   // EXERCISE KERESÉS BACKENDEN
@@ -155,7 +155,7 @@ export class ExerciseService {
     }
 
     return this.http.get<ApiResponse<ExerciseSearchResponse>>(
-      `${API_ENDPOINTS.exercises}/exercise-search`,
+      API_ENDPOINTS.exerciseSearch,
       { params },
     );
   }

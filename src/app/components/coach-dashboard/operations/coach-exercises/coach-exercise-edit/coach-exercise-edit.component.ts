@@ -123,16 +123,9 @@ export class CoachExerciseEditComponent implements OnInit {
 
     this.exerciseService.getAllExercises(language).subscribe({
       next: (response: ApiResponse<Exercise[]>) => {
-        console.log('EDIT EXERCISE RESPONSE:', response);
 
         const exercises = response.data ?? [];
 
-        console.log(
-          'EDIT EXERCISE ID:',
-          exerciseId,
-          'FOUND:',
-          exercises.find((item) => item.id === exerciseId),
-        );
 
         const exercise = exercises.find((item) => item.id === exerciseId);
 
@@ -178,7 +171,6 @@ export class CoachExerciseEditComponent implements OnInit {
       .updateExercise(this.exercise, this.currentLanguage)
       .subscribe({
         next: (response) => {
-          console.log('Exercise frissítve:', response.data);
 
           // A backend a módosított ExerciseDto-t az ApiResponse.data
           // mezőben adja vissza. Ezt visszatesszük a form modelljébe,

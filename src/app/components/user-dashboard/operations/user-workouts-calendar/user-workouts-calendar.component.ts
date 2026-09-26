@@ -3,6 +3,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subject, takeUntil } from 'rxjs';
 
 import { WorkoutExercisesManagerService } from '../../../../services/coach/workout-exercises-manager.service';
+import { ScheduledWorkout } from '../../../../services/user/user-workouts/user-workouts.service';
+import { UserWorkoutExerciseDto } from '../../../../models/user-workout-exercise.dto';
 import { LanguageService } from '../../../../services/shared/language.service';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
@@ -30,11 +32,11 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   // Workout adatok
   // =========================================================
 
-  scheduledWorkouts: any[] = [];
+  scheduledWorkouts: ScheduledWorkout[] = [];
 
-  selectedWorkout: any | null = null;
+  selectedWorkout: ScheduledWorkout | null = null;
 
-  selectedExercises: any[] = [];
+  selectedExercises: UserWorkoutExerciseDto[] = [];
 
   // =========================================================
   // Naptár adatok
@@ -111,7 +113,6 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
-          console.log('Scheduled workouts:', JSON.stringify(response, null, 2));
 
           if (response.success) {
             this.scheduledWorkouts = response.data ?? [];
@@ -240,7 +241,7 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   // WORKOUTOK LEKÉRÉSE ADOTT NAPRA
   // =========================================================
 
-  getWorkoutsForDay(date: Date): any[] {
+  getWorkoutsForDay(date: Date): ScheduledWorkout[] {
     return this.scheduledWorkouts.filter((workout) => {
       if (!workout.scheduledAt) {
         return false;
@@ -266,12 +267,11 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   // WORKOUT KIVÁLASZTÁSA
   // =========================================================
 
-  selectWorkout(workout: any): void {
+  selectWorkout(workout: ScheduledWorkout): void {
     this.selectedWorkout = workout;
 
     this.selectedExercises = [];
 
-    console.log('Kiválasztott workout:', workout);
 
     this.loadSelectedWorkoutExercises();
   }
@@ -291,7 +291,6 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (exercises) => {
-          console.log('Workout exercise-ok:', JSON.stringify(exercises, null, 2));
 
           this.selectedExercises = exercises ?? [];
         },

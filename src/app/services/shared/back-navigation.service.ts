@@ -15,11 +15,9 @@ export class BackNavigationService {
   private isBackNavigation = false;
 
   constructor(private router: Router) {
-    console.log('[BackNavigation] Service inicializálása');
 
     const currentUrl = this.router.url;
 
-    console.log('[BackNavigation] Induló URL:', currentUrl);
 
     if (currentUrl && currentUrl !== '/') {
       const entry: NavigationHistoryEntry = {
@@ -29,7 +27,6 @@ export class BackNavigationService {
 
       this.navigationHistory.push(entry);
 
-      console.log('[BackNavigation] Kezdő oldal rögzítve:', entry);
     }
 
     this.logHistory('Inicializálás után');
@@ -39,14 +36,9 @@ export class BackNavigationService {
       .subscribe((event) => {
         const currentUrl = event.urlAfterRedirects;
 
-        console.log('[BackNavigation] NavigationEnd:', currentUrl);
-        console.log('[BackNavigation] history.state:', this.getCurrentState());
 
         // A back() által indított navigációt nem rögzítjük újra.
         if (this.isBackNavigation) {
-          console.log(
-            '[BackNavigation] Visszalépésből érkeztünk, ' + 'az új előzmény rögzítése kimarad.',
-          );
 
           this.isBackNavigation = false;
           this.logHistory('Back navigáció után');
@@ -57,7 +49,6 @@ export class BackNavigationService {
 
         // Azonos URL ne kerüljön be egymás után.
         if (lastEntry?.url === currentUrl) {
-          console.log('[BackNavigation] Azonos URL, state frissítése:', currentUrl);
 
           lastEntry.state = this.getCurrentState();
 
@@ -72,7 +63,6 @@ export class BackNavigationService {
 
         this.navigationHistory.push(entry);
 
-        console.log('[BackNavigation] Új előzmény rögzítve:', entry);
 
         this.logHistory('Navigáció után');
       });
@@ -85,9 +75,6 @@ export class BackNavigationService {
   back(fallbackUrl: string = '/'): void {
     const currentUrl = this.router.url;
 
-    console.log('========== BACK START ==========');
-    console.log('[BackNavigation] Aktuális URL:', currentUrl);
-    console.log('[BackNavigation] Fallback URL:', fallbackUrl);
 
     this.logHistory('Back előtt');
 
@@ -97,7 +84,6 @@ export class BackNavigationService {
     if (lastEntry?.url === currentUrl) {
       const removed = this.navigationHistory.pop();
 
-      console.log('[BackNavigation] Aktuális oldal eltávolítva:', removed);
     } else {
       console.warn(
         '[BackNavigation] Az aktuális URL nem egyezik ' + 'az előzmények utolsó elemével.',
@@ -112,9 +98,7 @@ export class BackNavigationService {
     const previousEntry = this.navigationHistory[this.navigationHistory.length - 1];
 
     if (previousEntry) {
-      console.log('[BackNavigation] Visszalépés célja:', previousEntry.url);
 
-      console.log('[BackNavigation] Visszaállítandó state:', previousEntry.state);
 
       this.isBackNavigation = true;
 
@@ -124,7 +108,6 @@ export class BackNavigationService {
 
       this.logHistory('Back navigáció indítása után');
 
-      console.log('========== BACK END ==========');
       return;
     }
 
@@ -137,7 +120,6 @@ export class BackNavigationService {
 
     this.logHistory('Fallback navigáció indítása után');
 
-    console.log('========== BACK END ==========');
   }
 
   /**
@@ -145,9 +127,6 @@ export class BackNavigationService {
    * opcionális navigation state adatokkal.
    */
   navigateTo(url: string, state?: Record<string, unknown>): void {
-    console.log('[BackNavigation] navigateTo() meghívva');
-    console.log('[BackNavigation] Cél URL:', url);
-    console.log('[BackNavigation] Küldött state:', state);
 
     this.router.navigateByUrl(url, {
       state,
@@ -171,13 +150,5 @@ export class BackNavigationService {
    * Navigációs előzmények naplózása.
    */
   private logHistory(context: string): void {
-    console.log(
-      `[BackNavigation] Előzmények (${context}):`,
-      this.navigationHistory.map((entry, index) => ({
-        index,
-        url: entry.url,
-        state: entry.state,
-      })),
-    );
   }
 }

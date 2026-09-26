@@ -29,7 +29,7 @@ export class ProgramWorkoutService {
       dayIndex,
     };
 
-    return this.http.post<ApiResponse<ProgramWorkout>>(`${this.baseUrl}/add`, payload);
+    return this.http.post<ApiResponse<ProgramWorkout>>(API_ENDPOINTS.programWorkoutAdd, payload);
   }
 
   // ==========================================================
@@ -38,7 +38,7 @@ export class ProgramWorkoutService {
 
   isWorkoutAssignedToAnyProgram(workoutId: number): Observable<ApiResponse<{ assigned: boolean }>> {
     return this.http.get<ApiResponse<{ assigned: boolean }>>(
-      `${this.baseUrl}/workout/${workoutId}/assigned`,
+      API_ENDPOINTS.programWorkoutAssigned(workoutId),
     );
   }
 
@@ -47,11 +47,11 @@ export class ProgramWorkoutService {
   // ==========================================================
 
   getWorkoutsForProgram(programId: number): Observable<ApiResponse<ProgramWorkout[]>> {
-    return this.http.get<ApiResponse<ProgramWorkout[]>>(`${this.baseUrl}?programId=${programId}`);
+    return this.http.get<ApiResponse<ProgramWorkout[]>>(API_ENDPOINTS.programWorkoutsByProgram(programId));
   }
 
   getWorkoutsForProgramByQuery(programId: number): Observable<ApiResponse<ProgramWorkout[]>> {
-    return this.http.get<ApiResponse<ProgramWorkout[]>>(`${this.baseUrl}?programId=${programId}`);
+    return this.http.get<ApiResponse<ProgramWorkout[]>>(API_ENDPOINTS.programWorkoutsByProgram(programId));
   }
 
   // ==========================================================
@@ -59,7 +59,7 @@ export class ProgramWorkoutService {
   // ==========================================================
 
   deleteProgramWorkout(programId: number, workoutId: number): Observable<ApiResponse<void>> {
-    return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/${programId}/${workoutId}`);
+    return this.http.delete<ApiResponse<void>>(API_ENDPOINTS.programWorkoutDelete(programId, workoutId));
   }
 
   // ==========================================================
@@ -67,7 +67,7 @@ export class ProgramWorkoutService {
   // ==========================================================
 
   deleteProgramWorkouts(programId: number): Observable<ApiResponse<void>> {
-    return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/${programId}`);
+    return this.http.delete<ApiResponse<void>>(API_ENDPOINTS.programWorkoutsDelete(programId));
   }
 
   // ==========================================================
@@ -80,6 +80,6 @@ export class ProgramWorkoutService {
       dayIndex,
     };
 
-    return this.http.put<ApiResponse<ProgramWorkout>>(`${this.baseUrl}/update`, payload);
+    return this.http.put<ApiResponse<ProgramWorkout>>(API_ENDPOINTS.programWorkoutUpdate, payload);
   }
 }

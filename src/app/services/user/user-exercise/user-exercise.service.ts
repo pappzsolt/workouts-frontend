@@ -24,7 +24,7 @@ export class UserExerciseService {
     language: string,
   ): Observable<ApiResponse<WorkoutDto>> {
     return this.http.get<ApiResponse<WorkoutDto>>(
-      `${this.baseUrl}/my-workout/user-workout/${userWorkoutId}`,
+      API_ENDPOINTS.userWorkoutExercisesByWorkout(userWorkoutId),
       {
         params: { language },
       },

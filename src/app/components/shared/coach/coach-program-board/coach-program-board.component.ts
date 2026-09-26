@@ -78,7 +78,6 @@ export class CoachProgramBoardComponent implements OnInit, OnDestroy {
           workouts: p.workouts ?? [],
         }));
 
-        console.log('Mapped programs:', this.programs);
       },
 
       error: (err) => {

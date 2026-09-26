@@ -32,7 +32,7 @@ export class WorkoutExerciseService {
    */
   assignExerciseToWorkout(workoutId: number, exerciseId: number): Observable<ApiResponse<void>> {
     const params = new HttpParams().set('workoutId', workoutId).set('exerciseId', exerciseId);
-    return this.http.post<ApiResponse<void>>(`${this.baseUrl}/assign`, null, { params });
+    return this.http.post<ApiResponse<void>>(API_ENDPOINTS.workoutExerciseAssign, null, { params });
   }
 
   // ==========================================================
@@ -70,7 +70,7 @@ export class WorkoutExerciseService {
    */
   deleteExerciseFromWorkout(workoutId: number, exerciseId: number): Observable<ApiResponse<void>> {
     const params = new HttpParams().set('workoutId', workoutId).set('exerciseId', exerciseId);
-    return this.http.delete<ApiResponse<void>>(`${this.baseUrl}/delete`, { params });
+    return this.http.delete<ApiResponse<void>>(API_ENDPOINTS.workoutExerciseDelete, { params });
   }
 
   // ==========================================================
@@ -100,6 +100,6 @@ export class WorkoutExerciseService {
       .set('workoutId', workoutId)
       .set('exerciseId', exerciseId)
       .set('orderIndex', orderIndex);
-    return this.http.put<ApiResponse<void>>(`${this.baseUrl}/order-index`, null, { params });
+    return this.http.put<ApiResponse<void>>(API_ENDPOINTS.workoutExerciseOrderIndex, null, { params });
   }
 }

@@ -34,7 +34,7 @@ export class AuthService {
    */
   login(username: string, password: string): Observable<LoginResponse> {
     return this.http
-      .post<ApiResponse<LoginResponse>>(`${this.apiUrl}/login`, {
+      .post<ApiResponse<LoginResponse>>(API_ENDPOINTS.authLogin, {
         username,
         password,
       })
@@ -103,7 +103,7 @@ export class AuthService {
     }
 
     return this.rawHttp
-      .post<ApiResponse<LoginResponse>>(`${this.apiUrl}/refresh`, { refreshToken })
+      .post<ApiResponse<LoginResponse>>(API_ENDPOINTS.authRefresh, { refreshToken })
       .pipe(
         map((response) => {
           if (!response.success || !response.data) {

@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { WorkoutDto } from '../../../models/exercise.model';
-import { Workout, WorkoutResponse } from '../../../models/workout.model';
+import { PagedWorkoutResponse, Workout, WorkoutResponse } from '../../../models/workout.model';
 import { ApiResponse } from '../../../models/api-response.model';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
@@ -23,7 +23,7 @@ export class CoachWorkoutsService {
    * GET /api/workouts/my-workouts
    */
   getMyWorkouts(): Observable<ApiResponse<Workout[]>> {
-    return this.http.get<ApiResponse<Workout[]>>(`${this.apiUrl}/my-workouts`);
+    return this.http.get<ApiResponse<Workout[]>>(API_ENDPOINTS.myWorkouts);
   }
 
   /**
@@ -32,7 +32,7 @@ export class CoachWorkoutsService {
    * GET /api/workouts/my-workouts/unique
    */
   getUniqueMyWorkouts(): Observable<Workout[]> {
-    return this.http.get<Workout[]>(`${this.apiUrl}/my-workouts/unique`);
+    return this.http.get<Workout[]>(API_ENDPOINTS.uniqueMyWorkouts);
   }
 
   /**
@@ -41,21 +41,21 @@ export class CoachWorkoutsService {
    * GET /api/exercises/workouts/unique
    */
   getUniqueWorkoutsWithExercises(): Observable<ApiResponse<WorkoutDto[]>> {
-    return this.http.get<ApiResponse<WorkoutDto[]>>(`${API_ENDPOINTS.exercises}/workouts/unique`);
+    return this.http.get<ApiResponse<WorkoutDto[]>>(API_ENDPOINTS.uniqueWorkoutsWithExercises);
   }
 
   /**
    * Új workout létrehozása.
    */
   addWorkout(workout: Workout): Observable<WorkoutResponse> {
-    return this.http.post<WorkoutResponse>(`${this.apiUrl}/add`, workout);
+    return this.http.post<WorkoutResponse>(API_ENDPOINTS.workoutAdd, workout);
   }
 
   /**
    * Workout lekérése ID alapján.
    */
   getWorkoutById(id: number): Observable<WorkoutResponse> {
-    return this.http.get<WorkoutResponse>(`${this.apiUrl}/${id}`);
+    return this.http.get<WorkoutResponse>(API_ENDPOINTS.workoutById(id));
   }
 
   /**
@@ -67,14 +67,14 @@ export class CoachWorkoutsService {
       id,
     };
 
-    return this.http.put<WorkoutResponse>(`${this.apiUrl}/update`, payload);
+    return this.http.put<WorkoutResponse>(API_ENDPOINTS.workoutUpdate, payload);
   }
 
   /**
    * Workout törlése.
    */
   deleteWorkout(id: number): Observable<WorkoutResponse> {
-    return this.http.delete<WorkoutResponse>(`${this.apiUrl}/delete/${id}`);
+    return this.http.delete<WorkoutResponse>(API_ENDPOINTS.workoutDelete(id));
   }
 
   /**
@@ -88,7 +88,7 @@ export class CoachWorkoutsService {
     size: number = 6,
     language: string = 'hu',
     sortDirection: 'asc' | 'desc' = 'asc',
-  ): Observable<any> {
+  ): Observable<PagedWorkoutResponse> {
     const params = new HttpParams()
       .set('search', search)
       .set('page', page)
@@ -96,6 +96,6 @@ export class CoachWorkoutsService {
       .set('language', language)
       .set('sortDirection', sortDirection);
 
-    return this.http.get<any>(`${this.apiUrl}/my-workouts/search`, { params });
+    return this.http.get<PagedWorkoutResponse>(API_ENDPOINTS.myWorkoutsSearch, { params });
   }
 }

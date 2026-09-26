@@ -22,7 +22,7 @@ export class AssignProgramService {
 
   getAssignedUserIds(programId: number): Observable<ApiResponse<number[]>> {
     return this.http.get<ApiResponse<number[]>>(
-      `${API_ENDPOINTS.assignedProgramUsers}/${programId}/assigned-users`,
+      API_ENDPOINTS.programAssignedUsers(programId),
     );
   }
 

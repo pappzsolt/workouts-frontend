@@ -26,27 +26,40 @@ export interface ProgramExercise {
   orderIndex?: number;
 }
 
-/**
- * Egységes backend API válasz.
- *
- * Backend:
- *
- * {
- *   "success": true,
- *   "data": ...,
- *   "message": "..."
- * }
- */
-export interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  message?: string | null;
-}
+import type { ApiResponse } from './api-response.model';
+export type { ApiResponse } from './api-response.model';
 
 /**
  * A bejelentkezett coach programjainak válasza.
  */
 export type CoachProgramsResponse = ApiResponse<Program[]>;
+
+/**
+ * Lapozott backend válasz program kereséshez.
+ * A Spring Page válasz releváns mezői.
+ */
+export interface CoachProgramSearchItem {
+  programId: number;
+  programName?: string;
+  programDescription?: string;
+  name?: string;
+  description?: string;
+  coachId?: number;
+  startDate?: string;
+  endDate?: string;
+  durationDays?: number;
+  difficultyLevel?: string;
+  workoutCount?: number;
+  workouts?: ProgramWorkout[];
+}
+
+export interface CoachProgramSearchResponse {
+  content: CoachProgramSearchItem[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
 
 /**
  * Program DTO.
@@ -59,7 +72,7 @@ export interface ProgramDto {
   endDate?: string | null;
   durationDays: number;
   difficultyLevel: string;
-  workouts?: any[];
+  workouts?: ProgramWorkout[];
 
   /**
    * Opcionális kompatibilitási mezők.
@@ -84,6 +97,18 @@ export interface ProgramCreationRequest {
 /**
  * A bejelentkezett userhez rendelt program.
  */
+export interface UserProgramApiItem {
+  id: number;
+  name: string;
+  description: string;
+  startDate?: string | null;
+  endDate?: string | null;
+  durationDays: number;
+  difficulty: string;
+  status: string;
+  assignedAt: string;
+}
+
 export interface UserProgram {
   id: number;
   name: string;
