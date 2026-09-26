@@ -3,8 +3,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 import { PagedWorkoutResponse, Workout } from '../../../models/workout.model';
-import type { WorkoutDto as WorkoutUiDto } from '../../../models/exercise.model';
-import type { WorkoutDto } from '../../../models/backend-dto/exercise/workout-dto';
+import type { WorkoutWithExercises as WorkoutUiDto } from '../../../models/exercise.model';
+import type { WorkoutDto as BackendWorkoutDto } from '../../../models/backend-dto/exercise/workout-dto';
 import type { WorkoutRequest } from '../../../models/backend-dto/workout/workout-request';
 import type { WorkoutResponse } from '../../../models/backend-dto/workout/workout-response';
 import type { ApiResponse } from '../../../models/backend-dto/common/api-response';
@@ -19,7 +19,7 @@ export class CoachWorkoutsService {
   private readonly http = inject(HttpClient);
   private readonly languageService = inject(LanguageService);
 
-  private readonly toWorkoutUiDto = (workout: WorkoutDto): WorkoutUiDto => ({
+  private readonly toWorkoutUiDto = (workout: BackendWorkoutDto): WorkoutUiDto => ({
     id: workout.id ?? 0,
     name: workout.name ?? '',
     description: workout.description ?? '',
@@ -31,11 +31,11 @@ export class CoachWorkoutsService {
       .filter(
         (
           item,
-        ): item is NonNullable<WorkoutDto['exercises']>[number] & {
+        ): item is NonNullable<BackendWorkoutDto['exercises']>[number] & {
           id: number;
           workoutId: number;
           exercise: NonNullable<
-            NonNullable<WorkoutDto['exercises']>[number]['exercise']
+            NonNullable<BackendWorkoutDto['exercises']>[number]['exercise']
           >;
         } =>
           item.id != null &&
@@ -83,7 +83,7 @@ export class CoachWorkoutsService {
       }),
   });
 
-  private readonly toWorkout = (workout: WorkoutDto): Workout => ({
+  private readonly toWorkout = (workout: BackendWorkoutDto): Workout => ({
     id: workout.id ?? undefined,
     workoutName: workout.name ?? undefined,
     name: workout.name ?? undefined,
@@ -106,7 +106,7 @@ export class CoachWorkoutsService {
    */
   getMyWorkouts(): Observable<ApiResponse<Workout[]>> {
     return this.http
-      .get<ApiResponse<WorkoutDto[]>>(API_ENDPOINTS.myWorkouts)
+      .get<ApiResponse<BackendWorkoutDto[]>>(API_ENDPOINTS.myWorkouts)
       .pipe(
         map((response) => ({
           ...response,
@@ -122,7 +122,7 @@ export class CoachWorkoutsService {
    */
   getUniqueMyWorkouts(): Observable<Workout[]> {
     return this.http
-      .get<WorkoutDto[]>(API_ENDPOINTS.uniqueMyWorkouts)
+      .get<BackendWorkoutDto[]>(API_ENDPOINTS.uniqueMyWorkouts)
       .pipe(map((workouts) => workouts.map((workout) => this.toWorkout(workout))));
   }
 
@@ -133,7 +133,7 @@ export class CoachWorkoutsService {
    */
   getUniqueWorkoutsWithExercises(): Observable<ApiResponse<WorkoutUiDto[]>> {
     return this.http
-      .get<ApiResponse<WorkoutDto[]>>(API_ENDPOINTS.uniqueWorkoutsWithExercises)
+      .get<ApiResponse<BackendWorkoutDto[]>>(API_ENDPOINTS.uniqueWorkoutsWithExercises)
       .pipe(
         map((response) => ({
           ...response,
@@ -163,8 +163,8 @@ export class CoachWorkoutsService {
   /**
    * Workout lekérése ID alapján.
    */
-  getWorkoutById(id: number): Observable<ApiResponse<WorkoutDto>> {
-    return this.http.get<ApiResponse<WorkoutDto>>(API_ENDPOINTS.workoutById(id));
+  getWorkoutById(id: number): Observable<ApiResponse<BackendWorkoutDto>> {
+    return this.http.get<ApiResponse<BackendWorkoutDto>>(API_ENDPOINTS.workoutById(id));
   }
 
   /**

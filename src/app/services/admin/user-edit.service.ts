@@ -11,7 +11,7 @@ import type { Role } from '../../models/role.model';
 
 import {
   RawUser,
-  Coach,
+  UserProfileCoach,
   UpdateUserRequest,
 } from '../../models/user-edit-model';
 
@@ -51,7 +51,7 @@ export class UserEditService {
     );
   }
 
-  getCoaches(): Observable<Coach[]> {
+  getCoaches(): Observable<UserProfileCoach[]> {
     return this.http.get<ApiResponse<MemberResponse[]>>(this.coachesUrl).pipe(
       map((response) =>
         (response.data ?? []).filter((coach): coach is MemberResponse & { id: number } => coach.id != null).map((coach) => ({

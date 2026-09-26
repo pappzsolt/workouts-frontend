@@ -5,10 +5,8 @@ import { Observable, Subject, forkJoin, map, takeUntil } from 'rxjs';
 
 import { TranslateService } from '@ngx-translate/core';
 import { SidePaginationComponent } from '../../../../components/shared/components/side-pagination/side-pagination.component';
-import {
-  UserWorkoutsService,
-  Workout,
-} from '../../../../services/user/user-workouts/user-workouts.service';
+import { UserWorkoutsService } from '../../../../services/user/user-workouts/user-workouts.service';
+import type { UserWorkoutOccurrence } from '../../../../models/user-workout-occurrence.model';
 
 import { LanguageService } from '../../../../services/shared/language.service';
 
@@ -26,11 +24,11 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
 
   programName!: string;
 
-  workouts$!: Observable<Workout[]>;
+  workouts$!: Observable<UserWorkoutOccurrence[]>;
 
-  pendingWorkouts: Workout[] = [];
+  pendingWorkouts: UserWorkoutOccurrence[] = [];
 
-  completedWorkouts: Workout[] = [];
+  completedWorkouts: UserWorkoutOccurrence[] = [];
 
   // ============================================================
   // AKTÍV EDZÉS TAB
@@ -66,7 +64,7 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
   // FÜGGŐBEN LÉVŐ EDZÉSEK LAPOZÁSA
   // ============================================================
 
-  get paginatedPendingWorkouts(): Workout[] {
+  get paginatedPendingWorkouts(): UserWorkoutOccurrence[] {
     const startIndex = (this.pendingCurrentPage - 1) * this.pendingPageSize;
 
     return this.pendingWorkouts.slice(startIndex, startIndex + this.pendingPageSize);
@@ -85,7 +83,7 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
   // TELJESÍTETT EDZÉSEK LAPOZÁSA
   // ============================================================
 
-  get paginatedCompletedWorkouts(): Workout[] {
+  get paginatedCompletedWorkouts(): UserWorkoutOccurrence[] {
     const startIndex = (this.completedCurrentPage - 1) * this.completedPageSize;
 
     return this.completedWorkouts.slice(startIndex, startIndex + this.completedPageSize);
@@ -153,7 +151,7 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
           (item) => item.programId === this.programId,
         );
 
-        const mappedWorkouts = workouts.map((workout: Workout): Workout => {
+        const mappedWorkouts = workouts.map((workout: UserWorkoutOccurrence): UserWorkoutOccurrence => {
           const candidates = programScheduled.filter(
             (item) => item.workoutId === workout.workoutId,
           );
@@ -204,7 +202,7 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
   // NAVIGÁCIÓ EXERCISE-OKHOZ
   // ============================================================
 
-  goToExercises(workout: Workout): void {
+  goToExercises(workout: UserWorkoutOccurrence): void {
     if (!workout.userWorkoutId) {
       console.error(
         '[UserWorkouts] Nem található a konkrét userWorkoutId.',

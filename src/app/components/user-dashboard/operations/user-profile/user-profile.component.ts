@@ -4,7 +4,7 @@ import { Subject, forkJoin, takeUntil } from 'rxjs';
 
 import { AuthService } from '../../../../services/auth/auth.service';
 
-import { User, RawUser, Coach } from '../../../../models/user-profil.model';
+import { UserProfile, RawUser, UserProfileCoach } from '../../../../models/user-profil.model';
 
 import { UserProfilService } from '../../../../services/user/user-profile/user-profile.service';
 
@@ -28,7 +28,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
   users: RawUser[] = [];
 
-  selectedUser: User = {
+  selectedUser: UserProfile = {
     id: 0,
     username: '',
     email: '',
@@ -44,7 +44,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     roleIds: [],
   };
 
-  coaches: Coach[] = [];
+  coaches: UserProfileCoach[] = [];
 
   /**
    * A felhasználó meglévő role-jai.
@@ -53,7 +53,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
    */
   roles: string[] = [];
 
-  selectedCoach?: Coach;
+  selectedCoach?: UserProfileCoach;
 
   message = '';
 
@@ -175,7 +175,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
-  onCoachSelected(coach: Coach): void {
+  onCoachSelected(coach: UserProfileCoach): void {
     this.selectedCoach = coach;
 
     this.selectedUser.coachId = coach.id;

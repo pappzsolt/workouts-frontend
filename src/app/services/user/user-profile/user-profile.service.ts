@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
-import { RawUser, Coach } from '../../../models/user-profil.model';
+import { RawUser, UserProfileCoach } from '../../../models/user-profil.model';
 import { Role } from '../../../models/role.model';
 import type { MemberResponse } from '../../../models/backend-dto/members/member-response';
 import type { CoachDto } from '../../../models/backend-dto/coach/coach-dto';
@@ -30,7 +30,7 @@ export class UserProfilService {
       })));
   }
 
-  getCoaches(): Observable<Coach[]> {
+  getCoaches(): Observable<UserProfileCoach[]> {
     return this.http.get<ApiResponse<CoachDto[]>>(this.coachesUrl).pipe(
       map((response) =>
         (response.data ?? []).flatMap((coach) =>

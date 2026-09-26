@@ -1,3 +1,5 @@
+import type { LoginResponse } from '../../models/auth-model';
+
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth/auth.service';
@@ -7,10 +9,6 @@ import { USER_MESSAGES } from '../../constants/user-messages';
 import { SHARED_IMPORTS } from '../shared/shared-imports';
 import { LanguageSelectorComponent } from '../shared/language/language-selector.component';
 
-interface LoginResponse {
-  accessToken: string;
-  refreshToken: string;
-}
 
 @Component({
   selector: 'app-login',

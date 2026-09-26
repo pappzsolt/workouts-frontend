@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
-import { Exercise, WorkoutDto as WorkoutUiDto } from '../../../models/exercise.model';
+import { Exercise, WorkoutWithExercises as WorkoutUiDto } from '../../../models/exercise.model';
 import type { WorkoutDto as BackendWorkoutDto } from '../../../models/backend-dto/exercise/workout-dto';
 import type { ExerciseDto } from '../../../models/backend-dto/exercise/exercise-dto';
 import type { ExerciseRequest } from '../../../models/backend-dto/exercise/exercise-request';

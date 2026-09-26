@@ -7,7 +7,7 @@ import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/
 import { LanguageService } from '../../../../services/shared/language.service';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 import { Workout } from '../../../../models/workout.model';
-import { WorkoutDto } from '../../../../models/exercise.model';
+import { WorkoutWithExercises } from '../../../../models/exercise.model';
 import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
 import { AppSearchComponent } from '../../../../components/shared/components/app-search/app-search.component';
@@ -141,7 +141,7 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
 
         const res = response.data;
 
-        this.workouts = (res ?? []).map((w: WorkoutDto): Workout => ({
+        this.workouts = (res ?? []).map((w: WorkoutWithExercises): Workout => ({
           id: w.id,
 
           workoutName: w.name ?? '',

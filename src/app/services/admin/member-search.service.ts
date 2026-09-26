@@ -6,7 +6,7 @@ import { catchError, switchMap } from 'rxjs/operators';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
 
-import { Coach, SearchResponse } from '../../models/member-search-model';
+import { MemberSearchCoach, MemberSearchResult, SearchResponse } from '../../models/member-search-model';
 import type { ExtraFields } from '../../models/extra-fields.model';
 
 import type { ApiResponse } from '../../models/backend-dto/common/api-response';
@@ -61,7 +61,7 @@ export class MemberSearchService {
             return of(response);
           }
 
-          const coachRequests: Observable<Coach | undefined>[] = coachIds.map((coachId) =>
+          const coachRequests: Observable<MemberSearchCoach | undefined>[] = coachIds.map((coachId) =>
             this.http
               .get<ApiResponse<CoachLookupDto>>(API_ENDPOINTS.coachById(coachId))
               .pipe(
@@ -72,7 +72,7 @@ export class MemberSearchService {
 
           return forkJoin(coachRequests).pipe(
             map((coaches) => {
-              const coachMap = new Map<number, Coach>();
+              const coachMap = new Map<number, MemberSearchCoach>();
 
               coaches.forEach((coach) => {
                 if (coach) {
@@ -98,7 +98,7 @@ export class MemberSearchService {
       );
   }
 
-  private mapCoach(coach: CoachLookupDto | null): Coach | undefined {
+  private mapCoach(coach: CoachLookupDto | null): MemberSearchCoach | undefined {
     if (coach?.id == null || coach.name == null || coach.email == null) {
       return undefined;
     }

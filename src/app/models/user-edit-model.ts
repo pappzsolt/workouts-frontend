@@ -1,6 +1,6 @@
-import type { RawUser, Coach } from './user-profil.model';
+import type { RawUser, UserProfile, UserProfileCoach } from './user-profil.model';
 
-export type { RawUser, Coach } from './user-profil.model';
+export type { RawUser, UserProfile, UserProfileCoach } from './user-profil.model';
 
 export interface UpdateUserRequest {
   id?: number;

@@ -18,7 +18,7 @@ import { AssignProgramService } from '../../../../services/coach/assign-program/
 import { LanguageService } from '../../../../services/shared/language.service';
 import { UserSelectComponent } from '../../../shared/user/user-select.component';
 import { AppSelectComponent } from '../../../../components/shared/components/app-select/app-select.component';
-import { Exercise, WorkoutDto, WorkoutExercise } from '../../../../models/exercise.model';
+import { Exercise, WorkoutWithExercises, WorkoutExercise } from '../../../../models/exercise.model';
 import type { ProgramDto } from '../../../../models/backend-dto/programs/program-dto';
 import type { ProgramCreationRequest } from '../../../../models/backend-dto/programcreator/program-creation-request';
 import type { ProgramWorkoutAssignment } from '../../../../models/program-workout-assignment.model';
@@ -88,7 +88,7 @@ export class CoachProgramBuilderComponent implements OnInit {
   // WORKOUTOK
   // ==========================================================
 
-  workouts: WorkoutDto[] = [];
+  workouts: WorkoutWithExercises[] = [];
 
   exercises: Exercise[] = [];
 
@@ -102,9 +102,9 @@ export class CoachProgramBuilderComponent implements OnInit {
 
   selectedWorkoutId: number | null = null;
 
-  selectedWorkout: WorkoutDto | null = null;
+  selectedWorkout: WorkoutWithExercises | null = null;
 
-  selectedWorkouts: WorkoutDto[] = [];
+  selectedWorkouts: WorkoutWithExercises[] = [];
 
   loadingWorkouts = false;
 
@@ -127,7 +127,7 @@ export class CoachProgramBuilderComponent implements OnInit {
 
   copyDialogOpen = false;
 
-  copySourceWorkout: WorkoutDto | null = null;
+  copySourceWorkout: WorkoutWithExercises | null = null;
 
   copyWorkoutName = '';
 
@@ -396,7 +396,7 @@ export class CoachProgramBuilderComponent implements OnInit {
     this.loadingWorkouts = true;
 
     this.coachWorkoutsService.getUniqueWorkoutsWithExercises().subscribe({
-      next: (response: ApiResponse<WorkoutDto[]>) => {
+      next: (response: ApiResponse<WorkoutWithExercises[]>) => {
         this.workouts = response.data ?? [];
 
         this.loadingWorkouts = false;
@@ -619,14 +619,14 @@ export class CoachProgramBuilderComponent implements OnInit {
         );
 
         this.exerciseService.getWorkoutsWithExercises().subscribe({
-          next: (response: ApiResponse<WorkoutDto[]>) => {
+          next: (response: ApiResponse<WorkoutWithExercises[]>) => {
             const allWorkouts = response.data ?? [];
 
             this.selectedWorkouts = this.programWorkouts
               .map((programWorkout) =>
                 allWorkouts.find((workout) => workout.id === programWorkout.workoutId),
               )
-              .filter((workout): workout is WorkoutDto => workout !== undefined);
+              .filter((workout): workout is WorkoutWithExercises => workout !== undefined);
 
             const newWorkoutId = this.route.snapshot.queryParamMap.get('newWorkoutId');
 
@@ -699,7 +699,7 @@ export class CoachProgramBuilderComponent implements OnInit {
     this.isNewWorkout = newWorkoutId !== null && Number(newWorkoutId) === workoutId;
 
     this.exerciseService.getWorkoutExercises(workoutId).subscribe({
-      next: (workout: WorkoutDto) => {
+      next: (workout: WorkoutWithExercises) => {
         this.selectedWorkout = workout;
 
         this.selectedWorkoutExercises = workout.exercises || [];
@@ -1000,7 +1000,7 @@ export class CoachProgramBuilderComponent implements OnInit {
 
         this.selectedWorkouts = this.programWorkouts
           .map((pw) => this.workouts.find((workout) => workout.id === pw.workoutId))
-          .filter((workout): workout is WorkoutDto => workout !== undefined);
+          .filter((workout): workout is WorkoutWithExercises => workout !== undefined);
       },
 
       error: (error: HttpErrorResponse) => {
@@ -1065,7 +1065,7 @@ export class CoachProgramBuilderComponent implements OnInit {
   // WORKOUT MÁSOLÁS
   // ==========================================================
 
-  copyWorkout(workout: WorkoutDto): void {
+  copyWorkout(workout: WorkoutWithExercises): void {
     if (this.programId === null) {
       console.error('Nincs program ID.');
 

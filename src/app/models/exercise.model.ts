@@ -57,7 +57,7 @@ export interface WorkoutExercise {
   done: boolean;
 }
 
-export interface WorkoutDto {
+export interface WorkoutWithExercises {
   id: number;
   name: string;
   description: string;

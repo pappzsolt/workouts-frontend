@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
-import { WorkoutDto } from '../../../../models/exercise.model';
+import { WorkoutWithExercises } from '../../../../models/exercise.model';
 
 @Component({
   selector: 'app-workout-copy-dialog',
@@ -9,7 +9,7 @@ import { WorkoutDto } from '../../../../models/exercise.model';
   templateUrl: './workout-copy-dialog.component.html',
 })
 export class WorkoutCopyDialogComponent {
-  @Input() sourceWorkout: WorkoutDto | null = null;
+  @Input() sourceWorkout: WorkoutWithExercises | null = null;
   @Input() workoutName = '';
   @Output() workoutNameChange = new EventEmitter<string>();
   @Input() workoutDate = '';

@@ -16,12 +16,12 @@ export interface RawUser {
   };
 }
 
-export interface Coach {
+export interface UserProfileCoach {
   id: number;
   name: string;
 }
 
-export interface User {
+export interface UserProfile {
   id: number;
   username: string;
   email: string;

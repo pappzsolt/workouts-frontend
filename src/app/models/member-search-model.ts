@@ -1,13 +1,13 @@
 import type { ExtraFields } from './extra-fields.model';
 
-export interface Coach {
+export interface MemberSearchCoach {
   id: number;
   usernameOrName: string;
   email: string;
   avatarUrl: string | null;
 }
 
-export interface Member {
+export interface MemberSearchResult {
   id: number;
   type: string;
   usernameOrName: string;
@@ -15,11 +15,11 @@ export interface Member {
   avatarUrl: string | null;
   roles: string[];
   extraFields: ExtraFields;
-  coach?: Coach; // ide kerül a coach adata, ha van
+  coach?: MemberSearchCoach; // ide kerül a coach adata, ha van
 }
 
 export interface SearchResponse {
   success: boolean;
   message: string;
-  data: Member[];
+  data: MemberSearchResult[];
 }

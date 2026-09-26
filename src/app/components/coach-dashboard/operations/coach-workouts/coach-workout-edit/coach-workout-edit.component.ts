@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CoachWorkoutsService } from '../../../../../services/coach/coach-workouts/coach-workouts.service';
 import type { ApiResponse } from '../../../../../models/backend-dto/common/api-response';
 import type { WorkoutDto as BackendWorkoutDto } from '../../../../../models/backend-dto/exercise/workout-dto';
-import type { WorkoutDto as WorkoutUiDto } from '../../../../../models/exercise.model';
+import type { WorkoutWithExercises as WorkoutUiDto } from '../../../../../models/exercise.model';
 import { WorkoutExerciseService } from '../../../../../services/coach/workout-exercises.service';
 
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';

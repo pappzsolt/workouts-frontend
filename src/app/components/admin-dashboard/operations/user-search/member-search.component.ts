@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { MemberSearchService } from '../../../../services/admin/member-search.service';
 
 import { USER_MESSAGES } from '../../../../constants/user-messages';
-import { Member } from '../../../../models/member-search-model';
+import { MemberSearchResult } from '../../../../models/member-search-model';
 
 import { MessageComponent } from '../../../shared/message/message.component';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
@@ -22,9 +22,9 @@ export class MemberSearchComponent {
 
   keyword = '';
 
-  members: Member[] = [];
+  members: MemberSearchResult[] = [];
 
-  displayedMembers: Member[] = [];
+  displayedMembers: MemberSearchResult[] = [];
 
   // =============================
   // ÁLLAPOT

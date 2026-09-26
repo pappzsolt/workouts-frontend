@@ -11,8 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 
-import { User } from '../../../../models/user-profil.model';
-import { RawUser, Coach } from '../../../../models/user-profil.model';
+import { UserProfile, RawUser, UserProfileCoach } from '../../../../models/user-profil.model';
 import { Role } from '../../../../models/role.model';
 
 import { UserEditService } from '../../../../services/admin/user-edit.service';
@@ -41,7 +40,7 @@ export class UserEditComponent implements OnInit {
 
   users: RawUser[] = [];
 
-  coaches: Coach[] = [];
+  coaches: UserProfileCoach[] = [];
 
   roles: Role[] = [];
 
@@ -51,7 +50,7 @@ export class UserEditComponent implements OnInit {
 
   selectedUserId?: number;
 
-  selectedUser: User = {
+  selectedUser: UserProfile = {
     id: 0,
     username: '',
     email: '',
@@ -67,7 +66,7 @@ export class UserEditComponent implements OnInit {
     roleIds: [],
   };
 
-  selectedCoach?: Coach;
+  selectedCoach?: UserProfileCoach;
 
   selectedRoles: Role[] = [];
 
@@ -213,7 +212,7 @@ export class UserEditComponent implements OnInit {
   // COACH KIVÁLASZTÁSA
   // =============================
 
-  onCoachSelected(coach: Coach): void {
+  onCoachSelected(coach: UserProfileCoach): void {
     this.selectedCoach = coach;
 
     this.selectedUser.coachId = coach.id;

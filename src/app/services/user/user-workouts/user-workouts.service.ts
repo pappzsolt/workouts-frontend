@@ -3,9 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
+import type { UserWorkoutOccurrence } from '../../../models/user-workout-occurrence.model';
 import { ApiResponse } from '../../../models/backend-dto/common/api-response';
 
-interface RawWorkoutRecord extends Partial<Workout> {
+interface RawWorkoutRecord extends Partial<UserWorkoutOccurrence> {
   id?: number;
   workout_id?: number;
   program_workout_id?: number;
@@ -21,25 +22,7 @@ interface RawScheduledWorkout extends Partial<ScheduledWorkout> {
   workout_name?: string | null;
 }
 
-export interface Workout {
-  workoutId: number;
-  workoutName: string;
-  workoutDescription: string;
-  workoutDate: string;
-  durationMinutes: number;
-  intensityLevel: string;
-  dayIndex: number;
-  programWorkoutId?: number;
-  userWorkoutId?: number;
-  completed: boolean | null;
-  performedAt: string | null;
-  actualSets: number | null;
-  actualRepetitions: number | null;
-  weightUsed: number | null;
-  durationSeconds: number | null;
-  feedback: string | null;
-  notes: string | null;
-}
+
 
 export interface ScheduledWorkout {
   userWorkoutId: number;
@@ -59,7 +42,7 @@ export class UserWorkoutsService {
   private readonly apiUrl = API_ENDPOINTS.workouts;
 
   /** Backend hívás – Workouts by program */
-  getWorkoutsByProgram(programId: number): Observable<Workout[]> {
+  getWorkoutsByProgram(programId: number): Observable<UserWorkoutOccurrence[]> {
     return this.http
       .get<ApiResponse<RawWorkoutRecord[]>>(API_ENDPOINTS.workoutsByProgram(programId))
       .pipe(
