@@ -60,8 +60,31 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
   messageParams: Record<string, unknown> = {};
   setPendingDeletion: UserWorkoutExerciseSetModel | null = null;
   deletingSet = false;
-  /** Only one set is expanded for editing at a time. */
-  expandedSetId?: number;
+  // ============================
+  // UI NAVIGATION
+  // ============================
+
+  /** Flat workout list used by the workout stepper. */
+  workoutPages: Array<{ day: UserProgramDay; workout: UserProgramWorkout }> = [];
+  selectedWorkoutIndex = 0;
+  selectedExerciseIndex = 0;
+  selectedSetIndex = 0;
+
+  get selectedWorkoutPage(): { day: UserProgramDay; workout: UserProgramWorkout } | undefined {
+    return this.workoutPages[this.selectedWorkoutIndex];
+  }
+
+  get selectedWorkout(): UserProgramWorkout | undefined {
+    return this.selectedWorkoutPage?.workout;
+  }
+
+  get selectedExercise(): UserProgramExercise | undefined {
+    return this.selectedWorkout?.exercises[this.selectedExerciseIndex];
+  }
+
+  get selectedSet(): UserWorkoutExerciseSetModel | undefined {
+    return this.selectedSets[this.selectedSetIndex];
+  }
 
   constructor(
     private service: WorkoutExercisesManagerService,
@@ -109,14 +132,16 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
 
     this.selectedUserWorkoutExerciseId = userWorkoutExerciseId;
     this.selectedSets = [];
-    this.expandedSetId = undefined;
+    this.selectedSetIndex = 0;
 
     this.setService.getSetsByUserWorkoutExerciseId(userWorkoutExerciseId).subscribe({
       next: (res) => {
         if (res.success && res.data) {
           this.selectedSets = res.data;
+          this.selectedSetIndex = Math.min(this.selectedSetIndex, Math.max(this.selectedSets.length - 1, 0));
         } else {
           this.selectedSets = [];
+          this.selectedSetIndex = 0;
         }
       },
       error: () => {
@@ -126,15 +151,69 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
   }
 
   // ============================
-  // SET KIVÁLASZTÁSA / SZERKESZTÉSE
+  // WORKOUT / EXERCISE / SET NAVIGÁCIÓ
   // ============================
 
-  toggleSetEditor(set: UserWorkoutExerciseSetModel): void {
-    if (set.id == null) {
+  selectWorkout(index: number): void {
+    if (index < 0 || index >= this.workoutPages.length) {
       return;
     }
 
-    this.expandedSetId = this.expandedSetId === set.id ? undefined : set.id;
+    this.selectedWorkoutIndex = index;
+    this.selectedExerciseIndex = 0;
+    this.selectedSetIndex = 0;
+    this.selectedUserWorkoutExerciseId = undefined;
+    this.selectedSets = [];
+
+    const firstExercise = this.selectedWorkout?.exercises[0];
+    if (firstExercise?.userWorkoutExerciseId != null) {
+      this.loadSets(firstExercise.userWorkoutExerciseId);
+    }
+  }
+
+  previousWorkout(): void {
+    this.selectWorkout(this.selectedWorkoutIndex - 1);
+  }
+
+  nextWorkout(): void {
+    this.selectWorkout(this.selectedWorkoutIndex + 1);
+  }
+
+  selectExercise(index: number): void {
+    const workout = this.selectedWorkout;
+
+    if (!workout || index < 0 || index >= workout.exercises.length) {
+      return;
+    }
+
+    this.selectedExerciseIndex = index;
+    const exercise = workout.exercises[index];
+
+    if (exercise.userWorkoutExerciseId != null) {
+      this.loadSets(exercise.userWorkoutExerciseId);
+    } else {
+      this.selectedSets = [];
+      this.selectedSetIndex = 0;
+      this.selectedUserWorkoutExerciseId = undefined;
+    }
+  }
+
+  previousSet(): void {
+    if (this.selectedSetIndex > 0) {
+      this.selectedSetIndex--;
+    }
+  }
+
+  nextSet(): void {
+    if (this.selectedSetIndex < this.selectedSets.length - 1) {
+      this.selectedSetIndex++;
+    }
+  }
+
+  selectSet(index: number): void {
+    if (index >= 0 && index < this.selectedSets.length) {
+      this.selectedSetIndex = index;
+    }
   }
 
   // ============================
@@ -151,6 +230,8 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
 
     this.setService.addSet(userWorkoutExerciseId).subscribe({
       next: () => {
+        // The new set is appended; focus it after reload.
+        this.selectedSetIndex = this.selectedSets.length;
         this.loadSets(userWorkoutExerciseId);
       },
       error: (err: HttpErrorResponse) => {
@@ -223,7 +304,12 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
     const userWorkoutExerciseId = this.selectedUserWorkoutExerciseId;
     this.setService.deleteSet(set.id).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
+        const deletedIndex = this.selectedSets.findIndex((currentSet) => currentSet.id === set.id);
         this.selectedSets = this.selectedSets.filter((currentSet) => currentSet.id !== set.id);
+        this.selectedSetIndex = Math.min(
+          Math.max(deletedIndex, 0),
+          Math.max(this.selectedSets.length - 1, 0),
+        );
         this.setPendingDeletion = null;
         this.deletingSet = false;
         this.showMessage('userWorkoutExerciseManager.deleteSetSuccess', 'success', {
@@ -298,9 +384,44 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
           if (res.success && res.data) {
             this.userProgramData = res.data;
             this.dayGroups = this.groupByDayAndWorkout(this.userProgramData);
+            this.workoutPages = this.dayGroups.flatMap((day) =>
+              day.workouts.map((workout) => ({ day, workout })),
+            );
+
+            if (this.workoutPages.length === 0) {
+              this.selectedWorkoutIndex = 0;
+              this.selectedExerciseIndex = 0;
+              this.selectedSetIndex = 0;
+              this.selectedSets = [];
+              this.selectedUserWorkoutExerciseId = undefined;
+            } else {
+              this.selectedWorkoutIndex = Math.min(
+                this.selectedWorkoutIndex,
+                this.workoutPages.length - 1,
+              );
+              this.selectedExerciseIndex = Math.min(
+                this.selectedExerciseIndex,
+                Math.max(this.workoutPages[this.selectedWorkoutIndex].workout.exercises.length - 1, 0),
+              );
+
+              const exercise =
+                this.workoutPages[this.selectedWorkoutIndex].workout.exercises[this.selectedExerciseIndex];
+
+              if (exercise?.userWorkoutExerciseId != null) {
+                this.loadSets(exercise.userWorkoutExerciseId);
+              } else {
+                this.selectedSets = [];
+                this.selectedSetIndex = 0;
+              }
+            }
           } else {
             this.userProgramData = [];
             this.dayGroups = [];
+            this.workoutPages = [];
+            this.selectedWorkoutIndex = 0;
+            this.selectedExerciseIndex = 0;
+            this.selectedSetIndex = 0;
+            this.selectedSets = [];
           }
         },
         error: () => {
