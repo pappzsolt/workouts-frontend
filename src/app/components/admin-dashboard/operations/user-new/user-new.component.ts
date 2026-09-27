@@ -6,7 +6,7 @@ import { UserNewService } from '../../../../services/admin/user-new.service';
 
 import { RoleSelectComponent } from '../../../shared/roles/role-select.component';
 import { CoachSelectComponent } from '../../../shared/coach/coach-select.component';
-import { MessageComponent } from '../../../shared/message/message.component';
+import { MessageComponent } from '../../../shared/components/message/message.component';
 
 import { Role } from '../../../../models/role.model';
 

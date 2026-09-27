@@ -47,7 +47,7 @@
     <app-button
       variant="sort"
       type="button"
-      [label]="'coachWorkoutBoard.sortByName' | translate"
+      [label]="'coachWorkoutBoard.sortByName'"
       [lucideIcon]="
     sortDirection === 'asc'
       ? 'arrow-up-narrow-wide'
@@ -152,12 +152,12 @@
 @if (!loading && !workouts.length) {
   @if (searchTerm) {
     <app-message
-      [message]="'coachWorkoutBoard.noSearchResults' | translate"
+      [message]="'coachWorkoutBoard.noSearchResults'"
       type="info"
     ></app-message>
   } @else {
     <app-message
-      [message]="'coachWorkoutBoard.noWorkouts' | translate"
+      [message]="'coachWorkoutBoard.noWorkouts'"
       type="info"
     ></app-message>
   }

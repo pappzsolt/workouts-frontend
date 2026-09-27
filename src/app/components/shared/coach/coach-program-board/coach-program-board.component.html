@@ -9,7 +9,7 @@
 <!-- Üzenet -->
 <app-message
   *ngIf="message && !loading"
-  [message]="message | translate"
+  [message]="message"
   [type]="messageType"
   class="block"
 ></app-message>
@@ -20,7 +20,7 @@
   class="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
 >
   <div
-    *ngFor="let program of programs"
+    *ngFor="let program of programs; trackBy: trackByProgram"
     class="min-w-0"
   >
     <!-- Program kiválasztása rádiógombbal -->
@@ -75,7 +75,7 @@
 <!-- Nincs program -->
 <app-message
   *ngIf="!loading && (!programs || !programs.length)"
-  [message]="'coachProgramBoard.noPrograms' | translate"
+  [message]="'coachProgramBoard.noPrograms'"
   type="info"
   class="block"
 ></app-message>

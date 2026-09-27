@@ -519,7 +519,7 @@
     "actualWeight": "Tényleges súly",
     "notes": "Megjegyzés",
     "loadError": "Hiba történt az exercise betöltésekor.",
-    "setUpdated": "A sorozat sikeresen frissítve.",
+    "setUpdated": "A(z) #{{setNumber}} sorozat sikeresen módosítva.",
     "setUpdateError": "Hiba történt a sorozat frissítésekor.",
     "saveSuccess": "A sorozat sikeresen mentve.",
     "saveError": "Hiba történt a sorozat mentésekor.",
@@ -701,7 +701,10 @@
     "exerciseIdMissing": "Az exercise azonosítója hiányzik.",
     "orderIndexRequired": "Az order index megadása kötelező.",
     "orderUpdateError": "Hiba történt az exercise sorrendjének módosításakor.",
-    "createUserWorkoutError": "Hiba történt a felhasználói edzés létrehozásakor."
+    "createUserWorkoutError": "Hiba történt a felhasználói edzés létrehozásakor.",
+    "deleteConfirmTitle": "Sorozat törlése",
+    "cancel": "Mégse",
+    "deleteSetSuccess": "A(z) #{{setNumber}} sorozat sikeresen törölve."
   },
   "assignProgram": {
     "title": "Program hozzárendelés",

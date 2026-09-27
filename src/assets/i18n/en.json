@@ -520,7 +520,7 @@
     "notes": "Notes",
     "save": "Save",
     "loadError": "An error occurred while loading the exercise.",
-    "setUpdated": "The set was successfully updated.",
+    "setUpdated": "Set #{{setNumber}} was successfully updated.",
     "setUpdateError": "An error occurred while updating the set.",
     "saveSuccess": "The set was successfully saved.",
     "saveError": "An error occurred while saving the set."
@@ -701,7 +701,10 @@
     "exerciseIdMissing": "The exercise ID is missing.",
     "orderIndexRequired": "The order index is required.",
     "orderUpdateError": "An error occurred while updating the exercise order.",
-    "createUserWorkoutError": "An error occurred while creating the user's workout."
+    "createUserWorkoutError": "An error occurred while creating the user's workout.",
+    "deleteConfirmTitle": "Delete set",
+    "cancel": "Cancel",
+    "deleteSetSuccess": "Set #{{setNumber}} was successfully deleted."
   },
   "assignProgram": {
     "title": "Assign Program",

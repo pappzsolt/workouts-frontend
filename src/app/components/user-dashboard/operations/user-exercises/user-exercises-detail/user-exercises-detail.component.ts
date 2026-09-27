@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, combineLatest, distinctUntilChanged, filter, map, switchMap, takeUntil } from 'rxjs';
 
 import { UserExerciseDetailService } from '../../../../../services/user/user-exercises-detail/user-exercises-detail.service';
 import { SidePaginationComponent } from '../../../../../components/shared/components/side-pagination/side-pagination.component';
@@ -37,6 +37,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   imageLoaded = false;
   message = '';
   messageType: 'success' | 'error' | 'info' | '' = '';
+  messageParams: Record<string, unknown> = {};
 
   constructor(
     private route: ActivatedRoute,
@@ -47,13 +48,11 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.workoutId = Number(this.route.snapshot.paramMap.get('workoutId'));
 
-    const navState = history.state;
     const queryParams = this.route.snapshot.queryParamMap;
 
-    const programIdParam = queryParams.get('programId') ?? navState['programId'];
-    const userWorkoutIdParam = queryParams.get('userWorkoutId') ?? navState['userWorkoutId'];
-    const programWorkoutIdParam =
-      queryParams.get('programWorkoutId') ?? navState['programWorkoutId'];
+    const programIdParam = queryParams.get('programId');
+    const userWorkoutIdParam = queryParams.get('userWorkoutId');
+    const programWorkoutIdParam = queryParams.get('programWorkoutId');
 
     this.programId = Number(programIdParam);
     this.userWorkoutId = Number(userWorkoutIdParam);
@@ -64,27 +63,47 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       : undefined;
 
     if (!this.userWorkoutId || Number.isNaN(this.userWorkoutId)) {
-      console.error('[UserExerciseDetail] Érvénytelen userWorkoutId:', navState['userWorkoutId']);
+      console.error('[UserExerciseDetail] Érvénytelen userWorkoutId:', userWorkoutIdParam);
       return;
     }
 
-    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
-      const exerciseId = Number(params.get('exerciseId'));
+    combineLatest([
+      this.route.paramMap.pipe(
+        map((params) => Number(params.get('exerciseId'))),
+        filter((exerciseId) => Number.isFinite(exerciseId) && exerciseId > 0),
+      ),
+      this.languageService.language$,
+    ])
+      .pipe(
+        map(([exerciseId, language]) => ({ exerciseId, language })),
+        distinctUntilChanged(
+          (previous, current) =>
+            previous.exerciseId === current.exerciseId &&
+            previous.language === current.language,
+        ),
+        switchMap(({ exerciseId, language }) => {
+          this.currentExerciseId = exerciseId;
+          this.currentSetIndex = 0;
+          this.message = '';
+          this.messageParams = {};
+          this.messageType = '';
 
-      if (!exerciseId || Number.isNaN(exerciseId)) {
-        return;
-      }
-
-      this.currentExerciseId = exerciseId;
-      this.currentSetIndex = 0;
-      this.loadExerciseDetail(exerciseId);
-    });
-
-    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      if (this.currentExerciseId) {
-        this.loadExerciseDetail(this.currentExerciseId);
-      }
-    });
+          return this.exercisesService.getWorkoutExercises(this.userWorkoutId, language).pipe(
+            map((response) => ({ response, exerciseId })),
+          );
+        }),
+        takeUntil(this.destroy$),
+      )
+      .subscribe({
+        next: ({ response, exerciseId }) => {
+          this.applyExerciseDetailResponse(response, exerciseId);
+        },
+        error: (err: unknown) => {
+          const error = err as { error?: { message?: string } };
+          this.message = error.error?.message || 'userExerciseDetail.loadError';
+          this.messageType = 'error';
+        },
+      });
   }
 
   ngOnDestroy(): void {
@@ -122,47 +141,32 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   /**
    * Workout és exercise adatainak betöltése.
    */
-  private loadExerciseDetail(exerciseId: number): void {
-    this.message = '';
-    this.messageType = '';
+  private applyExerciseDetailResponse(
+    response: { data?: UserWorkoutDetailDto | null },
+    exerciseId: number,
+  ): void {
+    const workout = response.data;
 
-    this.exercisesService.getWorkoutExercises(this.userWorkoutId, this.languageService.getCurrentLanguage()).subscribe({
-      next: (response) => {
-        const workout = response.data;
+    this.workout = workout ?? undefined;
 
-        this.workout = workout ?? undefined;
+    if (!workout?.exercises || workout.exercises.length === 0) {
+      this.message = 'userExerciseDetail.noExercise';
+      this.messageType = 'info';
+      return;
+    }
 
-        if (!workout?.exercises || workout.exercises.length === 0) {
-          this.message = 'userExerciseDetail.noExercise';
-          this.messageType = 'info';
-          return;
-        }
+    const found = workout.exercises.find((we) => we.exercise.id === exerciseId);
 
-        const found = workout.exercises.find((we) => we.exercise.id === exerciseId);
+    if (!found) {
+      this.message = 'userExerciseDetail.noExercise';
+      this.messageType = 'info';
+      return;
+    }
 
-        if (!found) {
-          this.message = 'userExerciseDetail.noExercise';
-          this.messageType = 'info';
-          return;
-        }
-
-        this.workoutExercise = found;
-        const setCount = found.userWorkoutExerciseSets?.length || 0;
-        this.currentSetIndex = setCount > 0 ? Math.min(this.currentSetIndex, setCount - 1) : 0;
-        this.updateExerciseDone();
-      },
-
-      error: (err: unknown) => {
-        const error = err as {
-          error?: {
-            message?: string;
-          };
-        };
-
-        this.message = error.error?.message || 'userExerciseDetail.loadError';
-        this.messageType = 'error';
-      },
-    });
+    this.workoutExercise = found;
+    const setCount = found.userWorkoutExerciseSets?.length || 0;
+    this.currentSetIndex = setCount > 0 ? Math.min(this.currentSetIndex, setCount - 1) : 0;
+    this.updateExerciseDone();
   }
 
   /**
@@ -191,6 +195,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     }
 
     this.message = '';
+    this.messageParams = {};
     this.messageType = '';
 
     this.exercisesService
@@ -210,6 +215,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
           set.completed = completed;
           this.updateExerciseDone();
           this.message = 'userExerciseDetail.setUpdated';
+          this.messageParams = { setNumber: set.setNumber };
           this.messageType = 'success';
         },
 
@@ -294,6 +300,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     }
 
     this.message = '';
+    this.messageParams = {};
     this.messageType = '';
 
     this.exercisesService

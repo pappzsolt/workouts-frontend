@@ -9,7 +9,7 @@ import type { ExerciseDto } from '../../../../../models/backend-dto/exercise/exe
 
 import { LanguageCode, LanguageService } from '../../../../../services/shared/language.service';
 
-import { MessageComponent } from '../../../../shared/message/message.component';
+import { MessageComponent } from '../../../../shared/components/message/message.component';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
 @Component({

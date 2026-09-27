@@ -20,13 +20,13 @@
 
     <app-message
       *ngIf="loading"
-      [message]="'userProgramStatistics.loading' | translate"
+      [message]="'userProgramStatistics.loading'"
       type="info"
     ></app-message>
 
     <app-message
       *ngIf="!loading && message"
-      [message]="message | translate"
+      [message]="message"
       [type]="messageType || 'info'"
     ></app-message>
 

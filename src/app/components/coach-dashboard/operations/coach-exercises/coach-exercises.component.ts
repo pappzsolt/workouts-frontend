@@ -2,7 +2,7 @@ import type { SelectOption } from '../../../../models/common/select-option.model
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, skip, takeUntil } from 'rxjs';
 
 import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
@@ -114,7 +114,7 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
     // NYELVVÁLTÁS
     // ==========================================================
 
-    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+    this.languageService.language$.pipe(skip(1), takeUntil(this.destroy$)).subscribe(() => {
       this.currentPage = 0;
       this.loadExercises();
     });
@@ -278,4 +278,12 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
       return [];
     }
   }
+  trackByExercise(index: number, exercise: Exercise): number {
+    return exercise.id ?? index;
+  }
+
+  trackByImage(index: number, image: string): string {
+    return image || String(index);
+  }
+
 }

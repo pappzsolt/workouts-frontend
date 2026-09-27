@@ -1,0 +1,582 @@
+<app-message [message]="message" [type]="messageType"></app-message>
+
+    <app-card *ngIf="currentStep === 2" class="min-w-0 overflow-hidden">
+
+      <!-- Step header -->
+      <div
+        class="flex items-start gap-4 border-b border-surface-100 px-5 py-5 sm:px-6"
+      >
+    <span
+      class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-600 text-sm font-bold text-white shadow-sm"
+    >
+      2
+    </span>
+
+        <div class="min-w-0">
+          <h3 class="text-lg font-bold text-content-800 sm:text-xl">
+            {{ 'coachProgramBuilder.workouts' | translate }}
+          </h3>
+
+          <p class="mt-1 text-sm leading-6 text-content-500">
+            {{ 'coachProgramBuilder.workoutsDescription' | translate }}
+          </p>
+        </div>
+      </div>
+
+
+      <div class="flex min-w-0 flex-col gap-6 p-5 sm:p-6">
+
+        <!-- ==================================================
+             WORKOUT OPCIÓK
+             ================================================== -->
+
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+
+          <!-- Meglévő workout -->
+          <button
+            type="button"
+            class="group flex min-w-0 items-center gap-4 rounded-xl border border-surface-200 bg-surface-50 p-4 text-left transition hover:border-primary-200 hover:bg-primary-50/50 hover:shadow-sm"
+          >
+        <span
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white text-xl shadow-sm"
+        >
+          <app-icon name="clipboard-list" sizeClass="h-5 w-5" />
+        </span>
+
+            <span class="min-w-0 flex-1">
+          <strong
+            class="block text-sm font-bold text-content-800"
+          >
+            {{ 'coachProgramBuilder.addExistingWorkout' | translate }}
+          </strong>
+
+          <small
+            class="mt-1 block text-xs leading-5 text-content-500"
+          >
+            {{ 'coachProgramBuilder.addExistingWorkoutDescription' | translate }}
+          </small>
+        </span>
+
+            <span
+              class="shrink-0 text-lg text-content-400 transition group-hover:translate-x-1 group-hover:text-primary-600"
+            >
+          →
+        </span>
+          </button>
+
+
+          <!-- Új workout -->
+          <button
+            type="button"
+            (click)="goToCreateWorkout.emit()"
+            class="group flex min-w-0 items-center gap-4 rounded-xl border border-surface-200 bg-surface-50 p-4 text-left transition hover:border-primary-200 hover:bg-primary-50/50 hover:shadow-sm"
+          >
+        <span
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white text-xl shadow-sm"
+        >
+          <app-icon name="circle-plus" sizeClass="h-5 w-5" />
+        </span>
+
+            <span class="min-w-0 flex-1">
+          <strong
+            class="block text-sm font-bold text-content-800"
+          >
+            {{ 'coachProgramBuilder.createNewWorkout' | translate }}
+          </strong>
+
+          <small
+            class="mt-1 block text-xs leading-5 text-content-500"
+          >
+            {{ 'coachProgramBuilder.createNewWorkoutDescription' | translate }}
+          </small>
+        </span>
+
+            <span
+              class="shrink-0 text-lg text-content-400 transition group-hover:translate-x-1 group-hover:text-primary-600"
+            >
+          →
+        </span>
+          </button>
+
+        </div>
+
+
+        <!-- ==================================================
+             ELÉRHETŐ WORKOUTOK
+             ================================================== -->
+
+        <div
+          class="min-w-0 rounded-xl border border-surface-200 bg-surface-50/50 p-4 sm:p-5"
+        >
+
+          <div class="mb-5">
+            <h4 class="text-base font-bold text-content-800 sm:text-lg">
+              {{ 'coachProgramBuilder.availableWorkouts' | translate }}
+            </h4>
+
+            <p class="mt-1 text-sm leading-6 text-content-500">
+              {{ 'coachProgramBuilder.availableWorkoutsDescription' | translate }}
+            </p>
+          </div>
+
+
+          <!-- LOADING -->
+          <div
+            *ngIf="loadingWorkouts"
+            class="flex items-center justify-center gap-3 rounded-xl border border-info-100 bg-info-50 px-4 py-5 text-sm font-medium text-info-700"
+          >
+        <span
+          class="h-5 w-5 animate-spin rounded-full border-2 border-info-200 border-t-primary-600"
+        ></span>
+
+            <span>
+          {{ 'coachProgramBuilder.loadingWorkouts' | translate }}
+        </span>
+          </div>
+
+
+          <!-- NINCS WORKOUT -->
+          <div
+            *ngIf="!loadingWorkouts && workouts.length === 0"
+            class="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-surface-300 bg-white px-5 py-10 text-center"
+          >
+        <span class="text-3xl">
+          <app-icon name="clipboard-list" sizeClass="h-5 w-5" />
+        </span>
+
+            <strong class="text-sm font-semibold text-content-700">
+              {{ 'coachProgramBuilder.noWorkouts' | translate }}
+            </strong>
+
+            <span class="max-w-md text-sm leading-6 text-content-500">
+          {{ 'coachProgramBuilder.noWorkoutsDescription' | translate }}
+        </span>
+          </div>
+
+
+          <!-- =================================================
+               WORKOUT KÁRTYÁK
+               ================================================= -->
+
+          <div class="flex min-w-0 flex-col gap-3">
+
+            <app-card
+              *ngFor="let workout of workouts; trackBy: trackByWorkoutId"
+              class="min-w-0 overflow-hidden rounded-xl border border-surface-200 bg-white shadow-sm transition hover:shadow-md"
+              [ngClass]="{
+            'border-info-400 ring-2 ring-info-500/10':
+              selectedWorkoutId === workout.id
+          }"
+            >
+
+              <!-- WORKOUT FEJLÉC -->
+              <div
+                (click)="selectWorkout(workout.id)"
+                class="flex cursor-pointer items-start gap-4 p-4 transition hover:bg-surface-50 sm:p-5"
+              >
+                <div class="min-w-0 flex-1">
+
+                  <div
+                    class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <h5
+                      class="break-words text-base font-bold text-content-800"
+                    >
+                      {{ workout.name }}
+                    </h5>
+
+                    <span
+                      *ngIf="isWorkoutSelected(workout.id)"
+                      class="inline-flex w-fit shrink-0 items-center rounded-full bg-success-100 px-2.5 py-1 text-xs font-semibold text-success-700"
+                    >
+                  ✓
+                  <span class="ml-1">
+                    {{ 'coachProgramBuilder.added' | translate }}
+                  </span>
+                </span>
+                  </div>
+
+                  <p
+                    class="mt-2 break-words text-sm leading-6 text-content-500"
+                  >
+                    {{
+                      workout.description ||
+                      ('coachProgramBuilder.noDescription' | translate)
+                    }}
+                  </p>
+
+                  <!-- WORKOUT META -->
+                  <div
+                    class="mt-3 flex flex-wrap gap-2"
+                  >
+                <span
+                  class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600"
+                >
+                  <app-icon name="dumbbell" sizeClass="h-5 w-5" />
+                  {{ workout.exercises.length }}
+                  {{ 'coachProgramBuilder.exercise' | translate }}
+                </span>
+
+                    <span
+                      *ngIf="workout.durationMinutes"
+                      class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600"
+                    >
+                  <app-icon name="timer" sizeClass="h-5 w-5" />
+                      {{ workout.durationMinutes }}
+                      {{ 'coachProgramBuilder.minutes' | translate }}
+                </span>
+
+                    <span
+                      *ngIf="workout.intensityLevel"
+                      class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600"
+                    >
+                  <app-icon name="chart-column-increasing" sizeClass="h-5 w-5" />
+                      {{ workout.intensityLevel }}
+                </span>
+                  </div>
+
+                </div>
+
+                <span
+                  class="shrink-0 pt-1 text-sm font-bold text-content-400"
+                >
+              {{ selectedWorkoutId === workout.id ? '▲' : '▼' }}
+            </span>
+              </div>
+
+
+              <!-- =================================================
+                   KIVÁLASZTOTT WORKOUT RÉSZLETEI
+                   ================================================= -->
+
+              <div
+                *ngIf="selectedWorkoutId === workout.id"
+                class="border-t border-surface-100 bg-surface-50/50 p-4 sm:p-5"
+              >
+
+                <!-- EXERCISE LOADING -->
+                <div
+                  *ngIf="loadingExercises"
+                  class="mb-5 flex items-center justify-center gap-3 rounded-xl border border-info-100 bg-info-50 px-4 py-5 text-sm font-medium text-info-700"
+                >
+              <span
+                class="h-5 w-5 animate-spin rounded-full border-2 border-info-200 border-t-primary-600"
+              ></span>
+
+                  <span>
+                {{ 'coachProgramBuilder.loadingExercises' | translate }}
+              </span>
+                </div>
+
+
+                <!-- =================================================
+                     EXERCISE KIVÁLASZTÓ
+                     ================================================= -->
+
+                <div
+                  class="min-w-0 rounded-xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5"
+                >
+                  <div class="mb-5">
+                    <h4 class="text-base font-bold text-content-800 sm:text-lg">
+                      {{ 'coachProgramBuilder.exercises' | translate }}
+                    </h4>
+
+                    <p class="mt-1 text-sm leading-6 text-content-500">
+                      {{
+                        lockSelectedExercises
+                          ? ('coachProgramBuilder.exercisesLocked' | translate)
+                          : ('coachProgramBuilder.exercisesDescription' | translate)
+                      }}
+                    </p>
+                  </div>
+
+                  <div class="min-w-0">
+                    <app-coach-exercises-board
+                      [externalExercises]="exercises"
+                      [externalSelectedExercises]="selectedExercises"
+                      [lockSelectedExercises]="lockSelectedExercises"
+                      (exercisesChange)="onExercisesChange($event)"
+                    >
+                    </app-coach-exercises-board>
+                  </div>
+                </div>
+
+
+                <!-- =================================================
+                     MÁR KIVÁLASZTOTT EXERCISE-OK
+                     ================================================= -->
+
+                <div
+                  *ngIf="!loadingExercises && selectedExercises.length === 0"
+                  class="mt-5 flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-surface-300 bg-white px-5 py-8 text-center"
+                >
+              <span class="text-2xl">
+                <app-icon name="dumbbell" sizeClass="h-5 w-5" />
+              </span>
+
+                  <span class="text-sm font-medium text-content-500">
+                {{ 'coachProgramBuilder.noExercises' | translate }}
+              </span>
+                </div>
+
+
+                <div
+                  *ngIf="!loadingExercises && selectedExercises.length > 0"
+                  class="mt-5 min-w-0 rounded-xl border border-surface-200 bg-white p-4 shadow-sm"
+                >
+
+                  <div
+                    class="mb-4 flex items-center justify-between gap-3"
+                  >
+                    <strong class="text-sm font-bold text-content-800">
+                      {{ 'coachProgramBuilder.selectedExercises' | translate }}
+                    </strong>
+
+                    <span
+                      class="flex h-7 min-w-7 items-center justify-center rounded-full bg-info-100 px-2 text-xs font-bold text-info-700"
+                    >
+                  {{ selectedExercises.length }}
+                </span>
+                  </div>
+
+
+                  <div class="flex min-w-0 flex-col gap-3">
+
+                    <div
+                      *ngFor="let exercise of selectedExercises; trackBy: trackByExerciseId"
+                      class="min-w-0 rounded-xl border border-surface-200 bg-surface-50 p-4"
+                    >
+
+                      <div>
+                        <strong
+                          class="block break-words text-sm font-bold text-content-800"
+                        >
+                          {{ exercise.name }}
+                        </strong>
+                      </div>
+
+                      <div
+                        class="mt-3 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2"
+                      >
+
+                    <span
+                      *ngIf="exercise.muscleGroup"
+                      class="break-words text-content-600"
+                    >
+                      <strong class="font-semibold text-content-700">
+                        {{ 'coachProgramBuilder.muscleGroup' | translate }}
+                      </strong>
+                      {{ exercise.muscleGroup }}
+                    </span>
+
+                        <span
+                          *ngIf="exercise.equipment"
+                          class="break-words text-content-600"
+                        >
+                      <strong class="font-semibold text-content-700">
+                        {{ 'coachProgramBuilder.equipment' | translate }}
+                      </strong>
+                          {{ exercise.equipment }}
+                    </span>
+
+                        <span
+                          *ngIf="exercise.difficultyLevel"
+                          class="break-words text-content-600"
+                        >
+                      <strong class="font-semibold text-content-700">
+                        {{ 'coachProgramBuilder.difficulty' | translate }}
+                      </strong>
+                          {{ exercise.difficultyLevel }}
+                    </span>
+
+                        <span
+                          *ngIf="exercise.category"
+                          class="break-words text-content-600"
+                        >
+                      <strong class="font-semibold text-content-700">
+                        {{ 'coachProgramBuilder.category' | translate }}
+                      </strong>
+                          {{ exercise.category }}
+                    </span>
+
+                      </div>
+
+                      <div
+                        *ngIf="exercise.description"
+                        class="mt-3 rounded-lg bg-white px-3 py-2.5 text-sm leading-6 text-content-500"
+                      >
+                        {{ exercise.description }}
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
+
+                <!-- =================================================
+                     WORKOUT HOZZÁADÁSA
+                     ================================================= -->
+
+                <div class="mt-5 flex justify-end">
+                  <button
+                    type="button"
+                    [disabled]="isWorkoutSelected(workout.id)"
+                    (click)="addSelectedWorkout()"
+                    class="w-full rounded-lg bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                  >
+                <span>
+                  {{
+                    isWorkoutSelected(workout.id)
+                      ? ('coachProgramBuilder.addedToProgram' | translate)
+                      : ('coachProgramBuilder.addToProgram' | translate)
+                  }}
+                </span>
+                  </button>
+                </div>
+
+              </div>
+            </app-card>
+
+          </div>
+        </div>
+
+
+        <!-- ==================================================
+             PROGRAMHOZ HOZZÁADOTT WORKOUTOK
+             ================================================== -->
+
+        <div
+          *ngIf="selectedWorkouts.length > 0"
+          class="min-w-0 rounded-xl border border-surface-200 bg-surface-50/50 p-4 sm:p-5"
+        >
+
+          <div
+            class="mb-5 flex items-start justify-between gap-4"
+          >
+            <div class="min-w-0">
+              <h4 class="text-base font-bold text-content-800 sm:text-lg">
+                {{ 'coachProgramBuilder.selectedWorkouts' | translate }}
+              </h4>
+
+              <p class="mt-1 text-sm leading-6 text-content-500">
+                {{ 'coachProgramBuilder.selectedWorkoutsDescription' | translate }}
+              </p>
+            </div>
+
+            <span
+              class="flex h-8 min-w-8 shrink-0 items-center justify-center rounded-full bg-info-100 px-2 text-xs font-bold text-info-700"
+            >
+          {{ selectedWorkouts.length }}
+        </span>
+          </div>
+
+
+          <div class="flex min-w-0 flex-col gap-3">
+
+            <div
+              *ngFor="let workout of selectedWorkouts; let i = index; trackBy: trackByWorkoutId"
+              class="flex min-w-0 flex-wrap items-center gap-3 rounded-xl border border-surface-200 bg-white p-3 shadow-sm sm:flex-nowrap sm:p-4"
+            >
+
+              <div
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-info-100 text-sm font-bold text-info-700"
+              >
+                {{ i + 1 }}
+              </div>
+
+              <div class="min-w-0 flex-1">
+                <strong
+                  class="block break-words text-sm font-bold text-content-800"
+                >
+                  {{ workout.name }}
+                </strong>
+
+                <small
+                  class="mt-1 block text-xs text-content-500"
+                >
+                  {{ workout.exercises.length }}
+                  {{ 'coachProgramBuilder.exercise' | translate }}
+                </small>
+              </div>
+
+              <button
+                type="button"
+                [attr.aria-label]="'coachProgramBuilder.copyWorkoutAria' | translate"
+                (click)="openCopyWorkout(workout)"
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-surface-200 bg-white text-sm transition hover:border-primary-200 hover:bg-primary-50 focus:outline-none focus:ring-4 focus:ring-primary-600/10"
+              >
+                <app-icon name="clipboard-list" sizeClass="h-5 w-5" />
+              </button>
+
+              <button
+                type="button"
+                [attr.aria-label]="'coachProgramBuilder.removeWorkoutAria' | translate"
+                (click)="removeWorkout(workout.id)"
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-delete-200 bg-white text-sm font-bold text-delete-600 transition hover:border-delete-300 hover:bg-delete-50 focus:outline-none focus:ring-4 focus:ring-delete-600/10"
+              >
+                <app-icon name="x" sizeClass="h-5 w-5" />
+              </button>
+
+            </div>
+
+          </div>
+        </div>
+
+
+        <!-- ==================================================
+             NAVIGÁCIÓ
+             ================================================== -->
+
+        <div
+          class="flex flex-col gap-3 border-t border-surface-200 pt-5 lg:flex-row lg:items-center lg:justify-between"
+        >
+
+          <button
+            type="button"
+            (click)="previousStep.emit()"
+            class="w-full rounded-lg border border-surface-300 bg-white px-5 py-3 text-sm font-semibold text-content-700 shadow-sm transition hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/10 lg:w-auto"
+          >
+            ←
+            {{ 'coachProgramBuilder.back' | translate }}
+          </button>
+
+
+          <div class="w-full min-w-0 lg:max-w-sm">
+            <app-user-select
+              [selectedUserId]="selectedUserId" (selectedUserIdChange)="selectedUserIdChange.emit($event)"
+              [disabled]="isEditMode && selectedUserId !== undefined"
+            >
+            </app-user-select>
+          </div>
+
+
+          <button
+            type="button"
+            [disabled]="programId === null || !selectedUserId"
+            (click)="finishProgram.emit()"
+            class="w-full rounded-lg bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto"
+          >
+        <span>
+          {{ 'coachProgramBuilder.finishProgram' | translate }}
+        </span>
+
+            <span class="ml-2">
+          →
+        </span>
+          </button>
+
+        </div>
+
+      </div>
+    </app-card>
+
+<app-workout-copy-dialog
+  *ngIf="copyDialogOpen"
+  [sourceWorkout]="copySourceWorkout"
+  [(workoutName)]="copyWorkoutName"
+  [(workoutDate)]="copyWorkoutDate"
+  [(dayIndex)]="copyWorkoutDayIndex"
+  [inProgress]="copyInProgress"
+  (cancel)="cancelCopyWorkout()"
+  (confirm)="confirmCopyWorkout()"
+></app-workout-copy-dialog>

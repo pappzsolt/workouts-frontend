@@ -3,6 +3,13 @@
     {{ 'userWorkoutExerciseManager.title' | translate }}
   </h2>
 
+  <app-message
+    *ngIf="message"
+    [message]="message"
+    [messageParams]="messageParams"
+    [type]="messageType"
+  ></app-message>
+
   <div class="add-workout-section">
     <div class="add-workout-controls">
       <app-user-select
@@ -37,7 +44,7 @@
       {{ 'userWorkoutExerciseManager.programOverview' | translate }}
     </h3>
 
-    <div *ngFor="let day of dayGroups" class="day-card">
+    <div *ngFor="let day of dayGroups; trackBy: trackByDay" class="day-card">
       <div class="day-header">
         <div>
           <div class="day-title">
@@ -57,7 +64,7 @@
       <!-- WORKOUTS -->
 
       <div class="workouts-list">
-        <div *ngFor="let w of day.workouts" class="workout-card">
+        <div *ngFor="let w of day.workouts; trackBy: trackByWorkout" class="workout-card">
           <div class="workout-header">
             <div class="workout-title-row">
               <div class="workout-name">
@@ -130,7 +137,7 @@
               </thead>
 
               <tbody>
-              <ng-container *ngFor="let ex of w.exercises">
+              <ng-container *ngFor="let ex of w.exercises; trackBy: trackByExercise">
                 <tr class="exercise-row">
                   <td>
                     <div class="order-controls">
@@ -287,7 +294,7 @@
 
                           <tbody>
                           <tr
-                            *ngFor="let set of selectedSets"
+                            *ngFor="let set of selectedSets; trackBy: trackBySet"
                             class="set-row"
                           >
                             <td>
@@ -393,8 +400,7 @@
                       <app-message
                         *ngIf="!selectedSets.length"
                         [message]="
-                            'userWorkoutExerciseManager.noSets' | translate
-                          "
+                            'userWorkoutExerciseManager.noSets'"
                         type="info"
                       ></app-message>
 
@@ -414,8 +420,17 @@
 
   <app-message
     *ngIf="userProgramData && !userProgramData.length"
-    [message]="'userWorkoutExerciseManager.noData' | translate"
+    [message]="'userWorkoutExerciseManager.noData'"
     type="info"
   ></app-message>
 
 </div>
+
+<app-confirm-dialog
+  [open]="setPendingDeletion !== null"
+  [busy]="deletingSet"
+  message="userWorkoutExerciseManager.deleteSetConfirm"
+  [messageParams]="{ setNumber: setPendingDeletion?.setNumber }"
+  (confirmed)="confirmSetDeletion()"
+  (cancelled)="cancelSetDeletion()"
+></app-confirm-dialog>

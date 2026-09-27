@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, combineLatest, distinctUntilChanged, filter, map, switchMap, takeUntil } from 'rxjs';
 
 import { UserExerciseService } from '../../../../services/user/user-exercise/user-exercise.service';
 import { LanguageService } from '../../../../services/shared/language.service';
@@ -81,15 +81,13 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
 
     // NAVIGATION STATE
 
-    const navState = history.state;
     const queryParams = this.route.snapshot.queryParamMap;
 
-    this.workoutName = navState?.workoutName || 'userExercises.unknownWorkout';
+    this.workoutName = queryParams.get('workoutName') || 'userExercises.unknownWorkout';
 
-    const programIdParam = queryParams.get('programId') ?? navState?.programId;
-    const userWorkoutIdParam = queryParams.get('userWorkoutId') ?? navState?.userWorkoutId;
-    const programWorkoutIdParam =
-      queryParams.get('programWorkoutId') ?? navState?.programWorkoutId;
+    const programIdParam = queryParams.get('programId');
+    const userWorkoutIdParam = queryParams.get('userWorkoutId');
+    const programWorkoutIdParam = queryParams.get('programWorkoutId');
 
     this.programId = Number(programIdParam);
     this.userWorkoutId = Number(userWorkoutIdParam);
@@ -116,37 +114,33 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // NYELVVÁLTÁS FIGYELÉSE
-
-    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.loadExercises();
-    });
-  }
-
-  // ============================================================
-  // EXERCISE-EK BETÖLTÉSE
-  // ============================================================
-
-  private loadExercises(): void {
-    this.exercisesService
-       .getWorkoutExercises(this.userWorkoutId, this.languageService.getCurrentLanguage())
-      .pipe(takeUntil(this.destroy$))
+    // NYELV + KÉRÉS KEZELÉSE: switchMap biztosítja, hogy egy régi
+    // nyelvi kérés válasza ne írja felül az újabb állapotot.
+    combineLatest([
+      this.languageService.language$,
+      this.route.queryParamMap,
+    ])
+      .pipe(
+        map(([language]) => language),
+        distinctUntilChanged(),
+        switchMap((language) =>
+          this.exercisesService.getWorkoutExercises(this.userWorkoutId, language),
+        ),
+        takeUntil(this.destroy$),
+      )
       .subscribe({
         next: (response) => {
           const exercises = response.data?.exercises ?? [];
 
-          // TELJES LISTA ELTÁROLÁSA
+          if (response.data?.name) {
+            this.workoutName = response.data.name;
+          }
 
           this.allExercises = exercises;
-
-          // PAGINATION ADATOK FRISSÍTÉSE
-
           this.totalItems = this.allExercises.length;
           this.currentPage = 1;
-
           this.updatePaginatedExercises();
         },
-
         error: (error) => {
           console.error('Hiba a gyakorlatok betöltésekor:', error);
 
@@ -157,6 +151,11 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
         },
       });
   }
+
+  // ============================================================
+  // EXERCISE-EK BETÖLTÉSE
+  // ============================================================
+
 
   // ============================================================
   // LAPOZOTT GYAKORLATOK FRISSÍTÉSE
@@ -193,8 +192,6 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
         programId: this.programId,
         programWorkoutId: this.programWorkoutId,
         userWorkoutId: this.userWorkoutId,
-      },
-      state: {
         workoutName: this.workoutName,
       },
     });

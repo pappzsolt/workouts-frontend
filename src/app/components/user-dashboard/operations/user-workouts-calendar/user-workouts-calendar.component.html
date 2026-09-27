@@ -112,7 +112,7 @@
       class="-mt-5 hidden grid-cols-7 overflow-hidden rounded-b-2xl border border-surface-200 bg-white shadow-md shadow-surface-200/50 sm:grid sm:-mt-6"
     >
       <div
-        *ngFor="let day of calendarDays"
+        *ngFor="let day of calendarDays; trackBy: trackByCalendarDay"
         class="relative min-h-24 min-w-0 border-b border-r border-surface-200 p-1 transition-colors duration-150 last:border-r-0 hover:bg-primary-50/40 sm:min-h-32 sm:p-2 lg:min-h-36"
         [class.bg-surface-50]="!day.currentMonth"
         [class.text-content-400]="!day.currentMonth"
@@ -135,7 +135,7 @@
         <div class="flex min-w-0 flex-col gap-1">
           <button
             type="button"
-            *ngFor="let workout of getWorkoutsForDay(day.date)"
+            *ngFor="let workout of getWorkoutsForDay(day.date); trackBy: trackByWorkout"
             class="group flex min-w-0 cursor-pointer items-center gap-1 rounded-lg border px-1 py-1.5 text-left text-[10px] font-semibold transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary-400 sm:gap-2 sm:px-2 sm:text-xs"
             [class.border-success-200]="workout.completed"
             [class.bg-success-50]="workout.completed"
@@ -167,7 +167,7 @@
       <h3 class="text-base font-bold text-content-800">
         {{ 'userWorkoutsCalendar.monthAgenda' | translate }}
       </h3>
-      <ng-container *ngFor="let day of calendarDays">
+      <ng-container *ngFor="let day of calendarDays; trackBy: trackByCalendarDay">
         <article
           *ngIf="day.currentMonth && getWorkoutsForDay(day.date).length"
           class="rounded-xl border border-surface-200 bg-white p-3 shadow-sm"
@@ -178,7 +178,7 @@
           <div class="flex flex-col gap-2">
             <button
               type="button"
-              *ngFor="let workout of getWorkoutsForDay(day.date)"
+              *ngFor="let workout of getWorkoutsForDay(day.date); trackBy: trackByWorkout"
               (click)="selectWorkout(workout)"
               class="flex min-h-11 w-full items-center gap-3 rounded-lg border px-3 py-2 text-left text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-400"
               [class.border-success-200]="workout.completed"
@@ -197,7 +197,7 @@
       </ng-container>
       <app-message
         *ngIf="!hasWorkoutsInCurrentMonth()"
-        [message]="'userWorkoutsCalendar.noMonthWorkouts' | translate"
+        [message]="'userWorkoutsCalendar.noMonthWorkouts'"
         type="info"
       ></app-message>
     </section>
@@ -243,7 +243,7 @@
         <button
           type="button"
           (click)="closeWorkoutDetails()"
-          [attr.aria-label]="'userWorkoutsCalendar.close' | translate"
+          [attr.aria-label]="'userWorkoutsCalendar.close'"
           class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-xl font-semibold text-white transition-colors hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50"
         >
           <app-icon name="x" sizeClass="h-5 w-5" />
@@ -261,14 +261,14 @@
         <!-- Nincs exercise -->
         <app-message
           *ngIf="selectedExercises.length === 0"
-          [message]="'userWorkoutsCalendar.noExercises' | translate"
+          [message]="'userWorkoutsCalendar.noExercises'"
           type="info"
         ></app-message>
 
         <!-- Exercise-ok -->
         <div class="mt-4 flex flex-col gap-3">
           <div
-            *ngFor="let exercise of selectedExercises; let i = index"
+            *ngFor="let exercise of selectedExercises; let i = index; trackBy: trackByExercise"
             class="flex min-w-0 items-center gap-3 rounded-xl border border-surface-200 bg-surface-50 px-3 py-3 transition-colors duration-150 hover:border-primary-200 hover:bg-primary-50/40 sm:px-4"
           >
             <!-- Sorszám -->

@@ -10,7 +10,7 @@ import {
   inject,
 } from '@angular/core';
 
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, skip, takeUntil } from 'rxjs';
 import { AppSearchComponent } from '../../components/app-search/app-search.component';
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
 import { LanguageService } from '../../../../services/shared/language.service';
@@ -99,7 +99,7 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges, OnDestro
     // NYELVVÁLTÁS
     // ==========================================================
 
-    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+    this.languageService.language$.pipe(skip(1), takeUntil(this.destroy$)).subscribe(() => {
       this.loadExercises();
     });
   }

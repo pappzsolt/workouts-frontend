@@ -2,7 +2,7 @@ import type { CalendarDay } from '../../../../models/common/calendar-day.model';
 import type { ScheduledWorkout } from '../../../../models/scheduled-workout/scheduled-workout.model';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
-import { Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, Subject, combineLatest, distinctUntilChanged, of, switchMap, takeUntil } from 'rxjs';
 
 import { WorkoutExercisesManagerService } from '../../../../services/coach/workout-exercises-manager.service';
 import { UserWorkoutExerciseDto } from '../../../../models/user-workout-exercise.dto';
@@ -22,12 +22,16 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   // =========================================================
 
   private readonly destroy$ = new Subject<void>();
+  private readonly selectedWorkoutId$ = new BehaviorSubject<number | null>(null);
 
   // =========================================================
   // Workout adatok
   // =========================================================
 
   scheduledWorkouts: ScheduledWorkout[] = [];
+
+  /** Előre indexelt workoutok dátum szerint, hogy a template ne filterezze újra a teljes listát. */
+  private workoutsByDate = new Map<string, ScheduledWorkout[]>();
 
   selectedWorkout: ScheduledWorkout | null = null;
 
@@ -78,15 +82,35 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   // =========================================================
 
   ngOnInit(): void {
-    this.loadScheduledWorkouts();
-
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.loadScheduledWorkouts();
-
-      if (this.selectedWorkout) {
-        this.loadSelectedWorkoutExercises();
-      }
     });
+
+    combineLatest([
+      this.selectedWorkoutId$,
+      this.languageService.language$,
+    ])
+      .pipe(
+        distinctUntilChanged(
+          ([previousWorkoutId, previousLanguage], [currentWorkoutId, currentLanguage]) =>
+            previousWorkoutId === currentWorkoutId && previousLanguage === currentLanguage,
+        ),
+        switchMap(([userWorkoutId]) =>
+          userWorkoutId == null
+            ? of([])
+            : this.workoutService.getExercisesForUserWorkout(userWorkoutId),
+        ),
+        takeUntil(this.destroy$),
+      )
+      .subscribe({
+        next: (exercises) => {
+          this.selectedExercises = exercises ?? [];
+        },
+        error: (err) => {
+          console.error('Hiba a workout exercise-ok lekérésekor:', err);
+          this.selectedExercises = [];
+        },
+      });
   }
 
   // =========================================================
@@ -109,12 +133,8 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
 
-          if (response.success) {
-            this.scheduledWorkouts = response.data ?? [];
-          } else {
-            this.scheduledWorkouts = [];
-          }
-
+          this.scheduledWorkouts = response.success ? (response.data ?? []) : [];
+          this.rebuildWorkoutDateIndex();
           this.generateCalendar();
         },
 
@@ -122,7 +142,7 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
           console.error('Hiba az ütemezett workoutok lekérésekor:', err);
 
           this.scheduledWorkouts = [];
-
+          this.rebuildWorkoutDateIndex();
           this.generateCalendar();
         },
       });
@@ -237,25 +257,52 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   // =========================================================
 
   getWorkoutsForDay(date: Date): ScheduledWorkout[] {
-    return this.scheduledWorkouts.filter((workout) => {
-      if (!workout.scheduledAt) {
-        return false;
-      }
-
-      const scheduledDate = this.parseDate(workout.scheduledAt);
-
-      return (
-        scheduledDate.getFullYear() === date.getFullYear() &&
-        scheduledDate.getMonth() === date.getMonth() &&
-        scheduledDate.getDate() === date.getDate()
-      );
-    });
+    return this.workoutsByDate.get(this.toDateKey(date)) ?? [];
   }
 
   hasWorkoutsInCurrentMonth(): boolean {
     return this.calendarDays.some(
-      (day) => day.currentMonth && this.getWorkoutsForDay(day.date).length > 0,
+      (day) => day.currentMonth && this.workoutsByDate.has(this.toDateKey(day.date)),
     );
+  }
+
+  trackByCalendarDay(index: number, day: CalendarDay): string {
+    return this.toDateKey(day.date);
+  }
+
+  trackByWorkout(index: number, workout: ScheduledWorkout): number {
+    return workout.userWorkoutId ?? index;
+  }
+
+  trackByExercise(index: number, exercise: { id?: number }): number {
+    return exercise.id ?? index;
+  }
+
+  private rebuildWorkoutDateIndex(): void {
+    this.workoutsByDate.clear();
+
+    for (const workout of this.scheduledWorkouts) {
+      if (!workout.scheduledAt) {
+        continue;
+      }
+
+      const key = workout.scheduledAt.slice(0, 10);
+      const workouts = this.workoutsByDate.get(key);
+
+      if (workouts) {
+        workouts.push(workout);
+      } else {
+        this.workoutsByDate.set(key, [workout]);
+      }
+    }
+  }
+
+  private toDateKey(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 
   // =========================================================
@@ -264,39 +311,14 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
 
   selectWorkout(workout: ScheduledWorkout): void {
     this.selectedWorkout = workout;
-
     this.selectedExercises = [];
-
-
-    this.loadSelectedWorkoutExercises();
+    this.selectedWorkoutId$.next(workout.userWorkoutId ?? null);
   }
 
   // =========================================================
   // KIVÁLASZTOTT WORKOUT EXERCISE-AINAK BETÖLTÉSE
   // =========================================================
 
-  private loadSelectedWorkoutExercises(): void {
-    if (!this.selectedWorkout?.userWorkoutId) {
-      this.selectedExercises = [];
-      return;
-    }
-
-    this.workoutService
-      .getExercisesForUserWorkout(this.selectedWorkout.userWorkoutId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (exercises) => {
-
-          this.selectedExercises = exercises ?? [];
-        },
-
-        error: (err) => {
-          console.error('Hiba a workout exercise-ok lekérésekor:', err);
-
-          this.selectedExercises = [];
-        },
-      });
-  }
 
   // =========================================================
   // WORKOUT RÉSZLETEK BEZÁRÁSA
@@ -304,19 +326,10 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
 
   closeWorkoutDetails(): void {
     this.selectedWorkout = null;
-
     this.selectedExercises = [];
+    this.selectedWorkoutId$.next(null);
   }
 
-  // =========================================================
-  // BACKEND DÁTUM FELDOLGOZÁSA
-  // =========================================================
-
-  private parseDate(dateString: string): Date {
-    const [year, month, day] = dateString.split('-').map(Number);
-
-    return new Date(year, month - 1, day);
-  }
 
   // =========================================================
   // MAI NAP ELLENŐRZÉSE

@@ -1,3 +1,12 @@
+  @if (message) {
+    <div class="px-4 sm:px-6 pt-2">
+      <app-message
+        [message]="message"
+        [type]="messageType"
+      ></app-message>
+    </div>
+  }
+
 <!-- ======================================================
      OLDAL
 ====================================================== -->
@@ -168,7 +177,7 @@
                   <app-button
                     [variant]="set.completed ? 'save' : 'secondary'"
                     type="button"
-                    [label]="'userExerciseDetail.done' | translate"
+                    [label]="'userExerciseDetail.done'"
                     [lucideIcon]="set.completed ? 'circle-check' : 'circle'"
                     [disabled]="false"
                     (buttonClick)="updateSetCompleted(set, !set.completed)"
@@ -648,7 +657,7 @@
 <ng-template #noSets>
 
   <app-message
-    [message]="'userExerciseDetail.noSets' | translate"
+    [message]="'userExerciseDetail.noSets'"
     type="info"
   ></app-message>
 
@@ -665,7 +674,7 @@
 >
 
   <app-message
-    [message]="'userExerciseDetail.noExercise' | translate"
+    [message]="'userExerciseDetail.noExercise'"
     type="info"
   ></app-message>
 

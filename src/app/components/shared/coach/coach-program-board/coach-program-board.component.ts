@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, inject } from '@angular/core';
 
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, skip, takeUntil } from 'rxjs';
 
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
 import { LanguageService } from '../../../../services/shared/language.service';
@@ -48,7 +48,7 @@ export class CoachProgramBoardComponent implements OnInit, OnDestroy {
     // NYELVVÁLTÁS
     // ==========================================================
 
-    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+    this.languageService.language$.pipe(skip(1), takeUntil(this.destroy$)).subscribe(() => {
       this.loadPrograms();
     });
   }
@@ -99,4 +99,8 @@ export class CoachProgramBoardComponent implements OnInit, OnDestroy {
 
     this.destroy$.complete();
   }
+  trackByProgram(index: number, program: { id?: number }): number {
+    return program.id ?? index;
+  }
+
 }

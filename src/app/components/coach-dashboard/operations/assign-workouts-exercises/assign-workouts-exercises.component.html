@@ -70,7 +70,7 @@
 
       <div class="space-y-3 p-5 sm:p-6">
         <div
-          *ngFor="let wid of selectedWorkoutIds"
+          *ngFor="let wid of selectedWorkoutIds; trackBy: trackByWorkoutId"
           class="flex items-center justify-between gap-3 rounded-xl border border-info-100 bg-info-50/60 px-4 py-3 transition hover:border-primary-200 hover:bg-primary-50"
         >
       <span
@@ -82,7 +82,7 @@
           <button
             type="button"
             (click)="removeWorkout(wid)"
-            [title]="'common.remove' | translate"
+            [title]="'common.remove'"
             class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-delete-200 bg-delete-50 text-sm font-bold text-delete-600 transition hover:border-delete-300 hover:bg-delete-100 focus:outline-none focus:ring-4 focus:ring-delete-600/10"
           >
             <app-icon name="x" sizeClass="h-5 w-5" />

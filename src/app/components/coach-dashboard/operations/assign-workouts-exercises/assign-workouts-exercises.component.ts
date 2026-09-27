@@ -4,12 +4,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ApiResponse } from '../../../../models/backend-dto/common/api-response';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, catchError, concatMap, from, of, takeUntil, toArray } from 'rxjs';
 
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
 import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exercises-board/coach-exercises-board.component';
 
-import { MessageComponent } from '../../../shared/message/message.component';
+import { MessageComponent } from '../../../shared/components/message/message.component';
 import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
 import { Workout } from '../../../../models/workout.model';
 import { Exercise } from '../../../../models/exercise.model';
@@ -97,9 +97,13 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
   // =============================
 
   ngOnInit(): void {
-    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      // Nyelvváltáskor itt lehet újratölteni az adatokat.
-    });
+    if (this.fromProgramBuilder && this.newWorkoutId !== null) {
+      this.selectedWorkoutIds = [this.newWorkoutId];
+      this.assignedWorkouts.emit([...this.selectedWorkoutIds]);
+    }
+
+    // A workout/exercise boardok maguk kezelik a nyelvváltás miatti újratöltést.
+    // Itt nincs szükség külön üres subscriptionre.
   }
 
   // =============================
@@ -197,57 +201,37 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    let completedRequests = 0;
+    from(requests)
+      .pipe(
+        concatMap((request) =>
+          this.workoutExerciseService
+            .addWorkoutExerciseSimple(request.workoutId, request.exerciseId)
+            .pipe(
+              catchError((err: HttpErrorResponse) =>
+                of({
+                  success: false,
+                  data: null,
+                  message:
+                    (typeof err.error === 'string' ? err.error : err.error?.message) ||
+                    `Hiba történt az exercise hozzárendelése közben. HTTP ${err.status}`,
+                } satisfies ApiResponse<void>),
+              ),
+            ),
+        ),
+        toArray(),
+        takeUntil(this.destroy$),
+      )
+      .subscribe((results: ApiResponse<void>[]) => {
+        const successes = results
+          .filter((result) => result.success)
+          .map((result) => result.message || 'Exercise sikeresen hozzárendelve a workouthoz.');
 
-    let successCount = 0;
+        const errors = results
+          .filter((result) => !result.success)
+          .map((result) => result.message || 'Hiba történt az exercise hozzárendelése közben.');
 
-    let errorCount = 0;
-
-    const errors: string[] = [];
-
-    const successes: string[] = [];
-
-    for (const request of requests) {
-      this.workoutExerciseService
-        .addWorkoutExerciseSimple(request.workoutId, request.exerciseId)
-        .subscribe({
-          next: (res: ApiResponse<void>) => {
-            completedRequests++;
-
-            successCount++;
-
-            const successMessage = res?.message || 'Exercise sikeresen hozzárendelve a workouthoz.';
-
-            if (!successes.includes(successMessage)) {
-              successes.push(successMessage);
-            }
-
-            if (completedRequests === requests.length) {
-              this.finishSave(successCount, errorCount, successes, errors);
-            }
-          },
-
-          error: (err: HttpErrorResponse) => {
-            completedRequests++;
-
-            errorCount++;
-
-            const backendMessage = typeof err.error === 'string' ? err.error : err.error?.message;
-
-            const errorMessage =
-              backendMessage ||
-              `Hiba történt az exercise hozzárendelése közben. HTTP ${err.status}`;
-
-            if (!errors.includes(errorMessage)) {
-              errors.push(errorMessage);
-            }
-
-            if (completedRequests === requests.length) {
-              this.finishSave(successCount, errorCount, successes, errors);
-            }
-          },
-        });
-    }
+        this.finishSave(successes.length, errors.length, [...new Set(successes)], [...new Set(errors)]);
+      });
   }
 
   // =============================
@@ -327,4 +311,8 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
 
     this.destroy$.complete();
   }
+  trackByWorkoutId(_index: number, workoutId: number): number {
+    return workoutId;
+  }
+
 }

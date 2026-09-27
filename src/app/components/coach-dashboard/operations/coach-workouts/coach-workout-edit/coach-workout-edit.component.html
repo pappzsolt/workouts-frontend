@@ -24,7 +24,7 @@
 
     <app-message
       *ngIf="message"
-      [message]="message | translate"
+      [message]="message"
       [type]="messageType"
     ></app-message>
 
@@ -283,7 +283,7 @@
                   type="text"
                   name="exerciseSearchTerm"
                   [(ngModel)]="exerciseSearchTerm"
-                  [placeholder]="'coachWorkoutEdit.searchExercisePlaceholder' | translate"
+                  [placeholder]="'coachWorkoutEdit.searchExercisePlaceholder'"
                   autocomplete="off"
                   class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white py-2.5 pl-11 pr-11 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
                 />
@@ -406,7 +406,7 @@
                   availableExercises.length === 0 &&
                   exercises.length > 0
                 "
-                [message]="'coachWorkoutEdit.noSearchResults' | translate"
+                [message]="'coachWorkoutEdit.noSearchResults'"
                 type="info"
               ></app-message>
 
@@ -421,7 +421,7 @@
                   availableExercises.length === 0 &&
                   exercises.length > 0
                 "
-                [message]="'coachWorkoutEdit.allExercisesAdded' | translate"
+                [message]="'coachWorkoutEdit.allExercisesAdded'"
                 type="info"
               ></app-message>
 
@@ -529,7 +529,7 @@
 
             <app-message
               *ngIf="workoutExercises.length === 0"
-              [message]="'coachWorkoutEdit.noExercisesYet' | translate"
+              [message]="'coachWorkoutEdit.noExercisesYet'"
               type="info"
             ></app-message>
 

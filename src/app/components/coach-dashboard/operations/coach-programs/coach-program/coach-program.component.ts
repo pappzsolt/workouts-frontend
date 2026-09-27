@@ -196,4 +196,8 @@ export class CoachProgramComponent implements OnInit {
     this.message = '';
     this.messageType = 'info';
   }
+  trackByProgram(index: number, program: { id?: number }): number {
+    return program.id ?? index;
+  }
+
 }

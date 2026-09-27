@@ -3,7 +3,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 
 import { UserSelectComponent } from '../../../../components/shared/user/user-select.component';
 import { CoachSelectComponent } from '../../../shared/coach/coach-select.component';
-import { MessageComponent } from '../../../shared/message/message.component';
+import { MessageComponent } from '../../../shared/components/message/message.component';
 
 import { RoleService } from '../../../../services/roles/role.service';
 

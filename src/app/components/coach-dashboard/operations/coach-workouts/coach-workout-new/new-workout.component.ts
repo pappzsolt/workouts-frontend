@@ -43,11 +43,6 @@ export class NewWorkoutComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const fromProgramBuilder = this.route.snapshot.queryParamMap.get('fromProgramBuilder');
-
-    const programId = this.route.snapshot.queryParamMap.get('programId');
-
-
 
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.loadWorkouts();
@@ -157,14 +152,4 @@ export class NewWorkoutComponent implements OnInit, OnDestroy {
     });
   }
 
-  private resetForm(): void {
-    this.newWorkout = {
-      name: '',
-      description: '',
-      workoutDate: '',
-      durationMinutes: 0,
-      intensityLevel: '',
-      done: false,
-    };
-  }
 }

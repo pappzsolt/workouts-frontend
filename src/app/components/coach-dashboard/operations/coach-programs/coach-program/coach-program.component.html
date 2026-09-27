@@ -55,7 +55,7 @@
 
         <app-button
           variant="sort"
-          [label]="'coachPrograms.sortByName' | translate"
+          [label]="'coachPrograms.sortByName'"
           [lucideIcon]="
             sortDirection === 'asc'
               ? 'arrow-up-narrow-wide'
@@ -74,7 +74,7 @@
         *ngIf="programs.length > 0; else noSearchResults"
         class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
       >
-        <app-card *ngFor="let program of programs">
+        <app-card *ngFor="let program of programs; trackBy: trackByProgram">
 
           <!-- ==================================================
                PROGRAM FEJLÉC / KÉP

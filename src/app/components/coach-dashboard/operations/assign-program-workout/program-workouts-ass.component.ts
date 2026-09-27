@@ -1,11 +1,11 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, catchError, concatMap, from, of, takeUntil, toArray } from 'rxjs';
 
-import { MessageComponent } from '../../../shared/message/message.component';
+import { MessageComponent } from '../../../shared/components/message/message.component';
 import { CoachProgramBoardComponent } from '../../../shared/coach/coach-program-board/coach-program-board.component';
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
 
@@ -13,7 +13,6 @@ import { Workout } from '../../../../models/workout.model';
 import { CoachProgram } from '../../../../models/coach-program.model';
 
 import { ProgramWorkoutService } from '../../../../services/coach/program-workout.service';
-import { LanguageService } from '../../../../services/shared/language.service';
 import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 
 @Component({
@@ -29,9 +28,8 @@ import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.c
   ],
   templateUrl: './program-workouts-ass.component.html',
 })
-export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
+export class ProgramWorkoutsAssComponent implements OnDestroy {
   private readonly destroy$ = new Subject<void>();
-
   programs: CoachProgram[] = [];
 
   workouts: Workout[] = [];
@@ -50,20 +48,7 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
     workoutIds: number[];
   }>();
 
-  constructor(
-    private programWorkoutService: ProgramWorkoutService,
-    private languageService: LanguageService,
-  ) {}
-
-  // ==========================================================
-  // INIT
-  // ==========================================================
-
-  ngOnInit(): void {
-    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      // Nyelvváltáskor itt lehet újratölteni az adatokat.
-    });
-  }
+  constructor(private programWorkoutService: ProgramWorkoutService) {}
 
   // ==========================================================
   // PROGRAM SELECTION
@@ -99,6 +84,7 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
 
   saveSelectedWorkouts(): void {
     const selectedProgramId = this.selectedProgramId;
+
     if (!selectedProgramId) {
       this.message = 'Nincs kiválasztott program!';
       this.messageStatus = 'error';
@@ -111,33 +97,48 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.selectedWorkoutIds.forEach((workoutId, index) => {
-      this.programWorkoutService
-        .addWorkoutToProgram(selectedProgramId, workoutId, index + 1)
-        .subscribe({
-          next: (res) => {
-            this.message = res.message;
-            this.messageStatus = res.success ? 'success' : 'error';
+    const requests = this.selectedWorkoutIds.map((workoutId, index) => ({
+      workoutId,
+      dayIndex: index + 1,
+    }));
 
-            setTimeout(() => {
-              this.message = null;
-              this.messageStatus = '';
-            }, 5000);
-          },
+    from(requests)
+      .pipe(
+        concatMap(({ workoutId, dayIndex }) =>
+          this.programWorkoutService
+            .addWorkoutToProgram(selectedProgramId, workoutId, dayIndex)
+            .pipe(
+              catchError((err) =>
+                of({
+                  success: false,
+                  data: null,
+                  message: err.error?.message || 'Ismeretlen hiba',
+                }),
+              ),
+            ),
+        ),
+        toArray(),
+        takeUntil(this.destroy$),
+      )
+      .subscribe((results) => {
+        const failed = results.filter((result) => !result.success);
 
-          error: (err) => {
-            this.message = err.error?.message || 'Ismeretlen hiba';
+        if (failed.length > 0) {
+          this.message = failed.map((result) => result.message || 'Ismeretlen hiba').join(' ');
+          this.messageStatus = 'error';
+          return;
+        }
 
-            this.messageStatus = 'error';
+        this.message = results[results.length - 1]?.message || 'A workoutok sikeresen hozzárendelve.';
+        this.messageStatus = 'success';
 
-            setTimeout(() => {
-              this.message = null;
-              this.messageStatus = '';
-            }, 5000);
-          },
-        });
-    });
+        setTimeout(() => {
+          this.message = null;
+          this.messageStatus = '';
+        }, 5000);
+      });
   }
+
 
   // ==========================================================
   // REMOVE WORKOUT
@@ -150,40 +151,38 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.selectedWorkoutIds = this.selectedWorkoutIds.filter((id) => id !== wid);
-
-    this.programWorkoutService.deleteProgramWorkout(this.selectedProgramId, wid).subscribe({
+    this.programWorkoutService.deleteProgramWorkout(this.selectedProgramId, wid)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
       next: (res) => {
+        if (!res.success) {
+          this.message = res.message || 'Ismeretlen hiba';
+          this.messageStatus = 'error';
+          return;
+        }
+
+        this.selectedWorkoutIds = this.selectedWorkoutIds.filter((id) => id !== wid);
         this.message = res.message;
-        this.messageStatus = res.success ? 'success' : 'error';
+        this.messageStatus = 'success';
+
+        this.onWorkoutsChange(this.selectedWorkoutIds);
 
         setTimeout(() => {
           this.message = null;
           this.messageStatus = '';
         }, 5000);
-
-        this.onWorkoutsChange(this.selectedWorkoutIds);
       },
 
       error: (err) => {
         this.message = err.error?.message || 'Ismeretlen hiba';
-
         this.messageStatus = 'error';
-
-        setTimeout(() => {
-          this.message = null;
-          this.messageStatus = '';
-        }, 5000);
       },
     });
   }
 
-  // ==========================================================
-  // DESTROY
-  // ==========================================================
-
-  ngOnDestroy(): void {
+\n\n  ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
 }

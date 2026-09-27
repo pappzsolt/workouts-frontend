@@ -5,7 +5,6 @@ import type { UserProgramWorkout } from '../../../../models/user-program/user-pr
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { TranslateService } from '@ngx-translate/core';
 
 import { Subject, takeUntil } from 'rxjs';
 
@@ -56,11 +55,15 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
 
   selectedUserWorkoutExerciseId?: number;
   selectedSets: UserWorkoutExerciseSetModel[] = [];
+  message = '';
+  messageType: 'success' | 'error' | 'info' | '' = '';
+  messageParams: Record<string, unknown> = {};
+  setPendingDeletion: UserWorkoutExerciseSetModel | null = null;
+  deletingSet = false;
 
   constructor(
     private service: WorkoutExercisesManagerService,
     private setService: UserWorkoutExerciseSetService,
-    private translate: TranslateService,
     private languageService: LanguageService,
   ) {}
 
@@ -74,6 +77,16 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
         this.loadSets(this.selectedUserWorkoutExerciseId);
       }
     });
+  }
+
+  private showMessage(
+    message: string,
+    type: 'success' | 'error' | 'info' = 'info',
+    params: Record<string, unknown> = {},
+  ): void {
+    this.message = message;
+    this.messageParams = params;
+    this.messageType = type;
   }
 
   ngOnDestroy(): void {
@@ -117,7 +130,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
     const userWorkoutExerciseId = this.selectedUserWorkoutExerciseId;
 
     if (!userWorkoutExerciseId) {
-      alert(this.translate.instant('userWorkoutExerciseManager.noExerciseSelected'));
+      this.showMessage('userWorkoutExerciseManager.noExerciseSelected', 'error');
       return;
     }
 
@@ -126,8 +139,9 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
         this.loadSets(userWorkoutExerciseId);
       },
       error: (err: HttpErrorResponse) => {
-        alert(
-          err?.error?.message || this.translate.instant('userWorkoutExerciseManager.addSetError'),
+        this.showMessage(
+          err?.error?.message ?? 'userWorkoutExerciseManager.addSetError',
+          'error',
         );
       },
     });
@@ -139,7 +153,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
 
   updateSet(set: UserWorkoutExerciseSetModel): void {
     if (set.id == null) {
-      alert(this.translate.instant('userWorkoutExerciseManager.setIdMissing'));
+      this.showMessage('userWorkoutExerciseManager.setIdMissing', 'error');
       return;
     }
 
@@ -155,16 +169,16 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
 
     this.setService.updateSet(set.id, data).subscribe({
       next: () => {
-        alert(
-          this.translate.instant('userWorkoutExerciseManager.updateSetSuccess', {
-            setNumber: set.setNumber,
-          }),
+        this.showMessage(
+          'userWorkoutExerciseManager.updateSetSuccess',
+          'success',
+          { setNumber: set.setNumber },
         );
       },
       error: (err: HttpErrorResponse) => {
-        alert(
-          err?.error?.message ||
-            this.translate.instant('userWorkoutExerciseManager.updateSetError'),
+        this.showMessage(
+          err?.error?.message ?? 'userWorkoutExerciseManager.updateSetError',
+          'error',
         );
       },
     });
@@ -176,36 +190,39 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
 
   deleteSet(set: UserWorkoutExerciseSetModel): void {
     if (set.id == null) {
-      alert(this.translate.instant('userWorkoutExerciseManager.setIdMissing'));
+      this.showMessage('userWorkoutExerciseManager.setIdMissing', 'error');
       return;
     }
+    this.setPendingDeletion = set;
+  }
 
-    if (
-      !confirm(
-        this.translate.instant('userWorkoutExerciseManager.deleteSetConfirm', {
-          setNumber: set.setNumber,
-        }),
-      )
-    ) {
-      return;
-    }
+  cancelSetDeletion(): void {
+    if (!this.deletingSet) this.setPendingDeletion = null;
+  }
 
+  confirmSetDeletion(): void {
+    const set = this.setPendingDeletion;
+    if (!set || set.id == null || this.deletingSet) return;
+
+    this.deletingSet = true;
     const userWorkoutExerciseId = this.selectedUserWorkoutExerciseId;
-
-    this.setService.deleteSet(set.id).subscribe({
+    this.setService.deleteSet(set.id).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.selectedSets = this.selectedSets.filter((currentSet) => currentSet.id !== set.id);
-
+        this.setPendingDeletion = null;
+        this.deletingSet = false;
+        this.showMessage('userWorkoutExerciseManager.deleteSetSuccess', 'success', {
+          setNumber: set.setNumber,
+        });
         if (userWorkoutExerciseId) {
           this.loadSets(userWorkoutExerciseId);
           this.loadUserProgramWithExercises();
         }
       },
       error: (err: HttpErrorResponse) => {
-        alert(
-          err?.error?.message ||
-            this.translate.instant('userWorkoutExerciseManager.deleteSetError'),
-        );
+        this.deletingSet = false;
+        this.setPendingDeletion = null;
+        this.showMessage(err?.error?.message ?? 'userWorkoutExerciseManager.deleteSetError', 'error');
       },
     });
   }
@@ -220,7 +237,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
 
   addUserWorkouts(): void {
     if (!this.selectedUserId || !this.selectedProgramId) {
-      alert(this.translate.instant('userWorkoutExerciseManager.missingUserOrProgram'));
+      this.showMessage('userWorkoutExerciseManager.missingUserOrProgram', 'error');
       return;
     }
 
@@ -233,17 +250,17 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
 
             this.newWorkoutExerciseId = undefined;
           } else {
-            alert(
-              res.message ||
-                this.translate.instant('userWorkoutExerciseManager.createUserWorkoutError'),
+            this.showMessage(
+              res.message ?? 'userWorkoutExerciseManager.createUserWorkoutError',
+              'error',
             );
           }
         },
 
         error: (err: HttpErrorResponse) => {
-          alert(
-            err?.error?.message ||
-              this.translate.instant('userWorkoutExerciseManager.createUserWorkoutError'),
+          this.showMessage(
+            err?.error?.message ?? 'userWorkoutExerciseManager.createUserWorkoutError',
+            'error',
           );
         },
       });
@@ -255,7 +272,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
 
   loadUserProgramWithExercises(): void {
     if (!this.selectedUserId || !this.selectedProgramId) {
-      alert(this.translate.instant('userWorkoutExerciseManager.selectUserAndProgram'));
+      this.showMessage('userWorkoutExerciseManager.selectUserAndProgram', 'error');
       return;
     }
 
@@ -382,12 +399,12 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
 
   updateScheduledDate(workout: UserProgramWorkout, scheduledAt: string | null): void {
     if (!workout.userWorkoutId) {
-      alert(this.translate.instant('userWorkoutExerciseManager.userWorkoutIdMissing'));
+      this.showMessage('userWorkoutExerciseManager.userWorkoutIdMissing', 'error');
       return;
     }
 
     if (!scheduledAt) {
-      alert(this.translate.instant('userWorkoutExerciseManager.scheduledDateRequired'));
+      this.showMessage('userWorkoutExerciseManager.scheduledDateRequired', 'error');
       return;
     }
 
@@ -397,17 +414,17 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
           workout.scheduledAt = scheduledAt;
           this.loadUserProgramWithExercises();
         } else {
-          alert(
-            res.message ||
-              this.translate.instant('userWorkoutExerciseManager.scheduledDateUpdateError'),
+          this.showMessage(
+            res.message ?? 'userWorkoutExerciseManager.scheduledDateUpdateError',
+            'error',
           );
         }
       },
 
       error: (err: HttpErrorResponse) => {
-        alert(
-          err?.error?.message ||
-            this.translate.instant('userWorkoutExerciseManager.scheduledDateUpdateError'),
+        this.showMessage(
+          err?.error?.message ?? 'userWorkoutExerciseManager.scheduledDateUpdateError',
+          'error',
         );
       },
     });
@@ -438,17 +455,17 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
 
   updateExerciseOrderIndex(workoutId: number, exerciseId: number, orderIndex: number | undefined): void {
     if (!workoutId) {
-      alert(this.translate.instant('userWorkoutExerciseManager.workoutIdMissing'));
+      this.showMessage('userWorkoutExerciseManager.workoutIdMissing', 'error');
       return;
     }
 
     if (!exerciseId) {
-      alert(this.translate.instant('userWorkoutExerciseManager.exerciseIdMissing'));
+      this.showMessage('userWorkoutExerciseManager.exerciseIdMissing', 'error');
       return;
     }
 
     if (orderIndex == null) {
-      alert(this.translate.instant('userWorkoutExerciseManager.orderIndexRequired'));
+      this.showMessage('userWorkoutExerciseManager.orderIndexRequired', 'error');
       return;
     }
 
@@ -477,9 +494,9 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
         );
       },
       error: (err: HttpErrorResponse) => {
-        alert(
-          err?.error?.message ||
-            this.translate.instant('userWorkoutExerciseManager.orderUpdateError'),
+        this.showMessage(
+          err?.error?.message ?? 'userWorkoutExerciseManager.orderUpdateError',
+          'error',
         );
       },
     });

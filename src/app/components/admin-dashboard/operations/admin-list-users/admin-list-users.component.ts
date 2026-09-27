@@ -64,4 +64,8 @@ export class AdminListUsersComponent {
       this.currentPage++;
     }
   }
+  trackByUser(index: number, user: { id?: number }): number {
+    return user.id ?? index;
+  }
+
 }

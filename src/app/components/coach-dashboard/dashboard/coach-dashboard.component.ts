@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { WorkoutListComponent } from '../operations/coach-workouts/coach-workouts.component';
 import { CoachProgramComponent } from '../operations/coach-programs/coach-program/coach-program.component';
@@ -46,55 +47,59 @@ export class CoachDashboardComponent implements OnInit {
 
   programIdForWorkouts?: number;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-  ) {}
+  private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
 
   // =============================
   // INIT
   // =============================
 
   ngOnInit(): void {
-    this.route.queryParams.subscribe((params) => {
-      this.closeAllPanels();
+    this.route.queryParams
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => {
+        this.closeAllPanels();
 
-      // ==========================================================
-      // EXERCISE NEM TALÁLHATÓ
-      // ==========================================================
+        // ==========================================================
+        // EXERCISE NEM TALÁLHATÓ
+        // ==========================================================
 
-      this.exerciseNotFound = params['exerciseNotFound'] === 'true';
+        this.exerciseNotFound = params['exerciseNotFound'] === 'true';
 
-      // ==========================================================
-      // AKTUÁLIS DASHBOARD PANEL
-      // ==========================================================
+        // ==========================================================
+        // AKTUÁLIS DASHBOARD PANEL
+        // ==========================================================
 
-      switch (params['section']) {
-        case 'workouts':
-          this.showWorkouts = true;
-          break;
+        switch (params['section']) {
+          case 'workouts':
+            this.showWorkouts = true;
+            break;
 
-        case 'programs':
-          this.showPrograms = true;
-          break;
+          case 'programs':
+            this.showPrograms = true;
+            break;
 
-        case 'exercises':
-          this.showExercises = true;
-          break;
+          case 'exercises':
+            this.showExercises = true;
+            break;
 
-        case 'assignments':
-          this.showAssignments = true;
-          break;
+          case 'assignments':
+            this.showAssignments = true;
+            break;
 
-        case 'program-workouts':
-          this.showProgramWorkouts = true;
-          break;
+          case 'program-workouts':
+            this.showProgramWorkouts = true;
+            break;
 
-        case 'workout-exercise-manager':
-          this.showWorkoutExerciseManager = true;
-          break;
-      }
-    });
+          case 'workout-exercises':
+            this.showWorkoutExercises = true;
+            break;
+
+          case 'workout-exercise-manager':
+            this.showWorkoutExerciseManager = true;
+            break;
+        }
+      });
   }
 
   // =============================

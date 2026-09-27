@@ -27,8 +27,18 @@ export const roleGuard: CanActivateFn = (
   const hasAccess = userRoles.some((r) => allowedRoles.includes(r));
 
   if (!hasAccess) {
+    // A bejelentkezett, de más szerepkörű felhasználót ne küldjük
+    // vissza loginra; a saját dashboardjára kerüljön.
+    if (userRoles.includes('ROLE_ADMIN')) {
+      router.navigate(['/admin/dashboard']);
+    } else if (userRoles.includes('ROLE_COACH')) {
+      router.navigate(['/coach/dashboard']);
+    } else if (userRoles.includes('ROLE_USER')) {
+      router.navigate(['/user/dashboard']);
+    } else {
+      router.navigate(['/login']);
+    }
 
-    router.navigate(['/login']);
     return false;
   }
 

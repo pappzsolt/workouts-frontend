@@ -123,7 +123,7 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const navState = window.history.state;
+    const programName = this.route.snapshot.queryParamMap.get('programName');
 
     // ==========================================================
     // NYELVVÁLTÁS FIGYELÉSE
@@ -131,7 +131,7 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
 
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.programName =
-        navState?.programName || this.translate.instant('userWorkouts.unknownProgram');
+        programName || this.translate.instant('userWorkouts.unknownProgram');
 
       this.loadWorkouts();
     });
@@ -220,10 +220,6 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
         programId: this.programId,
         programWorkoutId: workout.programWorkoutId,
         userWorkoutId: workout.userWorkoutId,
-      },
-      state: {
-        // A query param az elsődleges, a history.state csak a megjelenítési
-        // adatokhoz és visszafelé kompatibilitáshoz marad.
         workoutName: workout.workoutName,
       },
     });

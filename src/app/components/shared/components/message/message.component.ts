@@ -23,6 +23,18 @@ export class MessageComponent implements OnDestroy {
     return this.rawMessage;
   }
 
+  private rawMessageParams: Record<string, unknown> = {};
+
+  @Input()
+  set messageParams(value: Record<string, unknown>) {
+    this.rawMessageParams = value ?? {};
+    this.translateMessage();
+  }
+
+  get messageParams(): Record<string, unknown> {
+    return this.rawMessageParams;
+  }
+
   @Input()
   type: 'success' | 'error' | 'info' | '' = '';
 
@@ -38,7 +50,7 @@ export class MessageComponent implements OnDestroy {
       return;
     }
 
-    const translated = this.translate.instant(this.rawMessage);
+    const translated = this.translate.instant(this.rawMessage, this.rawMessageParams);
 
     // A komponens kulcsot és már lefordított / backendből érkező
     // szöveget is fogad. Ha nincs ilyen translation key, az eredeti

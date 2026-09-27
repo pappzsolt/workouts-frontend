@@ -1,0 +1,17 @@
+<div *ngIf="open" class="confirm-backdrop" role="presentation">
+  <section class="confirm-panel" role="alertdialog" aria-modal="true"
+           aria-labelledby="confirm-title" aria-describedby="confirm-description">
+    <h2 id="confirm-title" class="confirm-title">{{ 'userWorkoutExerciseManager.deleteConfirmTitle' | translate }}</h2>
+    <div id="confirm-description">
+      <app-message [message]="message" [messageParams]="messageParams" type="info"></app-message>
+    </div>
+    <div class="confirm-actions">
+      <button type="button" class="confirm-cancel" [disabled]="busy" (click)="cancelled.emit()">
+        {{ cancelLabel | translate }}
+      </button>
+      <button type="button" class="confirm-delete" [disabled]="busy" (click)="confirmed.emit()">
+        {{ confirmLabel | translate }}
+      </button>
+    </div>
+  </section>
+</div>

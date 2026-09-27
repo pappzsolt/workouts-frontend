@@ -1,4 +1,6 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, Input, Output, inject } from '@angular/core';
+import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 
@@ -10,6 +12,18 @@ import { TranslatePipe } from '@ngx-translate/core';
   styleUrl: './app-search.component.css',
 })
 export class AppSearchComponent {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly searchInput$ = new Subject<string>();
+
+  constructor() {
+    this.searchInput$
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((value) => this.searchTermChange.emit(value));
+  }
   @Input() searchTerm = '';
 
   @Input() label = 'coachPrograms.search';
@@ -21,6 +35,6 @@ export class AppSearchComponent {
   @Output() searchTermChange = new EventEmitter<string>();
 
   onSearchChange(value: string): void {
-    this.searchTermChange.emit(value);
+    this.searchInput$.next(value);
   }
 }

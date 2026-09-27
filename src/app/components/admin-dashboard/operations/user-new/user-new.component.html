@@ -15,7 +15,7 @@
     <!-- Üzenet -->
     <app-message
       *ngIf="message"
-      [message]="message | translate"
+      [message]="message"
       [type]="messageType"
     ></app-message>
 
@@ -192,7 +192,7 @@
         <app-button
           variant="primary"
           type="submit"
-          [label]="'adminUserNew.create' | translate"
+          [label]="'adminUserNew.create'"
         ></app-button>
       </div>
 

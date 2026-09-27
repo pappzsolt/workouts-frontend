@@ -5,7 +5,7 @@ import { MemberSearchService } from '../../../../services/admin/member-search.se
 import { USER_MESSAGES } from '../../../../constants/user-messages';
 import { MemberSearchResult } from '../../../../models/member-search-model';
 
-import { MessageComponent } from '../../../shared/message/message.component';
+import { MessageComponent } from '../../../shared/components/message/message.component';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({

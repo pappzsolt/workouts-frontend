@@ -52,7 +52,7 @@
 
       <app-button
         variant="sort"
-        [label]="'coachWorkouts.sortByName' | translate"
+        [label]="'coachWorkouts.sortByName'"
         [lucideIcon]="
     sortDirection === 'asc'
       ? 'arrow-up-narrow-wide'
@@ -181,7 +181,7 @@
             @if (!w.exercises?.length) {
               <div class="mt-4">
                 <app-message
-                  [message]="'coachWorkouts.noExercisesAssigned' | translate"
+                  [message]="'coachWorkouts.noExercisesAssigned'"
                   type="info"
                 ></app-message>
               </div>
@@ -194,7 +194,7 @@
             <div class="mt-4">
               <app-button
                 variant="edit"
-                [label]="'common.edit' | translate"
+                [label]="'common.edit'"
                 [lucideIcon]="'pencil'"
                 (buttonClick)="editWorkout(w.id, $event)"
               ></app-button>
@@ -231,8 +231,7 @@
         [message]="
           (searchTerm
             ? 'coachWorkouts.noSearchResults'
-            : 'coachWorkouts.noWorkouts') | translate
-        "
+            : 'coachWorkouts.noWorkouts')"
         type="info"
       ></app-message>
 
@@ -248,7 +247,7 @@
     variant="add"
     [floating]="true"
     [lucideIcon]="'circle-plus'"
-    [title]="'coachWorkouts.addWorkout' | translate"
+    [title]="'coachWorkouts.addWorkout'"
     (buttonClick)="goToNewWorkout()"
   ></app-button>
 

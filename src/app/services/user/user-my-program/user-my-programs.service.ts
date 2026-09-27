@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map, catchError, of } from 'rxjs';
+import { Observable, map, catchError, throwError } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
 
@@ -36,7 +36,7 @@ export class UserMyProgramsService {
         }));
       }),
 
-      catchError(() => of([])),
+      catchError((error) => throwError(() => error)),
     );
   }
 
