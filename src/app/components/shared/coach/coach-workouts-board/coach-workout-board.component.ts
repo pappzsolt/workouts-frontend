@@ -38,6 +38,16 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
   @Input()
   multiSelect: boolean = true;
 
+  /**
+   * Kompakt kiválasztási nézet.
+   *
+   * Az assignment oldalon a kártyás nézet helyett
+   * sűrűbb, mobilbarát listát használunk.
+   * Más oldalakon az alapértelmezett false miatt semmi nem változik.
+   */
+  @Input()
+  compactSelection = false;
+
   @Output()
   workoutsChange = new EventEmitter<number[]>();
 
@@ -62,6 +72,10 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
   // ==========================================================
 
   ngOnInit(): void {
+    if (this.compactSelection) {
+      this.itemsPerPage = 8;
+    }
+
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.loadWorkouts();
     });

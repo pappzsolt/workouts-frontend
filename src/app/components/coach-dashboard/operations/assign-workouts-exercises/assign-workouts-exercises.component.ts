@@ -63,6 +63,8 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
 
   messageParams: Record<string, unknown> = {};
 
+  saving = false;
+
   // =============================
   // OUTPUT
   // =============================
@@ -154,7 +156,11 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
   // EXERCISE ELTÁVOLÍTÁS
   // =============================
 
-  removeExercise(eid: number): void {
+  removeExercise(eid: number | undefined): void {
+    if (eid == null) {
+      return;
+    }
+
     this.selectedExercises = this.selectedExercises.filter((exercise) => exercise.id !== eid);
 
     this.onExercisesChange(this.selectedExercises);
@@ -165,6 +171,10 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
   // =============================
 
   saveSelectedWorkoutsAndExercises(): void {
+    if (this.saving) {
+      return;
+    }
+
     this.clearMessage();
 
     if (this.selectedWorkoutIds.length === 0) {
@@ -203,6 +213,8 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this.saving = true;
+
     from(requests)
       .pipe(
         concatMap((request) =>
@@ -224,6 +236,8 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
         takeUntil(this.destroy$),
       )
       .subscribe((results: ApiResponse<void>[]) => {
+        this.saving = false;
+
         const successes = results
           .filter((result) => result.success)
           .map((result) => result.message || 'assignWorkoutExercises.errors.assignSuccess');
@@ -277,10 +291,11 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.showError(
-      'assignWorkoutExercises.batchSummary',
-    );
-    this.messageParams = { successCount, errorCount, errors: errors.join(' ') };
+    this.showInfo('assignWorkoutExercises.batchSummary', {
+      successCount,
+      errorCount,
+      errors: errors.join(' '),
+    });
   }
 
   // =============================
@@ -289,14 +304,20 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
 
   private showSuccess(message: string): void {
     this.message = message;
-
+    this.messageParams = {};
     this.messageType = 'success';
   }
 
   private showError(message: string): void {
     this.message = message;
-
+    this.messageParams = {};
     this.messageType = 'error';
+  }
+
+  private showInfo(message: string, params: Record<string, unknown> = {}): void {
+    this.message = message;
+    this.messageParams = params;
+    this.messageType = 'info';
   }
 
   private clearMessage(): void {

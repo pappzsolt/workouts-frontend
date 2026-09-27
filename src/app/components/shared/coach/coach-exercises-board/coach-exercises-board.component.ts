@@ -57,6 +57,13 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges, OnDestro
   @Input()
   lockSelectedExercises = false;
 
+  /**
+   * Kompakt kiválasztási nézet az assignment oldalakhoz.
+   * Alapértelmezetten false, ezért a többi használat változatlan marad.
+   */
+  @Input()
+  compactSelection = false;
+
   @Output()
   exercisesChange = new EventEmitter<Exercise[]>();
 
@@ -93,6 +100,10 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges, OnDestro
   // ==========================================================
 
   ngOnInit(): void {
+    if (this.compactSelection) {
+      this.pageSize = 8;
+    }
+
     this.loadExercises();
 
     // ==========================================================

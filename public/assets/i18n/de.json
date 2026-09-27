@@ -137,7 +137,8 @@
     "selectedWorkouts": "Ausgewählte Trainings",
     "availableExercises": "Verfügbare Übungen",
     "save": "Ausgewählte Trainings und Übungen speichern",
-    "savedRelations": "Gespeicherte Zuordnungen"
+    "savedRelations": "Gespeicherte Zuordnungen",
+    "batchSummary": "Teilerfolg: {{successCount}} Zuordnung(en) erfolgreich, {{errorCount}} fehlgeschlagen. {{errors}}"
   },
   "coachExerciseEdit": {
     "title": "Übung bearbeiten",

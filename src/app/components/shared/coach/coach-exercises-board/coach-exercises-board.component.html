@@ -60,133 +60,187 @@
        ====================================================== -->
 
   @if (!loading && filteredExercises.length) {
-    <div
-      class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
-    >
 
-      @for (ex of pagedExercises; track ex.id) {
-        <app-card class="block min-w-0">
+    @if (compactSelection) {
+      <!-- KOMPAKT KIVÁLASZTÁSI NÉZET -->
+      <div class="overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm">
+        <div class="hidden grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 border-b border-surface-100 bg-surface-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-content-500 sm:grid">
+          <span class="w-8"></span>
+          <span>{{ 'coachExercisesBoard.exercise' | translate }}</span>
+          <span>{{ 'coachExercisesBoard.equipment' | translate }}</span>
+        </div>
 
-          <!-- FEJLÉC -->
-
-          <div
-            header
-            class="flex h-20 items-center justify-center rounded-t-2xl bg-gradient-to-r from-primary-700 to-primary-800"
-          >
-            <span class="text-2xl">
-              <app-icon name="dumbbell" sizeClass="h-5 w-5" />
-            </span>
-          </div>
-
-          <!-- TARTALOM -->
-
-          <div
-            content
-            class="flex min-w-0 flex-1 flex-col p-5"
-          >
-
-            <!-- NÉV + KIVÁLASZTÁS -->
-
-            <div class="flex items-start justify-between gap-4">
-
-              <h2
-                class="min-w-0 flex-1 break-words text-lg font-bold leading-snug text-content-800"
-              >
-                {{ ex.name }}
-              </h2>
-
+        <div class="divide-y divide-surface-100">
+          @for (ex of pagedExercises; track ex.id) {
+            <label
+              [for]="'compact-exercise-' + ex.id"
+              class="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3.5 transition hover:bg-primary-50 sm:gap-4 sm:px-5"
+              [class.bg-primary-50]="isExerciseSelected(ex)"
+              [class.cursor-not-allowed]="lockSelectedExercises"
+            >
               <input
                 type="checkbox"
                 [checked]="isExerciseSelected(ex)"
                 [disabled]="lockSelectedExercises"
                 (change)="onCheckboxChange(ex, $event)"
-                class="mt-1 h-5 w-5 shrink-0 cursor-pointer rounded border-surface-300 text-primary-600 accent-primary-600 focus:ring-2 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                [id]="'compact-exercise-' + ex.id"
+                class="h-5 w-5 cursor-pointer rounded border-surface-300 accent-primary-600 focus:ring-2 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:opacity-50"
               />
 
-            </div>
-
-            <!-- LEÍRÁS -->
-
-            @if (ex.description) {
-              <p
-                class="mt-3 line-clamp-3 break-words text-sm leading-6 text-content-600"
-              >
-                {{ ex.description }}
-              </p>
-            }
-
-            <!-- EXERCISE ADATOK -->
-
-            <div class="mt-auto flex flex-wrap gap-2 pt-4">
-
-              @if (ex.muscleGroup) {
-                <span
-                  class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
-                >
-                  {{ 'coachExercisesBoard.muscleGroup' | translate }}:
-                  {{ ex.muscleGroup }}
+              <span class="min-w-0">
+                <span class="block break-words text-sm font-semibold text-content-800 sm:text-base">
+                  {{ ex.name }}
                 </span>
-              }
-
-              @if (ex.equipment) {
-                <span
-                  class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
-                >
-                  {{ 'coachExercisesBoard.equipment' | translate }}:
-                  {{ ex.equipment }}
+                <span class="mt-0.5 block truncate text-xs text-content-500">
+                  @if (ex.muscleGroup) {
+                    {{ ex.muscleGroup }}
+                  }
+                  @if (ex.muscleGroup && ex.difficultyLevel) {
+                    <span> · </span>
+                  }
+                  @if (ex.difficultyLevel) {
+                    {{ ex.difficultyLevel }}
+                  }
                 </span>
-              }
+              </span>
 
-              @if (ex.difficultyLevel) {
-                <span
-                  class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
-                >
-                  {{ 'coachExercisesBoard.difficulty' | translate }}:
-                  {{ ex.difficultyLevel }}
-                </span>
-              }
+              <span class="hidden max-w-40 truncate rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1 text-xs font-medium text-content-500 sm:inline-flex">
+                {{ ex.equipment || '—' }}
+              </span>
+            </label>
+          }
+        </div>
+      </div>
 
-              @if (
-                ex.sets !== undefined &&
-                ex.repetitions !== undefined
-                ) {
-                <span
-                  class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
-                >
-                  {{ 'coachExercisesBoard.setsReps' | translate }}:
-                  {{ ex.sets }}x{{ ex.repetitions }}
-                </span>
-              }
-
-              @if (ex.duration_minutes) {
-                <span
-                  class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
-                >
-                  {{ 'coachExercisesBoard.duration' | translate }}:
-                  {{ ex.duration_minutes }}
-                  {{ 'coachExercisesBoard.minutes' | translate }}
-                </span>
-              }
-
-              @if (ex.intensity_level) {
-                <span
-                  class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
-                >
-                  {{ 'coachExercisesBoard.intensity' | translate }}:
-                  {{ ex.intensity_level }}
-                </span>
-              }
-
-            </div>
-
-          </div>
-
-        </app-card>
+      @if (totalExercisePages > 1) {
+        <div class="mt-4">
+          <app-pagination
+            [totalItems]="filteredExercises.length"
+            [pageSize]="pageSize"
+            [currentPage]="exercisePage"
+            [showPageSize]="false"
+            [showInfo]="false"
+            (pageChange)="exercisePage = $event"
+          ></app-pagination>
+        </div>
       }
+    } @else {
+      <!-- ALAPÉRTELMEZETT KÁRTYÁS NÉZET -->
+      <div
+        class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+      >
 
-      <!-- ====================================================
-           LAPOZÁS
-           ==================================================== -->
+        @for (ex of pagedExercises; track ex.id) {
+          <app-card class="block min-w-0">
+
+            <div
+              header
+              class="flex h-20 items-center justify-center rounded-t-2xl bg-gradient-to-r from-primary-700 to-primary-800"
+            >
+              <span class="text-2xl">
+                <app-icon name="dumbbell" sizeClass="h-5 w-5" />
+              </span>
+            </div>
+
+            <div
+              content
+              class="flex min-w-0 flex-1 flex-col p-5"
+            >
+
+              <div class="flex items-start justify-between gap-4">
+
+                <h2
+                  class="min-w-0 flex-1 break-words text-lg font-bold leading-snug text-content-800"
+                >
+                  {{ ex.name }}
+                </h2>
+
+                <input
+                  type="checkbox"
+                  [checked]="isExerciseSelected(ex)"
+                  [disabled]="lockSelectedExercises"
+                  (change)="onCheckboxChange(ex, $event)"
+                  class="mt-1 h-5 w-5 shrink-0 cursor-pointer rounded border-surface-300 text-primary-600 accent-primary-600 focus:ring-2 focus:ring-primary-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+
+              </div>
+
+              @if (ex.description) {
+                <p
+                  class="mt-3 line-clamp-3 break-words text-sm leading-6 text-content-600"
+                >
+                  {{ ex.description }}
+                </p>
+              }
+
+              <div class="mt-auto flex flex-wrap gap-2 pt-4">
+
+                @if (ex.muscleGroup) {
+                  <span
+                    class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
+                  >
+                    {{ 'coachExercisesBoard.muscleGroup' | translate }}:
+                    {{ ex.muscleGroup }}
+                  </span>
+                }
+
+                @if (ex.equipment) {
+                  <span
+                    class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
+                  >
+                    {{ 'coachExercisesBoard.equipment' | translate }}:
+                    {{ ex.equipment }}
+                  </span>
+                }
+
+                @if (ex.difficultyLevel) {
+                  <span
+                    class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
+                  >
+                    {{ 'coachExercisesBoard.difficulty' | translate }}:
+                    {{ ex.difficultyLevel }}
+                  </span>
+                }
+
+                @if (
+                  ex.sets !== undefined &&
+                  ex.repetitions !== undefined
+                  ) {
+                  <span
+                    class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
+                  >
+                    {{ 'coachExercisesBoard.setsReps' | translate }}:
+                    {{ ex.sets }}x{{ ex.repetitions }}
+                  </span>
+                }
+
+                @if (ex.duration_minutes) {
+                  <span
+                    class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
+                  >
+                    {{ 'coachExercisesBoard.duration' | translate }}:
+                    {{ ex.duration_minutes }}
+                    {{ 'coachExercisesBoard.minutes' | translate }}
+                  </span>
+                }
+
+                @if (ex.intensity_level) {
+                  <span
+                    class="rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-xs font-medium text-content-600"
+                  >
+                    {{ 'coachExercisesBoard.intensity' | translate }}:
+                    {{ ex.intensity_level }}
+                  </span>
+                }
+
+              </div>
+
+            </div>
+
+          </app-card>
+        }
+
+      </div>
 
       @if (totalExercisePages > 1) {
         <div class="col-span-1 mt-1 sm:col-span-2 lg:col-span-3">
@@ -200,8 +254,8 @@
           ></app-pagination>
         </div>
       }
-
-    </div>
+    }
   }
+
 
 </div>

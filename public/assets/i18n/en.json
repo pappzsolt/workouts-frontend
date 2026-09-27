@@ -137,7 +137,8 @@
     "selectedWorkouts": "Selected workouts",
     "availableExercises": "Available exercises",
     "save": "Save to selected workouts and exercises",
-    "savedRelations": "Saved relations"
+    "savedRelations": "Saved relations",
+    "batchSummary": "Partial success: {{successCount}} assignment(s) succeeded, {{errorCount}} failed. {{errors}}"
   },
   "coachExerciseEdit": {
     "title": "Edit Exercise",

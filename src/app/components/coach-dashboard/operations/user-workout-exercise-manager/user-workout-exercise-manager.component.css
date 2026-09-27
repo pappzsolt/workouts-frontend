@@ -381,28 +381,145 @@
    ============================================================ */
 
 .sets-container {
-  padding: 0.75rem;
+  padding: 1rem;
   background: var(--app-surface-50);
 }
 
 .sets-panel {
   border: 1px solid var(--app-surface-300);
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   background: var(--app-white);
   overflow: hidden;
 }
 
 .sets-header {
-  padding: 0.65rem 0.9rem;
-
+  padding: 0.85rem 1rem;
   font-weight: 600;
   border-bottom: 1px solid var(--app-surface-300);
   background: var(--app-surface-100);
-
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
+}
+
+.sets-list {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.85rem;
+}
+
+.set-card {
+  border: 1px solid var(--app-surface-300);
+  border-radius: 0.75rem;
+  background: var(--app-white);
+  overflow: hidden;
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--app-content-900) 5%, transparent);
+}
+
+.set-card-header {
+  min-height: 3.25rem;
+  padding: 0.65rem 0.85rem;
+  background: var(--app-surface-100);
+  border-bottom: 1px solid var(--app-surface-200);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.set-card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--app-content-800);
+  font-weight: 700;
+}
+
+.set-number-badge {
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--app-primary-100);
+  color: var(--app-primary-700);
+  font-weight: 700;
+}
+
+.set-completed {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--app-content-700);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.set-card-body {
+  padding: 0.85rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+.set-data-group {
+  padding: 0.75rem;
+  border: 1px solid var(--app-surface-200);
+  border-radius: 0.65rem;
+  background: var(--app-surface-50);
+}
+
+.set-group-title {
+  margin: 0 0 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--app-content-700);
+}
+
+.set-actual-group {
+  background: color-mix(in srgb, var(--app-primary-50) 45%, var(--app-white));
+}
+
+.set-field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.set-field {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.set-field > span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--app-content-600);
+}
+
+.set-number-input {
+  width: 100%;
+  min-height: 2.5rem;
+}
+
+.set-notes-field {
+  grid-column: 1 / -1;
+}
+
+.set-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 0.7rem 0.85rem;
+  border-top: 1px solid var(--app-surface-200);
+  background: var(--app-surface-50);
 }
 
 .set-row {
@@ -428,9 +545,7 @@
 .no-data {
   margin-top: 1rem;
   padding: 0.9rem;
-
   text-align: center;
-
   background: var(--app-surface-50);
   border: 1px dashed var(--app-surface-300);
   border-radius: 0.5rem;
@@ -474,5 +589,43 @@
   .scheduled-date {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .sets-container {
+    padding: 0.6rem;
+  }
+
+  .sets-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .sets-header app-button {
+    width: 100%;
+  }
+
+  .set-card-body {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
+  .set-field-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .set-card-header {
+    align-items: flex-start;
+  }
+
+  .set-completed {
+    flex-shrink: 0;
+  }
+
+  .set-card-actions {
+    flex-direction: column;
+  }
+
+  .set-card-actions button {
+    width: 100%;
   }
 }

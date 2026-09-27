@@ -63,86 +63,118 @@
      ====================================================== -->
 
 @if (!loading && workouts.length) {
-  <div
-    class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
-  >
-    @for (workout of workouts; track workout.id) {
-      <app-card
-        class="block min-w-0"
-      >
-        <!-- FEJLÉC -->
 
-        <div
-          header
-          class="flex h-20 items-center justify-center rounded-t-2xl bg-gradient-to-r from-primary-700 to-primary-800"
-        >
-          <span class="text-2xl">
-            <app-icon name="flame" sizeClass="h-5 w-5" />
-          </span>
-        </div>
+  @if (compactSelection) {
+    <!-- KOMPAKT KIVÁLASZTÁSI NÉZET -->
+    <div class="overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm">
+      <div class="hidden grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 border-b border-surface-100 bg-surface-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-content-500 sm:grid">
+        <span class="w-8"></span>
+        <span>{{ 'coachWorkoutBoard.workout' | translate }}</span>
+        <span>{{ 'coachWorkoutBoard.id' | translate }}</span>
+      </div>
 
-        <!-- TARTALOM -->
+      <div class="divide-y divide-surface-100">
+        @for (workout of workouts; track workout.id) {
+          <label
+            [for]="'compact-workout-' + workout.id"
+            class="grid cursor-pointer grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-4 py-3.5 transition hover:bg-primary-50 sm:gap-4 sm:px-5"
+            [class.bg-primary-50]="workout.id != null && selectedWorkoutIds.includes(workout.id)"
+          >
+            <input
+              type="checkbox"
+              [checked]="workout.id != null && selectedWorkoutIds.includes(workout.id)"
+              (change)="onWorkoutCheckboxChange($event, workout.id)"
+              [id]="'compact-workout-' + workout.id"
+              class="h-5 w-5 cursor-pointer rounded border-surface-300 accent-primary-600 focus:ring-2 focus:ring-primary-500/20"
+            />
 
-        <div
-          content
-          class="flex min-w-0 flex-1 flex-col p-5"
-        >
-          <!-- KIVÁLASZTÁS + ID -->
-
-          <div class="mb-4 flex items-center justify-between gap-3">
-            <label
-              for="workout-{{ workout.id }}"
-              class="flex min-w-0 cursor-pointer items-center"
-            >
-              <input
-                type="checkbox"
-                [checked]="workout.id != null && selectedWorkoutIds.includes(workout.id)"
-                (change)="onWorkoutCheckboxChange($event, workout.id)"
-                id="workout-{{ workout.id }}"
-                class="h-5 w-5 shrink-0 cursor-pointer rounded border-surface-300 text-primary-600 accent-primary-600 focus:ring-2 focus:ring-primary-500/20"
-              />
-
-              <span
-                class="ml-2 truncate text-sm font-medium text-content-600"
-              >
-                {{ 'coachWorkoutBoard.select' | translate }}
+            <span class="min-w-0">
+              <span class="block break-words text-sm font-semibold text-content-800 sm:text-base">
+                {{ workout.name || ('coachWorkoutBoard.noName' | translate) }}
               </span>
-            </label>
+              <span class="mt-0.5 block text-xs text-content-500 sm:hidden">
+                {{ 'coachWorkoutBoard.id' | translate }} {{ workout.id }}
+              </span>
+            </span>
 
-            <span
-              class="shrink-0 rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1 text-xs font-medium text-content-400"
-            >
-              {{ 'coachWorkoutBoard.id' | translate }}
-              {{ workout.id }}
+            <span class="hidden shrink-0 rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1 text-xs font-medium text-content-500 sm:inline-flex">
+              #{{ workout.id }}
+            </span>
+          </label>
+        }
+      </div>
+    </div>
+  } @else {
+    <!-- ALAPÉRTELMEZETT KÁRTYÁS NÉZET -->
+    <div
+      class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
+    >
+      @for (workout of workouts; track workout.id) {
+        <app-card class="block min-w-0">
+          <div
+            header
+            class="flex h-20 items-center justify-center rounded-t-2xl bg-gradient-to-r from-primary-700 to-primary-800"
+          >
+            <span class="text-2xl">
+              <app-icon name="flame" sizeClass="h-5 w-5" />
             </span>
           </div>
 
-          <!-- WORKOUT NÉV -->
-
           <div
-            class="flex min-h-20 flex-1 items-center justify-center text-center"
+            content
+            class="flex min-w-0 flex-1 flex-col p-5"
           >
-            <p
-              class="line-clamp-3 break-words text-lg font-bold leading-snug text-content-800"
+            <div class="mb-4 flex items-center justify-between gap-3">
+              <label
+                [for]="'workout-' + workout.id"
+                class="flex min-w-0 cursor-pointer items-center"
+              >
+                <input
+                  type="checkbox"
+                  [checked]="workout.id != null && selectedWorkoutIds.includes(workout.id)"
+                  (change)="onWorkoutCheckboxChange($event, workout.id)"
+                  [id]="'workout-' + workout.id"
+                  class="h-5 w-5 shrink-0 cursor-pointer rounded border-surface-300 text-primary-600 accent-primary-600 focus:ring-2 focus:ring-primary-500/20"
+                />
+
+                <span
+                  class="ml-2 truncate text-sm font-medium text-content-600"
+                >
+                  {{ 'coachWorkoutBoard.select' | translate }}
+                </span>
+              </label>
+
+              <span
+                class="shrink-0 rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1 text-xs font-medium text-content-400"
+              >
+                {{ 'coachWorkoutBoard.id' | translate }}
+                {{ workout.id }}
+              </span>
+            </div>
+
+            <div
+              class="flex min-h-20 flex-1 items-center justify-center text-center"
             >
-              {{
-                workout.name ||
-                ('coachWorkoutBoard.noName' | translate)
-              }}
-            </p>
-          </div>
+              <p
+                class="line-clamp-3 break-words text-lg font-bold leading-snug text-content-800"
+              >
+                {{
+                  workout.name ||
+                  ('coachWorkoutBoard.noName' | translate)
+                }}
+              </p>
+            </div>
 
-          <!-- ALSÓ INFORMÁCIÓ -->
-
-          <div
-            class="mt-4 border-t border-surface-100 pt-3 text-center text-xs font-medium text-content-400"
-          >
-            {{ 'coachWorkoutBoard.workout' | translate }}
+            <div
+              class="mt-4 border-t border-surface-100 pt-3 text-center text-xs font-medium text-content-400"
+            >
+              {{ 'coachWorkoutBoard.workout' | translate }}
+            </div>
           </div>
-        </div>
-      </app-card>
-    }
-  </div>
+        </app-card>
+      }
+    </div>
+  }
 }
 
 <!-- ======================================================

@@ -1,131 +1,218 @@
-<div
-  class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8"
->
-  <div
-    class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6"
-  >
+<div class="min-h-full min-w-0 bg-transparent px-3 py-5 sm:px-6 sm:py-6 lg:px-8">
+  <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-5 sm:gap-6">
 
     <!-- ======================================================
-         OLDAL CÍM
+         OLDAL FEJLÉC
          ====================================================== -->
 
-    <h1
-      class="text-center text-2xl font-bold tracking-tight text-content-800 sm:text-3xl"
-    >
-      {{ 'assignWorkoutExercises.title' | translate }}
-    </h1>
+    <div class="rounded-2xl border border-surface-200 bg-white px-4 py-5 shadow-sm sm:px-6">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="min-w-0">
+          <h1 class="text-xl font-bold tracking-tight text-content-800 sm:text-2xl lg:text-3xl">
+            {{ 'assignWorkoutExercises.title' | translate }}
+          </h1>
 
+          <p class="mt-1 text-sm leading-6 text-content-500">
+            {{ 'assignWorkoutExercises.availableWorkouts' | translate }}
+            <span class="mx-1">→</span>
+            {{ 'assignWorkoutExercises.availableExercises' | translate }}
+          </p>
+        </div>
 
-    <!-- ======================================================
-         KÖZÖS ÜZENET
-         ====================================================== -->
+        <div class="flex shrink-0 items-center gap-2">
+          <span class="rounded-full bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-700">
+            {{ 'assignWorkoutExercises.availableWorkouts' | translate }}: {{ selectedWorkoutIds.length }} / 1
+          </span>
 
-    <app-message
-      [message]="message"
-      [type]="messageType"
-      [messageParams]="messageParams"
-    >
-    </app-message>
-
-
-    <!-- ======================================================
-         WORKOUT LISTA
-         ====================================================== -->
-
-    <div class="min-w-0">
-
-      <h2
-        class="mb-4 text-xl font-bold text-content-800 sm:text-2xl"
-      >
-        {{ 'assignWorkoutExercises.availableWorkouts' | translate }}
-      </h2>
-
-      <app-coach-workout-board
-        [externalWorkouts]="workouts"
-        [selectedWorkoutIds]="selectedWorkoutIds"
-        [multiSelect]="false"
-        (workoutsChange)="onWorkoutsChange($event)"
-      >
-      </app-coach-workout-board>
-
-    </div>
-
-
-    <!-- ======================================================
-         KIVÁLASZTOTT WORKOUTOK
-         ====================================================== -->
-
-    <app-card
-      *ngIf="selectedWorkoutIds.length"
-      class="min-w-0 overflow-hidden"
-    >
-      <div
-        class="border-b border-surface-100 px-5 py-4 sm:px-6"
-      >
-        <h2
-          class="text-xl font-bold tracking-tight text-content-800 sm:text-2xl"
-        >
-          {{ 'assignWorkoutExercises.selectedWorkouts' | translate }}
-        </h2>
-      </div>
-
-      <div class="space-y-3 p-5 sm:p-6">
-        <div
-          *ngFor="let wid of selectedWorkoutIds; trackBy: trackByWorkoutId"
-          class="flex items-center justify-between gap-3 rounded-xl border border-info-100 bg-info-50/60 px-4 py-3 transition hover:border-primary-200 hover:bg-primary-50"
-        >
-      <span
-        class="min-w-0 break-words text-sm font-semibold text-content-700"
-      >
-        {{ 'common.id' | translate }}: {{ wid }}
-      </span>
-
-          <button
-            type="button"
-            (click)="removeWorkout(wid)"
-            [title]="'common.remove'"
-            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-delete-200 bg-delete-50 text-sm font-bold text-delete-600 transition hover:border-delete-300 hover:bg-delete-100 focus:outline-none focus:ring-4 focus:ring-delete-600/10"
-          >
-            <app-icon name="x" sizeClass="h-5 w-5" />
-          </button>
+          <span class="rounded-full bg-surface-100 px-3 py-1.5 text-xs font-semibold text-content-600">
+            {{ 'assignWorkoutExercises.availableExercises' | translate }}: {{ selectedExercises.length }}
+          </span>
         </div>
       </div>
-    </app-card>
+    </div>
 
     <!-- ======================================================
-         EXERCISES LISTA
+         ÜZENET
          ====================================================== -->
 
-    <div class="min-w-0">
+    @if (message) {
+      <app-message
+        [message]="message"
+        [type]="messageType"
+        [messageParams]="messageParams"
+      ></app-message>
+    }
 
-      <h2
-        class="mb-4 text-xl font-bold tracking-tight text-content-800 sm:text-2xl"
-      >
-        {{ 'assignWorkoutExercises.availableExercises' | translate }}
-      </h2>
+    <!-- ======================================================
+         KIVÁLASZTÁSI MUNKATERÜLET
+         ====================================================== -->
 
-      <app-coach-exercises-board
-        [externalExercises]="exercises"
-        [externalSelectedExercises]="selectedExercises"
-        (exercisesChange)="onExercisesChange($event)"
-      >
-      </app-coach-exercises-board>
+    <div class="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-2 lg:items-start">
 
+      <!-- ====================================================
+           1. WORKOUT
+           ==================================================== -->
+
+      <app-card variant="outlined" class="min-w-0 overflow-hidden">
+        <div class="border-b border-surface-100 bg-white px-4 py-4 sm:px-5">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <div class="mb-1 flex items-center gap-2">
+                <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary-700 text-xs font-bold text-white">
+                  1
+                </span>
+
+                <h2 class="text-lg font-bold text-content-800 sm:text-xl">
+                  {{ 'assignWorkoutExercises.availableWorkouts' | translate }}
+                </h2>
+              </div>
+
+            </div>
+
+            @if (selectedWorkoutIds.length) {
+              <button
+                type="button"
+                (click)="removeWorkout(selectedWorkoutIds[0])"
+                class="shrink-0 rounded-lg border border-delete-200 bg-delete-50 px-2.5 py-2 text-xs font-semibold text-delete-600 transition hover:bg-delete-100 focus:outline-none focus:ring-4 focus:ring-delete-600/10"
+              >
+                <span class="hidden sm:inline">{{ 'common.remove' | translate }}</span>
+                <app-icon name="x" sizeClass="h-4 w-4 sm:hidden" />
+              </button>
+            }
+          </div>
+
+          @if (selectedWorkoutIds.length) {
+            <div class="mt-4 flex items-center gap-2 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2.5">
+              <app-icon name="circle-check" sizeClass="h-4 w-4 shrink-0 text-primary-700" />
+              <span class="text-sm font-semibold text-primary-800">
+                {{ 'common.id' | translate }}: {{ selectedWorkoutIds[0] }}
+              </span>
+            </div>
+          }
+        </div>
+
+        <div class="p-3 sm:p-4">
+          <app-coach-workout-board
+            [externalWorkouts]="workouts"
+            [selectedWorkoutIds]="selectedWorkoutIds"
+            [multiSelect]="false"
+            [compactSelection]="true"
+            (workoutsChange)="onWorkoutsChange($event)"
+          ></app-coach-workout-board>
+        </div>
+      </app-card>
+
+
+      <!-- ====================================================
+           2. EXERCISE
+           ==================================================== -->
+
+      <app-card variant="outlined" class="min-w-0 overflow-hidden">
+        <div class="border-b border-surface-100 bg-white px-4 py-4 sm:px-5">
+          <div class="flex items-start justify-between gap-3">
+            <div class="min-w-0">
+              <div class="mb-1 flex items-center gap-2">
+                <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary-700 text-xs font-bold text-white">
+                  2
+                </span>
+
+                <h2 class="text-lg font-bold text-content-800 sm:text-xl">
+                  {{ 'assignWorkoutExercises.availableExercises' | translate }}
+                </h2>
+              </div>
+
+            </div>
+
+            <span class="shrink-0 rounded-full bg-surface-100 px-2.5 py-1.5 text-xs font-semibold text-content-600">
+              {{ selectedExercises.length }}
+            </span>
+          </div>
+
+        </div>
+
+        <div
+          class="p-3 sm:p-4"
+          [class.pointer-events-none]="!selectedWorkoutIds.length"
+          [class.opacity-60]="!selectedWorkoutIds.length"
+        >
+          <app-coach-exercises-board
+            [externalExercises]="exercises"
+            [externalSelectedExercises]="selectedExercises"
+            [compactSelection]="true"
+            [lockSelectedExercises]="false"
+            (exercisesChange)="onExercisesChange($event)"
+          ></app-coach-exercises-board>
+        </div>
+      </app-card>
     </div>
+
+
+    <!-- ======================================================
+         KIVÁLASZTOTT EXERCISE-EK
+         ====================================================== -->
+
+    @if (selectedExercises.length) {
+      <app-card variant="outlined" class="min-w-0 overflow-hidden">
+        <div class="border-b border-surface-100 px-4 py-4 sm:px-5">
+          <div class="flex items-center justify-between gap-3">
+            <div>
+              <h2 class="text-lg font-bold text-content-800">
+                {{ 'assignWorkoutExercises.availableExercises' | translate }}
+                <span class="text-content-400">({{ selectedExercises.length }})</span>
+              </h2>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-2 p-4 sm:grid-cols-2 lg:grid-cols-3 sm:p-5">
+          @for (exercise of selectedExercises; track exercise.id) {
+            <div class="flex min-w-0 items-center justify-between gap-3 rounded-xl border border-primary-100 bg-primary-50/60 px-3 py-2.5">
+              <span class="min-w-0 break-words text-sm font-semibold text-content-700">
+                {{ exercise.name }}
+              </span>
+
+              <button
+                type="button"
+                (click)="removeExercise(exercise.id)"
+                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-delete-600 transition hover:bg-delete-100 focus:outline-none focus:ring-4 focus:ring-delete-600/10"
+                [attr.aria-label]="'common.remove' | translate"
+              >
+                <app-icon name="x" sizeClass="h-4 w-4" />
+              </button>
+            </div>
+          }
+        </div>
+      </app-card>
+    }
 
 
     <!-- ======================================================
          MENTÉS
          ====================================================== -->
 
-    <div class="flex justify-center pt-1">
-      <button
-        type="button"
-        (click)="saveSelectedWorkoutsAndExercises()"
-        class="w-full rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 sm:w-auto"
-      >
-        {{ 'assignWorkoutExercises.save' | translate }}
-      </button>
+    <div class="sticky bottom-2 z-20 -mx-1 mt-1 rounded-2xl border border-surface-200 bg-white/95 p-3 shadow-lg backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div class="min-w-0 text-center text-xs text-content-500 sm:text-left sm:text-sm">
+          @if (selectedWorkoutIds.length && selectedExercises.length) {
+            {{ 'assignWorkoutExercises.availableWorkouts' | translate }}: {{ selectedWorkoutIds.length }}
+            <span class="mx-1">·</span>
+            {{ 'assignWorkoutExercises.availableExercises' | translate }}: {{ selectedExercises.length }}
+          }
+        </div>
+
+        <button
+          type="button"
+          (click)="saveSelectedWorkoutsAndExercises()"
+          [disabled]="saving || !selectedWorkoutIds.length || !selectedExercises.length"
+          class="w-full rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+        >
+          @if (saving) {
+            {{ 'common.saving' | translate }}
+          } @else {
+            {{ 'assignWorkoutExercises.save' | translate }}
+          }
+        </button>
+      </div>
     </div>
 
   </div>

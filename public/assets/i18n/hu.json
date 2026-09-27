@@ -137,7 +137,8 @@
     "selectedWorkouts": "Kiválasztott workoutok",
     "availableExercises": "Elérhető exercise-ek",
     "save": "Mentés a kiválasztott workoutokhoz és exercise-ekhez",
-    "savedRelations": "Mentett kapcsolatok"
+    "savedRelations": "Mentett kapcsolatok",
+    "batchSummary": "Részleges siker: {{successCount}} hozzárendelés sikerült, {{errorCount}} sikertelen. {{errors}}"
   },
   "coachExerciseEdit": {
     "title": "Gyakorlat szerkesztése",
