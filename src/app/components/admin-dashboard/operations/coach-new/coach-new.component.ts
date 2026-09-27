@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 
@@ -53,10 +54,10 @@ export class CoachNewComponent {
         }
       },
 
-      error: (error: Error) => {
+      error: (error: HttpErrorResponse) => {
         this.loading = false;
 
-        this.showError(error.message || 'adminCoachNew.createError');
+        this.showError(this.getBackendErrorMessage(error) ?? 'adminCoachNew.createError');
       },
     });
   }
@@ -105,4 +106,20 @@ export class CoachNewComponent {
 
     this.messageType = '';
   }
+
+  private getBackendErrorMessage(error: HttpErrorResponse): string | undefined {
+    const body = error.error;
+
+    if (
+      typeof body === 'object' &&
+      body !== null &&
+      'message' in body &&
+      typeof body.message === 'string'
+    ) {
+      return body.message;
+    }
+
+    return error.message || undefined;
+  }
+
 }

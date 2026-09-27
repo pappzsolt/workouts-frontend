@@ -115,4 +115,9 @@ export class AssignProgramComponent implements OnInit, OnDestroy {
 
     this.destroy$.complete();
   }
+
+  trackByUser(index: number, user: UserNameId): number {
+    return user.id;
+  }
+
 }

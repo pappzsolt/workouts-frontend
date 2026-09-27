@@ -173,4 +173,9 @@ export class UserNewComponent {
 
     this.messageType = '';
   }
+
+  trackByRole(index: number, role: Role): number {
+    return role.id;
+  }
+
 }

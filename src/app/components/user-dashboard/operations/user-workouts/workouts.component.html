@@ -254,7 +254,7 @@
       <div class="w-full">
 
         <app-card
-          *ngFor="let workout of items"
+          *ngFor="let workout of items; trackBy: trackByWorkout"
           variant="default"
           class="block w-full min-w-0 cursor-pointer"
         >

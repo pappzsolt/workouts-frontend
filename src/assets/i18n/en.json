@@ -429,7 +429,9 @@
     "updateProgram": "Update Program",
     "createProgram": "Create Program",
     "startDate": "Start date",
-    "endDate": "End date"
+    "endDate": "End date",
+    "createError": "An error occurred while creating the program.",
+    "createSuccess": "Program created successfully."
   },
   "coachExercisesBoard": {
     "noExercises": "No exercises available.",
@@ -523,7 +525,8 @@
     "setUpdated": "Set #{{setNumber}} was successfully updated.",
     "setUpdateError": "An error occurred while updating the set.",
     "saveSuccess": "The set was successfully saved.",
-    "saveError": "An error occurred while saving the set."
+    "saveError": "An error occurred while saving the set.",
+    "invalidSet": "Invalid set."
   },
   "userMyPrograms": {
     "title": "My Programs",
@@ -796,5 +799,10 @@
     "nextPage": "Next page",
     "lastPage": "Last page",
     "pageSize": "Items per page"
+  },
+  "programWorkouts": {
+    "programNotSelected": "No program selected.",
+    "noWorkoutsSelected": "No workouts selected.",
+    "assignSuccess": "Workouts assigned successfully."
   }
 }

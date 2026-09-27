@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
@@ -98,9 +99,9 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
         next: ({ response, exerciseId }) => {
           this.applyExerciseDetailResponse(response, exerciseId);
         },
-        error: (err: unknown) => {
-          const error = err as { error?: { message?: string } };
-          this.message = error.error?.message || 'userExerciseDetail.loadError';
+        error: (error: HttpErrorResponse) => {
+          this.message =
+            this.getBackendErrorMessage(error) ?? 'userExerciseDetail.loadError';
           this.messageType = 'error';
         },
       });
@@ -219,14 +220,9 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
           this.messageType = 'success';
         },
 
-        error: (err: unknown) => {
-          const error = err as {
-            error?: {
-              message?: string;
-            };
-          };
-
-          this.message = error.error?.message || 'userExerciseDetail.setUpdateError';
+        error: (error: HttpErrorResponse) => {
+          this.message =
+            this.getBackendErrorMessage(error) ?? 'userExerciseDetail.setUpdateError';
           this.messageType = 'error';
         },
       });
@@ -322,14 +318,9 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
           this.messageType = 'success';
         },
 
-        error: (err: unknown) => {
-          const error = err as {
-            error?: {
-              message?: string;
-            };
-          };
-
-          this.message = error.error?.message || 'userExerciseDetail.saveError';
+        error: (error: HttpErrorResponse) => {
+          this.message =
+            this.getBackendErrorMessage(error) ?? 'userExerciseDetail.saveError';
           this.messageType = 'error';
         },
       });
@@ -343,4 +334,20 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
     this.currentSetIndex = index;
   }
+
+  private getBackendErrorMessage(error: HttpErrorResponse): string | undefined {
+    const body = error.error;
+
+    if (
+      typeof body === 'object' &&
+      body !== null &&
+      'message' in body &&
+      typeof body.message === 'string'
+    ) {
+      return body.message;
+    }
+
+    return error.message || undefined;
+  }
+
 }

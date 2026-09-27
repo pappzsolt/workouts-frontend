@@ -1,6 +1,6 @@
 <nav class="w-full" [attr.aria-label]="'menu.navigation' | translate">
   <ul class="flex flex-col gap-1.5">
-    <ng-container *ngFor="let item of menuItems">
+    <ng-container *ngFor="let item of menuItems; trackBy: trackByMenuItem">
       <li class="w-full">
         <!-- Normál link -->
         <a
@@ -41,7 +41,7 @@
             *ngIf="isOpen(item)"
             class="mt-1 ml-3 flex flex-col gap-1 border-l-2 border-surface-200 pl-3"
           >
-            <li *ngFor="let child of item.children">
+            <li *ngFor="let child of item.children; trackBy: trackByMenuItem">
               <a
                 [routerLink]="child.path"
                 routerLinkActive="bg-primary-50 text-primary-700"

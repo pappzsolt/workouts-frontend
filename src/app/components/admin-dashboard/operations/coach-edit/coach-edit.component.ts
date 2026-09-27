@@ -171,4 +171,9 @@ export class CoachEditComponent implements OnInit {
       password: '',
     };
   }
+
+  trackByCoach(index: number, coach: Coach): number {
+    return coach.id;
+  }
+
 }

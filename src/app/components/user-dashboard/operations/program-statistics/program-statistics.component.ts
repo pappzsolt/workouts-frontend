@@ -100,4 +100,9 @@ export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
     this.completedPrograms = 0;
     this.programPage = 1;
   }
+
+  trackByProgram(index: number, program: ProgramStatisticsProgram): number {
+    return program.programId;
+  }
+
 }

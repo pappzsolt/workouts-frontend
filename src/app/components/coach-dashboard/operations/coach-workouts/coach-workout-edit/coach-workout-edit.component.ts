@@ -11,7 +11,7 @@ import { WorkoutExerciseService } from '../../../../../services/coach/workout-ex
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 
 import { ProgramWorkoutService } from '../../../../../services/coach/program-workout.service';
-import { skip } from 'rxjs';
+import { skip, timer } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { LanguageService } from '../../../../../services/shared/language.service';
@@ -614,9 +614,11 @@ export class CoachWorkoutEditComponent implements OnInit {
         if (res.done === true) {
           this.setMessage('coachWorkoutEdit.updateSuccess', 'success');
 
-          setTimeout(() => {
-            this.router.navigate(['/coach/dashboard']);
-          }, 1500);
+          timer(1500)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+              void this.router.navigate(['/coach/dashboard']);
+            });
         } else {
           this.setMessage(res.message || 'coachWorkoutEdit.updateError', 'error');
         }
@@ -649,10 +651,20 @@ export class CoachWorkoutEditComponent implements OnInit {
 
     this.messageType = type;
 
-    setTimeout(() => {
-      this.message = '';
-
-      this.messageType = '';
-    }, 4000);
+    timer(4000)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.message = '';
+        this.messageType = '';
+      });
   }
+
+  trackByExercise(index: number, exercise: Exercise): number {
+    return exercise.id ?? index;
+  }
+
+  trackByWorkoutExercise(index: number, workoutExercise: WorkoutExerciseView): number | string {
+    return workoutExercise.id ?? `${workoutExercise.exerciseId}-${workoutExercise.orderIndex ?? index}`;
+  }
+
 }

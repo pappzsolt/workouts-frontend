@@ -233,4 +233,9 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  trackByWorkout(index: number, workout: UserWorkoutOccurrence): number | string {
+    return workout.userWorkoutId ?? workout.programWorkoutId ?? `${workout.workoutId}-${workout.workoutDate}`;
+  }
+
 }

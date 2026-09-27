@@ -429,7 +429,9 @@
     "updateProgram": "Program frissítése",
     "createProgram": "Program létrehozása",
     "startDate": "Kezdés dátuma",
-    "endDate": "Befejezés dátuma"
+    "endDate": "Befejezés dátuma",
+    "createError": "Hiba történt a program létrehozásakor.",
+    "createSuccess": "Program sikeresen létrehozva."
   },
   "coachExercisesBoard": {
     "noExercises": "Nincsenek elérhető exercise-ek.",
@@ -523,7 +525,8 @@
     "setUpdateError": "Hiba történt a sorozat frissítésekor.",
     "saveSuccess": "A sorozat sikeresen mentve.",
     "saveError": "Hiba történt a sorozat mentésekor.",
-    "save": "Mentés"
+    "save": "Mentés",
+    "invalidSet": "Érvénytelen sorozat."
   },
   "userMyPrograms": {
     "title": "Programjaim",
@@ -796,5 +799,10 @@
     "nextPage": "Következő oldal",
     "lastPage": "Utolsó oldal",
     "pageSize": "Elem oldalanként"
+  },
+  "programWorkouts": {
+    "programNotSelected": "Nincs kiválasztott program.",
+    "noWorkoutsSelected": "Nincsenek kiválasztott workoutok.",
+    "assignSuccess": "A workoutok sikeresen hozzárendelve."
   }
 }

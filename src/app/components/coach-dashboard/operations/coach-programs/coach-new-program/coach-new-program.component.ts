@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 import { AppCardComponent } from '../../../../shared/components/app-card/app-card.component';
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
-import { skip } from 'rxjs';
+import { skip, timer } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { LanguageService } from '../../../../../services/shared/language.service';
@@ -107,9 +107,11 @@ export class CoachNewProgramComponent implements OnInit {
           this.messageType = 'success';
           this.message = 'coachNewProgram.createSuccess';
 
-          setTimeout(() => {
-            this.router.navigate(['/coach/programs']);
-          }, 1500);
+          timer(1500)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+              void this.router.navigate(['/coach/programs']);
+            });
         } else {
           this.messageType = 'error';
           this.message = `Hiba: ${response.message}`;

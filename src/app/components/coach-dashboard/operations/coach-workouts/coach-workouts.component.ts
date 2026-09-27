@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, timer } from 'rxjs';
 
 import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { LanguageService } from '../../../../services/shared/language.service';
@@ -348,11 +348,12 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
 
     this.messageType = type;
 
-    setTimeout(() => {
-      this.message = '';
-
-      this.messageType = '';
-    }, 4000);
+    timer(4000)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.message = '';
+        this.messageType = '';
+      });
   }
 
   // ==========================================================
@@ -362,4 +363,9 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
   goToNewWorkout(): void {
     this.router.navigate(['/coach/workouts/new']);
   }
+
+  trackByWorkout(index: number, workout: Workout): number | string {
+    return workout.id ?? workout.programWorkoutId ?? index;
+  }
+
 }

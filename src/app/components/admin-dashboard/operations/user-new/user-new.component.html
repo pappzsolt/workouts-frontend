@@ -171,7 +171,7 @@
             class="mt-4 flex flex-wrap gap-2"
           >
             <span
-              *ngFor="let role of user.roleIds"
+              *ngFor="let role of user.roleIds; trackBy: trackByRole"
               class="inline-flex cursor-pointer items-center gap-2 rounded-full border border-info-200 bg-info-50 px-3 py-1.5 text-sm font-semibold text-info-700 transition-colors duration-200 hover:border-delete-200 hover:bg-delete-50 hover:text-delete-700"
               (click)="onRemoveRole(role)"
             >

@@ -201,4 +201,17 @@ export class MemberSearchComponent {
 
     this.messageType = '';
   }
+
+  trackByMember(index: number, member: MemberSearchResult): number {
+    return member.id;
+  }
+
+  trackByKeyValue(index: number, item: { key: string }): string {
+    return item.key;
+  }
+
+  trackByIndex(index: number): number {
+    return index;
+  }
+
 }

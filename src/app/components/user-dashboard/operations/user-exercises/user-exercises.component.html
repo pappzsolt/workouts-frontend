@@ -62,7 +62,7 @@
              ================================================= -->
 
         <app-card
-          *ngFor="let exercise of paginatedExercises"
+          *ngFor="let exercise of paginatedExercises; trackBy: trackByExercise"
           variant="default"
           class="block w-full min-w-0"
         >
@@ -112,7 +112,7 @@
 
                     <img
                       *ngFor="
-                        let image of getExerciseImages(exercise.exercise)
+                        let image of getExerciseImages(exercise.exercise); trackBy: trackByImage
                       "
                       [src]="'/assets/images/flat/' + image"
                       [alt]="exercise.exercise.name"

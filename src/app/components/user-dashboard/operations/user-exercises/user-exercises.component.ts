@@ -225,4 +225,13 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
       return [];
     }
   }
+
+  trackByExercise(index: number, exercise: WorkoutExercise): number {
+    return exercise.id;
+  }
+
+  trackByImage(index: number, image: string): string {
+    return image;
+  }
+
 }

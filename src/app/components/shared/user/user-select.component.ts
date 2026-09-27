@@ -25,7 +25,7 @@ import { SHARED_IMPORTS } from '../shared-imports';
         {{ 'userSelect.selectUserOption' | translate }}
       </option>
 
-      <option *ngFor="let u of users" [ngValue]="u.id">
+      <option *ngFor="let u of users; trackBy: trackByUser" [ngValue]="u.id">
         {{ u.username }}
       </option>
     </select>
@@ -71,4 +71,9 @@ export class UserSelectComponent implements OnInit {
       this.userSelected.emit(user);
     }
   }
+
+  trackByUser(index: number, user: UserNameId): number {
+    return user.id;
+  }
+
 }

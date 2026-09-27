@@ -169,7 +169,7 @@
             (selectionChange)="onRoleSelected($event.value)"
           >
             <mat-option
-              *ngFor="let role of roles"
+              *ngFor="let role of roles; trackBy: trackByRole"
               [value]="role"
             >
               {{ role.name }}

@@ -22,9 +22,7 @@ export class CoachNewService {
   createCoach(coachData: CreateCoachRequest): Observable<ApiResponse<void>> {
     return this.http.post<ApiResponse<void>>(this.apiUrl, coachData).pipe(
       catchError((error: HttpErrorResponse) => {
-        const message = error.error?.message ?? 'Az edző létrehozása nem sikerült.';
-
-        return throwError(() => new Error(message));
+        return throwError(() => error);
       }),
     );
   }

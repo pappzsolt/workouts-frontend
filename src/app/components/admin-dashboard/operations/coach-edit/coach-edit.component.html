@@ -61,7 +61,7 @@
         </option>
 
         <option
-          *ngFor="let c of coaches"
+          *ngFor="let c of coaches; trackBy: trackByCoach"
           [ngValue]="c.id"
         >
           {{ c.name }} ({{ c.email }})

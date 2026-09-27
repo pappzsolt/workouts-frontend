@@ -19,4 +19,9 @@ export class ExerciseSearchFieldComponent {
   onValueChange(value: string): void {
     this.valueChange.emit(value);
   }
+
+  trackByOption(index: number, option: SelectOption): string {
+    return option.value;
+  }
+
 }

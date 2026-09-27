@@ -345,7 +345,7 @@
               >
                 <button
                   type="button"
-                  *ngFor="let exercise of availableExercises"
+                  *ngFor="let exercise of availableExercises; trackBy: trackByExercise"
                   [class.bg-info-50]="selectedExerciseId === exercise.id"
                   [class.border-info-300]="selectedExerciseId === exercise.id"
                   [class.text-info-800]="selectedExerciseId === exercise.id"
@@ -562,8 +562,7 @@
             >
               <div
                 *ngFor="
-                  let workoutExercise of workoutExercises;
-                  let i = index
+                  let workoutExercise of workoutExercises; let i = index; trackBy: trackByWorkoutExercise
                 "
                 class="flex min-w-0 items-center gap-3 rounded-xl border border-surface-200 bg-surface-50 px-3 py-3 transition duration-150 hover:border-primary-200 hover:bg-primary-50/50"
               >

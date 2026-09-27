@@ -17,7 +17,7 @@
     </option>
 
     <option
-      *ngFor="let program of programs"
+      *ngFor="let program of programs; trackBy: trackByProgram"
       [value]="program.programId"
     >
       {{ program.programName }}

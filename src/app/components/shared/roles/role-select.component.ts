@@ -25,7 +25,7 @@ import { SHARED_IMPORTS } from '../shared-imports';
           {{ 'roleSelect.select' | translate }}
         </option>
 
-        <option *ngFor="let role of roles" [ngValue]="role">
+        <option *ngFor="let role of roles; trackBy: trackByRole" [ngValue]="role">
           {{ role.name }}
         </option>
       </select>
@@ -83,4 +83,9 @@ export class RoleSelectComponent implements OnInit {
       this.selectedRole = undefined;
     }
   }
+
+  trackByRole(index: number, role: Role): number {
+    return role.id;
+  }
+
 }

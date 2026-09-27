@@ -332,4 +332,9 @@ export class UserEditComponent implements OnInit {
 
     this.messageType = '';
   }
+
+  trackByRole(index: number, role: Role): number {
+    return role.id;
+  }
+
 }

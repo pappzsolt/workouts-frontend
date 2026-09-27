@@ -3,7 +3,7 @@ import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { Subject, catchError, concatMap, from, of, takeUntil, toArray } from 'rxjs';
+import { Subject, catchError, concatMap, from, of, takeUntil, timer, toArray } from 'rxjs';
 
 import { MessageComponent } from '../../../shared/components/message/message.component';
 import { CoachProgramBoardComponent } from '../../../shared/coach/coach-program-board/coach-program-board.component';
@@ -65,7 +65,7 @@ export class ProgramWorkoutsAssComponent implements OnDestroy {
 
   onWorkoutsChange(updatedIds: number[]): void {
     if (!this.selectedProgramId) {
-      this.message = 'Program nincs kiválasztva!';
+      this.message = 'programWorkouts.programNotSelected';
       this.messageStatus = 'error';
       return;
     }
@@ -86,13 +86,13 @@ export class ProgramWorkoutsAssComponent implements OnDestroy {
     const selectedProgramId = this.selectedProgramId;
 
     if (!selectedProgramId) {
-      this.message = 'Nincs kiválasztott program!';
+      this.message = 'programWorkouts.programNotSelected';
       this.messageStatus = 'error';
       return;
     }
 
     if (this.selectedWorkoutIds.length === 0) {
-      this.message = 'Nincsenek kiválasztott workoutok!';
+      this.message = 'programWorkouts.noWorkoutsSelected';
       this.messageStatus = 'error';
       return;
     }
@@ -129,13 +129,15 @@ export class ProgramWorkoutsAssComponent implements OnDestroy {
           return;
         }
 
-        this.message = results[results.length - 1]?.message || 'A workoutok sikeresen hozzárendelve.';
+        this.message = results[results.length - 1]?.message || 'programWorkouts.assignSuccess';
         this.messageStatus = 'success';
 
-        setTimeout(() => {
-          this.message = null;
-          this.messageStatus = '';
-        }, 5000);
+        timer(5000)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(() => {
+            this.message = null;
+            this.messageStatus = '';
+          });
       });
   }
 
@@ -146,7 +148,7 @@ export class ProgramWorkoutsAssComponent implements OnDestroy {
 
   removeWorkout(wid: number): void {
     if (!this.selectedProgramId) {
-      this.message = 'Program nincs kiválasztva!';
+      this.message = 'programWorkouts.programNotSelected';
       this.messageStatus = 'error';
       return;
     }
@@ -167,10 +169,12 @@ export class ProgramWorkoutsAssComponent implements OnDestroy {
 
         this.onWorkoutsChange(this.selectedWorkoutIds);
 
-        setTimeout(() => {
-          this.message = null;
-          this.messageStatus = '';
-        }, 5000);
+        timer(5000)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(() => {
+            this.message = null;
+            this.messageStatus = '';
+          });
       },
 
       error: (err) => {

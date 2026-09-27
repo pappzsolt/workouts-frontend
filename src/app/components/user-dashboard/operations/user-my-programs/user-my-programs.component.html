@@ -59,7 +59,7 @@
              ================================================= -->
 
         <app-card
-          *ngFor="let program of paginatedPrograms"
+          *ngFor="let program of paginatedPrograms; trackBy: trackByProgram"
           variant="default"
           class="block w-full min-w-0 cursor-pointer"
           (click)="goToWorkouts(program.id, program.name)"

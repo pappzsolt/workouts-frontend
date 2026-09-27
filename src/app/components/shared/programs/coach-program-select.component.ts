@@ -66,4 +66,9 @@ export class CoachProgramSelectComponent implements OnInit {
 
     this.selectedProgramIdChange.emit(programId);
   }
+
+  trackByProgram(index: number, program: CoachProgram): number {
+    return program.programId;
+  }
+
 }

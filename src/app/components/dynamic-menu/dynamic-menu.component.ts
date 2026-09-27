@@ -29,4 +29,9 @@ export class DynamicMenuComponent {
       this.menuAction.emit(item.action);
     }
   }
+
+  trackByMenuItem(index: number, item: MenuItem): string | number {
+    return item.path ?? item.action ?? `${item.label}-${index}`;
+  }
+
 }

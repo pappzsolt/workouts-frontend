@@ -25,7 +25,7 @@ import { SHARED_IMPORTS } from '../shared-imports';
           {{ 'coachSelect.select' | translate }}
         </option>
 
-        <option *ngFor="let coach of coaches" [ngValue]="coach.id">
+        <option *ngFor="let coach of coaches; trackBy: trackByCoach" [ngValue]="coach.id">
           {{ coach.name }}
         </option>
       </select>
@@ -71,4 +71,9 @@ export class CoachSelectComponent implements OnInit {
 
     this.selectedCoachIdChange.emit(selectedCoachId);
   }
+
+  trackByCoach(index: number, coach: CoachNameId): number {
+    return coach.id;
+  }
+
 }

@@ -224,4 +224,9 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
       state: { programName },
     });
   }
+
+  trackByProgram(index: number, program: UserProgram): number {
+    return program.id;
+  }
+
 }
