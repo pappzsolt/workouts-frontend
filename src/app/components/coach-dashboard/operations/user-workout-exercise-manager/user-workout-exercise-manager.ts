@@ -60,6 +60,8 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
   messageParams: Record<string, unknown> = {};
   setPendingDeletion: UserWorkoutExerciseSetModel | null = null;
   deletingSet = false;
+  /** Only one set is expanded for editing at a time. */
+  expandedSetId?: number;
 
   constructor(
     private service: WorkoutExercisesManagerService,
@@ -107,6 +109,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
 
     this.selectedUserWorkoutExerciseId = userWorkoutExerciseId;
     this.selectedSets = [];
+    this.expandedSetId = undefined;
 
     this.setService.getSetsByUserWorkoutExerciseId(userWorkoutExerciseId).subscribe({
       next: (res) => {
@@ -120,6 +123,18 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
         this.selectedSets = [];
       },
     });
+  }
+
+  // ============================
+  // SET KIVÁLASZTÁSA / SZERKESZTÉSE
+  // ============================
+
+  toggleSetEditor(set: UserWorkoutExerciseSetModel): void {
+    if (set.id == null) {
+      return;
+    }
+
+    this.expandedSetId = this.expandedSetId === set.id ? undefined : set.id;
   }
 
   // ============================

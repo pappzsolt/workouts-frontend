@@ -12,19 +12,11 @@
 
   <div class="add-workout-section">
     <div class="add-workout-controls">
-      <app-user-select
-        [(selectedUserId)]="selectedUserId"
-      ></app-user-select>
+      <app-user-select [(selectedUserId)]="selectedUserId"></app-user-select>
 
       <label class="form-field">
-        <span>
-          {{ 'userWorkoutExerciseManager.program' | translate }}:
-        </span>
-
-        <app-coach-program-select
-          [(selectedProgramId)]="selectedProgramId"
-        >
-        </app-coach-program-select>
+        <span>{{ 'userWorkoutExerciseManager.program' | translate }}:</span>
+        <app-coach-program-select [(selectedProgramId)]="selectedProgramId"></app-coach-program-select>
       </label>
 
       <app-button
@@ -37,8 +29,6 @@
     </div>
   </div>
 
-  <!-- PROGRAM OVERVIEW -->
-
   <div *ngIf="dayGroups?.length" class="program-overview">
     <h3 class="section-title">
       {{ 'userWorkoutExerciseManager.programOverview' | translate }}
@@ -48,12 +38,8 @@
       <div class="day-header">
         <div>
           <div class="day-title">
-            {{
-              day.date ||
-              ('userWorkoutExerciseManager.unscheduledDay' | translate)
-            }}
+            {{ day.date || ('userWorkoutExerciseManager.unscheduledDay' | translate) }}
           </div>
-
           <div class="day-index">
             {{ 'userWorkoutExerciseManager.programDay' | translate }}:
             {{ day.programDayIndex }}
@@ -61,23 +47,14 @@
         </div>
       </div>
 
-      <!-- WORKOUTS -->
-
       <div class="workouts-list">
         <div *ngFor="let w of day.workouts; trackBy: trackByWorkout" class="workout-card">
           <div class="workout-header">
             <div class="workout-title-row">
-              <div class="workout-name">
-                {{ w.workoutName }}
-              </div>
-
+              <div class="workout-name">{{ w.workoutName }}</div>
               <span
                 class="workout-status"
-                [ngClass]="
-                  w.workoutCompleted
-                    ? 'status-done'
-                    : 'status-not-done'
-                "
+                [ngClass]="w.workoutCompleted ? 'status-done' : 'status-not-done'"
               >
                 {{
                   w.workoutCompleted
@@ -91,14 +68,12 @@
               <label class="field-label">
                 {{ 'userWorkoutExerciseManager.scheduledDate' | translate }}:
               </label>
-
               <input
                 type="date"
                 [ngModel]="w.scheduledAt"
                 (ngModelChange)="w.scheduledAt = $event"
                 class="form-input form-input-small"
               />
-
               <app-button
                 variant="save"
                 type="button"
@@ -108,165 +83,157 @@
             </div>
           </div>
 
-          <!-- EXERCISES -->
-
           <div class="exercise-table-wrapper">
             <table class="exercise-table">
               <thead>
-              <tr>
-                <th>#</th>
-                <th>
-                  {{ 'userWorkoutExerciseManager.exercise' | translate }}
-                </th>
-                <th>
-                  {{ 'userWorkoutExerciseManager.done' | translate }}
-                </th>
-                <th>
-                  {{ 'userWorkoutExerciseManager.sets' | translate }}
-                </th>
-                <th>
-                  {{ 'userWorkoutExerciseManager.feedback' | translate }}
-                </th>
-                <th>
-                  {{ 'userWorkoutExerciseManager.notes' | translate }}
-                </th>
-                <th>
-                  {{ 'userWorkoutExerciseManager.setsColumn' | translate }}
-                </th>
-              </tr>
+                <tr>
+                  <th>#</th>
+                  <th>{{ 'userWorkoutExerciseManager.exercise' | translate }}</th>
+                  <th>{{ 'userWorkoutExerciseManager.done' | translate }}</th>
+                  <th>{{ 'userWorkoutExerciseManager.sets' | translate }}</th>
+                  <th>{{ 'userWorkoutExerciseManager.feedback' | translate }}</th>
+                  <th>{{ 'userWorkoutExerciseManager.notes' | translate }}</th>
+                  <th>{{ 'userWorkoutExerciseManager.setsColumn' | translate }}</th>
+                </tr>
               </thead>
 
               <tbody>
-              <ng-container *ngFor="let ex of w.exercises; trackBy: trackByExercise">
-                <tr class="exercise-row">
-                  <td>
-                    <div class="order-controls">
-                      <input
-                        type="number"
-                        min="1"
-                        [(ngModel)]="ex.order"
-                        class="number-input"
-                      />
-                      <app-button
-                        variant="save"
-                        type="button"
-                        [label]="'userWorkoutExerciseManager.save' | translate"
-                        (buttonClick)="
-    ex.exerciseId != null &&
-    updateExerciseOrderIndex(
-      w.workoutId,
-      ex.exerciseId,
-      ex.order
-    )
-  "
-                      ></app-button>
-                    </div>
-                  </td>
-
-                  <td class="exercise-name">
-                    {{ ex.exerciseName }}
-                  </td>
-
-                  <td>
-                      <span
-                        *ngIf="ex.exerciseCompleted"
-                        class="exercise-done"
-                      >
-                        <app-icon name="circle-check" sizeClass="h-5 w-5" />
-                      </span>
-
-                    <span
-                      *ngIf="!ex.exerciseCompleted"
-                      class="exercise-not-done"
-                    >
-                        <app-icon name="circle-x" sizeClass="h-5 w-5" />
-                      </span>
-                  </td>
-
-                  <td>
-                    {{ ex.setsDone }}
-                  </td>
-
-                  <td>
-                    {{ ex.feedback }}
-                  </td>
-
-                  <td>
-                    {{ ex.notes }}
-                  </td>
-
-                  <td>
-                    <app-button
-                      variant="primary"
-                      type="button"
-                      [label]="'userWorkoutExerciseManager.sets' | translate"
-                      (buttonClick)="ex.userWorkoutExerciseId != null && loadSets(ex.userWorkoutExerciseId)"
-                    ></app-button>
-                  </td>
-                </tr>
-
-                <!-- SETS -->
-
-                <tr
-                  *ngIf="
-                      selectedUserWorkoutExerciseId ===
-                      ex.userWorkoutExerciseId
-                    "
-                >
-                  <td colspan="7" class="sets-container">
-
-                    <!-- SETS PANEL -->
-
-                    <div class="sets-panel">
-                      <div class="sets-header">
-                          <span>
-                            {{
-                              'userWorkoutExerciseManager.exerciseSets'
-                                | translate
-                            }}
-                          </span>
-
+                <ng-container *ngFor="let ex of w.exercises; trackBy: trackByExercise">
+                  <tr class="exercise-row">
+                    <td>
+                      <div class="order-controls">
+                        <input type="number" min="1" [(ngModel)]="ex.order" class="number-input" />
                         <app-button
-                          variant="add"
+                          variant="save"
                           type="button"
-                          [label]="'userWorkoutExerciseManager.newSet' | translate"
-                          [lucideIcon]="'plus'"
-                          (buttonClick)="addSet()"
+                          [label]="'userWorkoutExerciseManager.save' | translate"
+                          (buttonClick)="ex.exerciseId != null && updateExerciseOrderIndex(w.workoutId, ex.exerciseId, ex.order)"
                         ></app-button>
                       </div>
+                    </td>
 
-                      <!-- SETS CARDS -->
+                    <td class="exercise-name">{{ ex.exerciseName }}</td>
 
-                      <div *ngIf="selectedSets.length" class="sets-list">
-                        <article
-                          *ngFor="let set of selectedSets; trackBy: trackBySet"
-                          class="set-card"
-                        >
-                          <div class="set-card-header">
-                            <div class="set-card-title">
-                              <span class="set-number-badge">{{ set.setNumber }}</span>
-                              <span>{{ 'userWorkoutExerciseManager.set' | translate }}</span>
-                            </div>
+                    <td>
+                      <span *ngIf="ex.exerciseCompleted" class="exercise-done">
+                        <app-icon name="circle-check" sizeClass="h-5 w-5" />
+                      </span>
+                      <span *ngIf="!ex.exerciseCompleted" class="exercise-not-done">
+                        <app-icon name="circle-x" sizeClass="h-5 w-5" />
+                      </span>
+                    </td>
 
-                            <label class="set-completed">
-                              <input
-                                type="checkbox"
-                                [(ngModel)]="set.completed"
-                                class="checkbox-input"
-                              />
-                              <span>{{ 'userWorkoutExerciseManager.completed' | translate }}</span>
-                            </label>
+                    <td>{{ ex.setsDone }}</td>
+                    <td>{{ ex.feedback }}</td>
+                    <td>{{ ex.notes }}</td>
+
+                    <td>
+                      <app-button
+                        variant="primary"
+                        type="button"
+                        [label]="'userWorkoutExerciseManager.sets' | translate"
+                        (buttonClick)="ex.userWorkoutExerciseId != null && loadSets(ex.userWorkoutExerciseId)"
+                      ></app-button>
+                    </td>
+                  </tr>
+
+                  <!-- COMPACT SET MANAGER -->
+                  <tr *ngIf="selectedUserWorkoutExerciseId === ex.userWorkoutExerciseId">
+                    <td colspan="7" class="sets-container">
+                      <div class="sets-panel">
+                        <div class="sets-header">
+                          <div class="sets-header-copy">
+                            <span class="sets-title">
+                              {{ 'userWorkoutExerciseManager.exerciseSets' | translate }}
+                            </span>
+                            <span class="sets-count">
+                              {{ selectedSets.length }}
+                            </span>
                           </div>
 
-                          <div class="set-card-body">
-                            <section class="set-data-group set-target-group">
-                              <h4 class="set-group-title">
-                                {{ 'userWorkoutExerciseManager.targetReps' | translate }}
-                                /
-                                {{ 'userWorkoutExerciseManager.targetWeight' | translate }}
-                              </h4>
+                          <app-button
+                            variant="add"
+                            type="button"
+                            [label]="'userWorkoutExerciseManager.newSet' | translate"
+                            [lucideIcon]="'plus'"
+                            (buttonClick)="addSet()"
+                          ></app-button>
+                        </div>
 
-                              <div class="set-field-grid">
+                        <div *ngIf="selectedSets.length" class="sets-list">
+                          <article
+                            *ngFor="let set of selectedSets; trackBy: trackBySet"
+                            class="set-item"
+                            [class.set-item-expanded]="expandedSetId === set.id"
+                          >
+                            <!-- ONE-LINE SUMMARY -->
+                            <button
+                              type="button"
+                              class="set-summary"
+                              (click)="toggleSetEditor(set)"
+                              [attr.aria-expanded]="expandedSetId === set.id"
+                            >
+                              <span class="set-summary-number">{{ set.setNumber }}</span>
+
+                              <span class="set-summary-main">
+                                <span class="set-summary-label">
+                                  {{ 'userWorkoutExerciseManager.set' | translate }}
+                                  {{ set.setNumber }}
+                                </span>
+
+                                <span class="set-summary-values">
+                                  <span class="set-summary-value">
+                                    <strong>{{ set.targetRepetitions }}</strong>
+                                    ×
+                                    <strong>{{ set.targetWeightKg != null ? set.targetWeightKg : '—' }}</strong>
+                                    <small>kg</small>
+                                  </span>
+
+                                  <span class="set-summary-arrow">→</span>
+
+                                  <span class="set-summary-value actual">
+                                    <strong>{{ set.actualRepetitions ?? '—' }}</strong>
+                                    ×
+                                    <strong>{{ set.actualWeightKg != null ? set.actualWeightKg : '—' }}</strong>
+                                    <small>kg</small>
+                                  </span>
+                                </span>
+                              </span>
+
+                              <span class="set-summary-status">
+                                <app-icon
+                                  [name]="set.completed ? 'circle-check' : 'circle-x'"
+                                  sizeClass="h-5 w-5"
+                                />
+                              </span>
+
+                              <span class="set-summary-chevron">
+                                <app-icon
+                                  [name]="expandedSetId === set.id ? 'arrow-up-narrow-wide' : 'arrow-down-wide-narrow'"
+                                  sizeClass="h-4 w-4"
+                                />
+                              </span>
+                            </button>
+
+                            <!-- ONLY THE SELECTED SET IS EDITABLE -->
+                            <div *ngIf="expandedSetId === set.id" class="set-editor">
+                              <div class="set-editor-top">
+                                <div class="set-editor-heading">
+                                  <span class="set-editor-number">{{ set.setNumber }}</span>
+                                  <span>{{ 'userWorkoutExerciseManager.set' | translate }}</span>
+                                </div>
+
+                                <label class="set-completed">
+                                  <input
+                                    type="checkbox"
+                                    [(ngModel)]="set.completed"
+                                    class="checkbox-input"
+                                  />
+                                  <span>{{ 'userWorkoutExerciseManager.completed' | translate }}</span>
+                                </label>
+                              </div>
+
+                              <div class="set-editor-grid">
                                 <label class="set-field">
                                   <span>{{ 'userWorkoutExerciseManager.targetReps' | translate }}</span>
                                   <input
@@ -283,27 +250,15 @@
                                     step="0.5"
                                     [(ngModel)]="set.targetWeightKg"
                                     class="form-input set-number-input"
-                                    [placeholder]="'userWorkoutExerciseManager.emptyValue' | translate"
                                   />
                                 </label>
-                              </div>
-                            </section>
 
-                            <section class="set-data-group set-actual-group">
-                              <h4 class="set-group-title">
-                                {{ 'userWorkoutExerciseManager.actualReps' | translate }}
-                                /
-                                {{ 'userWorkoutExerciseManager.actualWeight' | translate }}
-                              </h4>
-
-                              <div class="set-field-grid">
                                 <label class="set-field">
                                   <span>{{ 'userWorkoutExerciseManager.actualReps' | translate }}</span>
                                   <input
                                     type="number"
                                     [(ngModel)]="set.actualRepetitions"
                                     class="form-input set-number-input"
-                                    [placeholder]="'userWorkoutExerciseManager.emptyValue' | translate"
                                   />
                                 </label>
 
@@ -314,56 +269,50 @@
                                     step="0.5"
                                     [(ngModel)]="set.actualWeightKg"
                                     class="form-input set-number-input"
-                                    [placeholder]="'userWorkoutExerciseManager.emptyValue' | translate"
                                   />
                                 </label>
                               </div>
-                            </section>
 
-                            <label class="set-field set-notes-field">
-                              <span>{{ 'userWorkoutExerciseManager.notes' | translate }}</span>
-                              <input
-                                type="text"
-                                [(ngModel)]="set.notes"
-                                class="form-input"
-                                [placeholder]="'userWorkoutExerciseManager.notes' | translate"
-                              />
-                            </label>
-                          </div>
+                              <label class="set-notes-field">
+                                <span>{{ 'userWorkoutExerciseManager.notes' | translate }}</span>
+                                <input
+                                  type="text"
+                                  [(ngModel)]="set.notes"
+                                  class="form-input"
+                                  [placeholder]="'userWorkoutExerciseManager.notes' | translate"
+                                />
+                              </label>
 
-                          <div class="set-card-actions">
-                            <button
-                              type="button"
-                              (click)="updateSet(set)"
-                              class="inline-flex min-h-10 items-center justify-center rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-primary-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-primary-200/50 active:scale-[0.98]"
-                            >
-                              {{ 'userWorkoutExerciseManager.save' | translate }}
-                            </button>
+                              <div class="set-editor-actions">
+                                <button
+                                  type="button"
+                                  class="set-save-button"
+                                  (click)="updateSet(set)"
+                                >
+                                  {{ 'userWorkoutExerciseManager.save' | translate }}
+                                </button>
 
-                            <button
-                              type="button"
-                              (click)="deleteSet(set)"
-                              class="inline-flex min-h-10 items-center justify-center rounded-xl bg-delete-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-150 hover:bg-delete-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-delete-200/50 active:scale-[0.98]"
-                            >
-                              {{ 'userWorkoutExerciseManager.delete' | translate }}
-                            </button>
-                          </div>
-                        </article>
+                                <button
+                                  type="button"
+                                  class="set-delete-button"
+                                  (click)="deleteSet(set)"
+                                >
+                                  {{ 'userWorkoutExerciseManager.delete' | translate }}
+                                </button>
+                              </div>
+                            </div>
+                          </article>
+                        </div>
+
+                        <app-message
+                          *ngIf="!selectedSets.length"
+                          [message]="'userWorkoutExerciseManager.noSets'"
+                          type="info"
+                        ></app-message>
                       </div>
-
-                      <!-- NO SETS -->
-
-                      <app-message
-                        *ngIf="!selectedSets.length"
-                        [message]="
-                            'userWorkoutExerciseManager.noSets'"
-                        type="info"
-                      ></app-message>
-
-                    </div>
-                  </td>
-                </tr>
-              </ng-container>
+                    </td>
+                  </tr>
+                </ng-container>
               </tbody>
             </table>
           </div>
@@ -372,14 +321,11 @@
     </div>
   </div>
 
-  <!-- NO DATA -->
-
   <app-message
     *ngIf="userProgramData && !userProgramData.length"
     [message]="'userWorkoutExerciseManager.noData'"
     type="info"
   ></app-message>
-
 </div>
 
 <app-confirm-dialog
