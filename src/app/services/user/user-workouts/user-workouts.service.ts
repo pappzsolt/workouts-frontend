@@ -4,6 +4,7 @@ import type { ScheduledWorkoutRecord } from '../../../models/scheduled-workout/s
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
+import { LanguageService } from '../../shared/language.service';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
 import type { UserWorkoutOccurrence } from '../../../models/user-workout-occurrence.model';
@@ -15,12 +16,20 @@ import { ApiResponse } from '../../../models/backend-dto/common/api-response';
 })
 export class UserWorkoutsService {
   private readonly http = inject(HttpClient);
+  private readonly languageService = inject(LanguageService);
   private readonly apiUrl = API_ENDPOINTS.workouts;
 
   /** Backend hívás – Workouts by program */
   getWorkoutsByProgram(programId: number): Observable<UserWorkoutOccurrence[]> {
     return this.http
-      .get<ApiResponse<RawWorkoutRecord[]>>(API_ENDPOINTS.workoutsByProgram(programId))
+      .get<ApiResponse<RawWorkoutRecord[]>>(
+        API_ENDPOINTS.workoutsByProgram(programId),
+        {
+          params: {
+            language: this.languageService.getCurrentLanguage(),
+          },
+        },
+      )
       .pipe(
         map((response) =>
           (response.data ?? []).map((item) => ({
@@ -67,6 +76,11 @@ export class UserWorkoutsService {
     return this.http
        .get<ApiResponse<ScheduledWorkoutRecord[]>>(
         API_ENDPOINTS.scheduledUserWorkouts,
+        {
+          params: {
+            language: this.languageService.getCurrentLanguage(),
+          },
+        },
       )
       .pipe(
         map((response) =>

@@ -107,8 +107,13 @@ export class CoachWorkoutsService {
    * GET /api/workouts/my-workouts
    */
   getMyWorkouts(): Observable<ApiResponse<Workout[]>> {
+    const params = new HttpParams().set(
+      'language',
+      this.languageService.getCurrentLanguage(),
+    );
+
     return this.http
-      .get<ApiResponse<BackendWorkoutDto[]>>(API_ENDPOINTS.myWorkouts)
+      .get<ApiResponse<BackendWorkoutDto[]>>(API_ENDPOINTS.myWorkouts, { params })
       .pipe(
         map((response) => ({
           ...response,
@@ -122,10 +127,20 @@ export class CoachWorkoutsService {
    *
    * GET /api/workouts/my-workouts/unique
    */
-  getUniqueMyWorkouts(): Observable<Workout[]> {
+  getUniqueMyWorkouts(): Observable<ApiResponse<Workout[]>> {
+    const params = new HttpParams().set(
+      'language',
+      this.languageService.getCurrentLanguage(),
+    );
+
     return this.http
-      .get<BackendWorkoutDto[]>(API_ENDPOINTS.uniqueMyWorkouts)
-      .pipe(map((workouts) => workouts.map((workout) => this.toWorkout(workout))));
+      .get<ApiResponse<BackendWorkoutDto[]>>(API_ENDPOINTS.uniqueMyWorkouts, { params })
+      .pipe(
+        map((response) => ({
+          ...response,
+          data: (response.data ?? []).map((workout) => this.toWorkout(workout)),
+        })),
+      );
   }
 
   /**
@@ -134,8 +149,16 @@ export class CoachWorkoutsService {
    * GET /api/exercises/workouts/unique
    */
   getUniqueWorkoutsWithExercises(): Observable<ApiResponse<WorkoutUiDto[]>> {
+    const params = new HttpParams().set(
+      'language',
+      this.languageService.getCurrentLanguage(),
+    );
+
     return this.http
-      .get<ApiResponse<BackendWorkoutDto[]>>(API_ENDPOINTS.uniqueWorkoutsWithExercises)
+      .get<ApiResponse<BackendWorkoutDto[]>>(
+        API_ENDPOINTS.uniqueWorkoutsWithExercises,
+        { params },
+      )
       .pipe(
         map((response) => ({
           ...response,

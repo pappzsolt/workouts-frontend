@@ -285,7 +285,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
    * A backend ugyanazt a /set-completed endpointot
    * használja az összes set adat mentésére.
    */
-  saveSetDetails(set: UserWorkoutExerciseSetDto): void {
+  saveSetDetails(set: UserWorkoutExerciseSetDto, showSuccessMessage = true): void {
     if (!this.workoutExercise) {
       return;
     }
@@ -317,8 +317,11 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.updateExerciseDone();
-          this.message = 'userExerciseDetail.saveSuccess';
-          this.messageType = 'success';
+
+          if (showSuccessMessage) {
+            this.message = 'userExerciseDetail.saveSuccess';
+            this.messageType = 'success';
+          }
         },
 
         error: (error: HttpErrorResponse) => {
@@ -333,6 +336,17 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
     if (!sets?.length || index < 0 || index >= sets.length) {
       return;
+    }
+
+    // Lapozáskor is mentsük el az aktuális set módosított adatait.
+    // A blur mentés mellett ez biztosítja azt is, hogy a következő/előző
+    // setre váltáskor ne vesszen el az ismétlés, súly vagy megjegyzés.
+    if (index !== this.currentSetIndex) {
+      const currentSet = sets[this.currentSetIndex];
+
+      if (currentSet) {
+        this.saveSetDetails(currentSet, false);
+      }
     }
 
     this.currentSetIndex = index;

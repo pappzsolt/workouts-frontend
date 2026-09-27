@@ -20,53 +20,17 @@ export class CoachProgramService {
   private readonly languageService = inject(LanguageService);
 
   /**
-   * Bejelentkezett coach programjai.
-   *
-   * Az API-határon a backend DTO-t használjuk, majd explicit UI modellé alakítjuk.
-   */
-  getProgramsForLoggedInCoach(): Observable<ApiResponse<CoachProgram[]>> {
-    return this.http
-      .get<ApiResponse<GetProgramsForLoggedInCoachDto[]>>(
-        API_ENDPOINTS.coachProgramsList,
-      )
-      .pipe(
-        map((response) => ({
-          success: response.success,
-          message: response.message,
-          data: response.data
-            ? response.data
-                .filter(
-                  (
-                    program,
-                  ): program is GetProgramsForLoggedInCoachDto & {
-                    programId: number;
-                    programName: string;
-                  } =>
-                    program.programId != null &&
-                    program.programName != null,
-                )
-                .map((program) => ({
-                  programId: program.programId,
-                  programName: program.programName,
-                  programDescription: program.programDescription ?? undefined,
-                  startDate: program.startDate,
-                  endDate: program.endDate,
-                  durationDays: program.durationDays ?? undefined,
-                  difficultyLevel: program.difficultyLevel ?? undefined,
-                  workoutCount: program.workoutCount,
-                  workouts: [],
-                }))
-            : null,
-        })),
-      );
-  }
-
-  /**
    * Összes program.
    */
   getAllPrograms(): Observable<ApiResponse<BackendProgramDto[]>> {
+    const params = new HttpParams().set(
+      'language',
+      this.languageService.getCurrentLanguage(),
+    );
+
     return this.http.get<ApiResponse<BackendProgramDto[]>>(
       API_ENDPOINTS.allProgramsList,
+      { params },
     );
   }
 
@@ -76,8 +40,14 @@ export class CoachProgramService {
    * Az endpoint backend DTO szerződését közvetlenül adja vissza.
    */
   getProgramById(id: number): Observable<ApiResponse<BackendProgramDto>> {
+    const params = new HttpParams().set(
+      'language',
+      this.languageService.getCurrentLanguage(),
+    );
+
     return this.http.get<ApiResponse<BackendProgramDto>>(
       API_ENDPOINTS.programById(id),
+      { params },
     );
   }
 

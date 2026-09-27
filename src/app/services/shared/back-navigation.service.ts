@@ -1,14 +1,16 @@
 import type { NavigationHistoryEntry } from '../../models/common/navigation-history-entry.model';
-import { Injectable, inject } from '@angular/core';
+import { DestroyRef, Injectable, inject } from '@angular/core';
 import { LoggerService } from '../logger.service';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BackNavigationService {
   private readonly logger = inject(LoggerService);
+  private readonly destroyRef = inject(DestroyRef);
 
   private navigationHistory: NavigationHistoryEntry[] = [];
   private isBackNavigation = false;
@@ -31,7 +33,10 @@ export class BackNavigationService {
     this.logHistory('Inicializálás után');
 
     this.router.events
-      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe((event) => {
         const currentUrl = event.urlAfterRedirects;
 

@@ -105,7 +105,6 @@ export const API_ENDPOINTS = {
   // PROGRAM ENDPOINTS
   // ============================================================
 
-  coachProgramsList: `${environment.apiUrl}/programs/coach/programs`,
   allProgramsList: `${environment.apiUrl}/programs/all`,
   programById: (id: number) => `${environment.apiUrl}/programs/${id}`,
   coachProgramDelete: (id: number) => `${environment.apiUrl}/programs/coach/${id}`,
@@ -120,7 +119,6 @@ export const API_ENDPOINTS = {
 
   exercisesForWorkouts: `${environment.apiUrl}/exercises/workouts`,
   exerciseForWorkout: (workoutId: number) => `${environment.apiUrl}/exercises/workout/${workoutId}`,
-  exerciseDone: `${environment.apiUrl}/exercises/done`,
   exerciseAdd: `${environment.apiUrl}/exercises/add`,
   exerciseUpdate: `${environment.apiUrl}/exercises/update`,
   exerciseDelete: (exerciseId: number) => `${environment.apiUrl}/exercises/delete/${exerciseId}`,
@@ -172,10 +170,6 @@ export const API_ENDPOINTS = {
 
   userWorkoutExerciseByWorkout: (userWorkoutId: number) =>
     `${environment.apiUrl}/user-workout-exercises/workout/${userWorkoutId}`,
-  userWorkoutExerciseCompleted: (id: number) =>
-    `${environment.apiUrl}/user-workout-exercises/${id}/completed`,
-  userWorkoutExerciseDetails: (id: number) =>
-    `${environment.apiUrl}/user-workout-exercises/${id}/details`,
   userWorkoutExercisesByUserProgram: (userId: number, programId: number) =>
     `${environment.apiUrl}/user-workout-exercises/user-program/${userId}/${programId}`,
   rescheduleUserWorkout: `${environment.apiUrl}/user-workout-exercises/reschedule-user-workout`,

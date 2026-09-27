@@ -10,12 +10,14 @@ import type { PageResponse } from '../../models/backend-dto/common/page-response
 import { UserWorkoutExerciseDto } from '../../models/user-workout-exercise.dto';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
+import { LanguageService } from '../shared/language.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class WorkoutExercisesManagerService {
   private readonly http = inject(HttpClient);
+  private readonly languageService = inject(LanguageService);
 
   private readonly baseUrl = API_ENDPOINTS.userWorkoutExercises;
 
@@ -26,34 +28,15 @@ export class WorkoutExercisesManagerService {
    */
   getExercisesForUserWorkout(userWorkoutId: number): Observable<UserWorkoutExerciseDto[]> {
     return this.http
-      .get<ApiResponse<UserWorkoutExerciseDto[]>>(API_ENDPOINTS.userWorkoutExerciseByWorkout(userWorkoutId))
+      .get<ApiResponse<UserWorkoutExerciseDto[]>>(
+        API_ENDPOINTS.userWorkoutExerciseByWorkout(userWorkoutId),
+        {
+          params: {
+            language: this.languageService.getCurrentLanguage(),
+          },
+        },
+      )
       .pipe(map((response: ApiResponse<UserWorkoutExerciseDto[]>) => response.data ?? []));
-  }
-
-  /**
-   * Completed mező frissítése.
-   */
-  updateCompleted(id: number, completed: boolean): Observable<void> {
-    const params = new HttpParams().set('completed', completed);
-
-    return this.http.patch<void>(API_ENDPOINTS.userWorkoutExerciseCompleted(id), null, { params });
-  }
-
-  /**
-   * Részletek frissítése.
-   */
-  updateDetails(id: number, setsDone: number, feedback?: string, notes?: string): Observable<void> {
-    let params = new HttpParams().set('setsDone', setsDone);
-
-    if (feedback != null) {
-      params = params.set('feedback', feedback);
-    }
-
-    if (notes != null) {
-      params = params.set('notes', notes);
-    }
-
-    return this.http.patch<void>(API_ENDPOINTS.userWorkoutExerciseDetails(id), null, { params });
   }
 
   /**
@@ -84,7 +67,14 @@ export class WorkoutExercisesManagerService {
    * Teljes program + workout + exercise + user adatok lekérése.
    */
   getUserProgramWithExercises(userId: number, programId: number): Observable<ApiResponse<UserProgramExerciseRow[]>> {
-    return this.http.get<ApiResponse<UserProgramExerciseRow[]>>(API_ENDPOINTS.userWorkoutExercisesByUserProgram(userId, programId));
+    return this.http.get<ApiResponse<UserProgramExerciseRow[]>>(
+      API_ENDPOINTS.userWorkoutExercisesByUserProgram(userId, programId),
+      {
+        params: {
+          language: this.languageService.getCurrentLanguage(),
+        },
+      },
+    );
   }
 
   /**
@@ -106,7 +96,14 @@ export class WorkoutExercisesManagerService {
    */
   getScheduledWorkouts(): Observable<ApiResponse<ScheduledWorkout[]>> {
     return this.http
-      .get<ApiResponse<ScheduledWorkoutRecord[]>>(API_ENDPOINTS.scheduledUserWorkouts)
+      .get<ApiResponse<ScheduledWorkoutRecord[]>>(
+        API_ENDPOINTS.scheduledUserWorkouts,
+        {
+          params: {
+            language: this.languageService.getCurrentLanguage(),
+          },
+        },
+      )
       .pipe(
         map((response) => ({
           ...response,
@@ -169,7 +166,11 @@ export class WorkoutExercisesManagerService {
     page: number = 0,
     size: number = 6,
   ): Observable<ApiResponse<PageResponse<ScheduledWorkoutRecord>>> {
-    const params = new HttpParams().set('search', search).set('page', page).set('size', size);
+    const params = new HttpParams()
+      .set('language', this.languageService.getCurrentLanguage())
+      .set('search', search)
+      .set('page', page)
+      .set('size', size);
 
     return this.http.get<ApiResponse<PageResponse<ScheduledWorkoutRecord>>>(API_ENDPOINTS.scheduledUserWorkoutsSearch, { params });
   }

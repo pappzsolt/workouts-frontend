@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
@@ -8,19 +8,29 @@ import type { GetProgramsForLoggedInCoachDto } from '../../../models/backend-dto
 import type { CoachProgram } from '../../../models/coach-program.model';
 
 import { ApiResponse } from '../../../models/backend-dto/common/api-response';
+import { LanguageService } from '../../shared/language.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CoachProgramSelectService {
   private readonly http = inject(HttpClient);
+  private readonly languageService = inject(LanguageService);
 
   /**
    * Lekéri a bejelentkezett coach programjait.
    */
   getMyPrograms(): Observable<ApiResponse<CoachProgram[]>> {
+    const params = new HttpParams().set(
+      'language',
+      this.languageService.getCurrentLanguage(),
+    );
+
     return this.http
-      .get<ApiResponse<GetProgramsForLoggedInCoachDto[]>>(API_ENDPOINTS.coachPrograms)
+      .get<ApiResponse<GetProgramsForLoggedInCoachDto[]>>(
+        API_ENDPOINTS.coachPrograms,
+        { params },
+      )
       .pipe(
         map((response) => ({
           success: response.success,

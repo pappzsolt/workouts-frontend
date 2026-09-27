@@ -3,7 +3,7 @@ import { LoggerService } from '../../../../services/logger.service';
 
 import { Subject, skip, takeUntil } from 'rxjs';
 
-import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
+import { CoachProgramSelectService } from '../../../../services/coach/coach-program-select/coach-program-select.service';
 import { LanguageService } from '../../../../services/shared/language.service';
 
 import { CoachProgram } from '../../../../models/coach-program.model';
@@ -22,7 +22,7 @@ export class CoachProgramBoardComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
-  private programService = inject(CoachProgramService);
+  private programService = inject(CoachProgramSelectService);
 
   private languageService = inject(LanguageService);
 
@@ -102,8 +102,8 @@ export class CoachProgramBoardComponent implements OnInit, OnDestroy {
 
     this.destroy$.complete();
   }
-  trackByProgram(index: number, program: { id?: number }): number {
-    return program.id ?? index;
+  trackByProgram(index: number, program: CoachProgram): number {
+    return program.programId ?? index;
   }
 
 }

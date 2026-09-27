@@ -83,8 +83,16 @@ export class ExerciseService {
   // ==========================================================
 
   getWorkoutsWithExercises(): Observable<ApiResponse<WorkoutUiDto[]>> {
+    const params = new HttpParams().set(
+      'language',
+      this.languageService.getCurrentLanguage(),
+    );
+
     return this.http
-      .get<ApiResponse<BackendWorkoutDto[]>>(API_ENDPOINTS.exercisesForWorkouts)
+      .get<ApiResponse<BackendWorkoutDto[]>>(
+        API_ENDPOINTS.exercisesForWorkouts,
+        { params },
+      )
       .pipe(
         map((response) => ({
           ...response,
@@ -100,8 +108,16 @@ export class ExerciseService {
   // ==========================================================
 
   getWorkoutExercises(workoutId: number): Observable<WorkoutUiDto> {
+    const params = new HttpParams().set(
+      'language',
+      this.languageService.getCurrentLanguage(),
+    );
+
     return this.http
-      .get<ApiResponse<BackendWorkoutDto>>(API_ENDPOINTS.exerciseForWorkout(workoutId))
+      .get<ApiResponse<BackendWorkoutDto>>(
+        API_ENDPOINTS.exerciseForWorkout(workoutId),
+        { params },
+      )
       .pipe(
         map((response) => {
           if (response.data == null) {
@@ -110,22 +126,6 @@ export class ExerciseService {
           return this.toWorkoutUiDto(response.data);
         }),
       );
-  }
-
-  // ==========================================================
-  // WORKOUT EXERCISE DONE
-  // ==========================================================
-
-  updateWorkoutExerciseDone(
-    workoutId: number,
-    exerciseId: number,
-    done: boolean,
-  ): Observable<string> {
-    return this.http.patch<string>(API_ENDPOINTS.exerciseDone, {
-      workoutId,
-      exerciseId,
-      done,
-    });
   }
 
   // ==========================================================

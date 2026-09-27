@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
@@ -7,19 +7,37 @@ import { API_ENDPOINTS } from '../../../api-endpoints';
 import type { ProgramDto } from '../../../models/backend-dto/programs/program-dto';
 import type { UserProgramDto } from '../../../models/backend-dto/programs/user-program-dto';
 import { ApiResponse } from '../../../models/backend-dto/common/api-response';
+import { LanguageService } from '../../shared/language.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AssignProgramService {
   private http = inject(HttpClient);
+  private languageService = inject(LanguageService);
 
   getAllPrograms(): Observable<ApiResponse<ProgramDto[]>> {
-    return this.http.get<ApiResponse<ProgramDto[]>>(API_ENDPOINTS.allPrograms);
+    const params = new HttpParams().set(
+      'language',
+      this.languageService.getCurrentLanguage(),
+    );
+
+    return this.http.get<ApiResponse<ProgramDto[]>>(
+      API_ENDPOINTS.allPrograms,
+      { params },
+    );
   }
 
   getMyAssignedPrograms(): Observable<ApiResponse<UserProgramDto[]>> {
-    return this.http.get<ApiResponse<UserProgramDto[]>>(API_ENDPOINTS.assignedPrograms);
+    const params = new HttpParams().set(
+      'language',
+      this.languageService.getCurrentLanguage(),
+    );
+
+    return this.http.get<ApiResponse<UserProgramDto[]>>(
+      API_ENDPOINTS.assignedPrograms,
+      { params },
+    );
   }
 
   getAssignedUserIds(programId: number): Observable<ApiResponse<number[]>> {

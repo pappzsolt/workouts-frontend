@@ -8,16 +8,23 @@ import { ApiResponse } from '../../../models/backend-dto/common/api-response';
 import type { UserProgramDto } from '../../../models/backend-dto/programs/user-program-dto';
 import type { ProgramProgressDto } from '../../../models/backend-dto/programs/program-progress-dto';
 import { UserProgram, ProgramProgress } from '../../../models/program.model';
+import { LanguageService } from '../../shared/language.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserMyProgramsService {
   private readonly http = inject(HttpClient);
+  private readonly languageService = inject(LanguageService);
   private readonly apiUrl = API_ENDPOINTS.assignedPrograms;
 
   getPrograms(): Observable<UserProgram[]> {
-    return this.http.get<ApiResponse<UserProgramDto[]>>(this.apiUrl).pipe(
+    const params = new HttpParams().set(
+      'language',
+      this.languageService.getCurrentLanguage(),
+    );
+
+    return this.http.get<ApiResponse<UserProgramDto[]>>(this.apiUrl, { params }).pipe(
       map((res) => {
         if (!res?.data) {
           return [];
