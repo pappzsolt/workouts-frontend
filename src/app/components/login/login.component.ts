@@ -1,6 +1,7 @@
 import type { LoginResponse } from '../../models/auth-model';
 
-import { Component, inject } from '@angular/core';
+import { Component, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LoggerService } from '../../services/logger.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth/auth.service';
@@ -19,6 +20,8 @@ import { LanguageSelectorComponent } from '../shared/language/language-selector.
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly logger = inject(LoggerService);
 
   loginForm: FormGroup;
@@ -58,7 +61,7 @@ export class LoginComponent {
           return of(null);
         }),
       )
-      .subscribe((res: LoginResponse | null) => {
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe((res: LoginResponse | null) => {
         this.loading = false;
 
         if (res) {

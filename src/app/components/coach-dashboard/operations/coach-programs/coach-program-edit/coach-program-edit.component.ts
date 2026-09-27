@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LoggerService } from '../../../../../services/logger.service';
 import { ActivatedRoute } from '@angular/router';
 
@@ -17,6 +18,8 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   styleUrls: ['./coach-program-edit.component.css'],
 })
 export class CoachProgramEditComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly logger = inject(LoggerService);
 
   program: Program = {
@@ -45,7 +48,7 @@ export class CoachProgramEditComponent implements OnInit {
       return;
     }
 
-    this.programService.getProgramById(id).subscribe({
+    this.programService.getProgramById(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         if (res?.success && res.data) {
           const dto = res.data;
@@ -114,7 +117,7 @@ export class CoachProgramEditComponent implements OnInit {
       orderIndex: null,
     };
 
-    this.programService.updateProgram(this.program.id, request).subscribe({
+    this.programService.updateProgram(this.program.id, request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         if (res.success) {
           this.setMessage('coachProgramEdit.saveSuccess', 'success');

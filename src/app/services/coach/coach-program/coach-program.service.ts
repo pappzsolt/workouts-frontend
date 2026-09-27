@@ -29,7 +29,7 @@ export class CoachProgramService {
     );
 
     return this.http.get<ApiResponse<BackendProgramDto[]>>(
-      API_ENDPOINTS.allProgramsList,
+      API_ENDPOINTS.allPrograms,
       { params },
     );
   }

@@ -292,7 +292,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
    * használja az összes set adat mentésére.
    */
   saveSetDetails(set: UserWorkoutExerciseSetDto, showSuccessMessage = true): void {
-    this.createSetSaveRequest(set, showSuccessMessage).subscribe();
+    this.createSetSaveRequest(set, showSuccessMessage).pipe(takeUntil(this.destroy$)).subscribe();
   }
 
   private createSetSaveRequest(

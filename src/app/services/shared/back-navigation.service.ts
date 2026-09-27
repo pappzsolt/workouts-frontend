@@ -30,8 +30,6 @@ export class BackNavigationService {
 
     }
 
-    this.logHistory('Inicializálás után');
-
     this.router.events
       .pipe(
         filter((event): event is NavigationEnd => event instanceof NavigationEnd),
@@ -45,7 +43,6 @@ export class BackNavigationService {
         if (this.isBackNavigation) {
 
           this.isBackNavigation = false;
-          this.logHistory('Back navigáció után');
           return;
         }
 
@@ -55,8 +52,6 @@ export class BackNavigationService {
         if (lastEntry?.url === currentUrl) {
 
           lastEntry.state = this.getCurrentState();
-
-          this.logHistory('Azonos URL state-frissítés után');
           return;
         }
 
@@ -66,9 +61,6 @@ export class BackNavigationService {
         };
 
         this.navigationHistory.push(entry);
-
-
-        this.logHistory('Navigáció után');
       });
   }
 
@@ -78,9 +70,6 @@ export class BackNavigationService {
    */
   back(fallbackUrl: string = '/'): void {
     const currentUrl = this.router.url;
-
-
-    this.logHistory('Back előtt');
 
     const lastEntry = this.navigationHistory[this.navigationHistory.length - 1];
 
@@ -110,8 +99,6 @@ export class BackNavigationService {
         state: previousEntry.state,
       });
 
-      this.logHistory('Back navigáció indítása után');
-
       return;
     }
 
@@ -121,8 +108,6 @@ export class BackNavigationService {
     this.isBackNavigation = true;
 
     this.router.navigateByUrl(fallbackUrl);
-
-    this.logHistory('Fallback navigáció indítása után');
 
   }
 
@@ -148,11 +133,5 @@ export class BackNavigationService {
     delete state['navigationId'];
 
     return state;
-  }
-
-  /**
-   * Navigációs előzmények naplózása.
-   */
-  private logHistory(context: string): void {
   }
 }

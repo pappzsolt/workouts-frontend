@@ -1,5 +1,6 @@
 import type { UserNameId } from '../../../../models/common/user-name-id.model';
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { UserSelectComponent } from '../../../../components/shared/user/user-select.component';
 import { CoachSelectComponent } from '../../../shared/coach/coach-select.component';
@@ -35,6 +36,8 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   templateUrl: './user-edit.component.html',
 })
 export class UserEditComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   // =============================
   // ADATOK
   // =============================
@@ -106,7 +109,7 @@ export class UserEditComponent implements OnInit {
   // =============================
 
   private loadCoaches(): void {
-    this.userService.getCoaches().subscribe({
+    this.userService.getCoaches().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (coaches) => {
         this.coaches = coaches;
 
@@ -124,7 +127,7 @@ export class UserEditComponent implements OnInit {
   // =============================
 
   private loadRoles(): void {
-    this.roleService.getRoles().subscribe({
+    this.roleService.getRoles().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (roles) => {
         this.roles = roles;
 
@@ -142,7 +145,7 @@ export class UserEditComponent implements OnInit {
   // =============================
 
   private loadUsers(): void {
-    this.userService.getUsers().subscribe({
+    this.userService.getUsers().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (users) => {
         this.users = users;
 
@@ -243,7 +246,7 @@ export class UserEditComponent implements OnInit {
 
       const rawUser = this.createRawUser();
 
-      this.userService.updateUser(rawUser, this.selectedUser.roleIds || []).subscribe({
+      this.userService.updateUser(rawUser, this.selectedUser.roleIds || []).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           this.showSuccess('adminUserEdit.updateSuccess');
         },

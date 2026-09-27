@@ -1,5 +1,6 @@
 import type { CoachNameId } from '../../../models/common/coach-name-id.model';
-import { Component, EventEmitter, Output, Input, OnInit, inject } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LoggerService } from '../../../services/logger.service';
 
 import { CoachNameIdService } from '../../../services/coach/coach-name-id.service';
@@ -34,6 +35,8 @@ import { SHARED_IMPORTS } from '../shared-imports';
   `,
 })
 export class CoachSelectComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly logger = inject(LoggerService);
 
   coaches: CoachNameId[] = [];
@@ -50,7 +53,7 @@ export class CoachSelectComponent implements OnInit {
   constructor(private coachService: CoachNameIdService) {}
 
   ngOnInit(): void {
-    this.coachService.getAllCoaches().subscribe({
+    this.coachService.getAllCoaches().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (coaches) => {
 
         this.coaches = coaches;

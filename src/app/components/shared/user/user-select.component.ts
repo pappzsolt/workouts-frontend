@@ -1,5 +1,6 @@
 import type { UserNameId } from '../../../models/common/user-name-id.model';
-import { Component, OnInit, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LoggerService } from '../../../services/logger.service';
 
 import { UserNameIdService } from '../../../services/user/user-name-id.service';
@@ -34,6 +35,8 @@ import { SHARED_IMPORTS } from '../shared-imports';
   styleUrls: ['./user-select.component.css'],
 })
 export class UserSelectComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly logger = inject(LoggerService);
 
   users: UserNameId[] = [];
@@ -53,7 +56,7 @@ export class UserSelectComponent implements OnInit {
   constructor(private userService: UserNameIdService) {}
 
   ngOnInit(): void {
-    this.userService.getAllUsers().subscribe({
+    this.userService.getAllUsers().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         this.users = response.data ?? [];
       },

@@ -1,4 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LoggerService } from '../../../../services/logger.service';
 
 import { AuthService } from '../../../../services/auth/auth.service';
@@ -18,6 +19,8 @@ import type { CoachProfile } from '../../../../models/coach-profile.model';
   styleUrls: ['./coach-profile.component.css'],
 })
 export class CoachProfileComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly logger = inject(LoggerService);
 
   private authService = inject(AuthService);
@@ -69,7 +72,7 @@ export class CoachProfileComponent implements OnInit {
       return;
     }
 
-    this.coachProfileService.getMemberById(userId).subscribe({
+    this.coachProfileService.getMemberById(userId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (profile) => {
         this.profile = {
           id: profile.id,
@@ -117,7 +120,7 @@ export class CoachProfileComponent implements OnInit {
       passwordHash: this.profile.password_hash,
     };
 
-    this.coachProfileService.saveCoachProfile(payload).subscribe({
+    this.coachProfileService.saveCoachProfile(payload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.profile.password_hash = '';
 

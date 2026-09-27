@@ -31,10 +31,6 @@ export const API_ENDPOINTS = {
   // PROGRAMS
   // ============================================================
 
-  programs: `${environment.apiUrl}/programs`,
-
-  updateProgram: `${environment.apiUrl}/user-programs/update`,
-
   allPrograms: `${environment.apiUrl}/programs/all`,
 
   assignedPrograms: `${environment.apiUrl}/programs/my/assigned-programs`,
@@ -44,7 +40,6 @@ export const API_ENDPOINTS = {
   createProgram: `${environment.apiUrl}/user-programs/create`,
 
   assignProgram: `${environment.apiUrl}/programs/assign`,
-  assignedProgramUsers: `${environment.apiUrl}/programs`,
 
   // ============================================================
   // EXERCISES
@@ -105,7 +100,6 @@ export const API_ENDPOINTS = {
   // PROGRAM ENDPOINTS
   // ============================================================
 
-  allProgramsList: `${environment.apiUrl}/programs/all`,
   programById: (id: number) => `${environment.apiUrl}/programs/${id}`,
   coachProgramDelete: (id: number) => `${environment.apiUrl}/programs/coach/${id}`,
   coachProgramSearch: `${environment.apiUrl}/programs/coach/search`,
@@ -175,9 +169,6 @@ export const API_ENDPOINTS = {
   rescheduleUserWorkout: `${environment.apiUrl}/user-workout-exercises/reschedule-user-workout`,
   scheduledUserWorkouts: `${environment.apiUrl}/user-workout-exercises/scheduled-workouts`,
   scheduledUserWorkoutsSearch: `${environment.apiUrl}/user-workout-exercises/scheduled-workouts/search`,
-  createUserWorkoutWithExercisesEndpoint:
-    `${environment.apiUrl}/user-workout-exercises/create-with-exercises`,
-
   // ============================================================
   // USER WORKOUT EXERCISE SET ENDPOINTS
   // ============================================================
@@ -196,5 +187,4 @@ export const API_ENDPOINTS = {
   // GENERAL API
   // ============================================================
   userProgramStatistics: `${environment.apiUrl}/user/program-statistics`,
-  api: environment.apiUrl,
 };

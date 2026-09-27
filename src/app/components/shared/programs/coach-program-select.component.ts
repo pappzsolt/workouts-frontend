@@ -1,4 +1,5 @@
-import { Component, OnInit, Input, Output, EventEmitter, inject } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { CoachProgramSelectService } from '../../../services/coach/coach-program-select/coach-program-select.service';
 
@@ -13,6 +14,8 @@ import { SHARED_IMPORTS } from '../shared-imports';
   templateUrl: './coach-program-select.component.html',
 })
 export class CoachProgramSelectComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   private readonly programService = inject(CoachProgramSelectService);
 
   programs: CoachProgram[] = [];
@@ -34,7 +37,7 @@ export class CoachProgramSelectComponent implements OnInit {
   loadPrograms(): void {
     this.loading = true;
 
-    this.programService.getMyPrograms().subscribe({
+    this.programService.getMyPrograms().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         if (!response.success) {
           this.programs = [];

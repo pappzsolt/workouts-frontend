@@ -1,5 +1,6 @@
 import type { CoachNameId } from '../../../../models/common/coach-name-id.model';
-import { Component } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgForm } from '@angular/forms';
 
 import { UserNewService } from '../../../../services/admin/user-new.service';
@@ -23,6 +24,8 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   styleUrls: ['./user-new.component.css'],
 })
 export class UserNewComponent {
+  private readonly destroyRef = inject(DestroyRef);
+
   user: {
     username: string;
     email: string;
@@ -129,7 +132,7 @@ export class UserNewComponent {
       roleIds: this.user.roleIds.map((role) => role.id),
     };
 
-    this.userNewService.createUser(payload).subscribe({
+    this.userNewService.createUser(payload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res: ApiResponse<void>) => {
         if (res.success) {
           this.showSuccess(res.message || 'adminUserNew.createSuccess');

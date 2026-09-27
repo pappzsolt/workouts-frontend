@@ -67,7 +67,7 @@ export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
     this.message = '';
     this.messageType = '';
 
-    this.statisticsService.getProgramStatistics(language).subscribe({
+    this.statisticsService.getProgramStatistics(language).pipe(takeUntil(this.destroy$)).subscribe({
       next: (response: ApiResponse<ProgramStatistics>) => {
         this.loading = false;
 

@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { AdminListUsersService } from '../../../../services/admin/admin-list-users.service';
 import { User } from '../../../../models/user.model';
@@ -14,6 +15,8 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   styleUrls: ['./admin-list-users.component.css'],
 })
 export class AdminListUsersComponent {
+  private readonly destroyRef = inject(DestroyRef);
+
   users: User[] = [];
 
   message = '';
@@ -32,7 +35,7 @@ export class AdminListUsersComponent {
     this.message = '';
     this.messageType = '';
 
-    this.adminListUsersService.getUsers().subscribe({
+    this.adminListUsersService.getUsers().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (users) => {
         this.users = users;
 

@@ -1,4 +1,5 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Role } from '../../../models/role.model';
 import { RoleService } from '../../../services/roles/role.service';
@@ -40,6 +41,8 @@ import { SHARED_IMPORTS } from '../shared-imports';
   `,
 })
 export class RoleSelectComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   @Input()
   roles: Role[] = [];
 
@@ -55,7 +58,7 @@ export class RoleSelectComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.roles.length) {
-      this.roleService.getRoles().subscribe({
+      this.roleService.getRoles().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (roles) => {
           this.roles = roles;
 

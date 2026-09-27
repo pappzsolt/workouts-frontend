@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { CoachEditService } from '../../../../services/admin/coach-edit.service';
 import { Coach } from '../../../../models/coach.model';
@@ -14,6 +15,8 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   providers: [CoachEditService],
 })
 export class CoachEditComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+
   selectedCoachId: number | null = null;
 
   coaches: Coach[] = [];
@@ -58,7 +61,7 @@ export class CoachEditComponent implements OnInit {
     this.message = '';
     this.messageType = '';
 
-    this.coachService.getCoaches().subscribe({
+    this.coachService.getCoaches().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (coaches) => {
         this.coaches = coaches;
 
@@ -123,7 +126,7 @@ export class CoachEditComponent implements OnInit {
 
     this.selectedCoach.id = this.selectedCoachId;
 
-    this.coachService.updateCoach(this.selectedCoachId, this.selectedCoach).subscribe({
+    this.coachService.updateCoach(this.selectedCoachId, this.selectedCoach).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (updatedCoach) => {
         this.loading = false;
 

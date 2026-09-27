@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NgForm } from '@angular/forms';
 
 import { CoachNewService } from '../../../../services/admin/coach-new.service';
@@ -15,6 +16,8 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   styleUrls: ['./coach-new.component.css'],
 })
 export class CoachNewComponent {
+  private readonly destroyRef = inject(DestroyRef);
+
   coach: CreateCoachRequest = this.createEmptyCoach();
 
   message = '';
@@ -39,7 +42,7 @@ export class CoachNewComponent {
 
     this.clearMessage();
 
-    this.coachNewService.createCoach(this.coach).subscribe({
+    this.coachNewService.createCoach(this.coach).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         this.loading = false;
 

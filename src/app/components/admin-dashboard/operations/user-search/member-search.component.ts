@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { MemberSearchService } from '../../../../services/admin/member-search.service';
 
@@ -16,6 +17,8 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   styleUrls: ['./member-search.component.css'],
 })
 export class MemberSearchComponent {
+  private readonly destroyRef = inject(DestroyRef);
+
   // =============================
   // KERESÉS
   // =============================
@@ -63,7 +66,7 @@ export class MemberSearchComponent {
 
     this.loading = true;
 
-    this.memberSearchService.searchMembers(this.keyword).subscribe({
+    this.memberSearchService.searchMembers(this.keyword).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         this.loading = false;
 
