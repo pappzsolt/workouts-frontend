@@ -815,6 +815,10 @@
   "programWorkouts": {
     "programNotSelected": "No program selected.",
     "noWorkoutsSelected": "No workouts selected.",
-    "assignSuccess": "Workouts assigned successfully."
+    "assignSuccess": "Workouts assigned successfully.",
+    "availableWorkouts": "Available workouts",
+    "programs": "Programs",
+    "save": "Save",
+    "selectedWorkouts": "Selected workouts"
   }
 }

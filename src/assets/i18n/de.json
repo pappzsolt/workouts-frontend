@@ -815,6 +815,10 @@
   "programWorkouts": {
     "programNotSelected": "Kein Programm ausgewählt.",
     "noWorkoutsSelected": "Keine Workouts ausgewählt.",
-    "assignSuccess": "Workouts erfolgreich zugewiesen."
+    "assignSuccess": "Workouts erfolgreich zugewiesen.",
+    "availableWorkouts": "Verfügbare Workouts",
+    "programs": "Programme",
+    "save": "Speichern",
+    "selectedWorkouts": "Ausgewählte Workouts"
   }
 }

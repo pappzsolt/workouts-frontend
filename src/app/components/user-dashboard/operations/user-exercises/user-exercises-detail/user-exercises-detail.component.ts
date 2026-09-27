@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
 import { ActivatedRoute } from '@angular/router';
 
-import { Subject, combineLatest, distinctUntilChanged, filter, map, switchMap, takeUntil } from 'rxjs';
+import { Observable, Subject, combineLatest, distinctUntilChanged, filter, finalize, map, shareReplay, switchMap, takeUntil } from 'rxjs';
 
 import { UserExerciseDetailService } from '../../../../../services/user/user-exercises-detail/user-exercises-detail.service';
 import { SidePaginationComponent } from '../../../../../components/shared/components/side-pagination/side-pagination.component';
@@ -42,6 +42,12 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   message = '';
   messageType: 'success' | 'error' | 'info' | '' = '';
   messageParams: Record<string, unknown> = {};
+
+  /**
+   * Egy sethez egyszerre csak egy mentési HTTP kérés futhat.
+   * Így a blur és a lapozás nem indít párhuzamos mentéseket ugyanarra a setre.
+   */
+  private readonly pendingSetSaves = new Map<number, Observable<void>>();
 
   constructor(
     private route: ActivatedRoute,
@@ -286,8 +292,15 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
    * használja az összes set adat mentésére.
    */
   saveSetDetails(set: UserWorkoutExerciseSetDto, showSuccessMessage = true): void {
+    this.createSetSaveRequest(set, showSuccessMessage).subscribe();
+  }
+
+  private createSetSaveRequest(
+    set: UserWorkoutExerciseSetDto,
+    showSuccessMessage = true,
+  ): Observable<void> {
     if (!this.workoutExercise) {
-      return;
+      return new Observable<void>((subscriber) => subscriber.complete());
     }
 
     const exerciseId = this.workoutExercise.exercise.id;
@@ -295,14 +308,19 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     if (exerciseId == null || set.id == null) {
       this.message = 'userExerciseDetail.invalidSet';
       this.messageType = 'error';
-      return;
+      return new Observable<void>((subscriber) => subscriber.complete());
+    }
+
+    const existingSave = this.pendingSetSaves.get(set.id);
+    if (existingSave) {
+      return existingSave;
     }
 
     this.message = '';
     this.messageParams = {};
     this.messageType = '';
 
-    this.exercisesService
+    const request$ = this.exercisesService
       .updateSetCompleted(
         this.userWorkoutId,
         this.programId,
@@ -314,23 +332,33 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
         set.actualWeightKg,
         set.notes,
       )
-      .subscribe({
-        next: () => {
-          this.updateExerciseDone();
+      .pipe(
+        map(() => void 0),
+        finalize(() => this.pendingSetSaves.delete(set.id!)),
+        shareReplay({ bufferSize: 1, refCount: true }),
+      );
 
-          if (showSuccessMessage) {
-            this.message = 'userExerciseDetail.saveSuccess';
-            this.messageType = 'success';
-          }
-        },
+    this.pendingSetSaves.set(set.id, request$);
 
-        error: (error: HttpErrorResponse) => {
-          this.message =
-            this.getBackendErrorMessage(error) ?? 'userExerciseDetail.saveError';
-          this.messageType = 'error';
-        },
-      });
+    request$.subscribe({
+      next: () => {
+        this.updateExerciseDone();
+
+        if (showSuccessMessage) {
+          this.message = 'userExerciseDetail.saveSuccess';
+          this.messageType = 'success';
+        }
+      },
+      error: (error: HttpErrorResponse) => {
+        this.message =
+          this.getBackendErrorMessage(error) ?? 'userExerciseDetail.saveError';
+        this.messageType = 'error';
+      },
+    });
+
+    return request$;
   }
+
   goToSet(index: number): void {
     const sets = this.workoutExercise?.userWorkoutExerciseSets;
 
@@ -338,18 +366,30 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Lapozáskor is mentsük el az aktuális set módosított adatait.
-    // A blur mentés mellett ez biztosítja azt is, hogy a következő/előző
-    // setre váltáskor ne vesszen el az ismétlés, súly vagy megjegyzés.
-    if (index !== this.currentSetIndex) {
-      const currentSet = sets[this.currentSetIndex];
-
-      if (currentSet) {
-        this.saveSetDetails(currentSet, false);
-      }
+    if (index === this.currentSetIndex) {
+      return;
     }
 
-    this.currentSetIndex = index;
+    const currentSet = sets[this.currentSetIndex];
+
+    if (!currentSet) {
+      this.currentSetIndex = index;
+      return;
+    }
+
+    // Lapozáskor megvárjuk az aktuális set mentését.
+    // Ha blur már elindította, ugyanazt a folyamatban lévő requestet használjuk.
+    this.createSetSaveRequest(currentSet, false)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          this.currentSetIndex = index;
+        },
+        error: () => {
+          // Hiba esetén sem veszítjük el a felhasználó navigációját.
+          this.currentSetIndex = index;
+        },
+      });
   }
 
   private getBackendErrorMessage(error: HttpErrorResponse): string | undefined {

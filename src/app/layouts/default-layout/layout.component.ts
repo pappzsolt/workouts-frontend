@@ -4,6 +4,7 @@ import { DynamicMenuComponent } from '../../components/dynamic-menu/dynamic-menu
 import { LanguageSelectorComponent } from '../../components/shared/language/language-selector.component';
 import { AuthService } from '../../services/auth/auth.service';
 import { SHARED_IMPORTS } from '../../components/shared/shared-imports';
+import { APP_VERSION } from '../../config/app-version';
 
 @Component({
   selector: 'app-layout',
@@ -17,6 +18,7 @@ export class LayoutComponent implements OnInit {
   role: string | null = null;
   currentYear: number = new Date().getFullYear();
   currentDate: Date = new Date();
+  readonly appVersion = APP_VERSION;
 
   menuOpen = false; // <-- hamburger menü állapota
 

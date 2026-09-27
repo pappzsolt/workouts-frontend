@@ -134,6 +134,11 @@
   <footer
     class="mt-auto border-t border-surface-200 bg-white px-4 py-4 text-center text-sm text-content-500 shadow-sm"
   >
-    &copy; {{ currentYear }} Fitness App. {{ 'header.copyright' | translate }}
+    <div>
+      &copy; {{ currentYear }} Fitness App. {{ 'header.copyright' | translate }}
+    </div>
+    <div class="mt-1 text-xs text-content-400">
+      v{{ appVersion }}
+    </div>
   </footer>
 </div>

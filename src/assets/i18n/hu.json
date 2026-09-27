@@ -815,6 +815,10 @@
   "programWorkouts": {
     "programNotSelected": "Nincs kiválasztott program.",
     "noWorkoutsSelected": "Nincsenek kiválasztott workoutok.",
-    "assignSuccess": "A workoutok sikeresen hozzárendelve."
+    "assignSuccess": "A workoutok sikeresen hozzárendelve.",
+    "availableWorkouts": "Elérhető edzések",
+    "programs": "Programok",
+    "save": "Mentés",
+    "selectedWorkouts": "Kiválasztott edzések"
   }
 }

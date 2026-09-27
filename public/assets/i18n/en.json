@@ -137,15 +137,7 @@
     "selectedWorkouts": "Selected workouts",
     "availableExercises": "Available exercises",
     "save": "Save to selected workouts and exercises",
-    "savedRelations": "Saved relations",
-    "errors": {
-      "selectWorkout": "Select at least one workout.",
-      "selectExercise": "Select at least one exercise.",
-      "noExercise": "There is no exercise to save.",
-      "assign": "Failed to assign the exercise.",
-      "assignSuccess": "Exercise assigned to the workout successfully.",
-      "batchSummary": "Successful saves: {{successCount}}. Failed saves: {{errorCount}}. {{errors}}"
-    }
+    "savedRelations": "Saved relations"
   },
   "coachExerciseEdit": {
     "title": "Edit Exercise",
@@ -190,8 +182,7 @@
     "sortByName": "Exercise name",
     "noSearchResults": "No exercises match the search.",
     "noExercises": "No exercises found.",
-    "addExercise": "Add new exercise",
-    "loadError": "Failed to load exercises."
+    "addExercise": "Add new exercise"
   },
   "coachWorkouts": {
     "title": "Workouts",
@@ -539,7 +530,7 @@
     "notes": "Notes",
     "save": "Save",
     "loadError": "An error occurred while loading the exercise.",
-    "setUpdated": "The set was successfully updated.",
+    "setUpdated": "Set #{{setNumber}} was successfully updated.",
     "setUpdateError": "An error occurred while updating the set.",
     "saveSuccess": "The set was successfully saved.",
     "saveError": "An error occurred while saving the set.",
@@ -726,8 +717,9 @@
     "orderIndexRequired": "The order index is required.",
     "orderUpdateError": "An error occurred while updating the exercise order.",
     "createUserWorkoutError": "An error occurred while creating the user's workout.",
-    "deleteConfirmTitle": "Confirm deletion",
-    "cancel": "Cancel"
+    "deleteConfirmTitle": "Delete set",
+    "cancel": "Cancel",
+    "deleteSetSuccess": "Set #{{setNumber}} was successfully deleted."
   },
   "assignProgram": {
     "title": "Assign Program",
@@ -820,48 +812,13 @@
     "lastPage": "Last page",
     "pageSize": "Items per page"
   },
-  "memberSearch": {
-    "errors": {
-      "network": "A network error occurred during the search.",
-      "server": "A server error occurred during the search."
-    }
-  },
   "programWorkouts": {
-    "programs": "Programs",
+    "programNotSelected": "No program selected.",
+    "noWorkoutsSelected": "No workouts selected.",
+    "assignSuccess": "Workouts assigned successfully.",
     "availableWorkouts": "Available workouts",
-    "selectedWorkouts": "Selected workouts",
-    "save": "Save to program",
-    "programNotSelected": "Select a program first.",
-    "noWorkoutsSelected": "Select at least one workout.",
-    "unknownError": "An unknown error occurred.",
-    "assignSuccess": "Workout assigned to the program successfully.",
-    "removeSuccess": "Workout removed from the program successfully."
-  },
-  "userMessages": {
-    "required": "This field is required.",
-    "email": "Invalid email address.",
-    "passwordMinLength": "Password must be at least 8 characters long.",
-    "serverError": "A server error occurred. Please try again.",
-    "loadError": "An error occurred while loading users.",
-    "notFound": "No results found.",
-    "notResult": "The search failed.",
-    "userOrPassFailed": "Invalid username or password.",
-    "noUserId": "No logged-in user.",
-    "loadProfileError": "An error occurred while loading the profile.",
-    "saveProfileSuccess": "Profile saved successfully.",
-    "saveProfileNoId": "No valid user ID.",
-    "saveProfileNetworkError": "A network error occurred. Check server availability.",
-    "saveProfileUnknownError": "An unknown error occurred while saving the profile.",
-    "networkError": "A network error occurred. Check your internet connection.",
-    "loadPrograms": "Loading programs...",
-    "loadProgramsError": "An error occurred while loading programs.",
-    "noPrograms": "No programs are currently available.",
-    "programClickError": "An error occurred while selecting the program.",
-    "loadCoachesError": "An error occurred while loading coaches.",
-    "loadRolesError": "An error occurred while loading roles.",
-    "profileLoaded": "Profile loaded successfully.",
-    "updateSuccess": "User updated successfully.",
-    "updateError": "Update failed.",
-    "workoutClickError": "An error occurred while editing the workout."
+    "programs": "Programs",
+    "save": "Save",
+    "selectedWorkouts": "Selected workouts"
   }
 }
