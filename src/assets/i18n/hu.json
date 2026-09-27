@@ -289,7 +289,9 @@
     "newWorkoutNotFound": "Az új edzés nem található.",
     "noWorkoutSelected": "Előbb válassz ki egy edzést.",
     "saveExerciseError": "Nem sikerült menteni a gyakorlatot.",
-    "startDateRequired": "A kezdési dátum megadása kötelező."
+    "startDateRequired": "A kezdési dátum megadása kötelező.",
+    "startDate": "Kezdés dátuma",
+    "endDate": "Befejezés dátuma"
   },
   "coachNewProgram": {
     "createSuccess": "Program sikeresen létrehozva!",
@@ -348,7 +350,13 @@
     "edit": "Szerkesztés",
     "noSearchResults": "Nincs a keresésnek megfelelő program.",
     "empty": "Nincsenek programok.",
-    "createNew": "Új program létrehozása"
+    "createNew": "Új program létrehozása",
+    "delete": "Törlés",
+    "deleteConfirm": "Biztosan törölni szeretnéd ezt a programot? A programhoz kapcsolódó felhasználói adatok is törlésre kerülnek.",
+    "deleteSuccess": "A program sikeresen törölve.",
+    "deleteError": "A program törlése sikertelen.",
+    "startDate": "Kezdés",
+    "endDate": "Befejezés"
   },
   "coachWorkoutEdit": {
     "invalidWorkoutId": "Érvénytelen workout ID.",
@@ -431,7 +439,7 @@
     "startDate": "Kezdés dátuma",
     "endDate": "Befejezés dátuma",
     "createError": "Hiba történt a program létrehozásakor.",
-    "createSuccess": "Program sikeresen létrehozva."
+    "createSuccess": "A program sikeresen létrehozva."
   },
   "coachExercisesBoard": {
     "noExercises": "Nincsenek elérhető exercise-ek.",
@@ -536,7 +544,9 @@
     "duration": "Időtartam",
     "weeks": "hét",
     "days": "Napok",
-    "workouts": "Edzések"
+    "workouts": "Edzések",
+    "startDate": "Kezdés",
+    "endDate": "Befejezés"
   },
   "userProfile": {
     "noUserId": "Nincs bejelentkezett felhasználó!",
@@ -614,7 +624,9 @@
     "noWorkouts": "Nincsenek workoutok ehhez a programhoz.",
     "pendingWorkouts": "Elvégzendő edzések",
     "completedWorkouts": "Elvégzett edzések",
-    "unknownProgram": "Ismeretlen program"
+    "unknownProgram": "Ismeretlen program",
+    "noPendingWorkouts": "Nincs elvégzendő edzés.",
+    "noCompletedWorkouts": "Még nincs elvégzett edzés."
   },
   "coachProgramBoard": {
     "loading": "Betöltés...",

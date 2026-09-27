@@ -108,6 +108,7 @@ export const API_ENDPOINTS = {
   coachProgramsList: `${environment.apiUrl}/programs/coach/programs`,
   allProgramsList: `${environment.apiUrl}/programs/all`,
   programById: (id: number) => `${environment.apiUrl}/programs/${id}`,
+  coachProgramDelete: (id: number) => `${environment.apiUrl}/programs/coach/${id}`,
   coachProgramSearch: `${environment.apiUrl}/programs/coach/search`,
   updateUserProgram: (id: number) => `${environment.apiUrl}/user-programs/update?programId=${id}`,
   programAssignedUsers: (programId: number) =>

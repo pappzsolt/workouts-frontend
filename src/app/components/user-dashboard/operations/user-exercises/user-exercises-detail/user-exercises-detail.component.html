@@ -177,7 +177,7 @@
                   <app-button
                     [variant]="set.completed ? 'save' : 'secondary'"
                     type="button"
-                    [label]="'userExerciseDetail.done'"
+                    [label]="'userExerciseDetail.done' | translate"
                     [lucideIcon]="set.completed ? 'circle-check' : 'circle'"
                     [disabled]="false"
                     (buttonClick)="updateSetCompleted(set, !set.completed)"

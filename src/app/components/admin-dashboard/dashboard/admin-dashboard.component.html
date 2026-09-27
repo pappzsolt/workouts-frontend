@@ -25,28 +25,28 @@
       <app-dashboard-action
         icon="users-three"
         tone="primary"
-        label="adminDashboard.usersList"
+        [label]="'adminDashboard.usersList' | translate"
         (activated)="navigateTo('admin/users')"
       ></app-dashboard-action>
 
       <app-dashboard-action
         icon="magnifying-glass"
         tone="search"
-        label="adminDashboard.userSearch"
+        [label]="'adminDashboard.userSearch' | translate"
         (activated)="navigateTo('admin/users/search')"
       ></app-dashboard-action>
 
       <app-dashboard-action
         icon="user-plus"
         tone="add"
-        label="adminDashboard.newUser"
+        [label]="'adminDashboard.newUser' | translate"
         (activated)="navigateTo('admin/choice-users/new')"
       ></app-dashboard-action>
 
       <app-dashboard-action
         icon="pencil-simple"
         tone="edit"
-        label="adminDashboard.editUser"
+        [label]="'adminDashboard.editUser' | translate"
         (activated)="navigateTo('admin/choice-users/edit')"
       ></app-dashboard-action>
 

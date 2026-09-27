@@ -269,9 +269,9 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
     );
   }
 
-  trackByCalendarDay(index: number, day: CalendarDay): string {
+  trackByCalendarDay = (_index: number, day: CalendarDay): string => {
     return this.toDateKey(day.date);
-  }
+  };
 
   trackByWorkout(index: number, workout: ScheduledWorkout): number {
     return workout.userWorkoutId ?? index;

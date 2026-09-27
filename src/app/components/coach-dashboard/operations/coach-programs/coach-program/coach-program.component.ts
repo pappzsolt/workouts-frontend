@@ -45,6 +45,10 @@ export class CoachProgramComponent implements OnInit {
   // Rendezés
   sortDirection: 'asc' | 'desc' = 'asc';
 
+  // Program törlés
+  pendingDeleteProgramId: number | null = null;
+  deletingProgram = false;
+
   constructor(
     private router: Router,
     private programService: CoachProgramService,
@@ -188,6 +192,77 @@ export class CoachProgramComponent implements OnInit {
         programId,
       },
     });
+  }
+
+
+  /**
+   * Program törlésének megerősítő párbeszédének megnyitása.
+   */
+  requestDeleteProgram(programId: number | undefined, event: MouseEvent): void {
+    event.stopPropagation();
+
+    if (programId === undefined || programId === null || programId <= 0) {
+      this.logger.error('Érvénytelen program ID törléshez:', programId);
+      this.setMessage('coachPrograms.deleteError', 'error');
+      return;
+    }
+
+    this.pendingDeleteProgramId = programId;
+    this.message = '';
+  }
+
+  /**
+   * Program törlésének megszakítása.
+   */
+  cancelDeleteProgram(): void {
+    if (this.deletingProgram) {
+      return;
+    }
+
+    this.pendingDeleteProgramId = null;
+  }
+
+  /**
+   * Coach saját programjának törlése.
+   */
+  confirmDeleteProgram(): void {
+    const programId = this.pendingDeleteProgramId;
+
+    if (programId === null || this.deletingProgram) {
+      return;
+    }
+
+    this.deletingProgram = true;
+
+    this.programService
+      .deleteCoachProgram(programId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.pendingDeleteProgramId = null;
+          this.deletingProgram = false;
+
+          // Ha az aktuális oldalon ez volt az utolsó program,
+          // lépjünk vissza az előző oldalra.
+          if (this.programs.length === 1 && this.currentPage > 1) {
+            this.currentPage--;
+          }
+
+          this.setMessage('coachPrograms.deleteSuccess', 'success');
+          this.loadCoachPrograms(this.languageService.getCurrentLanguage());
+        },
+
+        error: (error) => {
+          this.deletingProgram = false;
+
+          this.logger.error(
+            'Hiba a coach program törlésekor:',
+            error,
+          );
+
+          this.setMessage('coachPrograms.deleteError', 'error');
+        },
+      });
   }
 
   private setMessage(message: string, type: 'success' | 'error' | 'info'): void {

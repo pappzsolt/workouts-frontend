@@ -52,7 +52,7 @@
 
       <app-button
         variant="sort"
-        [label]="'coachWorkouts.sortByName'"
+        [label]="'coachWorkouts.sortByName' | translate"
         [lucideIcon]="
     sortDirection === 'asc'
       ? 'arrow-up-narrow-wide'
@@ -194,7 +194,7 @@
             <div class="mt-4">
               <app-button
                 variant="edit"
-                [label]="'common.edit'"
+                [label]="'common.edit' | translate"
                 [lucideIcon]="'pencil'"
                 (buttonClick)="editWorkout(w.id, $event)"
               ></app-button>

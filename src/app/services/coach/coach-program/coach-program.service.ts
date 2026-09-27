@@ -81,6 +81,19 @@ export class CoachProgramService {
     );
   }
 
+
+  /**
+   * A bejelentkezett coach saját programjának törlése.
+   *
+   * A jogosultságot a backend ellenőrzi; a frontend a coach
+   * programlistájában csak a saját programokra kínálja fel a műveletet.
+   */
+  deleteCoachProgram(id: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(
+      API_ENDPOINTS.coachProgramDelete(id),
+    );
+  }
+
   /**
    * Új program létrehozása.
    *

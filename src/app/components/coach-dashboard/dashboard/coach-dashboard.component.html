@@ -16,35 +16,35 @@
       <app-dashboard-action
         icon="barbell"
         tone="primary"
-        label="coachDashboard.programs"
+        [label]="'coachDashboard.programs' | translate"
         (activated)="togglePrograms()"
       ></app-dashboard-action>
 
       <app-dashboard-action
         icon="fire"
         tone="add"
-        label="coachDashboard.workouts"
+        [label]="'coachDashboard.workouts' | translate"
         (activated)="toggleWorkouts()"
       ></app-dashboard-action>
 
       <app-dashboard-action
         icon="barbell"
         tone="primary"
-        label="coachDashboard.exercises"
+        [label]="'coachDashboard.exercises' | translate"
         (activated)="toggleExercises()"
       ></app-dashboard-action>
 
       <app-dashboard-action
         icon="link"
         tone="edit"
-        label="coachDashboard.assignWorkoutExercises"
+        [label]="'coachDashboard.assignWorkoutExercises' | translate"
         (activated)="toggleWorkoutExercises()"
       ></app-dashboard-action>
 
       <app-dashboard-action
         icon="chart-line-up"
         tone="sort"
-        label="coachDashboard.workoutExerciseManager"
+        [label]="'coachDashboard.workoutExerciseManager' | translate"
         (activated)="toggleWorkoutExerciseManager()"
       ></app-dashboard-action>
 

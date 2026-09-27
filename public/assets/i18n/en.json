@@ -298,7 +298,9 @@
     "newWorkoutNotFound": "The new workout could not be found.",
     "noWorkoutSelected": "Select a workout first.",
     "saveExerciseError": "Failed to save the exercise.",
-    "startDateRequired": "Start date is required."
+    "startDateRequired": "Start date is required.",
+    "startDate": "Start date",
+    "endDate": "End date"
   },
   "coachNewProgram": {
     "createSuccess": "Program created successfully!",
@@ -357,7 +359,13 @@
     "edit": "Edit",
     "noSearchResults": "No programs match the search.",
     "empty": "There are no programs.",
-    "createNew": "Create new program"
+    "createNew": "Create new program",
+    "delete": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this program? User-specific data linked to the program will also be deleted.",
+    "deleteSuccess": "Program deleted successfully.",
+    "deleteError": "Failed to delete the program.",
+    "startDate": "Start",
+    "endDate": "End"
   },
   "coachWorkoutEdit": {
     "invalidWorkoutId": "Invalid workout ID.",
@@ -438,7 +446,9 @@
     "updateProgram": "Update Program",
     "createProgram": "Create Program",
     "startDate": "Start date",
-    "endDate": "End date"
+    "endDate": "End date",
+    "createError": "An error occurred while creating the program.",
+    "createSuccess": "Program created successfully."
   },
   "coachExercisesBoard": {
     "noExercises": "No exercises available.",
@@ -532,7 +542,8 @@
     "setUpdated": "The set was successfully updated.",
     "setUpdateError": "An error occurred while updating the set.",
     "saveSuccess": "The set was successfully saved.",
-    "saveError": "An error occurred while saving the set."
+    "saveError": "An error occurred while saving the set.",
+    "invalidSet": "Invalid set."
   },
   "userMyPrograms": {
     "title": "My Programs",
@@ -542,7 +553,9 @@
     "duration": "Duration",
     "weeks": "weeks",
     "days": "Days",
-    "workouts": "Workouts"
+    "workouts": "Workouts",
+    "startDate": "Start",
+    "endDate": "End"
   },
   "userProfile": {
     "noUserId": "No logged-in user!",
@@ -620,7 +633,9 @@
     "noWorkouts": "There are no workouts for this program.",
     "pendingWorkouts": "Pending Workouts",
     "completedWorkouts": "Completed Workouts",
-    "unknownProgram": "Unknown program"
+    "unknownProgram": "Unknown program",
+    "noPendingWorkouts": "No workouts to complete.",
+    "noCompletedWorkouts": "No completed workouts yet."
   },
   "coachProgramBoard": {
     "loading": "Loading...",
@@ -710,7 +725,9 @@
     "exerciseIdMissing": "The exercise ID is missing.",
     "orderIndexRequired": "The order index is required.",
     "orderUpdateError": "An error occurred while updating the exercise order.",
-    "createUserWorkoutError": "An error occurred while creating the user's workout."
+    "createUserWorkoutError": "An error occurred while creating the user's workout.",
+    "deleteConfirmTitle": "Confirm deletion",
+    "cancel": "Cancel"
   },
   "assignProgram": {
     "title": "Assign Program",

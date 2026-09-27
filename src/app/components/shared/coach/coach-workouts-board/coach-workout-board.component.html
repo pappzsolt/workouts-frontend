@@ -35,7 +35,7 @@
     <div class="min-w-0 flex-1">
       <app-search
         [searchTerm]="searchTerm"
-        [label]="'coachWorkoutBoard.search'"
+        [label]="'coachWorkoutBoard.search' | translate"
         [placeholder]="'coachWorkoutBoard.searchPlaceholder'"
         inputId="workoutSearch"
         (searchTermChange)="searchTerm = $event; onSearchChange()"
@@ -47,7 +47,7 @@
     <app-button
       variant="sort"
       type="button"
-      [label]="'coachWorkoutBoard.sortByName'"
+      [label]="'coachWorkoutBoard.sortByName' | translate"
       [lucideIcon]="
     sortDirection === 'asc'
       ? 'arrow-up-narrow-wide'

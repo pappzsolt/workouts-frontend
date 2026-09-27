@@ -31,7 +31,7 @@
   @if (!loading) {
     <app-search
       [(searchTerm)]="searchTerm"
-      [label]="'common.search'"
+      [label]="'common.search' | translate"
       [placeholder]="'coachExercisesBoard.searchPlaceholder'"
       inputId="exerciseSearch"
       (searchTermChange)="onSearchChange()"

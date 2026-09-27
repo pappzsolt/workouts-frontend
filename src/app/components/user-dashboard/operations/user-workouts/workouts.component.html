@@ -165,7 +165,7 @@
               <span class="mb-3 text-4xl">🎉</span>
 
               <p class="text-sm font-semibold text-content-600 sm:text-base">
-                Nincs elvégzendő edzés.
+                {{ 'userWorkouts.noPendingWorkouts' | translate }}
               </p>
             </div>
           </ng-template>
@@ -231,7 +231,7 @@
               <span class="mb-3"><app-icon name="dumbbell" sizeClass="h-10 w-10" /></span>
 
               <p class="text-sm font-semibold text-content-600 sm:text-base">
-                Még nincs elvégzett edzés.
+                {{ 'userWorkouts.noCompletedWorkouts' | translate }}
               </p>
             </div>
           </ng-template>
