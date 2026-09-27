@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { LoggerService } from '../../../../../services/logger.service';
 import { ActivatedRoute } from '@angular/router';
 
 import { Subject, combineLatest, distinctUntilChanged, filter, map, switchMap, takeUntil } from 'rxjs';
@@ -23,6 +24,8 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   styleUrls: ['./user-exercises-detail.component.css'],
 })
 export class UserExerciseDetailComponent implements OnInit, OnDestroy {
+  private readonly logger = inject(LoggerService);
+
   private readonly destroy$ = new Subject<void>();
 
   workout?: UserWorkoutDetailDto;
@@ -64,7 +67,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       : undefined;
 
     if (!this.userWorkoutId || Number.isNaN(this.userWorkoutId)) {
-      console.error('[UserExerciseDetail] Érvénytelen userWorkoutId:', userWorkoutIdParam);
+      this.logger.error('[UserExerciseDetail] Érvénytelen userWorkoutId:', userWorkoutIdParam);
       return;
     }
 

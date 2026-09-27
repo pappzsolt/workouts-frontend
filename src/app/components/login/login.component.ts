@@ -1,6 +1,7 @@
 import type { LoginResponse } from '../../models/auth-model';
 
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { LoggerService } from '../../services/logger.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth/auth.service';
 import { catchError, of } from 'rxjs';
@@ -18,6 +19,8 @@ import { LanguageSelectorComponent } from '../shared/language/language-selector.
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
+  private readonly logger = inject(LoggerService);
+
   loginForm: FormGroup;
   errorMessage = '';
   loading = false;
@@ -49,7 +52,7 @@ export class LoginComponent {
       .login(username, password)
       .pipe(
         catchError((err) => {
-          console.error('Login hiba:', err);
+          this.logger.error('Login hiba:', err);
           this.errorMessage = USER_MESSAGES.userOrPassFailed;
           this.loading = false;
           return of(null);

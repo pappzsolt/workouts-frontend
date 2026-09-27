@@ -1,5 +1,6 @@
 import type { CoachNameId } from '../../../models/common/coach-name-id.model';
-import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnInit, inject } from '@angular/core';
+import { LoggerService } from '../../../services/logger.service';
 
 import { CoachNameIdService } from '../../../services/coach/coach-name-id.service';
 
@@ -33,6 +34,8 @@ import { SHARED_IMPORTS } from '../shared-imports';
   `,
 })
 export class CoachSelectComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+
   coaches: CoachNameId[] = [];
 
   @Input()
@@ -53,7 +56,7 @@ export class CoachSelectComponent implements OnInit {
         this.coaches = coaches;
       },
 
-      error: (err) => console.error('Hiba a coachok lekérésénél', err),
+      error: (err) => this.logger.error('Hiba a coachok lekérésénél', err),
     });
   }
 

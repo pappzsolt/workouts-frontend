@@ -1,4 +1,5 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { LoggerService } from '../../../../../services/logger.service';
 import { Router } from '@angular/router';
 
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
@@ -19,6 +20,8 @@ import { AppButtonComponent } from '../../../../../components/shared/components/
   styleUrls: ['./coach-new-program.component.css'],
 })
 export class CoachNewProgramComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+
   private readonly destroyRef = inject(DestroyRef);
 
   program: Program = {
@@ -114,17 +117,17 @@ export class CoachNewProgramComponent implements OnInit {
             });
         } else {
           this.messageType = 'error';
-          this.message = `Hiba: ${response.message}`;
+          this.message = response.message || 'coachNewProgram.createError';
         }
       },
 
       error: (err) => {
-        console.error('Error creating program:', err);
+        this.logger.error('Error creating program:', err);
 
         this.messageType = 'error';
 
         if (err.error?.message) {
-          this.message = `Hiba: ${err.error.message}`;
+          this.message = err.error?.message || 'coachNewProgram.createError';
         } else {
           this.message = 'coachNewProgram.createError';
         }

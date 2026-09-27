@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { LoggerService } from '../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Observable, Subject, forkJoin, map, takeUntil } from 'rxjs';
@@ -20,6 +21,8 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   templateUrl: './workouts.component.html',
 })
 export class WorkoutsComponent implements OnInit, OnDestroy {
+  private readonly logger = inject(LoggerService);
+
   programId!: number;
 
   programName!: string;
@@ -204,7 +207,7 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
 
   goToExercises(workout: UserWorkoutOccurrence): void {
     if (!workout.userWorkoutId) {
-      console.error(
+      this.logger.error(
         '[UserWorkouts] Nem található a konkrét userWorkoutId.',
         {
           programId: this.programId,

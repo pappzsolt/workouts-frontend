@@ -61,6 +61,8 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
 
   messageType: 'success' | 'error' | 'info' | '' = '';
 
+  messageParams: Record<string, unknown> = {};
+
   // =============================
   // OUTPUT
   // =============================
@@ -166,13 +168,13 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
     this.clearMessage();
 
     if (this.selectedWorkoutIds.length === 0) {
-      this.showError('Válassz ki legalább egy workoutot.');
+      this.showError('assignWorkoutExercises.errors.selectWorkout');
 
       return;
     }
 
     if (this.selectedExercises.length === 0) {
-      this.showError('Válassz ki legalább egy exercise-t.');
+      this.showError('assignWorkoutExercises.errors.selectExercise');
 
       return;
     }
@@ -196,7 +198,7 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
     }
 
     if (requests.length === 0) {
-      this.showError('Nincs menthető exercise.');
+      this.showError('assignWorkoutExercises.errors.noExercise');
 
       return;
     }
@@ -213,7 +215,7 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
                   data: null,
                   message:
                     (typeof err.error === 'string' ? err.error : err.error?.message) ||
-                    `Hiba történt az exercise hozzárendelése közben. HTTP ${err.status}`,
+                    'assignWorkoutExercises.errors.assign',
                 } satisfies ApiResponse<void>),
               ),
             ),
@@ -224,11 +226,11 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
       .subscribe((results: ApiResponse<void>[]) => {
         const successes = results
           .filter((result) => result.success)
-          .map((result) => result.message || 'Exercise sikeresen hozzárendelve a workouthoz.');
+          .map((result) => result.message || 'assignWorkoutExercises.errors.assignSuccess');
 
         const errors = results
           .filter((result) => !result.success)
-          .map((result) => result.message || 'Hiba történt az exercise hozzárendelése közben.');
+          .map((result) => result.message || 'assignWorkoutExercises.errors.assign');
 
         this.finishSave(successes.length, errors.length, [...new Set(successes)], [...new Set(errors)]);
       });
@@ -264,7 +266,7 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
       // EREDETI SIKERES MENTÉS
       // ==================================================
 
-      this.showSuccess(successes[0] || 'Az exercise-ek sikeresen hozzárendelésre kerültek.');
+      this.showSuccess(successes[0] || 'assignWorkoutExercises.errors.assignSuccess');
 
       return;
     }
@@ -276,8 +278,9 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
     }
 
     this.showError(
-      [`Sikeres mentések: ${successCount}.`, `Hibás mentések: ${errorCount}.`, ...errors].join(' '),
+      'assignWorkoutExercises.batchSummary',
     );
+    this.messageParams = { successCount, errorCount, errors: errors.join(' ') };
   }
 
   // =============================

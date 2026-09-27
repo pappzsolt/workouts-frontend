@@ -1,5 +1,6 @@
 import type { WorkoutExerciseView } from '../../../../../models/workout/workout-exercise-view.model';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { LoggerService } from '../../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { CoachWorkoutsService } from '../../../../../services/coach/coach-workouts/coach-workouts.service';
@@ -32,6 +33,8 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   styleUrls: ['./coach-workout-edit.component.css'],
 })
 export class CoachWorkoutEditComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+
   private readonly destroyRef = inject(DestroyRef);
 
   // ==========================================================
@@ -191,7 +194,7 @@ export class CoachWorkoutEditComponent implements OnInit {
       },
 
       error: (error: HttpErrorResponse) => {
-        console.error('Hiba a workout programhoz tartozásának ellenőrzésekor:', error);
+        this.logger.error('Hiba a workout programhoz tartozásának ellenőrzésekor:', error);
 
         this.workoutAssignedToProgram = false;
 
@@ -248,7 +251,7 @@ export class CoachWorkoutEditComponent implements OnInit {
       },
 
       error: (error) => {
-        console.error('Hiba a workout betöltésekor:', error);
+        this.logger.error('Hiba a workout betöltésekor:', error);
 
         this.setMessage('coachWorkoutEdit.loadError', 'error');
       },
@@ -275,7 +278,7 @@ export class CoachWorkoutEditComponent implements OnInit {
       },
 
       error: (error) => {
-        console.error('Hiba az exercise-ek betöltésekor:', error);
+        this.logger.error('Hiba az exercise-ek betöltésekor:', error);
 
         this.exercises = [];
 
@@ -341,7 +344,7 @@ export class CoachWorkoutEditComponent implements OnInit {
       },
 
       error: (error: HttpErrorResponse) => {
-        console.error('Hiba a workout exercise-ek betöltésekor:', error);
+        this.logger.error('Hiba a workout exercise-ek betöltésekor:', error);
 
         this.workoutExercises = [];
 
@@ -581,7 +584,7 @@ export class CoachWorkoutEditComponent implements OnInit {
       },
 
       error: (error: HttpErrorResponse) => {
-        console.error('Hiba az exercise workoutba adásakor:', error);
+        this.logger.error('Hiba az exercise workoutba adásakor:', error);
 
         this.addingExercise = false;
 
@@ -625,7 +628,7 @@ export class CoachWorkoutEditComponent implements OnInit {
       },
 
       error: (error) => {
-        console.error('Hiba a workout mentésekor:', error);
+        this.logger.error('Hiba a workout mentésekor:', error);
 
         const backendMessage = error?.error?.message ?? error?.error?.error ?? error?.message;
 

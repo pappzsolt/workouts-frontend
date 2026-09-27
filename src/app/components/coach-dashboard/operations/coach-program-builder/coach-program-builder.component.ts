@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { LoggerService } from '../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { ApiResponse } from '../../../../models/backend-dto/common/api-response';
@@ -30,6 +31,8 @@ import { CoachProgramBuilderWorkoutsComponent } from './coach-program-builder-wo
   styleUrl: './coach-program-builder.component.css',
 })
 export class CoachProgramBuilderComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+
   private readonly destroyRef = inject(DestroyRef);
 
   currentStep = 1;
@@ -179,7 +182,7 @@ export class CoachProgramBuilderComponent implements OnInit {
             : undefined;
       },
       error: (err) => {
-        console.error(
+        this.logger.error(
           'Hiba a programhoz rendelt felhasználó lekérésekor:',
           err,
         );

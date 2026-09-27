@@ -137,7 +137,15 @@
     "selectedWorkouts": "Kiválasztott workoutok",
     "availableExercises": "Elérhető exercise-ek",
     "save": "Mentés a kiválasztott workoutokhoz és exercise-ekhez",
-    "savedRelations": "Mentett kapcsolatok"
+    "savedRelations": "Mentett kapcsolatok",
+    "errors": {
+      "selectWorkout": "Válassz ki legalább egy workoutot.",
+      "selectExercise": "Válassz ki legalább egy exercise-t.",
+      "noExercise": "Nincs menthető exercise.",
+      "assign": "Hiba történt az exercise hozzárendelése közben.",
+      "assignSuccess": "Az exercise sikeresen hozzárendelve a workouthoz.",
+      "batchSummary": "Sikeres mentések: {{successCount}}. Hibás mentések: {{errorCount}}. {{errors}}"
+    }
   },
   "coachExerciseEdit": {
     "title": "Gyakorlat szerkesztése",
@@ -182,7 +190,8 @@
     "sortByName": "Gyakorlat neve",
     "noSearchResults": "Nincs a keresésnek megfelelő gyakorlat.",
     "noExercises": "Nincsenek gyakorlatok.",
-    "addExercise": "Új gyakorlat hozzáadása"
+    "addExercise": "Új gyakorlat hozzáadása",
+    "loadError": "A gyakorlatok betöltése sikertelen."
   },
   "coachWorkouts": {
     "title": "Edzések",
@@ -793,5 +802,49 @@
     "nextPage": "Következő oldal",
     "lastPage": "Utolsó oldal",
     "pageSize": "Elem oldalanként"
+  },
+  "memberSearch": {
+    "errors": {
+      "network": "Hálózati hiba történt a keresés közben.",
+      "server": "Szerverhiba történt a keresés közben."
+    }
+  },
+  "programWorkouts": {
+    "programs": "Programok",
+    "availableWorkouts": "Elérhető workoutok",
+    "selectedWorkouts": "Kiválasztott workoutok",
+    "save": "Mentés a programhoz",
+    "programNotSelected": "Előbb válassz programot.",
+    "noWorkoutsSelected": "Válassz ki legalább egy workoutot.",
+    "unknownError": "Ismeretlen hiba történt.",
+    "assignSuccess": "A workout sikeresen hozzárendelve a programhoz.",
+    "removeSuccess": "A workout sikeresen eltávolítva a programból."
+  },
+  "userMessages": {
+    "required": "Ez a mező kötelező.",
+    "email": "Érvénytelen email cím.",
+    "passwordMinLength": "A jelszónak legalább 8 karakter hosszúnak kell lennie.",
+    "serverError": "Szerverhiba történt. Kérlek, próbáld újra.",
+    "loadError": "Hiba történt a felhasználók betöltése közben.",
+    "notFound": "Nincs találat.",
+    "notResult": "A keresés sikertelen.",
+    "userOrPassFailed": "Hibás felhasználónév vagy jelszó.",
+    "noUserId": "Nincs bejelentkezett felhasználó.",
+    "loadProfileError": "Hiba történt a profil betöltésekor.",
+    "saveProfileSuccess": "Profil sikeresen mentve.",
+    "saveProfileNoId": "Nincs érvényes felhasználói ID.",
+    "saveProfileNetworkError": "Hálózati hiba történt. Ellenőrizd a szerver elérhetőségét.",
+    "saveProfileUnknownError": "Ismeretlen hiba történt a profil mentésekor.",
+    "networkError": "Hálózati hiba történt. Ellenőrizd az internetkapcsolatot.",
+    "loadPrograms": "Programok betöltése folyamatban...",
+    "loadProgramsError": "Hiba történt a programok betöltése közben.",
+    "noPrograms": "Jelenleg nincsenek elérhető programok.",
+    "programClickError": "Hiba történt a program kiválasztásakor.",
+    "loadCoachesError": "Hiba történt a coachok betöltésekor.",
+    "loadRolesError": "Hiba történt a szerepkörök betöltésekor.",
+    "profileLoaded": "Profil sikeresen betöltve.",
+    "updateSuccess": "Felhasználó sikeresen frissítve.",
+    "updateError": "Hiba a frissítés során.",
+    "workoutClickError": "Hiba történt a workout szerkesztésekor."
   }
 }

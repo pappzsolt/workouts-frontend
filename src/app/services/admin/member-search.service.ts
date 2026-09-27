@@ -170,18 +170,18 @@ export class MemberSearchService {
    * HTTP hibák egységes kezelése.
    */
   private handleError(error: HttpErrorResponse): Observable<never> {
-    let errorMsg = 'Ismeretlen hiba történt.';
-
     if (error.error instanceof ErrorEvent) {
-      errorMsg = `Hálózati hiba: ${error.error.message}`;
-    } else if (typeof error.error === 'string') {
-      errorMsg = error.error;
-    } else if (error.error?.message) {
-      errorMsg = error.error.message;
-    } else {
-      errorMsg = `Szerver hiba: ${error.status}, üzenet: ${error.message}`;
+      return throwError(() => 'memberSearch.errors.network');
     }
 
-    return throwError(() => errorMsg);
+    if (typeof error.error === 'string' && error.error.trim()) {
+      return throwError(() => error.error);
+    }
+
+    if (error.error?.message) {
+      return throwError(() => error.error.message);
+    }
+
+    return throwError(() => 'memberSearch.errors.server');
   }
 }

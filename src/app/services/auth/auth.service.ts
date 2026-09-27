@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { LoggerService } from '../logger.service';
 import { HttpClient, HttpBackend } from '@angular/common/http';
 import { Observable, map, tap } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
@@ -12,6 +13,8 @@ import { ApiResponse } from '../../models/backend-dto/common/api-response';
   providedIn: 'root',
 })
 export class AuthService {
+  private readonly logger = inject(LoggerService);
+
   private readonly apiUrl = API_ENDPOINTS.auth;
 
   private readonly rawHttp: HttpClient;
@@ -145,7 +148,7 @@ export class AuthService {
 
       return decodedToken.roles;
     } catch (error) {
-      console.error('[AuthService] Token dekódolási hiba', error);
+      this.logger.error('[AuthService] Token dekódolási hiba', error);
 
       return null;
     }
@@ -163,7 +166,7 @@ export class AuthService {
 
       return decodedToken.id;
     } catch (error) {
-      console.error('[AuthService] Token dekódolási hiba', error);
+      this.logger.error('[AuthService] Token dekódolási hiba', error);
 
       return null;
     }
@@ -181,7 +184,7 @@ export class AuthService {
 
       return decodedToken.sub;
     } catch (error) {
-      console.error('[AuthService] Token dekódolási hiba', error);
+      this.logger.error('[AuthService] Token dekódolási hiba', error);
 
       return null;
     }

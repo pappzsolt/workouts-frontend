@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { LoggerService } from '../logger.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, map, throwError } from 'rxjs';
 
@@ -12,6 +13,8 @@ import { Role } from '../../models/role.model';
   providedIn: 'root',
 })
 export class RoleService {
+  private readonly logger = inject(LoggerService);
+
   private readonly apiUrl = API_ENDPOINTS.usersWithRoles;
 
   constructor(private readonly http: HttpClient) {}
@@ -21,7 +24,7 @@ export class RoleService {
       map((response) => this.extractUniqueRoles(response.data ?? [])),
 
       catchError((error) => {
-        console.error('Hiba a role-ok lekérésekor:', error);
+        this.logger.error('Hiba a role-ok lekérésekor:', error);
 
         return throwError(() => new Error(error?.message || 'Hiba a role-ok lekérésekor'));
       }),

@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { LoggerService } from '../../../../services/logger.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -19,6 +20,8 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   styleUrl: './program-statistics.component.css',
 })
 export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
+  private readonly logger = inject(LoggerService);
+
   private readonly statisticsService = inject(UserProgramStatisticsService);
   private readonly languageService = inject(LanguageService);
   private readonly destroy$ = new Subject<void>();
@@ -89,7 +92,7 @@ export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
         this.resetStatistics();
         this.message = error.error?.message || 'userProgramStatistics.loadError';
         this.messageType = 'error';
-        console.error('Program statisztikák betöltése sikertelen:', error);
+        this.logger.error('Program statisztikák betöltése sikertelen:', error);
       },
     });
   }

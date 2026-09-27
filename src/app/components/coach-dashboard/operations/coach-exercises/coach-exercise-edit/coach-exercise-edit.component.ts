@@ -1,4 +1,5 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { LoggerService } from '../../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -20,6 +21,8 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   styleUrls: ['./coach-exercise-edit.component.css'],
 })
 export class CoachExerciseEditComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+
   // ==========================================================
   // DESTROY REF
   // ==========================================================
@@ -151,7 +154,7 @@ export class CoachExerciseEditComponent implements OnInit {
       },
 
       error: (err) => {
-        console.error('Hiba az exercise betöltésénél:', err);
+        this.logger.error('Hiba az exercise betöltésénél:', err);
 
         this.showError('coachExerciseEdit.loadError');
 
@@ -213,7 +216,7 @@ export class CoachExerciseEditComponent implements OnInit {
         },
 
         error: (err) => {
-        console.error('Hiba az exercise frissítésénél:', err);
+        this.logger.error('Hiba az exercise frissítésénél:', err);
 
         this.showError('coachExerciseEdit.saveError');
 

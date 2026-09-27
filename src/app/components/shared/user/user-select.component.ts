@@ -1,5 +1,6 @@
 import type { UserNameId } from '../../../models/common/user-name-id.model';
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, inject } from '@angular/core';
+import { LoggerService } from '../../../services/logger.service';
 
 import { UserNameIdService } from '../../../services/user/user-name-id.service';
 
@@ -33,6 +34,8 @@ import { SHARED_IMPORTS } from '../shared-imports';
   styleUrls: ['./user-select.component.css'],
 })
 export class UserSelectComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+
   users: UserNameId[] = [];
 
   @Input()
@@ -56,7 +59,7 @@ export class UserSelectComponent implements OnInit {
       },
 
       error: (err) => {
-        console.error('Hiba a felhasználók lekérésekor:', err);
+        this.logger.error('Hiba a felhasználók lekérésekor:', err);
         this.users = [];
       },
     });

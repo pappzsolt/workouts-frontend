@@ -1,4 +1,5 @@
 import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -25,6 +26,7 @@ import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.c
     CoachProgramBoardComponent,
     CoachWorkoutBoardComponent,
     AppIconComponent,
+    TranslatePipe,
   ],
   templateUrl: './program-workouts-ass.component.html',
 })
@@ -112,7 +114,7 @@ export class ProgramWorkoutsAssComponent implements OnDestroy {
                 of({
                   success: false,
                   data: null,
-                  message: err.error?.message || 'Ismeretlen hiba',
+                  message: err.error?.message || 'programWorkouts.unknownError',
                 }),
               ),
             ),
@@ -124,7 +126,7 @@ export class ProgramWorkoutsAssComponent implements OnDestroy {
         const failed = results.filter((result) => !result.success);
 
         if (failed.length > 0) {
-          this.message = failed.map((result) => result.message || 'Ismeretlen hiba').join(' ');
+          this.message = failed.map((result) => result.message || 'programWorkouts.unknownError').join(' ');
           this.messageStatus = 'error';
           return;
         }
@@ -158,7 +160,7 @@ export class ProgramWorkoutsAssComponent implements OnDestroy {
       .subscribe({
       next: (res) => {
         if (!res.success) {
-          this.message = res.message || 'Ismeretlen hiba';
+          this.message = res.message || 'programWorkouts.unknownError';
           this.messageStatus = 'error';
           return;
         }
@@ -178,7 +180,7 @@ export class ProgramWorkoutsAssComponent implements OnDestroy {
       },
 
       error: (err) => {
-        this.message = err.error?.message || 'Ismeretlen hiba';
+        this.message = err.error?.message || 'programWorkouts.unknownError';
         this.messageStatus = 'error';
       },
     });

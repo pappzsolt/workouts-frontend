@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { LoggerService } from '../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Subject, combineLatest, distinctUntilChanged, filter, map, switchMap, takeUntil } from 'rxjs';
@@ -18,6 +19,8 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   templateUrl: './user-exercises.component.html',
 })
 export class UserExercisesComponent implements OnInit, OnDestroy {
+  private readonly logger = inject(LoggerService);
+
   private readonly destroy$ = new Subject<void>();
 
   workoutId!: number;
@@ -100,17 +103,17 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
     // ID VALIDÁLÁS
 
     if (Number.isNaN(this.workoutId) || this.workoutId <= 0) {
-      console.error('Érvénytelen workout ID:', this.workoutId);
+      this.logger.error('Érvénytelen workout ID:', this.workoutId);
       return;
     }
 
     if (Number.isNaN(this.programId) || this.programId <= 0) {
-      console.error('Érvénytelen program ID:', this.programId);
+      this.logger.error('Érvénytelen program ID:', this.programId);
       return;
     }
 
     if (Number.isNaN(this.userWorkoutId) || this.userWorkoutId <= 0) {
-      console.error('Érvénytelen userWorkout ID:', this.userWorkoutId);
+      this.logger.error('Érvénytelen userWorkout ID:', this.userWorkoutId);
       return;
     }
 
@@ -142,7 +145,7 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
           this.updatePaginatedExercises();
         },
         error: (error) => {
-          console.error('Hiba a gyakorlatok betöltésekor:', error);
+          this.logger.error('Hiba a gyakorlatok betöltésekor:', error);
 
           this.allExercises = [];
           this.paginatedExercises = [];
@@ -220,7 +223,7 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
 
       return Array.isArray(images) ? images : [];
     } catch (error) {
-      console.error('[UserWorkouts] Hibás imageUrl JSON:', exercise.imageUrl, error);
+      this.logger.error('[UserWorkouts] Hibás imageUrl JSON:', exercise.imageUrl, error);
 
       return [];
     }

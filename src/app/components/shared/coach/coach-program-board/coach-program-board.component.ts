@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, inject } from '@angular/core';
+import { LoggerService } from '../../../../services/logger.service';
 
 import { Subject, skip, takeUntil } from 'rxjs';
 
@@ -17,6 +18,8 @@ import { SHARED_IMPORTS } from '../../shared-imports';
   styleUrls: ['./coach-program-board.component.css'],
 })
 export class CoachProgramBoardComponent implements OnInit, OnDestroy {
+  private readonly logger = inject(LoggerService);
+
   private readonly destroy$ = new Subject<void>();
 
   private programService = inject(CoachProgramService);
@@ -75,7 +78,7 @@ export class CoachProgramBoardComponent implements OnInit, OnDestroy {
 
         this.message = 'coachProgramBoard.loadError';
 
-        console.error('❌ Programok betöltése sikertelen', err);
+        this.logger.error('❌ Programok betöltése sikertelen', err);
       },
     });
   }

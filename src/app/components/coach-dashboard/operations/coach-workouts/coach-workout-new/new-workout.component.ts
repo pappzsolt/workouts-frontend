@@ -1,4 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { LoggerService } from '../../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Subject, takeUntil } from 'rxjs';
@@ -18,6 +19,8 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   imports: [...SHARED_IMPORTS, AppCardComponent, AppSelectComponent],
 })
 export class NewWorkoutComponent implements OnInit, OnDestroy {
+  private readonly logger = inject(LoggerService);
+
   private readonly destroy$ = new Subject<void>();
 
   workouts: Workout[] = [];
@@ -62,7 +65,7 @@ export class NewWorkoutComponent implements OnInit, OnDestroy {
       },
 
       error: (err) => {
-        console.error('Hiba a workoutok betöltésekor', err);
+        this.logger.error('Hiba a workoutok betöltésekor', err);
 
         this.workouts = [];
 

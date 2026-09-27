@@ -1,6 +1,7 @@
 import type { CalendarDay } from '../../../../models/common/calendar-day.model';
 import type { ScheduledWorkout } from '../../../../models/scheduled-workout/scheduled-workout.model';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { LoggerService } from '../../../../services/logger.service';
 
 import { BehaviorSubject, Subject, combineLatest, distinctUntilChanged, of, switchMap, takeUntil } from 'rxjs';
 
@@ -17,6 +18,8 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   styleUrls: ['./user-workouts-calendar.component.css'],
 })
 export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
+  private readonly logger = inject(LoggerService);
+
   // =========================================================
   // DESTROY
   // =========================================================
@@ -107,7 +110,7 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
           this.selectedExercises = exercises ?? [];
         },
         error: (err) => {
-          console.error('Hiba a workout exercise-ok lekérésekor:', err);
+          this.logger.error('Hiba a workout exercise-ok lekérésekor:', err);
           this.selectedExercises = [];
         },
       });
@@ -139,7 +142,7 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
         },
 
         error: (err) => {
-          console.error('Hiba az ütemezett workoutok lekérésekor:', err);
+          this.logger.error('Hiba az ütemezett workoutok lekérésekor:', err);
 
           this.scheduledWorkouts = [];
           this.rebuildWorkoutDateIndex();

@@ -1,4 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { LoggerService } from '../../../../services/logger.service';
 
 import { AuthService } from '../../../../services/auth/auth.service';
 import { CoachProfileService } from '../../../../services/coach/coach-profile.service';
@@ -17,6 +18,8 @@ import type { CoachProfile } from '../../../../models/coach-profile.model';
   styleUrls: ['./coach-profile.component.css'],
 })
 export class CoachProfileComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+
   private authService = inject(AuthService);
 
   private coachProfileService = inject(CoachProfileService);
@@ -83,7 +86,7 @@ export class CoachProfileComponent implements OnInit {
       },
 
       error: (error) => {
-        console.error('Coach profil betöltési hiba:', error);
+        this.logger.error('Coach profil betöltési hiba:', error);
 
         this.showError(USER_MESSAGES.loadProfileError);
       },
@@ -122,7 +125,7 @@ export class CoachProfileComponent implements OnInit {
       },
 
       error: (error) => {
-        console.error('Coach profil mentési hiba:', error);
+        this.logger.error('Coach profil mentési hiba:', error);
 
         if (error.status === 0) {
           this.showError(USER_MESSAGES.saveProfileNetworkError);
@@ -131,7 +134,7 @@ export class CoachProfileComponent implements OnInit {
         }
 
         if (error.error?.message) {
-          this.showError(`${USER_MESSAGES.serverError}: ${error.error.message}`);
+          this.showError(error.error?.message || USER_MESSAGES.serverError);
 
           return;
         }

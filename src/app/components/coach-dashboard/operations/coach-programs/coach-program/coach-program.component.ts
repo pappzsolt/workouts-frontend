@@ -1,4 +1,5 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { LoggerService } from '../../../../../services/logger.service';
 import { Router } from '@angular/router';
 import { AppSearchComponent } from '../../../../shared/components/app-search/app-search.component';
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
@@ -24,6 +25,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styleUrls: ['./coach-program.component.css'],
 })
 export class CoachProgramComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+
   programs: Program[] = [];
 
   message = '';
@@ -102,7 +105,7 @@ export class CoachProgramComponent implements OnInit {
         },
 
         error: (error) => {
-          console.error('Hiba a coach programok keresésekor:', error);
+          this.logger.error('Hiba a coach programok keresésekor:', error);
 
           this.programs = [];
           this.totalItems = 0;
@@ -142,7 +145,7 @@ export class CoachProgramComponent implements OnInit {
 
   createNewProgram(): void {
     this.router.navigate(['/coach/programs/new']).catch((error) => {
-      console.error('Hiba az új program oldal megnyitásakor:', error);
+      this.logger.error('Hiba az új program oldal megnyitásakor:', error);
 
       this.setMessage(USER_MESSAGES.programClickError, 'error');
     });
@@ -153,7 +156,7 @@ export class CoachProgramComponent implements OnInit {
 
 
     if (programId === undefined || programId === null || programId <= 0) {
-      console.error('Érvénytelen program ID:', programId);
+      this.logger.error('Érvénytelen program ID:', programId);
 
       this.setMessage(USER_MESSAGES.programClickError, 'error');
 
@@ -169,7 +172,7 @@ export class CoachProgramComponent implements OnInit {
       .then(() => {
     })
       .catch((error) => {
-        console.error('Hiba a Program Builder megnyitásakor:', error);
+        this.logger.error('Hiba a Program Builder megnyitásakor:', error);
 
         this.setMessage(USER_MESSAGES.programClickError, 'error');
       });

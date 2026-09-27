@@ -1,4 +1,5 @@
 import { Component, DestroyRef, Input, OnInit, inject } from '@angular/core';
+import { LoggerService } from '../../../../../services/logger.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -18,6 +19,8 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   styleUrls: ['./new-exercise.component.css'],
 })
 export class NewExerciseComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+
   private readonly destroyRef = inject(DestroyRef);
   @Input()
   workoutId!: number;
@@ -111,7 +114,7 @@ export class NewExerciseComponent implements OnInit {
       error: (err: HttpErrorResponse) => {
         this.saving = false;
 
-        console.error('Exercise creation error:', err);
+        this.logger.error('Exercise creation error:', err);
 
         this.handleError(err);
       },

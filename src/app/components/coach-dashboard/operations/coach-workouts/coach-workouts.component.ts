@@ -1,4 +1,5 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, inject } from '@angular/core';
+import { LoggerService } from '../../../../services/logger.service';
 import { Router } from '@angular/router';
 
 import { Subject, takeUntil, timer } from 'rxjs';
@@ -30,6 +31,8 @@ import { AppButtonComponent } from '../../../../components/shared/components/app
   styleUrls: ['./coach-workouts.component.css'],
 })
 export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
+  private readonly logger = inject(LoggerService);
+
   private readonly destroy$ = new Subject<void>();
 
   // ==========================================================
@@ -163,7 +166,7 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
       },
 
       error: (error) => {
-        console.error('[CoachWorkouts] workout betöltési hiba:', error);
+        this.logger.error('[CoachWorkouts] workout betöltési hiba:', error);
 
         this.workouts = [];
 
@@ -325,7 +328,7 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     this.router.navigate([`/coach/workouts/${workoutId}/edit`]).catch((error) => {
-      console.error('router.navigate hiba:', error);
+      this.logger.error('router.navigate hiba:', error);
 
       this.message = USER_MESSAGES.workoutClickError;
     });

@@ -1,5 +1,6 @@
 import type { SelectOption } from '../../../../models/common/select-option.model';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { LoggerService } from '../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Subject, skip, takeUntil } from 'rxjs';
@@ -24,6 +25,8 @@ import { ExerciseSearchFieldComponent } from '../../../shared/components/exercis
   styleUrls: ['./coach-exercises.component.css'],
 })
 export class ExerciseControllerComponent implements OnInit, OnDestroy {
+  private readonly logger = inject(LoggerService);
+
   private readonly destroy$ = new Subject<void>();
 
   // ==========================================================
@@ -151,7 +154,7 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
         },
 
         error: (error) => {
-          console.error('[CoachExercises] Hiba a gyakorlatok betöltésekor:', error);
+          this.logger.error('[CoachExercises] Hiba a gyakorlatok betöltésekor:', error);
 
           this.exercises = [];
           this.totalElements = 0;
@@ -162,7 +165,7 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
           const backendMessage =
             typeof error.error === 'string' ? error.error : error.error?.message;
 
-          this.showError(backendMessage || 'A gyakorlatok betöltése sikertelen.');
+          this.showError(backendMessage || 'coachExercises.loadError');
         },
       });
   }
@@ -273,7 +276,7 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
 
       return Array.isArray(images) ? images : [];
     } catch (error) {
-      console.error('[CoachExercises] Hibás imageUrl JSON:', exercise.imageUrl, error);
+      this.logger.error('[CoachExercises] Hibás imageUrl JSON:', exercise.imageUrl, error);
 
       return [];
     }

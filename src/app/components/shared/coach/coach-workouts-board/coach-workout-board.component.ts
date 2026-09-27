@@ -1,14 +1,5 @@
-import {
-  Component,
-  OnInit,
-  OnChanges,
-  OnDestroy,
-  SimpleChanges,
-  Input,
-  Output,
-  EventEmitter,
-  inject,
-} from '@angular/core';
+import { Component, OnInit, OnChanges, OnDestroy, SimpleChanges, Input, Output, EventEmitter, inject } from '@angular/core';
+import { LoggerService } from '../../../../services/logger.service';
 
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -30,6 +21,8 @@ import { SHARED_IMPORTS } from '../../shared-imports';
   styleUrls: ['./coach-workout-board.component.css'],
 })
 export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy {
+  private readonly logger = inject(LoggerService);
+
   private readonly workoutService = inject(CoachWorkoutsService);
 
   private readonly languageService = inject(LanguageService);
@@ -139,10 +132,10 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
 
           this.messageType = 'error';
 
-          console.error('❌ Workoutok betöltése sikertelen', err);
+          this.logger.error('❌ Workoutok betöltése sikertelen', err);
 
           if (err.error) {
-            console.error('Backend válasz:', err.error);
+            this.logger.error('Backend válasz:', err.error);
           }
         },
       });

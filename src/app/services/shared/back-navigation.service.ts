@@ -1,5 +1,6 @@
 import type { NavigationHistoryEntry } from '../../models/common/navigation-history-entry.model';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { LoggerService } from '../logger.service';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
@@ -7,6 +8,8 @@ import { filter } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class BackNavigationService {
+  private readonly logger = inject(LoggerService);
+
   private navigationHistory: NavigationHistoryEntry[] = [];
   private isBackNavigation = false;
 
@@ -81,7 +84,7 @@ export class BackNavigationService {
       const removed = this.navigationHistory.pop();
 
     } else {
-      console.warn(
+      this.logger.warn(
         '[BackNavigation] Az aktuális URL nem egyezik ' + 'az előzmények utolsó elemével.',
         {
           currentUrl,
@@ -108,7 +111,7 @@ export class BackNavigationService {
     }
 
     // Nincs további belső előzmény.
-    console.warn('[BackNavigation] Nincs további előzmény. ' + 'Fallback használata:', fallbackUrl);
+    this.logger.warn('[BackNavigation] Nincs további előzmény. ' + 'Fallback használata:', fallbackUrl);
 
     this.isBackNavigation = true;
 

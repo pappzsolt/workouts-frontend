@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { LoggerService } from '../../../../../services/logger.service';
 import { ActivatedRoute } from '@angular/router';
 
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
@@ -16,6 +17,8 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   styleUrls: ['./coach-program-edit.component.css'],
 })
 export class CoachProgramEditComponent implements OnInit {
+  private readonly logger = inject(LoggerService);
+
   program: Program = {
     programName: '',
     programDescription: '',
@@ -67,7 +70,7 @@ export class CoachProgramEditComponent implements OnInit {
       },
 
       error: (err) => {
-        console.error(err);
+        this.logger.error(err);
 
         this.setMessage('coachProgramEdit.loadError', 'error');
       },
@@ -121,7 +124,7 @@ export class CoachProgramEditComponent implements OnInit {
       },
 
       error: (err) => {
-        console.error(err);
+        this.logger.error(err);
 
         this.setMessage('coachProgramEdit.saveError', 'error');
       },

@@ -137,7 +137,15 @@
     "selectedWorkouts": "Selected workouts",
     "availableExercises": "Available exercises",
     "save": "Save to selected workouts and exercises",
-    "savedRelations": "Saved relations"
+    "savedRelations": "Saved relations",
+    "errors": {
+      "selectWorkout": "Select at least one workout.",
+      "selectExercise": "Select at least one exercise.",
+      "noExercise": "There is no exercise to save.",
+      "assign": "Failed to assign the exercise.",
+      "assignSuccess": "Exercise assigned to the workout successfully.",
+      "batchSummary": "Successful saves: {{successCount}}. Failed saves: {{errorCount}}. {{errors}}"
+    }
   },
   "coachExerciseEdit": {
     "title": "Edit Exercise",
@@ -182,7 +190,8 @@
     "sortByName": "Exercise name",
     "noSearchResults": "No exercises match the search.",
     "noExercises": "No exercises found.",
-    "addExercise": "Add new exercise"
+    "addExercise": "Add new exercise",
+    "loadError": "Failed to load exercises."
   },
   "coachWorkouts": {
     "title": "Workouts",
@@ -793,5 +802,49 @@
     "nextPage": "Next page",
     "lastPage": "Last page",
     "pageSize": "Items per page"
+  },
+  "memberSearch": {
+    "errors": {
+      "network": "A network error occurred during the search.",
+      "server": "A server error occurred during the search."
+    }
+  },
+  "programWorkouts": {
+    "programs": "Programs",
+    "availableWorkouts": "Available workouts",
+    "selectedWorkouts": "Selected workouts",
+    "save": "Save to program",
+    "programNotSelected": "Select a program first.",
+    "noWorkoutsSelected": "Select at least one workout.",
+    "unknownError": "An unknown error occurred.",
+    "assignSuccess": "Workout assigned to the program successfully.",
+    "removeSuccess": "Workout removed from the program successfully."
+  },
+  "userMessages": {
+    "required": "This field is required.",
+    "email": "Invalid email address.",
+    "passwordMinLength": "Password must be at least 8 characters long.",
+    "serverError": "A server error occurred. Please try again.",
+    "loadError": "An error occurred while loading users.",
+    "notFound": "No results found.",
+    "notResult": "The search failed.",
+    "userOrPassFailed": "Invalid username or password.",
+    "noUserId": "No logged-in user.",
+    "loadProfileError": "An error occurred while loading the profile.",
+    "saveProfileSuccess": "Profile saved successfully.",
+    "saveProfileNoId": "No valid user ID.",
+    "saveProfileNetworkError": "A network error occurred. Check server availability.",
+    "saveProfileUnknownError": "An unknown error occurred while saving the profile.",
+    "networkError": "A network error occurred. Check your internet connection.",
+    "loadPrograms": "Loading programs...",
+    "loadProgramsError": "An error occurred while loading programs.",
+    "noPrograms": "No programs are currently available.",
+    "programClickError": "An error occurred while selecting the program.",
+    "loadCoachesError": "An error occurred while loading coaches.",
+    "loadRolesError": "An error occurred while loading roles.",
+    "profileLoaded": "Profile loaded successfully.",
+    "updateSuccess": "User updated successfully.",
+    "updateError": "Update failed.",
+    "workoutClickError": "An error occurred while editing the workout."
   }
 }
