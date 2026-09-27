@@ -6,7 +6,6 @@ import { Exercise, WorkoutWithExercises as WorkoutUiDto } from '../../../models/
 import type { WorkoutDto as BackendWorkoutDto } from '../../../models/backend-dto/exercise/workout-dto';
 import type { ExerciseDto } from '../../../models/backend-dto/exercise/exercise-dto';
 import type { ExerciseRequest } from '../../../models/backend-dto/exercise/exercise-request';
-import type { ExerciseResponse } from '../../../models/backend-dto/exercise/exercise-response';
 import type { ApiResponse } from '../../../models/backend-dto/common/api-response';
 import type { PageResponse } from '../../../models/backend-dto/common/page-response';
 import { API_ENDPOINTS } from '../../../api-endpoints';
@@ -132,7 +131,7 @@ export class ExerciseService {
   // EXERCISE HOZZÁADÁSA
   // ==========================================================
 
-  addExercise(exercise: Exercise): Observable<ExerciseResponse> {
+  addExercise(exercise: Exercise): Observable<ApiResponse<ExerciseDto>> {
     const payload: ExerciseRequest = {
       id: exercise.id ?? null,
       name: exercise.name ?? null,
@@ -147,7 +146,7 @@ export class ExerciseService {
       durationSeconds: exercise.durationSeconds ?? null,
     };
 
-    return this.http.post<ExerciseResponse>(API_ENDPOINTS.exerciseAdd, payload);
+    return this.http.post<ApiResponse<ExerciseDto>>(API_ENDPOINTS.exerciseAdd, payload);
   }
 
   // ==========================================================
@@ -207,8 +206,8 @@ export class ExerciseService {
   // EXERCISE TÖRLÉSE
   // ==========================================================
 
-  deleteExercise(exerciseId: number): Observable<ExerciseResponse> {
-    return this.http.delete<ExerciseResponse>(API_ENDPOINTS.exerciseDelete(exerciseId));
+  deleteExercise(exerciseId: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(API_ENDPOINTS.exerciseDelete(exerciseId));
   }
 
   // ==========================================================

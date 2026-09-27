@@ -2,18 +2,16 @@ import { Injectable } from '@angular/core';
 import { Observable, of, from } from 'rxjs';
 import { catchError, concatMap, map, toArray } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
-
 import { ApiResponse } from '../../models/backend-dto/common/api-response';
 import { Exercise, WorkoutWithExercises } from '../../models/exercise.model';
 import type { ProgramWorkoutAssignment } from '../../models/program-workout-assignment.model';
-
 import { ExerciseService } from './coach-exercises/coach-exercises.service';
 import { CoachWorkoutsService } from './coach-workouts/coach-workouts.service';
 import { ProgramWorkoutService } from './program-workout.service';
 import { WorkoutExerciseService } from './workout-exercises.service';
 import { WorkoutCopyService } from './workout-copy.service';
 import type { WorkoutCopyRequest } from '../../models/backend-dto/workout/workout-copy-request';
-import type { WorkoutCopyResponse } from '../../models/backend-dto/workout/workout-copy-response';
+
 
 export interface ProgramBuilderWorkoutLoad {
   programWorkouts: ProgramWorkoutAssignment[];
@@ -32,7 +30,7 @@ export class CoachProgramBuilderWorkoutService {
     private readonly workoutCopyService: WorkoutCopyService,
   ) {}
 
-  copyWorkout(request: WorkoutCopyRequest): Observable<WorkoutCopyResponse> {
+  copyWorkout(request: WorkoutCopyRequest): Observable<ApiResponse<number>> {
     return this.workoutCopyService.copyWorkout(request);
   }
 

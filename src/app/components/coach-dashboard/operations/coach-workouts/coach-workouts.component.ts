@@ -293,8 +293,8 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
 
     this.coachWorkoutsService.addWorkout(this.newWorkout).subscribe({
       next: (res) => {
-        if (res.done === true) {
-          this.setMessage(res.message || 'coachWorkouts.addSuccess', 'success');
+        if (res.data?.done === true) {
+          this.setMessage(res.data.message || res.message || 'coachWorkouts.addSuccess', 'success');
 
           this.newWorkout = {
             workoutName: '',
@@ -304,7 +304,7 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
 
           this.loadWorkouts();
         } else {
-          this.setMessage(res.message || 'coachWorkouts.addError', 'error');
+          this.setMessage(res.data?.message || res.message || 'coachWorkouts.addError', 'error');
         }
       },
 

@@ -614,7 +614,7 @@ export class CoachWorkoutEditComponent implements OnInit {
 
     this.coachWorkoutsService.updateWorkout(this.workoutId, payload).subscribe({
       next: (res) => {
-        if (res.done === true) {
+        if (res.data?.done === true) {
           this.setMessage('coachWorkoutEdit.updateSuccess', 'success');
 
           timer(1500)
@@ -623,7 +623,7 @@ export class CoachWorkoutEditComponent implements OnInit {
               void this.router.navigate(['/coach/dashboard']);
             });
         } else {
-          this.setMessage(res.message || 'coachWorkoutEdit.updateError', 'error');
+          this.setMessage(res.data?.message || res.message || 'coachWorkoutEdit.updateError', 'error');
         }
       },
 

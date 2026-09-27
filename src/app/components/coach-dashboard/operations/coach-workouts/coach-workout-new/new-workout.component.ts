@@ -95,13 +95,8 @@ export class NewWorkoutComponent implements OnInit, OnDestroy {
         // ==================================================
 
         if (fromProgramBuilder === 'true' && programId) {
-          /**
-           * A WorkoutResponse modell alapján
-           * az új workout azonosítója:
-           *
-           * res.id
-           */
-          const workoutId = res.id;
+          // Az ApiResponse wrapperen belül található a WorkoutResponse.
+          const workoutId = res.data?.id;
 
           if (workoutId === undefined || workoutId === null) {
             this.message = 'newWorkout.createIdMissing';
@@ -130,7 +125,7 @@ export class NewWorkoutComponent implements OnInit, OnDestroy {
         // NORMÁL WORKOUT LÉTREHOZÁS
         // ==================================================
 
-        const workoutId = res.id;
+        const workoutId = res.data?.id;
 
         if (workoutId === undefined || workoutId === null) {
           this.message = 'newWorkout.createIdMissing';

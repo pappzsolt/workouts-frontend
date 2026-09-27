@@ -170,7 +170,7 @@ export class CoachWorkoutsService {
   /**
    * Új workout létrehozása.
    */
-  addWorkout(workout: Workout): Observable<WorkoutResponse> {
+  addWorkout(workout: Workout): Observable<ApiResponse<WorkoutResponse>> {
     const payload: WorkoutRequest = {
       id: workout.id ?? null,
       name: workout.name ?? workout.workoutName ?? null,
@@ -187,7 +187,7 @@ export class CoachWorkoutsService {
       this.languageService.getCurrentLanguage(),
     );
 
-    return this.http.post<WorkoutResponse>(
+    return this.http.post<ApiResponse<WorkoutResponse>>(
       API_ENDPOINTS.workoutAdd,
       payload,
       { params },
@@ -212,7 +212,7 @@ export class CoachWorkoutsService {
   /**
    * Workout módosítása.
    */
-  updateWorkout(id: number, workout: Workout): Observable<WorkoutResponse> {
+  updateWorkout(id: number, workout: Workout): Observable<ApiResponse<WorkoutResponse>> {
     const payload: WorkoutRequest = {
       id,
       name: workout.name ?? workout.workoutName ?? null,
@@ -229,7 +229,7 @@ export class CoachWorkoutsService {
       this.languageService.getCurrentLanguage(),
     );
 
-    return this.http.put<WorkoutResponse>(
+    return this.http.put<ApiResponse<WorkoutResponse>>(
       API_ENDPOINTS.workoutUpdate,
       payload,
       { params },
@@ -239,8 +239,8 @@ export class CoachWorkoutsService {
   /**
    * Workout törlése.
    */
-  deleteWorkout(id: number): Observable<WorkoutResponse> {
-    return this.http.delete<WorkoutResponse>(API_ENDPOINTS.workoutDelete(id));
+  deleteWorkout(id: number): Observable<ApiResponse<WorkoutResponse>> {
+    return this.http.delete<ApiResponse<WorkoutResponse>>(API_ENDPOINTS.workoutDelete(id));
   }
 
   /**

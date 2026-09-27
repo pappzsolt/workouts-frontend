@@ -477,7 +477,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
       next: (response) => {
         this.copyInProgress = false;
 
-        if (response.status === 'success' && response.data !== null) {
+        if (response.success && response.data !== null) {
           this.cancelCopyWorkout();
           this.message = 'coachProgramBuilder.copySuccess';
           this.messageType = 'success';
