@@ -1,4 +1,4 @@
-import type { SelectOption } from '../../../../models/app-types.model';
+import type { SelectOption } from '../../../../models/common/select-option.model';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 

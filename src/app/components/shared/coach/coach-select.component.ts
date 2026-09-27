@@ -1,4 +1,4 @@
-import type { CoachNameId } from '../../../models/app-types.model';
+import type { CoachNameId } from '../../../models/common/coach-name-id.model';
 import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 
 import { CoachNameIdService } from '../../../services/coach/coach-name-id.service';

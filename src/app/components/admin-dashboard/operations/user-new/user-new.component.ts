@@ -1,4 +1,4 @@
-import type { CoachNameId } from '../../../../models/app-types.model';
+import type { CoachNameId } from '../../../../models/common/coach-name-id.model';
 import { Component } from '@angular/core';
 import { NgForm } from '@angular/forms';
 

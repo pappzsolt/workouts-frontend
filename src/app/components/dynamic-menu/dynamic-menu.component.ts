@@ -1,4 +1,4 @@
-import type { MenuItem } from '../../models/app-types.model';
+import type { MenuItem } from '../../models/common/menu-item.model';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Component, Input, Output, EventEmitter } from '@angular/core';

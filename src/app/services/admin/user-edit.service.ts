@@ -9,7 +9,7 @@ import type { MemberResponse } from '../../models/backend-dto/members/member-res
 import type { RoleDto } from '../../models/backend-dto/roles/role-dto';
 import type { Role } from '../../models/role.model';
 
-import type { CoachNameId } from '../../models/app-types.model';
+import type { CoachNameId } from '../../models/common/coach-name-id.model';
 import {
   RawUser,
   UpdateUserRequest,

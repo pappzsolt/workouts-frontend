@@ -1,4 +1,7 @@
-import type { UserProgramDay, UserProgramExercise, UserProgramExerciseRow, UserProgramWorkout } from '../../../../models/app-types.model';
+import type { UserProgramDay } from '../../../../models/user-program/user-program-day.model';
+import type { UserProgramExercise } from '../../../../models/user-program/user-program-exercise.model';
+import type { UserProgramExerciseRow } from '../../../../models/user-program/user-program-exercise-row.model';
+import type { UserProgramWorkout } from '../../../../models/user-program/user-program-workout.model';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -363,7 +366,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
       .map((day) => {
         day.workouts = day.workouts.map((workout) => {
           workout.exercises = workout.exercises.sort(
-            (a, b) => (a.order ?? 0) - (b.order ?? 0),
+            (a: UserProgramExercise, b: UserProgramExercise) => (a.order ?? 0) - (b.order ?? 0),
           );
 
           return workout;
@@ -460,7 +463,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
         }
 
         const exercise = workout.exercises.find(
-          (currentExercise) => currentExercise.exerciseId === exerciseId,
+          (currentExercise: UserProgramExercise) => currentExercise.exerciseId === exerciseId,
         );
 
         if (!exercise) {
@@ -470,7 +473,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
         exercise.order = orderIndex;
 
         workout.exercises = workout.exercises.sort(
-          (a, b) => (a.order ?? 0) - (b.order ?? 0),
+          (a: UserProgramExercise, b: UserProgramExercise) => (a.order ?? 0) - (b.order ?? 0),
         );
       },
       error: (err: HttpErrorResponse) => {

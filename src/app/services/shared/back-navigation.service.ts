@@ -1,4 +1,4 @@
-import type { NavigationHistoryEntry } from '../../models/app-types.model';
+import type { NavigationHistoryEntry } from '../../models/common/navigation-history-entry.model';
 import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';

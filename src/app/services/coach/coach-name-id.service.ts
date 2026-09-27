@@ -1,4 +1,4 @@
-import type { CoachNameId } from '../../models/app-types.model';
+import type { CoachNameId } from '../../models/common/coach-name-id.model';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';

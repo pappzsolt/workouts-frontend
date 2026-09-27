@@ -1,4 +1,4 @@
-import type { UserNameId } from '../../models/app-types.model';
+import type { UserNameId } from '../../models/common/user-name-id.model';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';

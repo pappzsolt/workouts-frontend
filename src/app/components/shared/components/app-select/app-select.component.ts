@@ -1,4 +1,4 @@
-import type { SelectOption } from '../../../../models/app-types.model';
+import type { SelectOption } from '../../../../models/common/select-option.model';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';

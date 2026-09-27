@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 import { RawUser } from '../../../models/user-profil.model';
-import type { CoachNameId } from '../../../models/app-types.model';
+import type { CoachNameId } from '../../../models/common/coach-name-id.model';
 import { Role } from '../../../models/role.model';
 import type { MemberResponse } from '../../../models/backend-dto/members/member-response';
 import type { CoachDto } from '../../../models/backend-dto/coach/coach-dto';

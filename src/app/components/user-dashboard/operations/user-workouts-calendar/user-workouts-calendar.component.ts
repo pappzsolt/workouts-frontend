@@ -1,4 +1,5 @@
-import type { CalendarDay, ScheduledWorkout } from '../../../../models/app-types.model';
+import type { CalendarDay } from '../../../../models/common/calendar-day.model';
+import type { ScheduledWorkout } from '../../../../models/scheduled-workout/scheduled-workout.model';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { Subject, takeUntil } from 'rxjs';

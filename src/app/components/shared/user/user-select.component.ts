@@ -1,4 +1,4 @@
-import type { UserNameId } from '../../../models/app-types.model';
+import type { UserNameId } from '../../../models/common/user-name-id.model';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 import { UserNameIdService } from '../../../services/user/user-name-id.service';

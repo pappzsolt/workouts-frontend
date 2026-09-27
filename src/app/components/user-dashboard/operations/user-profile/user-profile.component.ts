@@ -5,7 +5,7 @@ import { Subject, forkJoin, takeUntil } from 'rxjs';
 import { AuthService } from '../../../../services/auth/auth.service';
 
 import { UserProfile, RawUser } from '../../../../models/user-profil.model';
-import type { CoachNameId } from '../../../../models/app-types.model';
+import type { CoachNameId } from '../../../../models/common/coach-name-id.model';
 
 import { UserProfilService } from '../../../../services/user/user-profile/user-profile.service';
 

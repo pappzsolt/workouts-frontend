@@ -1,4 +1,4 @@
-import type { WorkoutExerciseView } from '../../../../../models/app-types.model';
+import type { WorkoutExerciseView } from '../../../../../models/workout/workout-exercise-view.model';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 

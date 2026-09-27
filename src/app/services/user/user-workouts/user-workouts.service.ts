@@ -1,4 +1,6 @@
-import type { RawScheduledWorkout, RawWorkoutRecord, ScheduledWorkout } from '../../../models/app-types.model';
+import type { RawWorkoutRecord } from '../../../models/scheduled-workout/raw-workout-record.model';
+import type { ScheduledWorkout } from '../../../models/scheduled-workout/scheduled-workout.model';
+import type { ScheduledWorkoutRecord } from '../../../models/scheduled-workout/scheduled-workout-record.model';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
@@ -63,7 +65,7 @@ export class UserWorkoutsService {
    */
   getScheduledWorkouts(): Observable<ScheduledWorkout[]> {
     return this.http
-       .get<ApiResponse<RawScheduledWorkout[]>>(
+       .get<ApiResponse<ScheduledWorkoutRecord[]>>(
         API_ENDPOINTS.scheduledUserWorkouts,
       )
       .pipe(

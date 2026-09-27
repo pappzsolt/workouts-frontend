@@ -1,4 +1,4 @@
-import type { UserNameId } from '../../../../models/app-types.model';
+import type { UserNameId } from '../../../../models/common/user-name-id.model';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';

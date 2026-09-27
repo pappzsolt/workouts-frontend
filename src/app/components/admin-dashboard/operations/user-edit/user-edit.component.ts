@@ -1,4 +1,4 @@
-import type { UserNameId } from '../../../../models/app-types.model';
+import type { UserNameId } from '../../../../models/common/user-name-id.model';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 
 import { UserSelectComponent } from '../../../../components/shared/user/user-select.component';
@@ -12,7 +12,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 
 import { UserProfile, RawUser } from '../../../../models/user-profil.model';
-import type { CoachNameId } from '../../../../models/app-types.model';
+import type { CoachNameId } from '../../../../models/common/coach-name-id.model';
 import { Role } from '../../../../models/role.model';
 
 import { UserEditService } from '../../../../services/admin/user-edit.service';

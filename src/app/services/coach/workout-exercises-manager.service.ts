@@ -1,4 +1,6 @@
-import type { ScheduledWorkout, ScheduledWorkoutRecord, UserProgramExerciseRow } from '../../models/app-types.model';
+import type { ScheduledWorkout } from '../../models/scheduled-workout/scheduled-workout.model';
+import type { ScheduledWorkoutRecord } from '../../models/scheduled-workout/scheduled-workout-record.model';
+import type { UserProgramExerciseRow } from '../../models/user-program/user-program-exercise-row.model';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
