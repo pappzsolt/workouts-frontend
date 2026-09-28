@@ -351,8 +351,8 @@ test.describe('Coach - Workout CREATE / UPDATE / PostgreSQL', () => {
       expect(db.workout_date).toBe(workout.workoutDate);
       expect(Number(db.duration_minutes)).toBe(workout.durationMinutes);
       expect(db.intensity_level).toBe(workout.intensityLevel);
-      expect(db.translation_name).toBe(workout.name);
-      expect(db.translation_description).toBe(workout.description);
+      expect(db.name).toBe(workout.name);
+      expect(db.description).toBe(workout.description);
     } finally {
       if (workoutId !== undefined) {
         await deleteWorkoutAsCurrentCoach(page, workoutId);
@@ -409,8 +409,8 @@ test.describe('Coach - Workout CREATE / UPDATE / PostgreSQL', () => {
       expect(db.workout_date).toBe(updated.workoutDate);
       expect(Number(db.duration_minutes)).toBe(updated.durationMinutes);
       expect(db.intensity_level).toBe(updated.intensityLevel);
-      expect(db.translation_name).toBe(updated.name);
-      expect(db.translation_description).toBe(updated.description);
+      expect(db.name).toBe(updated.name);
+      expect(db.description).toBe(updated.description);
 
       // Teljes újratöltés: így nem csak az Angular memóriában lévő state-et teszteljük.
       await page.goto(`/coach/workouts/${workoutId}/edit`);
