@@ -96,6 +96,36 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
 
       const finalSets = await success(await coachApi.get(`/api/user-workout-exercise-sets/${userWorkoutExerciseId}`), 'GET final sets');
       expect(finalSets.data.some((x: any) => Number(x.id) === setId)).toBeTruthy();
+
+      // A completed/actual set szándékosan történeti USER_WORKOUT állapotot hoz létre.
+      // A backend ezt nem engedi programtörléskor törölni. Cleanup előtt ugyanazon API
+      // kontrakton keresztül visszaállítjuk a fixture-t nem megkezdett állapotba.
+      await success(await coachApi.put(`/api/user-workout-exercise-sets/${setId}`, {
+        data: {
+          completed: false,
+          clearActualRepetitions: true,
+          clearActualWeightKg: true,
+          clearNotes: true,
+        },
+      }), 'PUT set reset for cleanup');
+
+      const cleanupState = await dbOne<{
+        completed: boolean;
+        completed_at: string | null;
+        actual_repetitions: number | null;
+        actual_weight_kg: string | null;
+        notes: string | null;
+      }>(
+        `SELECT completed, completed_at, actual_repetitions, actual_weight_kg, notes
+           FROM public.user_workout_exercise_sets
+          WHERE id=$1`,
+        [setId],
+      );
+      expect(cleanupState?.completed).toBe(false);
+      expect(cleanupState?.completed_at).toBeNull();
+      expect(cleanupState?.actual_repetitions).toBeNull();
+      expect(cleanupState?.actual_weight_kg).toBeNull();
+      expect(cleanupState?.notes).toBeNull();
     } finally {
       await deleteProgram(coachApi, programId);
       await deleteExercise(coachApi, exerciseId);

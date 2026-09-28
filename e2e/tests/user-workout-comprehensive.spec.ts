@@ -45,31 +45,64 @@ test.describe('User - UserWorkout endpoint matrix', () => {
       const actualUserId = await currentUserId();
       expect(actualUserId).toBe(userId);
 
-      // Az explicit create-with-exercises endpointet is lefedjük. Idempotens workflow esetén
-      // a meglévő USER_WORKOUT occurrence ID-jaival kell visszatérnie, nem hozhat létre duplikátumot.
-      const before = await dbCount(
-        `SELECT count(*)::text AS count FROM public.user_workouts WHERE id=$1`,
-        [userWorkoutId],
+      // A backend contract szerint ez az endpoint a program ÖSSZES workout-occurrence
+      // ID-ját adja vissza. A program assign már létrehozott egy másik occurrence-t;
+      // az explicit scheduledAt=2035-04-20 ezért egy új, külön USER_WORKOUT lehet.
+      const beforeCount = await dbCount(
+        `SELECT count(*)::text AS count
+           FROM public.user_workouts
+          WHERE user_id=$1 AND program_id=$2`,
+        [userId, programId],
       );
+      expect(beforeCount).toBe(1);
+
       const created = await success(await userApi.post('/api/user-workout-exercises/create-with-exercises', {
         data: { userId, programId, scheduledAt: '2035-04-20' },
       }), 'POST /api/user-workout-exercises/create-with-exercises');
       expect(Array.isArray(created.data)).toBeTruthy();
-      expect(created.data.map((x: any) => Number(x)).includes(userWorkoutId)).toBeTruthy();
+      expect(created.data).toHaveLength(1);
+
+      const createdUserWorkoutId = Number(created.data[0]);
+      expect(Number.isInteger(createdUserWorkoutId) && createdUserWorkoutId > 0).toBeTruthy();
+      expect(createdUserWorkoutId).not.toBe(userWorkoutId);
+
+      const createdDb = await dbOne<{
+        id: number;
+        user_id: number;
+        program_id: number;
+        workout_id: number;
+        program_workout_id: number;
+        scheduled_at: string;
+      }>(
+        `SELECT id, user_id, program_id, workout_id, program_workout_id,
+                scheduled_at::text AS scheduled_at
+           FROM public.user_workouts
+          WHERE id=$1`,
+        [createdUserWorkoutId],
+      );
+      expect(createdDb).not.toBeNull();
+      expect(Number(createdDb!.user_id)).toBe(userId);
+      expect(Number(createdDb!.program_id)).toBe(programId);
+      expect(Number(createdDb!.workout_id)).toBe(workoutId);
+      expect(Number(createdDb!.program_workout_id)).toBe(programWorkoutId);
+      expect(createdDb!.scheduled_at).toContain('2035-04-20');
+
       expect(await dbCount(
-        `SELECT count(*)::text AS count FROM public.user_workouts WHERE id=$1`,
-        [userWorkoutId],
-      )).toBe(before);
+        `SELECT count(*)::text AS count
+           FROM public.user_workouts
+          WHERE user_id=$1 AND program_id=$2`,
+        [userId, programId],
+      )).toBe(2);
 
       const full = await success(
         await userApi.get(`/api/user-workout-exercises/user-program/${userId}/${programId}?language=hu`),
         'GET /api/user-workout-exercises/user-program/{userId}/{programId}',
       );
       expect(Array.isArray(full.data)).toBeTruthy();
-      expect(full.data.some((x: any) => Number(x.userWorkoutId ?? x.user_workout_id ?? x.id) === userWorkoutId)).toBeTruthy();
+      expect(full.data.some((x: any) => Number(x.userWorkoutId ?? x.user_workout_id ?? x.id) === createdUserWorkoutId)).toBeTruthy();
 
       const exercises = await success(
-        await userApi.get(`/api/user-workout-exercises/workout/${userWorkoutId}?language=hu`),
+        await userApi.get(`/api/user-workout-exercises/workout/${createdUserWorkoutId}?language=hu`),
         'GET /api/user-workout-exercises/workout/{userWorkoutId}',
       );
       expect(Array.isArray(exercises.data)).toBeTruthy();
@@ -79,15 +112,15 @@ test.describe('User - UserWorkout endpoint matrix', () => {
         'GET /api/user-workout-exercises/scheduled-workouts',
       );
       expect(Array.isArray(scheduled.data)).toBeTruthy();
-      expect(scheduled.data.some((x: any) => Number(x.userWorkoutId ?? x.user_workout_id ?? x.id) === userWorkoutId)).toBeTruthy();
+      expect(scheduled.data.some((x: any) => Number(x.userWorkoutId ?? x.user_workout_id ?? x.id) === createdUserWorkoutId)).toBeTruthy();
 
       await success(await userApi.patch('/api/user-workout-exercises/reschedule-user-workout', {
-        data: { userWorkoutId, scheduledAt: '2035-04-21' },
+        data: { userWorkoutId: createdUserWorkoutId, scheduledAt: '2035-04-21' },
       }), 'PATCH /api/user-workout-exercises/reschedule-user-workout');
 
       const moved = await dbOne<{ scheduled_at: string }>(
         `SELECT scheduled_at::text AS scheduled_at FROM public.user_workouts WHERE id=$1`,
-        [userWorkoutId],
+        [createdUserWorkoutId],
       );
       expect(String(moved?.scheduled_at)).toContain('2035-04-21');
 
