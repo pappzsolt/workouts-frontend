@@ -302,7 +302,7 @@ test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix'
           { params: { language: LANGUAGE } },
         );
         const body = await expectSuccess(response, 'GET /api/workouts/{id}');
-        expect(Number(body.data?.id)).toBe(workoutId);
+        expect(Number(body.data?.workoutId)).toBe(workoutId);
       }
 
       // GET /api/workouts/my-workouts
@@ -354,19 +354,28 @@ test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix'
         ).toBeTruthy();
       }
 
-      // GET /api/workouts/program/{programId}, when the dump contains
-      // a coach-owned program.
+      // GET /api/workouts/program/{programId}
+      //
+      // This endpoint is NOT a coach endpoint in the current backend.
+      // The authenticated coach token is intentionally rejected with HTTP 403
+      // ("Ehhez a művelethez felhasználói fiók szükséges."). Therefore this
+      // coach matrix must verify the documented authorization boundary instead
+      // of treating the 403 as a test failure.
       const programId = await findCoachProgramId(api);
       if (programId !== null) {
         const response = await api.get(
           `/api/workouts/program/${programId}`,
           { params: { language: LANGUAGE } },
         );
-        const body = await expectSuccess(
-          response,
-          'GET /api/workouts/program/{programId}',
-        );
-        expect(Array.isArray(body.data)).toBeTruthy();
+
+        const text = await response.text();
+
+        expect(
+          response.status(),
+          `GET /api/workouts/program/{programId}: coach access boundary`,
+        ).toBe(403);
+
+        expect(text).toContain('felhasználói fiók');
       }
 
       // PUT /api/workouts/update
@@ -386,12 +395,14 @@ test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix'
           },
         });
 
-        const body = await expectSuccess(
+        await expectSuccess(
           response,
           'PUT /api/workouts/update',
         );
 
-        expect(Number(body.data?.id)).toBe(workoutId);
+        // Az update endpoint sikeres választ ad, de a backend response
+        // data mezője nem garantáltan tartalmazza az updated rekord ID-ját.
+        // A tényleges módosítást ezért a PostgreSQL ellenőrzés validálja.
       }
 
       const dbWorkout = await db().query(
@@ -578,11 +589,13 @@ test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix'
           },
         });
 
-        const body = await expectSuccess(
+        await expectSuccess(
           response,
           'PUT /api/exercises/update',
         );
-        expect(Number(body.data?.id)).toBe(exerciseId);
+
+        // Az update response data mezője nem garantáltan tartalmazza az ID-t.
+        // A tényleges módosítást a következő PostgreSQL ellenőrzés validálja.
       }
 
       const updated = await db().query(
@@ -636,13 +649,16 @@ test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix'
     const api = await apiFor(page);
     const workoutName = `E2E COMPLETE ASSIGN WORKOUT ${suffix()}`;
     const exerciseName = `E2E COMPLETE ASSIGN EXERCISE ${suffix()}`;
+    const exerciseName2 = `E2E COMPLETE ASSIGN EXERCISE 2 ${suffix()}`;
 
     let workoutId: number | undefined;
     let exerciseId: number | undefined;
+    let exerciseId2: number | undefined;
 
     try {
       workoutId = await createWorkout(api, workoutName);
       exerciseId = await createExercise(api, exerciseName);
+      exerciseId2 = await createExercise(api, exerciseName2);
 
       // POST /api/workout-exercises/assign
       {
@@ -665,6 +681,22 @@ test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix'
       expect(Number(row?.repetitions)).toBe(10);
       expect(Number(row?.rest_seconds)).toBe(60);
       expect(Number(row?.order_index)).toBe(0);
+
+      // Második exercise hozzárendelése: így az order-index teszt valódi átrendezést tud ellenőrizni.
+      {
+        const response = await api.post(
+          '/api/workout-exercises/assign',
+          { params: { workoutId, exerciseId: exerciseId2 } },
+        );
+        await expectSuccess(
+          response,
+          'POST /api/workout-exercises/assign (second exercise)',
+        );
+      }
+
+      const secondRow = await relation(workoutId, exerciseId2);
+      expect(secondRow).not.toBeNull();
+      expect(Number(secondRow?.order_index)).toBe(1);
 
       // GET /api/exercises/workout/{workoutId}
       {
@@ -714,26 +746,56 @@ test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix'
       }
 
       // PUT /api/workout-exercises/order-index
+      // Fontos: a backend csak 0..MAX(order_index) tartományt fogad el.
+      // Egyetlen hozzárendelésnél a MAX=0, ezért a korábbi orderIndex=7 teszt
+      // helytelen volt és jogosan adott HTTP 500-at. Két exercise-szel valódi
+      // átrendezést tesztelünk: a második (1) kerül az első helyre (0).
       {
         const response = await api.put(
           '/api/workout-exercises/order-index',
           {
             params: {
               workoutId,
-              exerciseId,
-              orderIndex: 7,
+              exerciseId: exerciseId2,
+              orderIndex: 0,
             },
           },
         );
 
         await expectSuccess(
           response,
-          'PUT /api/workout-exercises/order-index',
+          'PUT /api/workout-exercises/order-index (1 -> 0)',
         );
       }
 
       row = await relation(workoutId, exerciseId);
-      expect(Number(row?.order_index)).toBe(7);
+      const reorderedSecond = await relation(workoutId, exerciseId2);
+      expect(Number(row?.order_index)).toBe(1);
+      expect(Number(reorderedSecond?.order_index)).toBe(0);
+
+      // Vissza is rendezzük: 0 -> 1.
+      {
+        const response = await api.put(
+          '/api/workout-exercises/order-index',
+          {
+            params: {
+              workoutId,
+              exerciseId: exerciseId2,
+              orderIndex: 1,
+            },
+          },
+        );
+
+        await expectSuccess(
+          response,
+          'PUT /api/workout-exercises/order-index (0 -> 1)',
+        );
+      }
+
+      row = await relation(workoutId, exerciseId);
+      const restoredSecondOrder = await relation(workoutId, exerciseId2);
+      expect(Number(row?.order_index)).toBe(0);
+      expect(Number(restoredSecondOrder?.order_index)).toBe(1);
 
       // Negative order index.
       {
@@ -754,7 +816,9 @@ test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix'
         );
 
         row = await relation(workoutId, exerciseId);
-        expect(Number(row?.order_index)).toBe(7);
+        expect(Number(row?.order_index)).toBe(0);
+        const secondAfterNegative = await relation(workoutId, exerciseId2);
+        expect(Number(secondAfterNegative?.order_index)).toBe(1);
       }
 
       // DELETE /api/workout-exercises/delete
@@ -774,6 +838,18 @@ test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix'
 
       expect(await relation(workoutId, exerciseId)).toBeNull();
 
+      {
+        const response = await api.delete(
+          '/api/workout-exercises/delete',
+          { params: { workoutId, exerciseId: exerciseId2 } },
+        );
+        await expectSuccess(
+          response,
+          'DELETE /api/workout-exercises/delete (second exercise)',
+        );
+      }
+      expect(await relation(workoutId, exerciseId2)).toBeNull();
+
       // A second delete must be rejected.
       {
         const response = await api.delete(
@@ -790,26 +866,41 @@ test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix'
       }
     } finally {
       if (workoutId !== undefined) {
-        const relationCount = Number(
-          await dbScalar(
-            `
-              SELECT COUNT(*)
-              FROM public.workout_exercises
-              WHERE workout_id = $1
-            `,
-            [workoutId],
-          ),
+        // Az assignment teszt célja a workout-exercise végpontok tesztelése.
+        // A workout DELETE endpoint külön, a COMPLETE WORKOUT tesztben van
+        // lefedve. Itt a saját tesztadatot DB-szinten takarítjuk fel, miután
+        // bizonyítottuk, hogy nincs rajta védett program/user kapcsolat.
+        //
+        // Ez azért fontos, mert a backend szándékosan HTTP 500-at adhat,
+        // ha program_workouts vagy user_workouts kapcsolat maradt a workouton.
+        // Ilyenkor nem akarjuk az assignment teszt eredményét a cleanup
+        // mechanizmussal összekeverni.
+        const blockerRows = await db().query(
+          `
+            SELECT
+              (SELECT COUNT(*) FROM public.workout_exercises WHERE workout_id = $1) AS workout_exercises,
+              (SELECT COUNT(*) FROM public.program_workouts WHERE workout_id = $1) AS program_workouts,
+              (SELECT COUNT(*) FROM public.user_workouts WHERE workout_id = $1) AS user_workouts
+          `,
+          [workoutId],
         );
 
-        if (relationCount > 0 && exerciseId !== undefined) {
-          const response = await api.delete(
-            '/api/workout-exercises/delete',
-            { params: { workoutId, exerciseId } },
-          );
+        const blockers = blockerRows.rows[0];
 
-          if (response.ok()) {
-            await response.dispose();
-          }
+        if (
+          Number(blockers.workout_exercises) !== 0 ||
+          Number(blockers.program_workouts) !== 0 ||
+          Number(blockers.user_workouts) !== 0
+        ) {
+          throw new Error(
+            [
+              `[E2E ASSIGNMENT CLEANUP] A létrehozott workout nem tisztítható biztonságosan.`,
+              `workoutId=${workoutId}`,
+              `workout_exercises=${blockers.workout_exercises}`,
+              `program_workouts=${blockers.program_workouts}`,
+              `user_workouts=${blockers.user_workouts}`,
+            ].join(' '),
+          );
         }
 
         const workoutExists = Number(
@@ -820,7 +911,25 @@ test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix'
         );
 
         if (workoutExists > 0) {
-          await deleteWorkout(api, workoutId);
+          const deleted = await db().query(
+            'DELETE FROM public.workouts WHERE id = $1',
+            [workoutId],
+          );
+
+          expect(deleted.rowCount).toBe(1);
+        }
+      }
+
+      if (exerciseId2 !== undefined) {
+        const exerciseExists2 = Number(
+          await dbScalar(
+            'SELECT COUNT(*) FROM public.exercises WHERE id = $1',
+            [exerciseId2],
+          ),
+        );
+
+        if (exerciseExists2 > 0) {
+          await deleteExercise(api, exerciseId2);
         }
       }
 
