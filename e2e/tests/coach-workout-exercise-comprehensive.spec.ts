@@ -710,9 +710,19 @@ test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix'
         );
 
         expect(Number(body.data?.id)).toBe(workoutId);
+
+        // A backend ExerciseWorkoutDto -> WorkoutExerciseDto struktúrája
+        // szerint az exercise az egyes workout-exercise elemen belül
+        // nested objektum: e.exercise.id. Nem e.id.
+        expect(Array.isArray(body.data?.exercises)).toBeTruthy();
         expect(
-          body.data?.exercises?.some(
-            (e: any) => Number(e.id) === exerciseId,
+          body.data.exercises.some(
+            (e: any) => Number(e?.exercise?.id) === Number(exerciseId),
+          ),
+        ).toBeTruthy();
+        expect(
+          body.data.exercises.some(
+            (e: any) => Number(e?.exercise?.id) === Number(exerciseId2),
           ),
         ).toBeTruthy();
       }
@@ -865,58 +875,140 @@ test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix'
         );
       }
     } finally {
+      // A teszt bármelyik ponton elbukhat. Cleanup közben ezért NEM dobunk új
+      // hibát az eredeti hiba helyett. Először minden saját relationt
+      // megpróbálunk az API-n keresztül törölni, majd DB-ben ellenőrizzük.
       if (workoutId !== undefined) {
-        // Az assignment teszt célja a workout-exercise végpontok tesztelése.
-        // A workout DELETE endpoint külön, a COMPLETE WORKOUT tesztben van
-        // lefedve. Itt a saját tesztadatot DB-szinten takarítjuk fel, miután
-        // bizonyítottuk, hogy nincs rajta védett program/user kapcsolat.
-        //
-        // Ez azért fontos, mert a backend szándékosan HTTP 500-at adhat,
-        // ha program_workouts vagy user_workouts kapcsolat maradt a workouton.
-        // Ilyenkor nem akarjuk az assignment teszt eredményét a cleanup
-        // mechanizmussal összekeverni.
-        const blockerRows = await db().query(
+        for (const currentExerciseId of [exerciseId, exerciseId2]) {
+          if (currentExerciseId === undefined) continue;
+
+          const relationExists = Number(
+            await dbScalar(
+              `
+                SELECT COUNT(*)
+                FROM public.workout_exercises
+                WHERE workout_id = $1 AND exercise_id = $2
+              `,
+              [workoutId, currentExerciseId],
+            ),
+          );
+
+          if (relationExists === 0) continue;
+
+          try {
+            const response = await api.delete(
+              '/api/workout-exercises/delete',
+              {
+                params: {
+                  workoutId,
+                  exerciseId: currentExerciseId,
+                },
+              },
+            );
+
+            if (!response.ok()) {
+              console.error(
+                `[E2E ASSIGNMENT CLEANUP] API relation DELETE sikertelen: ` +
+                  `workoutId=${workoutId}, exerciseId=${currentExerciseId}, ` +
+                  `HTTP ${response.status()} ${await response.text()}`,
+              );
+            }
+          } catch (error) {
+            console.error(
+              `[E2E ASSIGNMENT CLEANUP] relation DELETE exception: ` +
+                `workoutId=${workoutId}, exerciseId=${currentExerciseId}`,
+              error,
+            );
+          }
+        }
+
+        // Ha az API-s relation DELETE valamiért nem távolította el a saját
+        // tesztadatot, közvetlenül DB-ben takarítjuk. Ez kizárólag a teszt
+        // által létrehozott workoutId-ra vonatkozik.
+        const remainingRelations = Number(
+          await dbScalar(
+            `
+              SELECT COUNT(*)
+              FROM public.workout_exercises
+              WHERE workout_id = $1
+            `,
+            [workoutId],
+          ),
+        );
+
+        if (remainingRelations > 0) {
+          console.error(
+            `[E2E ASSIGNMENT CLEANUP] ${remainingRelations} workout_exercises ` +
+              `relation maradt; DB cleanup indul. workoutId=${workoutId}`,
+          );
+
+          await db().query(
+            'DELETE FROM public.workout_exercises WHERE workout_id = $1',
+            [workoutId],
+          );
+        }
+
+        const blockers = await db().query(
           `
             SELECT
-              (SELECT COUNT(*) FROM public.workout_exercises WHERE workout_id = $1) AS workout_exercises,
               (SELECT COUNT(*) FROM public.program_workouts WHERE workout_id = $1) AS program_workouts,
               (SELECT COUNT(*) FROM public.user_workouts WHERE workout_id = $1) AS user_workouts
           `,
           [workoutId],
         );
 
-        const blockers = blockerRows.rows[0];
+        const blockerRow = blockers.rows[0];
+        const programWorkouts = Number(blockerRow.program_workouts);
+        const userWorkouts = Number(blockerRow.user_workouts);
 
-        if (
-          Number(blockers.workout_exercises) !== 0 ||
-          Number(blockers.program_workouts) !== 0 ||
-          Number(blockers.user_workouts) !== 0
-        ) {
-          throw new Error(
-            [
-              `[E2E ASSIGNMENT CLEANUP] A létrehozott workout nem tisztítható biztonságosan.`,
-              `workoutId=${workoutId}`,
-              `workout_exercises=${blockers.workout_exercises}`,
-              `program_workouts=${blockers.program_workouts}`,
-              `user_workouts=${blockers.user_workouts}`,
-            ].join(' '),
-          );
-        }
-
-        const workoutExists = Number(
-          await dbScalar(
-            'SELECT COUNT(*) FROM public.workouts WHERE id = $1',
-            [workoutId],
-          ),
-        );
-
-        if (workoutExists > 0) {
-          const deleted = await db().query(
-            'DELETE FROM public.workouts WHERE id = $1',
-            [workoutId],
+        if (programWorkouts === 0 && userWorkouts === 0) {
+          const workoutExists = Number(
+            await dbScalar(
+              'SELECT COUNT(*) FROM public.workouts WHERE id = $1',
+              [workoutId],
+            ),
           );
 
-          expect(deleted.rowCount).toBe(1);
+          if (workoutExists > 0) {
+            try {
+              const response = await api.delete(
+                `/api/workouts/delete/${workoutId}`,
+              );
+
+              if (!response.ok()) {
+                console.error(
+                  `[E2E ASSIGNMENT CLEANUP] workout API DELETE sikertelen: ` +
+                    `workoutId=${workoutId}, HTTP ${response.status()} ` +
+                    `${await response.text()}`,
+                );
+
+                // A workout saját tesztadat. Ha az API törlés sikertelen, de
+                // nincs program/user függőség, DB-ből biztonságosan takarítjuk.
+                await db().query(
+                  'DELETE FROM public.workouts WHERE id = $1',
+                  [workoutId],
+                );
+              }
+            } catch (error) {
+              console.error(
+                `[E2E ASSIGNMENT CLEANUP] workout DELETE exception: ` +
+                  `workoutId=${workoutId}`,
+                error,
+              );
+
+              await db().query(
+                'DELETE FROM public.workouts WHERE id = $1',
+                [workoutId],
+              );
+            }
+          }
+        } else {
+          console.error(
+            `[E2E ASSIGNMENT CLEANUP] workout nem törölhető: ` +
+              `workoutId=${workoutId}, ` +
+              `program_workouts=${programWorkouts}, ` +
+              `user_workouts=${userWorkouts}`,
+          );
         }
       }
 
