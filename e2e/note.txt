@@ -3,3 +3,4 @@ npm install pg
 npm install -D @types/pg
 npx playwright test tests/coach-workout-write.spec.ts --headed
 npx playwright test tests/coach-workout-write.spec.ts --headed
+npx playwright test tests/coach-exercise-write.spec.ts -g "UPDATE:" --headed
