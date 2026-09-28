@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import {
   apiFor,
-  anotherCoachClientUserId,
+  adminUserId,
   assignExercise,
   coachUserId,
   createExercise,
@@ -272,25 +272,30 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
     }
   });
 
-  test('NEGATIVE OWNERSHIP: user nem olvashat/módosíthat/törölhet másik user setjét', async ({ page }) => {
+  test('NEGATIVE OWNERSHIP: user nem olvashat/módosíthat/törölhet másik users rekord setjét', async ({ page }) => {
     await login(page, 'coach');
     const coachApi = await apiFor(page);
-    const ownUserId = await coachUserId();
-    const foreignUserId = await anotherCoachClientUserId(ownUserId);
-    const programId = await createProgram(coachApi, `E2E FOREIGN SET PROGRAM ${suffix()}`);
-    const workoutId = await createWorkout(coachApi, `E2E FOREIGN SET WORKOUT ${suffix()}`);
-    const exerciseId = await createExercise(coachApi, `E2E FOREIGN SET EXERCISE ${suffix()}`);
+    const foreignUserId = await adminUserId();
+
+    const programId = await createProgram(
+      coachApi,
+      `E2E FOREIGN SET PROGRAM ${suffix()}`,
+    );
+    const workoutId = await createWorkout(
+      coachApi,
+      `E2E FOREIGN SET WORKOUT ${suffix()}`,
+    );
+    const exerciseId = await createExercise(
+      coachApi,
+      `E2E FOREIGN SET EXERCISE ${suffix()}`,
+    );
 
     try {
       await assignExercise(coachApi, workoutId, exerciseId);
 
-      await success(
-        await coachApi.post('/api/programs/assign', {
-          data: { userId: foreignUserId, programId },
-        }),
-        'assign foreign user',
-      );
-
+      // A program-workout kapcsolatot előbb hozzuk létre, majd az admin
+      // accountot rendeljük hozzá. Így a foreign USER_WORKOUT kizárólag
+      // a valódi user-workout API-n keresztül készül.
       const pw = await success(
         await coachApi.post('/api/program-workouts/add', {
           data: { programId, workoutId, dayIndex: 1 },
@@ -299,31 +304,50 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       );
 
       const programWorkoutId = Number(pw.data?.id);
+      expect(programWorkoutId).toBeGreaterThan(0);
 
-      const uw = await dbOne<{ id: number }>(
-        `SELECT id
-           FROM public.user_workouts
-          WHERE user_id=$1 AND program_workout_id=$2
-          ORDER BY id DESC LIMIT 1`,
-        [foreignUserId, programWorkoutId],
+      await coachApi.dispose();
+
+      await login(page, 'admin');
+      const adminApi = await apiFor(page);
+
+      await success(
+        await adminApi.post('/api/programs/assign', {
+          data: { userId: foreignUserId, programId },
+        }),
+        'admin assigns program to foreign users record',
       );
 
-      expect(uw).not.toBeNull();
-      const userWorkoutId = Number(uw!.id);
+      const created = await success(
+        await adminApi.post('/api/user-workout-exercises/create-with-exercises', {
+          data: {
+            userId: foreignUserId,
+            programId,
+            scheduledAt: '2035-05-03',
+          },
+        }),
+        'admin creates foreign user workout',
+      );
+
+      expect(Array.isArray(created.data)).toBeTruthy();
+      expect(created.data).toHaveLength(1);
+
+      const foreignUserWorkoutId = Number(created.data[0]);
+      expect(foreignUserWorkoutId).toBeGreaterThan(0);
 
       const uwe = await dbOne<{ id: number }>(
         `SELECT id
            FROM public.user_workout_exercises
           WHERE user_workout_id=$1
           ORDER BY id DESC LIMIT 1`,
-        [userWorkoutId],
+        [foreignUserWorkoutId],
       );
 
       expect(uwe).not.toBeNull();
       const userWorkoutExerciseId = Number(uwe!.id);
 
-      const set = await dbOne<{ id: number; completed: boolean }>(
-        `SELECT id, completed
+      const set = await dbOne<{ id: number; completed: boolean; notes: string | null }>(
+        `SELECT id, completed, notes
            FROM public.user_workout_exercise_sets
           WHERE user_workout_exercise_id=$1
           ORDER BY id DESC LIMIT 1`,
@@ -333,7 +357,8 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       expect(set).not.toBeNull();
       const setId = Number(set!.id);
 
-      await coachApi.dispose();
+      await adminApi.dispose();
+
       await login(page, 'user');
       const userApi = await apiFor(page);
 
@@ -373,7 +398,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       );
 
       expect(after?.completed).toBe(set!.completed);
-      expect(after?.notes).not.toBe('MUST NOT UPDATE');
+      expect(after?.notes).toBe(set!.notes);
 
       await userApi.dispose();
     } finally {
@@ -386,7 +411,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
         await cleanup.delete('/api/workout-exercises/delete', {
           params: { workoutId, exerciseId },
         }),
-        'DELETE /api/workout-exercises/delete',
+        'DELETE foreign workout exercise relation',
       );
 
       await deleteExercise(cleanup, exerciseId);

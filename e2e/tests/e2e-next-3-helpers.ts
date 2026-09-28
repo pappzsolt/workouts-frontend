@@ -38,15 +38,37 @@ export async function dbCount(sql: string, params: unknown[] = []): Promise<numb
   return Number(r?.count ?? 0);
 }
 
-export async function login(page: Page, role: 'coach' | 'user') {
-  const username = process.env[role === 'coach' ? 'E2E_COACH_USERNAME' : 'E2E_USER_USERNAME'];
-  const password = process.env[role === 'coach' ? 'E2E_COACH_PASSWORD' : 'E2E_USER_PASSWORD'];
-  if (!username || !password || password === 'CHANGE_ME') throw new Error(`Hiányzó E2E ${role} credentials.`);
+export async function login(page: Page, role: 'coach' | 'user' | 'admin') {
+  const prefix = role === 'coach' ? 'COACH' : role === 'user' ? 'USER' : 'ADMIN';
+  const username = process.env[`E2E_${prefix}_USERNAME`];
+  const password = process.env[`E2E_${prefix}_PASSWORD`];
+
+  if (!username || !password || password === 'CHANGE_ME') {
+    throw new Error(`Hiányzó E2E ${role} credentials.`);
+  }
+
+  // A tesztek coach -> user -> coach (és admin -> user) szerepkört
+  // váltanak ugyanazon browser contextben. A korábbi JWT/refresh token
+  // nem maradhat a következő login előtt.
   await page.goto('/login');
+  await page.evaluate(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+  await page.goto('/login');
+
   await page.locator('input[formcontrolname="username"]').fill(username);
   await page.locator('input[formcontrolname="password"]').fill(password);
   await page.locator('form button[type="submit"]').click();
-  await expect(page).toHaveURL(role === 'coach' ? /\/coach\/dashboard$/ : /\/user\/dashboard$/, { timeout: 15000 });
+
+  const expectedUrl =
+    role === 'coach'
+      ? /\/coach\/dashboard$/
+      : role === 'admin'
+        ? /\/admin\/dashboard$/
+        : /\/user\/dashboard$/;
+
+  await expect(page).toHaveURL(expectedUrl, { timeout: 15000 });
 }
 
 export async function apiFor(page: Page): Promise<APIRequestContext> {
@@ -88,6 +110,16 @@ export async function currentUserId(): Promise<number> {
     [username],
   );
   if (!row) throw new Error(`A bejelentkezett E2E user nem található: ${username}`);
+  return Number(row.id);
+}
+
+export async function adminUserId(): Promise<number> {
+  const username = process.env.E2E_ADMIN_USERNAME ?? 'admin';
+  const row = await dbOne<{ id: number }>(
+    `SELECT id FROM public.users WHERE username=$1 LIMIT 1`,
+    [username],
+  );
+  if (!row) throw new Error(`Az admin E2E user nem található: ${username}`);
   return Number(row.id);
 }
 

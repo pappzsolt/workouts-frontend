@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import {
   apiFor,
-  anotherUserId,
+  adminUserId,
   assignExercise,
   coachUserId,
   createExercise,
@@ -232,22 +232,35 @@ test.describe('User - UserWorkout endpoint matrix', () => {
     }
   });
 
-  test('NEGATIVE OWNERSHIP: user nem módosíthat ténylegesen másik user workoutját', async ({ page }) => {
+  test('NEGATIVE OWNERSHIP: user nem módosíthat másik users rekordhoz tartozó workoutot', async ({ page }) => {
     await login(page, 'coach');
     const coachApi = await apiFor(page);
-    const ownUserId = await coachUserId();
-    const foreignUserId = await anotherUserId(ownUserId);
-    const programId = await createProgram(coachApi, `E2E FOREIGN UW PROGRAM ${suffix()}`);
-    const workoutId = await createWorkout(coachApi, `E2E FOREIGN UW WORKOUT ${suffix()}`);
+    const foreignUserId = await adminUserId();
+
+    const programId = await createProgram(
+      coachApi,
+      `E2E FOREIGN UW PROGRAM ${suffix()}`,
+    );
+    const workoutId = await createWorkout(
+      coachApi,
+      `E2E FOREIGN UW WORKOUT ${suffix()}`,
+    );
+    const exerciseId = await createExercise(
+      coachApi,
+      `E2E FOREIGN UW EXERCISE ${suffix()}`,
+    );
 
     try {
       await success(
-        await coachApi.post('/api/programs/assign', {
-          data: { userId: foreignUserId, programId },
+        await coachApi.post('/api/workout-exercises/assign', {
+          params: { workoutId, exerciseId },
         }),
-        'assign foreign user',
+        'assign foreign-workout exercise',
       );
 
+      // A program-workout kapcsolatot még a foreign account hozzárendelése
+      // előtt hozzuk létre, így a coach oldali automatikus USER_WORKOUT
+      // létrehozása nem fut le foreign userre.
       const pw = await success(
         await coachApi.post('/api/program-workouts/add', {
           data: { programId, workoutId, dayIndex: 1 },
@@ -256,54 +269,90 @@ test.describe('User - UserWorkout endpoint matrix', () => {
       );
 
       const programWorkoutId = Number(pw.data?.id);
-
-      const foreignUw = await dbOne<{ id: number }>(
-        `SELECT id
-           FROM public.user_workouts
-          WHERE user_id=$1 AND program_workout_id=$2
-          ORDER BY id DESC LIMIT 1`,
-        [foreignUserId, programWorkoutId],
-      );
-
-      expect(foreignUw).not.toBeNull();
-      const foreignUserWorkoutId = Number(foreignUw!.id);
+      expect(programWorkoutId).toBeGreaterThan(0);
 
       await coachApi.dispose();
-      await login(page, 'user');
-      const userApi = await apiFor(page);
 
-      const before = await dbOne<{ scheduled_at: string }>(
-        `SELECT scheduled_at::text AS scheduled_at
+      // Az adatbázis dumpban a második users-rekord az admin (id=319).
+      // Az admin API-n keresztül jogosan létrehozható hozzá USER_WORKOUT,
+      // így az ownership teszt valódi API-flow-t vizsgál, nem közvetlen DB
+      // beszúrást.
+      await login(page, 'admin');
+      const adminApi = await apiFor(page);
+
+      await success(
+        await adminApi.post('/api/programs/assign', {
+          data: { userId: foreignUserId, programId },
+        }),
+        'admin assigns program to foreign users record',
+      );
+
+      const created = await success(
+        await adminApi.post('/api/user-workout-exercises/create-with-exercises', {
+          data: {
+            userId: foreignUserId,
+            programId,
+            scheduledAt: '2035-05-01',
+          },
+        }),
+        'admin creates foreign user workout',
+      );
+
+      expect(Array.isArray(created.data)).toBeTruthy();
+      expect(created.data).toHaveLength(1);
+
+      const foreignUserWorkoutId = Number(created.data[0]);
+      expect(foreignUserWorkoutId).toBeGreaterThan(0);
+
+      const before = await dbOne<{ scheduled_at: string; user_id: number }>(
+        `SELECT scheduled_at::text AS scheduled_at, user_id
            FROM public.user_workouts
           WHERE id=$1`,
         [foreignUserWorkoutId],
       );
 
       expect(before).not.toBeNull();
+      expect(Number(before!.user_id)).toBe(foreignUserId);
+
+      await adminApi.dispose();
+
+      await login(page, 'user');
+      const userApi = await apiFor(page);
 
       await rejected(
         await userApi.patch('/api/user-workout-exercises/reschedule-user-workout', {
           data: {
             userWorkoutId: foreignUserWorkoutId,
-            scheduledAt: '2035-05-01',
+            scheduledAt: '2035-05-02',
           },
         }),
         'PATCH foreign user workout',
       );
 
-      const after = await dbOne<{ scheduled_at: string }>(
-        `SELECT scheduled_at::text AS scheduled_at
+      const after = await dbOne<{ scheduled_at: string; user_id: number }>(
+        `SELECT scheduled_at::text AS scheduled_at, user_id
            FROM public.user_workouts
           WHERE id=$1`,
         [foreignUserWorkoutId],
       );
 
       expect(after?.scheduled_at).toBe(before?.scheduled_at);
+      expect(Number(after?.user_id)).toBe(foreignUserId);
+
       await userApi.dispose();
     } finally {
       await login(page, 'coach');
       const cleanup = await apiFor(page);
       await deleteProgram(cleanup, programId);
+
+      await success(
+        await cleanup.delete('/api/workout-exercises/delete', {
+          params: { workoutId, exerciseId },
+        }),
+        'DELETE foreign workout exercise relation',
+      );
+
+      await deleteExercise(cleanup, exerciseId);
       await deleteWorkout(cleanup, workoutId);
       await cleanup.dispose();
     }
