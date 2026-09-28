@@ -1,0 +1,1 @@
+npx playwright test tests/coach-workout-write.spec.ts --headed
