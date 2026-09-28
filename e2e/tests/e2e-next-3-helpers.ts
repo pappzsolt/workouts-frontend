@@ -91,18 +91,32 @@ export async function currentUserId(): Promise<number> {
   return Number(row.id);
 }
 
-export async function anotherUserId(excludeUserId: number): Promise<number> {
+export async function anotherCoachClientUserId(
+  excludeUserId: number,
+): Promise<number> {
   const row = await dbOne<{ id: number }>(
-    `SELECT id FROM public.users WHERE id <> $1 ORDER BY id LIMIT 1`,
-    [excludeUserId],
+    `SELECT u.id
+       FROM public.users u
+      WHERE u.id <> $1
+        AND u.coach_id = (
+          SELECT c.id
+            FROM public.users coach_user
+            JOIN public.coaches c ON c.id = coach_user.coach_id
+           WHERE coach_user.username = $2
+           LIMIT 1
+        )
+      ORDER BY u.id
+      LIMIT 1`,
+    [excludeUserId, process.env.E2E_COACH_USERNAME],
   );
   if (!row) {
     throw new Error(
-      `Ownership E2E teszthez szükséges másik user, de nincs másik rekord a public.users táblában.`,
+      'Ownership E2E teszthez szükséges másik, ugyanahhoz a coachhoz tartozó user.',
     );
   }
   return Number(row.id);
 }
+
 
 export async function coachUserId(): Promise<number> {
   const username = process.env.E2E_COACH_USERNAME;
