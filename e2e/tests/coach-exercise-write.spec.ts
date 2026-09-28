@@ -2,6 +2,7 @@ import { expect, request, test, type Page } from '@playwright/test';
 
 import {
   assertExerciseDescriptionInDatabase,
+  assertExerciseDeleted,
   assertExerciseUnchangedExceptDescription,
   closeExerciseDatabase,
   getExerciseInDatabase,
@@ -439,12 +440,169 @@ async function updateDescriptionThroughUi(
   ).toBe(newDescription);
 }
 
+
+async function deleteExerciseAsCurrentCoach(
+  page: Page,
+  exerciseId: number,
+): Promise<void> {
+  const token = await page.evaluate(() => localStorage.getItem('accessToken'));
+
+  if (!token) {
+    throw new Error('Cleanup: accessToken nem található.');
+  }
+
+  const api = await request.newContext({
+    baseURL: BASE_API_URL,
+    extraHTTPHeaders: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  try {
+    const response = await api.delete(`/api/exercises/delete/${exerciseId}`);
+    const body = await response.text();
+
+    expect(
+      response.ok(),
+      `DELETE /api/exercises/delete/${exerciseId}: ${response.status()} ${body}`,
+    ).toBeTruthy();
+  } finally {
+    await api.dispose();
+  }
+}
+
+async function createExerciseThroughUi(
+  page: Page,
+): Promise<{
+  id: number;
+  name: string;
+  description: string;
+}> {
+  const suffix = uniqueSuffix();
+  const exercise = {
+    name: `E2E CREATE Exercise ${suffix}`,
+    description: `E2E CREATE Exercise description ${suffix}`,
+    imageUrl: '',
+    videoUrl: '',
+    muscleGroup: 'e2e',
+    equipment: 'e2e',
+    difficultyLevel: 'medium',
+    category: 'e2e',
+    caloriesBurnedPerMinute: 5,
+    durationSeconds: 60,
+  };
+
+  await page.goto('/coach/exercises/new');
+  await expect(page.locator('app-new-exercise')).toBeAttached({
+    timeout: 15_000,
+  });
+
+  const form = page.locator('app-new-exercise form').first();
+
+  await form.locator('#name').fill(exercise.name);
+  await form.locator('#description').fill(exercise.description);
+  await form.locator('#imageUrl').fill(exercise.imageUrl);
+  await form.locator('#videoUrl').fill(exercise.videoUrl);
+  await form.locator('#muscleGroup').fill(exercise.muscleGroup);
+  await form.locator('#equipment').fill(exercise.equipment);
+  await form.locator('#difficultyLevel').locator('select').selectOption('medium').catch(async () => {
+    // app-select may expose the native select directly in some Angular builds.
+    await form.locator('select#difficultyLevel').selectOption('medium');
+  });
+  await form.locator('#category').fill(exercise.category);
+  await form.locator('#caloriesBurnedPerMinute').fill(String(exercise.caloriesBurnedPerMinute));
+  await form.locator('#durationSeconds').fill(String(exercise.durationSeconds));
+
+  const responsePromise = page.waitForResponse((response) => {
+    const url = new URL(response.url());
+    return (
+      response.request().method() === 'POST' &&
+      url.pathname.endsWith('/api/exercises/add')
+    );
+  });
+
+  await form.locator('button[type="submit"]').click();
+
+  const response = await responsePromise;
+  const responseBody = await response.json();
+  const requestBody =
+    response.request().postDataJSON() as Record<string, unknown>;
+
+  expect(response.ok(), `POST /api/exercises/add: ${response.status()}`).toBeTruthy();
+  expect(responseBody.success).toBeTruthy();
+  expect(responseBody.data).toBeTruthy();
+
+  expect(requestBody.name).toBe(exercise.name);
+  expect(requestBody.description).toBe(exercise.description);
+  expect(requestBody.muscleGroup).toBe(exercise.muscleGroup);
+  expect(requestBody.equipment).toBe(exercise.equipment);
+  expect(requestBody.difficultyLevel).toBe(exercise.difficultyLevel);
+  expect(requestBody.category).toBe(exercise.category);
+  expect(Number(requestBody.caloriesBurnedPerMinute)).toBe(
+    exercise.caloriesBurnedPerMinute,
+  );
+  expect(Number(requestBody.durationSeconds)).toBe(exercise.durationSeconds);
+
+  const id = Number(responseBody.data.id);
+
+  expect(Number.isInteger(id) && id > 0).toBeTruthy();
+
+  return {
+    id,
+    name: exercise.name,
+    description: exercise.description,
+  };
+}
+
 test.describe(
-  'Coach - Exercise UPDATE / PostgreSQL',
+  'Coach - Exercise CREATE / UPDATE / DELETE / PostgreSQL',
   () => {
+    test.describe.configure({ mode: 'serial' });
     test.afterAll(async () => {
       await closeExerciseDatabase();
     });
+
+    test(
+      'CREATE: UI → POST → PostgreSQL → cleanup → PostgreSQL',
+      async ({ page }) => {
+        await loginAsCoach(page);
+
+        let exerciseId: number | undefined;
+
+        try {
+          const created = await createExerciseThroughUi(page);
+          exerciseId = created.id;
+
+          const db = await getExerciseInDatabase(exerciseId, LANGUAGE);
+
+          console.log('');
+          console.log('============================================================');
+          console.log('[E2E EXERCISE CREATE] LÉTREHOZVA');
+          console.log(`exerciseId       : ${exerciseId}`);
+          console.log(`language         : ${LANGUAGE}`);
+          console.log(`name             : ${JSON.stringify(db.name)}`);
+          console.log(`description      : ${JSON.stringify(db.description)}`);
+          console.log('============================================================');
+          console.log('');
+
+          expect(db.id).toBe(exerciseId);
+          expect(db.name).toBe(created.name);
+          expect(db.description).toBe(created.description);
+          expect(db.language_code.toLowerCase()).toBe(LANGUAGE.toLowerCase());
+          expect(db.muscle_group).toBe('e2e');
+          expect(db.equipment).toBe('e2e');
+          expect(db.difficulty_level).toBe('medium');
+          expect(db.category).toBe('e2e');
+          expect(Number(db.calories_burned_per_minute)).toBe(5);
+          expect(Number(db.duration_seconds)).toBe(60);
+        } finally {
+          if (exerciseId !== undefined) {
+            await deleteExerciseAsCurrentCoach(page, exerciseId);
+            await assertExerciseDeleted(exerciseId);
+          }
+        }
+      },
+    );
 
     test(
       'UPDATE: csak description módosítása → API/DB verification → reload → restore',
@@ -704,5 +862,104 @@ test.describe(
         );
       },
     );
+
+    test(
+      'DELETE: CREATE → DELETE API → PostgreSQL cleanup verification',
+      async ({ page }) => {
+        await loginAsCoach(page);
+
+        const created = await createExerciseThroughUi(page);
+
+        console.log('');
+        console.log('============================================================');
+        console.log('[E2E EXERCISE DELETE] TÖRLÉS ELŐTT');
+        console.log(`exerciseId       : ${created.id}`);
+        console.log(`name             : ${JSON.stringify(created.name)}`);
+        console.log(`description      : ${JSON.stringify(created.description)}`);
+        console.log('============================================================');
+        console.log('');
+
+        await deleteExerciseAsCurrentCoach(page, created.id);
+        await assertExerciseDeleted(created.id);
+      },
+    );
+
+    test(
+      'NEGATIVE: CREATE üres névvel → API elutasítja',
+      async ({ page }) => {
+        await loginAsCoach(page);
+
+        await page.goto('/coach/exercises/new');
+        const form = page.locator('app-new-exercise form').first();
+
+        await form.locator('#name').fill('');
+        await form.locator('#description').fill(
+          `E2E NEGATIVE Exercise ${uniqueSuffix()}`,
+        );
+
+        // A gombnak a required name miatt disablednek kell lennie.
+        // Ebben az esetben a UI szándékosan NEM küld POST kérést.
+        // A backend validációt külön, autentikált API hívással ellenőrizzük lent.
+        await expect(form.locator('button[type="submit"]')).toBeDisabled();
+
+        // A backend API-t közvetlenül is ellenőrizzük, hogy ne csak UI-validációra támaszkodjunk.
+        const token = await page.evaluate(() => localStorage.getItem('accessToken'));
+        expect(token).toBeTruthy();
+
+        const api = await request.newContext({
+          baseURL: BASE_API_URL,
+          extraHTTPHeaders: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        try {
+          const response = await api.post('/api/exercises/add?language=hu', {
+            data: {
+              name: '',
+              description: 'E2E NEGATIVE',
+            },
+          });
+
+          expect(response.ok()).toBeFalsy();
+          expect(response.status()).toBeGreaterThanOrEqual(400);
+        } finally {
+          await api.dispose();
+        }
+      },
+    );
+
+    test(
+      'NEGATIVE: UPDATE nem létező exercise ID → API elutasítja',
+      async ({ page }) => {
+        await loginAsCoach(page);
+
+        const token = await page.evaluate(() => localStorage.getItem('accessToken'));
+        expect(token).toBeTruthy();
+
+        const api = await request.newContext({
+          baseURL: BASE_API_URL,
+          extraHTTPHeaders: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        try {
+          const response = await api.put('/api/exercises/update?language=hu', {
+            data: {
+              id: 2147483000,
+              name: `E2E NEGATIVE ${uniqueSuffix()}`,
+              description: 'E2E NEGATIVE',
+            },
+          });
+
+          expect(response.ok()).toBeFalsy();
+          expect(response.status()).toBeGreaterThanOrEqual(400);
+        } finally {
+          await api.dispose();
+        }
+      },
+    );
+
   },
 );

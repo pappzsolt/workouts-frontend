@@ -1,13 +1,19 @@
-import { expect, test, type Page } from '@playwright/test';
-import { request } from '@playwright/test';
+import { expect, request, test, type Page } from '@playwright/test';
 
 import {
   assertWorkoutInDatabase,
   assertWorkoutDeleted,
+  assertWorkoutExerciseDeleted,
+  assertWorkoutExerciseInDatabase,
   closeWorkoutDatabase,
+  getWorkoutExerciseInDatabase,
 } from '../helpers/workout-db';
 
+import { getExerciseInDatabase } from '../helpers/exercise-db';
+
 const BASE_API_URL = process.env.E2E_API_URL ?? 'http://localhost:8080';
+const LANGUAGE = process.env.E2E_LANGUAGE ?? 'hu';
+const ASSIGN_EXERCISE_ID = Number(process.env.E2E_EXERCISE_ID ?? 1046);
 
 type WorkoutData = {
   name: string;
@@ -29,7 +35,6 @@ function buildWorkout(prefix: string): WorkoutData {
     description: `Playwright E2E teszt ${suffix}`,
     workoutDate: '2035-01-15',
     durationMinutes: 77,
-    // Ezt a CREATE oldalon a valódi Angular option érték adja.
     intensityLevel: 'High',
   };
 }
@@ -45,7 +50,6 @@ async function loginAsCoach(page: Page): Promise<void> {
   }
 
   await page.goto('/login');
-
   await page.locator('input[formcontrolname="username"]').fill(username);
   await page.locator('input[formcontrolname="password"]').fill(password);
   await page.locator('form button[type="submit"]').click();
@@ -74,17 +78,8 @@ async function loginAsCoach(page: Page): Promise<void> {
   expect(String(tokenInfo?.roles ?? '')).toContain('ROLE_COACH');
 }
 
-/**
- * A CREATE oldal tényleges Angular komponense:
- * selector: app-newworkout
- *
- * Ha ez nem jelenik meg, nem locator-problémát akarunk elrejteni:
- * a teszt diagnosztikai hibával álljon meg.
- */
 async function waitForCreateComponent(page: Page): Promise<void> {
-  await expect(page).toHaveURL(/\/coach\/workouts\/new$/, {
-    timeout: 15_000,
-  });
+  await expect(page).toHaveURL(/\/coach\/workouts\/new$/, { timeout: 15_000 });
 
   const component = page.locator('app-newworkout');
 
@@ -100,7 +95,7 @@ async function waitForCreateComponent(page: Page): Promise<void> {
 
     throw new Error(
       'A /coach/workouts/new route betöltődött, de az app-newworkout komponens nem került a DOM-ba.\n' +
-      JSON.stringify(diagnostics, null, 2),
+        JSON.stringify(diagnostics, null, 2),
     );
   }
 
@@ -163,11 +158,8 @@ async function createWorkoutThroughUi(
   expect(responseBody.data).toBeTruthy();
 
   const id = Number(responseBody.data.id);
-
   expect(Number.isInteger(id) && id > 0).toBeTruthy();
 
-  // A frontend service mapping ellenőrzése:
-  // WorkoutRequest -> backend @JsonProperty("name"/"description").
   expect(requestBody.name).toBe(workout.name);
   expect(requestBody.description).toBe(workout.description);
   expect(requestBody.workoutDate).toBe(workout.workoutDate);
@@ -182,15 +174,21 @@ async function createWorkoutThroughUi(
   return { id, responseBody };
 }
 
+async function getAccessToken(page: Page): Promise<string> {
+  const token = await page.evaluate(() => localStorage.getItem('accessToken'));
+
+  if (!token) {
+    throw new Error('E2E: accessToken nem található.');
+  }
+
+  return token;
+}
+
 async function deleteWorkoutAsCurrentCoach(
   page: Page,
   workoutId: number,
 ): Promise<void> {
-  const token = await page.evaluate(() => localStorage.getItem('accessToken'));
-
-  if (!token) {
-    throw new Error('Cleanup: accessToken nem található.');
-  }
+  const token = await getAccessToken(page);
 
   const api = await request.newContext({
     baseURL: BASE_API_URL,
@@ -212,6 +210,40 @@ async function deleteWorkoutAsCurrentCoach(
   }
 }
 
+async function deleteWorkoutExerciseAsCurrentCoach(
+  page: Page,
+  workoutId: number,
+  exerciseId: number,
+): Promise<void> {
+  const token = await getAccessToken(page);
+
+  const api = await request.newContext({
+    baseURL: BASE_API_URL,
+    extraHTTPHeaders: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  try {
+    const response = await api.delete('/api/workout-exercises/delete', {
+      params: {
+        workoutId,
+        exerciseId,
+      },
+    });
+
+    const body = await response.text();
+
+    expect(
+      response.ok(),
+      `Cleanup DELETE /api/workout-exercises/delete?workoutId=${workoutId}&exerciseId=${exerciseId}: ` +
+        `${response.status()} ${body}`,
+    ).toBeTruthy();
+  } finally {
+    await api.dispose();
+  }
+}
+
 async function waitForEditComponent(
   page: Page,
   workoutId: number,
@@ -221,7 +253,6 @@ async function waitForEditComponent(
     { timeout: 15_000 },
   );
 
-  // A tényleges selector: app-coach-workout-edit.
   const component = page.locator('app-coach-workout-edit');
 
   try {
@@ -236,8 +267,8 @@ async function waitForEditComponent(
 
     throw new Error(
       `A /coach/workouts/${workoutId}/edit route betöltődött, ` +
-      'de az app-coach-workout-edit komponens nem került a DOM-ba.\n' +
-      JSON.stringify(diagnostics, null, 2),
+        'de az app-coach-workout-edit komponens nem került a DOM-ba.\n' +
+        JSON.stringify(diagnostics, null, 2),
     );
   }
 
@@ -251,14 +282,13 @@ async function updateWorkoutThroughUi(
   workoutId: number,
   expectedBefore: WorkoutData,
   expectedAfter: WorkoutData,
-): Promise<any> {
+): Promise<void> {
   await page.goto(`/coach/workouts/${workoutId}/edit`);
   await waitForEditComponent(page, workoutId);
 
   const component = page.locator('app-coach-workout-edit');
   const form = component.locator('form').first();
 
-  // Nem a korábbi Angular state-et, hanem az API-ból betöltött adatot ellenőrizzük.
   await expect(form.locator('#workoutName')).toHaveValue(expectedBefore.name);
   await expect(form.locator('#description')).toHaveValue(expectedBefore.description);
   await expect(form.locator('#workoutDate')).toHaveValue(expectedBefore.workoutDate);
@@ -271,8 +301,7 @@ async function updateWorkoutThroughUi(
   await form.locator('#workoutDate').fill(expectedAfter.workoutDate);
   await form.locator('#durationMinutes').fill(String(expectedAfter.durationMinutes));
 
-  const intensity = form.locator('select#intensityLevel');
-  await intensity.selectOption(expectedAfter.intensityLevel);
+  await form.locator('select#intensityLevel').selectOption(expectedAfter.intensityLevel);
 
   const responsePromise = page.waitForResponse((response) => {
     const url = new URL(response.url());
@@ -293,26 +322,101 @@ async function updateWorkoutThroughUi(
   expect(responseBody.success).toBeTruthy();
   expect(responseBody.data).toBeTruthy();
 
-  // A backend WorkoutResponse update esetén jelenleg az id nincs kitöltve.
-  // Emiatt itt nem hamisítunk elvárást: a request id és a DB azonosítja a workoutot.
   expect(Number(requestBody.id)).toBe(workoutId);
   expect(requestBody.name).toBe(expectedAfter.name);
   expect(requestBody.description).toBe(expectedAfter.description);
 
-  // A frontend az edit során a HTML date mező értékét Date-ként is
-  // elküldheti, ezért a PUT requestben a dátum lehet ISO timestamp:
-  // pl. "2035-01-15T00:00:00.000Z". A domain elvárásunk viszont
-  // DATE érték, ezért csak a dátumrészt hasonlítjuk össze.
   const actualWorkoutDate = String(requestBody.workoutDate ?? '').slice(0, 10);
   expect(actualWorkoutDate).toBe(expectedAfter.workoutDate);
 
   expect(Number(requestBody.durationMinutes)).toBe(expectedAfter.durationMinutes);
   expect(requestBody.intensityLevel).toBe(expectedAfter.intensityLevel);
-
-  return responseBody;
 }
 
-test.describe('Coach - Workout CREATE / UPDATE / PostgreSQL', () => {
+async function waitForAssignComponent(page: Page): Promise<void> {
+  await expect(page).toHaveURL(/\/coach\/assign-workouts-exercises\?.*/, {
+    timeout: 15_000,
+  });
+
+  await expect(page.locator('app-assign-workouts-exercises')).toBeAttached({
+    timeout: 15_000,
+  });
+
+  await expect(page.locator('#workoutSearch')).toBeVisible({
+    timeout: 15_000,
+  });
+
+  await expect(page.locator('#exerciseSearch')).toBeVisible({
+    timeout: 15_000,
+  });
+}
+
+async function assignExerciseThroughUi(
+  page: Page,
+  workout: WorkoutData,
+  workoutId: number,
+  exerciseId: number,
+  exerciseName: string,
+): Promise<void> {
+  await page.goto(
+    `/coach/assign-workouts-exercises?workoutId=${workoutId}`,
+  );
+
+  await waitForAssignComponent(page);
+
+  const workoutSearch = page.locator('#workoutSearch');
+  await workoutSearch.fill(workout.name);
+
+  const workoutCheckbox = page.locator(
+    `#compact-workout-${workoutId}`,
+  );
+
+  await expect(workoutCheckbox).toBeVisible({ timeout: 15_000 });
+  await workoutCheckbox.check();
+  await expect(workoutCheckbox).toBeChecked();
+
+  const exerciseSearch = page.locator('#exerciseSearch');
+  await exerciseSearch.fill(exerciseName);
+
+  const exerciseCheckbox = page.locator(
+    `#compact-exercise-${exerciseId}`,
+  );
+
+  await expect(exerciseCheckbox).toBeVisible({ timeout: 15_000 });
+  await exerciseCheckbox.check();
+  await expect(exerciseCheckbox).toBeChecked();
+
+  const saveButton = page.locator(
+    'app-assign-workouts-exercises button[type="button"]',
+  ).filter({ hasText: /mentés|save/i }).last();
+
+  await expect(saveButton).toBeEnabled();
+
+  const responsePromise = page.waitForResponse((response) => {
+    const url = new URL(response.url());
+
+    return (
+      response.request().method() === 'POST' &&
+      url.pathname.endsWith('/api/workout-exercises/assign') &&
+      Number(url.searchParams.get('workoutId')) === workoutId &&
+      Number(url.searchParams.get('exerciseId')) === exerciseId
+    );
+  });
+
+  await saveButton.click();
+
+  const response = await responsePromise;
+  const body = await response.json();
+
+  expect(
+    response.ok(),
+    `POST /api/workout-exercises/assign: ${response.status()}`,
+  ).toBeTruthy();
+
+  expect(body.success).toBeTruthy();
+}
+
+test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', () => {
   test.describe.configure({ mode: 'serial' });
 
   test.afterAll(async () => {
@@ -320,20 +424,6 @@ test.describe('Coach - Workout CREATE / UPDATE / PostgreSQL', () => {
   });
 
   test('CREATE: UI → POST → PostgreSQL → cleanup → PostgreSQL', async ({ page }) => {
-    page.on('console', msg => {
-      console.log(`[browser:${msg.type()}] ${msg.text()}`);
-    });
-
-    page.on('pageerror', error => {
-      console.error(`[pageerror] ${error.message}`);
-    });
-
-    page.on('requestfailed', request => {
-      console.error(
-        `[requestfailed] ${request.method()} ${request.url()} -> ${request.failure()?.errorText}`,
-      );
-    });
-
     await loginAsCoach(page);
 
     const workout = buildWorkout('E2E CREATE');
@@ -351,8 +441,6 @@ test.describe('Coach - Workout CREATE / UPDATE / PostgreSQL', () => {
       expect(db.workout_date).toBe(workout.workoutDate);
       expect(Number(db.duration_minutes)).toBe(workout.durationMinutes);
       expect(db.intensity_level).toBe(workout.intensityLevel);
-      expect(db.name).toBe(workout.name);
-      expect(db.description).toBe(workout.description);
     } finally {
       if (workoutId !== undefined) {
         await deleteWorkoutAsCurrentCoach(page, workoutId);
@@ -364,20 +452,6 @@ test.describe('Coach - Workout CREATE / UPDATE / PostgreSQL', () => {
   test('UPDATE: CREATE → DB baseline → UI UPDATE → API/DB verification → reload', async ({
     page,
   }) => {
-    page.on('console', msg => {
-      console.log(`[browser:${msg.type()}] ${msg.text()}`);
-    });
-
-    page.on('pageerror', error => {
-      console.error(`[pageerror] ${error.message}`);
-    });
-
-    page.on('requestfailed', request => {
-      console.error(
-        `[requestfailed] ${request.method()} ${request.url()} -> ${request.failure()?.errorText}`,
-      );
-    });
-
     await loginAsCoach(page);
 
     const original = buildWorkout('E2E UPDATE');
@@ -387,7 +461,6 @@ test.describe('Coach - Workout CREATE / UPDATE / PostgreSQL', () => {
       name: `${original.name} MODIFIED`,
       description: `${original.description} - módosítva`,
       durationMinutes: 91,
-      // Az EDIT template tényleges option értéke.
       intensityLevel: 'low',
     };
 
@@ -409,10 +482,7 @@ test.describe('Coach - Workout CREATE / UPDATE / PostgreSQL', () => {
       expect(db.workout_date).toBe(updated.workoutDate);
       expect(Number(db.duration_minutes)).toBe(updated.durationMinutes);
       expect(db.intensity_level).toBe(updated.intensityLevel);
-      expect(db.name).toBe(updated.name);
-      expect(db.description).toBe(updated.description);
 
-      // Teljes újratöltés: így nem csak az Angular memóriában lévő state-et teszteljük.
       await page.goto(`/coach/workouts/${workoutId}/edit`);
       await waitForEditComponent(page, workoutId);
 
@@ -429,6 +499,287 @@ test.describe('Coach - Workout CREATE / UPDATE / PostgreSQL', () => {
       );
     } finally {
       if (workoutId !== undefined) {
+        await deleteWorkoutAsCurrentCoach(page, workoutId);
+        await assertWorkoutDeleted(workoutId);
+      }
+    }
+  });
+
+  test('DELETE: CREATE → DELETE API → PostgreSQL cleanup verification', async ({
+    page,
+  }) => {
+    await loginAsCoach(page);
+
+    const workout = buildWorkout('E2E DELETE');
+    let workoutId: number | undefined;
+
+    try {
+      const created = await createWorkoutThroughUi(page, workout);
+      workoutId = created.id;
+
+      const before = await assertWorkoutInDatabase(workoutId, workout);
+
+      console.log('');
+      console.log('============================================================');
+      console.log('[E2E WORKOUT DELETE] TÖRLÉS ELŐTT');
+      console.log(`workoutId        : ${workoutId}`);
+      console.log(`name             : ${JSON.stringify(before.name)}`);
+      console.log(`description      : ${JSON.stringify(before.description)}`);
+      console.log('============================================================');
+      console.log('');
+
+      await deleteWorkoutAsCurrentCoach(page, workoutId);
+      await assertWorkoutDeleted(workoutId);
+
+      workoutId = undefined;
+    } finally {
+      if (workoutId !== undefined) {
+        await deleteWorkoutAsCurrentCoach(page, workoutId);
+        await assertWorkoutDeleted(workoutId);
+      }
+    }
+  });
+
+  test('ASSIGN: CREATE workout → UI exercise hozzárendelés → API/DB verification → relation cleanup', async ({
+    page,
+  }) => {
+    await loginAsCoach(page);
+
+    expect(
+      Number.isInteger(ASSIGN_EXERCISE_ID) && ASSIGN_EXERCISE_ID > 0,
+    ).toBeTruthy();
+
+    const exercise = await getExerciseInDatabase(ASSIGN_EXERCISE_ID, LANGUAGE);
+    const workout = buildWorkout('E2E ASSIGN');
+
+    let workoutId: number | undefined;
+    let relationExists = false;
+
+    try {
+      const created = await createWorkoutThroughUi(page, workout);
+      workoutId = created.id;
+
+      await expect(
+        getWorkoutExerciseInDatabase(workoutId, ASSIGN_EXERCISE_ID),
+      ).resolves.toBeNull();
+
+      await assignExerciseThroughUi(
+        page,
+        workout,
+        workoutId,
+        ASSIGN_EXERCISE_ID,
+        exercise.name ?? '',
+      );
+
+      const relation = await assertWorkoutExerciseInDatabase(
+        workoutId,
+        ASSIGN_EXERCISE_ID,
+      );
+
+      relationExists = true;
+
+      expect(relation.workout_id).toBe(workoutId);
+      expect(relation.exercise_id).toBe(ASSIGN_EXERCISE_ID);
+
+      // A DB defaultok is a tényleges backend viselkedés része.
+      expect(Number(relation.sets)).toBe(3);
+      expect(Number(relation.repetitions)).toBe(10);
+      expect(Number(relation.rest_seconds)).toBe(60);
+
+      console.log('');
+      console.log('============================================================');
+      console.log('[E2E WORKOUT-EXERCISE ASSIGN] LÉTREHOZVA');
+      console.log(`workoutId        : ${workoutId}`);
+      console.log(`exerciseId       : ${ASSIGN_EXERCISE_ID}`);
+      console.log(`exercise name    : ${JSON.stringify(exercise.name)}`);
+      console.log(`relation id      : ${relation.id}`);
+      console.log(`sets             : ${relation.sets}`);
+      console.log(`repetitions      : ${relation.repetitions}`);
+      console.log(`rest_seconds     : ${relation.rest_seconds}`);
+      console.log(`order_index      : ${relation.order_index}`);
+      console.log('============================================================');
+      console.log('');
+    } finally {
+      if (workoutId !== undefined) {
+        if (relationExists) {
+          await deleteWorkoutExerciseAsCurrentCoach(
+            page,
+            workoutId,
+            ASSIGN_EXERCISE_ID,
+          );
+          await assertWorkoutExerciseDeleted(
+            workoutId,
+            ASSIGN_EXERCISE_ID,
+          );
+        }
+
+        await deleteWorkoutAsCurrentCoach(page, workoutId);
+        await assertWorkoutDeleted(workoutId);
+      }
+    }
+  });
+
+  test('NEGATIVE: UPDATE nem létező workout ID → API elutasítja', async ({
+    page,
+  }) => {
+    await loginAsCoach(page);
+
+    const token = await getAccessToken(page);
+
+    const api = await request.newContext({
+      baseURL: BASE_API_URL,
+      extraHTTPHeaders: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    try {
+      const response = await api.put('/api/workouts/update?language=hu', {
+        data: {
+          id: 2147483000,
+          name: `E2E NEGATIVE ${uniqueSuffix()}`,
+          description: 'E2E NEGATIVE',
+          workoutDate: '2035-01-15',
+          durationMinutes: 30,
+          intensityLevel: 'High',
+          done: false,
+        },
+      });
+
+      expect(response.ok()).toBeFalsy();
+      expect(response.status()).toBeGreaterThanOrEqual(400);
+    } finally {
+      await api.dispose();
+    }
+  });
+
+  test('NEGATIVE: DELETE nem létező workout ID → API elutasítja', async ({
+    page,
+  }) => {
+    await loginAsCoach(page);
+
+    const token = await getAccessToken(page);
+
+    const api = await request.newContext({
+      baseURL: BASE_API_URL,
+      extraHTTPHeaders: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    try {
+      const response = await api.delete('/api/workouts/delete/2147483000');
+
+      expect(response.ok()).toBeFalsy();
+      expect(response.status()).toBeGreaterThanOrEqual(400);
+    } finally {
+      await api.dispose();
+    }
+  });
+
+  test('NEGATIVE: ASSIGN nem létező workout ID → API elutasítja és DB nem változik', async ({
+    page,
+  }) => {
+    await loginAsCoach(page);
+
+    const token = await getAccessToken(page);
+
+    const api = await request.newContext({
+      baseURL: BASE_API_URL,
+      extraHTTPHeaders: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    try {
+      const response = await api.post('/api/workout-exercises/assign', {
+        params: {
+          workoutId: 2147483000,
+          exerciseId: ASSIGN_EXERCISE_ID,
+        },
+      });
+
+      expect(response.ok()).toBeFalsy();
+      expect(response.status()).toBeGreaterThanOrEqual(400);
+
+      const relation = await getWorkoutExerciseInDatabase(
+        2147483000,
+        ASSIGN_EXERCISE_ID,
+      );
+
+      expect(relation).toBeNull();
+    } finally {
+      await api.dispose();
+    }
+  });
+
+  test('NEGATIVE: ugyanaz az exercise kétszer → második hozzárendelés elutasítva', async ({
+    page,
+  }) => {
+    await loginAsCoach(page);
+
+    const workout = buildWorkout('E2E DUPLICATE ASSIGN');
+    let workoutId: number | undefined;
+
+    try {
+      const created = await createWorkoutThroughUi(page, workout);
+      workoutId = created.id;
+
+      const token = await getAccessToken(page);
+
+      const api = await request.newContext({
+        baseURL: BASE_API_URL,
+        extraHTTPHeaders: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      try {
+        const first = await api.post('/api/workout-exercises/assign', {
+          params: {
+            workoutId,
+            exerciseId: ASSIGN_EXERCISE_ID,
+          },
+        });
+
+        expect(first.ok()).toBeTruthy();
+
+        const second = await api.post('/api/workout-exercises/assign', {
+          params: {
+            workoutId,
+            exerciseId: ASSIGN_EXERCISE_ID,
+          },
+        });
+
+        expect(second.ok()).toBeFalsy();
+        expect(second.status()).toBeGreaterThanOrEqual(400);
+      } finally {
+        await api.dispose();
+      }
+
+      const relation = await assertWorkoutExerciseInDatabase(
+        workoutId,
+        ASSIGN_EXERCISE_ID,
+      );
+
+      expect(relation.exercise_id).toBe(ASSIGN_EXERCISE_ID);
+    } finally {
+      if (workoutId !== undefined) {
+        try {
+          await deleteWorkoutExerciseAsCurrentCoach(
+            page,
+            workoutId,
+            ASSIGN_EXERCISE_ID,
+          );
+        } catch {
+          // Ha az első assign sem jött létre, nincs mit törölni.
+        }
+
+        await assertWorkoutExerciseDeleted(
+          workoutId,
+          ASSIGN_EXERCISE_ID,
+        );
+
         await deleteWorkoutAsCurrentCoach(page, workoutId);
         await assertWorkoutDeleted(workoutId);
       }

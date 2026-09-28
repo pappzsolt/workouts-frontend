@@ -232,9 +232,116 @@ GROUP BY w.id
   }
 }
 
+
+
+export interface WorkoutExerciseDbRow {
+  id: number;
+  workout_id: number;
+  exercise_id: number;
+  sets: number | string;
+  repetitions: number | string;
+  rest_seconds: number | string;
+  notes: string | null;
+  order_index: number | string;
+}
+
+export async function getWorkoutExerciseInDatabase(
+  workoutId: number,
+  exerciseId: number,
+): Promise<WorkoutExerciseDbRow | null> {
+  const result = await db().query<WorkoutExerciseDbRow>(
+    `
+      SELECT
+        id,
+        workout_id,
+        exercise_id,
+        sets,
+        repetitions,
+        rest_seconds,
+        notes,
+        order_index
+      FROM public.workout_exercises
+      WHERE workout_id = $1
+        AND exercise_id = $2
+      LIMIT 1
+    `,
+    [workoutId, exerciseId],
+  );
+
+  return result.rows[0] ?? null;
+}
+
+export async function assertWorkoutExerciseInDatabase(
+  workoutId: number,
+  exerciseId: number,
+): Promise<WorkoutExerciseDbRow> {
+  const row = await getWorkoutExerciseInDatabase(workoutId, exerciseId);
+
+  if (!row) {
+    throw new Error(
+      `A workout_exercises kapcsolat nem található: ` +
+        `workoutId=${workoutId}, exerciseId=${exerciseId}`,
+    );
+  }
+
+  return row;
+}
+
+export async function assertWorkoutExerciseDeleted(
+  workoutId: number,
+  exerciseId: number,
+): Promise<void> {
+  const row = await getWorkoutExerciseInDatabase(workoutId, exerciseId);
+
+  if (row) {
+    throw new Error(
+      `A workout_exercises kapcsolat még létezik: ` +
+        `id=${row.id}, workoutId=${workoutId}, exerciseId=${exerciseId}`,
+    );
+  }
+
+  console.log(
+    `[E2E WORKOUT-EXERCISE] DB cleanup ellenőrizve: ` +
+      `workoutId=${workoutId}, exerciseId=${exerciseId}, kapcsolat=0`,
+  );
+}
+
 export async function closeWorkoutDatabase(): Promise<void> {
   if (pool) {
     await pool.end();
     pool = undefined;
   }
+}
+
+
+export async function getWorkoutRelationCounts(
+  workoutId: number,
+): Promise<{
+  translation_count: number;
+  workout_exercise_count: number;
+  program_workout_count: number;
+  user_workout_count: number;
+}> {
+  const result = await db().query(
+    `
+      SELECT
+        COUNT(DISTINCT wt.id)::int AS translation_count,
+        COUNT(DISTINCT we.id)::int AS workout_exercise_count,
+        COUNT(DISTINCT pw.id)::int AS program_workout_count,
+        COUNT(DISTINCT uw.id)::int AS user_workout_count
+      FROM public.workouts w
+      LEFT JOIN public.workout_translations wt
+        ON wt.workout_id = w.id
+      LEFT JOIN public.workout_exercises we
+        ON we.workout_id = w.id
+      LEFT JOIN public.program_workouts pw
+        ON pw.workout_id = w.id
+      LEFT JOIN public.user_workouts uw
+        ON uw.workout_id = w.id
+      WHERE w.id = $1
+    `,
+    [workoutId],
+  );
+
+  return result.rows[0];
 }

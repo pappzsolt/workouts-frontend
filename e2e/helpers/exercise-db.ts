@@ -191,3 +191,50 @@ export async function closeExerciseDatabase(): Promise<void> {
     pool = undefined;
   }
 }
+
+
+export async function assertExerciseDeleted(
+  exerciseId: number,
+): Promise<void> {
+  const result = await db().query<{
+    exercise_count: number;
+    translation_count: number;
+    workout_relation_count: number;
+  }>(
+    `
+      SELECT
+        (SELECT COUNT(*)::int
+           FROM public.exercises
+          WHERE id = $1) AS exercise_count,
+
+        (SELECT COUNT(*)::int
+           FROM public.exercise_translations
+          WHERE exercise_id = $1) AS translation_count,
+
+        (SELECT COUNT(*)::int
+           FROM public.workout_exercises
+          WHERE exercise_id = $1) AS workout_relation_count
+    `,
+    [exerciseId],
+  );
+
+  const row = result.rows[0];
+
+  if (
+    row.exercise_count !== 0 ||
+    row.translation_count !== 0 ||
+    row.workout_relation_count !== 0
+  ) {
+    throw new Error(
+      `Cleanup után az exercise ${exerciseId} még megtalálható: ` +
+      `exercises=${row.exercise_count}, ` +
+      `translations=${row.translation_count}, ` +
+      `workout_exercises=${row.workout_relation_count}`,
+    );
+  }
+
+  console.log(
+    `[E2E EXERCISE DELETE] DB cleanup ellenőrizve: ` +
+    `exerciseId=${exerciseId}, exercises=0, translations=0, workout_exercises=0`,
+  );
+}
