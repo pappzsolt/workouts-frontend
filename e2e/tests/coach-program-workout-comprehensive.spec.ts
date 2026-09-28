@@ -1,24 +1,52 @@
 import { expect, test } from '@playwright/test';
 import {
-  apiFor, createProgram, createWorkout, dbOne, deleteProgram, deleteWorkout,
-  login, rejected, success, suffix
+  apiFor,
+  createProgram,
+  createWorkout,
+  dbCount,
+  dbOne,
+  deleteProgram,
+  deleteWorkout,
+  login,
+  rejected,
+  success,
+  suffix,
 } from './e2e-next-3-helpers';
 
 test.describe('Coach - ProgramWorkout endpoint matrix', () => {
   test.describe.configure({ mode: 'serial' });
 
-  test('PROGRAM-WORKOUT: add → GET → assigned → update dayIndex → duplicate rejection → delete by id → DB', async ({ page }) => {
+  test('PROGRAM-WORKOUT: add → GET → assigned → update → duplicate → second occurrence → delete by id → delete pair → DB', async ({
+    page,
+  }) => {
     await login(page, 'coach');
     const api = await apiFor(page);
 
-    const programId = await createProgram(api, `E2E PW PROGRAM ${suffix()}`);
-    const workoutId = await createWorkout(api, `E2E PW WORKOUT ${suffix()}`);
-    let relationId = 0;
+    let programId: number | undefined;
+    let workoutId: number | undefined;
+    let relationId: number | undefined;
+    let secondRelationId: number | undefined;
 
     try {
-      const created = await success(await api.post('/api/program-workouts/add', {
-        data: { programId, workoutId, dayIndex: 1 },
-      }), 'POST /api/program-workouts/add');
+      programId = await createProgram(
+        api,
+        `E2E PROGRAM-WORKOUT PROGRAM ${suffix()}`,
+      );
+      workoutId = await createWorkout(
+        api,
+        `E2E PROGRAM-WORKOUT ${suffix()}`,
+      );
+
+      const created = await success(
+        await api.post('/api/program-workouts/add', {
+          data: {
+            programId,
+            workoutId,
+            dayIndex: 1,
+          },
+        }),
+        'POST /api/program-workouts/add',
+      );
 
       relationId = Number(created.data?.id);
       expect(relationId).toBeGreaterThan(0);
@@ -26,12 +54,17 @@ test.describe('Coach - ProgramWorkout endpoint matrix', () => {
       expect(Number(created.data?.workoutId)).toBe(workoutId);
       expect(Number(created.data?.dayIndex)).toBe(1);
 
-      const rows = await success(
-        await api.get(`/api/program-workouts?programId=${programId}`),
+      const programRows = await success(
+        await api.get('/api/program-workouts', {
+          params: { programId },
+        }),
         'GET /api/program-workouts?programId',
       );
-      expect(Array.isArray(rows.data)).toBeTruthy();
-      expect(rows.data.some((x: any) => Number(x.id) === relationId)).toBeTruthy();
+      expect(
+        programRows.data.some(
+          (row: any) => Number(row.id) === relationId,
+        ),
+      ).toBeTruthy();
 
       const assigned = await success(
         await api.get(`/api/program-workouts/workout/${workoutId}/assigned`),
@@ -39,96 +72,227 @@ test.describe('Coach - ProgramWorkout endpoint matrix', () => {
       );
       expect(assigned.data?.assigned).toBe(true);
 
-      const updated = await success(await api.put('/api/program-workouts/update', {
-        data: { id: relationId, programId, workoutId, dayIndex: 3 },
-      }), 'PUT /api/program-workouts/update');
+      const updated = await success(
+        await api.put('/api/program-workouts/update', {
+          data: {
+            id: relationId,
+            programId,
+            workoutId,
+            dayIndex: 3,
+          },
+        }),
+        'PUT /api/program-workouts/update',
+      );
 
-      // The endpoint must return the freshly updated entity, not the stale
-      // JPA entity that was loaded before the bulk UPDATE.
       expect(Number(updated.data?.id)).toBe(relationId);
       expect(Number(updated.data?.programId)).toBe(programId);
       expect(Number(updated.data?.workoutId)).toBe(workoutId);
       expect(Number(updated.data?.dayIndex)).toBe(3);
 
-      const dbAfterUpdate = await dbOne<{ program_id: number; workout_id: number; day_index: number }>(
-        `SELECT program_id, workout_id, day_index FROM public.program_workouts WHERE id=$1`,
+      const updatedDb = await dbOne<{
+        program_id: number;
+        workout_id: number;
+        day_index: number;
+      }>(
+        `
+          SELECT program_id, workout_id, day_index
+          FROM public.program_workouts
+          WHERE id=$1
+        `,
         [relationId],
       );
-      expect(Number(dbAfterUpdate?.program_id)).toBe(programId);
-      expect(Number(dbAfterUpdate?.workout_id)).toBe(workoutId);
-      expect(Number(dbAfterUpdate?.day_index)).toBe(3);
+      expect(updatedDb).not.toBeNull();
+      expect(Number(updatedDb?.program_id)).toBe(programId);
+      expect(Number(updatedDb?.workout_id)).toBe(workoutId);
+      expect(Number(updatedDb?.day_index)).toBe(3);
 
-      // Same program + workout + same dayIndex is explicitly rejected by the service.
-      const duplicate = await rejected(await api.post('/api/program-workouts/add', {
-        data: { programId, workoutId, dayIndex: 3 },
-      }), 'POST duplicate program-workout');
-      expect(duplicate).toBeTruthy();
+      await rejected(
+        await api.post('/api/program-workouts/add', {
+          data: {
+            programId,
+            workoutId,
+            dayIndex: 3,
+          },
+        }),
+        'duplicate same program/workout/dayIndex',
+      );
 
-      expect(await dbOne<{ count: string }>(
-        `SELECT count(*)::text AS count FROM public.program_workouts WHERE id=$1`,
-        [relationId],
-      ).then(r => Number(r?.count))).toBe(1);
+      expect(
+        await dbCount(
+          `
+            SELECT count(*)::text AS count
+            FROM public.program_workouts
+            WHERE program_id=$1 AND workout_id=$2 AND day_index=3
+          `,
+          [programId, workoutId],
+        ),
+      ).toBe(1);
 
-      // Same workout may legally occur at another dayIndex.
-      const second = await success(await api.post('/api/program-workouts/add', {
-        data: { programId, workoutId, dayIndex: 5 },
-      }), 'POST same workout / different dayIndex');
-      const secondId = Number(second.data?.id);
-      expect(secondId).toBeGreaterThan(0);
-      expect(secondId).not.toBe(relationId);
+      const second = await success(
+        await api.post('/api/program-workouts/add', {
+          data: {
+            programId,
+            workoutId,
+            dayIndex: 5,
+          },
+        }),
+        'POST same workout at another dayIndex',
+      );
+
+      secondRelationId = Number(second.data?.id);
+      expect(secondRelationId).toBeGreaterThan(0);
+      expect(secondRelationId).not.toBe(relationId);
+
+      expect(
+        await dbCount(
+          `
+            SELECT count(*)::text AS count
+            FROM public.program_workouts
+            WHERE program_id=$1 AND workout_id=$2
+          `,
+          [programId, workoutId],
+        ),
+      ).toBe(2);
 
       await success(
         await api.delete(`/api/program-workouts/id/${relationId}`),
         'DELETE /api/program-workouts/id/{id}',
       );
-      expect(await dbOne<{ count: string }>(
-        `SELECT count(*)::text AS count FROM public.program_workouts WHERE id=$1`,
-        [relationId],
-      ).then(r => Number(r?.count))).toBe(0);
+
+      expect(
+        await dbCount(
+          'SELECT count(*)::text AS count FROM public.program_workouts WHERE id=$1',
+          [relationId],
+        ),
+      ).toBe(0);
+      relationId = undefined;
 
       await success(
         await api.delete(`/api/program-workouts/${programId}/${workoutId}`),
         'DELETE /api/program-workouts/{programId}/{workoutId}',
       );
-      expect(await dbOne<{ count: string }>(
-        `SELECT count(*)::text AS count FROM public.program_workouts WHERE id=$1`,
-        [secondId],
-      ).then(r => Number(r?.count))).toBe(0);
+
+      expect(
+        await dbCount(
+          'SELECT count(*)::text AS count FROM public.program_workouts WHERE id=$1',
+          [secondRelationId],
+        ),
+      ).toBe(0);
+      secondRelationId = undefined;
 
       const finalAssigned = await success(
         await api.get(`/api/program-workouts/workout/${workoutId}/assigned`),
         'GET assigned after delete',
       );
       expect(finalAssigned.data?.assigned).toBe(false);
-    } finally {
-      const left = await dbOne<{ count: string }>(
-        `SELECT count(*)::text AS count FROM public.program_workouts WHERE program_id=$1`,
-        [programId],
-      );
-      if (Number(left?.count ?? 0) > 0) {
-        await success(await api.delete(`/api/program-workouts/${programId}`), 'cleanup program-workouts');
-      }
+
       await deleteProgram(api, programId);
+      programId = undefined;
+
       await deleteWorkout(api, workoutId);
+      workoutId = undefined;
+    } finally {
+      // A cleanup is intentionally API-only. If the backend cannot delete
+      // its own test data, the test must expose that backend defect.
+      if (relationId !== undefined) {
+        await success(
+          await api.delete(`/api/program-workouts/id/${relationId}`),
+          `cleanup DELETE program-workout id=${relationId}`,
+        );
+      }
+
+      if (secondRelationId !== undefined) {
+        await success(
+          await api.delete(`/api/program-workouts/id/${secondRelationId}`),
+          `cleanup DELETE program-workout id=${secondRelationId}`,
+        );
+      }
+
+      if (programId !== undefined) {
+        const remaining = await dbCount(
+          'SELECT count(*)::text AS count FROM public.program_workouts WHERE program_id=$1',
+          [programId],
+        );
+
+        if (remaining > 0) {
+          await success(
+            await api.delete(`/api/program-workouts/${programId}`),
+            `cleanup DELETE all program-workouts program=${programId}`,
+          );
+        }
+
+        await deleteProgram(api, programId);
+      }
+
+      if (workoutId !== undefined) {
+        await deleteWorkout(api, workoutId);
+      }
+
       await api.dispose();
     }
   });
 
-  test('NEGATIVE: nem létező program/workout kapcsolat nem módosít DB-t', async ({ page }) => {
+  test('NEGATIVE: nem létező program/workout kapcsolat nem hoz létre DB rekordot', async ({
+    page,
+  }) => {
     await login(page, 'coach');
     const api = await apiFor(page);
-    const before = await dbOne<{ count: string }>(
-      `SELECT count(*)::text AS count FROM public.program_workouts WHERE program_id=$1 OR workout_id=$2`,
-      [2147483001, 2147483002],
-    );
-    await rejected(await api.post('/api/program-workouts/add', {
-      data: { programId: 2147483001, workoutId: 2147483002, dayIndex: 1 },
-    }), 'POST invalid program-workout');
-    const after = await dbOne<{ count: string }>(
-      `SELECT count(*)::text AS count FROM public.program_workouts WHERE program_id=$1 OR workout_id=$2`,
-      [2147483001, 2147483002],
-    );
-    expect(Number(after?.count)).toBe(Number(before?.count));
-    await api.dispose();
+
+    const invalidProgramId = 2147483001;
+    const invalidWorkoutId = 2147483002;
+
+    try {
+      expect(
+        await dbCount(
+          `
+            SELECT count(*)::text AS count
+            FROM public.program_workouts
+            WHERE program_id=$1 OR workout_id=$2
+          `,
+          [invalidProgramId, invalidWorkoutId],
+        ),
+      ).toBe(0);
+
+      await rejected(
+        await api.post('/api/program-workouts/add', {
+          data: {
+            programId: invalidProgramId,
+            workoutId: invalidWorkoutId,
+            dayIndex: 1,
+          },
+        }),
+        'POST invalid program-workout',
+      );
+
+      expect(
+        await dbCount(
+          `
+            SELECT count(*)::text AS count
+            FROM public.program_workouts
+            WHERE program_id=$1 OR workout_id=$2
+          `,
+          [invalidProgramId, invalidWorkoutId],
+        ),
+      ).toBe(0);
+
+      await rejected(
+        await api.put('/api/program-workouts/update', {
+          data: {
+            id: invalidProgramId,
+            programId: invalidProgramId,
+            workoutId: invalidWorkoutId,
+            dayIndex: 1,
+          },
+        }),
+        'PUT invalid program-workout',
+      );
+
+      await rejected(
+        await api.delete(`/api/program-workouts/id/${invalidProgramId}`),
+        'DELETE invalid program-workout id',
+      );
+    } finally {
+      await api.dispose();
+    }
   });
 });

@@ -1,510 +1,246 @@
-import { expect, request, test, type APIRequestContext, type Page } from '@playwright/test';
-import { Pool } from 'pg';
+import { expect, test, type APIRequestContext, type Page } from '@playwright/test';
+import {
+  apiFor,
+  createExercise,
+  createWorkout,
+  db,
+  dbCount,
+  dbOne,
+  deleteExercise,
+  deleteWorkout,
+  LANGUAGE,
+  login,
+  rejected,
+  success,
+  suffix,
+} from './e2e-next-3-helpers';
 
-/**
- * Comprehensive coach E2E coverage for:
- * - /api/workouts
- * - /api/exercises
- * - /api/workout-exercises
- *
- * The existing UI write tests remain the UI-level regression suite.
- * This suite intentionally adds endpoint-matrix + PostgreSQL verification
- * so every coach-facing endpoint in these three controllers is exercised.
- */
-
-const BASE_API_URL = process.env.E2E_API_URL ?? 'http://localhost:8080';
-const LANGUAGE = process.env.E2E_LANGUAGE ?? 'hu';
-
-let pool: Pool | undefined;
-
-function db(): Pool {
-  if (!pool) {
-    const required = (name: string) => {
-      const value = process.env[name];
-      if (!value || value === 'CHANGE_ME') {
-        throw new Error(`Hiányzó E2E DB konfiguráció: ${name}`);
-      }
-      return value;
-    };
-
-    pool = new Pool({
-      host: required('E2E_DB_HOST'),
-      port: Number(process.env.E2E_DB_PORT ?? 5432),
-      database: required('E2E_DB_NAME'),
-      user: required('E2E_DB_USER'),
-      password: required('E2E_DB_PASSWORD'),
-      ssl:
-        process.env.E2E_DB_SSL === 'true'
-          ? { rejectUnauthorized: false }
-          : false,
-      max: 2,
-    });
-  }
-
-  return pool;
-}
-
-function suffix(): string {
-  return `${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
-}
-
-async function loginAsCoach(page: Page): Promise<void> {
-  const username = process.env.E2E_COACH_USERNAME;
-  const password = process.env.E2E_COACH_PASSWORD;
-
-  if (!username || !password || password === 'CHANGE_ME') {
-    throw new Error('Hiányzó E2E_COACH_USERNAME / E2E_COACH_PASSWORD.');
-  }
-
-  await page.goto('/login');
-  await page.locator('input[formcontrolname="username"]').fill(username);
-  await page.locator('input[formcontrolname="password"]').fill(password);
-  await page.locator('form button[type="submit"]').click();
-
-  await expect(page).toHaveURL(/\/coach\/dashboard$/, { timeout: 15_000 });
-}
-
-async function tokenFromPage(page: Page): Promise<string> {
-  const token = await page.evaluate(() => localStorage.getItem('accessToken'));
-  if (!token) throw new Error('E2E: accessToken nem található.');
-  return token;
-}
-
-async function apiFor(page: Page): Promise<APIRequestContext> {
-  return request.newContext({
-    baseURL: BASE_API_URL,
-    extraHTTPHeaders: {
-      Authorization: `Bearer ${await tokenFromPage(page)}`,
-    },
-  });
-}
-
-async function expectSuccess(response: any, label: string): Promise<any> {
-  const text = await response.text();
-
-  expect(
-    response.ok(),
-    `${label}: HTTP ${response.status()} ${text}`,
-  ).toBeTruthy();
-
-  if (!text) return null;
-
-  const body = JSON.parse(text);
-  expect(
-    body.success,
-    `${label}: success=false: ${text}`,
-  ).toBeTruthy();
-
-  return body;
-}
-
-async function expectRejected(response: any, label: string): Promise<string> {
-  const text = await response.text();
-
-  expect(
-    response.ok(),
-    `${label}: a kérésnek hibával kell visszatérnie, de HTTP ${response.status()} érkezett: ${text}`,
-  ).toBeFalsy();
-
-  return text;
-}
-
-async function createWorkout(
-  api: APIRequestContext,
-  name: string,
-): Promise<number> {
-  const response = await api.post('/api/workouts/add', {
-    params: { language: LANGUAGE },
-    data: {
-      name,
-      description: `E2E comprehensive workout ${suffix()}`,
-      workoutDate: '2035-02-15',
-      durationMinutes: 80,
-      intensityLevel: 'High',
-      dayIndex: 1,
-      done: false,
-    },
-  });
-
-  const body = await expectSuccess(response, 'POST /api/workouts/add');
-  const id = Number(body.data?.id);
-
-  expect(Number.isInteger(id) && id > 0).toBeTruthy();
-  return id;
-}
-
-async function deleteWorkout(
-  api: APIRequestContext,
-  workoutId: number,
-): Promise<void> {
-  const response = await api.delete(`/api/workouts/delete/${workoutId}`);
-  await expectSuccess(
-    response,
-    `DELETE /api/workouts/delete/${workoutId}`,
-  );
-}
-
-async function createExercise(
-  api: APIRequestContext,
-  name: string,
-): Promise<number> {
-  const response = await api.post('/api/exercises/add', {
-    params: { language: LANGUAGE },
-    data: {
-      name,
-      description: `E2E comprehensive exercise ${suffix()}`,
-      imageUrl: null,
-      videoUrl: null,
-      muscleGroup: 'back',
-      equipment: 'cable',
-      difficultyLevel: 'intermediate',
-      category: 'strength',
-      caloriesBurnedPerMinute: 5.5,
-      durationSeconds: 60,
-      done: false,
-      forceType: 'pull',
-      mechanic: 'compound',
-      isUnilateral: false,
-      isBodyweight: false,
-      variationGroup: null,
-      bodyPart: 'back',
-      synonyms: null,
-      instructions: null,
-      tips: null,
-      primaryMuscles: 'latissimus dorsi',
-      secondaryMuscles: null,
-    },
-  });
-
-  const body = await expectSuccess(response, 'POST /api/exercises/add');
-  const id = Number(body.data?.id);
-
-  expect(Number.isInteger(id) && id > 0).toBeTruthy();
-  return id;
-}
-
-async function deleteExercise(
-  api: APIRequestContext,
-  exerciseId: number,
-): Promise<void> {
-  const response = await api.delete(
-    `/api/exercises/delete/${exerciseId}`,
-  );
-
-  await expectSuccess(
-    response,
-    `DELETE /api/exercises/delete/${exerciseId}`,
-  );
-}
-
-async function dbScalar<T = unknown>(
-  sql: string,
-  params: unknown[] = [],
-): Promise<T | null> {
-  const result = await db().query(sql, params);
-  return result.rows[0] ? (Object.values(result.rows[0])[0] as T) : null;
-}
-
-async function relation(
-  workoutId: number,
-  exerciseId: number,
-): Promise<{
-  id: number;
-  sets: number;
-  repetitions: number;
-  rest_seconds: number;
-  order_index: number;
-} | null> {
-  const result = await db().query(
-    `
-      SELECT id, sets, repetitions, rest_seconds, order_index
-      FROM public.workout_exercises
-      WHERE workout_id = $1
-        AND exercise_id = $2
-      LIMIT 1
-    `,
-    [workoutId, exerciseId],
-  );
-
-  return result.rows[0] ?? null;
-}
-
-async function countRows(
-  table: string,
-  column: string,
-  id: number,
-): Promise<number> {
-  const allowed = new Set([
-    'workouts',
-    'workout_translations',
-    'exercises',
-    'exercise_translations',
-    'workout_exercises',
-  ]);
-
-  if (!allowed.has(table)) {
-    throw new Error(`Tiltott DB tábla: ${table}`);
-  }
-
-  const result = await db().query(
-    `SELECT COUNT(*)::int AS count FROM public.${table} WHERE ${column} = $1`,
-    [id],
-  );
-
-  return Number(result.rows[0].count);
-}
-
-async function findCoachProgramId(api: APIRequestContext): Promise<number | null> {
-  const username = process.env.E2E_COACH_USERNAME;
-  if (!username) return null;
-
-  const result = await db().query(
-    `
-      SELECT p.id
-      FROM public.programs p
-      JOIN public.coaches c ON c.id = p.coach_id
-      WHERE c.name = $1 OR c.email = $1
-      ORDER BY p.id
-      LIMIT 1
-    `,
-    [username],
-  );
-
-  return result.rows[0] ? Number(result.rows[0].id) : null;
-}
-
-test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix', () => {
+test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
   test.describe.configure({ mode: 'serial' });
 
-  test.afterAll(async () => {
-    if (pool) {
-      await pool.end();
-      pool = undefined;
+  async function workoutExerciseCount(
+    workoutId: number,
+    exerciseId?: number,
+  ): Promise<number> {
+    if (exerciseId === undefined) {
+      return dbCount(
+        `SELECT count(*)::text AS count
+           FROM public.workout_exercises
+          WHERE workout_id = $1`,
+        [workoutId],
+      );
     }
-  });
 
-  test('COMPLETE WORKOUT: CRUD + all coach GET/search endpoints + PostgreSQL', async ({
+    return dbCount(
+      `SELECT count(*)::text AS count
+         FROM public.workout_exercises
+        WHERE workout_id = $1
+          AND exercise_id = $2`,
+      [workoutId, exerciseId],
+    );
+  }
+
+  async function assertWorkoutGone(workoutId: number): Promise<void> {
+    expect(
+      await dbCount(
+        'SELECT count(*)::text AS count FROM public.workout_exercises WHERE workout_id=$1',
+        [workoutId],
+      ),
+    ).toBe(0);
+
+    expect(
+      await dbCount(
+        'SELECT count(*)::text AS count FROM public.workout_translations WHERE workout_id=$1',
+        [workoutId],
+      ),
+    ).toBe(0);
+
+    expect(
+      await dbCount(
+        'SELECT count(*)::text AS count FROM public.workouts WHERE id=$1',
+        [workoutId],
+      ),
+    ).toBe(0);
+  }
+
+  async function assertExerciseGone(exerciseId: number): Promise<void> {
+    expect(
+      await dbCount(
+        'SELECT count(*)::text AS count FROM public.workout_exercises WHERE exercise_id=$1',
+        [exerciseId],
+      ),
+    ).toBe(0);
+
+    expect(
+      await dbCount(
+        'SELECT count(*)::text AS count FROM public.exercise_translations WHERE exercise_id=$1',
+        [exerciseId],
+      ),
+    ).toBe(0);
+
+    expect(
+      await dbCount(
+        'SELECT count(*)::text AS count FROM public.exercises WHERE id=$1',
+        [exerciseId],
+      ),
+    ).toBe(0);
+  }
+
+  test('COMPLETE WORKOUT: create → GET → my-workouts → unique → search → update → PostgreSQL → delete', async ({
     page,
   }) => {
-    await loginAsCoach(page);
-
+    await login(page, 'coach');
     const api = await apiFor(page);
-    const name = `E2E COMPLETE WORKOUT ${suffix()}`;
+
+    const name = `E2E COACH WORKOUT ${suffix()}`;
     let workoutId: number | undefined;
 
     try {
       workoutId = await createWorkout(api, name);
 
-      // GET /api/workouts/{id}
-      {
-        const response = await api.get(
-          `/api/workouts/${workoutId}`,
-          { params: { language: LANGUAGE } },
-        );
-        const body = await expectSuccess(response, 'GET /api/workouts/{id}');
-        expect(Number(body.data?.workoutId)).toBe(workoutId);
-      }
-
-      // GET /api/workouts/my-workouts
-      {
-        const response = await api.get('/api/workouts/my-workouts', {
+      const getBody = await success(
+        await api.get(`/api/workouts/${workoutId}`, {
           params: { language: LANGUAGE },
-        });
-        const body = await expectSuccess(
-          response,
-          'GET /api/workouts/my-workouts',
-        );
-        expect(Array.isArray(body.data)).toBeTruthy();
-        expect(
-          body.data.some((w: any) => Number(w.id) === workoutId),
-        ).toBeTruthy();
-      }
+        }),
+        'GET /api/workouts/{id}',
+      );
+      expect(Number(getBody.data?.workoutId)).toBe(workoutId);
 
-      // GET /api/workouts/my-workouts/unique
-      {
-        const response = await api.get('/api/workouts/my-workouts/unique', {
+      const myBody = await success(
+        await api.get('/api/workouts/my-workouts', {
           params: { language: LANGUAGE },
-        });
-        const body = await expectSuccess(
-          response,
-          'GET /api/workouts/my-workouts/unique',
-        );
-        expect(Array.isArray(body.data)).toBeTruthy();
-      }
+        }),
+        'GET /api/workouts/my-workouts',
+      );
+      expect(
+        myBody.data.some((row: any) => Number(row.id) === workoutId),
+      ).toBeTruthy();
 
-      // GET /api/workouts/my-workouts/search
-      {
-        const response = await api.get('/api/workouts/my-workouts/search', {
-          params: {
-            search: name,
-            page: 0,
-            size: 6,
-            language: LANGUAGE,
-            sortDirection: 'asc',
-          },
-        });
+      const uniqueBody = await success(
+        await api.get('/api/workouts/my-workouts/unique', {
+          params: { language: LANGUAGE },
+        }),
+        'GET /api/workouts/my-workouts/unique',
+      );
+      expect(Array.isArray(uniqueBody.data)).toBeTruthy();
 
-        const text = await response.text();
-        expect(response.ok(), text).toBeTruthy();
+      const searchResponse = await api.get('/api/workouts/my-workouts/search', {
+        params: {
+          search: name,
+          page: 0,
+          size: 6,
+          language: LANGUAGE,
+          sortDirection: 'asc',
+        },
+      });
+      expect(searchResponse.ok(), await searchResponse.text()).toBeTruthy();
+      const searchBody = JSON.parse(await searchResponse.text());
+      expect(
+        searchBody.content.some((row: any) => Number(row.id) === workoutId),
+      ).toBeTruthy();
 
-        const body = JSON.parse(text);
-        expect(Array.isArray(body.content)).toBeTruthy();
-        expect(
-          body.content.some((w: any) => Number(w.id) === workoutId),
-        ).toBeTruthy();
-      }
-
-      // GET /api/workouts/program/{programId}
-      //
-      // This endpoint is NOT a coach endpoint in the current backend.
-      // The authenticated coach token is intentionally rejected with HTTP 403
-      // ("Ehhez a művelethez felhasználói fiók szükséges."). Therefore this
-      // coach matrix must verify the documented authorization boundary instead
-      // of treating the 403 as a test failure.
-      const programId = await findCoachProgramId(api);
-      if (programId !== null) {
-        const response = await api.get(
-          `/api/workouts/program/${programId}`,
-          { params: { language: LANGUAGE } },
-        );
-
-        const text = await response.text();
-
-        expect(
-          response.status(),
-          `GET /api/workouts/program/{programId}: coach access boundary`,
-        ).toBe(403);
-
-        expect(text).toContain('felhasználói fiók');
-      }
-
-      // PUT /api/workouts/update
-      {
-        const updatedName = `${name} UPDATED`;
-        const response = await api.put('/api/workouts/update', {
+      await success(
+        await api.put('/api/workouts/update', {
           params: { language: LANGUAGE },
           data: {
             id: workoutId,
-            name: updatedName,
-            description: 'E2E COMPLETE workout updated',
+            name: `${name} UPDATED`,
+            description: 'E2E workout update',
             workoutDate: '2035-02-16',
             durationMinutes: 95,
             intensityLevel: 'Low',
             dayIndex: 2,
             done: false,
           },
-        });
+        }),
+        'PUT /api/workouts/update',
+      );
 
-        await expectSuccess(
-          response,
-          'PUT /api/workouts/update',
-        );
-
-        // Az update endpoint sikeres választ ad, de a backend response
-        // data mezője nem garantáltan tartalmazza az updated rekord ID-ját.
-        // A tényleges módosítást ezért a PostgreSQL ellenőrzés validálja.
-      }
-
-      const dbWorkout = await db().query(
+      const dbWorkout = await dbOne<{
+        workout_date: string;
+        duration_minutes: number;
+        intensity_level: string;
+        name: string;
+        description: string;
+      }>(
         `
-          SELECT w.id,
-                 w.workout_date::text AS workout_date,
-                 w.duration_minutes,
-                 w.intensity_level,
-                 wt.name,
-                 wt.description
+          SELECT
+            w.workout_date::text AS workout_date,
+            w.duration_minutes,
+            w.intensity_level,
+            wt.name,
+            wt.description
           FROM public.workouts w
-          LEFT JOIN public.workout_translations wt
+          JOIN public.workout_translations wt
             ON wt.workout_id = w.id
-           AND wt.language_id = (
-             SELECT id FROM public.languages
-             WHERE lower(code) = lower($2)
-             LIMIT 1
-           )
+          JOIN public.languages l
+            ON l.id = wt.language_id
+           AND lower(l.code) = lower($2)
           WHERE w.id = $1
+          LIMIT 1
         `,
         [workoutId, LANGUAGE],
       );
 
-      expect(dbWorkout.rowCount).toBe(1);
-      expect(dbWorkout.rows[0].name).toBe(`${name} UPDATED`);
-      expect(dbWorkout.rows[0].description).toBe(
-        'E2E COMPLETE workout updated',
-      );
-      expect(dbWorkout.rows[0].workout_date).toBe('2035-02-16');
-      expect(Number(dbWorkout.rows[0].duration_minutes)).toBe(95);
-      expect(dbWorkout.rows[0].intensity_level).toBe('Low');
+      expect(dbWorkout).not.toBeNull();
+      expect(dbWorkout?.workout_date).toBe('2035-02-16');
+      expect(Number(dbWorkout?.duration_minutes)).toBe(95);
+      expect(dbWorkout?.intensity_level).toBe('Low');
+      expect(dbWorkout?.name).toBe(`${name} UPDATED`);
+      expect(dbWorkout?.description).toBe('E2E workout update');
+
+      await deleteWorkout(api, workoutId);
+      await assertWorkoutGone(workoutId);
+      workoutId = undefined;
     } finally {
       if (workoutId !== undefined) {
-        const exists = await dbScalar<number>(
-          'SELECT COUNT(*)::int FROM public.workouts WHERE id = $1',
-          [workoutId],
-        );
-
-        if (Number(exists) > 0) {
-          await deleteWorkout(api, workoutId);
-        }
-
-        expect(await countRows('workout_translations', 'workout_id', workoutId)).toBe(0);
-        expect(await countRows('workout_exercises', 'workout_id', workoutId)).toBe(0);
-        expect(await countRows('workouts', 'id', workoutId)).toBe(0);
+        await deleteWorkout(api, workoutId);
+        await assertWorkoutGone(workoutId);
       }
-
       await api.dispose();
     }
   });
 
-  test('COMPLETE EXERCISE: CRUD + search/list endpoints + language + PostgreSQL', async ({
+  test('COMPLETE EXERCISE: create → all → workouts → unique → search → update → PostgreSQL → delete', async ({
     page,
   }) => {
-    await loginAsCoach(page);
-
+    await login(page, 'coach');
     const api = await apiFor(page);
-    const name = `E2E COMPLETE EXERCISE ${suffix()}`;
+
+    const name = `E2E COACH EXERCISE ${suffix()}`;
     let exerciseId: number | undefined;
 
     try {
       exerciseId = await createExercise(api, name);
 
-      // GET /api/exercises/all
-      {
-        const response = await api.get('/api/exercises/all', {
+      const allBody = await success(
+        await api.get('/api/exercises/all', {
           params: { language: LANGUAGE },
-        });
-        const body = await expectSuccess(response, 'GET /api/exercises/all');
-        expect(Array.isArray(body.data)).toBeTruthy();
-        expect(
-          body.data.some((e: any) => Number(e.id) === exerciseId),
-        ).toBeTruthy();
-      }
+        }),
+        'GET /api/exercises/all',
+      );
+      expect(
+        allBody.data.some((row: any) => Number(row.id) === exerciseId),
+      ).toBeTruthy();
 
-      // GET /api/exercises/workouts
-      {
-        const response = await api.get('/api/exercises/workouts', {
+      const workoutsBody = await success(
+        await api.get('/api/exercises/workouts', {
           params: { language: LANGUAGE },
-        });
-        const body = await expectSuccess(
-          response,
-          'GET /api/exercises/workouts',
-        );
-        expect(Array.isArray(body.data)).toBeTruthy();
-      }
+        }),
+        'GET /api/exercises/workouts',
+      );
+      expect(Array.isArray(workoutsBody.data)).toBeTruthy();
 
-      // GET /api/exercises/workouts/unique
-      {
-        const response = await api.get('/api/exercises/workouts/unique', {
+      const uniqueBody = await success(
+        await api.get('/api/exercises/workouts/unique', {
           params: { language: LANGUAGE },
-        });
-        const body = await expectSuccess(
-          response,
-          'GET /api/exercises/workouts/unique',
-        );
-        expect(Array.isArray(body.data)).toBeTruthy();
-      }
+        }),
+        'GET /api/exercises/workouts/unique',
+      );
+      expect(Array.isArray(uniqueBody.data)).toBeTruthy();
 
-      // GET /api/exercises/exercise-search
-      {
-        const response = await api.get('/api/exercises/exercise-search', {
+      const searchBody = await success(
+        await api.get('/api/exercises/exercise-search', {
           params: {
             language: LANGUAGE,
             search: name,
@@ -513,59 +249,46 @@ test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix'
             size: 6,
             sortDirection: 'asc',
           },
-        });
-        const body = await expectSuccess(
-          response,
-          'GET /api/exercises/exercise-search',
-        );
+        }),
+        'GET /api/exercises/exercise-search',
+      );
+      expect(
+        searchBody.data.content.some(
+          (row: any) => Number(row.id) === exerciseId,
+        ),
+      ).toBeTruthy();
 
-        expect(Array.isArray(body.data?.content)).toBeTruthy();
-        expect(
-          body.data.content.some((e: any) => Number(e.id) === exerciseId),
-        ).toBeTruthy();
-      }
-
-      // Invalid pagination must be rejected.
-      {
-        const response = await api.get('/api/exercises/exercise-search', {
+      await rejected(
+        await api.get('/api/exercises/exercise-search', {
           params: {
             language: LANGUAGE,
             search: name,
             page: -1,
             size: 6,
           },
-        });
+        }),
+        'GET exercise-search page=-1',
+      );
 
-        await expectRejected(
-          response,
-          'exercise-search page=-1',
-        );
-      }
-
-      {
-        const response = await api.get('/api/exercises/exercise-search', {
+      await rejected(
+        await api.get('/api/exercises/exercise-search', {
           params: {
             language: LANGUAGE,
             search: name,
             page: 0,
             size: 0,
           },
-        });
+        }),
+        'GET exercise-search size=0',
+      );
 
-        await expectRejected(
-          response,
-          'exercise-search size=0',
-        );
-      }
-
-      // PUT /api/exercises/update
-      {
-        const response = await api.put('/api/exercises/update', {
+      await success(
+        await api.put('/api/exercises/update', {
           params: { language: LANGUAGE },
           data: {
             id: exerciseId,
             name,
-            description: 'E2E COMPLETE EXERCISE UPDATED',
+            description: 'E2E exercise update',
             imageUrl: null,
             videoUrl: null,
             muscleGroup: 'back',
@@ -587,23 +310,22 @@ test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix'
             primaryMuscles: 'latissimus dorsi',
             secondaryMuscles: null,
           },
-        });
+        }),
+        'PUT /api/exercises/update',
+      );
 
-        await expectSuccess(
-          response,
-          'PUT /api/exercises/update',
-        );
-
-        // Az update response data mezője nem garantáltan tartalmazza az ID-t.
-        // A tényleges módosítást a következő PostgreSQL ellenőrzés validálja.
-      }
-
-      const updated = await db().query(
+      const dbExercise = await dbOne<{
+        name: string;
+        description: string;
+        calories_burned_per_minute: number;
+        duration_seconds: number;
+      }>(
         `
-          SELECT et.name,
-                 et.description,
-                 e.calories_burned_per_minute,
-                 e.duration_seconds
+          SELECT
+            et.name,
+            et.description,
+            e.calories_burned_per_minute,
+            e.duration_seconds
           FROM public.exercises e
           JOIN public.exercise_translations et
             ON et.exercise_id = e.id
@@ -611,45 +333,38 @@ test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix'
             ON l.id = et.language_id
            AND lower(l.code) = lower($2)
           WHERE e.id = $1
+          LIMIT 1
         `,
         [exerciseId, LANGUAGE],
       );
 
-      expect(updated.rowCount).toBe(1);
-      expect(updated.rows[0].name).toBe(name);
-      expect(updated.rows[0].description).toBe(
-        'E2E COMPLETE EXERCISE UPDATED',
-      );
-      expect(Number(updated.rows[0].calories_burned_per_minute)).toBe(6.5);
-      expect(Number(updated.rows[0].duration_seconds)).toBe(75);
+      expect(dbExercise).not.toBeNull();
+      expect(dbExercise?.name).toBe(name);
+      expect(dbExercise?.description).toBe('E2E exercise update');
+      expect(Number(dbExercise?.calories_burned_per_minute)).toBe(6.5);
+      expect(Number(dbExercise?.duration_seconds)).toBe(75);
+
+      await deleteExercise(api, exerciseId);
+      await assertExerciseGone(exerciseId);
+      exerciseId = undefined;
     } finally {
       if (exerciseId !== undefined) {
-        const exists = await dbScalar<number>(
-          'SELECT COUNT(*)::int FROM public.exercises WHERE id = $1',
-          [exerciseId],
-        );
-
-        if (Number(exists) > 0) {
-          await deleteExercise(api, exerciseId);
-        }
-
-        expect(await countRows('exercise_translations', 'exercise_id', exerciseId)).toBe(0);
-        expect(await countRows('exercises', 'id', exerciseId)).toBe(0);
+        await deleteExercise(api, exerciseId);
+        await assertExerciseGone(exerciseId);
       }
-
       await api.dispose();
     }
   });
 
-  test('COMPLETE ASSIGNMENT: assign → defaults → GET → order → duplicate rejection → delete → DB', async ({
+  test('COMPLETE ASSIGNMENT: assign → defaults → GET → duplicate → reorder → delete → PostgreSQL', async ({
     page,
   }) => {
-    await loginAsCoach(page);
-
+    await login(page, 'coach');
     const api = await apiFor(page);
-    const workoutName = `E2E COMPLETE ASSIGN WORKOUT ${suffix()}`;
-    const exerciseName = `E2E COMPLETE ASSIGN EXERCISE ${suffix()}`;
-    const exerciseName2 = `E2E COMPLETE ASSIGN EXERCISE 2 ${suffix()}`;
+
+    const workoutName = `E2E ASSIGN WORKOUT ${suffix()}`;
+    const exerciseName = `E2E ASSIGN EXERCISE ${suffix()}`;
+    const exerciseName2 = `E2E ASSIGN EXERCISE 2 ${suffix()}`;
 
     let workoutId: number | undefined;
     let exerciseId: number | undefined;
@@ -660,567 +375,305 @@ test.describe('Coach - COMPLETE Workout / Exercise / Assignment endpoint matrix'
       exerciseId = await createExercise(api, exerciseName);
       exerciseId2 = await createExercise(api, exerciseName2);
 
-      // POST /api/workout-exercises/assign
-      {
-        const response = await api.post(
-          '/api/workout-exercises/assign',
-          {
-            params: { workoutId, exerciseId },
-          },
-        );
+      await success(
+        await api.post('/api/workout-exercises/assign', {
+          params: { workoutId, exerciseId },
+        }),
+        'POST /api/workout-exercises/assign',
+      );
 
-        await expectSuccess(
-          response,
-          'POST /api/workout-exercises/assign',
-        );
-      }
+      let first = await dbOne<{
+        sets: number;
+        repetitions: number;
+        rest_seconds: number;
+        order_index: number;
+      }>(
+        `
+          SELECT sets, repetitions, rest_seconds, order_index
+          FROM public.workout_exercises
+          WHERE workout_id=$1 AND exercise_id=$2
+        `,
+        [workoutId, exerciseId],
+      );
 
-      let row = await relation(workoutId, exerciseId);
-      expect(row).not.toBeNull();
-      expect(Number(row?.sets)).toBe(3);
-      expect(Number(row?.repetitions)).toBe(10);
-      expect(Number(row?.rest_seconds)).toBe(60);
-      expect(Number(row?.order_index)).toBe(0);
+      expect(first).not.toBeNull();
+      expect(Number(first?.sets)).toBe(3);
+      expect(Number(first?.repetitions)).toBe(10);
+      expect(Number(first?.rest_seconds)).toBe(60);
+      expect(Number(first?.order_index)).toBe(0);
 
-      // Második exercise hozzárendelése: így az order-index teszt valódi átrendezést tud ellenőrizni.
-      {
-        const response = await api.post(
-          '/api/workout-exercises/assign',
-          { params: { workoutId, exerciseId: exerciseId2 } },
-        );
-        await expectSuccess(
-          response,
-          'POST /api/workout-exercises/assign (second exercise)',
-        );
-      }
+      await success(
+        await api.post('/api/workout-exercises/assign', {
+          params: { workoutId, exerciseId: exerciseId2 },
+        }),
+        'POST /api/workout-exercises/assign second',
+      );
 
-      const secondRow = await relation(workoutId, exerciseId2);
-      expect(secondRow).not.toBeNull();
-      expect(Number(secondRow?.order_index)).toBe(1);
+      const second = await dbOne<{ order_index: number }>(
+        `
+          SELECT order_index
+          FROM public.workout_exercises
+          WHERE workout_id=$1 AND exercise_id=$2
+        `,
+        [workoutId, exerciseId2],
+      );
+      expect(Number(second?.order_index)).toBe(1);
 
-      // GET /api/exercises/workout/{workoutId}
-      {
-        const response = await api.get(
-          `/api/exercises/workout/${workoutId}`,
-          { params: { language: LANGUAGE } },
-        );
-        const body = await expectSuccess(
-          response,
-          'GET /api/exercises/workout/{workoutId}',
-        );
+      const workoutBody = await success(
+        await api.get(`/api/exercises/workout/${workoutId}`, {
+          params: { language: LANGUAGE },
+        }),
+        'GET /api/exercises/workout/{workoutId}',
+      );
+      expect(Number(workoutBody.data?.id)).toBe(workoutId);
+      expect(
+        workoutBody.data.exercises.some(
+          (row: any) => Number(row?.exercise?.id) === exerciseId,
+        ),
+      ).toBeTruthy();
+      expect(
+        workoutBody.data.exercises.some(
+          (row: any) => Number(row?.exercise?.id) === exerciseId2,
+        ),
+      ).toBeTruthy();
 
-        expect(Number(body.data?.id)).toBe(workoutId);
+      await rejected(
+        await api.post('/api/workout-exercises/assign', {
+          params: { workoutId, exerciseId },
+        }),
+        'duplicate workout-exercise assignment',
+      );
+      expect(await workoutExerciseCount(workoutId, exerciseId)).toBe(1);
 
-        // A backend ExerciseWorkoutDto -> WorkoutExerciseDto struktúrája
-        // szerint az exercise az egyes workout-exercise elemen belül
-        // nested objektum: e.exercise.id. Nem e.id.
-        expect(Array.isArray(body.data?.exercises)).toBeTruthy();
-        expect(
-          body.data.exercises.some(
-            (e: any) => Number(e?.exercise?.id) === Number(exerciseId),
-          ),
-        ).toBeTruthy();
-        expect(
-          body.data.exercises.some(
-            (e: any) => Number(e?.exercise?.id) === Number(exerciseId2),
-          ),
-        ).toBeTruthy();
-      }
+      await success(
+        await api.put('/api/workout-exercises/order-index', {
+          params: { workoutId, exerciseId: exerciseId2, orderIndex: 0 },
+        }),
+        'PUT order-index 1→0',
+      );
 
-      // Duplicate relation must be rejected and DB count must remain 1.
-      {
-        const response = await api.post(
-          '/api/workout-exercises/assign',
-          {
-            params: { workoutId, exerciseId },
-          },
-        );
+      first = await dbOne<{ order_index: number }>(
+        `SELECT order_index FROM public.workout_exercises
+          WHERE workout_id=$1 AND exercise_id=$2`,
+        [workoutId, exerciseId],
+      );
+      const moved = await dbOne<{ order_index: number }>(
+        `SELECT order_index FROM public.workout_exercises
+          WHERE workout_id=$1 AND exercise_id=$2`,
+        [workoutId, exerciseId2],
+      );
+      expect(Number(first?.order_index)).toBe(1);
+      expect(Number(moved?.order_index)).toBe(0);
 
-        await expectRejected(
-          response,
-          'duplicate workout-exercise assignment',
-        );
+      await rejected(
+        await api.put('/api/workout-exercises/order-index', {
+          params: { workoutId, exerciseId, orderIndex: -1 },
+        }),
+        'PUT negative order-index',
+      );
 
-        expect(
-          Number(
-            await dbScalar(
-              `
-                SELECT COUNT(*)
-                FROM public.workout_exercises
-                WHERE workout_id = $1 AND exercise_id = $2
-              `,
-              [workoutId, exerciseId],
-            ),
-          ),
-        ).toBe(1);
-      }
+      await success(
+        await api.delete('/api/workout-exercises/delete', {
+          params: { workoutId, exerciseId },
+        }),
+        'DELETE first workout-exercise relation',
+      );
+      await success(
+        await api.delete('/api/workout-exercises/delete', {
+          params: { workoutId, exerciseId: exerciseId2 },
+        }),
+        'DELETE second workout-exercise relation',
+      );
 
-      // PUT /api/workout-exercises/order-index
-      // Fontos: a backend csak 0..MAX(order_index) tartományt fogad el.
-      // Egyetlen hozzárendelésnél a MAX=0, ezért a korábbi orderIndex=7 teszt
-      // helytelen volt és jogosan adott HTTP 500-at. Két exercise-szel valódi
-      // átrendezést tesztelünk: a második (1) kerül az első helyre (0).
-      {
-        const response = await api.put(
-          '/api/workout-exercises/order-index',
-          {
-            params: {
-              workoutId,
-              exerciseId: exerciseId2,
-              orderIndex: 0,
-            },
-          },
-        );
+      expect(await workoutExerciseCount(workoutId)).toBe(0);
 
-        await expectSuccess(
-          response,
-          'PUT /api/workout-exercises/order-index (1 -> 0)',
-        );
-      }
+      await rejected(
+        await api.delete('/api/workout-exercises/delete', {
+          params: { workoutId, exerciseId },
+        }),
+        'DELETE missing workout-exercise relation',
+      );
 
-      row = await relation(workoutId, exerciseId);
-      const reorderedSecond = await relation(workoutId, exerciseId2);
-      expect(Number(row?.order_index)).toBe(1);
-      expect(Number(reorderedSecond?.order_index)).toBe(0);
+      await deleteExercise(api, exerciseId2);
+      await assertExerciseGone(exerciseId2);
+      exerciseId2 = undefined;
 
-      // Vissza is rendezzük: 0 -> 1.
-      {
-        const response = await api.put(
-          '/api/workout-exercises/order-index',
-          {
-            params: {
-              workoutId,
-              exerciseId: exerciseId2,
-              orderIndex: 1,
-            },
-          },
-        );
+      await deleteExercise(api, exerciseId);
+      await assertExerciseGone(exerciseId);
+      exerciseId = undefined;
 
-        await expectSuccess(
-          response,
-          'PUT /api/workout-exercises/order-index (0 -> 1)',
-        );
-      }
-
-      row = await relation(workoutId, exerciseId);
-      const restoredSecondOrder = await relation(workoutId, exerciseId2);
-      expect(Number(row?.order_index)).toBe(0);
-      expect(Number(restoredSecondOrder?.order_index)).toBe(1);
-
-      // Negative order index.
-      {
-        const response = await api.put(
-          '/api/workout-exercises/order-index',
-          {
-            params: {
-              workoutId,
-              exerciseId,
-              orderIndex: -1,
-            },
-          },
-        );
-
-        await expectRejected(
-          response,
-          'negative orderIndex',
-        );
-
-        row = await relation(workoutId, exerciseId);
-        expect(Number(row?.order_index)).toBe(0);
-        const secondAfterNegative = await relation(workoutId, exerciseId2);
-        expect(Number(secondAfterNegative?.order_index)).toBe(1);
-      }
-
-      // DELETE /api/workout-exercises/delete
-      {
-        const response = await api.delete(
-          '/api/workout-exercises/delete',
-          {
-            params: { workoutId, exerciseId },
-          },
-        );
-
-        await expectSuccess(
-          response,
-          'DELETE /api/workout-exercises/delete',
-        );
-      }
-
-      expect(await relation(workoutId, exerciseId)).toBeNull();
-
-      {
-        const response = await api.delete(
-          '/api/workout-exercises/delete',
-          { params: { workoutId, exerciseId: exerciseId2 } },
-        );
-        await expectSuccess(
-          response,
-          'DELETE /api/workout-exercises/delete (second exercise)',
-        );
-      }
-      expect(await relation(workoutId, exerciseId2)).toBeNull();
-
-      // A second delete must be rejected.
-      {
-        const response = await api.delete(
-          '/api/workout-exercises/delete',
-          {
-            params: { workoutId, exerciseId },
-          },
-        );
-
-        await expectRejected(
-          response,
-          'delete missing workout-exercise relation',
-        );
-      }
+      await deleteWorkout(api, workoutId);
+      await assertWorkoutGone(workoutId);
+      workoutId = undefined;
     } finally {
-      // A teszt bármelyik ponton elbukhat. Cleanup közben ezért NEM dobunk új
-      // hibát az eredeti hiba helyett. Először minden saját relationt
-      // megpróbálunk az API-n keresztül törölni, majd DB-ben ellenőrizzük.
+      // Cleanup kizárólag az alkalmazás API-ján keresztül történik.
+      // Ha az API nem tudja eltávolítani a saját tesztadatot, az tesztelési
+      // vagy backend hiba, nem rejtjük el közvetlen SQL DELETE-tel.
       if (workoutId !== undefined) {
         for (const currentExerciseId of [exerciseId, exerciseId2]) {
           if (currentExerciseId === undefined) continue;
 
-          const relationExists = Number(
-            await dbScalar(
-              `
-                SELECT COUNT(*)
-                FROM public.workout_exercises
-                WHERE workout_id = $1 AND exercise_id = $2
-              `,
-              [workoutId, currentExerciseId],
-            ),
+          const relationExists = await workoutExerciseCount(
+            workoutId,
+            currentExerciseId,
           );
 
-          if (relationExists === 0) continue;
-
-          try {
-            const response = await api.delete(
-              '/api/workout-exercises/delete',
-              {
+          if (relationExists > 0) {
+            await success(
+              await api.delete('/api/workout-exercises/delete', {
                 params: {
                   workoutId,
                   exerciseId: currentExerciseId,
                 },
-              },
-            );
-
-            if (!response.ok()) {
-              console.error(
-                `[E2E ASSIGNMENT CLEANUP] API relation DELETE sikertelen: ` +
-                  `workoutId=${workoutId}, exerciseId=${currentExerciseId}, ` +
-                  `HTTP ${response.status()} ${await response.text()}`,
-              );
-            }
-          } catch (error) {
-            console.error(
-              `[E2E ASSIGNMENT CLEANUP] relation DELETE exception: ` +
-                `workoutId=${workoutId}, exerciseId=${currentExerciseId}`,
-              error,
+              }),
+              `cleanup DELETE workout-exercise ${workoutId}/${currentExerciseId}`,
             );
           }
-        }
-
-        // Ha az API-s relation DELETE valamiért nem távolította el a saját
-        // tesztadatot, közvetlenül DB-ben takarítjuk. Ez kizárólag a teszt
-        // által létrehozott workoutId-ra vonatkozik.
-        const remainingRelations = Number(
-          await dbScalar(
-            `
-              SELECT COUNT(*)
-              FROM public.workout_exercises
-              WHERE workout_id = $1
-            `,
-            [workoutId],
-          ),
-        );
-
-        if (remainingRelations > 0) {
-          console.error(
-            `[E2E ASSIGNMENT CLEANUP] ${remainingRelations} workout_exercises ` +
-              `relation maradt; DB cleanup indul. workoutId=${workoutId}`,
-          );
-
-          await db().query(
-            'DELETE FROM public.workout_exercises WHERE workout_id = $1',
-            [workoutId],
-          );
-        }
-
-        const blockers = await db().query(
-          `
-            SELECT
-              (SELECT COUNT(*) FROM public.program_workouts WHERE workout_id = $1) AS program_workouts,
-              (SELECT COUNT(*) FROM public.user_workouts WHERE workout_id = $1) AS user_workouts
-          `,
-          [workoutId],
-        );
-
-        const blockerRow = blockers.rows[0];
-        const programWorkouts = Number(blockerRow.program_workouts);
-        const userWorkouts = Number(blockerRow.user_workouts);
-
-        if (programWorkouts === 0 && userWorkouts === 0) {
-          const workoutExists = Number(
-            await dbScalar(
-              'SELECT COUNT(*) FROM public.workouts WHERE id = $1',
-              [workoutId],
-            ),
-          );
-
-          if (workoutExists > 0) {
-            try {
-              const response = await api.delete(
-                `/api/workouts/delete/${workoutId}`,
-              );
-
-              if (!response.ok()) {
-                console.error(
-                  `[E2E ASSIGNMENT CLEANUP] workout API DELETE sikertelen: ` +
-                    `workoutId=${workoutId}, HTTP ${response.status()} ` +
-                    `${await response.text()}`,
-                );
-
-                // A workout saját tesztadat. Ha az API törlés sikertelen, de
-                // nincs program/user függőség, DB-ből biztonságosan takarítjuk.
-                await db().query(
-                  'DELETE FROM public.workouts WHERE id = $1',
-                  [workoutId],
-                );
-              }
-            } catch (error) {
-              console.error(
-                `[E2E ASSIGNMENT CLEANUP] workout DELETE exception: ` +
-                  `workoutId=${workoutId}`,
-                error,
-              );
-
-              await db().query(
-                'DELETE FROM public.workouts WHERE id = $1',
-                [workoutId],
-              );
-            }
-          }
-        } else {
-          console.error(
-            `[E2E ASSIGNMENT CLEANUP] workout nem törölhető: ` +
-              `workoutId=${workoutId}, ` +
-              `program_workouts=${programWorkouts}, ` +
-              `user_workouts=${userWorkouts}`,
-          );
         }
       }
 
       if (exerciseId2 !== undefined) {
-        const exerciseExists2 = Number(
-          await dbScalar(
-            'SELECT COUNT(*) FROM public.exercises WHERE id = $1',
-            [exerciseId2],
-          ),
-        );
-
-        if (exerciseExists2 > 0) {
-          await deleteExercise(api, exerciseId2);
-        }
+        await deleteExercise(api, exerciseId2);
+        await assertExerciseGone(exerciseId2);
       }
 
       if (exerciseId !== undefined) {
-        const exerciseExists = Number(
-          await dbScalar(
-            'SELECT COUNT(*) FROM public.exercises WHERE id = $1',
-            [exerciseId],
-          ),
-        );
+        await deleteExercise(api, exerciseId);
+        await assertExerciseGone(exerciseId);
+      }
 
-        if (exerciseExists > 0) {
-          await deleteExercise(api, exerciseId);
-        }
+      if (workoutId !== undefined) {
+        await deleteWorkout(api, workoutId);
+        await assertWorkoutGone(workoutId);
       }
 
       await api.dispose();
     }
   });
 
-  test('NEGATIVE MATRIX: invalid IDs + invalid workout/exercise combinations do not modify DB', async ({
+  test('NEGATIVE MATRIX: invalid IDs and invalid relations are rejected without creating rows', async ({
     page,
   }) => {
-    await loginAsCoach(page);
-
+    await login(page, 'coach');
     const api = await apiFor(page);
 
-    const invalidId = 999999999;
+    const invalidId = 2147483001;
 
     try {
-      // Workout update: invalid ID.
-      {
-        const response = await api.put('/api/workouts/update', {
+      await rejected(
+        await api.put('/api/workouts/update', {
           params: { language: LANGUAGE },
           data: {
             id: invalidId,
-            name: 'E2E INVALID',
-            description: 'must fail',
+            name: 'E2E INVALID WORKOUT',
+            description: 'must not exist',
             workoutDate: '2035-01-01',
             durationMinutes: 30,
             intensityLevel: 'Low',
             dayIndex: 1,
             done: false,
           },
-        });
+        }),
+        'PUT invalid workout ID',
+      );
 
-        await expectRejected(
-          response,
-          'PUT invalid workout ID',
-        );
-      }
+      await rejected(
+        await api.delete(`/api/workouts/delete/${invalidId}`),
+        'DELETE invalid workout ID',
+      );
 
-      // Workout delete: invalid ID.
-      {
-        const response = await api.delete(
-          `/api/workouts/delete/${invalidId}`,
-        );
-
-        await expectRejected(
-          response,
-          'DELETE invalid workout ID',
-        );
-      }
-
-      // Exercise update: invalid ID.
-      {
-        const response = await api.put('/api/exercises/update', {
+      await rejected(
+        await api.put('/api/exercises/update', {
           params: { language: LANGUAGE },
           data: {
             id: invalidId,
-            name: 'E2E INVALID',
-            description: 'must fail',
+            name: 'E2E INVALID EXERCISE',
+            description: 'must not exist',
           },
-        });
+        }),
+        'PUT invalid exercise ID',
+      );
 
-        await expectRejected(
-          response,
-          'PUT invalid exercise ID',
-        );
-      }
+      await rejected(
+        await api.delete(`/api/exercises/delete/${invalidId}`),
+        'DELETE invalid exercise ID',
+      );
 
-      // Exercise delete: invalid ID.
-      {
-        const response = await api.delete(
-          `/api/exercises/delete/${invalidId}`,
-        );
+      const invalidWorkoutBefore = await dbCount(
+        'SELECT count(*)::text AS count FROM public.workouts WHERE id=$1',
+        [invalidId],
+      );
+      const invalidExerciseBefore = await dbCount(
+        'SELECT count(*)::text AS count FROM public.exercises WHERE id=$1',
+        [invalidId],
+      );
+      expect(invalidWorkoutBefore).toBe(0);
+      expect(invalidExerciseBefore).toBe(0);
 
-        await expectRejected(
-          response,
-          'DELETE invalid exercise ID',
-        );
-      }
+      await rejected(
+        await api.post('/api/workout-exercises/assign', {
+          params: { workoutId: invalidId, exerciseId: invalidId },
+        }),
+        'POST assign invalid workout/exercise IDs',
+      );
 
-      // Assignment: invalid workout.
-      {
-        const response = await api.post(
-          '/api/workout-exercises/assign',
-          {
-            params: {
-              workoutId: invalidId,
-              exerciseId: Number(process.env.E2E_EXERCISE_ID ?? 1046),
-            },
+      expect(
+        await dbCount(
+          `SELECT count(*)::text AS count
+             FROM public.workout_exercises
+            WHERE workout_id=$1 OR exercise_id=$2`,
+          [invalidId, invalidId],
+        ),
+      ).toBe(0);
+
+      await rejected(
+        await api.put('/api/workout-exercises/order-index', {
+          params: {
+            workoutId: invalidId,
+            exerciseId: invalidId,
+            orderIndex: 0,
           },
-        );
-
-        await expectRejected(
-          response,
-          'ASSIGN invalid workout ID',
-        );
-      }
-
-      // Assignment: invalid exercise.
-      {
-        const response = await api.post(
-          '/api/workout-exercises/assign',
-          {
-            params: {
-              workoutId: Number(process.env.E2E_WORKOUT_ID ?? 1),
-              exerciseId: invalidId,
-            },
-          },
-        );
-
-        await expectRejected(
-          response,
-          'ASSIGN invalid exercise ID',
-        );
-      }
-
-      // Order update: invalid IDs.
-      {
-        const response = await api.put(
-          '/api/workout-exercises/order-index',
-          {
-            params: {
-              workoutId: invalidId,
-              exerciseId: invalidId,
-              orderIndex: 1,
-            },
-          },
-        );
-
-        await expectRejected(
-          response,
-          'ORDER invalid IDs',
-        );
-      }
+        }),
+        'PUT order-index invalid IDs',
+      );
     } finally {
       await api.dispose();
     }
   });
 
-  test('NEGATIVE VALIDATION: empty exercise name is rejected and no DB record is created', async ({
+  test('NEGATIVE VALIDATION: empty exercise name is rejected and no translation is created', async ({
     page,
   }) => {
-    await loginAsCoach(page);
-
+    await login(page, 'coach');
     const api = await apiFor(page);
+
     const marker = `E2E EMPTY EXERCISE ${suffix()}`;
 
     try {
-      const before = Number(
-        await dbScalar(
-          `
-            SELECT COUNT(*)
-            FROM public.exercise_translations
-            WHERE name = $1
-          `,
+      expect(
+        await dbCount(
+          'SELECT count(*)::text AS count FROM public.exercise_translations WHERE name=$1',
           [marker],
         ),
-      );
+      ).toBe(0);
 
-      expect(before).toBe(0);
-
-      const response = await api.post('/api/exercises/add', {
-        params: { language: LANGUAGE },
-        data: {
-          name: '',
-          description: marker,
-        },
-      });
-
-      await expectRejected(
-        response,
+      await rejected(
+        await api.post('/api/exercises/add', {
+          params: { language: LANGUAGE },
+          data: {
+            name: '',
+            description: marker,
+          },
+        }),
         'POST /api/exercises/add empty name',
       );
 
-      const after = Number(
-        await dbScalar(
-          `
-            SELECT COUNT(*)
-            FROM public.exercise_translations
-            WHERE name = $1
-          `,
+      expect(
+        await dbCount(
+          'SELECT count(*)::text AS count FROM public.exercise_translations WHERE name=$1',
           [marker],
         ),
-      );
-
-      expect(after).toBe(0);
+      ).toBe(0);
     } finally {
       await api.dispose();
     }
