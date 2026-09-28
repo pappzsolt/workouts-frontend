@@ -1,266 +1,430 @@
-import { test, expect, Page } from '@playwright/test';
-import { loginAs } from '../helpers/read-only';
+import { expect, test, type Page } from '@playwright/test';
+import { request } from '@playwright/test';
 
-const COACH_USERNAME = process.env.E2E_COACH_USERNAME;
-const COACH_PASSWORD = process.env.E2E_COACH_PASSWORD;
+import {
+  assertWorkoutInDatabase,
+  assertWorkoutDeleted,
+  closeWorkoutDatabase,
+} from '../helpers/workout-db';
 
-const CREATE_URL = /\/api\/workouts\/add(?:\?.*)?$/;
-const UPDATE_URL = /\/api\/workouts\/update(?:\?.*)?$/;
-type WorkoutResponse = {
-  status?: string;
-  success?: boolean;
-  message?: string;
-  data?: {
-    id?: number | string;
-    [key: string]: unknown;
-  };
+const BASE_API_URL = process.env.E2E_API_URL ?? 'http://localhost:8080';
+
+type WorkoutData = {
+  name: string;
+  description: string;
+  workoutDate: string;
+  durationMinutes: number;
+  intensityLevel: string;
 };
 
-function requireCoachCredentials(): void {
-  expect(COACH_USERNAME, 'Missing E2E_COACH_USERNAME').toBeTruthy();
-  expect(COACH_PASSWORD, 'Missing E2E_COACH_PASSWORD').toBeTruthy();
+function uniqueSuffix(): string {
+  return `${Date.now()}-${Math.floor(Math.random() * 1_000_000)}`;
+}
+
+function buildWorkout(prefix: string): WorkoutData {
+  const suffix = uniqueSuffix();
+
+  return {
+    name: `${prefix} ${suffix}`,
+    description: `Playwright E2E teszt ${suffix}`,
+    workoutDate: '2035-01-15',
+    durationMinutes: 77,
+    // Ezt a CREATE oldalon a valódi Angular option érték adja.
+    intensityLevel: 'High',
+  };
 }
 
 async function loginAsCoach(page: Page): Promise<void> {
-  requireCoachCredentials();
+  const username = process.env.E2E_COACH_USERNAME;
+  const password = process.env.E2E_COACH_PASSWORD;
 
-  await loginAs(
-    page,
-    COACH_USERNAME!,
-    COACH_PASSWORD!,
-    '/coach/dashboard',
-  );
-}
+  if (!username || !password || password === 'CHANGE_ME') {
+    throw new Error(
+      'Hiányzó E2E_COACH_USERNAME / E2E_COACH_PASSWORD a .env fájlból.',
+    );
+  }
 
-/**
- * Captures the Authorization header used by the Angular application.
- *
- * page.request shares browser cookies, so cookie-based authentication also
- * works. The captured header is only needed when the application uses a
- * bearer token stored outside cookies.
- */
-function captureAuthHeader(page: Page): { get: () => string | undefined } {
-  let authorization: string | undefined;
+  await page.goto('/login');
 
-  page.on('request', (request) => {
-    const value = request.headers()['authorization'];
+  await page.locator('input[formcontrolname="username"]').fill(username);
+  await page.locator('input[formcontrolname="password"]').fill(password);
+  await page.locator('form button[type="submit"]').click();
 
-    if (value) {
-      authorization = value;
+  await expect(page).toHaveURL(/\/coach\/dashboard$/, { timeout: 15_000 });
+
+  const tokenInfo = await page.evaluate(() => {
+    const token = localStorage.getItem('accessToken');
+    if (!token) return null;
+
+    try {
+      const payload = JSON.parse(
+        atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')),
+      );
+
+      return {
+        roles: payload.roles ?? payload.authorities ?? null,
+        subject: payload.sub ?? null,
+      };
+    } catch {
+      return null;
     }
   });
 
-  return {
-    get: () => authorization,
-  };
+  expect(tokenInfo).not.toBeNull();
+  expect(String(tokenInfo?.roles ?? '')).toContain('ROLE_COACH');
+}
+
+/**
+ * A CREATE oldal tényleges Angular komponense:
+ * selector: app-newworkout
+ *
+ * Ha ez nem jelenik meg, nem locator-problémát akarunk elrejteni:
+ * a teszt diagnosztikai hibával álljon meg.
+ */
+async function waitForCreateComponent(page: Page): Promise<void> {
+  await expect(page).toHaveURL(/\/coach\/workouts\/new$/, {
+    timeout: 15_000,
+  });
+
+  const component = page.locator('app-newworkout');
+
+  try {
+    await expect(component).toBeAttached({ timeout: 15_000 });
+  } catch {
+    const diagnostics = await page.evaluate(() => ({
+      url: location.href,
+      title: document.title,
+      bodyText: document.body?.innerText?.slice(0, 3000) ?? '',
+      html: document.documentElement.outerHTML.slice(0, 12000),
+    }));
+
+    throw new Error(
+      'A /coach/workouts/new route betöltődött, de az app-newworkout komponens nem került a DOM-ba.\n' +
+      JSON.stringify(diagnostics, null, 2),
+    );
+  }
+
+  await expect(component.locator('#workoutName')).toBeVisible({
+    timeout: 15_000,
+  });
+}
+
+function createWorkoutForm(page: Page) {
+  return page.locator('app-newworkout form').first();
+}
+
+async function fillCreateForm(page: Page, workout: WorkoutData): Promise<void> {
+  await waitForCreateComponent(page);
+
+  const form = createWorkoutForm(page);
+
+  await form.locator('#workoutName').fill(workout.name);
+  await form.locator('#description').fill(workout.description);
+  await form.locator('#workoutDate').fill(workout.workoutDate);
+  await form.locator('#durationMinutes').fill(String(workout.durationMinutes));
+
+  const intensity = form.locator('select#intensityLevel');
+  await expect(intensity).toBeVisible();
+  await intensity.selectOption(workout.intensityLevel);
+
+  await expect(form.locator('#workoutName')).toHaveValue(workout.name);
+  await expect(form.locator('#description')).toHaveValue(workout.description);
+  await expect(form.locator('#workoutDate')).toHaveValue(workout.workoutDate);
+  await expect(form.locator('#durationMinutes')).toHaveValue(
+    String(workout.durationMinutes),
+  );
+  await expect(intensity).toHaveValue(workout.intensityLevel);
 }
 
 async function createWorkoutThroughUi(
   page: Page,
-  suffix: string,
-): Promise<number> {
-  const workoutName = `E2E Workout ${suffix}`;
-  const description = `Playwright create/update test ${suffix}`;
-
+  workout: WorkoutData,
+): Promise<{ id: number; responseBody: any }> {
   await page.goto('/coach/workouts/new');
+  await fillCreateForm(page, workout);
 
-  await expect(
-    page.getByRole('heading', { name: /Létrehozás: Új Workout/i }),
-  ).toBeVisible();
+  const responsePromise = page.waitForResponse((response) => {
+    const url = new URL(response.url());
 
-  const nameInput = page.getByLabel(/Workout neve/i);
-  const descriptionInput = page.getByLabel(/^Leírás$/i);
-  const dateInput = page.getByLabel(/^Dátum$/i);
-  const durationInput = page.getByLabel(/Időtartam \(perc\)/i);
-  const intensitySelect = page.getByLabel(/^Intenzitás$/i);
-
-  await expect(nameInput).toBeVisible();
-  await expect(descriptionInput).toBeVisible();
-  await expect(dateInput).toBeVisible();
-  await expect(durationInput).toBeVisible();
-  await expect(intensitySelect).toBeVisible();
-
-  await nameInput.fill(workoutName);
-  await descriptionInput.fill(description);
-
-  const tomorrow = new Date();
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  const yyyy = tomorrow.getFullYear();
-  const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
-  const dd = String(tomorrow.getDate()).padStart(2, '0');
-
-  await dateInput.fill(`${yyyy}-${mm}-${dd}`);
-  await durationInput.fill('60');
-  await intensitySelect.selectOption({ label: 'Közepes' });
-
-  const createResponsePromise = page.waitForResponse((response) => {
-    return response.request().method() === 'POST' && CREATE_URL.test(response.url());
+    return (
+      response.request().method() === 'POST' &&
+      url.pathname.endsWith('/api/workouts/add')
+    );
   });
 
-  await page.getByRole('button', { name: /Workout létrehozása/i }).click();
+  await createWorkoutForm(page).locator('button[type="submit"]').click();
 
-  const createResponse = await createResponsePromise;
+  const response = await responsePromise;
+  const responseBody = await response.json();
+  const requestBody = response.request().postDataJSON() as Record<string, unknown>;
 
-  expect(createResponse.ok(), await createResponse.text()).toBeTruthy();
+  expect(response.ok(), `POST /api/workouts/add: ${response.status()}`).toBeTruthy();
+  expect(responseBody.success).toBeTruthy();
+  expect(responseBody.data).toBeTruthy();
 
-  const body = (await createResponse.json()) as WorkoutResponse;
-  const workoutId = Number(body.data?.id);
+  const id = Number(responseBody.data.id);
 
-  expect(
-    Number.isInteger(workoutId) && workoutId > 0,
-    `Backend create response does not contain a valid workout ID: ${JSON.stringify(body)}`,
-  ).toBeTruthy();
+  expect(Number.isInteger(id) && id > 0).toBeTruthy();
 
-  // Normal, non-Program-Builder creation continues to the exercise assignment page.
-  await expect(page).toHaveURL(/\/coach\/assign-workouts-exercises(?:\?.*)?$/);
+  // A frontend service mapping ellenőrzése:
+  // WorkoutRequest -> backend @JsonProperty("name"/"description").
+  expect(requestBody.name).toBe(workout.name);
+  expect(requestBody.description).toBe(workout.description);
+  expect(requestBody.workoutDate).toBe(workout.workoutDate);
+  expect(Number(requestBody.durationMinutes)).toBe(workout.durationMinutes);
+  expect(requestBody.intensityLevel).toBe(workout.intensityLevel);
 
-  return workoutId;
+  await expect(page).toHaveURL(
+    new RegExp(`/coach/assign-workouts-exercises\\?.*workoutId=${id}`),
+    { timeout: 15_000 },
+  );
+
+  return { id, responseBody };
 }
 
-async function deleteWorkout(
+async function deleteWorkoutAsCurrentCoach(
   page: Page,
-  workoutId: number | undefined,
-  authorization?: string,
+  workoutId: number,
 ): Promise<void> {
-  if (!workoutId) {
-    return;
+  const token = await page.evaluate(() => localStorage.getItem('accessToken'));
+
+  if (!token) {
+    throw new Error('Cleanup: accessToken nem található.');
   }
 
-  const headers: Record<string, string> = {};
+  const api = await request.newContext({
+    baseURL: BASE_API_URL,
+    extraHTTPHeaders: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-  if (authorization) {
-    headers.authorization = authorization;
-  }
-
-  const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:4200';
-  const deleteURL = new URL(
-    `/api/workouts/delete/${workoutId}`,
-    baseURL,
-  ).toString();
-
-  const response = await page.request.delete(deleteURL, { headers });
-
-  if (!response.ok()) {
+  try {
+    const response = await api.delete(`/api/workouts/delete/${workoutId}`);
     const body = await response.text();
+
+    expect(
+      response.ok(),
+      `Cleanup DELETE /api/workouts/delete/${workoutId}: ${response.status()} ${body}`,
+    ).toBeTruthy();
+  } finally {
+    await api.dispose();
+  }
+}
+
+async function waitForEditComponent(
+  page: Page,
+  workoutId: number,
+): Promise<void> {
+  await expect(page).toHaveURL(
+    new RegExp(`/coach/workouts/${workoutId}/edit$`),
+    { timeout: 15_000 },
+  );
+
+  // A tényleges selector: app-coach-workout-edit.
+  const component = page.locator('app-coach-workout-edit');
+
+  try {
+    await expect(component).toBeAttached({ timeout: 15_000 });
+  } catch {
+    const diagnostics = await page.evaluate(() => ({
+      url: location.href,
+      title: document.title,
+      bodyText: document.body?.innerText?.slice(0, 3000) ?? '',
+      html: document.documentElement.outerHTML.slice(0, 12000),
+    }));
+
     throw new Error(
-      `E2E cleanup failed for workout ${workoutId}: HTTP ${response.status()} ${body}`,
+      `A /coach/workouts/${workoutId}/edit route betöltődött, ` +
+      'de az app-coach-workout-edit komponens nem került a DOM-ba.\n' +
+      JSON.stringify(diagnostics, null, 2),
     );
   }
 
-  const body = (await response.json()) as WorkoutResponse;
-
-  expect(
-    body.status === undefined || body.status === 'success' || body.success === true,
-    `Unexpected delete response: ${JSON.stringify(body)}`,
-  ).toBeTruthy();
+  await expect(component.locator('#workoutName')).toBeVisible({
+    timeout: 15_000,
+  });
 }
 
-test.describe('Coach - workout create/update', () => {
+async function updateWorkoutThroughUi(
+  page: Page,
+  workoutId: number,
+  expectedBefore: WorkoutData,
+  expectedAfter: WorkoutData,
+): Promise<any> {
+  await page.goto(`/coach/workouts/${workoutId}/edit`);
+  await waitForEditComponent(page, workoutId);
+
+  const component = page.locator('app-coach-workout-edit');
+  const form = component.locator('form').first();
+
+  // Nem a korábbi Angular state-et, hanem az API-ból betöltött adatot ellenőrizzük.
+  await expect(form.locator('#workoutName')).toHaveValue(expectedBefore.name);
+  await expect(form.locator('#description')).toHaveValue(expectedBefore.description);
+  await expect(form.locator('#workoutDate')).toHaveValue(expectedBefore.workoutDate);
+  await expect(form.locator('#durationMinutes')).toHaveValue(
+    String(expectedBefore.durationMinutes),
+  );
+
+  await form.locator('#workoutName').fill(expectedAfter.name);
+  await form.locator('#description').fill(expectedAfter.description);
+  await form.locator('#workoutDate').fill(expectedAfter.workoutDate);
+  await form.locator('#durationMinutes').fill(String(expectedAfter.durationMinutes));
+
+  const intensity = form.locator('select#intensityLevel');
+  await intensity.selectOption(expectedAfter.intensityLevel);
+
+  const responsePromise = page.waitForResponse((response) => {
+    const url = new URL(response.url());
+
+    return (
+      response.request().method() === 'PUT' &&
+      url.pathname.endsWith('/api/workouts/update')
+    );
+  });
+
+  await form.locator('button[type="submit"]').click();
+
+  const response = await responsePromise;
+  const responseBody = await response.json();
+  const requestBody = response.request().postDataJSON() as Record<string, unknown>;
+
+  expect(response.ok(), `PUT /api/workouts/update: ${response.status()}`).toBeTruthy();
+  expect(responseBody.success).toBeTruthy();
+  expect(responseBody.data).toBeTruthy();
+
+  // A backend WorkoutResponse update esetén jelenleg az id nincs kitöltve.
+  // Emiatt itt nem hamisítunk elvárást: a request id és a DB azonosítja a workoutot.
+  expect(Number(requestBody.id)).toBe(workoutId);
+  expect(requestBody.name).toBe(expectedAfter.name);
+  expect(requestBody.description).toBe(expectedAfter.description);
+  expect(requestBody.workoutDate).toBe(expectedAfter.workoutDate);
+  expect(Number(requestBody.durationMinutes)).toBe(expectedAfter.durationMinutes);
+  expect(requestBody.intensityLevel).toBe(expectedAfter.intensityLevel);
+
+  return responseBody;
+}
+
+test.describe('Coach - Workout CREATE / UPDATE / PostgreSQL', () => {
   test.describe.configure({ mode: 'serial' });
 
-  let createdWorkoutId: number | undefined;
-  let authHeader: string | undefined;
+  test.afterAll(async () => {
+    await closeWorkoutDatabase();
+  });
 
-  test.beforeEach(async ({ page }) => {
-    const auth = captureAuthHeader(page);
+  test('CREATE: UI → POST → PostgreSQL → cleanup → PostgreSQL', async ({ page }) => {
+    page.on('console', msg => {
+      console.log(`[browser:${msg.type()}] ${msg.text()}`);
+    });
+
+    page.on('pageerror', error => {
+      console.error(`[pageerror] ${error.message}`);
+    });
+
+    page.on('requestfailed', request => {
+      console.error(
+        `[requestfailed] ${request.method()} ${request.url()} -> ${request.failure()?.errorText}`,
+      );
+    });
 
     await loginAsCoach(page);
 
-    authHeader = auth.get();
+    const workout = buildWorkout('E2E CREATE');
+    let workoutId: number | undefined;
+
+    try {
+      const created = await createWorkoutThroughUi(page, workout);
+      workoutId = created.id;
+
+      const db = await assertWorkoutInDatabase(workoutId, workout);
+
+      expect(db.id).toBe(workoutId);
+      expect(db.name).toBe(workout.name);
+      expect(db.description).toBe(workout.description);
+      expect(db.workout_date).toBe(workout.workoutDate);
+      expect(Number(db.duration_minutes)).toBe(workout.durationMinutes);
+      expect(db.intensity_level).toBe(workout.intensityLevel);
+      expect(db.translation_name).toBe(workout.name);
+      expect(db.translation_description).toBe(workout.description);
+    } finally {
+      if (workoutId !== undefined) {
+        await deleteWorkoutAsCurrentCoach(page, workoutId);
+        await assertWorkoutDeleted(workoutId);
+      }
+    }
   });
 
-  test.afterEach(async ({ page }) => {
-    await deleteWorkout(page, createdWorkoutId, authHeader);
-
-    createdWorkoutId = undefined;
-    authHeader = undefined;
-  });
-
-  test('coach can create a workout and backend returns its ID', async ({ page }) => {
-    const suffix = `${Date.now()}`;
-
-    createdWorkoutId = await createWorkoutThroughUi(page, suffix);
-
-    expect(createdWorkoutId).toBeGreaterThan(0);
-
-    // Verify the created record can immediately be loaded back from the UI.
-    await page.goto(`/coach/workouts/${createdWorkoutId}/edit`);
-
-    await expect(
-      page.getByRole('heading', { name: /Workout módosítása|Edit Workout/i }),
-    ).toBeVisible();
-
-    await expect(page.getByLabel(/Workout neve|Workout Name/i)).toHaveValue(
-      `E2E Workout ${suffix}`,
-    );
-    await expect(page.getByLabel(/^Leírás$|^Description$/i)).toHaveValue(
-      `Playwright create/update test ${suffix}`,
-    );
-    await expect(
-      page.getByLabel(/Időtartam \(perc\)|Duration \(minutes\)/i),
-    ).toHaveValue('60');
-  });
-
-  test('coach can modify a workout and the changes persist', async ({ page }) => {
-    const suffix = `${Date.now()}`;
-
-    createdWorkoutId = await createWorkoutThroughUi(page, suffix);
-
-    const updatedName = `E2E Updated Workout ${suffix}`;
-    const updatedDescription = `Updated by Playwright ${suffix}`;
-
-    await page.goto(`/coach/workouts/${createdWorkoutId}/edit`);
-
-    await expect(
-      page.getByRole('heading', { name: /Workout módosítása|Edit Workout/i }),
-    ).toBeVisible();
-
-    const nameInput = page.getByLabel(/Workout neve|Workout Name/i);
-    const descriptionInput = page.getByLabel(/^Leírás$|^Description$/i);
-    const durationInput = page.getByLabel(/Időtartam \(perc\)|Duration \(minutes\)/i);
-    const intensitySelect = page.getByLabel(/^Intenzitás$|^Intensity Level$/i);
-
-    await expect(nameInput).toBeVisible();
-    await expect(descriptionInput).toBeVisible();
-    await expect(durationInput).toBeVisible();
-    await expect(intensitySelect).toBeVisible();
-
-    await nameInput.fill(updatedName);
-    await descriptionInput.fill(updatedDescription);
-    await durationInput.fill('75');
-    await intensitySelect.selectOption({ label: 'Magas' });
-
-    const updateResponsePromise = page.waitForResponse((response) => {
-      return response.request().method() === 'PUT' && UPDATE_URL.test(response.url());
+  test('UPDATE: CREATE → DB baseline → UI UPDATE → API/DB verification → reload', async ({
+    page,
+  }) => {
+    page.on('console', msg => {
+      console.log(`[browser:${msg.type()}] ${msg.text()}`);
     });
 
-    await page.getByRole('button', { name: /^Mentés$|^Save$/i }).click();
+    page.on('pageerror', error => {
+      console.error(`[pageerror] ${error.message}`);
+    });
 
-    const updateResponse = await updateResponsePromise;
+    page.on('requestfailed', request => {
+      console.error(
+        `[requestfailed] ${request.method()} ${request.url()} -> ${request.failure()?.errorText}`,
+      );
+    });
 
-    expect(updateResponse.ok(), await updateResponse.text()).toBeTruthy();
+    await loginAsCoach(page);
 
-    const updateBody = (await updateResponse.json()) as WorkoutResponse;
+    const original = buildWorkout('E2E UPDATE');
 
-    expect(
-      updateBody.status === undefined ||
-        updateBody.status === 'success' ||
-        updateBody.success === true,
-      `Unexpected update response: ${JSON.stringify(updateBody)}`,
-    ).toBeTruthy();
+    const updated: WorkoutData = {
+      ...original,
+      name: `${original.name} MODIFIED`,
+      description: `${original.description} - módosítva`,
+      durationMinutes: 91,
+      // Az EDIT template tényleges option értéke.
+      intensityLevel: 'low',
+    };
 
-    await expect(page).toHaveURL(/\/coach\/dashboard(?:\?.*)?$/);
+    let workoutId: number | undefined;
 
-    // Reload the edit page and verify that the values were really persisted.
-    await page.goto(`/coach/workouts/${createdWorkoutId}/edit`);
+    try {
+      const created = await createWorkoutThroughUi(page, original);
+      workoutId = created.id;
 
-    await expect(
-      page.getByRole('heading', { name: /Workout módosítása|Edit Workout/i }),
-    ).toBeVisible();
+      await assertWorkoutInDatabase(workoutId, original);
 
-    await expect(nameInput).toHaveValue(updatedName);
-    await expect(descriptionInput).toHaveValue(updatedDescription);
-    await expect(durationInput).toHaveValue('75');
+      await updateWorkoutThroughUi(page, workoutId, original, updated);
+
+      const db = await assertWorkoutInDatabase(workoutId, updated);
+
+      expect(db.id).toBe(workoutId);
+      expect(db.name).toBe(updated.name);
+      expect(db.description).toBe(updated.description);
+      expect(db.workout_date).toBe(updated.workoutDate);
+      expect(Number(db.duration_minutes)).toBe(updated.durationMinutes);
+      expect(db.intensity_level).toBe(updated.intensityLevel);
+      expect(db.translation_name).toBe(updated.name);
+      expect(db.translation_description).toBe(updated.description);
+
+      // Teljes újratöltés: így nem csak az Angular memóriában lévő state-et teszteljük.
+      await page.goto(`/coach/workouts/${workoutId}/edit`);
+      await waitForEditComponent(page, workoutId);
+
+      const form = page.locator('app-coach-workout-edit form').first();
+
+      await expect(form.locator('#workoutName')).toHaveValue(updated.name);
+      await expect(form.locator('#description')).toHaveValue(updated.description);
+      await expect(form.locator('#workoutDate')).toHaveValue(updated.workoutDate);
+      await expect(form.locator('#durationMinutes')).toHaveValue(
+        String(updated.durationMinutes),
+      );
+      await expect(form.locator('select#intensityLevel')).toHaveValue(
+        updated.intensityLevel,
+      );
+    } finally {
+      if (workoutId !== undefined) {
+        await deleteWorkoutAsCurrentCoach(page, workoutId);
+        await assertWorkoutDeleted(workoutId);
+      }
+    }
   });
 });
