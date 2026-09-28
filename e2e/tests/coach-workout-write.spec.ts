@@ -298,7 +298,14 @@ async function updateWorkoutThroughUi(
   expect(Number(requestBody.id)).toBe(workoutId);
   expect(requestBody.name).toBe(expectedAfter.name);
   expect(requestBody.description).toBe(expectedAfter.description);
-  expect(requestBody.workoutDate).toBe(expectedAfter.workoutDate);
+
+  // A frontend az edit során a HTML date mező értékét Date-ként is
+  // elküldheti, ezért a PUT requestben a dátum lehet ISO timestamp:
+  // pl. "2035-01-15T00:00:00.000Z". A domain elvárásunk viszont
+  // DATE érték, ezért csak a dátumrészt hasonlítjuk össze.
+  const actualWorkoutDate = String(requestBody.workoutDate ?? '').slice(0, 10);
+  expect(actualWorkoutDate).toBe(expectedAfter.workoutDate);
+
   expect(Number(requestBody.durationMinutes)).toBe(expectedAfter.durationMinutes);
   expect(requestBody.intensityLevel).toBe(expectedAfter.intensityLevel);
 
