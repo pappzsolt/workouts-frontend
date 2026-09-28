@@ -2,7 +2,8 @@ import { Pool } from 'pg';
 
 export interface ExerciseDbRow {
   id: number;
-  name: string;
+  language_code: string;
+  name: string | null;
   description: string | null;
   body_part: string | null;
   synonyms: string | null;
@@ -10,21 +11,21 @@ export interface ExerciseDbRow {
   tips: string | null;
   primary_muscles: string | null;
   secondary_muscles: string | null;
+
   image_url: string | null;
   video_url: string | null;
   muscle_group: string | null;
   equipment: string | null;
   difficulty_level: string | null;
   category: string | null;
-  calories_burned_per_minute: number | string | null;
-  duration_seconds: number | string | null;
+  calories_burned_per_minute: string | number | null;
+  duration_seconds: string | number | null;
   done: boolean | null;
   force_type: string | null;
   mechanic: string | null;
   is_unilateral: boolean | null;
   is_bodyweight: boolean | null;
   variation_group: string | null;
-  language_code: string;
 }
 
 let pool: Pool | undefined;
@@ -58,32 +59,17 @@ function db(): Pool {
   return pool;
 }
 
-/**
- * Az E2E dumpban a 1046-os exercise létezik, magyar fordítással:
- * "széles evezés csigán".
- *
- * A teszt alapértelmezésben ezt használja. E2E_EXERCISE_ID-del
- * másik meglévő exercise adható meg.
- */
-export function configuredExerciseId(): number {
-  const value = Number(process.env.E2E_EXERCISE_ID ?? 1046);
-
-  if (!Number.isInteger(value) || value <= 0) {
-    throw new Error(`Érvénytelen E2E_EXERCISE_ID: ${process.env.E2E_EXERCISE_ID}`);
-  }
-
-  return value;
-}
-
-export async function getExerciseBaseline(
-  exerciseId: number = configuredExerciseId(),
+export async function getExerciseInDatabase(
+  exerciseId: number,
+  languageCode = process.env.E2E_LANGUAGE ?? 'hu',
 ): Promise<ExerciseDbRow> {
-  const languageCode = process.env.E2E_LANGUAGE ?? 'hu';
-
   const result = await db().query<ExerciseDbRow>(
     `
       SELECT
         e.id,
+
+        l.code AS language_code,
+
         et.name,
         et.description,
         et.body_part,
@@ -92,6 +78,7 @@ export async function getExerciseBaseline(
         et.tips,
         et.primary_muscles,
         et.secondary_muscles,
+
         e.image_url,
         e.video_url,
         e.muscle_group,
@@ -105,38 +92,66 @@ export async function getExerciseBaseline(
         e.mechanic,
         e.is_unilateral,
         e.is_bodyweight,
-        e.variation_group,
-        l.code AS language_code
+        e.variation_group
+
       FROM public.exercises e
+
       JOIN public.exercise_translations et
         ON et.exercise_id = e.id
+
       JOIN public.languages l
         ON l.id = et.language_id
+       AND lower(l.code) = lower($2)
+
       WHERE e.id = $1
-        AND lower(l.code) = lower($2)
+      LIMIT 1
     `,
     [exerciseId, languageCode],
   );
 
   if (result.rowCount !== 1) {
     throw new Error(
-      `Az exercise ${exerciseId} nem található a public.exercises + ` +
-        `exercise_translations táblákban language=${languageCode} mellett.`,
+      `Az exercise ${exerciseId} nem található a public.exercises táblában.`,
     );
   }
 
-  return result.rows[0];
+  const row = result.rows[0];
+
+  if (!row.language_code) {
+    throw new Error(
+      `Az exercise ${exerciseId} esetén nincs ${languageCode} nyelvű translation.`,
+    );
+  }
+
+  return row;
 }
 
-export async function assertExerciseInDatabase(
+export async function assertExerciseDescriptionInDatabase(
   exerciseId: number,
-  expected: ExerciseDbRow,
+  expectedDescription: string | null,
+  languageCode = process.env.E2E_LANGUAGE ?? 'hu',
 ): Promise<ExerciseDbRow> {
-  const actual = await getExerciseBaseline(exerciseId);
+  const row = await getExerciseInDatabase(exerciseId, languageCode);
 
+  if (row.description !== expectedDescription) {
+    throw new Error(
+      `exercise_translations.description eltérés: ` +
+        `DB=${JSON.stringify(row.description)}, ` +
+        `expected=${JSON.stringify(expectedDescription)}`,
+    );
+  }
+
+  return row;
+}
+
+export function assertExerciseUnchangedExceptDescription(
+  before: ExerciseDbRow,
+  after: ExerciseDbRow,
+): void {
   const fields: Array<keyof ExerciseDbRow> = [
+    'id',
+    'language_code',
     'name',
-    'description',
     'body_part',
     'synonyms',
     'instructions',
@@ -157,19 +172,17 @@ export async function assertExerciseInDatabase(
     'is_unilateral',
     'is_bodyweight',
     'variation_group',
-    'language_code',
   ];
 
   for (const field of fields) {
-    if (actual[field] !== expected[field]) {
+    if (before[field] !== after[field]) {
       throw new Error(
-        `Exercise ${String(field)} eltérés: ` +
-          `DB=${String(actual[field])}, expected=${String(expected[field])}`,
+        `Az exercise módosításakor a "${field}" is megváltozott: ` +
+          `előtte=${JSON.stringify(before[field])}, ` +
+          `utána=${JSON.stringify(after[field])}`,
       );
     }
   }
-
-  return actual;
 }
 
 export async function closeExerciseDatabase(): Promise<void> {
