@@ -6,7 +6,7 @@ import {
   assertExerciseUnchangedExceptDescription,
   closeExerciseDatabase,
   getExerciseInDatabase,
-} from '../helpers/exercise-db';
+} from '../../helpers/exercise-db';
 
 const BASE_API_URL =
   process.env.E2E_API_URL ?? 'http://localhost:8080';

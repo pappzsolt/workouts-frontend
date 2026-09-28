@@ -15,18 +15,10 @@ tesztek run:
 npx playwright test --headed
 
 npx playwright test \
-  tests/coach-workout-exercise-comprehensive.spec.ts \
-  tests/coach-program-comprehensive.spec.ts \
-  tests/coach-program-assignment-comprehensive.spec.ts \
-  tests/coach-program-workout-comprehensive.spec.ts \
+  tests/AUTH/ENDPOINTS/auth-login-refresh-20260928_172621.spec.ts \
   --headed
 
-  npx playwright test \
-    tests/coach-program-assignment-comprehensive.spec.ts \
-    tests/coach-program-workout-comprehensive.spec.ts \
-    --headed
-
-    
+npx playwright test --headed
 ----------------
 
 ----------

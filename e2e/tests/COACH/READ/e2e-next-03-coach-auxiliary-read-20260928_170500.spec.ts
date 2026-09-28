@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { apiFor, dbOne, currentUserId, login, success, LANGUAGE } from './e2e-next-3-helpers';
+import { apiFor, dbOne, currentUserId, login, success, LANGUAGE } from '../../helpers/e2e-next-3-helpers';
 
 test('COACH READ: coach programs + user/coach name-id + coach lookup match DB', async ({
   page,

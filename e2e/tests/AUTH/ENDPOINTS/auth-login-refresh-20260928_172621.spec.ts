@@ -1,5 +1,5 @@
 import { test, expect, request } from '@playwright/test';
-import { BASE_API_URL } from '../helpers/e2e-next-3-helpers';
+import { BASE_API_URL } from '../../helpers/e2e-next-3-helpers';
 
 test.describe('AUTH: login + refresh token rotation', () => {
   test('AUTH LOGIN: valid credentials return access and refresh tokens', async () => {

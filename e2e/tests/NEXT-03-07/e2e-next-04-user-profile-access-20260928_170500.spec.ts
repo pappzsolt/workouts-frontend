@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { apiFor, dbOne, dbCount, currentUserId, coachUserId, login, success, rejected, createProgram, createWorkout, createExercise, assignExercise, deleteProgram, deleteWorkout, deleteExercise, suffix, LANGUAGE } from './e2e-next-3-helpers';
+import { apiFor, dbOne, dbCount, currentUserId, coachUserId, login, success, rejected, createProgram, createWorkout, createExercise, assignExercise, deleteProgram, deleteWorkout, deleteExercise, suffix, LANGUAGE } from '../helpers/e2e-next-3-helpers';
 
 
 test('USER READ: own member and public coach list; protected coach/admin endpoints rejected', async ({ page }) => {

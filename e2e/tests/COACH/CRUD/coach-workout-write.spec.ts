@@ -7,9 +7,9 @@ import {
   assertWorkoutExerciseInDatabase,
   closeWorkoutDatabase,
   getWorkoutExerciseInDatabase,
-} from '../helpers/workout-db';
+} from '../../helpers/workout-db';
 
-import { getExerciseInDatabase } from '../helpers/exercise-db';
+import { getExerciseInDatabase } from '../../helpers/exercise-db';
 
 const BASE_API_URL = process.env.E2E_API_URL ?? 'http://localhost:8080';
 const LANGUAGE = process.env.E2E_LANGUAGE ?? 'hu';

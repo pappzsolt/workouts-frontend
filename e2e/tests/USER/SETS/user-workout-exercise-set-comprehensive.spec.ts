@@ -16,7 +16,7 @@ import {
   rejected,
   success,
   suffix,
-} from './e2e-next-3-helpers';
+} from '../../helpers/e2e-next-3-helpers';
 
 test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
   test.describe.configure({ mode: 'serial' });

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { assertNoDataMutation, installReadOnlyGuard, loginAs, navigateSpa, setTestLanguage } from '../helpers/read-only';
+import { assertNoDataMutation, installReadOnlyGuard, loginAs, navigateSpa, setTestLanguage } from '../../helpers/read-only';
 
 test.describe('User - read-only surfaces', () => {
   test.beforeEach(async ({ page }) => {

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
-import { assertNoDataMutation, installReadOnlyGuard, loginAs, setTestLanguage } from '../helpers/read-only';
-import { findExistingExercise } from '../helpers/db';
+import { assertNoDataMutation, installReadOnlyGuard, loginAs, setTestLanguage } from '../../helpers/read-only';
+import { findExistingExercise } from '../../helpers/db';
 
 test.describe('Coach - read-only surfaces', () => {
   test.beforeEach(async ({ page }) => {

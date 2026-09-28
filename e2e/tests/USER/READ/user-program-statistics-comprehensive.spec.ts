@@ -6,7 +6,7 @@ import {
   login,
   rejected,
   success,
-} from './e2e-next-3-helpers';
+} from '../../helpers/e2e-next-3-helpers';
 
 test.describe('User - Program Statistics endpoint matrix', () => {
   test.describe.configure({ mode: 'serial' });

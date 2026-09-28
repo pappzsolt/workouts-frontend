@@ -13,7 +13,7 @@ import {
   rejected,
   success,
   suffix,
-} from './e2e-next-3-helpers';
+} from '../../helpers/e2e-next-3-helpers';
 
 test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
   test.describe.configure({ mode: 'serial' });
