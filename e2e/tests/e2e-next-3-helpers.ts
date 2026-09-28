@@ -80,6 +80,30 @@ export async function rejected(response: any, label: string) {
   return body;
 }
 
+export async function currentUserId(): Promise<number> {
+  const username = process.env.E2E_USER_USERNAME;
+  if (!username) throw new Error('Hiányzó E2E_USER_USERNAME.');
+  const row = await dbOne<{ id: number }>(
+    `SELECT id FROM public.users WHERE username=$1 LIMIT 1`,
+    [username],
+  );
+  if (!row) throw new Error(`A bejelentkezett E2E user nem található: ${username}`);
+  return Number(row.id);
+}
+
+export async function anotherUserId(excludeUserId: number): Promise<number> {
+  const row = await dbOne<{ id: number }>(
+    `SELECT id FROM public.users WHERE id <> $1 ORDER BY id LIMIT 1`,
+    [excludeUserId],
+  );
+  if (!row) {
+    throw new Error(
+      `Ownership E2E teszthez szükséges másik user, de nincs másik rekord a public.users táblában.`,
+    );
+  }
+  return Number(row.id);
+}
+
 export async function coachUserId(): Promise<number> {
   const username = process.env.E2E_COACH_USERNAME;
   const row = await dbOne<{ id: number }>(

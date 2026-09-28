@@ -11,6 +11,23 @@ docker compose down --rmi all --remove-orphans && \
 docker compose build --no-cache && \
 docker compose up -d
 
+tesztek run:
+npx playwright test --headed
+
+npx playwright test \
+  tests/coach-workout-exercise-comprehensive.spec.ts \
+  tests/coach-program-comprehensive.spec.ts \
+  tests/coach-program-assignment-comprehensive.spec.ts \
+  tests/coach-program-workout-comprehensive.spec.ts \
+  --headed
+
+  npx playwright test \
+    tests/coach-program-assignment-comprehensive.spec.ts \
+    tests/coach-program-workout-comprehensive.spec.ts \
+    --headed
+
+    
+----------------
 
 ----------
 uj verzio :npm version patch
