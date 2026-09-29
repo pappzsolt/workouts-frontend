@@ -126,26 +126,38 @@ export async function adminUserId(): Promise<number> {
 export async function anotherCoachClientUserId(
   excludeUserId: number,
 ): Promise<number> {
+  const coachUsername = process.env.E2E_COACH_USERNAME;
+  if (!coachUsername) {
+    throw new Error('Hiányzó E2E_COACH_USERNAME az ownership E2E teszthez.');
+  }
+
+  // A coach saját users rekordjának coach_id-ja NULL lehet. A korábbi
+  // lekérdezés ezért tévesen a coach_user.coach_id-n keresztül próbálta
+  // feloldani a coaches rekordot, és ilyen adatmodellnél mindig üres
+  // eredményt adott.
+  //
+  // A helyes kapcsolat:
+  //   coaches.name (= E2E_COACH_USERNAME)
+  //        -> users.coach_id
+  //        -> kliens user
   const row = await dbOne<{ id: number }>(
     `SELECT u.id
        FROM public.users u
+       JOIN public.coaches c
+         ON c.id = u.coach_id
       WHERE u.id <> $1
-        AND u.coach_id = (
-          SELECT c.id
-            FROM public.users coach_user
-            JOIN public.coaches c ON c.id = coach_user.coach_id
-           WHERE coach_user.username = $2
-           LIMIT 1
-        )
+        AND c.name = $2
       ORDER BY u.id
       LIMIT 1`,
-    [excludeUserId, process.env.E2E_COACH_USERNAME],
+    [excludeUserId, coachUsername],
   );
+
   if (!row) {
     throw new Error(
-      'Ownership E2E teszthez szükséges másik, ugyanahhoz a coachhoz tartozó user.',
+      'Ownership E2E teszthez szükséges másik, ugyanahhoz a coachhoz tartozó user nem található a DB-ben.',
     );
   }
+
   return Number(row.id);
 }
 
