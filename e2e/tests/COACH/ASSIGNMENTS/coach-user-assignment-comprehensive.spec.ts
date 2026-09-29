@@ -55,15 +55,15 @@ async function coachUserId():Promise<number>{
   return Number(r.id);
 }
 async function createProgram(api:APIRequestContext,name:string):Promise<number>{
-  const b=await success(await api.post('/api/user-programs/create',{data:{userId:null,programName:name,programDescription:`E2E ${suffix()}`,durationDays:30,startDate:'2035-03-01',difficultyLevel:'intermediate',languageCode:LANGUAGE,workouts:null}}),'POST /api/user-programs/create');
+  const b=await success(await api.post('/api/user-programs',{data:{userId:null,programName:name,programDescription:`E2E ${suffix()}`,durationDays:30,startDate:'2035-03-01',difficultyLevel:'intermediate',languageCode:LANGUAGE,workouts:null}}),'POST /api/user-programs');
   return Number(b.data);
 }
 async function createWorkout(api:APIRequestContext,name:string):Promise<number>{
-  const b=await success(await api.post('/api/workouts/add',{params:{language:LANGUAGE},data:{name,description:`E2E ${suffix()}`,workoutDate:'2035-03-10',durationMinutes:60,intensityLevel:'High',dayIndex:1,done:false}}),'POST /api/workouts/add');
+  const b=await success(await api.post('/api/workouts',{params:{language:LANGUAGE},data:{name,description:`E2E ${suffix()}`,workoutDate:'2035-03-10',durationMinutes:60,intensityLevel:'High',dayIndex:1,done:false}}),'POST /api/workouts');
   return Number(b.data?.id);
 }
 async function deleteProgram(api:APIRequestContext,id:number){ await success(await api.delete(`/api/programs/coach/${id}`),`DELETE /api/programs/coach/${id}`); }
-async function deleteWorkout(api:APIRequestContext,id:number){ const r=await api.delete(`/api/workouts/delete/${id}`); if(!r.ok()) console.log(`Workout cleanup HTTP ${r.status()}: ${await r.text()}`); }
+async function deleteWorkout(api:APIRequestContext,id:number){ const r=await api.delete(`/api/workouts/${id}`); if(!r.ok()) console.log(`Workout cleanup HTTP ${r.status()}: ${await r.text()}`); }
 
 test.describe('Coach - Program ↔ User assignment comprehensive',()=>{
  test.describe.configure({mode:'serial'});
@@ -81,7 +81,7 @@ test.describe('Coach - Program ↔ User assignment comprehensive',()=>{
 
    await coachApi.dispose();
    await login(page,'user'); const userApi=await apiFor(page);
-   const mine=await success(await userApi.get(`/api/programs/my/assigned-programs?language=${LANGUAGE}`),'GET my assigned programs');
+   const mine=await success(await userApi.get(`/api/programs/my/assigned?language=${LANGUAGE}`),'GET my assigned programs');
    expect((mine.data??[]).some((p:any)=>Number(p.id??p.programId)===programId)).toBeTruthy();
    await userApi.dispose();
   }finally{

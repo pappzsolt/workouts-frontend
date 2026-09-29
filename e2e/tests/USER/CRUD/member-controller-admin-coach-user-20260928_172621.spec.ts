@@ -30,8 +30,8 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
     expect(all.data.length).toBe(expectedAll);
 
     const allUsers = await success(
-      await api.get('/api/members/all-users'),
-      'GET /api/members/all-users',
+      await api.get('/api/members/users'),
+      'GET /api/members/users',
     );
     expect(allUsers.data.length).toBe(await dbCount(`SELECT COUNT(*) FROM public.users`));
     expect(allUsers.data.some((m: any) => Number(m.id) === Number(adminRow!.id))).toBeTruthy();
@@ -142,8 +142,8 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
 
     try {
       await success(
-        await api.post('/api/members/my-profile', { data: payload(changedGoals) }),
-        'POST /api/members/my-profile',
+        await api.post('/api/members/me', { data: payload(changedGoals) }),
+        'POST /api/members/me',
       );
 
       const changed = await dbOne<any>(
@@ -153,25 +153,25 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
       expect(changed?.goals).toBe(changedGoals);
 
       await rejected(await api.get('/api/members'), 'USER GET /api/members');
-      await rejected(await api.get('/api/members/all-users'), 'USER GET /api/members/all-users');
+      await rejected(await api.get('/api/members/users'), 'USER GET /api/members/users');
       await rejected(
         await api.post('/api/members', { data: { type: 'user' } }),
         'USER POST /api/members',
       );
     } finally {
       await success(
-        await api.post('/api/members/my-profile', {
+        await api.post('/api/members/me', {
           data: {
             ...payload(original!.goals),
             coachId: original!.coach_id,
           },
         }),
-        'POST /api/members/my-profile restore',
+        'POST /api/members/me restore',
       );
     }
   });
 
-  test('COACH PROFILE: PUT /api/members/my-coach-profile updates only own coach profile and restores it', async ({ page }) => {
+  test('COACH PROFILE: PUT /api/members/me/coach updates only own coach profile and restores it', async ({ page }) => {
     await login(page, 'coach');
     const api = await apiFor(page);
 
@@ -208,10 +208,10 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
 
     try {
       await success(
-        await api.put('/api/members/my-coach-profile', {
+        await api.put('/api/members/me/coach', {
           data: payload(changedSpecialization),
         }),
-        'PUT /api/members/my-coach-profile',
+        'PUT /api/members/me/coach',
       );
 
       const changed = await dbOne<any>(
@@ -221,10 +221,10 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
       expect(changed?.specialization).toBe(changedSpecialization);
     } finally {
       await success(
-        await api.put('/api/members/my-coach-profile', {
+        await api.put('/api/members/me/coach', {
           data: payload(original!.specialization),
         }),
-        'PUT /api/members/my-coach-profile restore',
+        'PUT /api/members/me/coach restore',
       );
     }
   });

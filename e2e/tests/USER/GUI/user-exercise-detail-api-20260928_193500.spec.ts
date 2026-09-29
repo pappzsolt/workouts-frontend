@@ -26,7 +26,7 @@ test('USER GUI: exercise detail loads the selected user-workout exercise from AP
   expect(workoutId).toBeGreaterThan(0);
 
   const exercisesPromise = page.waitForResponse((r) =>
-    r.request().method() === 'GET' && r.url().includes(`/api/exercises/my-workout/user-workout/${userWorkoutId}`),
+    r.request().method() === 'GET' && r.url().includes(`/api/exercises/user-workouts/${userWorkoutId}`),
   );
   await navigateSpa(page, `/user/workouts/${workoutId}/exercises?programId=${programId}&programWorkoutId=${programWorkoutId}&userWorkoutId=${userWorkoutId}`);
 

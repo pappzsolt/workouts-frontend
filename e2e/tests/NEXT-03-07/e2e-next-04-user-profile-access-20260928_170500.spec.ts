@@ -15,12 +15,12 @@ test('USER READ: own member and public coach list; protected coach/admin endpoin
   expect(member.data?.type).toBe('user');
   expect(member.data?.usernameOrName).toBe(dbUser?.username);
 
-  const coaches = await success(await api.get('/api/members/all-coaches'), 'GET all-coaches');
+  const coaches = await success(await api.get('/api/members/coaches'), 'GET all-coaches');
   expect(coaches.data.length).toBeGreaterThan(0);
 
-  expect((await api.get('/api/users-name-id')).ok()).toBeFalsy();
+  expect((await api.get('/api/users/name-id')).ok()).toBeFalsy();
   expect((await api.get('/api/roles')).ok()).toBeFalsy();
-  expect((await api.post('/api/user-programs/create', { data: {
+  expect((await api.post('/api/user-programs', { data: {
     userId:null, programName:`Forbidden ${suffix()}`, programDescription:'forbidden',
     durationDays:30, startDate:'2035-03-01', difficultyLevel:'intermediate',
     languageCode:LANGUAGE, workouts:null

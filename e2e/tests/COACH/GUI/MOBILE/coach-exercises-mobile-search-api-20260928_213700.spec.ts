@@ -9,13 +9,13 @@ test('COACH MOBILE GUI: exercise search sends the selected query to the API', as
 
 
   page.on('request', request => {
-    if (request.url().includes('/api/exercises/exercise-search')) {
+    if (request.url().includes('/api/exercises/search')) {
       console.log('[E2E REQUEST]', request.method(), request.url());
     }
   });
 
   page.on('response', response => {
-    if (response.url().includes('/api/exercises/exercise-search')) {
+    if (response.url().includes('/api/exercises/search')) {
       console.log('[E2E RESPONSE]', response.status(), response.url());
     }
   });
@@ -27,7 +27,7 @@ test('COACH MOBILE GUI: exercise search sends the selected query to the API', as
   // The backend endpoint uses the `search` query parameter, not `searchTerm`.
   // Register the listener before clicking because the request is emitted synchronously by search().
   const responsePromise = page.waitForResponse(r => {
-    if (r.request().method() !== 'GET' || !r.url().includes('/api/exercises/exercise-search')) {
+    if (r.request().method() !== 'GET' || !r.url().includes('/api/exercises/search')) {
       return false;
     }
 

@@ -107,24 +107,24 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       expect(Number(getBody.data?.workoutId)).toBe(workoutId);
 
       const myBody = await success(
-        await api.get('/api/workouts/my-workouts', {
+        await api.get('/api/workouts/my', {
           params: { language: LANGUAGE },
         }),
-        'GET /api/workouts/my-workouts',
+        'GET /api/workouts/my',
       );
       expect(
         myBody.data.some((row: any) => Number(row.id) === workoutId),
       ).toBeTruthy();
 
       const uniqueBody = await success(
-        await api.get('/api/workouts/my-workouts/unique', {
+        await api.get('/api/workouts/my/unique', {
           params: { language: LANGUAGE },
         }),
-        'GET /api/workouts/my-workouts/unique',
+        'GET /api/workouts/my/unique',
       );
       expect(Array.isArray(uniqueBody.data)).toBeTruthy();
 
-      const searchResponse = await api.get('/api/workouts/my-workouts/search', {
+      const searchResponse = await api.get('/api/workouts/my/search', {
         params: {
           search: name,
           page: 0,
@@ -140,7 +140,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       ).toBeTruthy();
 
       await success(
-        await api.put('/api/workouts/update', {
+        await api.put(`/api/workouts/${workoutId}`, {
           params: { language: LANGUAGE },
           data: {
             id: workoutId,
@@ -153,7 +153,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
             done: false,
           },
         }),
-        'PUT /api/workouts/update',
+        'PUT /api/workouts/{id}',
       );
 
       const dbWorkout = await dbOne<{
@@ -214,10 +214,10 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       exerciseId = await createExercise(api, name);
 
       const allBody = await success(
-        await api.get('/api/exercises/all', {
+        await api.get('/api/exercises', {
           params: { language: LANGUAGE },
         }),
-        'GET /api/exercises/all',
+        'GET /api/exercises',
       );
       expect(
         allBody.data.some((row: any) => Number(row.id) === exerciseId),
@@ -240,7 +240,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       expect(Array.isArray(uniqueBody.data)).toBeTruthy();
 
       const searchBody = await success(
-        await api.get('/api/exercises/exercise-search', {
+        await api.get('/api/exercises/search', {
           params: {
             language: LANGUAGE,
             search: name,
@@ -250,7 +250,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
             sortDirection: 'asc',
           },
         }),
-        'GET /api/exercises/exercise-search',
+        'GET /api/exercises/search',
       );
       expect(
         searchBody.data.content.some(
@@ -259,7 +259,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       ).toBeTruthy();
 
       await rejected(
-        await api.get('/api/exercises/exercise-search', {
+        await api.get('/api/exercises/search', {
           params: {
             language: LANGUAGE,
             search: name,
@@ -271,7 +271,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       );
 
       await rejected(
-        await api.get('/api/exercises/exercise-search', {
+        await api.get('/api/exercises/search', {
           params: {
             language: LANGUAGE,
             search: name,
@@ -283,7 +283,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       );
 
       await success(
-        await api.put('/api/exercises/update', {
+        await api.put(`/api/exercises/${exerciseId}`, {
           params: { language: LANGUAGE },
           data: {
             id: exerciseId,
@@ -311,7 +311,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
             secondaryMuscles: null,
           },
         }),
-        'PUT /api/exercises/update',
+        'PUT /api/exercises/{id}',
       );
 
       const dbExercise = await dbOne<{
@@ -376,10 +376,10 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       exerciseId2 = await createExercise(api, exerciseName2);
 
       await success(
-        await api.post('/api/workout-exercises/assign', {
+        await api.post('/api/workout-exercises', {
           params: { workoutId, exerciseId },
         }),
-        'POST /api/workout-exercises/assign',
+        'POST /api/workout-exercises',
       );
 
       let first = await dbOne<{
@@ -403,10 +403,10 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       expect(Number(first?.order_index)).toBe(0);
 
       await success(
-        await api.post('/api/workout-exercises/assign', {
+        await api.post('/api/workout-exercises', {
           params: { workoutId, exerciseId: exerciseId2 },
         }),
-        'POST /api/workout-exercises/assign second',
+        'POST /api/workout-exercises second',
       );
 
       const second = await dbOne<{ order_index: number }>(
@@ -420,10 +420,10 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       expect(Number(second?.order_index)).toBe(1);
 
       const workoutBody = await success(
-        await api.get(`/api/exercises/workout/${workoutId}`, {
+        await api.get(`/api/exercises/workouts/${workoutId}`, {
           params: { language: LANGUAGE },
         }),
-        'GET /api/exercises/workout/{workoutId}',
+        'GET /api/exercises/workouts/{workoutId}',
       );
       expect(Number(workoutBody.data?.id)).toBe(workoutId);
       expect(
@@ -438,7 +438,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       ).toBeTruthy();
 
       await rejected(
-        await api.post('/api/workout-exercises/assign', {
+        await api.post('/api/workout-exercises', {
           params: { workoutId, exerciseId },
         }),
         'duplicate workout-exercise assignment',
@@ -446,7 +446,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       expect(await workoutExerciseCount(workoutId, exerciseId)).toBe(1);
 
       await success(
-        await api.put('/api/workout-exercises/order-index', {
+        await api.put('/api/workout-exercises/order', {
           params: { workoutId, exerciseId: exerciseId2, orderIndex: 0 },
         }),
         'PUT order-index 1→0',
@@ -466,20 +466,20 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       expect(Number(moved?.order_index)).toBe(0);
 
       await rejected(
-        await api.put('/api/workout-exercises/order-index', {
+        await api.put('/api/workout-exercises/order', {
           params: { workoutId, exerciseId, orderIndex: -1 },
         }),
         'PUT negative order-index',
       );
 
       await success(
-        await api.delete('/api/workout-exercises/delete', {
+        await api.delete('/api/workout-exercises', {
           params: { workoutId, exerciseId },
         }),
         'DELETE first workout-exercise relation',
       );
       await success(
-        await api.delete('/api/workout-exercises/delete', {
+        await api.delete('/api/workout-exercises', {
           params: { workoutId, exerciseId: exerciseId2 },
         }),
         'DELETE second workout-exercise relation',
@@ -488,7 +488,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       expect(await workoutExerciseCount(workoutId)).toBe(0);
 
       await rejected(
-        await api.delete('/api/workout-exercises/delete', {
+        await api.delete('/api/workout-exercises', {
           params: { workoutId, exerciseId },
         }),
         'DELETE missing workout-exercise relation',
@@ -520,7 +520,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
 
           if (relationExists > 0) {
             await success(
-              await api.delete('/api/workout-exercises/delete', {
+              await api.delete('/api/workout-exercises', {
                 params: {
                   workoutId,
                   exerciseId: currentExerciseId,
@@ -561,7 +561,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
 
     try {
       await rejected(
-        await api.put('/api/workouts/update', {
+        await api.put(`/api/workouts/${invalidId}`, {
           params: { language: LANGUAGE },
           data: {
             id: invalidId,
@@ -578,12 +578,12 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       );
 
       await rejected(
-        await api.delete(`/api/workouts/delete/${invalidId}`),
+        await api.delete(`/api/workouts/${invalidId}`),
         'DELETE invalid workout ID',
       );
 
       await rejected(
-        await api.put('/api/exercises/update', {
+        await api.put(`/api/exercises/${invalidId}`, {
           params: { language: LANGUAGE },
           data: {
             id: invalidId,
@@ -595,7 +595,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       );
 
       await rejected(
-        await api.delete(`/api/exercises/delete/${invalidId}`),
+        await api.delete(`/api/exercises/${invalidId}`),
         'DELETE invalid exercise ID',
       );
 
@@ -611,7 +611,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       expect(invalidExerciseBefore).toBe(0);
 
       await rejected(
-        await api.post('/api/workout-exercises/assign', {
+        await api.post('/api/workout-exercises', {
           params: { workoutId: invalidId, exerciseId: invalidId },
         }),
         'POST assign invalid workout/exercise IDs',
@@ -627,7 +627,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       ).toBe(0);
 
       await rejected(
-        await api.put('/api/workout-exercises/order-index', {
+        await api.put('/api/workout-exercises/order', {
           params: {
             workoutId: invalidId,
             exerciseId: invalidId,
@@ -658,14 +658,14 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       ).toBe(0);
 
       await rejected(
-        await api.post('/api/exercises/add', {
+        await api.post('/api/exercises', {
           params: { language: LANGUAGE },
           data: {
             name: '',
             description: marker,
           },
         }),
-        'POST /api/exercises/add empty name',
+        'POST /api/exercises empty name',
       );
 
       expect(

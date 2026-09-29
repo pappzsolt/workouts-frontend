@@ -67,12 +67,12 @@ test('COACH READ: coach programs + user/coach name-id + coach lookup match DB', 
   // ---------------------------------------------------------------------------
 
   const programs = await success(
-    await api.get('/api/programs/my/coach-programs', {
+    await api.get('/api/programs/my/coach', {
       params: {
         language: LANGUAGE,
       },
     }),
-    'GET /api/programs/my/coach-programs',
+    'GET /api/programs/my/coach',
   );
 
   expect(Array.isArray(programs.data)).toBeTruthy();
@@ -123,7 +123,7 @@ test('COACH READ: coach programs + user/coach name-id + coach lookup match DB', 
   // 2. USERS NAME-ID
   // ---------------------------------------------------------------------------
 
-  const users = await success(await api.get('/api/users-name-id'), 'GET /api/users-name-id');
+  const users = await success(await api.get('/api/users/name-id'), 'GET /api/users/name-id');
 
   expect(Array.isArray(users.data)).toBeTruthy();
 
@@ -133,7 +133,7 @@ test('COACH READ: coach programs + user/coach name-id + coach lookup match DB', 
   // 3. COACHES NAME-ID
   // ---------------------------------------------------------------------------
 
-  const coaches = await success(await api.get('/api/coaches-name-id'), 'GET /api/coaches-name-id');
+  const coaches = await success(await api.get('/api/coaches/name-id'), 'GET /api/coaches/name-id');
 
   expect(Array.isArray(coaches.data)).toBeTruthy();
 
@@ -158,19 +158,19 @@ test('COACH READ: coach programs + user/coach name-id + coach lookup match DB', 
   ).toBeTruthy();
 
   // ---------------------------------------------------------------------------
-  // 4. GET /api/coach/{id}
+  // 4. GET /api/coaches/{id}
   // ---------------------------------------------------------------------------
 
-  const coach = await success(await api.get(`/api/coach/${coachId}`), `GET /api/coach/${coachId}`);
+  const coach = await success(await api.get(`/api/coaches/${coachId}`), `GET /api/coaches/${coachId}`);
 
   expect(Number(coach.data?.id)).toBe(coachId);
   expect(coach.data?.name).toBe(dbCoach?.name);
 
   // ---------------------------------------------------------------------------
-  // 5. GET /api/coach
+  // 5. GET /api/coaches
   // ---------------------------------------------------------------------------
 
-  const all = await success(await api.get('/api/coach'), 'GET /api/coach');
+  const all = await success(await api.get('/api/coaches'), 'GET /api/coaches');
 
   expect(Array.isArray(all.data)).toBeTruthy();
 

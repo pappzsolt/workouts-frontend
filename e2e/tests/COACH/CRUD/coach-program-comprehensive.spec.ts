@@ -97,7 +97,7 @@ async function coachUserId(): Promise<number> {
 }
 
 async function createProgram(api: APIRequestContext, name: string): Promise<number> {
-  const response = await api.post('/api/user-programs/create', {
+  const response = await api.post('/api/user-programs', {
     data: {
       userId: null,
       programName: name,
@@ -109,7 +109,7 @@ async function createProgram(api: APIRequestContext, name: string): Promise<numb
       workouts: null,
     },
   });
-  const body = await success(response, 'POST /api/user-programs/create');
+  const body = await success(response, 'POST /api/user-programs');
   const id = Number(body.data);
   expect(Number.isInteger(id) && id > 0).toBeTruthy();
   return id;
@@ -168,7 +168,7 @@ test.describe('Coach - COMPLETE Program endpoint matrix', () => {
     let programId = 0;
 
     try {
-      const createResponse = await api.post('/api/user-programs/create', {
+      const createResponse = await api.post('/api/user-programs', {
         data: {
           userId: null,
           programName: name,
@@ -180,7 +180,7 @@ test.describe('Coach - COMPLETE Program endpoint matrix', () => {
           workouts: null,
         },
       });
-      const createBody = await success(createResponse, 'POST /api/user-programs/create');
+      const createBody = await success(createResponse, 'POST /api/user-programs');
       programId = Number(createBody.data);
       expect(programId).toBeGreaterThan(0);
 
@@ -197,7 +197,7 @@ test.describe('Coach - COMPLETE Program endpoint matrix', () => {
       expect(byId.data?.programName).toBe(name);
       expect(byId.data?.programDescription).toBe(description);
 
-      const coachPrograms = await success(await api.get(`/api/programs/coach/programs?language=${LANGUAGE}`), 'GET /api/programs/coach/programs');
+      const coachPrograms = await success(await api.get(`/api/programs/coach?language=${LANGUAGE}`), 'GET /api/programs/coach');
       expect(Array.isArray(coachPrograms.data)).toBeTruthy();
       expect(coachPrograms.data.some((p: any) => Number(p.programId) === programId)).toBeTruthy();
 
@@ -228,7 +228,7 @@ test.describe('Coach - COMPLETE Program endpoint matrix', () => {
       expect(Array.isArray(assignedBefore.data)).toBeTruthy();
       expect(assignedBefore.data).not.toContain(await coachUserId());
 
-      const updateResponse = await api.put(`/api/user-programs/update?programId=${programId}`, {
+      const updateResponse = await api.put(`/api/user-programs/${programId}`, {
         data: {
           userId: null,
           programName: updatedName,
@@ -240,7 +240,7 @@ test.describe('Coach - COMPLETE Program endpoint matrix', () => {
           workouts: null,
         },
       });
-      const updateBody = await success(updateResponse, 'PUT /api/user-programs/update');
+      const updateBody = await success(updateResponse, 'PUT /api/user-programs/{id}');
       expect(Number(updateBody.data)).toBe(programId);
 
       await assertProgramDb(programId, {
@@ -297,7 +297,7 @@ test.describe('Coach - COMPLETE Program endpoint matrix', () => {
     const missingId = 2147483000;
 
     await rejected(await api.get(`/api/programs/${missingId}?language=${LANGUAGE}`), 'GET missing program');
-    await rejected(await api.put(`/api/user-programs/update?programId=${missingId}`, {
+    await rejected(await api.put(`/api/user-programs/${missingId}`, {
       data: {
         userId: null,
         programName: `E2E INVALID ${suffix()}`,

@@ -9,7 +9,7 @@ test('USER MOBILE GUI: exercise list loads the selected user-workout API data', 
 
   const scheduledPromise = page.waitForResponse(r =>
     r.request().method() === 'GET' &&
-    r.url().includes('/api/user-workout-exercises/scheduled-workouts'),
+    r.url().includes('/api/user-workout-exercises/scheduled'),
   );
   await navigateSpa(page, '/user/workouts');
   const scheduled = await scheduledPromise;
@@ -34,7 +34,7 @@ test('USER MOBILE GUI: exercise list loads the selected user-workout API data', 
 
   const exercisesPromise = page.waitForResponse(r =>
     r.request().method() === 'GET' &&
-    r.url().includes(`/api/exercises/my-workout/user-workout/${userWorkoutId}`),
+    r.url().includes(`/api/exercises/user-workouts/${userWorkoutId}`),
   );
 
   await navigateSpa(

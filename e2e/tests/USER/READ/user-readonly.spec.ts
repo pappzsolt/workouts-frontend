@@ -142,7 +142,7 @@ test.describe('User - read-only surfaces', () => {
 
     const exercisesResponsePromise = page.waitForResponse((response) =>
       response.request().method() === 'GET' &&
-      response.url().includes(`/api/exercises/my-workout/user-workout/${selectedUserWorkoutId}`) &&
+      response.url().includes(`/api/exercises/user-workouts/${selectedUserWorkoutId}`) &&
       response.ok(),
     );
 

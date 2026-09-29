@@ -7,7 +7,7 @@ test('USER GUI: my programs opens the selected workout occurrence with its userW
 
   const assignedPromise = page.waitForResponse(r =>
     r.request().method() === 'GET' &&
-    r.url().includes('/api/programs/my/assigned-programs') &&
+    r.url().includes('/api/programs/my/assigned') &&
     !r.url().includes('/progress'),
   );
   await navigateSpa(page, '/user/my-programs');
@@ -70,7 +70,7 @@ test('USER GUI: my programs opens the selected workout occurrence with its userW
   const expectedWorkoutId = workoutId;
   const exercisesResponsePromise = page.waitForResponse((response) =>
     response.request().method() === 'GET' &&
-    response.url().includes(`/api/exercises/my-workout/user-workout/${userWorkoutId}`),
+    response.url().includes(`/api/exercises/user-workouts/${userWorkoutId}`),
   );
 
   await workoutCard.click();

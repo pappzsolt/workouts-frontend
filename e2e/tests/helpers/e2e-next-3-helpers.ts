@@ -178,7 +178,7 @@ export async function coachUserId(): Promise<number> {
 }
 
 export async function createProgram(api: APIRequestContext, name = `E2E Program ${suffix()}`) {
-  const body = await success(await api.post('/api/user-programs/create', {
+  const body = await success(await api.post('/api/user-programs', {
     data: {
       userId: null,
       programName: name,
@@ -189,14 +189,14 @@ export async function createProgram(api: APIRequestContext, name = `E2E Program 
       languageCode: LANGUAGE,
       workouts: null,
     },
-  }), 'POST /api/user-programs/create');
+  }), 'POST /api/user-programs');
   const id = Number(body.data);
   expect(Number.isInteger(id) && id > 0).toBeTruthy();
   return id;
 }
 
 export async function createWorkout(api: APIRequestContext, name = `E2E Workout ${suffix()}`) {
-  const body = await success(await api.post('/api/workouts/add', {
+  const body = await success(await api.post('/api/workouts', {
     params: { language: LANGUAGE },
     data: {
       name,
@@ -207,14 +207,14 @@ export async function createWorkout(api: APIRequestContext, name = `E2E Workout 
       dayIndex: 1,
       done: false,
     },
-  }), 'POST /api/workouts/add');
+  }), 'POST /api/workouts');
   const id = Number(body.data?.id);
   expect(Number.isInteger(id) && id > 0).toBeTruthy();
   return id;
 }
 
 export async function createExercise(api: APIRequestContext, name = `E2E Exercise ${suffix()}`) {
-  const body = await success(await api.post('/api/exercises/add', {
+  const body = await success(await api.post('/api/exercises', {
     params: { language: LANGUAGE },
     data: {
       name,
@@ -227,16 +227,16 @@ export async function createExercise(api: APIRequestContext, name = `E2E Exercis
       synonyms: null, instructions: null, tips: null,
       primaryMuscles: 'latissimus dorsi', secondaryMuscles: null,
     },
-  }), 'POST /api/exercises/add');
+  }), 'POST /api/exercises');
   const id = Number(body.data?.id);
   expect(Number.isInteger(id) && id > 0).toBeTruthy();
   return id;
 }
 
 export async function assignExercise(api: APIRequestContext, workoutId: number, exerciseId: number) {
-  await success(await api.post('/api/workout-exercises/assign', {
+  await success(await api.post('/api/workout-exercises', {
     params: { workoutId, exerciseId },
-  }), 'POST /api/workout-exercises/assign');
+  }), 'POST /api/workout-exercises');
 }
 
 export async function deleteProgram(api: APIRequestContext, id: number) {
@@ -244,9 +244,9 @@ export async function deleteProgram(api: APIRequestContext, id: number) {
 }
 
 export async function deleteWorkout(api: APIRequestContext, id: number) {
-  await success(await api.delete(`/api/workouts/delete/${id}`), `DELETE /api/workouts/delete/${id}`);
+  await success(await api.delete(`/api/workouts/${id}`), `DELETE /api/workouts/${id}`);
 }
 
 export async function deleteExercise(api: APIRequestContext, id: number) {
-  await success(await api.delete(`/api/exercises/delete/${id}`), `DELETE /api/exercises/delete/${id}`);
+  await success(await api.delete(`/api/exercises/${id}`), `DELETE /api/exercises/${id}`);
 }

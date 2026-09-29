@@ -140,7 +140,7 @@ async function createAssignedFixture(
     const exerciseId = await createExercise(coachApi, `${prefix} EXERCISE ${i + 1} ${suffix()}`);
     exercises.push(exerciseId);
     await success(
-      await coachApi.post('/api/workout-exercises/assign', {
+      await coachApi.post('/api/workout-exercises', {
         params: { workoutId, exerciseId },
       }),
       `assign ${prefix} exercise ${exerciseId}`,
@@ -156,7 +156,7 @@ async function createAssignedFixture(
     );
 
     await success(
-      await coachApi.post('/api/program-workouts/add', {
+      await coachApi.post('/api/program-workouts', {
         data: { programId, workoutId, dayIndex: programs.indexOf(programId) + 1 },
       }),
       `add ${prefix} program-workout ${programId}`,
@@ -238,7 +238,7 @@ async function cleanupFixture(
       );
 
       if (Number(relation?.count ?? 0) > 0) {
-        const response = await coachApi.delete('/api/workout-exercises/delete', {
+        const response = await coachApi.delete('/api/workout-exercises', {
           params: { workoutId, exerciseId },
         });
         expect(response.ok(), `cleanup workout-exercise ${workoutId}/${exerciseId}`).toBeTruthy();

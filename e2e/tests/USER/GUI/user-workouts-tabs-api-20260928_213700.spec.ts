@@ -7,7 +7,7 @@ test('USER GUI: workout tabs switch between pending and completed panels', async
 
   const assignedPromise = page.waitForResponse(r =>
     r.request().method() === 'GET' &&
-    r.url().includes('/api/programs/my/assigned-programs') &&
+    r.url().includes('/api/programs/my/assigned') &&
     !r.url().includes('/progress'),
   );
   await navigateSpa(page, '/user/my-programs');
