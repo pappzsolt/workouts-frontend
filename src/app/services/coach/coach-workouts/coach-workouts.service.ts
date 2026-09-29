@@ -104,7 +104,7 @@ export class CoachWorkoutsService {
    * A bejelentkezett coach által létrehozott
    * összes workout lekérése.
    *
-   * GET /api/workouts/my-workouts
+   * GET /api/workouts/my
    */
   getMyWorkouts(): Observable<ApiResponse<Workout[]>> {
     const params = new HttpParams().set(
@@ -125,7 +125,7 @@ export class CoachWorkoutsService {
   /**
    * A bejelentkezett coach egyedi workoutjainak lekérése.
    *
-   * GET /api/workouts/my-workouts/unique
+   * GET /api/workouts/my/unique
    */
   getUniqueMyWorkouts(): Observable<ApiResponse<Workout[]>> {
     const params = new HttpParams().set(
@@ -230,7 +230,7 @@ export class CoachWorkoutsService {
     );
 
     return this.http.put<ApiResponse<WorkoutResponse>>(
-      API_ENDPOINTS.workoutUpdate,
+      API_ENDPOINTS.workoutUpdate(id),
       payload,
       { params },
     );
@@ -246,7 +246,7 @@ export class CoachWorkoutsService {
   /**
    * A bejelentkezett coach workoutjainak keresése és lapozása.
    *
-   * GET /api/workouts/my-workouts/search
+   * GET /api/workouts/my/search
    */
   searchMyWorkouts(
     search: string,

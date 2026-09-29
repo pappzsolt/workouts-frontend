@@ -143,7 +143,7 @@ async function createWorkoutThroughUi(
 
     return (
       response.request().method() === 'POST' &&
-      url.pathname.endsWith('/api/workouts/add')
+      url.pathname.endsWith('/api/workouts')
     );
   });
 
@@ -153,7 +153,7 @@ async function createWorkoutThroughUi(
   const responseBody = await response.json();
   const requestBody = response.request().postDataJSON() as Record<string, unknown>;
 
-  expect(response.ok(), `POST /api/workouts/add: ${response.status()}`).toBeTruthy();
+  expect(response.ok(), `POST /api/workouts: ${response.status()}`).toBeTruthy();
   expect(responseBody.success).toBeTruthy();
   expect(responseBody.data).toBeTruthy();
 
@@ -198,12 +198,12 @@ async function deleteWorkoutAsCurrentCoach(
   });
 
   try {
-    const response = await api.delete(`/api/workouts/delete/${workoutId}`);
+    const response = await api.delete(`/api/workouts/${workoutId}`);
     const body = await response.text();
 
     expect(
       response.ok(),
-      `Cleanup DELETE /api/workouts/delete/${workoutId}: ${response.status()} ${body}`,
+      `Cleanup DELETE /api/workouts/${workoutId}: ${response.status()} ${body}`,
     ).toBeTruthy();
   } finally {
     await api.dispose();
@@ -225,7 +225,7 @@ async function deleteWorkoutExerciseAsCurrentCoach(
   });
 
   try {
-    const response = await api.delete('/api/workout-exercises/delete', {
+    const response = await api.delete('/api/workout-exercises', {
       params: {
         workoutId,
         exerciseId,
@@ -236,7 +236,7 @@ async function deleteWorkoutExerciseAsCurrentCoach(
 
     expect(
       response.ok(),
-      `Cleanup DELETE /api/workout-exercises/delete?workoutId=${workoutId}&exerciseId=${exerciseId}: ` +
+      `Cleanup DELETE /api/workout-exercises?workoutId=${workoutId}&exerciseId=${exerciseId}: ` +
         `${response.status()} ${body}`,
     ).toBeTruthy();
   } finally {
@@ -308,7 +308,7 @@ async function updateWorkoutThroughUi(
 
     return (
       response.request().method() === 'PUT' &&
-      url.pathname.endsWith('/api/workouts/update')
+      url.pathname.endsWith('/api/workouts')
     );
   });
 
@@ -318,7 +318,7 @@ async function updateWorkoutThroughUi(
   const responseBody = await response.json();
   const requestBody = response.request().postDataJSON() as Record<string, unknown>;
 
-  expect(response.ok(), `PUT /api/workouts/update: ${response.status()}`).toBeTruthy();
+  expect(response.ok(), `PUT /api/workouts: ${response.status()}`).toBeTruthy();
   expect(responseBody.success).toBeTruthy();
   expect(responseBody.data).toBeTruthy();
 
@@ -396,7 +396,7 @@ async function assignExerciseThroughUi(
 
     return (
       response.request().method() === 'POST' &&
-      url.pathname.endsWith('/api/workout-exercises/assign') &&
+      url.pathname.endsWith('/api/workout-exercises') &&
       Number(url.searchParams.get('workoutId')) === workoutId &&
       Number(url.searchParams.get('exerciseId')) === exerciseId
     );
@@ -409,7 +409,7 @@ async function assignExerciseThroughUi(
 
   expect(
     response.ok(),
-    `POST /api/workout-exercises/assign: ${response.status()}`,
+    `POST /api/workout-exercises: ${response.status()}`,
   ).toBeTruthy();
 
   expect(body.success).toBeTruthy();
@@ -633,7 +633,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
     });
 
     try {
-      const response = await api.put('/api/workouts/update?language=hu', {
+      const response = await api.put('/api/workouts/2147483000?language=hu', {
         data: {
           id: 2147483000,
           name: `E2E NEGATIVE ${uniqueSuffix()}`,
@@ -667,7 +667,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
     });
 
     try {
-      const response = await api.delete('/api/workouts/delete/2147483000');
+      const response = await api.delete('/api/workouts/2147483000');
 
       expect(response.ok()).toBeFalsy();
       expect(response.status()).toBeGreaterThanOrEqual(400);
@@ -691,7 +691,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
     });
 
     try {
-      const response = await api.post('/api/workout-exercises/assign', {
+      const response = await api.post('/api/workout-exercises', {
         params: {
           workoutId: 2147483000,
           exerciseId: ASSIGN_EXERCISE_ID,
@@ -734,7 +734,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
       });
 
       try {
-        const first = await api.post('/api/workout-exercises/assign', {
+        const first = await api.post('/api/workout-exercises', {
           params: {
             workoutId,
             exerciseId: ASSIGN_EXERCISE_ID,
@@ -743,7 +743,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
 
         expect(first.ok()).toBeTruthy();
 
-        const second = await api.post('/api/workout-exercises/assign', {
+        const second = await api.post('/api/workout-exercises', {
           params: {
             workoutId,
             exerciseId: ASSIGN_EXERCISE_ID,

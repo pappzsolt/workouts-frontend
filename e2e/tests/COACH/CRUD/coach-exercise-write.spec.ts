@@ -390,7 +390,7 @@ async function updateDescriptionThroughUi(
 
       return (
         response.request().method() === 'PUT' &&
-        url.pathname.endsWith('/api/exercises/update')
+        url.pathname.endsWith('/api/exercises')
       );
     },
   );
@@ -411,7 +411,7 @@ async function updateDescriptionThroughUi(
 
   expect(
     response.ok(),
-    `PUT /api/exercises/update: ${response.status()}`,
+    `PUT /api/exercises: ${response.status()}`,
   ).toBeTruthy();
 
   expect(responseBody.success).toBeTruthy();
@@ -459,12 +459,12 @@ async function deleteExerciseAsCurrentCoach(
   });
 
   try {
-    const response = await api.delete(`/api/exercises/delete/${exerciseId}`);
+    const response = await api.delete(`/api/exercises/${exerciseId}`);
     const body = await response.text();
 
     expect(
       response.ok(),
-      `DELETE /api/exercises/delete/${exerciseId}: ${response.status()} ${body}`,
+      `DELETE /api/exercises/${exerciseId}: ${response.status()} ${body}`,
     ).toBeTruthy();
   } finally {
     await api.dispose();
@@ -517,7 +517,7 @@ async function createExerciseThroughUi(
     const url = new URL(response.url());
     return (
       response.request().method() === 'POST' &&
-      url.pathname.endsWith('/api/exercises/add')
+      url.pathname.endsWith('/api/exercises')
     );
   });
 
@@ -528,7 +528,7 @@ async function createExerciseThroughUi(
   const requestBody =
     response.request().postDataJSON() as Record<string, unknown>;
 
-  expect(response.ok(), `POST /api/exercises/add: ${response.status()}`).toBeTruthy();
+  expect(response.ok(), `POST /api/exercises: ${response.status()}`).toBeTruthy();
   expect(responseBody.success).toBeTruthy();
   expect(responseBody.data).toBeTruthy();
 
@@ -914,7 +914,7 @@ test.describe(
         });
 
         try {
-          const response = await api.post('/api/exercises/add?language=hu', {
+          const response = await api.post('/api/exercises?language=hu', {
             data: {
               name: '',
               description: 'E2E NEGATIVE',
@@ -945,7 +945,7 @@ test.describe(
         });
 
         try {
-          const response = await api.put('/api/exercises/update?language=hu', {
+          const response = await api.put('/api/exercises/2147483000?language=hu', {
             data: {
               id: 2147483000,
               name: `E2E NEGATIVE ${uniqueSuffix()}`,

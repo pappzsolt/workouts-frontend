@@ -9,7 +9,7 @@ test.describe('AUTH: negative refresh-token validation', () => {
     expect(username, 'E2E_USER_USERNAME hiányzik').toBeTruthy();
     expect(password, 'E2E_USER_PASSWORD hiányzik').toBeTruthy();
 
-    const response = await api.post('/auth/login', {
+    const response = await api.post('/api/auth/login', {
       data: { username, password },
     });
 
@@ -29,7 +29,7 @@ test.describe('AUTH: negative refresh-token validation', () => {
   test('AUTH REFRESH NEGATIVE: missing refreshToken is rejected', async () => {
     const api = await request.newContext({ baseURL: BASE_API_URL });
     try {
-      const response = await api.post('/auth/refresh', {
+      const response = await api.post('/api/auth/refresh', {
         data: {},
       });
 
@@ -43,7 +43,7 @@ test.describe('AUTH: negative refresh-token validation', () => {
   test('AUTH REFRESH NEGATIVE: malformed refreshToken is rejected', async () => {
     const api = await request.newContext({ baseURL: BASE_API_URL });
     try {
-      const response = await api.post('/auth/refresh', {
+      const response = await api.post('/api/auth/refresh', {
         data: { refreshToken: 'not-a-valid-jwt' },
       });
 
@@ -59,7 +59,7 @@ test.describe('AUTH: negative refresh-token validation', () => {
     try {
       const tokens = await loginUser(api);
 
-      const response = await api.post('/auth/refresh', {
+      const response = await api.post('/api/auth/refresh', {
         data: { refreshToken: tokens.accessToken },
       });
 
@@ -78,7 +78,7 @@ test.describe('AUTH: negative refresh-token validation', () => {
         'eyJzdWIiOiJ1c2VyIiwidG9rZW5UeXBlIjoicmVmcmVzaCJ9.' +
         'invalid-signature';
 
-      const response = await api.post('/auth/refresh', {
+      const response = await api.post('/api/auth/refresh', {
         data: { refreshToken: fakeJwt },
       });
 

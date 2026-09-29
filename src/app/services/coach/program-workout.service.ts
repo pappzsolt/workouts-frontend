@@ -83,7 +83,7 @@ export class ProgramWorkoutService {
 
     return this.http
       .put<ApiResponse<ProgramWorkoutAssignmentDto>>(
-        API_ENDPOINTS.programWorkoutUpdate,
+        API_ENDPOINTS.programWorkoutUpdate(id),
         payload,
       )
       .pipe(map((response) => this.mapAssignmentResponse(response)));

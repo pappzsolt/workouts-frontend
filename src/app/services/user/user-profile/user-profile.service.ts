@@ -91,7 +91,7 @@ export class UserProfilService {
       roleIds: null,
     };
 
-    return this.http.post<ApiResponse<void>>(API_ENDPOINTS.myProfile, payload);
+    return this.http.put<ApiResponse<void>>(API_ENDPOINTS.myProfile, payload);
   }
 
   private toRawUser(member: MemberResponse): RawUser | null {

@@ -7,7 +7,7 @@ test('USER GUI: my programs opens the selected workout occurrence with its userW
 
   const assignedPromise = page.waitForResponse(r =>
     r.request().method() === 'GET' &&
-    r.url().includes('/api/programs/my/assigned-programs') &&
+    r.url().includes('/api/programs/my/assigned') &&
     !r.url().includes('/progress'),
   );
   await navigateSpa(page, '/user/my-programs');

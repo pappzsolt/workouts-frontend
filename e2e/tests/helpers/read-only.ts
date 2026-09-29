@@ -17,7 +17,7 @@ export function installReadOnlyGuard(page: Page): string[] {
 
     // Authentication requests are test setup, not page data mutations.
     // Business/API writes must still fail the read-only GUI tests.
-    if (request.url().includes('/auth/login') || request.url().includes('/auth/refresh')) {
+    if (request.url().includes('/api/auth/login') || request.url().includes('/api/auth/refresh')) {
       return;
     }
 
@@ -70,7 +70,7 @@ export async function loginAs(
 
   const loginResponsePromise = page.waitForResponse((response) =>
     response.request().method() === 'POST' &&
-    response.url().endsWith('/auth/login'),
+    response.url().endsWith('/api/auth/login'),
   );
 
   await page.locator('form button[type="submit"]').click();

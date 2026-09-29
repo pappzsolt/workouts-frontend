@@ -193,10 +193,17 @@ export class ExerciseService {
       variationGroup: exercise.variationGroup,
     };
 
-    const params = new HttpParams().set('language', language ?? this.languageService.getCurrentLanguage());
+    if (exercise.id == null) {
+      throw new Error('Exercise módosításához az ID megadása kötelező.');
+    }
+
+    const params = new HttpParams().set(
+      'language',
+      language ?? this.languageService.getCurrentLanguage(),
+    );
 
     return this.http.put<ApiResponse<ExerciseDto>>(
-      API_ENDPOINTS.exerciseUpdate,
+      API_ENDPOINTS.exerciseUpdate(exercise.id),
       payload,
       { params },
     );

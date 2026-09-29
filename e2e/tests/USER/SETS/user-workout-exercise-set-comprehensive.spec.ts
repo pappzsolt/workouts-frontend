@@ -42,10 +42,10 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       );
 
       const pw = await success(
-        await coachApi.post('/api/program-workouts/add', {
+        await coachApi.post('/api/program-workouts', {
           data: { programId, workoutId, dayIndex: 1 },
         }),
-        'POST /api/program-workouts/add',
+        'POST /api/program-workouts',
       );
 
       const programWorkoutId = Number(pw.data?.id);
@@ -99,7 +99,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       );
 
       const created = await success(
-        await userApi.post('/api/user-workout-exercise-sets/create', {
+        await userApi.post('/api/user-workout-exercise-sets', {
           data: {
             userWorkoutId,
             workoutExerciseId: Number(uwe!.workout_exercise_id),
@@ -110,7 +110,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
             }],
           },
         }),
-        'POST /api/user-workout-exercise-sets/create',
+        'POST /api/user-workout-exercise-sets',
       );
 
       expect(Number(created.data)).toBe(userWorkoutExerciseId);
@@ -180,7 +180,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       expect(Number(progress!.sets_done)).toBeGreaterThanOrEqual(1);
 
       const added = await success(
-        await userApi.post(`/api/user-workout-exercise-sets/${userWorkoutExerciseId}/add`),
+        await userApi.post(`/api/user-workout-exercise-sets/${userWorkoutExerciseId}/sets`),
         'POST add set',
       );
 
@@ -258,10 +258,10 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       // The exercise relation was protected while the workout belonged to
       // a program. Once the program is deleted, remove the relation explicitly.
       await success(
-        await cleanup.delete('/api/workout-exercises/delete', {
+        await cleanup.delete('/api/workout-exercises', {
           params: { workoutId, exerciseId },
         }),
-        'DELETE /api/workout-exercises/delete',
+        'DELETE /api/workout-exercises',
       );
 
       // ExerciseService explicitly refuses deleting an exercise that is still
@@ -297,7 +297,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       // accountot rendeljük hozzá. Így a foreign USER_WORKOUT kizárólag
       // a valódi user-workout API-n keresztül készül.
       const pw = await success(
-        await coachApi.post('/api/program-workouts/add', {
+        await coachApi.post('/api/program-workouts', {
           data: { programId, workoutId, dayIndex: 1 },
         }),
         'add foreign program workout',
@@ -319,7 +319,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       );
 
       const created = await success(
-        await adminApi.post('/api/user-workout-exercises/create-with-exercises', {
+        await adminApi.post('/api/user-workout-exercises', {
           data: {
             userId: foreignUserId,
             programId,
@@ -408,7 +408,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       await deleteProgram(cleanup, programId);
 
       await success(
-        await cleanup.delete('/api/workout-exercises/delete', {
+        await cleanup.delete('/api/workout-exercises', {
           params: { workoutId, exerciseId },
         }),
         'DELETE foreign workout exercise relation',

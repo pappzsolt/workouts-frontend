@@ -30,8 +30,8 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
     expect(all.data.length).toBe(expectedAll);
 
     const allUsers = await success(
-      await api.get('/api/members/all-users'),
-      'GET /api/members/all-users',
+      await api.get('/api/members/users'),
+      'GET /api/members/users',
     );
     expect(allUsers.data.length).toBe(await dbCount(`SELECT COUNT(*) FROM public.users`));
     expect(allUsers.data.some((m: any) => Number(m.id) === Number(adminRow!.id))).toBeTruthy();
@@ -153,7 +153,7 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
       expect(changed?.goals).toBe(changedGoals);
 
       await rejected(await api.get('/api/members'), 'USER GET /api/members');
-      await rejected(await api.get('/api/members/all-users'), 'USER GET /api/members/all-users');
+      await rejected(await api.get('/api/members/users'), 'USER GET /api/members/users');
       await rejected(
         await api.post('/api/members', { data: { type: 'user' } }),
         'USER POST /api/members',

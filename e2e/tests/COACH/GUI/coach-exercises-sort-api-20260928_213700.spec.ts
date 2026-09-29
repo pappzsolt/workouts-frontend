@@ -17,7 +17,7 @@ test('COACH GUI: exercise sort toggles the real exercise-search API sort directi
   await expect(sortButton).toBeVisible({ timeout: 15000 });
 
   const responsePromise = page.waitForResponse(r => {
-    if (r.request().method() !== 'GET' || !r.url().includes('/api/exercises/exercise-search')) {
+    if (r.request().method() !== 'GET' || !r.url().includes('/api/exercises/search')) {
       return false;
     }
     return new URL(r.url()).searchParams.get('sortDirection') === 'desc';

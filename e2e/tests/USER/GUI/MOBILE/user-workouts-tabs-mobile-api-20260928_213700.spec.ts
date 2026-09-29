@@ -11,7 +11,7 @@ test('USER MOBILE GUI: workout tabs switch the visible workout group', async ({ 
   // The tab UI belongs to /user/programs/:id/workouts.
   const assignedPromise = page.waitForResponse(r =>
     r.request().method() === 'GET' &&
-    r.url().includes('/api/programs/my/assigned-programs') &&
+    r.url().includes('/api/programs/my/assigned') &&
     !r.url().includes('/progress'),
   );
   await navigateSpa(page, '/user/my-programs');

@@ -23,7 +23,7 @@ export class WorkoutExerciseService {
 
 
    POST:
-   /api/workout-exercises/assign
+   /api/workout-exercises
 
 
    Query params:
@@ -61,7 +61,7 @@ export class WorkoutExerciseService {
 
 
    DELETE:
-   /api/workout-exercises/delete
+   /api/workout-exercises
 
 
    Query params:
@@ -83,7 +83,7 @@ export class WorkoutExerciseService {
 
 
    PUT:
-   /api/workout-exercises/order-index
+   /api/workout-exercises/order
 
 
    Query params:

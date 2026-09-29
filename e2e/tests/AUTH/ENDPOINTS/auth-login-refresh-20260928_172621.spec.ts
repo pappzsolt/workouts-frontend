@@ -10,7 +10,7 @@ test.describe('AUTH: login + refresh token rotation', () => {
 
     const api = await request.newContext({ baseURL: BASE_API_URL });
     try {
-      const response = await api.post('/auth/login', { data: { username, password } });
+      const response = await api.post('/api/auth/login', { data: { username, password } });
       expect(response.ok()).toBeTruthy();
       const body = await response.json();
       expect(body.success).toBeTruthy();
@@ -27,7 +27,7 @@ test.describe('AUTH: login + refresh token rotation', () => {
 
     const api = await request.newContext({ baseURL: BASE_API_URL });
     try {
-      const response = await api.post('/auth/login', {
+      const response = await api.post('/api/auth/login', {
         data: { username, password: '__invalid_e2e_password__' },
       });
       expect(response.ok()).toBeFalsy();
@@ -45,7 +45,7 @@ test.describe('AUTH: login + refresh token rotation', () => {
 
     const api = await request.newContext({ baseURL: BASE_API_URL });
     try {
-      const loginResponse = await api.post('/auth/login', {
+      const loginResponse = await api.post('/api/auth/login', {
         data: { username, password },
       });
       expect(loginResponse.ok()).toBeTruthy();
@@ -54,7 +54,7 @@ test.describe('AUTH: login + refresh token rotation', () => {
       const refreshToken = loginBody.data?.refreshToken;
       expect(refreshToken).toBeTruthy();
 
-      const refreshResponse = await api.post('/auth/refresh', {
+      const refreshResponse = await api.post('/api/auth/refresh', {
         data: { refreshToken },
       });
       expect(refreshResponse.ok()).toBeTruthy();
@@ -65,7 +65,7 @@ test.describe('AUTH: login + refresh token rotation', () => {
       expect(refreshBody.data?.refreshToken).toBeTruthy();
       expect(refreshBody.data.refreshToken).not.toBe(refreshToken);
 
-      const reusedResponse = await api.post('/auth/refresh', {
+      const reusedResponse = await api.post('/api/auth/refresh', {
         data: { refreshToken },
       });
       expect(reusedResponse.ok()).toBeFalsy();

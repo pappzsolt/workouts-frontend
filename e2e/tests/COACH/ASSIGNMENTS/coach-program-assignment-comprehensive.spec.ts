@@ -196,7 +196,7 @@ async function createProgram(
   api: APIRequestContext,
   name: string,
 ): Promise<number> {
-  const response = await api.post('/api/user-programs/create', {
+  const response = await api.post('/api/user-programs', {
     data: {
       userId: null,
       programName: name,
@@ -211,7 +211,7 @@ async function createProgram(
 
   const body = await success(
     response,
-    'POST /api/user-programs/create',
+    'POST /api/user-programs',
   );
 
   const programId = Number(body.data);

@@ -42,17 +42,17 @@ test.describe('User - UserWorkout endpoint matrix', () => {
       // The user-program GET endpoint joins workout_exercises and
       // user_workout_exercises, so the fixture must contain an exercise.
       await success(
-        await coachApi.post('/api/workout-exercises/assign', {
+        await coachApi.post('/api/workout-exercises', {
           params: { workoutId, exerciseId },
         }),
-        'POST /api/workout-exercises/assign',
+        'POST /api/workout-exercises',
       );
 
       const pw = await success(
-        await coachApi.post('/api/program-workouts/add', {
+        await coachApi.post('/api/program-workouts', {
           data: { programId, workoutId, dayIndex: 1 },
         }),
-        'POST /api/program-workouts/add',
+        'POST /api/program-workouts',
       );
 
       const programWorkoutId = Number(pw.data?.id);
@@ -91,14 +91,14 @@ test.describe('User - UserWorkout endpoint matrix', () => {
       // user + program-workout + scheduledAt combination, but a different
       // scheduledAt creates a separate occurrence.
       const created = await success(
-        await userApi.post('/api/user-workout-exercises/create-with-exercises', {
+        await userApi.post('/api/user-workout-exercises', {
           data: {
             userId,
             programId,
             scheduledAt: '2035-04-20',
           },
         }),
-        'POST /api/user-workout-exercises/create-with-exercises',
+        'POST /api/user-workout-exercises',
       );
 
       expect(Array.isArray(created.data)).toBeTruthy();
@@ -157,17 +157,17 @@ test.describe('User - UserWorkout endpoint matrix', () => {
 
       const exercises = await success(
         await userApi.get(
-          `/api/user-workout-exercises/workout/${createdUserWorkoutId}?language=hu`,
+          `/api/user-workout-exercises/workouts/${createdUserWorkoutId}?language=hu`,
         ),
-        'GET /api/user-workout-exercises/workout/{userWorkoutId}',
+        'GET /api/user-workout-exercises/workouts/{userWorkoutId}',
       );
 
       expect(Array.isArray(exercises.data)).toBeTruthy();
       expect(exercises.data.length).toBeGreaterThan(0);
 
       const scheduled = await success(
-        await userApi.get('/api/user-workout-exercises/scheduled-workouts?language=hu'),
-        'GET /api/user-workout-exercises/scheduled-workouts',
+        await userApi.get('/api/user-workout-exercises/scheduled?language=hu'),
+        'GET /api/user-workout-exercises/scheduled',
       );
 
       expect(Array.isArray(scheduled.data)).toBeTruthy();
@@ -178,13 +178,13 @@ test.describe('User - UserWorkout endpoint matrix', () => {
       ).toBeTruthy();
 
       await success(
-        await userApi.patch('/api/user-workout-exercises/reschedule-user-workout', {
+        await userApi.patch('/api/user-workout-exercises/schedule', {
           data: {
             userWorkoutId: createdUserWorkoutId,
             scheduledAt: '2035-04-21',
           },
         }),
-        'PATCH /api/user-workout-exercises/reschedule-user-workout',
+        'PATCH /api/user-workout-exercises/schedule',
       );
 
       const moved = await dbOne<{ scheduled_at: string }>(
@@ -198,9 +198,9 @@ test.describe('User - UserWorkout endpoint matrix', () => {
 
       const search = await success(
         await userApi.get(
-          '/api/user-workout-exercises/scheduled-workouts/search?search=E2E&page=0&size=20&language=hu',
+          '/api/user-workout-exercises/scheduled/search?search=E2E&page=0&size=20&language=hu',
         ),
-        'GET /api/user-workout-exercises/scheduled-workouts/search',
+        'GET /api/user-workout-exercises/scheduled/search',
       );
 
       expect(search).toBeTruthy();
@@ -220,10 +220,10 @@ test.describe('User - UserWorkout endpoint matrix', () => {
       // A program-assigned workout cannot have its exercise structure removed.
       // After the program is deleted, the relation becomes mutable again.
       await success(
-        await cleanup.delete('/api/workout-exercises/delete', {
+        await cleanup.delete('/api/workout-exercises', {
           params: { workoutId, exerciseId },
         }),
-        'DELETE /api/workout-exercises/delete',
+        'DELETE /api/workout-exercises',
       );
 
       await deleteExercise(cleanup, exerciseId);
@@ -252,7 +252,7 @@ test.describe('User - UserWorkout endpoint matrix', () => {
 
     try {
       await success(
-        await coachApi.post('/api/workout-exercises/assign', {
+        await coachApi.post('/api/workout-exercises', {
           params: { workoutId, exerciseId },
         }),
         'assign foreign-workout exercise',
@@ -262,7 +262,7 @@ test.describe('User - UserWorkout endpoint matrix', () => {
       // előtt hozzuk létre, így a coach oldali automatikus USER_WORKOUT
       // létrehozása nem fut le foreign userre.
       const pw = await success(
-        await coachApi.post('/api/program-workouts/add', {
+        await coachApi.post('/api/program-workouts', {
           data: { programId, workoutId, dayIndex: 1 },
         }),
         'add foreign program workout',
@@ -288,7 +288,7 @@ test.describe('User - UserWorkout endpoint matrix', () => {
       );
 
       const created = await success(
-        await adminApi.post('/api/user-workout-exercises/create-with-exercises', {
+        await adminApi.post('/api/user-workout-exercises', {
           data: {
             userId: foreignUserId,
             programId,
@@ -320,7 +320,7 @@ test.describe('User - UserWorkout endpoint matrix', () => {
       const userApi = await apiFor(page);
 
       await rejected(
-        await userApi.patch('/api/user-workout-exercises/reschedule-user-workout', {
+        await userApi.patch('/api/user-workout-exercises/schedule', {
           data: {
             userWorkoutId: foreignUserWorkoutId,
             scheduledAt: '2035-05-02',
@@ -346,7 +346,7 @@ test.describe('User - UserWorkout endpoint matrix', () => {
       await deleteProgram(cleanup, programId);
 
       await success(
-        await cleanup.delete('/api/workout-exercises/delete', {
+        await cleanup.delete('/api/workout-exercises', {
           params: { workoutId, exerciseId },
         }),
         'DELETE foreign workout exercise relation',

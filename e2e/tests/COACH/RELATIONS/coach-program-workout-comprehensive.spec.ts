@@ -38,14 +38,14 @@ test.describe('Coach - ProgramWorkout endpoint matrix', () => {
       );
 
       const created = await success(
-        await api.post('/api/program-workouts/add', {
+        await api.post('/api/program-workouts', {
           data: {
             programId,
             workoutId,
             dayIndex: 1,
           },
         }),
-        'POST /api/program-workouts/add',
+        'POST /api/program-workouts',
       );
 
       relationId = Number(created.data?.id);
@@ -67,13 +67,13 @@ test.describe('Coach - ProgramWorkout endpoint matrix', () => {
       ).toBeTruthy();
 
       const assigned = await success(
-        await api.get(`/api/program-workouts/workout/${workoutId}/assigned`),
-        'GET /api/program-workouts/workout/{workoutId}/assigned',
+        await api.get(`/api/program-workouts/workouts/${workoutId}/assigned`),
+        'GET /api/program-workouts/workouts/{workoutId}/assigned',
       );
       expect(assigned.data?.assigned).toBe(true);
 
       const updated = await success(
-        await api.put('/api/program-workouts/update', {
+        await api.put(`/api/program-workouts/${relationId}`, {
           data: {
             id: relationId,
             programId,
@@ -81,7 +81,7 @@ test.describe('Coach - ProgramWorkout endpoint matrix', () => {
             dayIndex: 3,
           },
         }),
-        'PUT /api/program-workouts/update',
+        'PUT /api/program-workouts/{id}',
       );
 
       expect(Number(updated.data?.id)).toBe(relationId);
@@ -107,7 +107,7 @@ test.describe('Coach - ProgramWorkout endpoint matrix', () => {
       expect(Number(updatedDb?.day_index)).toBe(3);
 
       await rejected(
-        await api.post('/api/program-workouts/add', {
+        await api.post('/api/program-workouts', {
           data: {
             programId,
             workoutId,
@@ -129,7 +129,7 @@ test.describe('Coach - ProgramWorkout endpoint matrix', () => {
       ).toBe(1);
 
       const second = await success(
-        await api.post('/api/program-workouts/add', {
+        await api.post('/api/program-workouts', {
           data: {
             programId,
             workoutId,
@@ -181,7 +181,7 @@ test.describe('Coach - ProgramWorkout endpoint matrix', () => {
       secondRelationId = undefined;
 
       const finalAssigned = await success(
-        await api.get(`/api/program-workouts/workout/${workoutId}/assigned`),
+        await api.get(`/api/program-workouts/workouts/${workoutId}/assigned`),
         'GET assigned after delete',
       );
       expect(finalAssigned.data?.assigned).toBe(false);
@@ -254,7 +254,7 @@ test.describe('Coach - ProgramWorkout endpoint matrix', () => {
       ).toBe(0);
 
       await rejected(
-        await api.post('/api/program-workouts/add', {
+        await api.post('/api/program-workouts', {
           data: {
             programId: invalidProgramId,
             workoutId: invalidWorkoutId,
@@ -276,7 +276,7 @@ test.describe('Coach - ProgramWorkout endpoint matrix', () => {
       ).toBe(0);
 
       await rejected(
-        await api.put('/api/program-workouts/update', {
+        await api.put(`/api/program-workouts/${invalidProgramId}`, {
           data: {
             id: invalidProgramId,
             programId: invalidProgramId,

@@ -7,11 +7,11 @@ test('COACH GUI: program-workouts loads real program/workout data and selected p
 
   const programsPromise = page.waitForResponse((response) =>
     response.request().method() === 'GET' &&
-    response.url().includes('/api/programs/my/coach-programs'),
+    response.url().includes('/api/programs/my/coach'),
   );
   const workoutsPromise = page.waitForResponse((response) =>
     response.request().method() === 'GET' &&
-    response.url().includes('/api/workouts/my-workouts'),
+    response.url().includes('/api/workouts/my'),
   );
 
   await navigateSpa(page, '/coach/dashboard?section=program-workouts');

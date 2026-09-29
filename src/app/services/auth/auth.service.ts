@@ -24,7 +24,7 @@ export class AuthService {
     httpBackend: HttpBackend,
   ) {
     // A refresh kérést az interceptor megkerülésével küldjük,
-    // hogy a lejárt access token ne kerüljön rá a /auth/refresh kérésre.
+    // hogy a lejárt access token ne kerüljön rá a /api/auth/refresh kérésre.
     this.rawHttp = new HttpClient(httpBackend);
   }
 
