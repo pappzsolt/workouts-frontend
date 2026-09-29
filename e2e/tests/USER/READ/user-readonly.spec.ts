@@ -47,7 +47,7 @@ test.describe('User - read-only surfaces', () => {
     const body = await programsResponse.json() as { data?: unknown[] };
     const programs = body.data ?? [];
 
-    test.skip(programs.length === 0, 'The test user has no assigned program.');
+    expect(programs.length, 'The configured E2E user must have at least one assigned program.').toBeGreaterThan(0);
 
     const programCard = page.locator('app-card').filter({ has: page.locator('h3') }).first();
     await expect(programCard).toBeVisible({ timeout: 15_000 });
@@ -93,7 +93,7 @@ test.describe('User - read-only surfaces', () => {
     const programsBody = await programsResponse.json() as { data?: Array<{ id?: number }> };
     const programs = programsBody.data ?? [];
 
-    test.skip(programs.length === 0, 'The test user has no assigned program.');
+    expect(programs.length, 'The configured E2E user must have at least one assigned program.').toBeGreaterThan(0);
 
     const programCard = page.locator('app-card').filter({ has: page.locator('h3') }).first();
     await expect(programCard).toBeVisible({ timeout: 15_000 });
@@ -114,24 +114,35 @@ test.describe('User - read-only surfaces', () => {
     };
     const workouts = workoutsBody.data ?? [];
 
-    test.skip(workouts.length === 0, 'The selected program has no workout occurrence.');
+    expect(workouts.length, 'The selected E2E program must have at least one workout occurrence.').toBeGreaterThan(0);
 
     const workoutWithUserWorkout = workouts.find(
       (workout) => workout.userWorkoutId != null || workout.user_workout_id != null,
     );
-    test.skip(
-      !workoutWithUserWorkout,
-      'No workout occurrence with a userWorkoutId is available for the test user.',
-    );
+    expect(workoutWithUserWorkout, 'The selected workout must have a userWorkoutId for the exercise flow.').toBeTruthy();
 
-    // A workout card uses an <h4>; the exercise cards use <h3>.
-    // Keep the selector aligned with the actual user-workouts template.
-    const workoutCard = page.locator('app-card').filter({ has: page.locator('h4') }).first();
+    const selected = workoutWithUserWorkout!;
+    const selectedUserWorkoutId = Number(
+      selected.userWorkoutId ?? selected.user_workout_id,
+    );
+    const selectedCompleted = selected.completed === true || selected.completed === 'true';
+
+    const tabs = page.getByRole('tab');
+    await expect(tabs).toHaveCount(2, { timeout: 15_000 });
+    if (selectedCompleted) {
+      await tabs.nth(1).click();
+      await expect(tabs.nth(1)).toHaveAttribute('aria-selected', 'true');
+    } else {
+      await tabs.nth(0).click();
+      await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true');
+    }
+
+    const workoutCard = page.locator('app-workouts app-card').first();
     await expect(workoutCard).toBeVisible({ timeout: 15_000 });
 
     const exercisesResponsePromise = page.waitForResponse((response) =>
       response.request().method() === 'GET' &&
-      response.url().includes('/exercises/my-workout/user-workout/') &&
+      response.url().includes(`/api/exercises/my-workout/user-workout/${selectedUserWorkoutId}`) &&
       response.ok(),
     );
 

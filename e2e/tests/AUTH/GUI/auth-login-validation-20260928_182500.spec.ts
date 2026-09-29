@@ -12,9 +12,14 @@ test.describe('AUTH GUI: login validation', () => {
 
     await expect(page).toHaveURL(/\/login$/);
     await expect(page.locator('input[formControlName="username"]')).toBeVisible();
-    await expect(page.locator('input[formControlName="password"]')).toBeVisible();
+    const username = page.locator('input[formControlName="username"]');
+    const password = page.locator('input[formControlName="password"]');
+    await expect(username).toBeVisible();
+    await expect(password).toBeVisible();
 
-    const bodyText = await page.locator('body').innerText();
-    expect(bodyText.length).toBeGreaterThan(0);
+    await expect(username).toHaveClass(/ng-invalid/);
+    await expect(password).toHaveClass(/ng-invalid/);
+    await expect(page.locator('form div.border-delete-200')).toBeVisible();
+
   });
 });

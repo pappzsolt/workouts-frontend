@@ -1,10 +1,10 @@
-import { Component, EventEmitter, OnDestroy, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { Subject, catchError, concatMap, from, of, takeUntil, timer, toArray } from 'rxjs';
+import { Subject, catchError, concatMap, forkJoin, from, of, takeUntil, timer, toArray } from 'rxjs';
 
 import { MessageComponent } from '../../../shared/components/message/message.component';
 import { CoachProgramBoardComponent } from '../../../shared/coach/coach-program-board/coach-program-board.component';
@@ -14,6 +14,8 @@ import { Workout } from '../../../../models/workout.model';
 import { CoachProgram } from '../../../../models/coach-program.model';
 
 import { ProgramWorkoutService } from '../../../../services/coach/program-workout.service';
+import { CoachProgramSelectService } from '../../../../services/coach/coach-program-select/coach-program-select.service';
+import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 
 @Component({
@@ -30,7 +32,7 @@ import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.c
   ],
   templateUrl: './program-workouts-ass.component.html',
 })
-export class ProgramWorkoutsAssComponent implements OnDestroy {
+export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
   programs: CoachProgram[] = [];
 
@@ -50,7 +52,35 @@ export class ProgramWorkoutsAssComponent implements OnDestroy {
     workoutIds: number[];
   }>();
 
-  constructor(private programWorkoutService: ProgramWorkoutService) {}
+  constructor(
+    private programWorkoutService: ProgramWorkoutService,
+    private coachProgramSelectService: CoachProgramSelectService,
+    private coachWorkoutsService: CoachWorkoutsService,
+  ) {}
+
+  ngOnInit(): void {
+    this.loadBoardData();
+  }
+
+  private loadBoardData(): void {
+    forkJoin({
+      programs: this.coachProgramSelectService.getMyPrograms(),
+      workouts: this.coachWorkoutsService.getMyWorkouts(),
+    })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: ({ programs, workouts }) => {
+          this.programs = programs.data ?? [];
+          this.workouts = workouts.data ?? [];
+        },
+        error: () => {
+          this.programs = [];
+          this.workouts = [];
+          this.message = 'programWorkouts.loadError';
+          this.messageStatus = 'error';
+        },
+      });
+  }
 
   // ==========================================================
   // PROGRAM SELECTION
@@ -59,6 +89,27 @@ export class ProgramWorkoutsAssComponent implements OnDestroy {
   onProgramSelected(programId: number): void {
     this.selectedProgramId = programId;
     this.selectedWorkoutIds = [];
+
+    this.programWorkoutService
+      .getWorkoutsForProgram(programId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (!response.success) {
+            this.message = response.message || 'programWorkouts.loadError';
+            this.messageStatus = 'error';
+            return;
+          }
+
+          this.selectedWorkoutIds = (response.data ?? [])
+            .map((assignment) => assignment.workoutId)
+            .filter((id): id is number => Number.isInteger(id) && id > 0);
+        },
+        error: (error) => {
+          this.message = error.error?.message || 'programWorkouts.loadError';
+          this.messageStatus = 'error';
+        },
+      });
   }
 
   // ==========================================================
@@ -186,7 +237,7 @@ export class ProgramWorkoutsAssComponent implements OnDestroy {
     });
   }
 
-\n\n  ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
   }

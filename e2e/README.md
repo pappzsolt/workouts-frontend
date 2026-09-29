@@ -17,13 +17,13 @@ Fill in the existing test-user credentials and PostgreSQL read-only connection v
 Coach:
 
 ```bash
-npx playwright test tests/coach-readonly.spec.ts --headed
+npx playwright test tests/COACH/READ/coach-readonly.spec.ts --headed
 ```
 
 User:
 
 ```bash
-npx playwright test tests/user-readonly.spec.ts --headed
+npx playwright test tests/USER/READ/user-readonly.spec.ts --headed
 ```
 
 All tests:

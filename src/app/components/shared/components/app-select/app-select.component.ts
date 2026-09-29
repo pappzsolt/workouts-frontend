@@ -6,6 +6,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 @Component({
   selector: 'app-select',
   standalone: true,
+  host: { '[attr.id]': 'null' },
   imports: [FormsModule, TranslatePipe],
   templateUrl: './app-select.component.html',
   styleUrl: './app-select.component.css',

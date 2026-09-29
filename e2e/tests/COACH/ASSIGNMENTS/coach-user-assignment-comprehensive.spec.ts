@@ -95,7 +95,7 @@ test.describe('Coach - Program ↔ User assignment comprehensive',()=>{
  test('NEGATIVE: coach nem rendelhet admin/nem saját usert',async({page})=>{
   await login(page,'coach'); const api=await apiFor(page);
   const target=await dbOne<{id:number}>(`SELECT u.id FROM public.users u JOIN public.user_roles ur ON ur.user_id=u.id JOIN public.roles r ON r.id=ur.role_id WHERE r.name='ADMIN' ORDER BY u.id LIMIT 1`);
-  test.skip(!target,'Nincs ADMIN user a dumpban.');
+  expect(target, 'The configured E2E database must contain an ADMIN user for the authorization check.').toBeTruthy();
   const programId=await createProgram(api,`E2E FORBIDDEN ASSIGN ${suffix()}`);
   try{
    await rejected(await api.post('/api/programs/assign',{data:{userId:Number(target!.id),programId}}),'foreign user assignment');

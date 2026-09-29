@@ -36,8 +36,26 @@ export async function loginAs(
   password?: string,
   path = '/user/dashboard',
 ): Promise<void> {
-  if (!username || !password) {
-    throw new Error('Hiányzó E2E credentials.');
+  const role = path.match(/^\/(admin|coach|user)\//)?.[1] ?? 'user';
+
+  const resolvedUsername =
+    username ??
+    (role === 'coach'
+      ? process.env.E2E_COACH_USERNAME
+      : role === 'admin'
+        ? process.env.E2E_ADMIN_USERNAME
+        : process.env.E2E_USER_USERNAME);
+
+  const resolvedPassword =
+    password ??
+    (role === 'coach'
+      ? process.env.E2E_COACH_PASSWORD
+      : role === 'admin'
+        ? process.env.E2E_ADMIN_PASSWORD
+        : process.env.E2E_USER_PASSWORD);
+
+  if (!resolvedUsername || !resolvedPassword) {
+    throw new Error(`Hiányzó E2E credentials a(z) ${role} szerepkörhöz.`);
   }
 
   await page.goto('/login');
@@ -47,8 +65,8 @@ export async function loginAs(
   });
   await page.reload();
 
-  await page.locator('input[formcontrolname="username"]').fill(username);
-  await page.locator('input[formcontrolname="password"]').fill(password);
+  await page.locator('input[formcontrolname="username"]').fill(resolvedUsername);
+  await page.locator('input[formcontrolname="password"]').fill(resolvedPassword);
 
   const loginResponsePromise = page.waitForResponse((response) =>
     response.request().method() === 'POST' &&

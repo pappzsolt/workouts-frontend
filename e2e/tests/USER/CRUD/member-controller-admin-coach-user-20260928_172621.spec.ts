@@ -177,9 +177,8 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
 
     const original = await dbOne<any>(
       `SELECT c.id, c.name, c.email, c.avatar_url, c.phone, c.specialization
-         FROM public.users u
-         JOIN public.coaches c ON c.id=u.coach_id
-        WHERE u.username=$1
+         FROM public.coaches c
+        WHERE c.name=$1 OR c.email=$1
         LIMIT 1`,
       [process.env.E2E_COACH_USERNAME],
     );

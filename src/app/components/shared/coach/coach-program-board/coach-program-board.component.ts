@@ -65,7 +65,7 @@ export class CoachProgramBoardComponent implements OnInit, OnDestroy {
 
     this.message = '';
 
-    this.programService.getProgramsForLoggedInCoach().subscribe({
+    this.programService.getMyPrograms().subscribe({
       next: (res) => {
         this.loading = false;
 

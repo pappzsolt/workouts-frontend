@@ -1,0 +1,133 @@
+◇ injected env (14) from .env // tip: ⌘ override existing { override: true }
+Listing tests:
+  [chromium] › AUTH/ENDPOINTS/auth-login-refresh-20260928_172621.spec.ts:5:7 › AUTH: login + refresh token rotation › AUTH LOGIN: valid credentials return access and refresh tokens
+  [chromium] › AUTH/ENDPOINTS/auth-login-refresh-20260928_172621.spec.ts:24:7 › AUTH: login + refresh token rotation › AUTH LOGIN: invalid credentials are rejected
+  [chromium] › AUTH/ENDPOINTS/auth-login-refresh-20260928_172621.spec.ts:40:7 › AUTH: login + refresh token rotation › AUTH REFRESH: refresh token rotates and old token cannot be reused
+  [chromium] › AUTH/GUI/auth-login-language-20260928_182500.spec.ts:5:7 › AUTH GUI: language selector › login language selector changes the visible UI language
+  [chromium] › AUTH/GUI/auth-login-validation-20260928_182500.spec.ts:10:7 › AUTH GUI: login validation › empty login submission shows validation feedback and stays on login
+  [chromium] › AUTH/GUI/MOBILE/auth-login-form-mobile-20260928_213700.spec.ts:6:5 › AUTH MOBILE GUI: login form keeps credentials and submit controls inside the viewport
+  [chromium] › AUTH/GUI/MOBILE/auth-login-mobile-layout-20260928_193000.spec.ts:5:5 › AUTH MOBILE GUI: login form fits the mobile viewport and remains usable
+  [chromium] › AUTH/NEGATIVE/auth-refresh-negative-20260928_181018.spec.ts:29:7 › AUTH: negative refresh-token validation › AUTH REFRESH NEGATIVE: missing refreshToken is rejected
+  [chromium] › AUTH/NEGATIVE/auth-refresh-negative-20260928_181018.spec.ts:43:7 › AUTH: negative refresh-token validation › AUTH REFRESH NEGATIVE: malformed refreshToken is rejected
+  [chromium] › AUTH/NEGATIVE/auth-refresh-negative-20260928_181018.spec.ts:57:7 › AUTH: negative refresh-token validation › AUTH REFRESH NEGATIVE: access token cannot be used as refresh token
+  [chromium] › AUTH/NEGATIVE/auth-refresh-negative-20260928_181018.spec.ts:73:7 › AUTH: negative refresh-token validation › AUTH REFRESH NEGATIVE: arbitrary JWT-shaped token is rejected
+  [chromium] › AUTH/ROLE-MATRIX/e2e-next-06-authorization-role-matrix-20260928_164519.spec.ts:5:5 › ROLE MATRIX: USER cannot access COACH/ADMIN-only endpoints
+  [chromium] › AUTH/ROLE-MATRIX/e2e-next-06-authorization-role-matrix-20260928_164519.spec.ts:21:5 › ROLE MATRIX: COACH can use coach endpoints but cannot use USER-only profile update
+  [chromium] › COACH/ASSIGNMENTS/coach-program-assignment-comprehensive.spec.ts:299:9 › Coach - Program Assignment comprehensive › ASSIGN: saját user → assigned-users → PostgreSQL
+  [chromium] › COACH/ASSIGNMENTS/coach-program-assignment-comprehensive.spec.ts:370:9 › Coach - Program Assignment comprehensive › ASSIGN DUPLICATE: második hozzárendelés nem hoz létre második DB sort
+  [chromium] › COACH/ASSIGNMENTS/coach-program-assignment-comprehensive.spec.ts:430:9 › Coach - Program Assignment comprehensive › ASSIGN REACTIVATE: inactive kapcsolat → assign → status=assigned
+  [chromium] › COACH/ASSIGNMENTS/coach-program-assignment-comprehensive.spec.ts:496:9 › Coach - Program Assignment comprehensive › NEGATIVE: coach nem rendelhet programot nem saját ügyfélnek
+  [chromium] › COACH/ASSIGNMENTS/coach-program-assignment-comprehensive.spec.ts:546:9 › Coach - Program Assignment comprehensive › NEGATIVE: nem létező user/program → DB változatlan marad
+  [chromium] › COACH/ASSIGNMENTS/coach-user-assignment-comprehensive.spec.ts:70:6 › Coach - Program ↔ User assignment comprehensive › ASSIGNMENT: create program → assign own user → assigned-users → duplicate idempotency → DB → user sees program
+  [chromium] › COACH/ASSIGNMENTS/coach-user-assignment-comprehensive.spec.ts:95:6 › Coach - Program ↔ User assignment comprehensive › NEGATIVE: coach nem rendelhet admin/nem saját usert
+  [chromium] › COACH/CRUD/coach-exercise-write.spec.ts:565:9 › Coach - Exercise CREATE / UPDATE / DELETE / PostgreSQL › CREATE: UI → POST → PostgreSQL → cleanup → PostgreSQL
+  [chromium] › COACH/CRUD/coach-exercise-write.spec.ts:607:9 › Coach - Exercise CREATE / UPDATE / DELETE / PostgreSQL › UPDATE: csak description módosítása → API/DB verification → reload → restore
+  [chromium] › COACH/CRUD/coach-exercise-write.spec.ts:866:9 › Coach - Exercise CREATE / UPDATE / DELETE / PostgreSQL › DELETE: CREATE → DELETE API → PostgreSQL cleanup verification
+  [chromium] › COACH/CRUD/coach-exercise-write.spec.ts:887:9 › Coach - Exercise CREATE / UPDATE / DELETE / PostgreSQL › NEGATIVE: CREATE üres névvel → API elutasítja
+  [chromium] › COACH/CRUD/coach-exercise-write.spec.ts:932:9 › Coach - Exercise CREATE / UPDATE / DELETE / PostgreSQL › NEGATIVE: UPDATE nem létező exercise ID → API elutasítja
+  [chromium] › COACH/CRUD/coach-program-comprehensive.spec.ts:161:7 › Coach - COMPLETE Program endpoint matrix › PROGRAM CRUD + coach GET/search + translation + PostgreSQL
+  [chromium] › COACH/CRUD/coach-program-comprehensive.spec.ts:268:7 › Coach - COMPLETE Program endpoint matrix › PROGRAM ASSIGNMENT: saját user → assigned-users → duplicate idempotency → DB
+  [chromium] › COACH/CRUD/coach-program-comprehensive.spec.ts:294:7 › Coach - COMPLETE Program endpoint matrix › PROGRAM NEGATIVE: nem létező ID-k és hibás update nem módosítják a DB-t
+  [chromium] › COACH/CRUD/coach-workout-write.spec.ts:426:7 › Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL › CREATE: UI → POST → PostgreSQL → cleanup → PostgreSQL
+  [chromium] › COACH/CRUD/coach-workout-write.spec.ts:452:7 › Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL › UPDATE: CREATE → DB baseline → UI UPDATE → API/DB verification → reload
+  [chromium] › COACH/CRUD/coach-workout-write.spec.ts:508:7 › Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL › DELETE: CREATE → DELETE API → PostgreSQL cleanup verification
+  [chromium] › COACH/CRUD/coach-workout-write.spec.ts:543:7 › Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL › ASSIGN: CREATE workout → UI exercise hozzárendelés → API/DB verification → relation cleanup
+  [chromium] › COACH/CRUD/coach-workout-write.spec.ts:622:7 › Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL › NEGATIVE: UPDATE nem létező workout ID → API elutasítja
+  [chromium] › COACH/CRUD/coach-workout-write.spec.ts:656:7 › Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL › NEGATIVE: DELETE nem létező workout ID → API elutasítja
+  [chromium] › COACH/CRUD/coach-workout-write.spec.ts:680:7 › Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL › NEGATIVE: ASSIGN nem létező workout ID → API elutasítja és DB nem változik
+  [chromium] › COACH/CRUD/coach-workout-write.spec.ts:716:7 › Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL › NEGATIVE: ugyanaz az exercise kétszer → második hozzárendelés elutasítva
+  [chromium] › COACH/GUI/coach-dashboard-actions-20260928_182500.spec.ts:9:7 › COACH GUI: dashboard actions › dashboard action cards open the corresponding coach surfaces
+  [chromium] › COACH/GUI/coach-dashboard-actions-20260928_184600.spec.ts:9:7 › COACH GUI: dashboard actions › dashboard action cards open the corresponding coach surfaces
+  [chromium] › COACH/GUI/coach-dashboard-actions-20260928_190500.spec.ts:5:7 › COACH GUI: dashboard actions › all five dashboard actions open their corresponding real coach surfaces
+  [chromium] › COACH/GUI/coach-exercise-search-api-20260928_193500.spec.ts:4:5 › COACH GUI: exercise search renders the backend search result and preserves edit actions
+  [chromium] › COACH/GUI/coach-exercises-sort-api-20260928_213700.spec.ts:4:5 › COACH GUI: exercise sort toggles the real exercise-search API sort direction
+  [chromium] › COACH/GUI/coach-profile-api-fields-20260928_213700.spec.ts:4:5 › COACH GUI: profile page renders after the authenticated coach profile API completes
+  [chromium] › COACH/GUI/coach-profile-form-20260928_182500.spec.ts:5:7 › COACH GUI: profile form › coach profile exposes the editable profile fields without saving
+  [chromium] › COACH/GUI/coach-profile-form-20260928_184600.spec.ts:5:7 › COACH GUI: profile form › coach profile exposes the editable profile fields without saving
+  [chromium] › COACH/GUI/coach-profile-form-20260928_190500.spec.ts:10:7 › COACH GUI: profile form › coach profile exposes all editable fields and save action without submitting changes
+  [chromium] › COACH/GUI/coach-program-builder-form-20260928_182500.spec.ts:5:7 › COACH GUI: program builder form › program builder renders its first-step fields and calculates the end date
+  [chromium] › COACH/GUI/coach-program-builder-form-20260928_184600.spec.ts:5:7 › COACH GUI: program builder form › program builder renders its first-step fields and calculates the end date
+  [chromium] › COACH/GUI/coach-program-builder-form-20260928_190500.spec.ts:10:7 › COACH GUI: program builder form › program builder renders required fields and calculates the end date from duration
+  [chromium] › COACH/GUI/coach-program-search-api-20260928_193500.spec.ts:4:5 › COACH GUI: program search triggers the coach-search API and renders its page
+  [chromium] › COACH/GUI/coach-program-workouts-api-20260928_193500.spec.ts:4:5 › COACH GUI: program workout surface loads its program-workout API data
+  [chromium] › COACH/GUI/coach-program-workouts-selection-api-20260928_213700.spec.ts:4:5 › COACH GUI: program-workouts loads real program/workout data and selected program assignments
+  [chromium] › COACH/GUI/coach-workouts-search-api-20260928_193500.spec.ts:4:5 › COACH GUI: workout search filters the dashboard workout list locally
+  [chromium] › COACH/GUI/MOBILE/coach-dashboard-mobile-layout-20260928_193000.spec.ts:6:5 › COACH MOBILE GUI: dashboard action cards form a usable one-column layout
+  [chromium] › COACH/GUI/MOBILE/coach-exercises-mobile-search-api-20260928_213700.spec.ts:6:5 › COACH MOBILE GUI: exercise search sends the selected query to the API
+  [chromium] › COACH/GUI/MOBILE/coach-program-builder-mobile-form-20260928_193000.spec.ts:6:5 › COACH MOBILE GUI: program builder keeps all first-step controls accessible and calculates end date
+  [chromium] › COACH/GUI/MOBILE/coach-program-builder-mobile-form-fixed-20260928_213700.spec.ts:6:5 › COACH MOBILE GUI: program builder exposes the difficulty control and calculates end date
+  [chromium] › COACH/GUI/MOBILE/coach-program-search-mobile-api-20260928_193000.spec.ts:6:5 › COACH MOBILE GUI: program search sends the entered query and keeps the result surface usable
+  [chromium] › COACH/GUI/MOBILE/coach-programs-mobile-route-api-20260928_213700.spec.ts:6:5 › COACH MOBILE GUI: program list renders its API-backed surface without horizontal overflow
+  [chromium] › COACH/GUI/MOBILE/coach-workouts-mobile-search-20260928_213700.spec.ts:6:5 › COACH MOBILE GUI: workout search filters the loaded workout cards without horizontal overflow
+  [chromium] › COACH/READ/coach-readonly.spec.ts:10:7 › Coach - read-only surfaces › coach dashboard can be opened without changing data
+  [chromium] › COACH/READ/coach-readonly.spec.ts:25:7 › Coach - read-only surfaces › coach profile can be viewed without changing data
+  [chromium] › COACH/READ/coach-readonly.spec.ts:40:7 › Coach - read-only surfaces › coach program list can be viewed without changing data
+  [chromium] › COACH/READ/coach-readonly.spec.ts:55:7 › Coach - read-only surfaces › coach exercise list searches for a real exercise from PostgreSQL
+  [chromium] › COACH/READ/e2e-next-03-coach-auxiliary-read-20260928_170500.spec.ts:4:5 › COACH READ: coach programs + user/coach name-id + coach lookup match DB
+  [chromium] › COACH/RELATIONS/coach-program-workout-comprehensive.spec.ts:19:7 › Coach - ProgramWorkout endpoint matrix › PROGRAM-WORKOUT: add → GET → assigned → update → duplicate → second occurrence → delete by id → delete pair → DB
+  [chromium] › COACH/RELATIONS/coach-program-workout-comprehensive.spec.ts:235:7 › Coach - ProgramWorkout endpoint matrix › NEGATIVE: nem létező program/workout kapcsolat nem hoz létre DB rekordot
+  [chromium] › COACH/RELATIONS/coach-workout-exercise-comprehensive.spec.ts:89:7 › Coach - Workout / Exercise / Assignment endpoint matrix › COMPLETE WORKOUT: create → GET → my-workouts → unique → search → update → PostgreSQL → delete
+  [chromium] › COACH/RELATIONS/coach-workout-exercise-comprehensive.spec.ts:204:7 › Coach - Workout / Exercise / Assignment endpoint matrix › COMPLETE EXERCISE: create → all → workouts → unique → search → update → PostgreSQL → delete
+  [chromium] › COACH/RELATIONS/coach-workout-exercise-comprehensive.spec.ts:359:7 › Coach - Workout / Exercise / Assignment endpoint matrix › COMPLETE ASSIGNMENT: assign → defaults → GET → duplicate → reorder → delete → PostgreSQL
+  [chromium] › COACH/RELATIONS/coach-workout-exercise-comprehensive.spec.ts:554:7 › Coach - Workout / Exercise / Assignment endpoint matrix › NEGATIVE MATRIX: invalid IDs and invalid relations are rejected without creating rows
+  [chromium] › COACH/RELATIONS/coach-workout-exercise-comprehensive.spec.ts:644:7 › Coach - Workout / Exercise / Assignment endpoint matrix › NEGATIVE VALIDATION: empty exercise name is rejected and no translation is created
+  [chromium] › INTEGRITY/CLEANUP/e2e-next-07-data-integrity-cleanup-20260928_164519.spec.ts:5:5 › DATA INTEGRITY: created program/workout/exercise relation is removed through application APIs
+  [chromium] › INTEGRITY/GUI/role-route-protection-20260928_182500.spec.ts:5:7 › INTEGRITY GUI: role route protection › USER cannot remain on the coach dashboard route
+  [chromium] › INTEGRITY/GUI/role-route-protection-20260928_184600.spec.ts:5:7 › INTEGRITY GUI: role route protection › USER cannot remain on the coach dashboard route
+  [chromium] › INTEGRITY/GUI/role-route-protection-20260928_190500.spec.ts:5:7 › INTEGRITY GUI: role route protection › USER is redirected to the user dashboard when opening the coach dashboard route
+  [chromium] › INTEGRITY/GUI/user-no-coach-api-20260928_193500.spec.ts:4:5 › INTEGRITY GUI: USER dashboard navigation does not call coach-only APIs
+  [chromium] › NEXT-03-07/e2e-next-03-coach-auxiliary-read-20260928_170500.spec.ts:4:5 › COACH READ: coach programs + user/coach name-id + coach lookup match DB
+  [chromium] › NEXT-03-07/e2e-next-04-user-profile-access-20260928_170500.spec.ts:5:5 › USER READ: own member and public coach list; protected coach/admin endpoints rejected
+  [chromium] › NEXT-03-07/e2e-next-05-program-creator-crud-20260928_164519.spec.ts:5:5 › PROGRAM CREATOR: create → update → DB → API cleanup
+  [chromium] › NEXT-03-07/e2e-next-05-program-creator-crud-20260928_164519.spec.ts:40:5 › PROGRAM CREATOR NEGATIVE: USER cannot create or update programs
+  [chromium] › NEXT-03-07/e2e-next-06-authorization-role-matrix-20260928_164519.spec.ts:5:5 › ROLE MATRIX: USER cannot access COACH/ADMIN-only endpoints
+  [chromium] › NEXT-03-07/e2e-next-06-authorization-role-matrix-20260928_164519.spec.ts:21:5 › ROLE MATRIX: COACH can use coach endpoints but cannot use USER-only profile update
+  [chromium] › NEXT-03-07/e2e-next-07-data-integrity-cleanup-20260928_164519.spec.ts:5:5 › DATA INTEGRITY: created program/workout/exercise relation is removed through application APIs
+  [chromium] › USER/CRUD/member-controller-admin-coach-user-20260928_172621.spec.ts:14:7 › MEMBER CONTROLLER: admin CRUD/read + user/coach profile access › ADMIN MEMBER READ: all → search → all-users → users-with-roles match database
+  [chromium] › USER/CRUD/member-controller-admin-coach-user-20260928_172621.spec.ts:56:7 › MEMBER CONTROLLER: admin CRUD/read + user/coach profile access › ADMIN MEMBER UPDATE: POST /api/members updates an existing user and restores the original data
+  [chromium] › USER/CRUD/member-controller-admin-coach-user-20260928_172621.spec.ts:110:7 › MEMBER CONTROLLER: admin CRUD/read + user/coach profile access › USER PROFILE: own profile update works; admin-only member endpoints reject
+  [chromium] › USER/CRUD/member-controller-admin-coach-user-20260928_172621.spec.ts:174:7 › MEMBER CONTROLLER: admin CRUD/read + user/coach profile access › COACH PROFILE: PUT /api/members/my-coach-profile updates only own coach profile and restores it
+  [chromium] › USER/GUI/MOBILE/user-calendar-mobile-api-20260928_193000.spec.ts:6:5 › USER MOBILE GUI: workout calendar switches to the mobile month agenda and loads scheduled API data
+  [chromium] › USER/GUI/MOBILE/user-dashboard-mobile-layout-20260928_193000.spec.ts:6:5 › USER MOBILE GUI: dashboard actions are visible as a one-column mobile layout
+  [chromium] › USER/GUI/MOBILE/user-exercise-detail-mobile-api-20260928_193000.spec.ts:6:5 › USER MOBILE GUI: exercise detail is populated from the selected user-workout API
+  [chromium] › USER/GUI/MOBILE/user-exercise-detail-mobile-api-fixed-20260928_213700.spec.ts:6:5 › USER MOBILE GUI: exercise list loads the selected user-workout API data
+  [chromium] › USER/GUI/MOBILE/user-my-programs-mobile-api-20260928_193000.spec.ts:6:5 › USER MOBILE GUI: my programs uses the assigned-program API and renders one mobile card per page
+  [chromium] › USER/GUI/MOBILE/user-profile-mobile-api-20260928_193000.spec.ts:6:5 › USER MOBILE GUI: profile fields match the authenticated profile API response
+  [chromium] › USER/GUI/MOBILE/user-profile-mobile-api-fixed-20260928_213700.spec.ts:6:5 › USER MOBILE GUI: profile username matches the authenticated member API
+  [chromium] › USER/GUI/MOBILE/user-program-statistics-mobile-api-20260928_193000.spec.ts:6:5 › USER MOBILE GUI: program statistics renders API-backed cards without horizontal overflow
+  [chromium] › USER/GUI/MOBILE/user-program-statistics-mobile-api-fixed-20260928_213700.spec.ts:6:5 › USER MOBILE GUI: program statistics renders the API response without page overflow
+  [chromium] › USER/GUI/MOBILE/user-workouts-tabs-mobile-api-20260928_213700.spec.ts:6:5 › USER MOBILE GUI: workout tabs switch the visible workout group
+  [chromium] › USER/GUI/user-calendar-scheduled-api-20260928_193500.spec.ts:4:5 › USER GUI: workout calendar loads scheduled occurrences from API
+  [chromium] › USER/GUI/user-dashboard-navigation-20260928_182500.spec.ts:5:7 › USER GUI: dashboard navigation › dashboard cards navigate to my programs, statistics and workouts
+  [chromium] › USER/GUI/user-dashboard-navigation-20260928_184600.spec.ts:5:7 › USER GUI: dashboard navigation › dashboard cards navigate to my programs, statistics and workouts
+  [chromium] › USER/GUI/user-dashboard-navigation-20260928_190500.spec.ts:5:7 › USER GUI: dashboard navigation › all dashboard cards navigate to their exact user surfaces
+  [chromium] › USER/GUI/user-exercise-detail-api-20260928_193500.spec.ts:4:5 › USER GUI: exercise detail loads the selected user-workout exercise from API
+  [chromium] › USER/GUI/user-my-programs-card-20260928_182500.spec.ts:5:7 › USER GUI: my programs › assigned program cards are rendered and the first card opens its workouts
+  [chromium] › USER/GUI/user-my-programs-card-20260928_184600.spec.ts:5:7 › USER GUI: my programs › assigned program cards are rendered and the first card opens its workouts
+  [chromium] › USER/GUI/user-my-programs-card-20260928_190500.spec.ts:5:7 › USER GUI: my programs › assigned program card opens a real workout occurrence with userWorkoutId
+  [chromium] › USER/GUI/user-my-programs-card-fixed-20260928_193000.spec.ts:5:7 › USER GUI: my programs › assigned program card opens a real workout occurrence with userWorkoutId
+  [chromium] › USER/GUI/user-my-programs-card-fixed-20260928_193500.spec.ts:5:7 › USER GUI: my programs pagination + occurrence API › program list renders one page item and pagination matches the API result
+  [chromium] › USER/GUI/user-my-programs-card-fixed-20260928_213700.spec.ts:4:5 › USER GUI: my programs opens the selected workout occurrence with its userWorkoutId
+  [chromium] › USER/GUI/user-profile-api-contract-20260928_193500.spec.ts:4:5 › USER GUI: profile screen renders the authenticated profile API response
+  [chromium] › USER/GUI/user-profile-form-20260928_182500.spec.ts:5:7 › USER GUI: profile form › user profile renders its editable fields without submitting changes
+  [chromium] › USER/GUI/user-profile-form-20260928_184600.spec.ts:5:7 › USER GUI: profile form › user profile renders its editable fields without submitting changes
+  [chromium] › USER/GUI/user-profile-form-20260928_190500.spec.ts:10:7 › USER GUI: profile form › user profile exposes all editable profile fields and save action without submitting changes
+  [chromium] › USER/GUI/user-program-statistics-api-20260928_193500.spec.ts:4:5 › USER GUI: program statistics renders the API-backed program data
+  [chromium] › USER/GUI/user-program-statistics-pagination-20260928_213700.spec.ts:4:5 › USER GUI: program statistics exposes the API-backed statistics surface and pagination controls when needed
+  [chromium] › USER/GUI/user-workout-calendar-navigation-20260928_182500.spec.ts:5:7 › USER GUI: workout calendar › previous and next month controls update the calendar header
+  [chromium] › USER/GUI/user-workout-calendar-navigation-20260928_184600.spec.ts:5:7 › USER GUI: workout calendar › previous and next month controls update the calendar header
+  [chromium] › USER/GUI/user-workout-calendar-navigation-20260928_190500.spec.ts:5:7 › USER GUI: workout calendar › previous and next month controls update the calendar header and restore the original month
+  [chromium] › USER/GUI/user-workouts-tabs-api-20260928_193500.spec.ts:4:5 › USER GUI: workouts page switches pending and completed views without leaving route
+  [chromium] › USER/GUI/user-workouts-tabs-api-20260928_213700.spec.ts:4:5 › USER GUI: workout tabs switch between pending and completed panels
+  [chromium] › USER/READ/user-program-statistics-comprehensive.spec.ts:14:7 › User - Program Statistics endpoint matrix › STATISTICS: program + workout activity + exercise strength progress + response contract
+  [chromium] › USER/READ/user-program-statistics-comprehensive.spec.ts:118:7 › User - Program Statistics endpoint matrix › NEGATIVE VALIDATION + ROLE: fordított dátumtartomány és coach hozzáférés elutasítva
+  [chromium] › USER/READ/user-readonly.spec.ts:25:7 › User - read-only surfaces › user dashboard can be opened without changing data
+  [chromium] › USER/READ/user-readonly.spec.ts:34:7 › User - read-only surfaces › my programs can be viewed and a program can be opened
+  [chromium] › USER/READ/user-readonly.spec.ts:60:7 › User - read-only surfaces › program statistics can be viewed without changing data
+  [chromium] › USER/READ/user-readonly.spec.ts:68:7 › User - read-only surfaces › workout calendar can be opened and navigated without changing data
+  [chromium] › USER/READ/user-readonly.spec.ts:80:7 › User - read-only surfaces › workout exercise list can be viewed without changing data
+  [chromium] › USER/SETS/user-workout-exercise-set-comprehensive.spec.ts:24:7 › UserWorkoutExerciseSet endpoint matrix › SETS: auto-created UWE → GET → CREATE → UPDATE completed/progress → ADD → DELETE → DB
+  [chromium] › USER/SETS/user-workout-exercise-set-comprehensive.spec.ts:275:7 › UserWorkoutExerciseSet endpoint matrix › NEGATIVE OWNERSHIP: user nem olvashat/módosíthat/törölhet másik users rekord setjét
+  [chromium] › USER/WORKOUTS/user-workout-comprehensive.spec.ts:24:7 › User - UserWorkout endpoint matrix › USER WORKOUT: program assignment → auto USER_WORKOUT → create-with-exercises → GET → scheduled → reschedule → search → DB
+  [chromium] › USER/WORKOUTS/user-workout-comprehensive.spec.ts:235:7 › User - UserWorkout endpoint matrix › NEGATIVE OWNERSHIP: user nem módosíthat másik users rekordhoz tartozó workoutot
+Total: 130 tests in 86 files

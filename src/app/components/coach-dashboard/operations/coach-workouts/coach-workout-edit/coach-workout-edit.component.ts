@@ -607,9 +607,7 @@ export class CoachWorkoutEditComponent implements OnInit {
     const payload: Workout = {
       ...this.workout,
 
-      workoutDate: this.workout.workoutDate
-        ? new Date(this.workout.workoutDate).toISOString()
-        : undefined,
+      workoutDate: this.workout.workoutDate,
     };
 
     this.coachWorkoutsService.updateWorkout(this.workoutId, payload).subscribe({

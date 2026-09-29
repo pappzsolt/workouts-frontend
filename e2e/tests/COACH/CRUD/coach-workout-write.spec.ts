@@ -326,8 +326,7 @@ async function updateWorkoutThroughUi(
   expect(requestBody.name).toBe(expectedAfter.name);
   expect(requestBody.description).toBe(expectedAfter.description);
 
-  const actualWorkoutDate = String(requestBody.workoutDate ?? '').slice(0, 10);
-  expect(actualWorkoutDate).toBe(expectedAfter.workoutDate);
+  expect(requestBody.workoutDate).toBe(expectedAfter.workoutDate);
 
   expect(Number(requestBody.durationMinutes)).toBe(expectedAfter.durationMinutes);
   expect(requestBody.intensityLevel).toBe(expectedAfter.intensityLevel);
