@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, test } from '@playwright/test';
 import {
   apiFor,
@@ -17,7 +18,7 @@ test.describe('User - Program Statistics endpoint matrix', () => {
 
     try {
       const programStats = await success(
-        await api.get('/api/user/program-statistics?language=hu'),
+        await api.get(`${API_ENDPOINTS.statistics.userProgram}?language=${LANGUAGE}`),
         'GET /api/user/program-statistics',
       );
 
@@ -44,7 +45,7 @@ test.describe('User - Program Statistics endpoint matrix', () => {
       }
 
       const activity = await success(
-        await api.get('/api/user/program-statistics/workouts?from=2035-01-01&to=2035-12-31'),
+        await api.get(`${API_ENDPOINTS.statistics.userProgramWorkouts}?from=2035-01-01&to=2035-12-31`),
         'GET /api/user/program-statistics/workouts',
       );
 
@@ -96,7 +97,7 @@ test.describe('User - Program Statistics endpoint matrix', () => {
 
       const strength = await success(
         await api.get(
-          `/api/user/program-statistics/exercises/${exerciseId}/strength-progress?from=2035-01-01&to=2035-12-31&language=hu`,
+          `${API_ENDPOINTS.statistics.userExerciseStrength(exerciseId)}?from=2035-01-01&to=2035-12-31&language=hu`,
         ),
         'GET /api/user/program-statistics/exercises/{exerciseId}/strength-progress',
       );
@@ -121,12 +122,12 @@ test.describe('User - Program Statistics endpoint matrix', () => {
 
     try {
       await rejected(
-        await userApi.get('/api/user/program-statistics/workouts?from=2035-12-31&to=2035-01-01'),
+        await userApi.get(`${API_ENDPOINTS.statistics.userProgramWorkouts}?from=2035-12-31&to=2035-01-01`),
         'GET workouts invalid date range',
       );
 
       await rejected(
-        await userApi.get('/api/user/program-statistics/exercises/0/strength-progress?from=2035-01-01&to=2035-12-31&language=hu'),
+        await userApi.get(`${API_ENDPOINTS.statistics.userExerciseStrength(0)}?from=2035-01-01&to=2035-12-31&language=${LANGUAGE}`),
         'GET strength progress invalid exercise id',
       );
     } finally {
@@ -138,11 +139,11 @@ test.describe('User - Program Statistics endpoint matrix', () => {
 
     try {
       await rejected(
-        await coachApi.get('/api/user/program-statistics?language=hu'),
+        await coachApi.get(`${API_ENDPOINTS.statistics.userProgram}?language=${LANGUAGE}`),
         'GET program statistics as coach',
       );
       await rejected(
-        await coachApi.get('/api/user/program-statistics/workouts?from=2035-01-01&to=2035-12-31'),
+        await coachApi.get(`${API_ENDPOINTS.statistics.userProgramWorkouts}?from=2035-01-01&to=2035-12-31`),
         'GET workout statistics as coach',
       );
     } finally {

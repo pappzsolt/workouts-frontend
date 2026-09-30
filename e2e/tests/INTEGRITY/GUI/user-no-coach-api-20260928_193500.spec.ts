@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, test } from '@playwright/test';
 import { loginAs, navigateSpa, setTestLanguage } from '../../helpers/read-only';
 
@@ -9,7 +10,7 @@ test('INTEGRITY GUI: USER dashboard navigation does not call coach-only APIs', a
   page.on('request', (request) => {
     if (request.method() !== 'GET') return;
     const url = request.url();
-    if (/\/programs\/coach\/search|\/workouts\/my-workouts|\/exercises\/exercise-search/.test(url)) {
+    if ([API_ENDPOINTS.programs.coachSearch, API_ENDPOINTS.workouts.my, API_ENDPOINTS.exercises.search].some((endpoint) => url.includes(endpoint))) {
       coachApiCalls.push(`${request.method()} ${url}`);
     }
   });

@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 
 import { expect, request, test, type APIRequestContext, type Page } from '@playwright/test';
 import { Pool } from 'pg';
@@ -55,15 +56,15 @@ async function coachUserId():Promise<number>{
   return Number(r.id);
 }
 async function createProgram(api:APIRequestContext,name:string):Promise<number>{
-  const b=await success(await api.post('/api/user-programs',{data:{userId:null,programName:name,programDescription:`E2E ${suffix()}`,durationDays:30,startDate:'2035-03-01',difficultyLevel:'intermediate',languageCode:LANGUAGE,workouts:null}}),'POST /api/user-programs');
+  const b=await success(await api.post(API_ENDPOINTS.userPrograms.base,{data:{userId:null,programName:name,programDescription:`E2E ${suffix()}`,durationDays:30,startDate:'2035-03-01',difficultyLevel:'intermediate',languageCode:LANGUAGE,workouts:null}}),'POST /api/user-programs');
   return Number(b.data);
 }
 async function createWorkout(api:APIRequestContext,name:string):Promise<number>{
-  const b=await success(await api.post('/api/workouts',{params:{language:LANGUAGE},data:{name,description:`E2E ${suffix()}`,workoutDate:'2035-03-10',durationMinutes:60,intensityLevel:'High',dayIndex:1,done:false}}),'POST /api/workouts');
+  const b=await success(await api.post(API_ENDPOINTS.workouts.base,{params:{language:LANGUAGE},data:{name,description:`E2E ${suffix()}`,workoutDate:'2035-03-10',durationMinutes:60,intensityLevel:'High',dayIndex:1,done:false}}),'POST /api/workouts');
   return Number(b.data?.id);
 }
-async function deleteProgram(api:APIRequestContext,id:number){ await success(await api.delete(`/api/programs/coach/${id}`),`DELETE /api/programs/coach/${id}`); }
-async function deleteWorkout(api:APIRequestContext,id:number){ const r=await api.delete(`/api/workouts/${id}`); if(!r.ok()) console.log(`Workout cleanup HTTP ${r.status()}: ${await r.text()}`); }
+async function deleteProgram(api:APIRequestContext,id:number){ await success(await api.delete(`${API_ENDPOINTS.programs.coachDelete(id)}`),`DELETE /api/programs/coach/${id}`); }
+async function deleteWorkout(api:APIRequestContext,id:number){ const r=await api.delete(`${API_ENDPOINTS.workouts.byId(id)}`); if(!r.ok()) console.log(`Workout cleanup HTTP ${r.status()}: ${await r.text()}`); }
 
 test.describe('Coach - Program ↔ User assignment comprehensive',()=>{
  test.describe.configure({mode:'serial'});
@@ -71,12 +72,12 @@ test.describe('Coach - Program ↔ User assignment comprehensive',()=>{
   await login(page,'coach'); const coachApi=await apiFor(page); const userId=await coachUserId();
   const programId=await createProgram(coachApi,`E2E USER ASSIGN ${suffix()}`);
   try{
-   await success(await coachApi.post('/api/programs/assign',{data:{userId,programId}}),'POST /api/programs/assign');
+   await success(await coachApi.post(API_ENDPOINTS.programs.assign,{data:{userId,programId}}),'POST /api/programs/assign');
    expect(await dbCount(`SELECT count(*)::text count FROM public.user_programs WHERE user_id=$1 AND program_id=$2`,[userId,programId])).toBe(1);
-   const assigned=await success(await coachApi.get(`/api/programs/${programId}/assigned-users`),'GET assigned-users');
+   const assigned=await success(await coachApi.get(`${API_ENDPOINTS.programs.assignedUsers(programId)}`),'GET assigned-users');
    expect((assigned.data??[]).map(Number)).toContain(userId);
 
-   await success(await coachApi.post('/api/programs/assign',{data:{userId,programId}}),'POST duplicate');
+   await success(await coachApi.post(API_ENDPOINTS.programs.assign,{data:{userId,programId}}),'POST duplicate');
    expect(await dbCount(`SELECT count(*)::text count FROM public.user_programs WHERE user_id=$1 AND program_id=$2`,[userId,programId])).toBe(1);
 
    await coachApi.dispose();
@@ -98,7 +99,7 @@ test.describe('Coach - Program ↔ User assignment comprehensive',()=>{
   expect(target, 'The configured E2E database must contain an ADMIN user for the authorization check.').toBeTruthy();
   const programId=await createProgram(api,`E2E FORBIDDEN ASSIGN ${suffix()}`);
   try{
-   await rejected(await api.post('/api/programs/assign',{data:{userId:Number(target!.id),programId}}),'foreign user assignment');
+   await rejected(await api.post(API_ENDPOINTS.programs.assign,{data:{userId:Number(target!.id),programId}}),'foreign user assignment');
    expect(await dbCount(`SELECT count(*)::text count FROM public.user_programs WHERE user_id=$1 AND program_id=$2`,[Number(target!.id),programId])).toBe(0);
   }finally{ await deleteProgram(api,programId); await api.dispose(); }
  });

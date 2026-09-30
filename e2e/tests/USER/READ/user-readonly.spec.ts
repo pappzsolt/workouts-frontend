@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, test } from '@playwright/test';
 import { assertNoDataMutation, installReadOnlyGuard, loginAs, navigateSpa, setTestLanguage } from '../../helpers/read-only';
 
@@ -36,7 +37,7 @@ test.describe('User - read-only surfaces', () => {
 
     const programsResponsePromise = page.waitForResponse((response) =>
       response.request().method() === 'GET' &&
-      response.url().includes('/programs/my/assigned-programs') &&
+      response.url().includes(API_ENDPOINTS.programs.assigned) &&
       !response.url().includes('/progress'),
     );
 
@@ -82,7 +83,7 @@ test.describe('User - read-only surfaces', () => {
 
     const programsResponsePromise = page.waitForResponse((response) =>
       response.request().method() === 'GET' &&
-      response.url().includes('/programs/my/assigned-programs') &&
+      response.url().includes(API_ENDPOINTS.programs.assigned) &&
       !response.url().includes('/progress'),
     );
 
@@ -142,7 +143,7 @@ test.describe('User - read-only surfaces', () => {
 
     const exercisesResponsePromise = page.waitForResponse((response) =>
       response.request().method() === 'GET' &&
-      response.url().includes(`/api/exercises/user-workouts/${selectedUserWorkoutId}`) &&
+      response.url().includes(`${API_ENDPOINTS.exercises.userWorkout(selectedUserWorkoutId)}`) &&
       response.ok(),
     );
 

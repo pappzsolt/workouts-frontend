@@ -5,40 +5,31 @@ export const API_ENDPOINTS = {
   // AUTHENTICATION
   // ============================================================
 
-  auth: `${environment.apiUrl.replace('/api', '')}/auth`,
+  auth: `${environment.apiUrl}/auth`,
+  authLogin: `${environment.apiUrl}/auth/login`,
+  authRefresh: `${environment.apiUrl}/auth/refresh`,
 
   // ============================================================
-  // MEMBERS
+  // MEMBERS / USERS / COACHES
   // ============================================================
 
   members: `${environment.apiUrl}/members`,
-
-  allCoaches: `${environment.apiUrl}/members/all-coaches`,
-
+  allCoaches: `${environment.apiUrl}/members/coaches`,
   memberSearch: `${environment.apiUrl}/members/search`,
-
   usersWithRoles: `${environment.apiUrl}/members/users-with-roles`,
-
-  coach: `${environment.apiUrl}/coach`,
-
-  usersNameId: `${environment.apiUrl}/users-name-id`,
-
-  coachesNameId: `${environment.apiUrl}/coaches-name-id`,
-
+  coach: `${environment.apiUrl}/coaches`,
+  usersNameId: `${environment.apiUrl}/users/name-id`,
+  coachesNameId: `${environment.apiUrl}/coaches/name-id`,
   roles: `${environment.apiUrl}/roles`,
 
   // ============================================================
   // PROGRAMS
   // ============================================================
 
-  allPrograms: `${environment.apiUrl}/programs/all`,
-
-  assignedPrograms: `${environment.apiUrl}/programs/my/assigned-programs`,
-
-  coachPrograms: `${environment.apiUrl}/programs/my/coach-programs`,
-
-  createProgram: `${environment.apiUrl}/user-programs/create`,
-
+  allPrograms: `${environment.apiUrl}/programs`,
+  assignedPrograms: `${environment.apiUrl}/programs/my/assigned`,
+  coachPrograms: `${environment.apiUrl}/programs/my/coach`,
+  createProgram: `${environment.apiUrl}/user-programs`,
   assignProgram: `${environment.apiUrl}/programs/assign`,
 
   // ============================================================
@@ -53,6 +44,7 @@ export const API_ENDPOINTS = {
 
   workouts: `${environment.apiUrl}/workouts`,
   workoutCopy: `${environment.apiUrl}/workout-copy`,
+
   // ============================================================
   // PROGRAM WORKOUTS
   // ============================================================
@@ -70,8 +62,7 @@ export const API_ENDPOINTS = {
   // ============================================================
 
   userWorkoutExercises: `${environment.apiUrl}/user-workout-exercises`,
-
-  createUserWorkoutWithExercises: `${environment.apiUrl}/user-workout-exercises/create-with-exercises`,
+  createUserWorkoutWithExercises: `${environment.apiUrl}/user-workout-exercises`,
 
   // ============================================================
   // USER WORKOUT EXERCISE SETS
@@ -80,21 +71,14 @@ export const API_ENDPOINTS = {
   userWorkoutExerciseSets: `${environment.apiUrl}/user-workout-exercise-sets`,
 
   // ============================================================
-  // AUTH ENDPOINTS
-  // ============================================================
-
-  authLogin: `${environment.apiUrl.replace('/api', '')}/auth/login`,
-  authRefresh: `${environment.apiUrl.replace('/api', '')}/auth/refresh`,
-
-  // ============================================================
   // MEMBER ENDPOINTS
   // ============================================================
 
   memberById: (id: number) => `${environment.apiUrl}/members/${id}`,
-  coachById: (id: number) => `${environment.apiUrl}/coach/${id}`,
-  allUsers: `${environment.apiUrl}/members/all-users`,
-  myProfile: `${environment.apiUrl}/members/my-profile`,
-  myCoachProfile: `${environment.apiUrl}/members/my-coach-profile`,
+  coachById: (id: number) => `${environment.apiUrl}/coaches/${id}`,
+  allUsers: `${environment.apiUrl}/members/users`,
+  myProfile: `${environment.apiUrl}/members/me`,
+  myCoachProfile: `${environment.apiUrl}/members/me/coach`,
 
   // ============================================================
   // PROGRAM ENDPOINTS
@@ -103,7 +87,7 @@ export const API_ENDPOINTS = {
   programById: (id: number) => `${environment.apiUrl}/programs/${id}`,
   coachProgramDelete: (id: number) => `${environment.apiUrl}/programs/coach/${id}`,
   coachProgramSearch: `${environment.apiUrl}/programs/coach/search`,
-  updateUserProgram: (id: number) => `${environment.apiUrl}/user-programs/update?programId=${id}`,
+  updateUserProgram: (id: number) => `${environment.apiUrl}/user-programs/${id}`,
   programAssignedUsers: (programId: number) =>
     `${environment.apiUrl}/programs/${programId}/assigned-users`,
 
@@ -112,63 +96,65 @@ export const API_ENDPOINTS = {
   // ============================================================
 
   exercisesForWorkouts: `${environment.apiUrl}/exercises/workouts`,
-  exerciseForWorkout: (workoutId: number) => `${environment.apiUrl}/exercises/workout/${workoutId}`,
-  exerciseAdd: `${environment.apiUrl}/exercises/add`,
-  exerciseUpdate: `${environment.apiUrl}/exercises/update`,
-  exerciseDelete: (exerciseId: number) => `${environment.apiUrl}/exercises/delete/${exerciseId}`,
-  allExercises: `${environment.apiUrl}/exercises/all`,
-  exerciseSearch: `${environment.apiUrl}/exercises/exercise-search`,
+  exerciseForWorkout: (workoutId: number) =>
+    `${environment.apiUrl}/exercises/workouts/${workoutId}`,
+  exerciseAdd: `${environment.apiUrl}/exercises`,
+  exerciseUpdate: (id: number) => `${environment.apiUrl}/exercises/${id}`,
+  exerciseDelete: (exerciseId: number) => `${environment.apiUrl}/exercises/${exerciseId}`,
+  allExercises: `${environment.apiUrl}/exercises`,
+  exerciseSearch: `${environment.apiUrl}/exercises/search`,
   uniqueWorkoutsWithExercises: `${environment.apiUrl}/exercises/workouts/unique`,
   userWorkoutExercisesByWorkout: (userWorkoutId: number) =>
-    `${environment.apiUrl}/exercises/my-workout/user-workout/${userWorkoutId}`,
-  exerciseSetCompleted: `${environment.apiUrl}/exercises/set-completed`,
+    `${environment.apiUrl}/exercises/user-workouts/${userWorkoutId}`,
+  exerciseSetCompleted: `${environment.apiUrl}/exercises/user-workouts/sets/completed`,
 
   // ============================================================
   // WORKOUT ENDPOINTS
   // ============================================================
 
-  myWorkouts: `${environment.apiUrl}/workouts/my-workouts`,
-  uniqueMyWorkouts: `${environment.apiUrl}/workouts/my-workouts/unique`,
-  workoutAdd: `${environment.apiUrl}/workouts/add`,
+  myWorkouts: `${environment.apiUrl}/workouts/my`,
+  uniqueMyWorkouts: `${environment.apiUrl}/workouts/my/unique`,
+  workoutAdd: `${environment.apiUrl}/workouts`,
   workoutById: (id: number) => `${environment.apiUrl}/workouts/${id}`,
-  workoutUpdate: `${environment.apiUrl}/workouts/update`,
-  workoutDelete: (id: number) => `${environment.apiUrl}/workouts/delete/${id}`,
-  myWorkoutsSearch: `${environment.apiUrl}/workouts/my-workouts/search`,
+  workoutUpdate: (id: number) => `${environment.apiUrl}/workouts/${id}`,
+  workoutDelete: (id: number) => `${environment.apiUrl}/workouts/${id}`,
+  myWorkoutsSearch: `${environment.apiUrl}/workouts/my/search`,
 
   // ============================================================
   // PROGRAM-WORKOUT ENDPOINTS
   // ============================================================
 
-  programWorkoutAdd: `${environment.apiUrl}/program-workouts/add`,
+  programWorkoutAdd: `${environment.apiUrl}/program-workouts`,
   programWorkoutAssigned: (workoutId: number) =>
-    `${environment.apiUrl}/program-workouts/workout/${workoutId}/assigned`,
+    `${environment.apiUrl}/program-workouts/workouts/${workoutId}/assigned`,
   programWorkoutsByProgram: (programId: number) =>
     `${environment.apiUrl}/program-workouts?programId=${programId}`,
   programWorkoutDelete: (programId: number, workoutId: number) =>
     `${environment.apiUrl}/program-workouts/${programId}/${workoutId}`,
   programWorkoutsDelete: (programId: number) =>
     `${environment.apiUrl}/program-workouts/${programId}`,
-  programWorkoutUpdate: `${environment.apiUrl}/program-workouts/update`,
+  programWorkoutUpdate: (id: number) => `${environment.apiUrl}/program-workouts/${id}`,
 
   // ============================================================
   // WORKOUT-EXERCISE ENDPOINTS
   // ============================================================
 
-  workoutExerciseAssign: `${environment.apiUrl}/workout-exercises/assign`,
-  workoutExerciseDelete: `${environment.apiUrl}/workout-exercises/delete`,
-  workoutExerciseOrderIndex: `${environment.apiUrl}/workout-exercises/order-index`,
+  workoutExerciseAssign: `${environment.apiUrl}/workout-exercises`,
+  workoutExerciseDelete: `${environment.apiUrl}/workout-exercises`,
+  workoutExerciseOrderIndex: `${environment.apiUrl}/workout-exercises/order`,
 
   // ============================================================
   // USER WORKOUT EXERCISE ENDPOINTS
   // ============================================================
 
   userWorkoutExerciseByWorkout: (userWorkoutId: number) =>
-    `${environment.apiUrl}/user-workout-exercises/workout/${userWorkoutId}`,
+    `${environment.apiUrl}/user-workout-exercises/workouts/${userWorkoutId}`,
   userWorkoutExercisesByUserProgram: (userId: number, programId: number) =>
-    `${environment.apiUrl}/user-workout-exercises/user-program/${userId}/${programId}`,
-  rescheduleUserWorkout: `${environment.apiUrl}/user-workout-exercises/reschedule-user-workout`,
-  scheduledUserWorkouts: `${environment.apiUrl}/user-workout-exercises/scheduled-workouts`,
-  scheduledUserWorkoutsSearch: `${environment.apiUrl}/user-workout-exercises/scheduled-workouts/search`,
+    `${environment.apiUrl}/user-workout-exercises/user-programs/${userId}/${programId}`,
+  rescheduleUserWorkout: `${environment.apiUrl}/user-workout-exercises/schedule`,
+  scheduledUserWorkouts: `${environment.apiUrl}/user-workout-exercises/scheduled`,
+  scheduledUserWorkoutsSearch: `${environment.apiUrl}/user-workout-exercises/scheduled/search`,
+
   // ============================================================
   // USER WORKOUT EXERCISE SET ENDPOINTS
   // ============================================================
@@ -176,15 +162,18 @@ export const API_ENDPOINTS = {
   userWorkoutExerciseSetsByExercise: (userWorkoutExerciseId: number) =>
     `${environment.apiUrl}/user-workout-exercise-sets/${userWorkoutExerciseId}`,
   addUserWorkoutExerciseSet: (userWorkoutExerciseId: number) =>
-    `${environment.apiUrl}/user-workout-exercise-sets/${userWorkoutExerciseId}/add`,
+    `${environment.apiUrl}/user-workout-exercise-sets/${userWorkoutExerciseId}/sets`,
   userWorkoutExerciseSetById: (id: number) =>
     `${environment.apiUrl}/user-workout-exercise-sets/${id}`,
 
-  assignedProgramsProgress: `${environment.apiUrl}/programs/my/assigned-programs/progress`,
-  workoutsByProgram: (programId: number) => `${environment.apiUrl}/workouts/program/${programId}`,
+  // ============================================================
+  // STATISTICS
+  // ============================================================
 
-  // ============================================================
-  // GENERAL API
-  // ============================================================
+  assignedProgramsProgress: `${environment.apiUrl}/programs/my/assigned/progress`,
+  workoutsByProgram: (programId: number) => `${environment.apiUrl}/workouts/program/${programId}`,
   userProgramStatistics: `${environment.apiUrl}/user/program-statistics`,
-};
+  userProgramStatisticsWorkouts: `${environment.apiUrl}/user/program-statistics/workouts`,
+  userExerciseStrengthProgress: (exerciseId: number) =>
+    `${environment.apiUrl}/user/program-statistics/exercises/${exerciseId}/strength-progress`,
+} as const;

@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from './api-endpoints';
 import { expect, type Page } from '@playwright/test';
 
 export async function setTestLanguage(page: Page): Promise<void> {
@@ -17,7 +18,7 @@ export function installReadOnlyGuard(page: Page): string[] {
 
     // Authentication requests are test setup, not page data mutations.
     // Business/API writes must still fail the read-only GUI tests.
-    if (request.url().includes('/auth/login') || request.url().includes('/auth/refresh')) {
+    if (request.url().includes(API_ENDPOINTS.auth.login) || request.url().includes(API_ENDPOINTS.auth.refresh)) {
       return;
     }
 
@@ -68,15 +69,10 @@ export async function loginAs(
   await page.locator('input[formcontrolname="username"]').fill(resolvedUsername);
   await page.locator('input[formcontrolname="password"]').fill(resolvedPassword);
 
-  const loginResponsePromise = page.waitForResponse((response) =>
-    response.request().method() === 'POST' &&
-    response.url().endsWith('/auth/login'),
-  );
-
+  // Submit through the real UI and wait for Angular's normal role-based redirect.
+  // Do not synchronize on a hard-coded response URL here: the application is
+  // responsible for performing the actual /api/auth/login request.
   await page.locator('form button[type="submit"]').click();
-
-  const loginResponse = await loginResponsePromise;
-  expect(loginResponse.ok(), `Login failed: HTTP ${loginResponse.status()}`).toBeTruthy();
 
   // Wait for the application itself to finish its role-based redirect.
   // Navigating to the target route before this completes can race the

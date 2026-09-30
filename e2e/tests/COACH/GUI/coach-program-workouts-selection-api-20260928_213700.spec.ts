@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, test } from '@playwright/test';
 import { loginAs, navigateSpa, setTestLanguage } from '../../helpers/read-only';
 
@@ -7,11 +8,11 @@ test('COACH GUI: program-workouts loads real program/workout data and selected p
 
   const programsPromise = page.waitForResponse((response) =>
     response.request().method() === 'GET' &&
-    response.url().includes('/api/programs/my/coach'),
+    response.url().includes(API_ENDPOINTS.programs.myCoach),
   );
   const workoutsPromise = page.waitForResponse((response) =>
     response.request().method() === 'GET' &&
-    response.url().includes('/api/workouts/my'),
+    response.url().includes(API_ENDPOINTS.workouts.my),
   );
 
   await navigateSpa(page, '/coach/dashboard?section=program-workouts');
@@ -30,7 +31,7 @@ test('COACH GUI: program-workouts loads real program/workout data and selected p
 
   const programWorkoutsPromise = page.waitForResponse((response) =>
     response.request().method() === 'GET' &&
-    new URL(response.url()).pathname === '/api/program-workouts' &&
+    new URL(response.url()).pathname === API_ENDPOINTS.programWorkouts.base &&
     Number(new URL(response.url()).searchParams.get('programId')) === programId,
   );
 

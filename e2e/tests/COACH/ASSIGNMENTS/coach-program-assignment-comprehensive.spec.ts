@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, request, test, type APIRequestContext, type Page } from '@playwright/test';
 import { Pool } from 'pg';
 
@@ -196,7 +197,7 @@ async function createProgram(
   api: APIRequestContext,
   name: string,
 ): Promise<number> {
-  const response = await api.post('/api/user-programs', {
+  const response = await api.post(API_ENDPOINTS.userPrograms.base, {
     data: {
       userId: null,
       programName: name,
@@ -229,7 +230,7 @@ async function deleteProgram(
   programId: number,
 ): Promise<void> {
   const response = await api.delete(
-    `/api/programs/coach/${programId}`,
+    `${API_ENDPOINTS.programs.coachDelete(programId)}`,
   );
 
   await success(
@@ -316,7 +317,7 @@ test.describe(
           );
 
           const response = await api.post(
-            '/api/programs/assign',
+            API_ENDPOINTS.programs.assign,
             {
               data: {
                 userId,
@@ -338,7 +339,7 @@ test.describe(
 
           const assigned = await success(
             await api.get(
-              `/api/programs/${programId}/assigned-users`,
+              `${API_ENDPOINTS.programs.assignedUsers(programId)}`,
             ),
             'GET /api/programs/{id}/assigned-users',
           );
@@ -381,7 +382,7 @@ test.describe(
 
         try {
           await success(
-            await api.post('/api/programs/assign', {
+            await api.post(API_ENDPOINTS.programs.assign, {
               data: { userId, programId },
             }),
             'POST /api/programs/assign #1',
@@ -398,7 +399,7 @@ test.describe(
           ).toBe(1);
 
           await success(
-            await api.post('/api/programs/assign', {
+            await api.post(API_ENDPOINTS.programs.assign, {
               data: { userId, programId },
             }),
             'POST /api/programs/assign #2 duplicate',
@@ -441,7 +442,7 @@ test.describe(
 
         try {
           await success(
-            await api.post('/api/programs/assign', {
+            await api.post(API_ENDPOINTS.programs.assign, {
               data: { userId, programId },
             }),
             'POST /api/programs/assign initial',
@@ -464,7 +465,7 @@ test.describe(
           );
 
           await success(
-            await api.post('/api/programs/assign', {
+            await api.post(API_ENDPOINTS.programs.assign, {
               data: { userId, programId },
             }),
             'POST /api/programs/assign reactivation',
@@ -517,7 +518,7 @@ test.describe(
           expect(before).toBe(0);
 
           await rejected(
-            await api.post('/api/programs/assign', {
+            await api.post(API_ENDPOINTS.programs.assign, {
               data: {
                 userId: targetUserId,
                 programId,
@@ -561,7 +562,7 @@ test.describe(
         );
 
         await rejected(
-          await api.post('/api/programs/assign', {
+          await api.post(API_ENDPOINTS.programs.assign, {
             data: {
               userId: missingUserId,
               programId: missingProgramId,

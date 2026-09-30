@@ -55,21 +55,28 @@ export class ExerciseService {
       intensityLevel: workout.intensityLevel ?? undefined,
       done: workout.done ?? undefined,
       exercises: (workout.exercises ?? []).flatMap((item) => {
-        if (item.id == null || item.workoutId == null || item.exercise == null || item.exercise.id == null) {
+        if (
+          item.id == null ||
+          item.workoutId == null ||
+          item.exercise == null ||
+          item.exercise.id == null
+        ) {
           return [];
         }
 
-        return [{
-          id: item.id,
-          workoutId: item.workoutId,
-          exercise: this.toExercise(item.exercise),
-          sets: item.sets ?? 0,
-          repetitions: item.repetitions ?? 0,
-          orderIndex: item.orderIndex ?? 0,
-          restSeconds: item.restSeconds ?? 0,
-          notes: item.notes ?? undefined,
-          done: item.done ?? false,
-        }];
+        return [
+          {
+            id: item.id,
+            workoutId: item.workoutId,
+            exercise: this.toExercise(item.exercise),
+            sets: item.sets ?? 0,
+            repetitions: item.repetitions ?? 0,
+            orderIndex: item.orderIndex ?? 0,
+            restSeconds: item.restSeconds ?? 0,
+            notes: item.notes ?? undefined,
+            done: item.done ?? false,
+          },
+        ];
       }),
     };
   };
@@ -82,16 +89,10 @@ export class ExerciseService {
   // ==========================================================
 
   getWorkoutsWithExercises(): Observable<ApiResponse<WorkoutUiDto[]>> {
-    const params = new HttpParams().set(
-      'language',
-      this.languageService.getCurrentLanguage(),
-    );
+    const params = new HttpParams().set('language', this.languageService.getCurrentLanguage());
 
     return this.http
-      .get<ApiResponse<BackendWorkoutDto[]>>(
-        API_ENDPOINTS.exercisesForWorkouts,
-        { params },
-      )
+      .get<ApiResponse<BackendWorkoutDto[]>>(API_ENDPOINTS.exercisesForWorkouts, { params })
       .pipe(
         map((response) => ({
           ...response,
@@ -107,21 +108,16 @@ export class ExerciseService {
   // ==========================================================
 
   getWorkoutExercises(workoutId: number): Observable<WorkoutUiDto> {
-    const params = new HttpParams().set(
-      'language',
-      this.languageService.getCurrentLanguage(),
-    );
+    const params = new HttpParams().set('language', this.languageService.getCurrentLanguage());
 
     return this.http
-      .get<ApiResponse<BackendWorkoutDto>>(
-        API_ENDPOINTS.exerciseForWorkout(workoutId),
-        { params },
-      )
+      .get<ApiResponse<BackendWorkoutDto>>(API_ENDPOINTS.exerciseForWorkout(workoutId), { params })
       .pipe(
         map((response) => {
           if (response.data == null) {
             throw new Error('A workout válaszban nincs adat.');
           }
+
           return this.toWorkoutUiDto(response.data);
         }),
       );
@@ -153,16 +149,17 @@ export class ExerciseService {
   // EXERCISE MÓDOSÍTÁSA
   // ==========================================================
 
-  updateExercise(
-    exercise: Exercise,
-    language?: string,
-  ): Observable<ApiResponse<ExerciseDto>> {
+  updateExercise(exercise: Exercise, language?: string): Observable<ApiResponse<ExerciseDto>> {
+    if (exercise.id == null) {
+      throw new Error('Exercise ID is required for update.');
+    }
+
     const payload = {
       id: exercise.id,
 
       // ==========================================================
       // FORDÍTOTT MEZŐK
-      // Ezeket az /update endpoint a language alapján
+      // Ezeket a backend a language alapján
       // az exercise_translations táblában frissíti.
       // ==========================================================
       name: exercise.name,
@@ -193,10 +190,13 @@ export class ExerciseService {
       variationGroup: exercise.variationGroup,
     };
 
-    const params = new HttpParams().set('language', language ?? this.languageService.getCurrentLanguage());
+    const params = new HttpParams().set(
+      'language',
+      language ?? this.languageService.getCurrentLanguage(),
+    );
 
     return this.http.put<ApiResponse<ExerciseDto>>(
-      API_ENDPOINTS.exerciseUpdate,
+      API_ENDPOINTS.exerciseUpdate(exercise.id),
       payload,
       { params },
     );
@@ -215,17 +215,19 @@ export class ExerciseService {
   // ==========================================================
 
   getAllExercises(language?: string): Observable<ApiResponse<Exercise[]>> {
-    const params = new HttpParams().set('language', language ?? this.languageService.getCurrentLanguage());
+    const params = new HttpParams().set(
+      'language',
+      language ?? this.languageService.getCurrentLanguage(),
+    );
 
-    return this.http
-      .get<ApiResponse<ExerciseDto[]>>(API_ENDPOINTS.allExercises, { params })
-      .pipe(
-        map((response) => ({
-          ...response,
-          data: (response.data ?? []).map((exercise) => this.toExercise(exercise)),
-        })),
-      );
+    return this.http.get<ApiResponse<ExerciseDto[]>>(API_ENDPOINTS.allExercises, { params }).pipe(
+      map((response) => ({
+        ...response,
+        data: (response.data ?? []).map((exercise) => this.toExercise(exercise)),
+      })),
+    );
   }
+
   // ==========================================================
   // EXERCISE KERESÉS BACKENDEN
   // ==========================================================
@@ -263,9 +265,7 @@ export class ExerciseService {
           data: response.data
             ? {
                 ...response.data,
-                content: (response.data.content ?? []).map((exercise) =>
-                  this.toExercise(exercise),
-                ),
+                content: (response.data.content ?? []).map((exercise) => this.toExercise(exercise)),
               }
             : null,
         })),

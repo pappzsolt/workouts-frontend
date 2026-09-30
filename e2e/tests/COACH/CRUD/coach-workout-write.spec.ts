@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, request, test, type Page } from '@playwright/test';
 
 import {
@@ -143,7 +144,7 @@ async function createWorkoutThroughUi(
 
     return (
       response.request().method() === 'POST' &&
-      url.pathname.endsWith('/api/workouts')
+      url.pathname.endsWith(API_ENDPOINTS.workouts.base)
     );
   });
 
@@ -198,7 +199,7 @@ async function deleteWorkoutAsCurrentCoach(
   });
 
   try {
-    const response = await api.delete(`/api/workouts/${workoutId}`);
+    const response = await api.delete(`${API_ENDPOINTS.workouts.byId(workoutId)}`);
     const body = await response.text();
 
     expect(
@@ -225,7 +226,7 @@ async function deleteWorkoutExerciseAsCurrentCoach(
   });
 
   try {
-    const response = await api.delete('/api/workout-exercises', {
+    const response = await api.delete(API_ENDPOINTS.workoutExercises.base, {
       params: {
         workoutId,
         exerciseId,
@@ -308,7 +309,7 @@ async function updateWorkoutThroughUi(
 
     return (
       response.request().method() === 'PUT' &&
-      url.pathname === `/api/workouts/${workoutId}`
+      url.pathname === `${API_ENDPOINTS.workouts.byId(workoutId)}`
     );
   });
 
@@ -396,7 +397,7 @@ async function assignExerciseThroughUi(
 
     return (
       response.request().method() === 'POST' &&
-      url.pathname.endsWith('/api/workout-exercises') &&
+      url.pathname.endsWith(API_ENDPOINTS.workoutExercises.base) &&
       Number(url.searchParams.get('workoutId')) === workoutId &&
       Number(url.searchParams.get('exerciseId')) === exerciseId
     );
@@ -633,7 +634,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
     });
 
     try {
-      const response = await api.put('/api/workouts/2147483000?language=hu', {
+      const response = await api.put(`${API_ENDPOINTS.workouts.byId(2147483000)}?language=${LANGUAGE}`, {
         data: {
           id: 2147483000,
           name: `E2E NEGATIVE ${uniqueSuffix()}`,
@@ -667,7 +668,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
     });
 
     try {
-      const response = await api.delete('/api/workouts/2147483000');
+      const response = await api.delete(API_ENDPOINTS.workouts.byId(2147483000));
 
       expect(response.ok()).toBeFalsy();
       expect(response.status()).toBeGreaterThanOrEqual(400);
@@ -691,7 +692,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
     });
 
     try {
-      const response = await api.post('/api/workout-exercises', {
+      const response = await api.post(API_ENDPOINTS.workoutExercises.base, {
         params: {
           workoutId: 2147483000,
           exerciseId: ASSIGN_EXERCISE_ID,
@@ -734,7 +735,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
       });
 
       try {
-        const first = await api.post('/api/workout-exercises', {
+        const first = await api.post(API_ENDPOINTS.workoutExercises.base, {
           params: {
             workoutId,
             exerciseId: ASSIGN_EXERCISE_ID,
@@ -743,7 +744,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
 
         expect(first.ok()).toBeTruthy();
 
-        const second = await api.post('/api/workout-exercises', {
+        const second = await api.post(API_ENDPOINTS.workoutExercises.base, {
           params: {
             workoutId,
             exerciseId: ASSIGN_EXERCISE_ID,

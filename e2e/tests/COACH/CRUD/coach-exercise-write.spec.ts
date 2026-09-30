@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, request, test, type Page } from '@playwright/test';
 
 import {
@@ -390,7 +391,7 @@ async function updateDescriptionThroughUi(
 
       return (
         response.request().method() === 'PUT' &&
-        url.pathname === `/api/exercises/${exerciseId}`
+        url.pathname === `${API_ENDPOINTS.exercises.byId(exerciseId)}`
       );
     },
   );
@@ -459,7 +460,7 @@ async function deleteExerciseAsCurrentCoach(
   });
 
   try {
-    const response = await api.delete(`/api/exercises/${exerciseId}`);
+    const response = await api.delete(`${API_ENDPOINTS.exercises.byId(exerciseId)}`);
     const body = await response.text();
 
     expect(
@@ -517,7 +518,7 @@ async function createExerciseThroughUi(
     const url = new URL(response.url());
     return (
       response.request().method() === 'POST' &&
-      url.pathname.endsWith('/api/exercises')
+      url.pathname.endsWith(API_ENDPOINTS.exercises.base)
     );
   });
 
@@ -914,7 +915,7 @@ test.describe(
         });
 
         try {
-          const response = await api.post('/api/exercises?language=hu', {
+          const response = await api.post(`${API_ENDPOINTS.exercises.base}?language=${LANGUAGE}`, {
             data: {
               name: '',
               description: 'E2E NEGATIVE',
@@ -945,7 +946,7 @@ test.describe(
         });
 
         try {
-          const response = await api.put('/api/exercises/2147483000?language=hu', {
+          const response = await api.put(`${API_ENDPOINTS.exercises.byId(2147483000)}?language=${LANGUAGE}`, {
             data: {
               id: 2147483000,
               name: `E2E NEGATIVE ${uniqueSuffix()}`,

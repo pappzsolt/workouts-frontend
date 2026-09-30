@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, test } from '@playwright/test';
 import { loginAs, navigateSpa, setTestLanguage } from '../../helpers/read-only';
 
@@ -7,7 +8,7 @@ test('USER GUI: workout tabs switch between pending and completed panels', async
 
   const assignedPromise = page.waitForResponse(r =>
     r.request().method() === 'GET' &&
-    r.url().includes('/api/programs/my/assigned') &&
+    r.url().includes(API_ENDPOINTS.programs.assigned) &&
     !r.url().includes('/progress'),
   );
   await navigateSpa(page, '/user/my-programs');
@@ -23,7 +24,7 @@ test('USER GUI: workout tabs switch between pending and completed panels', async
 
   const workoutsPromise = page.waitForResponse(r =>
     r.request().method() === 'GET' &&
-    r.url().includes(`/api/workouts/program/${programId}`),
+    r.url().includes(`${API_ENDPOINTS.workouts.byProgram(programId)}`),
   );
   await navigateSpa(page, `/user/programs/${programId}/workouts`);
   const workouts = await workoutsPromise;

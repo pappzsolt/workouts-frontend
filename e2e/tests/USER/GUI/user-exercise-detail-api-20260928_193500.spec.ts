@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, test } from '@playwright/test';
 import { loginAs, navigateSpa, setTestLanguage } from '../../helpers/read-only';
 
@@ -6,7 +7,7 @@ test('USER GUI: exercise detail loads the selected user-workout exercise from AP
   await loginAs(page, process.env.E2E_USER_USERNAME, process.env.E2E_USER_PASSWORD, '/user/dashboard');
 
   const scheduledPromise = page.waitForResponse((r) =>
-    r.request().method() === 'GET' && r.url().includes('/user-workout-exercises/scheduled-workouts'),
+    r.request().method() === 'GET' && r.url().includes(API_ENDPOINTS.userWorkoutExercises.scheduled),
   );
   await navigateSpa(page, '/user/workouts');
   const scheduled = await scheduledPromise;
@@ -26,7 +27,7 @@ test('USER GUI: exercise detail loads the selected user-workout exercise from AP
   expect(workoutId).toBeGreaterThan(0);
 
   const exercisesPromise = page.waitForResponse((r) =>
-    r.request().method() === 'GET' && r.url().includes(`/api/exercises/user-workouts/${userWorkoutId}`),
+    r.request().method() === 'GET' && r.url().includes(`${API_ENDPOINTS.exercises.userWorkout(userWorkoutId)}`),
   );
   await navigateSpa(page, `/user/workouts/${workoutId}/exercises?programId=${programId}&programWorkoutId=${programWorkoutId}&userWorkoutId=${userWorkoutId}`);
 

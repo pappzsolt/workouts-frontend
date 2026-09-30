@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from './api-endpoints';
 import { expect, request, type APIRequestContext, type Page } from '@playwright/test';
 import { Pool } from 'pg';
 
@@ -178,7 +179,7 @@ export async function coachUserId(): Promise<number> {
 }
 
 export async function createProgram(api: APIRequestContext, name = `E2E Program ${suffix()}`) {
-  const body = await success(await api.post('/api/user-programs', {
+  const body = await success(await api.post(API_ENDPOINTS.userPrograms.base, {
     data: {
       userId: null,
       programName: name,
@@ -196,7 +197,7 @@ export async function createProgram(api: APIRequestContext, name = `E2E Program 
 }
 
 export async function createWorkout(api: APIRequestContext, name = `E2E Workout ${suffix()}`) {
-  const body = await success(await api.post('/api/workouts', {
+  const body = await success(await api.post(API_ENDPOINTS.workouts.base, {
     params: { language: LANGUAGE },
     data: {
       name,
@@ -214,7 +215,7 @@ export async function createWorkout(api: APIRequestContext, name = `E2E Workout 
 }
 
 export async function createExercise(api: APIRequestContext, name = `E2E Exercise ${suffix()}`) {
-  const body = await success(await api.post('/api/exercises', {
+  const body = await success(await api.post(API_ENDPOINTS.exercises.base, {
     params: { language: LANGUAGE },
     data: {
       name,
@@ -234,19 +235,19 @@ export async function createExercise(api: APIRequestContext, name = `E2E Exercis
 }
 
 export async function assignExercise(api: APIRequestContext, workoutId: number, exerciseId: number) {
-  await success(await api.post('/api/workout-exercises', {
+  await success(await api.post(API_ENDPOINTS.workoutExercises.base, {
     params: { workoutId, exerciseId },
   }), 'POST /api/workout-exercises');
 }
 
 export async function deleteProgram(api: APIRequestContext, id: number) {
-  await success(await api.delete(`/api/programs/coach/${id}`), `DELETE /api/programs/coach/${id}`);
+  await success(await api.delete(`${API_ENDPOINTS.programs.coachDelete(id)}`), `DELETE /api/programs/coach/${id}`);
 }
 
 export async function deleteWorkout(api: APIRequestContext, id: number) {
-  await success(await api.delete(`/api/workouts/${id}`), `DELETE /api/workouts/${id}`);
+  await success(await api.delete(`${API_ENDPOINTS.workouts.byId(id)}`), `DELETE /api/workouts/${id}`);
 }
 
 export async function deleteExercise(api: APIRequestContext, id: number) {
-  await success(await api.delete(`/api/exercises/${id}`), `DELETE /api/exercises/${id}`);
+  await success(await api.delete(`${API_ENDPOINTS.exercises.byId(id)}`), `DELETE /api/exercises/${id}`);
 }

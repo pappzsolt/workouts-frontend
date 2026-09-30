@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, test } from '@playwright/test';
 import { loginAs, navigateSpa, setTestLanguage } from '../../helpers/read-only';
 
@@ -7,7 +8,7 @@ test('USER GUI: program statistics exposes the API-backed statistics surface and
 
   const apiPromise = page.waitForResponse(r =>
     r.request().method() === 'GET' &&
-    r.url().includes('/api/user/program-statistics'),
+    r.url().includes(API_ENDPOINTS.statistics.userProgram),
   );
   await navigateSpa(page, '/user/program-statistics');
   const response = await apiPromise;

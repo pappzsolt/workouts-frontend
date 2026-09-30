@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, test } from '@playwright/test';
 import { loginAs, navigateSpa, setTestLanguage } from '../../helpers/read-only';
 
@@ -6,7 +7,7 @@ test('COACH GUI: exercise search renders the backend search result and preserves
   await loginAs(page, process.env.E2E_COACH_USERNAME, process.env.E2E_COACH_PASSWORD, '/coach/dashboard');
 
   const responsePromise = page.waitForResponse((r) =>
-    r.request().method() === 'GET' && r.url().includes('/exercises/exercise-search'),
+    r.request().method() === 'GET' && r.url().includes(API_ENDPOINTS.exercises.search),
   );
   await navigateSpa(page, '/coach/exercises');
   const response = await responsePromise;

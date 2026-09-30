@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../helpers/api-endpoints';
 import { test, expect } from '@playwright/test';
 import { apiFor, dbOne, dbCount, currentUserId, coachUserId, login, success, rejected, createProgram, createWorkout, createExercise, assignExercise, deleteProgram, deleteWorkout, deleteExercise, suffix, LANGUAGE } from '../helpers/e2e-next-3-helpers';
 
@@ -16,7 +17,7 @@ test('PROGRAM CREATOR: create → update → DB → API cleanup', async ({ page 
        WHERE pt.program_id=$1 AND l.code=$2 LIMIT 1`, [id, LANGUAGE]);
     expect(before?.name).toBe(name);
 
-    const response = await success(await api.put(`/api/user-programs/${id}`, {
+    const response = await success(await api.put(`${API_ENDPOINTS.userPrograms.byId(id)}`, {
       data:{ userId:null, programName:updated, programDescription:'updated',
         durationDays:31, startDate:'2035-03-02', difficultyLevel:'advanced',
         languageCode:LANGUAGE, workouts:null }
@@ -39,13 +40,13 @@ test('PROGRAM CREATOR: create → update → DB → API cleanup', async ({ page 
 test('PROGRAM CREATOR NEGATIVE: USER cannot create or update programs', async ({ page }) => {
   await login(page, 'user');
   const api = await apiFor(page);
-  expect((await api.post('/api/user-programs', { data:{
+  expect((await api.post(API_ENDPOINTS.userPrograms.base, { data:{
     userId:null, programName:`Forbidden ${suffix()}`, programDescription:'x',
     durationDays:30,startDate:'2035-03-01',difficultyLevel:'intermediate',
     languageCode:LANGUAGE,workouts:null
   }})).ok()).toBeFalsy();
 
-  const denied = await rejected(await api.put('/api/user-programs/999999999', {
+  const denied = await rejected(await api.put(API_ENDPOINTS.userPrograms.byId(999999999), {
     data:{userId:null,programName:'Forbidden',programDescription:'x',durationDays:30,
       startDate:'2035-03-01',difficultyLevel:'intermediate',languageCode:LANGUAGE,workouts:null}
   }), 'USER PUT program creator');

@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, test } from '@playwright/test';
 import { loginAs, navigateSpa, setTestLanguage } from '../../helpers/read-only';
 
@@ -6,7 +7,7 @@ test('USER GUI: workout calendar loads scheduled occurrences from API', async ({
   await loginAs(page, process.env.E2E_USER_USERNAME, process.env.E2E_USER_PASSWORD, '/user/dashboard');
 
   const responsePromise = page.waitForResponse((r) =>
-    r.request().method() === 'GET' && r.url().includes('/user-workout-exercises/scheduled-workouts'),
+    r.request().method() === 'GET' && r.url().includes(API_ENDPOINTS.userWorkoutExercises.scheduled),
   );
   await navigateSpa(page, '/user/workouts');
 

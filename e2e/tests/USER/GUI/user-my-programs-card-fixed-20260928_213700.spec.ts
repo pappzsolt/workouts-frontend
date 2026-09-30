@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, test } from '@playwright/test';
 import { loginAs, navigateSpa, setTestLanguage } from '../../helpers/read-only';
 
@@ -7,7 +8,7 @@ test('USER GUI: my programs opens the selected workout occurrence with its userW
 
   const assignedPromise = page.waitForResponse(r =>
     r.request().method() === 'GET' &&
-    r.url().includes('/api/programs/my/assigned') &&
+    r.url().includes(API_ENDPOINTS.programs.assigned) &&
     !r.url().includes('/progress'),
   );
   await navigateSpa(page, '/user/my-programs');
@@ -23,7 +24,7 @@ test('USER GUI: my programs opens the selected workout occurrence with its userW
 
   const workoutsPromise = page.waitForResponse(r =>
     r.request().method() === 'GET' &&
-    r.url().includes('/api/workouts/program/'),
+    r.url().includes(API_ENDPOINTS.workouts.programPrefix),
   );
   await card.click();
 
@@ -70,7 +71,7 @@ test('USER GUI: my programs opens the selected workout occurrence with its userW
   const expectedWorkoutId = workoutId;
   const exercisesResponsePromise = page.waitForResponse((response) =>
     response.request().method() === 'GET' &&
-    response.url().includes(`/api/exercises/user-workouts/${userWorkoutId}`),
+    response.url().includes(`${API_ENDPOINTS.exercises.userWorkout(userWorkoutId)}`),
   );
 
   await workoutCard.click();

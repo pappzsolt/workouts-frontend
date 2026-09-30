@@ -230,7 +230,7 @@ export class CoachWorkoutsService {
     );
 
     return this.http.put<ApiResponse<WorkoutResponse>>(
-      API_ENDPOINTS.workoutUpdate,
+      API_ENDPOINTS.workoutUpdate(id),
       payload,
       { params },
     );

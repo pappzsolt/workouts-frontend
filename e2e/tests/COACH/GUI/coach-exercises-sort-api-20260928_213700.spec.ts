@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, test } from '@playwright/test';
 import { loginAs, navigateSpa, setTestLanguage } from '../../helpers/read-only';
 
@@ -17,7 +18,7 @@ test('COACH GUI: exercise sort toggles the real exercise-search API sort directi
   await expect(sortButton).toBeVisible({ timeout: 15000 });
 
   const responsePromise = page.waitForResponse(r => {
-    if (r.request().method() !== 'GET' || !r.url().includes('/api/exercises/search')) {
+    if (r.request().method() !== 'GET' || !r.url().includes(API_ENDPOINTS.exercises.search)) {
       return false;
     }
     return new URL(r.url()).searchParams.get('sortDirection') === 'desc';

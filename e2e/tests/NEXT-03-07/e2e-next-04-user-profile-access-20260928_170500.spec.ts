@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../helpers/api-endpoints';
 import { test, expect } from '@playwright/test';
 import { apiFor, dbOne, dbCount, currentUserId, coachUserId, login, success, rejected, createProgram, createWorkout, createExercise, assignExercise, deleteProgram, deleteWorkout, deleteExercise, suffix, LANGUAGE } from '../helpers/e2e-next-3-helpers';
 
@@ -15,12 +16,12 @@ test('USER READ: own member and public coach list; protected coach/admin endpoin
   expect(member.data?.type).toBe('user');
   expect(member.data?.usernameOrName).toBe(dbUser?.username);
 
-  const coaches = await success(await api.get('/api/members/coaches'), 'GET all-coaches');
+  const coaches = await success(await api.get(API_ENDPOINTS.members.coaches), 'GET all-coaches');
   expect(coaches.data.length).toBeGreaterThan(0);
 
-  expect((await api.get('/api/users/name-id')).ok()).toBeFalsy();
-  expect((await api.get('/api/roles')).ok()).toBeFalsy();
-  expect((await api.post('/api/user-programs', { data: {
+  expect((await api.get(API_ENDPOINTS.users.nameId)).ok()).toBeFalsy();
+  expect((await api.get(API_ENDPOINTS.roles.base)).ok()).toBeFalsy();
+  expect((await api.post(API_ENDPOINTS.userPrograms.base, { data: {
     userId:null, programName:`Forbidden ${suffix()}`, programDescription:'forbidden',
     durationDays:30, startDate:'2035-03-01', difficultyLevel:'intermediate',
     languageCode:LANGUAGE, workouts:null

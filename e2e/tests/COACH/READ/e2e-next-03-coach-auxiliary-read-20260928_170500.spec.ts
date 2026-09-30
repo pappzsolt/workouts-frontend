@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { test, expect } from '@playwright/test';
 import { apiFor, dbOne, currentUserId, login, success, LANGUAGE } from '../../helpers/e2e-next-3-helpers';
 
@@ -67,7 +68,7 @@ test('COACH READ: coach programs + user/coach name-id + coach lookup match DB', 
   // ---------------------------------------------------------------------------
 
   const programs = await success(
-    await api.get('/api/programs/my/coach', {
+    await api.get(API_ENDPOINTS.programs.myCoach, {
       params: {
         language: LANGUAGE,
       },
@@ -123,7 +124,7 @@ test('COACH READ: coach programs + user/coach name-id + coach lookup match DB', 
   // 2. USERS NAME-ID
   // ---------------------------------------------------------------------------
 
-  const users = await success(await api.get('/api/users/name-id'), 'GET /api/users/name-id');
+  const users = await success(await api.get(API_ENDPOINTS.users.nameId), 'GET /api/users/name-id');
 
   expect(Array.isArray(users.data)).toBeTruthy();
 
@@ -133,7 +134,7 @@ test('COACH READ: coach programs + user/coach name-id + coach lookup match DB', 
   // 3. COACHES NAME-ID
   // ---------------------------------------------------------------------------
 
-  const coaches = await success(await api.get('/api/coaches/name-id'), 'GET /api/coaches/name-id');
+  const coaches = await success(await api.get(API_ENDPOINTS.coaches.nameId), 'GET /api/coaches/name-id');
 
   expect(Array.isArray(coaches.data)).toBeTruthy();
 
@@ -170,7 +171,7 @@ test('COACH READ: coach programs + user/coach name-id + coach lookup match DB', 
   // 5. GET /api/coaches
   // ---------------------------------------------------------------------------
 
-  const all = await success(await api.get('/api/coaches'), 'GET /api/coaches');
+  const all = await success(await api.get(API_ENDPOINTS.coaches.base), 'GET /api/coaches');
 
   expect(Array.isArray(all.data)).toBeTruthy();
 

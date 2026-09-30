@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, test } from '@playwright/test';
 import {
   apiFor,
@@ -35,14 +36,14 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       await assignExercise(coachApi, workoutId, exerciseId);
 
       await success(
-        await coachApi.post('/api/programs/assign', {
+        await coachApi.post(API_ENDPOINTS.programs.assign, {
           data: { userId, programId },
         }),
         'POST /api/programs/assign',
       );
 
       const pw = await success(
-        await coachApi.post('/api/program-workouts', {
+        await coachApi.post(API_ENDPOINTS.programWorkouts.base, {
           data: { programId, workoutId, dayIndex: 1 },
         }),
         'POST /api/program-workouts',
@@ -84,7 +85,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       const userApi = await apiFor(page);
 
       const initial = await success(
-        await userApi.get(`/api/user-workout-exercise-sets/${userWorkoutExerciseId}`),
+        await userApi.get(`${API_ENDPOINTS.userWorkoutExerciseSets.byId(userWorkoutExerciseId)}`),
         'GET sets',
       );
 
@@ -99,7 +100,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       );
 
       const created = await success(
-        await userApi.post('/api/user-workout-exercise-sets', {
+        await userApi.post(API_ENDPOINTS.userWorkoutExerciseSets.base, {
           data: {
             userWorkoutId,
             workoutExerciseId: Number(uwe!.workout_exercise_id),
@@ -135,7 +136,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       expect(beforeCount).toBeGreaterThan(0);
 
       await success(
-        await userApi.put(`/api/user-workout-exercise-sets/${setId}`, {
+        await userApi.put(`${API_ENDPOINTS.userWorkoutExerciseSets.byId(setId)}`, {
           data: {
             setNumber: 99,
             targetRepetitions: 10,
@@ -180,7 +181,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       expect(Number(progress!.sets_done)).toBeGreaterThanOrEqual(1);
 
       const added = await success(
-        await userApi.post(`/api/user-workout-exercise-sets/${userWorkoutExerciseId}/sets`),
+        await userApi.post(`${API_ENDPOINTS.userWorkoutExerciseSets.sets(userWorkoutExerciseId)}`),
         'POST add set',
       );
 
@@ -195,7 +196,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       )).toBe(1);
 
       await success(
-        await userApi.delete(`/api/user-workout-exercise-sets/${addedSetId}`),
+        await userApi.delete(`${API_ENDPOINTS.userWorkoutExerciseSets.byId(addedSetId)}`),
         'DELETE set',
       );
 
@@ -207,7 +208,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       )).toBe(0);
 
       const finalSets = await success(
-        await userApi.get(`/api/user-workout-exercise-sets/${userWorkoutExerciseId}`),
+        await userApi.get(`${API_ENDPOINTS.userWorkoutExerciseSets.byId(userWorkoutExerciseId)}`),
         'GET final sets',
       );
 
@@ -216,7 +217,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       // Reset all activity flags through the real API contract so the
       // generated user workout remains an unperformed fixture for cleanup.
       await success(
-        await userApi.put(`/api/user-workout-exercise-sets/${setId}`, {
+        await userApi.put(`${API_ENDPOINTS.userWorkoutExerciseSets.byId(setId)}`, {
           data: {
             completed: false,
             clearActualRepetitions: true,
@@ -258,7 +259,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       // The exercise relation was protected while the workout belonged to
       // a program. Once the program is deleted, remove the relation explicitly.
       await success(
-        await cleanup.delete('/api/workout-exercises', {
+        await cleanup.delete(API_ENDPOINTS.workoutExercises.base, {
           params: { workoutId, exerciseId },
         }),
         'DELETE /api/workout-exercises',
@@ -297,7 +298,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       // accountot rendeljük hozzá. Így a foreign USER_WORKOUT kizárólag
       // a valódi user-workout API-n keresztül készül.
       const pw = await success(
-        await coachApi.post('/api/program-workouts', {
+        await coachApi.post(API_ENDPOINTS.programWorkouts.base, {
           data: { programId, workoutId, dayIndex: 1 },
         }),
         'add foreign program workout',
@@ -312,14 +313,14 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       const adminApi = await apiFor(page);
 
       await success(
-        await adminApi.post('/api/programs/assign', {
+        await adminApi.post(API_ENDPOINTS.programs.assign, {
           data: { userId: foreignUserId, programId },
         }),
         'admin assigns program to foreign users record',
       );
 
       const created = await success(
-        await adminApi.post('/api/user-workout-exercises', {
+        await adminApi.post(API_ENDPOINTS.userWorkoutExercises.base, {
           data: {
             userId: foreignUserId,
             programId,
@@ -363,12 +364,12 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       const userApi = await apiFor(page);
 
       await rejected(
-        await userApi.get(`/api/user-workout-exercise-sets/${userWorkoutExerciseId}`),
+        await userApi.get(`${API_ENDPOINTS.userWorkoutExerciseSets.byId(userWorkoutExerciseId)}`),
         'GET foreign user set',
       );
 
       await rejected(
-        await userApi.put(`/api/user-workout-exercise-sets/${setId}`, {
+        await userApi.put(`${API_ENDPOINTS.userWorkoutExerciseSets.byId(setId)}`, {
           data: {
             setNumber: 1,
             targetRepetitions: 999,
@@ -383,7 +384,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       );
 
       await rejected(
-        await userApi.delete(`/api/user-workout-exercise-sets/${setId}`),
+        await userApi.delete(`${API_ENDPOINTS.userWorkoutExerciseSets.byId(setId)}`),
         'DELETE foreign user set',
       );
 
@@ -408,7 +409,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       await deleteProgram(cleanup, programId);
 
       await success(
-        await cleanup.delete('/api/workout-exercises', {
+        await cleanup.delete(API_ENDPOINTS.workoutExercises.base, {
           params: { workoutId, exerciseId },
         }),
         'DELETE foreign workout exercise relation',

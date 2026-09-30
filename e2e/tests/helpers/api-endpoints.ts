@@ -1,0 +1,98 @@
+/** Canonical normal-backend API endpoints used by E2E tests. */
+export const API_BASE = '/api';
+
+export const API_ENDPOINTS = {
+  auth: {
+    login: `${API_BASE}/auth/login`,
+    refresh: `${API_BASE}/auth/refresh`,
+  },
+  members: {
+    base: `${API_BASE}/members`,
+    users: `${API_BASE}/members/users`,
+    coaches: `${API_BASE}/members/coaches`,
+    search: `${API_BASE}/members/search`,
+    usersWithRoles: `${API_BASE}/members/users-with-roles`,
+    me: `${API_BASE}/members/me`,
+    meCoach: `${API_BASE}/members/me/coach`,
+    byId: (id: number | string) => `${API_BASE}/members/${id}`,
+  },
+  coaches: {
+    base: `${API_BASE}/coaches`,
+    nameId: `${API_BASE}/coaches/name-id`,
+    byId: (id: number | string) => `${API_BASE}/coaches/${id}`,
+  },
+  users: { nameId: `${API_BASE}/users/name-id` },
+  roles: { base: `${API_BASE}/roles` },
+  programs: {
+    base: `${API_BASE}/programs`,
+    byId: (id: number | string) => `${API_BASE}/programs/${id}`,
+    coach: `${API_BASE}/programs/coach`,
+    coachSearch: `${API_BASE}/programs/coach/search`,
+    myCoach: `${API_BASE}/programs/my/coach`,
+    assigned: `${API_BASE}/programs/my/assigned`,
+    assignedProgress: `${API_BASE}/programs/my/assigned/progress`,
+    assignedUsers: (id: number | string) => `${API_BASE}/programs/${id}/assigned-users`,
+    assign: `${API_BASE}/programs/assign`,
+    coachDelete: (id: number | string) => `${API_BASE}/programs/coach/${id}`,
+    myById: (id: number | string) => `${API_BASE}/programs/my/${id}`,
+  },
+  userPrograms: {
+    base: `${API_BASE}/user-programs`,
+    byId: (id: number | string) => `${API_BASE}/user-programs/${id}`,
+  },
+  exercises: {
+    base: `${API_BASE}/exercises`,
+    byId: (id: number | string) => `${API_BASE}/exercises/${id}`,
+    search: `${API_BASE}/exercises/search`,
+    workouts: `${API_BASE}/exercises/workouts`,
+    workout: (workoutId: number | string) => `${API_BASE}/exercises/workouts/${workoutId}`,
+    uniqueWorkouts: `${API_BASE}/exercises/workouts/unique`,
+    userWorkout: (userWorkoutId: number | string) => `${API_BASE}/exercises/user-workouts/${userWorkoutId}`,
+  },
+  workouts: {
+    base: `${API_BASE}/workouts`,
+    byId: (id: number | string) => `${API_BASE}/workouts/${id}`,
+    my: `${API_BASE}/workouts/my`,
+    myUnique: `${API_BASE}/workouts/my/unique`,
+    mySearch: `${API_BASE}/workouts/my/search`,
+    programPrefix: `${API_BASE}/workouts/program/`,
+    byProgram: (programId: number | string) => `${API_BASE}/workouts/program/${programId}`,
+    copy: `${API_BASE}/workout-copy`,
+  },
+  programWorkouts: {
+    base: `${API_BASE}/program-workouts`,
+    updateById: (id: number | string) => `${API_BASE}/program-workouts/${id}`,
+    deleteById: (id: number | string) => `${API_BASE}/program-workouts/id/${id}`,
+    byProgram: (programId: number | string) => `${API_BASE}/program-workouts/${programId}`,
+    byProgramAndWorkout: (programId: number | string, workoutId: number | string) => `${API_BASE}/program-workouts/${programId}/${workoutId}`,
+    assigned: (workoutId: number | string) => `${API_BASE}/program-workouts/workouts/${workoutId}/assigned`,
+  },
+  workoutExercises: {
+    base: `${API_BASE}/workout-exercises`,
+    order: `${API_BASE}/workout-exercises/order`,
+  },
+  userWorkoutExercises: {
+    base: `${API_BASE}/user-workout-exercises`,
+    byWorkout: (id: number | string) => `${API_BASE}/user-workout-exercises/workouts/${id}`,
+    byUserProgram: (userId: number | string, programId: number | string) => `${API_BASE}/user-workout-exercises/user-programs/${userId}/${programId}`,
+    schedule: `${API_BASE}/user-workout-exercises/schedule`,
+    scheduled: `${API_BASE}/user-workout-exercises/scheduled`,
+    scheduledSearch: `${API_BASE}/user-workout-exercises/scheduled/search`,
+  },
+  userWorkoutExerciseSets: {
+    base: `${API_BASE}/user-workout-exercise-sets`,
+    byExercise: (id: number | string) => `${API_BASE}/user-workout-exercise-sets/${id}`,
+    sets: (id: number | string) => `${API_BASE}/user-workout-exercise-sets/${id}/sets`,
+    byId: (id: number | string) => `${API_BASE}/user-workout-exercise-sets/${id}`,
+  },
+  mobile: {
+    snapshot: `${API_BASE}/mobile/v1/snapshot`,
+    userWorkout: (id: number | string) => `${API_BASE}/mobile/v1/user-workouts/${id}`,
+    userWorkoutState: (id: number | string) => `${API_BASE}/mobile/v1/user-workouts/${id}/state`,
+  },
+  statistics: {
+    userProgram: `${API_BASE}/user/program-statistics`,
+    userProgramWorkouts: `${API_BASE}/user/program-statistics/workouts`,
+    userExerciseStrength: (exerciseId: number | string) => `${API_BASE}/user/program-statistics/exercises/${exerciseId}/strength-progress`,
+  },
+} as const;

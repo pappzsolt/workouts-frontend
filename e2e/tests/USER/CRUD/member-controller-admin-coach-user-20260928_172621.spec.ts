@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { test, expect } from '@playwright/test';
 import {
   apiFor,
@@ -21,7 +22,7 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
     );
     expect(adminRow).not.toBeNull();
 
-    const all = await success(await api.get('/api/members'), 'GET /api/members');
+    const all = await success(await api.get(API_ENDPOINTS.members.base), 'GET /api/members');
     const expectedAll = await dbCount(
       `SELECT
          (SELECT COUNT(*) FROM public.users) +
@@ -30,7 +31,7 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
     expect(all.data.length).toBe(expectedAll);
 
     const allUsers = await success(
-      await api.get('/api/members/users'),
+      await api.get(API_ENDPOINTS.members.users),
       'GET /api/members/users',
     );
     expect(allUsers.data.length).toBe(await dbCount(`SELECT COUNT(*) FROM public.users`));
@@ -38,7 +39,7 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
 
     const username = process.env.E2E_ADMIN_USERNAME ?? 'admin';
     const search = await success(
-      await api.get('/api/members/search', { params: { keyword: username } }),
+      await api.get(API_ENDPOINTS.members.search, { params: { keyword: username } }),
       'GET /api/members/search',
     );
     expect(search.data.some((m: any) =>
@@ -47,7 +48,7 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
     )).toBeTruthy();
 
     const withRoles = await success(
-      await api.get('/api/members/users-with-roles'),
+      await api.get(API_ENDPOINTS.members.usersWithRoles),
       'GET /api/members/users-with-roles',
     );
     expect(withRoles.data.some((u: any) => Number(u.id) === Number(adminRow!.id))).toBeTruthy();
@@ -90,7 +91,7 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
 
     try {
       await success(
-        await api.post('/api/members', { data: payload(changedGoals) }),
+        await api.post(API_ENDPOINTS.members.base, { data: payload(changedGoals) }),
         'POST /api/members update user',
       );
 
@@ -101,7 +102,7 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
       expect(changed?.goals).toBe(changedGoals);
     } finally {
       await success(
-        await api.post('/api/members', { data: payload(original!.goals) }),
+        await api.post(API_ENDPOINTS.members.base, { data: payload(original!.goals) }),
         'POST /api/members restore user',
       );
     }
@@ -142,7 +143,7 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
 
     try {
       await success(
-        await api.post('/api/members/me', { data: payload(changedGoals) }),
+        await api.post(API_ENDPOINTS.members.me, { data: payload(changedGoals) }),
         'POST /api/members/me',
       );
 
@@ -152,15 +153,15 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
       );
       expect(changed?.goals).toBe(changedGoals);
 
-      await rejected(await api.get('/api/members'), 'USER GET /api/members');
-      await rejected(await api.get('/api/members/users'), 'USER GET /api/members/users');
+      await rejected(await api.get(API_ENDPOINTS.members.base), 'USER GET /api/members');
+      await rejected(await api.get(API_ENDPOINTS.members.users), 'USER GET /api/members/users');
       await rejected(
-        await api.post('/api/members', { data: { type: 'user' } }),
+        await api.post(API_ENDPOINTS.members.base, { data: { type: 'user' } }),
         'USER POST /api/members',
       );
     } finally {
       await success(
-        await api.post('/api/members/me', {
+        await api.post(API_ENDPOINTS.members.me, {
           data: {
             ...payload(original!.goals),
             coachId: original!.coach_id,
@@ -208,7 +209,7 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
 
     try {
       await success(
-        await api.put('/api/members/me/coach', {
+        await api.put(API_ENDPOINTS.members.meCoach, {
           data: payload(changedSpecialization),
         }),
         'PUT /api/members/me/coach',
@@ -221,7 +222,7 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
       expect(changed?.specialization).toBe(changedSpecialization);
     } finally {
       await success(
-        await api.put('/api/members/me/coach', {
+        await api.put(API_ENDPOINTS.members.meCoach, {
           data: payload(original!.specialization),
         }),
         'PUT /api/members/me/coach restore',

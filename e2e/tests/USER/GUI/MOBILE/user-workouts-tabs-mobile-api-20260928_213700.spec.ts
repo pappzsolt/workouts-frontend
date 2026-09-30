@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../../helpers/api-endpoints';
 import { expect, test } from '@playwright/test';
 import { loginAs, navigateSpa, setTestLanguage } from '../../../helpers/read-only';
 
@@ -11,7 +12,7 @@ test('USER MOBILE GUI: workout tabs switch the visible workout group', async ({ 
   // The tab UI belongs to /user/programs/:id/workouts.
   const assignedPromise = page.waitForResponse(r =>
     r.request().method() === 'GET' &&
-    r.url().includes('/api/programs/my/assigned') &&
+    r.url().includes(API_ENDPOINTS.programs.assigned) &&
     !r.url().includes('/progress'),
   );
   await navigateSpa(page, '/user/my-programs');
@@ -28,7 +29,7 @@ test('USER MOBILE GUI: workout tabs switch the visible workout group', async ({ 
 
   const workoutsPromise = page.waitForResponse(r =>
     r.request().method() === 'GET' &&
-    r.url().includes(`/api/workouts/program/${programId}`),
+    r.url().includes(`${API_ENDPOINTS.workouts.byProgram(programId)}`),
   );
 
   await navigateSpa(page, `/user/programs/${programId}/workouts`);

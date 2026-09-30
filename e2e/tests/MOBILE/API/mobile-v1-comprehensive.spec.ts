@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, request, test, type APIRequestContext } from '@playwright/test';
 import {
   apiFor,
@@ -140,7 +141,7 @@ async function createAssignedFixture(
     const exerciseId = await createExercise(coachApi, `${prefix} EXERCISE ${i + 1} ${suffix()}`);
     exercises.push(exerciseId);
     await success(
-      await coachApi.post('/api/workout-exercises', {
+      await coachApi.post(API_ENDPOINTS.workoutExercises.base, {
         params: { workoutId, exerciseId },
       }),
       `assign ${prefix} exercise ${exerciseId}`,
@@ -149,14 +150,14 @@ async function createAssignedFixture(
 
   for (const programId of programs) {
     await success(
-      await coachApi.post('/api/programs/assign', {
+      await coachApi.post(API_ENDPOINTS.programs.assign, {
         data: { userId, programId },
       }),
       `assign ${prefix} program ${programId}`,
     );
 
     await success(
-      await coachApi.post('/api/program-workouts', {
+      await coachApi.post(API_ENDPOINTS.programWorkouts.base, {
         data: { programId, workoutId, dayIndex: programs.indexOf(programId) + 1 },
       }),
       `add ${prefix} program-workout ${programId}`,
@@ -238,7 +239,7 @@ async function cleanupFixture(
       );
 
       if (Number(relation?.count ?? 0) > 0) {
-        const response = await coachApi.delete('/api/workout-exercises', {
+        const response = await coachApi.delete(API_ENDPOINTS.workoutExercises.base, {
           params: { workoutId, exerciseId },
         });
         expect(response.ok(), `cleanup workout-exercise ${workoutId}/${exerciseId}`).toBeTruthy();
@@ -279,7 +280,7 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
       const expectedProgramIds = (assigned?.ids ?? []).map(Number);
   
       const body = await mobileSuccess(
-        await api.get('/api/mobile/v1/snapshot', { params: { language: LANGUAGE } }),
+        await api.get(API_ENDPOINTS.mobile.snapshot, { params: { language: LANGUAGE } }),
         'GET /api/mobile/v1/snapshot',
       );
   
@@ -426,7 +427,7 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
     const api = await apiFor(page);
 
     const body = await mobileSuccess(
-      await api.get('/api/mobile/v1/snapshot', { params: { language: LANGUAGE } }),
+      await api.get(API_ENDPOINTS.mobile.snapshot, { params: { language: LANGUAGE } }),
       'snapshot exercise contract',
     );
 
@@ -591,7 +592,7 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
       expect([401, 403, 404]).toContain(foreignResponse.status());
       expect(foreignBody.data).toBeNull();
 
-      const missingResponse = await api.get('/api/mobile/v1/user-workouts/2147483647', {
+      const missingResponse = await api.get(API_ENDPOINTS.mobile.userWorkout(2147483647), {
         params: { language: LANGUAGE },
       });
       const missingBody = await mobileRejected(missingResponse, 'missing user-workout detail');
@@ -612,15 +613,15 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
     const api = await unauthenticatedApi();
     try {
       for (const endpoint of [
-        '/api/mobile/v1/snapshot?language=hu',
-        '/api/mobile/v1/user-workouts/1?language=hu',
+        `${API_ENDPOINTS.mobile.snapshot}?language=${LANGUAGE}`,
+        `${API_ENDPOINTS.mobile.userWorkout(1)}?language=${LANGUAGE}`,
       ]) {
         const response = await api.get(endpoint);
         expect(response.status(), `${endpoint} must reject unauthenticated request`).toBeGreaterThanOrEqual(401);
         expect(response.status()).toBeLessThan(500);
       }
 
-      const response = await api.put('/api/mobile/v1/user-workouts/1/state', {
+      const response = await api.put(API_ENDPOINTS.mobile.userWorkoutState(1), {
         data: { status: 'IN_PROGRESS', startedAt: null, completedAt: null, userNote: null, sets: [] },
       });
       expect(response.status()).toBeGreaterThanOrEqual(401);
@@ -1178,15 +1179,15 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
 
     try {
       for (const endpoint of [
-        '/api/mobile/v1/snapshot?language=hu',
-        '/api/mobile/v1/user-workouts/1?language=hu',
+        `${API_ENDPOINTS.mobile.snapshot}?language=${LANGUAGE}`,
+        `${API_ENDPOINTS.mobile.userWorkout(1)}?language=${LANGUAGE}`,
       ]) {
         const response = await api.get(endpoint);
         expect(response.status()).toBeGreaterThanOrEqual(401);
         expect(response.status()).toBeLessThan(500);
       }
 
-      const response = await api.put('/api/mobile/v1/user-workouts/1/state', {
+      const response = await api.put(API_ENDPOINTS.mobile.userWorkoutState(1), {
         data: { status: 'IN_PROGRESS', startedAt: null, completedAt: null, userNote: null, sets: [] },
       });
       expect(response.status()).toBeGreaterThanOrEqual(401);

@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, test } from '@playwright/test';
 import { loginAs, navigateSpa, setTestLanguage } from '../../helpers/read-only';
 
@@ -8,7 +9,7 @@ test.describe('USER GUI: my programs pagination + occurrence API', () => {
 
     const assignedResponsePromise = page.waitForResponse((response) =>
       response.request().method() === 'GET' &&
-      response.url().includes('/programs/my/assigned-programs') &&
+      response.url().includes(API_ENDPOINTS.programs.assigned) &&
       !response.url().includes('/progress'),
     );
 

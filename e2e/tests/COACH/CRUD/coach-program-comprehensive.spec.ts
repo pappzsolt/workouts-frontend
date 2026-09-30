@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, request, test, type APIRequestContext, type Page } from '@playwright/test';
 import { Pool } from 'pg';
 
@@ -97,7 +98,7 @@ async function coachUserId(): Promise<number> {
 }
 
 async function createProgram(api: APIRequestContext, name: string): Promise<number> {
-  const response = await api.post('/api/user-programs', {
+  const response = await api.post(API_ENDPOINTS.userPrograms.base, {
     data: {
       userId: null,
       programName: name,
@@ -116,7 +117,7 @@ async function createProgram(api: APIRequestContext, name: string): Promise<numb
 }
 
 async function deleteProgram(api: APIRequestContext, id: number): Promise<void> {
-  await success(await api.delete(`/api/programs/coach/${id}`), `DELETE /api/programs/coach/${id}`);
+  await success(await api.delete(`${API_ENDPOINTS.programs.coachDelete(id)}`), `DELETE /api/programs/coach/${id}`);
 }
 
 async function assertProgramDb(id: number, expected: { name: string; description: string; duration: number; startDate: string; difficulty: string }): Promise<void> {
@@ -168,7 +169,7 @@ test.describe('Coach - COMPLETE Program endpoint matrix', () => {
     let programId = 0;
 
     try {
-      const createResponse = await api.post('/api/user-programs', {
+      const createResponse = await api.post(API_ENDPOINTS.userPrograms.base, {
         data: {
           userId: null,
           programName: name,
@@ -192,7 +193,7 @@ test.describe('Coach - COMPLETE Program endpoint matrix', () => {
         difficulty: 'intermediate',
       });
 
-      const byId = await success(await api.get(`/api/programs/${programId}?language=${LANGUAGE}`), 'GET /api/programs/{id}');
+      const byId = await success(await api.get(`${API_ENDPOINTS.programs.byId(programId)}?language=${LANGUAGE}`), 'GET /api/programs/{id}');
       expect(Number(byId.data?.programId)).toBe(programId);
       expect(byId.data?.programName).toBe(name);
       expect(byId.data?.programDescription).toBe(description);
@@ -203,7 +204,7 @@ test.describe('Coach - COMPLETE Program endpoint matrix', () => {
 
       // /api/programs/coach/search közvetlen Spring PageResponse-t ad vissza,
       // nem a projekt általános { success, data } wrapperét.
-      const searchResponse = await api.get('/api/programs/coach/search', {
+      const searchResponse = await api.get(API_ENDPOINTS.programs.coachSearch, {
         params: { search: name, page: 0, size: 10, language: LANGUAGE, sortDirection: 'asc' },
       });
       const searchText = await searchResponse.text();
@@ -224,11 +225,11 @@ test.describe('Coach - COMPLETE Program endpoint matrix', () => {
         search.content.some((p: any) => Number(p.programId) === programId),
       ).toBeTruthy();
 
-      const assignedBefore = await success(await api.get(`/api/programs/${programId}/assigned-users`), 'GET /api/programs/{id}/assigned-users');
+      const assignedBefore = await success(await api.get(`${API_ENDPOINTS.programs.assignedUsers(programId)}`), 'GET /api/programs/{id}/assigned-users');
       expect(Array.isArray(assignedBefore.data)).toBeTruthy();
       expect(assignedBefore.data).not.toContain(await coachUserId());
 
-      const updateResponse = await api.put(`/api/user-programs/${programId}`, {
+      const updateResponse = await api.put(`${API_ENDPOINTS.userPrograms.byId(programId)}`, {
         data: {
           userId: null,
           programName: updatedName,
@@ -251,7 +252,7 @@ test.describe('Coach - COMPLETE Program endpoint matrix', () => {
         difficulty: 'advanced',
       });
 
-      const updated = await success(await api.get(`/api/programs/${programId}?language=${LANGUAGE}`), 'GET /api/programs/{id} after update');
+      const updated = await success(await api.get(`${API_ENDPOINTS.programs.byId(programId)}?language=${LANGUAGE}`), 'GET /api/programs/{id} after update');
       expect(updated.data?.programName).toBe(updatedName);
       expect(updated.data?.programDescription).toBe(updatedDescription);
       expect(Number(updated.data?.durationDays)).toBe(45);
@@ -272,15 +273,15 @@ test.describe('Coach - COMPLETE Program endpoint matrix', () => {
     const programId = await createProgram(api, `E2E Program ASSIGN ${suffix()}`);
 
     try {
-      const assign1 = await api.post('/api/programs/assign', { data: { userId, programId } });
+      const assign1 = await api.post(API_ENDPOINTS.programs.assign, { data: { userId, programId } });
       await success(assign1, 'POST /api/programs/assign');
 
-      const assigned = await success(await api.get(`/api/programs/${programId}/assigned-users`), 'GET assigned-users');
+      const assigned = await success(await api.get(`${API_ENDPOINTS.programs.assignedUsers(programId)}`), 'GET assigned-users');
       expect(assigned.data).toContain(userId);
 
       expect(await dbCount('SELECT count(*)::text AS count FROM public.user_programs WHERE user_id=$1 AND program_id=$2', [userId, programId])).toBe(1);
 
-      const assign2 = await api.post('/api/programs/assign', { data: { userId, programId } });
+      const assign2 = await api.post(API_ENDPOINTS.programs.assign, { data: { userId, programId } });
       await success(assign2, 'POST /api/programs/assign duplicate');
 
       expect(await dbCount('SELECT count(*)::text AS count FROM public.user_programs WHERE user_id=$1 AND program_id=$2', [userId, programId])).toBe(1);
@@ -296,8 +297,8 @@ test.describe('Coach - COMPLETE Program endpoint matrix', () => {
     const api = await apiFor(page);
     const missingId = 2147483000;
 
-    await rejected(await api.get(`/api/programs/${missingId}?language=${LANGUAGE}`), 'GET missing program');
-    await rejected(await api.put(`/api/user-programs/${missingId}`, {
+    await rejected(await api.get(`${API_ENDPOINTS.programs.byId(missingId)}?language=${LANGUAGE}`), 'GET missing program');
+    await rejected(await api.put(`${API_ENDPOINTS.userPrograms.byId(missingId)}`, {
       data: {
         userId: null,
         programName: `E2E INVALID ${suffix()}`,
@@ -310,7 +311,7 @@ test.describe('Coach - COMPLETE Program endpoint matrix', () => {
       },
     }), 'PUT missing program');
 
-    await rejected(await api.post('/api/programs/assign', { data: { userId: 2147483000, programId: missingId } }), 'POST assign invalid IDs');
+    await rejected(await api.post(API_ENDPOINTS.programs.assign, { data: { userId: 2147483000, programId: missingId } }), 'POST assign invalid IDs');
     await api.dispose();
   });
 });

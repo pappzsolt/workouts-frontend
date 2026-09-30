@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../../helpers/api-endpoints';
 import { expect, test } from '@playwright/test';
 import { loginAs, navigateSpa, setTestLanguage } from '../../../helpers/read-only';
 
@@ -9,7 +10,7 @@ test('USER MOBILE GUI: exercise list loads the selected user-workout API data', 
 
   const scheduledPromise = page.waitForResponse(r =>
     r.request().method() === 'GET' &&
-    r.url().includes('/api/user-workout-exercises/scheduled'),
+    r.url().includes(API_ENDPOINTS.userWorkoutExercises.scheduled),
   );
   await navigateSpa(page, '/user/workouts');
   const scheduled = await scheduledPromise;
@@ -34,7 +35,7 @@ test('USER MOBILE GUI: exercise list loads the selected user-workout API data', 
 
   const exercisesPromise = page.waitForResponse(r =>
     r.request().method() === 'GET' &&
-    r.url().includes(`/api/exercises/user-workouts/${userWorkoutId}`),
+    r.url().includes(`${API_ENDPOINTS.exercises.userWorkout(userWorkoutId)}`),
   );
 
   await navigateSpa(

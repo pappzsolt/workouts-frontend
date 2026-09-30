@@ -1,3 +1,4 @@
+import { API_ENDPOINTS } from '../../../helpers/api-endpoints';
 import { expect, test } from '@playwright/test';
 import { loginAs, navigateSpa, setTestLanguage } from '../../../helpers/read-only';
 
@@ -9,7 +10,7 @@ test('USER MOBILE GUI: program statistics renders the API response without page 
 
   const apiPromise = page.waitForResponse(r =>
     r.request().method() === 'GET' &&
-    new URL(r.url()).pathname === '/api/user/program-statistics',
+    new URL(r.url()).pathname === API_ENDPOINTS.statistics.userProgram,
   );
   await navigateSpa(page, '/user/program-statistics');
   const response = await apiPromise;
