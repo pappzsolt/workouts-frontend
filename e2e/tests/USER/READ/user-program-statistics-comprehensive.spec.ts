@@ -9,10 +9,14 @@ import {
   success,
 } from '../../helpers/e2e-next-3-helpers';
 
+const LANGUAGE = 'hu';
+
 test.describe('User - Program Statistics endpoint matrix', () => {
   test.describe.configure({ mode: 'serial' });
 
-  test('STATISTICS: program + workout activity + exercise strength progress + response contract', async ({ page }) => {
+  test('STATISTICS: program + workout activity + exercise strength progress + response contract', async ({
+    page,
+  }) => {
     await login(page, 'user');
     const api = await apiFor(page);
 
@@ -36,8 +40,15 @@ test.describe('User - Program Statistics endpoint matrix', () => {
         expect(Number(program.totalWorkouts)).toBeGreaterThanOrEqual(0);
         expect(Number(program.completedWorkouts)).toBeGreaterThanOrEqual(0);
         expect(Number(program.incompleteWorkouts)).toBeGreaterThanOrEqual(0);
-        expect(Number(program.completedWorkouts)).toBeLessThanOrEqual(Number(program.totalWorkouts));
-        expect(Number(program.incompleteWorkouts)).toBeLessThanOrEqual(Number(program.totalWorkouts));
+
+        expect(Number(program.completedWorkouts)).toBeLessThanOrEqual(
+          Number(program.totalWorkouts),
+        );
+
+        expect(Number(program.incompleteWorkouts)).toBeLessThanOrEqual(
+          Number(program.totalWorkouts),
+        );
+
         expect(Boolean(program.completed)).toBe(
           Number(program.totalWorkouts) > 0 &&
             Number(program.completedWorkouts) === Number(program.totalWorkouts),
@@ -45,7 +56,9 @@ test.describe('User - Program Statistics endpoint matrix', () => {
       }
 
       const activity = await success(
-        await api.get(`${API_ENDPOINTS.statistics.userProgramWorkouts}?from=2035-01-01&to=2035-12-31`),
+        await api.get(
+          `${API_ENDPOINTS.statistics.userProgramWorkouts}?from=2035-01-01&to=2035-12-31`,
+        ),
         'GET /api/user/program-statistics/workouts',
       );
 
@@ -68,13 +81,14 @@ test.describe('User - Program Statistics endpoint matrix', () => {
       expect(activity.data.weeklyVolume.percentageChange).toBeDefined();
 
       const userId = await coachUserId();
+
       const exercise = await dbOne<{ exercise_id: number }>(
         `SELECT uwe.workout_exercise_id AS exercise_id
-           FROM public.user_workout_exercises uwe
-           JOIN public.user_workouts uw ON uw.id = uwe.user_workout_id
-          WHERE uw.user_id = $1
-          ORDER BY uwe.id
-          LIMIT 1`,
+         FROM public.user_workout_exercises uwe
+                JOIN public.user_workouts uw ON uw.id = uwe.user_workout_id
+         WHERE uw.user_id = $1
+         ORDER BY uwe.id
+           LIMIT 1`,
         [userId],
       );
 
@@ -86,23 +100,26 @@ test.describe('User - Program Statistics endpoint matrix', () => {
 
       const workoutExercise = await dbOne<{ exercise_id: number }>(
         `SELECT exercise_id
-           FROM public.workout_exercises
-          WHERE id = $1`,
+         FROM public.workout_exercises
+         WHERE id = $1`,
         [Number(exercise.exercise_id)],
       );
 
       expect(workoutExercise).not.toBeNull();
+
       const exerciseId = Number(workoutExercise!.exercise_id);
+
       expect(exerciseId).toBeGreaterThan(0);
 
       const strength = await success(
         await api.get(
-          `${API_ENDPOINTS.statistics.userExerciseStrength(exerciseId)}?from=2035-01-01&to=2035-12-31&language=hu`,
+          `${API_ENDPOINTS.statistics.userExerciseStrength(exerciseId)}?from=2035-01-01&to=2035-12-31&language=${LANGUAGE}`,
         ),
         'GET /api/user/program-statistics/exercises/{exerciseId}/strength-progress',
       );
 
       expect(Array.isArray(strength.data)).toBeTruthy();
+
       for (const row of strength.data) {
         expect(Number(row.exerciseId)).toBe(exerciseId);
         expect(typeof row.exerciseName).toBe('string');
@@ -116,18 +133,24 @@ test.describe('User - Program Statistics endpoint matrix', () => {
     }
   });
 
-  test('NEGATIVE VALIDATION + ROLE: fordított dátumtartomány és coach hozzáférés elutasítva', async ({ page }) => {
+  test('NEGATIVE VALIDATION + ROLE: fordított dátumtartomány és coach hozzáférés elutasítva', async ({
+    page,
+  }) => {
     await login(page, 'user');
     const userApi = await apiFor(page);
 
     try {
       await rejected(
-        await userApi.get(`${API_ENDPOINTS.statistics.userProgramWorkouts}?from=2035-12-31&to=2035-01-01`),
+        await userApi.get(
+          `${API_ENDPOINTS.statistics.userProgramWorkouts}?from=2035-12-31&to=2035-01-01`,
+        ),
         'GET workouts invalid date range',
       );
 
       await rejected(
-        await userApi.get(`${API_ENDPOINTS.statistics.userExerciseStrength(0)}?from=2035-01-01&to=2035-12-31&language=${LANGUAGE}`),
+        await userApi.get(
+          `${API_ENDPOINTS.statistics.userExerciseStrength(0)}?from=2035-01-01&to=2035-12-31&language=${LANGUAGE}`,
+        ),
         'GET strength progress invalid exercise id',
       );
     } finally {
@@ -142,8 +165,11 @@ test.describe('User - Program Statistics endpoint matrix', () => {
         await coachApi.get(`${API_ENDPOINTS.statistics.userProgram}?language=${LANGUAGE}`),
         'GET program statistics as coach',
       );
+
       await rejected(
-        await coachApi.get(`${API_ENDPOINTS.statistics.userProgramWorkouts}?from=2035-01-01&to=2035-12-31`),
+        await coachApi.get(
+          `${API_ENDPOINTS.statistics.userProgramWorkouts}?from=2035-01-01&to=2035-12-31`,
+        ),
         'GET workout statistics as coach',
       );
     } finally {
