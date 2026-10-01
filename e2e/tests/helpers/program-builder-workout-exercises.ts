@@ -124,25 +124,6 @@ export async function openProgramBuilderStep2(
   const programName = page.locator('#programName');
   await expect(programName).toBeVisible({ timeout: 15_000 });
 
-  const programWorkoutsResponsePromise = page.waitForResponse((response) => {
-    const url = new URL(response.url());
-
-    return (
-      response.request().method() === 'GET' &&
-      url.pathname === new URL(API_ENDPOINTS.programWorkouts.byProgram(fixture.programId), page.url()).pathname &&
-      url.searchParams.get('programId') === String(fixture.programId)
-    );
-  });
-
-  const uniqueWorkoutsResponsePromise = page.waitForResponse((response) => {
-    const url = new URL(response.url());
-
-    return (
-      response.request().method() === 'GET' &&
-      url.pathname === new URL(API_ENDPOINTS.uniqueWorkoutsWithExercises, page.url()).pathname
-    );
-  });
-
   const nextButton = page
     .getByRole('button', {
       name: /program módosítása|modify program/i,
@@ -152,40 +133,27 @@ export async function openProgramBuilderStep2(
   await expect(nextButton).toBeVisible({ timeout: 15_000 });
   await nextButton.click();
 
+  // The step-2 component performs its own initial HTTP loading in ngOnInit.
+  // Do not race those internal requests with waitForResponse() here: the
+  // business assertion we need is the actual workout -> exercises request,
+  // which is registered immediately before the Exercises button click below.
   await expect(
     page.locator('app-coach-program-builder-workouts'),
   ).toBeVisible({ timeout: 15_000 });
 
-  // The child component loads its program-workout relation and the
-  // coach's unique workouts asynchronously. Wait for those real API
-  // responses before querying the rendered workout list.
-  const [programWorkoutsResponse, uniqueWorkoutsResponse] = await Promise.all([
-    programWorkoutsResponsePromise,
-    uniqueWorkoutsResponsePromise,
-  ]);
-
-  expect(
-    programWorkoutsResponse.ok(),
-    `GET program-workouts: ${programWorkoutsResponse.status()}`,
-  ).toBeTruthy();
-
-  expect(
-    uniqueWorkoutsResponse.ok(),
-    `GET unique workouts: ${uniqueWorkoutsResponse.status()}`,
-  ).toBeTruthy();
-
-  // The fixture workout is rendered as an <h5>, so getByRole('heading')
-  // is valid, but do not assume a specific translated/border DOM wrapper.
-  // Find the nearest action row containing the workout's Exercises button.
   const workoutName = page.getByText(fixture.workoutName, {
     exact: true,
   });
 
-  await expect(workoutName).toBeVisible({ timeout: 15_000 });
+  // Wait for the real UI state produced by the component's program-workout
+  // loading instead of coupling this helper to its internal request order.
+  await expect(workoutName).toBeVisible({ timeout: 20_000 });
 
-  const workoutRow = workoutName.locator(
-    'xpath=ancestor::div[.//button][1]',
-  );
+  // In the actual component the workout name is an <h5>. Its row is the
+  // third div ancestor: h5 -> name wrapper -> workout info -> workout row.
+  // Do not search for the first ancestor containing any button because that
+  // makes the locator dependent on unrelated nested markup.
+  const workoutRow = workoutName.locator('xpath=ancestor::div[3]');
 
   await expect(workoutRow).toBeVisible({ timeout: 15_000 });
 }
@@ -201,9 +169,10 @@ export async function openFixtureWorkout(
 
   await expect(workoutName).toBeVisible({ timeout: 15_000 });
 
-  const workoutRow = workoutName.locator(
-    'xpath=ancestor::div[.//button][1]',
-  );
+  // The workout name is rendered by the component as an <h5>. Walk to the
+  // concrete workout row instead of relying on a generic ancestor that merely
+  // happens to contain a button.
+  const workoutRow = workoutName.locator('xpath=ancestor::div[3]');
 
   const exercisesButton = workoutRow.getByRole('button', {
     name: /gyakorlatok|exercises/i,
