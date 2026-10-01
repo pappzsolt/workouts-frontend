@@ -1,39 +1,34 @@
 <div class="min-h-full min-w-0 bg-transparent px-3 py-5 sm:px-6 sm:py-6 lg:px-8">
-  <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-5 sm:gap-6">
+  <div class="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-5 sm:gap-6">
 
-    <!-- ======================================================
-         OLDAL FEJLÉC
-         ====================================================== -->
-
-    <div class="rounded-2xl border border-surface-200 bg-white px-4 py-5 shadow-sm sm:px-6">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <!-- FEJLÉC / FOLYAMAT -->
+    <div class="rounded-2xl border border-surface-200 bg-white px-4 py-4 shadow-sm sm:px-6 sm:py-5">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div class="min-w-0">
-          <h1 class="text-xl font-bold tracking-tight text-content-800 sm:text-2xl lg:text-3xl">
+          <div class="flex items-center gap-2 text-xs font-semibold text-content-400">
+            <span>Program</span>
+            <span>›</span>
+            <span>Workout</span>
+            <span>›</span>
+            <span class="text-primary-700">Gyakorlatok</span>
+          </div>
+
+          <h1 class="mt-2 text-xl font-bold tracking-tight text-content-800 sm:text-2xl">
             {{ 'assignWorkoutExercises.title' | translate }}
           </h1>
 
-          <p class="mt-1 text-sm leading-6 text-content-500">
-            {{ 'assignWorkoutExercises.availableWorkouts' | translate }}
-            <span class="mx-1">→</span>
-            {{ 'assignWorkoutExercises.availableExercises' | translate }}
+          <p class="mt-1 max-w-2xl text-sm leading-6 text-content-500">
+            Válaszd ki a workoutot, majd külön ablakban add hozzá a hozzá tartozó gyakorlatokat.
           </p>
         </div>
 
         <div class="flex shrink-0 items-center gap-2">
           <span class="rounded-full bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-700">
-            {{ 'assignWorkoutExercises.availableWorkouts' | translate }}: {{ selectedWorkoutIds.length }} / 1
-          </span>
-
-          <span class="rounded-full bg-surface-100 px-3 py-1.5 text-xs font-semibold text-content-600">
-            {{ 'assignWorkoutExercises.availableExercises' | translate }}: {{ selectedExercises.length }}
+            {{ selectedExercises.length }} gyakorlat
           </span>
         </div>
       </div>
     </div>
-
-    <!-- ======================================================
-         ÜZENET
-         ====================================================== -->
 
     @if (message) {
       <app-message
@@ -44,54 +39,156 @@
     }
 
     <!-- ======================================================
-         KIVÁLASZTÁSI MUNKATERÜLET
+         KIVÁLASZTOTT WORKOUT
          ====================================================== -->
 
-    <div class="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-2 lg:items-start">
-
-      <!-- ====================================================
-           1. WORKOUT
-           ==================================================== -->
-
+    @if (selectedWorkout) {
       <app-card variant="outlined" class="min-w-0 overflow-hidden">
-        <div class="border-b border-surface-100 bg-white px-4 py-4 sm:px-5">
-          <div class="flex items-start justify-between gap-3">
+        <div class="border-b border-surface-100 bg-white px-4 py-4 sm:px-6">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div class="min-w-0">
-              <div class="mb-1 flex items-center gap-2">
-                <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary-700 text-xs font-bold text-white">
+              <div class="mb-2 flex items-center gap-2">
+                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-700 text-xs font-bold text-white">
                   1
                 </span>
-
-                <h2 class="text-lg font-bold text-content-800 sm:text-xl">
-                  {{ 'assignWorkoutExercises.availableWorkouts' | translate }}
-                </h2>
+                <span class="rounded-full bg-primary-50 px-2.5 py-1 text-xs font-semibold text-primary-700">
+                  Workout kiválasztva
+                </span>
               </div>
 
+              <h2 class="break-words text-xl font-bold text-content-800 sm:text-2xl">
+                {{ selectedWorkout.name || ('Workout #' + selectedWorkout.id) }}
+              </h2>
+
+              @if (selectedWorkout.description) {
+                <p class="mt-1 max-w-3xl text-sm leading-6 text-content-500">
+                  {{ selectedWorkout.description }}
+                </p>
+              }
+
+              <div class="mt-3 flex flex-wrap gap-2">
+                <span class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600">
+                  ID: {{ selectedWorkout.id }}
+                </span>
+
+                @if (selectedWorkout.workoutDate) {
+                  <span class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600">
+                    {{ selectedWorkout.workoutDate }}
+                  </span>
+                }
+
+                @if (selectedWorkout.durationMinutes) {
+                  <span class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600">
+                    {{ selectedWorkout.durationMinutes }} perc
+                  </span>
+                }
+
+                @if (selectedWorkout.intensityLevel) {
+                  <span class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600">
+                    {{ selectedWorkout.intensityLevel }}
+                  </span>
+                }
+              </div>
             </div>
 
-            @if (selectedWorkoutIds.length) {
+            <div class="flex shrink-0 flex-col gap-2 sm:items-end">
               <button
                 type="button"
-                (click)="removeWorkout(selectedWorkoutIds[0])"
-                class="shrink-0 rounded-lg border border-delete-200 bg-delete-50 px-2.5 py-2 text-xs font-semibold text-delete-600 transition hover:bg-delete-100 focus:outline-none focus:ring-4 focus:ring-delete-600/10"
+                (click)="openExerciseSelector()"
+                class="rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20"
               >
-                <span class="hidden sm:inline">{{ 'common.remove' | translate }}</span>
-                <app-icon name="x" sizeClass="h-4 w-4 sm:hidden" />
+                <span class="mr-2">+</span>
+                Gyakorlatok kezelése
               </button>
-            }
-          </div>
 
-          @if (selectedWorkoutIds.length) {
-            <div class="mt-4 flex items-center gap-2 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2.5">
-              <app-icon name="circle-check" sizeClass="h-4 w-4 shrink-0 text-primary-700" />
-              <span class="text-sm font-semibold text-primary-800">
-                {{ 'common.id' | translate }}: {{ selectedWorkoutIds[0] }}
-              </span>
+              @if (!fromProgramBuilder) {
+                <button
+                  type="button"
+                  (click)="changeWorkout()"
+                  class="rounded-xl border border-surface-200 bg-white px-4 py-2.5 text-sm font-semibold text-content-600 transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700"
+                >
+                  Workout cseréje
+                </button>
+              }
             </div>
-          }
+          </div>
         </div>
 
-        <div class="p-3 sm:p-4">
+        <!-- KIVÁLASZTOTT GYAKORLATOK ÖSSZEFOGLALÓ -->
+        <div class="bg-surface-50/50 px-4 py-4 sm:px-6">
+          <div class="mb-3 flex items-center justify-between gap-3">
+            <div>
+              <h3 class="text-base font-bold text-content-800">
+                Kiválasztott gyakorlatok
+              </h3>
+              <p class="mt-0.5 text-xs text-content-500">
+                Ezek kerülnek hozzáadásra ehhez a workouthoz.
+              </p>
+            </div>
+
+            <span class="flex h-8 min-w-8 items-center justify-center rounded-full bg-primary-100 px-2 text-xs font-bold text-primary-700">
+              {{ selectedExercises.length }}
+            </span>
+          </div>
+
+          @if (selectedExercises.length) {
+            <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              @for (exercise of selectedExercises; track exercise.id; let i = $index) {
+                <div class="flex min-w-0 items-center gap-3 rounded-xl border border-primary-100 bg-primary-50/60 px-3 py-2.5">
+                  <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-700 text-[11px] font-bold text-white">
+                    {{ i + 1 }}
+                  </span>
+
+                  <span class="min-w-0 flex-1 break-words text-sm font-semibold text-content-700">
+                    {{ exercise.name }}
+                  </span>
+
+                  <button
+                    type="button"
+                    (click)="removeExercise(exercise.id)"
+                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-delete-600 transition hover:bg-delete-100 focus:outline-none focus:ring-4 focus:ring-delete-600/10"
+                    [attr.aria-label]="'common.remove' | translate"
+                  >
+                    <app-icon name="x" sizeClass="h-4 w-4" />
+                  </button>
+                </div>
+              }
+            </div>
+          } @else {
+            <button
+              type="button"
+              (click)="openExerciseSelector()"
+              class="flex w-full items-center justify-center rounded-xl border border-dashed border-surface-300 bg-white px-4 py-6 text-sm font-medium text-content-500 transition hover:border-primary-300 hover:bg-primary-50/40 hover:text-primary-700"
+            >
+              Még nincs kiválasztott gyakorlat — kattints a „Gyakorlatok kezelése” gombra.
+            </button>
+          }
+        </div>
+      </app-card>
+    } @else {
+      <!-- ======================================================
+           WORKOUT KIVÁLASZTÁSA - CSAK AKKOR LÁTSZIK, HA MÉG NINCS
+           ====================================================== -->
+
+      <app-card variant="outlined" class="min-w-0 overflow-hidden">
+        <div class="border-b border-surface-100 bg-white px-4 py-4 sm:px-6">
+          <div class="flex items-center gap-3">
+            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-700 text-xs font-bold text-white">
+              1
+            </span>
+
+            <div>
+              <h2 class="text-lg font-bold text-content-800 sm:text-xl">
+                Workout kiválasztása
+              </h2>
+              <p class="mt-1 text-sm text-content-500">
+                Válassz ki egy workoutot. Ezután külön panelben kezelheted a gyakorlatokat.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-3 sm:p-5">
           <app-coach-workout-board
             [externalWorkouts]="workouts"
             [selectedWorkoutIds]="selectedWorkoutIds"
@@ -101,119 +198,116 @@
           ></app-coach-workout-board>
         </div>
       </app-card>
-
-
-      <!-- ====================================================
-           2. EXERCISE
-           ==================================================== -->
-
-      <app-card variant="outlined" class="min-w-0 overflow-hidden">
-        <div class="border-b border-surface-100 bg-white px-4 py-4 sm:px-5">
-          <div class="flex items-start justify-between gap-3">
-            <div class="min-w-0">
-              <div class="mb-1 flex items-center gap-2">
-                <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary-700 text-xs font-bold text-white">
-                  2
-                </span>
-
-                <h2 class="text-lg font-bold text-content-800 sm:text-xl">
-                  {{ 'assignWorkoutExercises.availableExercises' | translate }}
-                </h2>
-              </div>
-
-            </div>
-
-            <span class="shrink-0 rounded-full bg-surface-100 px-2.5 py-1.5 text-xs font-semibold text-content-600">
-              {{ selectedExercises.length }}
-            </span>
-          </div>
-
-        </div>
-
-        <div
-          class="p-3 sm:p-4"
-          [class.pointer-events-none]="!selectedWorkoutIds.length"
-          [class.opacity-60]="!selectedWorkoutIds.length"
-        >
-          <app-coach-exercises-board
-            [externalExercises]="exercises"
-            [externalSelectedExercises]="selectedExercises"
-            [compactSelection]="true"
-            [lockSelectedExercises]="false"
-            (exercisesChange)="onExercisesChange($event)"
-          ></app-coach-exercises-board>
-        </div>
-      </app-card>
-    </div>
-
-
-    <!-- ======================================================
-         KIVÁLASZTOTT EXERCISE-EK
-         ====================================================== -->
-
-    @if (selectedExercises.length) {
-      <app-card variant="outlined" class="min-w-0 overflow-hidden">
-        <div class="border-b border-surface-100 px-4 py-4 sm:px-5">
-          <div class="flex items-center justify-between gap-3">
-            <div>
-              <h2 class="text-lg font-bold text-content-800">
-                {{ 'assignWorkoutExercises.availableExercises' | translate }}
-                <span class="text-content-400">({{ selectedExercises.length }})</span>
-              </h2>
-            </div>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 gap-2 p-4 sm:grid-cols-2 lg:grid-cols-3 sm:p-5">
-          @for (exercise of selectedExercises; track exercise.id) {
-            <div class="flex min-w-0 items-center justify-between gap-3 rounded-xl border border-primary-100 bg-primary-50/60 px-3 py-2.5">
-              <span class="min-w-0 break-words text-sm font-semibold text-content-700">
-                {{ exercise.name }}
-              </span>
-
-              <button
-                type="button"
-                (click)="removeExercise(exercise.id)"
-                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-delete-600 transition hover:bg-delete-100 focus:outline-none focus:ring-4 focus:ring-delete-600/10"
-                [attr.aria-label]="'common.remove' | translate"
-              >
-                <app-icon name="x" sizeClass="h-4 w-4" />
-              </button>
-            </div>
-          }
-        </div>
-      </app-card>
     }
-
 
     <!-- ======================================================
          MENTÉS
          ====================================================== -->
 
-    <div class="sticky bottom-2 z-20 -mx-1 mt-1 rounded-2xl border border-surface-200 bg-white/95 p-3 shadow-lg backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none sm:backdrop-blur-none">
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div class="min-w-0 text-center text-xs text-content-500 sm:text-left sm:text-sm">
-          @if (selectedWorkoutIds.length && selectedExercises.length) {
-            {{ 'assignWorkoutExercises.availableWorkouts' | translate }}: {{ selectedWorkoutIds.length }}
+    @if (selectedWorkout) {
+      <div class="sticky bottom-2 z-20 rounded-2xl border border-surface-200 bg-white/95 p-3 shadow-lg backdrop-blur sm:static sm:border-0 sm:bg-transparent sm:p-0 sm:shadow-none">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div class="text-center text-xs text-content-500 sm:text-left sm:text-sm">
+            <span class="font-semibold text-content-700">
+              {{ selectedWorkout.name }}
+            </span>
             <span class="mx-1">·</span>
-            {{ 'assignWorkoutExercises.availableExercises' | translate }}: {{ selectedExercises.length }}
-          }
-        </div>
+            {{ selectedExercises.length }} gyakorlat
+          </div>
 
-        <button
-          type="button"
-          (click)="saveSelectedWorkoutsAndExercises()"
-          [disabled]="saving || !selectedWorkoutIds.length || !selectedExercises.length"
-          class="w-full rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-        >
-          @if (saving) {
-            {{ 'common.saving' | translate }}
-          } @else {
-            {{ 'assignWorkoutExercises.save' | translate }}
-          }
-        </button>
+          <button
+            type="button"
+            (click)="saveSelectedWorkoutsAndExercises()"
+            [disabled]="saving || !selectedWorkoutIds.length || !selectedExercises.length"
+            class="w-full rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-6 py-3.5 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+          >
+            @if (saving) {
+              {{ 'common.saving' | translate }}
+            } @else {
+              {{ 'assignWorkoutExercises.save' | translate }}
+            }
+          </button>
+        </div>
       </div>
-    </div>
+    }
 
   </div>
 </div>
+
+<!-- ==========================================================
+     EXERCISE VÁLASZTÓ MODAL
+     ========================================================== -->
+
+@if (exerciseSelectorOpen && selectedWorkout) {
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-content-900/50 p-3 backdrop-blur-[2px] sm:p-5"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="exercise-selector-title"
+  >
+    <div class="flex max-h-[92vh] w-full max-w-5xl min-w-0 flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-2xl">
+
+      <div class="shrink-0 border-b border-surface-100 bg-white px-4 py-4 sm:px-6">
+        <div class="flex items-start justify-between gap-4">
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="rounded-full bg-primary-50 px-2.5 py-1 text-xs font-semibold text-primary-700">
+                2. lépés
+              </span>
+              <span class="text-xs font-medium text-content-400">
+                {{ selectedExercises.length }} kiválasztva
+              </span>
+            </div>
+
+            <h2
+              id="exercise-selector-title"
+              class="mt-1 break-words text-lg font-bold text-content-800 sm:text-xl"
+            >
+              Gyakorlatok — {{ selectedWorkout.name }}
+            </h2>
+
+            <p class="mt-1 text-sm text-content-500">
+              Keresd meg és jelöld ki a hozzáadni kívánt gyakorlatokat.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            (click)="closeExerciseSelector()"
+            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-content-500 transition hover:bg-surface-100 hover:text-content-800"
+            aria-label="Bezárás"
+          >
+            <app-icon name="x" sizeClass="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+
+      <div class="min-h-0 flex-1 overflow-y-auto bg-surface-50/40 p-3 sm:p-5">
+        <app-coach-exercises-board
+          [externalExercises]="exercises"
+          [externalSelectedExercises]="selectedExercises"
+          [compactSelection]="true"
+          [lockSelectedExercises]="false"
+          (exercisesChange)="onExercisesChange($event)"
+        ></app-coach-exercises-board>
+      </div>
+
+      <div class="shrink-0 border-t border-surface-100 bg-white px-4 py-3 sm:px-6">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <span class="text-sm text-content-500">
+            {{ selectedExercises.length }} gyakorlat kiválasztva
+          </span>
+
+          <button
+            type="button"
+            (click)="closeExerciseSelector()"
+            class="w-full rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 sm:w-auto"
+          >
+            Kész
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+}

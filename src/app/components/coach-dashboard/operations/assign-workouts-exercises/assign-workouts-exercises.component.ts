@@ -15,7 +15,7 @@ import { Workout } from '../../../../models/workout.model';
 import { Exercise } from '../../../../models/exercise.model';
 
 import { WorkoutExerciseService } from '../../../../services/coach/workout-exercises.service';
-import { LanguageService } from '../../../../services/shared/language.service';
+import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
@@ -36,21 +36,21 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   workouts: Workout[] = [];
-
   exercises: Exercise[] = [];
 
   selectedWorkoutIds: number[] = [];
-
   selectedExercises: Exercise[] = [];
+
+  selectedWorkout: Workout | null = null;
+
+  exerciseSelectorOpen = false;
 
   // =============================
   // PROGRAM BUILDER PARAMÉTEREK
   // =============================
 
   fromProgramBuilder = false;
-
   programId: number | null = null;
-
   newWorkoutId: number | null = null;
 
   // =============================
@@ -58,11 +58,8 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
   // =============================
 
   message = '';
-
   messageType: 'success' | 'error' | 'info' | '' = '';
-
   messageParams: Record<string, unknown> = {};
-
   saving = false;
 
   // =============================
@@ -76,10 +73,10 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
   assignedExercises = new EventEmitter<Exercise[]>();
 
   constructor(
-    private workoutExerciseService: WorkoutExerciseService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private languageService: LanguageService,
+    private readonly workoutExerciseService: WorkoutExerciseService,
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly coachWorkoutsService: CoachWorkoutsService,
   ) {
     const fromProgramBuilder = this.route.snapshot.queryParamMap.get('fromProgramBuilder');
 
@@ -90,24 +87,14 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
     const workoutId = this.route.snapshot.queryParamMap.get('workoutId');
 
     this.fromProgramBuilder = fromProgramBuilder === 'true';
-
     this.programId = programId !== null ? Number(programId) : null;
-
     this.newWorkoutId = workoutId !== null ? Number(workoutId) : null;
   }
 
-  // =============================
-  // INIT
-  // =============================
-
   ngOnInit(): void {
     if (this.fromProgramBuilder && this.newWorkoutId !== null) {
-      this.selectedWorkoutIds = [this.newWorkoutId];
-      this.assignedWorkouts.emit([...this.selectedWorkoutIds]);
+      this.selectWorkout(this.newWorkoutId);
     }
-
-    // A workout/exercise boardok maguk kezelik a nyelvváltás miatti újratöltést.
-    // Itt nincs szükség külön üres subscriptionre.
   }
 
   // =============================
@@ -118,43 +105,114 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
     const previousSelectedWorkouts = [...this.selectedWorkoutIds];
 
     this.selectedWorkoutIds = [...updatedIds];
-
     this.clearMessage();
 
-    if (JSON.stringify(previousSelectedWorkouts) !== JSON.stringify(this.selectedWorkoutIds)) {
-      this.selectedExercises = [];
+    const changed =
+      previousSelectedWorkouts.length !== this.selectedWorkoutIds.length ||
+      previousSelectedWorkouts.some((id, index) => id !== this.selectedWorkoutIds[index]);
 
-      this.assignedExercises.emit(this.selectedExercises);
+    if (changed) {
+      this.selectedExercises = [];
+      this.assignedExercises.emit([]);
+    }
+
+    if (this.selectedWorkoutIds.length) {
+      this.selectWorkout(this.selectedWorkoutIds[0], false);
+    } else {
+      this.selectedWorkout = null;
+      this.exerciseSelectorOpen = false;
     }
 
     this.assignedWorkouts.emit(this.selectedWorkoutIds);
+  }
+
+  selectWorkout(workoutId: number, openExerciseSelector = false): void {
+    if (!Number.isInteger(workoutId) || workoutId <= 0) {
+      return;
+    }
+
+    this.selectedWorkoutIds = [workoutId];
+    this.clearMessage();
+    this.loadWorkoutSummary(workoutId);
+
+    if (openExerciseSelector) {
+      this.exerciseSelectorOpen = true;
+    }
+
+    this.assignedWorkouts.emit([...this.selectedWorkoutIds]);
+  }
+
+  private loadWorkoutSummary(workoutId: number): void {
+    this.coachWorkoutsService.getWorkoutById(workoutId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          const data = response.data;
+
+          if (!data) {
+            this.selectedWorkout = {
+              id: workoutId,
+              name: `Workout #${workoutId}`,
+              workoutName: `Workout #${workoutId}`,
+              exercises: [],
+            };
+            return;
+          }
+
+          this.selectedWorkout = {
+            id: data.workoutId ?? workoutId,
+            name: data.workoutName ?? `Workout #${workoutId}`,
+            workoutName: data.workoutName ?? `Workout #${workoutId}`,
+            description: data.workoutDescription ?? undefined,
+            workoutDescription: data.workoutDescription ?? undefined,
+            workoutDate: data.workoutDate ?? undefined,
+            durationMinutes: data.durationMinutes ?? undefined,
+            intensityLevel: data.intensityLevel ?? undefined,
+            exercises: [],
+          };
+        },
+        error: () => {
+          this.selectedWorkout = {
+            id: workoutId,
+            name: `Workout #${workoutId}`,
+            workoutName: `Workout #${workoutId}`,
+            exercises: [],
+          };
+        },
+      });
+  }
+
+  changeWorkout(): void {
+    this.exerciseSelectorOpen = false;
+    this.selectedWorkout = null;
+    this.selectedWorkoutIds = [];
+    this.selectedExercises = [];
+    this.assignedExercises.emit([]);
+    this.assignedWorkouts.emit([]);
   }
 
   // =============================
   // EXERCISE KIVÁLASZTÁS
   // =============================
 
+  openExerciseSelector(): void {
+    if (!this.selectedWorkoutIds.length) {
+      this.showError('assignWorkoutExercises.errors.selectWorkout');
+      return;
+    }
+
+    this.exerciseSelectorOpen = true;
+  }
+
+  closeExerciseSelector(): void {
+    this.exerciseSelectorOpen = false;
+  }
+
   onExercisesChange(updatedExercises: Exercise[]): void {
     this.selectedExercises = [...updatedExercises];
-
     this.clearMessage();
-
     this.assignedExercises.emit(this.selectedExercises);
   }
-
-  // =============================
-  // WORKOUT ELTÁVOLÍTÁS
-  // =============================
-
-  removeWorkout(wid: number): void {
-    this.selectedWorkoutIds = this.selectedWorkoutIds.filter((id) => id !== wid);
-
-    this.onWorkoutsChange(this.selectedWorkoutIds);
-  }
-
-  // =============================
-  // EXERCISE ELTÁVOLÍTÁS
-  // =============================
 
   removeExercise(eid: number | undefined): void {
     if (eid == null) {
@@ -162,8 +220,7 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
     }
 
     this.selectedExercises = this.selectedExercises.filter((exercise) => exercise.id !== eid);
-
-    this.onExercisesChange(this.selectedExercises);
+    this.assignedExercises.emit([...this.selectedExercises]);
   }
 
   // =============================
@@ -179,20 +236,16 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
 
     if (this.selectedWorkoutIds.length === 0) {
       this.showError('assignWorkoutExercises.errors.selectWorkout');
-
       return;
     }
 
     if (this.selectedExercises.length === 0) {
       this.showError('assignWorkoutExercises.errors.selectExercise');
-
+      this.exerciseSelectorOpen = true;
       return;
     }
 
-    const requests: Array<{
-      workoutId: number;
-      exerciseId: number;
-    }> = [];
+    const requests: Array<{ workoutId: number; exerciseId: number }> = [];
 
     for (const workoutId of this.selectedWorkoutIds) {
       for (const exercise of this.selectedExercises) {
@@ -209,7 +262,6 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
 
     if (requests.length === 0) {
       this.showError('assignWorkoutExercises.errors.noExercise');
-
       return;
     }
 
@@ -246,13 +298,14 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
           .filter((result) => !result.success)
           .map((result) => result.message || 'assignWorkoutExercises.errors.assign');
 
-        this.finishSave(successes.length, errors.length, [...new Set(successes)], [...new Set(errors)]);
+        this.finishSave(
+          successes.length,
+          errors.length,
+          [...new Set(successes)],
+          [...new Set(errors)],
+        );
       });
   }
-
-  // =============================
-  // MENTÉS EREDMÉNYE
-  // =============================
 
   private finishSave(
     successCount: number,
@@ -261,10 +314,6 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
     errors: string[],
   ): void {
     if (errorCount === 0) {
-      // ==================================================
-      // PROGRAM BUILDERBE VISSZANAVIGÁLÁS
-      // ==================================================
-
       if (this.fromProgramBuilder && this.programId !== null && this.newWorkoutId !== null) {
         this.router.navigate(['/coach/program-builder'], {
           queryParams: {
@@ -272,22 +321,15 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
             newWorkoutId: this.newWorkoutId,
           },
         });
-
         return;
       }
 
-      // ==================================================
-      // EREDETI SIKERES MENTÉS
-      // ==================================================
-
       this.showSuccess(successes[0] || 'assignWorkoutExercises.errors.assignSuccess');
-
       return;
     }
 
     if (successCount === 0) {
       this.showError(errors.join(' '));
-
       return;
     }
 
@@ -322,21 +364,12 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
 
   private clearMessage(): void {
     this.message = '';
-
     this.messageType = '';
+    this.messageParams = {};
   }
-
-  // =============================
-  // DESTROY
-  // =============================
 
   ngOnDestroy(): void {
     this.destroy$.next();
-
     this.destroy$.complete();
   }
-  trackByWorkoutId(_index: number, workoutId: number): number {
-    return workoutId;
-  }
-
 }
