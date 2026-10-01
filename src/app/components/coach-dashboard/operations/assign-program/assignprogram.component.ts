@@ -95,7 +95,7 @@ export class AssignProgramComponent implements OnInit, OnDestroy {
       next: (response) => {
         this.loading = false;
 
-        this.success = response.status === 'success';
+        this.success = true;
 
         this.message = response.message || this.translate.instant('assignProgram.success');
       },
