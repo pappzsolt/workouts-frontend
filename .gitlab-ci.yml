@@ -81,7 +81,7 @@ cache:
     - 'echo "Angular artifact available"'
 
     # ========================================================
-    # LOGIN
+    # LOGIN TO GITLAB REGISTRY
     # ========================================================
 
     - 'echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" --username "$CI_REGISTRY_USER" --password-stdin'
@@ -92,7 +92,6 @@ cache:
 
     - >
       docker build
-      --pull
       -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
       .
 
@@ -162,7 +161,7 @@ cache:
   script:
 
     # ========================================================
-    # INFORMATION
+    # FRONTEND DEPLOY PATH
     # ========================================================
 
     - 'echo "Environment: $DEPLOY_ENVIRONMENT"'
@@ -171,6 +170,19 @@ cache:
     - 'echo "Deploy path: $DEPLOY_PATH"'
     - 'echo "Registry: $CI_REGISTRY"'
     - 'echo "Image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"'
+
+    # ========================================================
+    # SAFETY CHECK
+    # ========================================================
+    # A frontend deploy MUST NOT use /home/pappzs itself,
+    # because that is the backend Compose directory.
+
+    - |
+      if [ "$DEPLOY_PATH" = "/home/pappzs" ]; then
+        echo "ERROR: DEPLOY_PATH cannot be /home/pappzs"
+        echo "Frontend must use a separate directory."
+        exit 1
+      fi
 
     # ========================================================
     # SSH TEST
@@ -183,7 +195,7 @@ cache:
       "echo 'SSH connection OK'"
 
     # ========================================================
-    # CREATE FRONTEND DEPLOY DIRECTORY
+    # CREATE FRONTEND DIRECTORY
     # ========================================================
 
     - >
@@ -191,6 +203,16 @@ cache:
       -i ~/.ssh/id_ed25519
       "$DEPLOY_USER@$DEPLOY_SERVER"
       "mkdir -p '$DEPLOY_PATH'"
+
+    # ========================================================
+    # CHECK FRONTEND DIRECTORY
+    # ========================================================
+
+    - >
+      ssh
+      -i ~/.ssh/id_ed25519
+      "$DEPLOY_USER@$DEPLOY_SERVER"
+      "ls -ld '$DEPLOY_PATH'"
 
     # ========================================================
     # COPY DOCKER COMPOSE
@@ -249,6 +271,13 @@ cache:
 
     # ========================================================
     # START / UPDATE FRONTEND ONLY
+    # ========================================================
+    #
+    # IMPORTANT:
+    # This command runs in the FRONTEND directory.
+    # It does NOT touch the backend Compose project.
+    #
+    # No --remove-orphans here.
     # ========================================================
 
     - >
@@ -338,6 +367,7 @@ frontend-deploy-test:
 
   variables:
     DEPLOY_ENVIRONMENT: "test"
+    DEPLOY_PATH: "/home/pappzs/frontend/test"
 
   environment:
     name: test
@@ -400,6 +430,7 @@ frontend-deploy-production:
 
   variables:
     DEPLOY_ENVIRONMENT: "production"
+    DEPLOY_PATH: "/home/pappzs/frontend/production"
 
   environment:
     name: production
