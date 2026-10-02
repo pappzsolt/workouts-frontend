@@ -663,7 +663,8 @@
     "password": "Jelszó",
     "passwordPlaceholder": "Jelszó",
     "loading": "Betöltés...",
-    "login": "Bejelentkezés"
+    "login": "Bejelentkezés",
+    "forgotPassword": "Elfelejtett jelszó?"
   },
   "adminLayout": {
     "title": "Admin Dashboard",
@@ -821,5 +822,33 @@
     "programs": "Programok",
     "save": "Mentés",
     "selectedWorkouts": "Kiválasztott edzések"
+  },
+  "forgotPassword": {
+    "title": "Elfelejtett jelszó",
+    "description": "Add meg a regisztrált email címedet, és elküldjük a jelszó-visszaállítási lehetőséget.",
+    "email": "Email cím",
+    "emailPlaceholder": "email@example.com",
+    "submit": "Jelszó-visszaállítás kérése",
+    "sending": "Küldés...",
+    "backToLogin": "Vissza a bejelentkezéshez",
+    "invalidEmail": "Kérlek adj meg egy érvényes email címet.",
+    "serviceUnavailable": "Az email küldési szolgáltatás jelenleg nem elérhető. Kérlek próbáld meg később.",
+    "requestFailed": "A jelszó-visszaállítási kérés nem sikerült."
+  },
+  "resetPassword": {
+    "title": "Új jelszó beállítása",
+    "description": "Adj meg egy új jelszót a fiókodhoz.",
+    "newPassword": "Új jelszó",
+    "confirmPassword": "Új jelszó ismét",
+    "submit": "Jelszó megváltoztatása",
+    "saving": "Mentés...",
+    "backToLogin": "Vissza a bejelentkezéshez",
+    "login": "Bejelentkezés",
+    "invalidLink": "A jelszó-visszaállítási link érvénytelen vagy hiányos.",
+    "passwordLength": "Az új jelszó legalább 8 és legfeljebb 72 karakter lehet.",
+    "passwordMismatch": "A két jelszó nem egyezik.",
+    "serviceUnavailable": "A szolgáltatás jelenleg nem elérhető. Kérlek próbáld meg később.",
+    "resetFailed": "A jelszó visszaállítása nem sikerült.",
+    "success": "A jelszó sikeresen megváltozott."
   }
 }

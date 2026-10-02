@@ -663,7 +663,8 @@
     "password": "Password",
     "passwordPlaceholder": "Password",
     "loading": "Loading...",
-    "login": "Login"
+    "login": "Login",
+    "forgotPassword": "Forgot password?"
   },
   "adminLayout": {
     "title": "Admin Dashboard",
@@ -821,5 +822,33 @@
     "programs": "Programs",
     "save": "Save",
     "selectedWorkouts": "Selected workouts"
+  },
+  "forgotPassword": {
+    "title": "Forgot password",
+    "description": "Enter your registered email address and we will send you a password reset link.",
+    "email": "Email address",
+    "emailPlaceholder": "email@example.com",
+    "submit": "Request password reset",
+    "sending": "Sending...",
+    "backToLogin": "Back to login",
+    "invalidEmail": "Please enter a valid email address.",
+    "serviceUnavailable": "The email service is currently unavailable. Please try again later.",
+    "requestFailed": "The password reset request failed."
+  },
+  "resetPassword": {
+    "title": "Set a new password",
+    "description": "Enter a new password for your account.",
+    "newPassword": "New password",
+    "confirmPassword": "Repeat new password",
+    "submit": "Change password",
+    "saving": "Saving...",
+    "backToLogin": "Back to login",
+    "login": "Login",
+    "invalidLink": "The password reset link is invalid or incomplete.",
+    "passwordLength": "The new password must be between 8 and 72 characters.",
+    "passwordMismatch": "The two passwords do not match.",
+    "serviceUnavailable": "The service is currently unavailable. Please try again later.",
+    "resetFailed": "The password reset failed.",
+    "success": "Your password has been changed successfully."
   }
 }

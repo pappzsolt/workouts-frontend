@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 
 import { LoginComponent } from './components/login/login.component';
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
+import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
 import { LayoutComponent } from './layouts/default-layout/layout.component';
 import { UserProgramStatisticsComponent } from './components/user-dashboard/operations/program-statistics/program-statistics.component';
@@ -46,6 +48,14 @@ export const routes: Routes = [
       {
         path: 'login',
         component: LoginComponent,
+      },
+      {
+        path: 'forgot-password',
+        component: ForgotPasswordComponent,
+      },
+      {
+        path: 'reset-password',
+        component: ResetPasswordComponent,
       },
       {
         path: '',

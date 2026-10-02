@@ -98,6 +98,48 @@ export class AuthService {
    * A backend refresh endpointja új access és új refresh tokent ad vissza
    * (refresh-token rotation).
    */
+  /**
+   * Elfelejtett jelszó: reset email kérése.
+   *
+   * A backend szándékosan azonos választ ad létező és nem létező email címre.
+   * A kérés nyilvános endpoint, ezért a rawHttp klienst használjuk.
+   */
+  requestPasswordReset(email: string): Observable<{ message: string }> {
+    return this.rawHttp
+      .post<ApiResponse<{ message: string }>>(API_ENDPOINTS.authForgotPassword, { email })
+      .pipe(
+        map((response) => {
+          if (!response.success || !response.data) {
+            throw new Error(response.message ?? 'A jelszó-visszaállítási kérés sikertelen.');
+          }
+
+          return response.data;
+        }),
+      );
+  }
+
+  /**
+   * Jelszó visszaállítása az emailben kapott egyszer használatos tokennel.
+   *
+   * A backend ResetPasswordRequest DTO-ja csak a token + newPassword mezőket várja.
+   */
+  resetPassword(token: string, newPassword: string): Observable<void> {
+    return this.rawHttp
+      .post<ApiResponse<null>>(API_ENDPOINTS.authResetPassword, {
+        token,
+        newPassword,
+      })
+      .pipe(
+        map((response) => {
+          if (!response.success) {
+            throw new Error(response.message ?? 'A jelszó visszaállítása sikertelen.');
+          }
+
+          return undefined;
+        }),
+      );
+  }
+
   refreshAccessToken(): Observable<LoginResponse> {
     const refreshToken = localStorage.getItem('refreshToken');
 

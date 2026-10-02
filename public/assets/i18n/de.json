@@ -663,7 +663,8 @@
     "password": "Password",
     "passwordPlaceholder": "Password",
     "loading": "Loading...",
-    "login": "Login"
+    "login": "Login",
+    "forgotPassword": "Passwort vergessen?"
   },
   "adminLayout": {
     "title": "Admin Dashboard",
@@ -821,5 +822,33 @@
     "programs": "Programme",
     "save": "Speichern",
     "selectedWorkouts": "Ausgewählte Workouts"
+  },
+  "forgotPassword": {
+    "title": "Passwort vergessen",
+    "description": "Gib deine registrierte E-Mail-Adresse ein und wir senden dir eine Möglichkeit zum Zurücksetzen des Passworts.",
+    "email": "E-Mail-Adresse",
+    "emailPlaceholder": "email@example.com",
+    "submit": "Passwort zurücksetzen anfordern",
+    "sending": "Senden...",
+    "backToLogin": "Zur Anmeldung",
+    "invalidEmail": "Bitte gib eine gültige E-Mail-Adresse ein.",
+    "serviceUnavailable": "Der E-Mail-Dienst ist derzeit nicht verfügbar. Bitte versuche es später erneut.",
+    "requestFailed": "Die Anfrage zum Zurücksetzen des Passworts ist fehlgeschlagen."
+  },
+  "resetPassword": {
+    "title": "Neues Passwort festlegen",
+    "description": "Gib ein neues Passwort für dein Konto ein.",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Neues Passwort wiederholen",
+    "submit": "Passwort ändern",
+    "saving": "Speichern...",
+    "backToLogin": "Zur Anmeldung",
+    "login": "Anmelden",
+    "invalidLink": "Der Link zum Zurücksetzen des Passworts ist ungültig oder unvollständig.",
+    "passwordLength": "Das neue Passwort muss zwischen 8 und 72 Zeichen lang sein.",
+    "passwordMismatch": "Die beiden Passwörter stimmen nicht überein.",
+    "serviceUnavailable": "Der Dienst ist derzeit nicht verfügbar. Bitte versuche es später erneut.",
+    "resetFailed": "Das Zurücksetzen des Passworts ist fehlgeschlagen.",
+    "success": "Dein Passwort wurde erfolgreich geändert."
   }
 }
