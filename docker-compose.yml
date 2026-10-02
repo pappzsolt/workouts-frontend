@@ -1,10 +1,7 @@
 services:
   workouts-frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${WORKOUTS_FRONTEND_IMAGE}
 
-    image: workouts-frontend:1.0.0
     container_name: workouts-frontend
 
     ports:
