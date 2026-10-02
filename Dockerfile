@@ -1,9 +1,6 @@
-# =========================
-# Nginx
-# =========================
 FROM nginx:alpine
 
-COPY dist/workouts-frontend/ /usr/share/nginx/html/
+COPY dist/workouts-frontend/browser/ /usr/share/nginx/html/
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 

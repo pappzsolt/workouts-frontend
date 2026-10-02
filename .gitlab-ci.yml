@@ -42,7 +42,7 @@ cache:
     - 'npm run build'
     - 'echo "Checking Angular build"'
     - 'test -d dist/workouts-frontend'
-    - 'test -f dist/workouts-frontend/index.html'
+    - 'test -f dist/workouts-frontend/browser/index.html'
     - 'echo "Frontend build OK"'
 
   artifacts:
@@ -72,7 +72,7 @@ cache:
     - 'echo "CI_REGISTRY_IMAGE=$CI_REGISTRY_IMAGE"'
     - 'echo "Registry image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"'
     - 'test -d dist/workouts-frontend'
-    - 'test -f dist/workouts-frontend/index.html'
+    - 'test -f dist/workouts-frontend/browser/index.html'
 
     # ========================================================
     # LOGIN
