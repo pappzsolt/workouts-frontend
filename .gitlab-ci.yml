@@ -1,37 +1,401 @@
-before_script:
-  - 'apk add --no-cache openssh-client netcat-openbsd'
-  - 'mkdir -p ~/.ssh'
-  - 'chmod 700 ~/.ssh'
+stages:
+  - test
+  - build
+  - docker
+  - deploy
 
-  # ========================================================
-  # SSH PRIVATE KEY
-  # ========================================================
+variables:
+  GIT_DEPTH: "1"
+  NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.npm"
 
-  - 'test -f "$SSH_PRIVATE_KEY"'
-  - 'sed "s/\r$//" "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519'
-  - 'printf "\n" >> ~/.ssh/id_ed25519'
-  - 'chmod 600 ~/.ssh/id_ed25519'
+cache:
+  key: "${CI_PROJECT_NAME}-npm"
+  paths:
+    - .npm/
 
-  # ========================================================
-  # SSH KEY VALIDATION
-  # ========================================================
 
-  - 'echo "Validating SSH private key..."'
-  - 'test -s ~/.ssh/id_ed25519'
-  - 'ssh-keygen -y -f ~/.ssh/id_ed25519 > /tmp/deploy_public_key'
-  - 'echo "SSH private key validation OK"'
+# ============================================================
+# COMMON TEMPLATES
+# ============================================================
 
-  # ========================================================
-  # SSH CONNECTIVITY
-  # ========================================================
+.frontend-test:
+  stage: test
+  image: node:22-alpine
 
-  - 'echo "Checking SSH connectivity to $DEPLOY_SERVER"'
-  - 'nc -zv "$DEPLOY_SERVER" 22'
+  script:
+    - 'echo "Environment: $DEPLOY_ENVIRONMENT"'
+    - 'echo "Checking frontend project"'
+    - 'test -f package.json'
+    - 'test -f angular.json'
+    - 'echo "Frontend project OK"'
 
-  # ========================================================
-  # KNOWN HOST
-  # ========================================================
 
-  - 'ssh-keyscan -v -T 10 -H "$DEPLOY_SERVER" >> ~/.ssh/known_hosts'
-  - 'chmod 644 ~/.ssh/known_hosts'
-  - 'echo "Known host added successfully"'
+.frontend-build:
+  stage: build
+  image: node:22-alpine
+
+  script:
+    - 'echo "Environment: $DEPLOY_ENVIRONMENT"'
+    - 'echo "Installing frontend dependencies"'
+    - 'npm ci'
+    - 'echo "Building Angular frontend"'
+    - 'npm run build'
+    - 'echo "Checking Angular build"'
+    - 'test -d dist/workouts-frontend'
+    - 'test -f dist/workouts-frontend/browser/index.html'
+    - 'echo "Frontend build OK"'
+
+  artifacts:
+    paths:
+      - dist/workouts-frontend/
+    expire_in: 1 day
+
+
+.frontend-docker-build:
+  stage: docker
+  image: docker:29-cli
+
+  services:
+    - name: docker:29-dind
+      command:
+        - "--tls=false"
+        - "--insecure-registry=192.168.1.37:5050"
+
+  variables:
+    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_DRIVER: overlay2
+
+  script:
+    - 'echo "Environment: $DEPLOY_ENVIRONMENT"'
+    - 'echo "CI_REGISTRY=$CI_REGISTRY"'
+    - 'echo "CI_REGISTRY_IMAGE=$CI_REGISTRY_IMAGE"'
+    - 'echo "Registry image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"'
+
+    # ========================================================
+    # VERIFY BUILD ARTIFACT
+    # ========================================================
+
+    - 'test -d dist/workouts-frontend'
+    - 'test -f dist/workouts-frontend/browser/index.html'
+    - 'echo "Angular artifact available"'
+
+    # ========================================================
+    # LOGIN
+    # ========================================================
+
+    - 'echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" --username "$CI_REGISTRY_USER" --password-stdin'
+
+    # ========================================================
+    # BUILD DOCKER IMAGE
+    # ========================================================
+
+    - >
+      docker build
+      --pull
+      -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+      .
+
+    # ========================================================
+    # PUSH
+    # ========================================================
+
+    - >
+      docker push
+      "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+
+
+.frontend-deploy:
+  stage: deploy
+  image: alpine:3.22
+
+  before_script:
+    - 'apk add --no-cache openssh-client'
+    - 'mkdir -p ~/.ssh'
+    - 'chmod 700 ~/.ssh'
+
+    # ========================================================
+    # SSH PRIVATE KEY
+    # ========================================================
+
+    - 'test -f "$SSH_PRIVATE_KEY"'
+    - 'echo "SSH private key file found"'
+
+    - 'sed "s/\r$//" "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519'
+    - 'printf "\n" >> ~/.ssh/id_ed25519'
+    - 'chmod 600 ~/.ssh/id_ed25519'
+
+    # ========================================================
+    # SSH KEY VALIDATION
+    # ========================================================
+
+    - 'echo "Validating SSH private key..."'
+    - 'test -s ~/.ssh/id_ed25519'
+    - 'ssh-keygen -y -f ~/.ssh/id_ed25519 > /tmp/deploy_public_key'
+    - 'echo "SSH private key validation OK"'
+
+    # ========================================================
+    # SSH CONFIGURATION
+    # ========================================================
+
+    - |
+      cat > ~/.ssh/config <<EOF
+      Host *
+        StrictHostKeyChecking no
+        UserKnownHostsFile /dev/null
+        IdentitiesOnly yes
+      EOF
+
+    - 'chmod 600 ~/.ssh/config'
+    - 'echo "SSH configuration ready"'
+
+  script:
+
+    # ========================================================
+    # INFORMATION
+    # ========================================================
+
+    - 'echo "Environment: $DEPLOY_ENVIRONMENT"'
+    - 'echo "Deploy server: $DEPLOY_SERVER"'
+    - 'echo "Deploy user: $DEPLOY_USER"'
+    - 'echo "Deploy path: $DEPLOY_PATH"'
+    - 'echo "Registry: $CI_REGISTRY"'
+    - 'echo "Image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"'
+
+    # ========================================================
+    # SSH TEST
+    # ========================================================
+
+    - >
+      ssh
+      -i ~/.ssh/id_ed25519
+      "$DEPLOY_USER@$DEPLOY_SERVER"
+      "echo 'SSH connection OK'"
+
+    # ========================================================
+    # CREATE REMOTE DIRECTORY
+    # ========================================================
+
+    - >
+      ssh
+      -i ~/.ssh/id_ed25519
+      "$DEPLOY_USER@$DEPLOY_SERVER"
+      "mkdir -p '$DEPLOY_PATH'"
+
+    # ========================================================
+    # COPY DOCKER COMPOSE
+    # ========================================================
+
+    - >
+      scp
+      -i ~/.ssh/id_ed25519
+      docker-compose.yml
+      "$DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/docker-compose.yml"
+
+    # ========================================================
+    # CREATE RUNTIME ENV
+    # ========================================================
+
+    - |
+      cat > deploy.env <<EOF
+      WORKOUTS_FRONTEND_IMAGE=${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
+      EOF
+
+    # ========================================================
+    # COPY RUNTIME ENV
+    # ========================================================
+
+    - >
+      scp
+      -i ~/.ssh/id_ed25519
+      deploy.env
+      "$DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/.env"
+
+    - 'rm -f deploy.env'
+
+    # ========================================================
+    # REGISTRY LOGIN ON DEPLOY SERVER
+    # ========================================================
+
+    - |
+      printf '%s' "$CI_REGISTRY_PASSWORD" |
+      ssh \
+        -i ~/.ssh/id_ed25519 \
+        "$DEPLOY_USER@$DEPLOY_SERVER" \
+        "docker login '$CI_REGISTRY' \
+        --username '$CI_REGISTRY_USER' \
+        --password-stdin"
+
+    # ========================================================
+    # PULL IMAGE
+    # ========================================================
+
+    - >
+      ssh
+      -i ~/.ssh/id_ed25519
+      "$DEPLOY_USER@$DEPLOY_SERVER"
+      "cd '$DEPLOY_PATH' &&
+       docker compose pull"
+
+    # ========================================================
+    # START / UPDATE
+    # ========================================================
+
+    - >
+      ssh
+      -i ~/.ssh/id_ed25519
+      "$DEPLOY_USER@$DEPLOY_SERVER"
+      "cd '$DEPLOY_PATH' &&
+       docker compose up -d --remove-orphans"
+
+    # ========================================================
+    # STATUS
+    # ========================================================
+
+    - >
+      ssh
+      -i ~/.ssh/id_ed25519
+      "$DEPLOY_USER@$DEPLOY_SERVER"
+      "cd '$DEPLOY_PATH' &&
+       docker compose ps"
+
+    # ========================================================
+    # CONTAINER CHECK
+    # ========================================================
+
+    - >
+      ssh
+      -i ~/.ssh/id_ed25519
+      "$DEPLOY_USER@$DEPLOY_SERVER"
+      "docker ps --filter 'name=workouts-frontend'"
+
+    # ========================================================
+    # LOGS
+    # ========================================================
+
+    - >
+      ssh
+      -i ~/.ssh/id_ed25519
+      "$DEPLOY_USER@$DEPLOY_SERVER"
+      "cd '$DEPLOY_PATH' &&
+       docker compose logs --tail=100 workouts-frontend"
+
+
+# ============================================================
+# TEST ENVIRONMENT
+# ============================================================
+
+frontend-test-test:
+  extends: .frontend-test
+
+  variables:
+    DEPLOY_ENVIRONMENT: "test"
+
+  environment:
+    name: test
+
+
+frontend-build-test:
+  extends: .frontend-build
+
+  variables:
+    DEPLOY_ENVIRONMENT: "test"
+
+  environment:
+    name: test
+
+  needs:
+    - job: frontend-test-test
+      artifacts: false
+
+
+frontend-docker-build-test:
+  extends: .frontend-docker-build
+
+  variables:
+    DEPLOY_ENVIRONMENT: "test"
+
+  environment:
+    name: test
+
+  needs:
+    - job: frontend-build-test
+      artifacts: true
+
+
+frontend-deploy-test:
+  extends: .frontend-deploy
+
+  variables:
+    DEPLOY_ENVIRONMENT: "test"
+
+  environment:
+    name: test
+
+  needs:
+    - job: frontend-docker-build-test
+      artifacts: false
+
+
+# ============================================================
+# PRODUCTION ENVIRONMENT
+# ============================================================
+
+frontend-test-production:
+  extends: .frontend-test
+
+  variables:
+    DEPLOY_ENVIRONMENT: "production"
+
+  environment:
+    name: production
+
+  when: manual
+
+
+frontend-build-production:
+  extends: .frontend-build
+
+  variables:
+    DEPLOY_ENVIRONMENT: "production"
+
+  environment:
+    name: production
+
+  needs:
+    - job: frontend-test-production
+      artifacts: false
+
+  when: manual
+
+
+frontend-docker-build-production:
+  extends: .frontend-docker-build
+
+  variables:
+    DEPLOY_ENVIRONMENT: "production"
+
+  environment:
+    name: production
+
+  needs:
+    - job: frontend-build-production
+      artifacts: true
+
+  when: manual
+
+
+frontend-deploy-production:
+  extends: .frontend-deploy
+
+  variables:
+    DEPLOY_ENVIRONMENT: "production"
+
+  environment:
+    name: production
+
+  needs:
+    - job: frontend-docker-build-production
+      artifacts: false
+
+  when: manual
