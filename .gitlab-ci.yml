@@ -161,7 +161,7 @@ cache:
   script:
 
     # ========================================================
-    # FRONTEND DEPLOY PATH
+    # INFORMATION
     # ========================================================
 
     - 'echo "Environment: $DEPLOY_ENVIRONMENT"'
@@ -172,10 +172,30 @@ cache:
     - 'echo "Image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"'
 
     # ========================================================
+    # REQUIRED VARIABLES
+    # ========================================================
+
+    - |
+      if [ -z "$DEPLOY_SERVER" ]; then
+        echo "ERROR: DEPLOY_SERVER is empty"
+        exit 1
+      fi
+
+      if [ -z "$DEPLOY_USER" ]; then
+        echo "ERROR: DEPLOY_USER is empty"
+        exit 1
+      fi
+
+      if [ -z "$DEPLOY_PATH" ]; then
+        echo "ERROR: DEPLOY_PATH is empty"
+        exit 1
+      fi
+
+    # ========================================================
     # SAFETY CHECK
     # ========================================================
-    # A frontend deploy MUST NOT use /home/pappzs itself,
-    # because that is the backend Compose directory.
+    # /home/pappzs is the backend Compose directory.
+    # Frontend must always use a separate directory.
 
     - |
       if [ "$DEPLOY_PATH" = "/home/pappzs" ]; then
@@ -197,6 +217,7 @@ cache:
     # ========================================================
     # CREATE FRONTEND DIRECTORY
     # ========================================================
+    # If it does not exist, it will be created automatically.
 
     - >
       ssh
@@ -273,11 +294,10 @@ cache:
     # START / UPDATE FRONTEND ONLY
     # ========================================================
     #
-    # IMPORTANT:
-    # This command runs in the FRONTEND directory.
-    # It does NOT touch the backend Compose project.
+    # This runs inside DEPLOY_PATH.
+    # Backend Compose project is NOT touched.
     #
-    # No --remove-orphans here.
+    # Do NOT use --remove-orphans.
     # ========================================================
 
     - >
@@ -367,7 +387,6 @@ frontend-deploy-test:
 
   variables:
     DEPLOY_ENVIRONMENT: "test"
-    DEPLOY_PATH: "/home/pappzs/frontend/test"
 
   environment:
     name: test
@@ -430,7 +449,6 @@ frontend-deploy-production:
 
   variables:
     DEPLOY_ENVIRONMENT: "production"
-    DEPLOY_PATH: "/home/pappzs/frontend/production"
 
   environment:
     name: production
