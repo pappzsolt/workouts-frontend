@@ -104,7 +104,7 @@ cache:
   image: alpine:3.22
 
   before_script:
-    - 'apk add --no-cache openssh-client'
+    - 'apk add --no-cache openssh-client file'
     - 'mkdir -p ~/.ssh'
     - 'chmod 700 ~/.ssh'
 
@@ -387,22 +387,6 @@ frontend-docker-build-production:
   needs:
     - job: frontend-build-production
       artifacts: true
-
-  when: manual
-
-
-frontend-deploy-production:
-  extends: .frontend-deploy
-
-  variables:
-    DEPLOY_ENVIRONMENT: "production"
-
-  environment:
-    name: production
-
-  needs:
-    - job: frontend-docker-build-production
-      artifacts: false
 
   when: manual
 
