@@ -110,7 +110,17 @@ cache:
   image: alpine:3.22
 
   before_script:
+
+    # ========================================================
+    # PACKAGES
+    # ========================================================
+
     - 'apk add --no-cache openssh-client'
+
+    # ========================================================
+    # SSH DIRECTORY
+    # ========================================================
+
     - 'mkdir -p ~/.ssh'
     - 'chmod 700 ~/.ssh'
 
@@ -173,7 +183,7 @@ cache:
       "echo 'SSH connection OK'"
 
     # ========================================================
-    # CREATE REMOTE DIRECTORY
+    # CREATE FRONTEND DEPLOY DIRECTORY
     # ========================================================
 
     - >
@@ -227,7 +237,7 @@ cache:
         --password-stdin"
 
     # ========================================================
-    # PULL IMAGE
+    # PULL FRONTEND IMAGE
     # ========================================================
 
     - >
@@ -238,7 +248,7 @@ cache:
        docker compose pull"
 
     # ========================================================
-    # START / UPDATE
+    # START / UPDATE FRONTEND ONLY
     # ========================================================
 
     - >
@@ -246,7 +256,7 @@ cache:
       -i ~/.ssh/id_ed25519
       "$DEPLOY_USER@$DEPLOY_SERVER"
       "cd '$DEPLOY_PATH' &&
-       docker compose up -d --remove-orphans"
+       docker compose up -d"
 
     # ========================================================
     # STATUS
