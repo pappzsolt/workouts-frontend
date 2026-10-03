@@ -1,0 +1,17 @@
+services:
+  workouts-frontend-runtime:
+    image: ${WORKOUTS_FRONTEND_IMAGE}
+    container_name: workouts-frontend-runtime
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.runtime.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    networks:
+      - workouts-network
+    restart: unless-stopped
+
+networks:
+  workouts-network:
+    external: true

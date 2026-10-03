@@ -7,146 +7,119 @@ stages:
 variables:
   GIT_DEPTH: "1"
   NPM_CONFIG_CACHE: "$CI_PROJECT_DIR/.npm"
+  FRONTEND_IMAGE_NAME: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+  FRONTEND_PACKAGE_NAME: "workouts-frontend"
+  FRONTEND_PACKAGE_VERSION: "$CI_COMMIT_SHA"
+  FRONTEND_PACKAGE_FILE: "workouts-frontend-image.tar.gz"
 
 cache:
   key: "${CI_PROJECT_NAME}-npm"
   paths:
     - .npm/
 
-
-# ============================================================
-# COMMON TEMPLATES
-# ============================================================
-
-.frontend-test:
+# ------------------------------------------------------------
+# Frontend validation. No environment-specific files are changed.
+# ------------------------------------------------------------
+frontend-test:
   stage: test
   image: node:22-alpine
-
   script:
-    - 'echo "Environment: $DEPLOY_ENVIRONMENT"'
     - 'echo "Checking frontend project"'
     - 'test -f package.json'
     - 'test -f angular.json'
-    - 'echo "Frontend project OK"'
+    - 'test -f Dockerfile'
+    - 'test -f docker-compose.yml'
+    - 'test -f nginx.conf'
+    - 'test -n "$(node --version)"'
+    - 'test -n "$(npm --version)"'
+    - 'echo "Frontend project validation OK"'
+  environment:
+    name: test
 
-
-.frontend-build:
+# ------------------------------------------------------------
+# ONE Angular build for the whole pipeline.
+# No production build is performed.
+# ------------------------------------------------------------
+frontend-build:
   stage: build
   image: node:22-alpine
-
+  needs:
+    - job: frontend-test
+      artifacts: false
   script:
-    - 'echo "Environment: $DEPLOY_ENVIRONMENT"'
-    - 'echo "Installing frontend dependencies"'
-    - 'npm ci'
-    - 'echo "Building Angular frontend"'
+    - 'echo "Building Angular frontend exactly once"'
+    - 'npm install'
     - 'npm run build'
-    - 'echo "Checking Angular build"'
     - 'test -d dist/workouts-frontend'
     - 'test -f dist/workouts-frontend/browser/index.html'
-    - 'echo "Frontend build OK"'
-
+    - 'echo "Angular build OK"'
   artifacts:
     paths:
       - dist/workouts-frontend/
     expire_in: 1 day
+  environment:
+    name: test
 
-
-.frontend-docker-build:
+# ------------------------------------------------------------
+# ONE Docker build.
+# The image contains only the Angular static files.
+# TEST and PROD provide their own nginx configuration at runtime.
+# ------------------------------------------------------------
+frontend-docker-build:
   stage: docker
   image: docker:29-cli
-
+  needs:
+    - job: frontend-build
+      artifacts: true
   services:
     - name: docker:29-dind
       command:
         - "--tls=false"
-        - "--insecure-registry=192.168.1.37:5050"
-
   variables:
     DOCKER_HOST: "tcp://docker:2375"
     DOCKER_TLS_CERTDIR: ""
     DOCKER_DRIVER: overlay2
-
   script:
-    - 'echo "Environment: $DEPLOY_ENVIRONMENT"'
-    - 'echo "CI_REGISTRY=$CI_REGISTRY"'
-    - 'echo "CI_REGISTRY_IMAGE=$CI_REGISTRY_IMAGE"'
-    - 'echo "Registry image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"'
-
-    # ========================================================
-    # VERIFY BUILD ARTIFACT
-    # ========================================================
-
-    - 'test -d dist/workouts-frontend'
+    - 'echo "Building frontend Docker image exactly once"'
     - 'test -f dist/workouts-frontend/browser/index.html'
-    - 'echo "Angular artifact available"'
-
-    # ========================================================
-    # LOGIN TO GITLAB REGISTRY
-    # ========================================================
-
-    - 'echo "$CI_REGISTRY_PASSWORD" | docker login "$CI_REGISTRY" --username "$CI_REGISTRY_USER" --password-stdin'
-
-    # ========================================================
-    # BUILD DOCKER IMAGE
-    # ========================================================
-
+    - 'docker version'
+    - 'docker build --pull -t "$FRONTEND_IMAGE_NAME" .'
+    - 'docker image inspect "$FRONTEND_IMAGE_NAME" >/dev/null'
+    - 'docker save "$FRONTEND_IMAGE_NAME" | gzip -1 > "$FRONTEND_PACKAGE_FILE"'
+    - 'test -s "$FRONTEND_PACKAGE_FILE"'
+    - 'ls -lh "$FRONTEND_PACKAGE_FILE"'
+    - 'echo "Uploading exact frontend image to GitLab Generic Package Registry"'
     - >
-      docker build
-      -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
-      .
+      curl --fail --show-error --location
+      --header "JOB-TOKEN: $CI_JOB_TOKEN"
+      --upload-file "$FRONTEND_PACKAGE_FILE"
+      "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$FRONTEND_PACKAGE_NAME/$FRONTEND_PACKAGE_VERSION/$FRONTEND_PACKAGE_FILE"
 
-    # ========================================================
-    # PUSH
-    # ========================================================
-
-    - >
-      docker push
-      "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
-
-
-.frontend-deploy:
+# ------------------------------------------------------------
+# TEST deploy.
+# Uses TEST scoped variables and TEST nginx configuration.
+# The existing TEST directory is /home/pappzs.
+# ------------------------------------------------------------
+frontend-deploy-test:
   stage: deploy
   image: alpine:3.22
-
+  needs:
+    - job: frontend-docker-build
+      artifacts: false
+  variables:
+    DEPLOY_ENVIRONMENT: "test"
+  environment:
+    name: test
   before_script:
-
-    # ========================================================
-    # PACKAGES
-    # ========================================================
-
-    - 'apk add --no-cache openssh-client'
-
-    # ========================================================
-    # SSH DIRECTORY
-    # ========================================================
-
+    - 'apk add --no-cache openssh-client curl'
     - 'mkdir -p ~/.ssh'
     - 'chmod 700 ~/.ssh'
-
-    # ========================================================
-    # SSH PRIVATE KEY
-    # ========================================================
-
     - 'test -f "$SSH_PRIVATE_KEY"'
-    - 'echo "SSH private key file found"'
-
     - 'sed "s/\r$//" "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519'
     - 'printf "\n" >> ~/.ssh/id_ed25519'
     - 'chmod 600 ~/.ssh/id_ed25519'
-
-    # ========================================================
-    # SSH KEY VALIDATION
-    # ========================================================
-
-    - 'echo "Validating SSH private key..."'
     - 'test -s ~/.ssh/id_ed25519'
     - 'ssh-keygen -y -f ~/.ssh/id_ed25519 > /tmp/deploy_public_key'
-    - 'echo "SSH private key validation OK"'
-
-    # ========================================================
-    # SSH CONFIGURATION
-    # ========================================================
-
     - |
       cat > ~/.ssh/config <<EOF
       Host *
@@ -154,307 +127,142 @@ cache:
         UserKnownHostsFile /dev/null
         IdentitiesOnly yes
       EOF
-
     - 'chmod 600 ~/.ssh/config'
-    - 'echo "SSH configuration ready"'
-
   script:
-
-    # ========================================================
-    # INFORMATION
-    # ========================================================
-
-    - 'echo "Environment: $DEPLOY_ENVIRONMENT"'
-    - 'echo "Deploy server: $DEPLOY_SERVER"'
-    - 'echo "Deploy user: $DEPLOY_USER"'
-    - 'echo "Deploy path: $DEPLOY_PATH"'
-    - 'echo "Registry: $CI_REGISTRY"'
-    - 'echo "Image: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"'
-
-    # ========================================================
-    # REQUIRED VARIABLES
-    # ========================================================
-
-    - |
-      if [ -z "$DEPLOY_SERVER" ]; then
-        echo "ERROR: DEPLOY_SERVER is empty"
-        exit 1
-      fi
-
-      if [ -z "$DEPLOY_USER" ]; then
-        echo "ERROR: DEPLOY_USER is empty"
-        exit 1
-      fi
-
-      if [ -z "$DEPLOY_PATH" ]; then
-        echo "ERROR: DEPLOY_PATH is empty"
-        exit 1
-      fi
-
-    # ========================================================
-    # SAFETY CHECK
-    # ========================================================
-    # /home/pappzs is the backend Compose directory.
-    # Frontend must always use a separate directory.
-
-    - |
-      if [ "$DEPLOY_PATH" = "/home/pappzs" ]; then
-        echo "ERROR: DEPLOY_PATH cannot be /home/pappzs"
-        echo "Frontend must use a separate directory."
-        exit 1
-      fi
-
-    # ========================================================
-    # SSH TEST
-    # ========================================================
-
-    - >
-      ssh
-      -i ~/.ssh/id_ed25519
-      "$DEPLOY_USER@$DEPLOY_SERVER"
-      "echo 'SSH connection OK'"
-
-    # ========================================================
-    # CREATE FRONTEND DIRECTORY
-    # ========================================================
-    # If it does not exist, it will be created automatically.
-
-    - >
-      ssh
-      -i ~/.ssh/id_ed25519
-      "$DEPLOY_USER@$DEPLOY_SERVER"
-      "mkdir -p '$DEPLOY_PATH'"
-
-    # ========================================================
-    # CHECK FRONTEND DIRECTORY
-    # ========================================================
-
-    - >
-      ssh
-      -i ~/.ssh/id_ed25519
-      "$DEPLOY_USER@$DEPLOY_SERVER"
-      "ls -ld '$DEPLOY_PATH'"
-
-    # ========================================================
-    # COPY DOCKER COMPOSE
-    # ========================================================
-
-    - >
-      scp
-      -i ~/.ssh/id_ed25519
-      docker-compose.yml
-      "$DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/docker-compose.yml"
-
-    # ========================================================
-    # CREATE RUNTIME ENV
-    # ========================================================
-
-    - |
-      cat > deploy.env <<EOF
-      WORKOUTS_FRONTEND_IMAGE=${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA}
-      EOF
-
-    # ========================================================
-    # COPY RUNTIME ENV
-    # ========================================================
-
-    - >
-      scp
-      -i ~/.ssh/id_ed25519
-      deploy.env
-      "$DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/.env"
-
+    - 'echo "TEST frontend deploy"'
+    - 'echo "Server: $DEPLOY_SERVER"'
+    - 'echo "User: $DEPLOY_USER"'
+    - 'echo "Path: $DEPLOY_PATH"'
+    - 'test "$DEPLOY_SERVER" = "192.168.1.37"'
+    - 'test "$DEPLOY_USER" = "pappzs"'
+    - 'test "$DEPLOY_PATH" = "/home/pappzs"'
+    - 'ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER" "echo SSH connection OK"'
+    - 'ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER" "mkdir -p \"$DEPLOY_PATH\""'
+    - 'scp -i ~/.ssh/id_ed25519 docker-compose.yml "$DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/docker-compose.yml"'
+    - 'scp -i ~/.ssh/id_ed25519 nginx.conf "$DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/nginx.conf"'
+    - 'printf "%s\n" "WORKOUTS_FRONTEND_IMAGE=$FRONTEND_IMAGE_NAME" > deploy.env'
+    - 'scp -i ~/.ssh/id_ed25519 deploy.env "$DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/.env"'
     - 'rm -f deploy.env'
-
-    # ========================================================
-    # REGISTRY LOGIN ON DEPLOY SERVER
-    # ========================================================
-
-    - |
-      printf '%s' "$CI_REGISTRY_PASSWORD" |
-      ssh \
-        -i ~/.ssh/id_ed25519 \
-        "$DEPLOY_USER@$DEPLOY_SERVER" \
-        "docker login '$CI_REGISTRY' \
-        --username '$CI_REGISTRY_USER' \
-        --password-stdin"
-
-    # ========================================================
-    # PULL FRONTEND IMAGE
-    # ========================================================
-
+    - 'echo "Downloading exact frontend image from GitLab Generic Package Registry"'
     - >
-      ssh
-      -i ~/.ssh/id_ed25519
-      "$DEPLOY_USER@$DEPLOY_SERVER"
-      "cd '$DEPLOY_PATH' &&
-       docker compose pull"
-
-    # ========================================================
-    # START / UPDATE FRONTEND ONLY
-    # ========================================================
-    #
-    # This runs inside DEPLOY_PATH.
-    # Backend Compose project is NOT touched.
-    #
-    # Do NOT use --remove-orphans.
-    # ========================================================
-
+      curl --fail --show-error --location
+      --header "JOB-TOKEN: $CI_JOB_TOKEN"
+      --output "$FRONTEND_PACKAGE_FILE"
+      "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$FRONTEND_PACKAGE_NAME/$FRONTEND_PACKAGE_VERSION/$FRONTEND_PACKAGE_FILE"
+    - 'test -s "$FRONTEND_PACKAGE_FILE"'
+    - 'scp -i ~/.ssh/id_ed25519 "$FRONTEND_PACKAGE_FILE" "$DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/$FRONTEND_PACKAGE_FILE"'
     - >
-      ssh
-      -i ~/.ssh/id_ed25519
-      "$DEPLOY_USER@$DEPLOY_SERVER"
-      "cd '$DEPLOY_PATH' &&
-       docker compose up -d"
-
-    # ========================================================
-    # STATUS
-    # ========================================================
-
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "gunzip -c '$DEPLOY_PATH/$FRONTEND_PACKAGE_FILE' | docker load"
     - >
-      ssh
-      -i ~/.ssh/id_ed25519
-      "$DEPLOY_USER@$DEPLOY_SERVER"
-      "cd '$DEPLOY_PATH' &&
-       docker compose ps"
-
-    # ========================================================
-    # CONTAINER CHECK
-    # ========================================================
-
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "docker image inspect '$FRONTEND_IMAGE_NAME' >/dev/null"
     - >
-      ssh
-      -i ~/.ssh/id_ed25519
-      "$DEPLOY_USER@$DEPLOY_SERVER"
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "rm -f '$DEPLOY_PATH/$FRONTEND_PACKAGE_FILE'"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "cd '$DEPLOY_PATH' && docker compose config >/dev/null"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "cd '$DEPLOY_PATH' && docker compose up -d --pull never"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "cd '$DEPLOY_PATH' && docker compose ps"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
       "docker ps --filter 'name=workouts-frontend'"
-
-    # ========================================================
-    # LOGS
-    # ========================================================
-
     - >
-      ssh
-      -i ~/.ssh/id_ed25519
-      "$DEPLOY_USER@$DEPLOY_SERVER"
-      "cd '$DEPLOY_PATH' &&
-       docker compose logs --tail=100 workouts-frontend"
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "docker logs --tail=100 workouts-frontend"
 
-
-# ============================================================
-# TEST ENVIRONMENT
-# ============================================================
-
-frontend-test-test:
-  extends: .frontend-test
-
-  variables:
-    DEPLOY_ENVIRONMENT: "test"
-
-  environment:
-    name: test
-
-
-frontend-build-test:
-  extends: .frontend-build
-
-  variables:
-    DEPLOY_ENVIRONMENT: "test"
-
-  environment:
-    name: test
-
-  needs:
-    - job: frontend-test-test
-      artifacts: false
-
-
-frontend-docker-build-test:
-  extends: .frontend-docker-build
-
-  variables:
-    DEPLOY_ENVIRONMENT: "test"
-
-  environment:
-    name: test
-
-  needs:
-    - job: frontend-build-test
-      artifacts: true
-
-
-frontend-deploy-test:
-  extends: .frontend-deploy
-
-  variables:
-    DEPLOY_ENVIRONMENT: "test"
-
-  environment:
-    name: test
-
-  needs:
-    - job: frontend-docker-build-test
-      artifacts: false
-
-
-# ============================================================
-# PRODUCTION ENVIRONMENT
-# ============================================================
-
-frontend-test-production:
-  extends: .frontend-test
-
-  variables:
-    DEPLOY_ENVIRONMENT: "production"
-
-  environment:
-    name: production
-
-  when: manual
-
-
-frontend-build-production:
-  extends: .frontend-build
-
-  variables:
-    DEPLOY_ENVIRONMENT: "production"
-
-  environment:
-    name: production
-
-  needs:
-    - job: frontend-test-production
-      artifacts: false
-
-  when: manual
-
-
-frontend-docker-build-production:
-  extends: .frontend-docker-build
-
-  variables:
-    DEPLOY_ENVIRONMENT: "production"
-
-  environment:
-    name: production
-
-  needs:
-    - job: frontend-build-production
-      artifacts: true
-
-  when: manual
-
-
+# ------------------------------------------------------------
+# PROD deploy.
+# Manual. Uses PROD scoped variables and the existing PROD certs.
+# It does NOT copy, delete, or modify the cert directory.
+# ------------------------------------------------------------
 frontend-deploy-production:
-  extends: .frontend-deploy
-
+  stage: deploy
+  image: alpine:3.22
+  needs:
+    - job: frontend-docker-build
+      artifacts: false
   variables:
     DEPLOY_ENVIRONMENT: "production"
-
   environment:
     name: production
-
-  needs:
-    - job: frontend-docker-build-production
-      artifacts: false
-
   when: manual
+  allow_failure: false
+  before_script:
+    - 'apk add --no-cache openssh-client curl'
+    - 'mkdir -p ~/.ssh'
+    - 'chmod 700 ~/.ssh'
+    - 'test -f "$SSH_PRIVATE_KEY_PROD"'
+    - 'sed "s/\r$//" "$SSH_PRIVATE_KEY_PROD" > ~/.ssh/id_ed25519'
+    - 'printf "\n" >> ~/.ssh/id_ed25519'
+    - 'chmod 600 ~/.ssh/id_ed25519'
+    - 'test -s ~/.ssh/id_ed25519'
+    - 'ssh-keygen -y -f ~/.ssh/id_ed25519 > /tmp/deploy_public_key'
+    - |
+      cat > ~/.ssh/config <<EOF
+      Host *
+        StrictHostKeyChecking no
+        UserKnownHostsFile /dev/null
+        IdentitiesOnly yes
+      EOF
+    - 'chmod 600 ~/.ssh/config'
+  script:
+    - 'echo "PRODUCTION frontend deploy"'
+    - 'echo "Server: $DEPLOY_SERVER"'
+    - 'echo "User: $DEPLOY_USER"'
+    - 'echo "Path: $DEPLOY_PATH"'
+    - 'test "$DEPLOY_SERVER" = "2.29.51.66"'
+    - 'test "$DEPLOY_USER" = "pappzsol"'
+    - 'test "$DEPLOY_PATH" = "/home/pappzsol/workouts/deploy/frontend"'
+    - 'ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER" "echo SSH connection OK"'
+    - 'ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER" "test -d \"$DEPLOY_PATH/certs\""'
+    - 'ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER" "test -f \"$DEPLOY_PATH/certs/workouts.hevexora.com.pem\""'
+    - 'ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER" "test -f \"$DEPLOY_PATH/certs/workouts.hevexora.com.key\""'
+    - 'scp -i ~/.ssh/id_ed25519 docker-compose.production.yml "$DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/docker-compose.yml"'
+    - 'scp -i ~/.ssh/id_ed25519 nginx.runtime.conf "$DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/nginx.runtime.conf"'
+    - 'printf "%s\n" "WORKOUTS_FRONTEND_IMAGE=$FRONTEND_IMAGE_NAME" > deploy.env'
+    - 'scp -i ~/.ssh/id_ed25519 deploy.env "$DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/.env"'
+    - 'rm -f deploy.env'
+    - 'echo "Downloading exact frontend image from GitLab Generic Package Registry"'
+    - >
+      curl --fail --show-error --location
+      --header "JOB-TOKEN: $CI_JOB_TOKEN"
+      --output "$FRONTEND_PACKAGE_FILE"
+      "$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$FRONTEND_PACKAGE_NAME/$FRONTEND_PACKAGE_VERSION/$FRONTEND_PACKAGE_FILE"
+    - 'test -s "$FRONTEND_PACKAGE_FILE"'
+    - 'scp -i ~/.ssh/id_ed25519 "$FRONTEND_PACKAGE_FILE" "$DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/$FRONTEND_PACKAGE_FILE"'
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "gunzip -c '$DEPLOY_PATH/$FRONTEND_PACKAGE_FILE' | docker load"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "docker image inspect '$FRONTEND_IMAGE_NAME' >/dev/null"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "rm -f '$DEPLOY_PATH/$FRONTEND_PACKAGE_FILE'"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "test -d '$DEPLOY_PATH/certs' && test -f '$DEPLOY_PATH/certs/workouts.hevexora.com.pem' && test -f '$DEPLOY_PATH/certs/workouts.hevexora.com.key'"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "cd '$DEPLOY_PATH' && docker compose config >/dev/null"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "docker network inspect workouts-network >/dev/null"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "cd '$DEPLOY_PATH' && docker compose up -d --pull never"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "cd '$DEPLOY_PATH' && docker compose ps"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "docker ps --filter 'name=workouts-frontend-runtime'"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "docker logs --tail=100 workouts-frontend-runtime"

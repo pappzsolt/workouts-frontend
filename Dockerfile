@@ -1,8 +1,6 @@
 FROM nginx:alpine
 
-COPY dist/workouts-frontend/browser/ /usr/share/nginx/html/
-
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY dist/workouts-frontend/browser/ /usr/share/nginx/html/browser/
 
 EXPOSE 80
 
