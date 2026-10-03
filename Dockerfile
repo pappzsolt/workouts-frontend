@@ -1,6 +1,5 @@
 FROM nginx:alpine
-
-COPY dist/workouts-frontend/browser/ /usr/share/nginx/html/browser/
+COPY dist/workouts-frontend/browser/ /usr/share/nginx/html/
 
 EXPOSE 80
 
