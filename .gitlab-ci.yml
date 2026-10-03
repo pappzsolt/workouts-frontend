@@ -62,8 +62,14 @@ frontend-build:
 
 # ------------------------------------------------------------
 # ONE Docker build.
-# The image contains only the Angular static files.
-# TEST and PROD provide their own nginx configuration at runtime.
+# The image contains the Angular static files.
+#
+# TEST uses /usr/share/nginx/html.
+# Existing PROD nginx.runtime.conf uses /usr/share/nginx/html/browser.
+#
+# Both paths are intentionally present in the SAME image so the
+# already-working TEST configuration is not changed and the existing
+# PROD configuration remains unchanged.
 # ------------------------------------------------------------
 frontend-docker-build:
   stage: docker
@@ -87,6 +93,8 @@ frontend-docker-build:
     - 'docker version'
     - 'docker build --pull -t "$FRONTEND_IMAGE_NAME" .'
     - 'docker image inspect "$FRONTEND_IMAGE_NAME" >/dev/null'
+    - 'docker run --rm "$FRONTEND_IMAGE_NAME" test -f /usr/share/nginx/html/index.html'
+    - 'docker run --rm "$FRONTEND_IMAGE_NAME" test -f /usr/share/nginx/html/browser/index.html'
     - 'docker save "$FRONTEND_IMAGE_NAME" | gzip -1 > "$FRONTEND_PACKAGE_FILE"'
     - 'test -s "$FRONTEND_PACKAGE_FILE"'
     - 'ls -lh "$FRONTEND_PACKAGE_FILE"'
@@ -161,6 +169,12 @@ frontend-deploy-test:
       "docker image inspect '$FRONTEND_IMAGE_NAME' >/dev/null"
     - >
       ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "docker run --rm '$FRONTEND_IMAGE_NAME' test -f /usr/share/nginx/html/index.html"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "docker run --rm '$FRONTEND_IMAGE_NAME' test -f /usr/share/nginx/html/browser/index.html"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
       "rm -f '$DEPLOY_PATH/$FRONTEND_PACKAGE_FILE'"
     - >
       ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
@@ -176,12 +190,18 @@ frontend-deploy-test:
       "docker ps --filter 'name=workouts-frontend'"
     - >
       ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "docker exec workouts-frontend test -f /usr/share/nginx/html/index.html"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
       "docker logs --tail=100 workouts-frontend"
 
 # ------------------------------------------------------------
 # PROD deploy.
 # Manual. Uses PROD scoped variables and the existing PROD certs.
 # It does NOT copy, delete, or modify the cert directory.
+#
+# Existing PROD nginx.runtime.conf is kept unchanged and expects:
+# /usr/share/nginx/html/browser
 # ------------------------------------------------------------
 frontend-deploy-production:
   stage: deploy
@@ -218,6 +238,7 @@ frontend-deploy-production:
     - 'echo "Server: $DEPLOY_SERVER"'
     - 'echo "User: $DEPLOY_USER"'
     - 'echo "Path: $DEPLOY_PATH"'
+    - 'echo "Image: $FRONTEND_IMAGE_NAME"'
     - 'test "$DEPLOY_SERVER" = "2.29.51.66"'
     - 'test "$DEPLOY_USER" = "pappzsol"'
     - 'test "$DEPLOY_PATH" = "/home/pappzsol/workouts/deploy/frontend"'
@@ -246,6 +267,12 @@ frontend-deploy-production:
       "docker image inspect '$FRONTEND_IMAGE_NAME' >/dev/null"
     - >
       ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "docker run --rm '$FRONTEND_IMAGE_NAME' test -f /usr/share/nginx/html/index.html"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "docker run --rm '$FRONTEND_IMAGE_NAME' test -f /usr/share/nginx/html/browser/index.html"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
       "rm -f '$DEPLOY_PATH/$FRONTEND_PACKAGE_FILE'"
     - >
       ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
@@ -265,6 +292,12 @@ frontend-deploy-production:
     - >
       ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
       "docker ps --filter 'name=workouts-frontend-runtime'"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "docker exec workouts-frontend-runtime test -f /usr/share/nginx/html/browser/index.html"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "docker exec workouts-frontend-runtime nginx -t"
     - >
       ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
       "docker logs --tail=100 workouts-frontend-runtime"
