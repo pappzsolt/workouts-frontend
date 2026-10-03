@@ -68,6 +68,8 @@ frontend-build:
 frontend-docker-build:
   stage: docker
   image: docker:29-cli
+  before_script:
+    - apk add --no-cache curl
   needs:
     - job: frontend-build
       artifacts: true
