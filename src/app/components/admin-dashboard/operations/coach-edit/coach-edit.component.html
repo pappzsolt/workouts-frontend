@@ -50,23 +50,14 @@
         {{ 'adminCoachEdit.selectCoach' | translate }}
       </label>
 
-      <select
+      <app-select
         id="coachSelect"
-        [(ngModel)]="selectedCoachId"
-        (change)="onSelectCoach()"
-        class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
-      >
-        <option [ngValue]="null">
-          -- {{ 'adminCoachEdit.selectCoach' | translate }} --
-        </option>
-
-        <option
-          *ngFor="let c of coaches; trackBy: trackByCoach"
-          [ngValue]="c.id"
-        >
-          {{ c.name }} ({{ c.email }})
-        </option>
-      </select>
+        [value]="selectedCoachId"
+        [options]="coachOptions"
+        placeholder="adminCoachEdit.selectCoach"
+        [placeholderValue]="null"
+        (valueChange)="selectedCoachId = $event; onSelectCoach()"
+      ></app-select>
     </div>
 
     <!-- ============================= -->

@@ -1,4 +1,5 @@
 import { API_ENDPOINTS } from '../../helpers/api-endpoints';
+import { authenticateAndOpen } from '../../helpers/auth-session';
 import { expect, request, test, type Page } from '@playwright/test';
 
 import {
@@ -10,11 +11,13 @@ import {
   getWorkoutExerciseInDatabase,
 } from '../../helpers/workout-db';
 
-import { getExerciseInDatabase } from '../../helpers/exercise-db';
+import {
+  getExerciseInDatabase,
+  resolveExistingExerciseId,
+} from '../../helpers/exercise-db';
 
 const BASE_API_URL = process.env.E2E_API_URL ?? 'http://localhost:8080';
 const LANGUAGE = process.env.E2E_LANGUAGE ?? 'hu';
-const ASSIGN_EXERCISE_ID = Number(process.env.E2E_EXERCISE_ID ?? 1046);
 
 type WorkoutData = {
   name: string;
@@ -41,42 +44,7 @@ function buildWorkout(prefix: string): WorkoutData {
 }
 
 async function loginAsCoach(page: Page): Promise<void> {
-  const username = process.env.E2E_COACH_USERNAME;
-  const password = process.env.E2E_COACH_PASSWORD;
-
-  if (!username || !password || password === 'CHANGE_ME') {
-    throw new Error(
-      'Hiányzó E2E_COACH_USERNAME / E2E_COACH_PASSWORD a .env fájlból.',
-    );
-  }
-
-  await page.goto('/login');
-  await page.locator('input[formcontrolname="username"]').fill(username);
-  await page.locator('input[formcontrolname="password"]').fill(password);
-  await page.locator('form button[type="submit"]').click();
-
-  await expect(page).toHaveURL(/\/coach\/dashboard$/, { timeout: 15_000 });
-
-  const tokenInfo = await page.evaluate(() => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) return null;
-
-    try {
-      const payload = JSON.parse(
-        atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')),
-      );
-
-      return {
-        roles: payload.roles ?? payload.authorities ?? null,
-        subject: payload.sub ?? null,
-      };
-    } catch {
-      return null;
-    }
-  });
-
-  expect(tokenInfo).not.toBeNull();
-  expect(String(tokenInfo?.roles ?? '')).toContain('ROLE_COACH');
+  await authenticateAndOpen(page, 'coach');
 }
 
 async function waitForCreateComponent(page: Page): Promise<void> {
@@ -346,9 +314,6 @@ async function waitForAssignComponent(page: Page): Promise<void> {
     timeout: 15_000,
   });
 
-  await expect(page.locator('#exerciseSearch')).toBeVisible({
-    timeout: 15_000,
-  });
 }
 
 async function assignExerciseThroughUi(
@@ -373,18 +338,23 @@ async function assignExerciseThroughUi(
 
   await expect(workoutCheckbox).toBeVisible({ timeout: 15_000 });
   await workoutCheckbox.check();
-  await expect(workoutCheckbox).toBeChecked();
+  await expect(page.getByRole('heading', { name: workout.name, exact: true })).toBeVisible();
+  await page.getByRole('button', { name: '+ Gyakorlatok kezelése', exact: true }).click();
+  const dialog = page.getByRole('dialog', { name: `Gyakorlatok — ${workout.name}` });
+  await expect(dialog).toBeVisible();
 
-  const exerciseSearch = page.locator('#exerciseSearch');
+  const exerciseSearch = dialog.locator('#exerciseSearch');
   await exerciseSearch.fill(exerciseName);
 
-  const exerciseCheckbox = page.locator(
+  const exerciseCheckbox = dialog.locator(
     `#compact-exercise-${exerciseId}`,
   );
 
   await expect(exerciseCheckbox).toBeVisible({ timeout: 15_000 });
   await exerciseCheckbox.check();
   await expect(exerciseCheckbox).toBeChecked();
+  await dialog.getByRole('button', { name: 'Kész', exact: true }).click();
+  await expect(dialog).not.toBeVisible();
 
   const saveButton = page.locator(
     'app-assign-workouts-exercises button[type="button"]',
@@ -545,11 +515,9 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
   }) => {
     await loginAsCoach(page);
 
-    expect(
-      Number.isInteger(ASSIGN_EXERCISE_ID) && ASSIGN_EXERCISE_ID > 0,
-    ).toBeTruthy();
-
-    const exercise = await getExerciseInDatabase(ASSIGN_EXERCISE_ID, LANGUAGE);
+    const assignExerciseId = await resolveExistingExerciseId(LANGUAGE);
+    const exercise = await getExerciseInDatabase(assignExerciseId, LANGUAGE);
+    expect(exercise, `Exercise ${assignExerciseId} nem található a teszt DB-ben.`).not.toBeNull();
     const workout = buildWorkout('E2E ASSIGN');
 
     let workoutId: number | undefined;
@@ -560,26 +528,26 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
       workoutId = created.id;
 
       await expect(
-        getWorkoutExerciseInDatabase(workoutId, ASSIGN_EXERCISE_ID),
+        getWorkoutExerciseInDatabase(workoutId, assignExerciseId),
       ).resolves.toBeNull();
 
       await assignExerciseThroughUi(
         page,
         workout,
         workoutId,
-        ASSIGN_EXERCISE_ID,
+        assignExerciseId,
         exercise.name ?? '',
       );
 
       const relation = await assertWorkoutExerciseInDatabase(
         workoutId,
-        ASSIGN_EXERCISE_ID,
+        assignExerciseId,
       );
 
       relationExists = true;
 
       expect(relation.workout_id).toBe(workoutId);
-      expect(relation.exercise_id).toBe(ASSIGN_EXERCISE_ID);
+      expect(relation.exercise_id).toBe(assignExerciseId);
 
       // A DB defaultok is a tényleges backend viselkedés része.
       expect(Number(relation.sets)).toBe(3);
@@ -590,7 +558,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
       console.log('============================================================');
       console.log('[E2E WORKOUT-EXERCISE ASSIGN] LÉTREHOZVA');
       console.log(`workoutId        : ${workoutId}`);
-      console.log(`exerciseId       : ${ASSIGN_EXERCISE_ID}`);
+      console.log(`exerciseId       : ${assignExerciseId}`);
       console.log(`exercise name    : ${JSON.stringify(exercise.name)}`);
       console.log(`relation id      : ${relation.id}`);
       console.log(`sets             : ${relation.sets}`);
@@ -605,11 +573,11 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
           await deleteWorkoutExerciseAsCurrentCoach(
             page,
             workoutId,
-            ASSIGN_EXERCISE_ID,
+            assignExerciseId,
           );
           await assertWorkoutExerciseDeleted(
             workoutId,
-            ASSIGN_EXERCISE_ID,
+            assignExerciseId,
           );
         }
 
@@ -682,6 +650,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
   }) => {
     await loginAsCoach(page);
 
+    const assignExerciseId = await resolveExistingExerciseId(LANGUAGE);
     const token = await getAccessToken(page);
 
     const api = await request.newContext({
@@ -695,7 +664,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
       const response = await api.post(API_ENDPOINTS.workoutExercises.base, {
         params: {
           workoutId: 2147483000,
-          exerciseId: ASSIGN_EXERCISE_ID,
+          exerciseId: assignExerciseId,
         },
       });
 
@@ -704,7 +673,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
 
       const relation = await getWorkoutExerciseInDatabase(
         2147483000,
-        ASSIGN_EXERCISE_ID,
+        assignExerciseId,
       );
 
       expect(relation).toBeNull();
@@ -718,6 +687,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
   }) => {
     await loginAsCoach(page);
 
+    const assignExerciseId = await resolveExistingExerciseId(LANGUAGE);
     const workout = buildWorkout('E2E DUPLICATE ASSIGN');
     let workoutId: number | undefined;
 
@@ -738,7 +708,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
         const first = await api.post(API_ENDPOINTS.workoutExercises.base, {
           params: {
             workoutId,
-            exerciseId: ASSIGN_EXERCISE_ID,
+            exerciseId: assignExerciseId,
           },
         });
 
@@ -747,7 +717,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
         const second = await api.post(API_ENDPOINTS.workoutExercises.base, {
           params: {
             workoutId,
-            exerciseId: ASSIGN_EXERCISE_ID,
+            exerciseId: assignExerciseId,
           },
         });
 
@@ -759,25 +729,28 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
 
       const relation = await assertWorkoutExerciseInDatabase(
         workoutId,
-        ASSIGN_EXERCISE_ID,
+        assignExerciseId,
       );
 
-      expect(relation.exercise_id).toBe(ASSIGN_EXERCISE_ID);
+      expect(relation.exercise_id).toBe(assignExerciseId);
     } finally {
       if (workoutId !== undefined) {
-        try {
+        const relation = await getWorkoutExerciseInDatabase(
+          workoutId,
+          assignExerciseId,
+        );
+
+        if (relation) {
           await deleteWorkoutExerciseAsCurrentCoach(
             page,
             workoutId,
-            ASSIGN_EXERCISE_ID,
+            assignExerciseId,
           );
-        } catch {
-          // Ha az első assign sem jött létre, nincs mit törölni.
         }
 
         await assertWorkoutExerciseDeleted(
           workoutId,
-          ASSIGN_EXERCISE_ID,
+          assignExerciseId,
         );
 
         await deleteWorkoutAsCurrentCoach(page, workoutId);

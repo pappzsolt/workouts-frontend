@@ -5,32 +5,29 @@ import { LoggerService } from '../../../services/logger.service';
 
 import { UserNameIdService } from '../../../services/user/user-name-id.service';
 
+import { AppSelectComponent } from '../components/app-select/app-select.component';
+import type { SelectOption } from '../../../models/common/select-option.model';
+
 import { SHARED_IMPORTS } from '../shared-imports';
 
 @Component({
   selector: 'app-user-select',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, AppSelectComponent],
   template: `
     <label for="userSelect" class="user-select-label">
       {{ 'userSelect.selectUser' | translate }}
     </label>
 
-    <select
+    <app-select
       id="userSelect"
-      [(ngModel)]="selectedUserId"
-      (ngModelChange)="onChange($event)"
+      [value]="selectedUserId"
+      [options]="userOptions"
       [disabled]="disabled"
-      class="user-select-control"
-    >
-      <option [ngValue]="undefined">
-        {{ 'userSelect.selectUserOption' | translate }}
-      </option>
-
-      <option *ngFor="let u of users; trackBy: trackByUser" [ngValue]="u.id">
-        {{ u.username }}
-      </option>
-    </select>
+      placeholder="userSelect.selectUserOption"
+      [placeholderValue]="undefined"
+      (valueChange)="selectedUserId = $event; onChange($event)"
+    ></app-select>
   `,
   styleUrls: ['./user-select.component.css'],
 })
@@ -55,6 +52,10 @@ export class UserSelectComponent implements OnInit {
 
   constructor(private userService: UserNameIdService) {}
 
+  get userOptions(): SelectOption<number>[] {
+    return this.users.map((user) => ({ value: user.id, label: user.username }));
+  }
+
   ngOnInit(): void {
     this.userService.getAllUsers().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
@@ -78,8 +79,5 @@ export class UserSelectComponent implements OnInit {
     }
   }
 
-  trackByUser(index: number, user: UserNameId): number {
-    return user.id;
-  }
 
 }

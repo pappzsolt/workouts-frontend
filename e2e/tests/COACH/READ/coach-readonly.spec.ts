@@ -56,7 +56,11 @@ test.describe('Coach - read-only surfaces', () => {
     const violations = installReadOnlyGuard(page);
     const exercise = await findExistingExercise();
 
-    test.skip(!exercise, 'E2E_DB_* variables are not configured or no translated exercise exists.');
+    expect(
+      exercise,
+      'A read-only coach exercise teszthez nincs lefordított exercise rekord a teszt DB-ben.',
+    ).not.toBeNull();
+    expect(exercise!.name.trim(), 'A kiválasztott exercise fordított neve üres.').not.toBe('');
 
     await loginAs(
       page,

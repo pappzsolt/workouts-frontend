@@ -46,13 +46,11 @@
              ====================================================== -->
 
         <!-- Név -->
-        <div class="col-span-full flex min-w-0 flex-col gap-2">
-          <label
-            for="name"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.name' | translate }}
-          </label>
+        <app-form-field
+          class="col-span-full min-w-0"
+          labelKey="coachExerciseEdit.name"
+          controlId="name"
+        >
 
           <input
             id="name"
@@ -62,16 +60,14 @@
             required
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Leírás -->
-        <div class="col-span-full flex min-w-0 flex-col gap-2">
-          <label
-            for="description"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.description' | translate }}
-          </label>
+        <app-form-field
+          class="col-span-full min-w-0"
+          labelKey="coachExerciseEdit.description"
+          controlId="description"
+        >
 
           <textarea
             id="description"
@@ -80,16 +76,14 @@
             [(ngModel)]="exercise.description"
             class="min-h-24 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           ></textarea>
-        </div>
+        </app-form-field>
 
         <!-- Testrész -->
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="bodyPart"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.bodyPart' | translate }}
-          </label>
+        <app-form-field
+          class="min-w-0"
+          labelKey="coachExerciseEdit.bodyPart"
+          controlId="bodyPart"
+        >
 
           <input
             id="bodyPart"
@@ -98,16 +92,14 @@
             [(ngModel)]="exercise.bodyPart"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Szinonimák -->
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="synonyms"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.synonyms' | translate }}
-          </label>
+        <app-form-field
+          class="min-w-0"
+          labelKey="coachExerciseEdit.synonyms"
+          controlId="synonyms"
+        >
 
           <input
             id="synonyms"
@@ -116,16 +108,14 @@
             [(ngModel)]="exercise.synonyms"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Utasítások -->
-        <div class="col-span-full flex min-w-0 flex-col gap-2">
-          <label
-            for="instructions"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.instructions' | translate }}
-          </label>
+        <app-form-field
+          class="col-span-full min-w-0"
+          labelKey="coachExerciseEdit.instructions"
+          controlId="instructions"
+        >
 
           <textarea
             id="instructions"
@@ -134,16 +124,14 @@
             [(ngModel)]="exercise.instructions"
             class="min-h-36 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           ></textarea>
-        </div>
+        </app-form-field>
 
         <!-- Tippek -->
-        <div class="col-span-full flex min-w-0 flex-col gap-2">
-          <label
-            for="tips"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.tips' | translate }}
-          </label>
+        <app-form-field
+          class="col-span-full min-w-0"
+          labelKey="coachExerciseEdit.tips"
+          controlId="tips"
+        >
 
           <textarea
             id="tips"
@@ -152,16 +140,14 @@
             [(ngModel)]="exercise.tips"
             class="min-h-28 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           ></textarea>
-        </div>
+        </app-form-field>
 
         <!-- Elsődleges izmok -->
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="primaryMuscles"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.primaryMuscles' | translate }}
-          </label>
+        <app-form-field
+          class="min-w-0"
+          labelKey="coachExerciseEdit.primaryMuscles"
+          controlId="primaryMuscles"
+        >
 
           <input
             id="primaryMuscles"
@@ -170,16 +156,14 @@
             [(ngModel)]="exercise.primaryMuscles"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Másodlagos izmok -->
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="secondaryMuscles"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.secondaryMuscles' | translate }}
-          </label>
+        <app-form-field
+          class="min-w-0"
+          labelKey="coachExerciseEdit.secondaryMuscles"
+          controlId="secondaryMuscles"
+        >
 
           <input
             id="secondaryMuscles"
@@ -188,20 +172,18 @@
             [(ngModel)]="exercise.secondaryMuscles"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- ======================================================
              KÖZÖS EXERCISE ADATOK
              ====================================================== -->
 
         <!-- Kép URL -->
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="imageUrl"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.imageUrl' | translate }}
-          </label>
+        <app-form-field
+          class="min-w-0"
+          labelKey="coachExerciseEdit.imageUrl"
+          controlId="imageUrl"
+        >
 
           <input
             id="imageUrl"
@@ -210,16 +192,14 @@
             [(ngModel)]="exercise.imageUrl"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Videó URL -->
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="videoUrl"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.videoUrl' | translate }}
-          </label>
+        <app-form-field
+          class="min-w-0"
+          labelKey="coachExerciseEdit.videoUrl"
+          controlId="videoUrl"
+        >
 
           <input
             id="videoUrl"
@@ -228,16 +208,14 @@
             [(ngModel)]="exercise.videoUrl"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Izomcsoport -->
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="muscleGroup"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.muscleGroup' | translate }}
-          </label>
+        <app-form-field
+          class="min-w-0"
+          labelKey="coachExerciseEdit.muscleGroup"
+          controlId="muscleGroup"
+        >
 
           <input
             id="muscleGroup"
@@ -246,16 +224,14 @@
             [(ngModel)]="exercise.muscleGroup"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Eszköz -->
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="equipment"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.equipment' | translate }}
-          </label>
+        <app-form-field
+          class="min-w-0"
+          labelKey="coachExerciseEdit.equipment"
+          controlId="equipment"
+        >
 
           <input
             id="equipment"
@@ -264,16 +240,14 @@
             [(ngModel)]="exercise.equipment"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Nehézségi szint -->
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="difficultyLevel"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.difficultyLevel' | translate }}
-          </label>
+        <app-form-field
+          class="min-w-0"
+          labelKey="coachExerciseEdit.difficultyLevel"
+          controlId="difficultyLevel"
+        >
 
           <input
             id="difficultyLevel"
@@ -282,16 +256,14 @@
             [(ngModel)]="exercise.difficultyLevel"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Kategória -->
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="category"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.category' | translate }}
-          </label>
+        <app-form-field
+          class="min-w-0"
+          labelKey="coachExerciseEdit.category"
+          controlId="category"
+        >
 
           <input
             id="category"
@@ -300,16 +272,14 @@
             [(ngModel)]="exercise.category"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Elégetett kalória / perc -->
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="caloriesBurnedPerMinute"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.caloriesPerMinute' | translate }}
-          </label>
+        <app-form-field
+          class="min-w-0"
+          labelKey="coachExerciseEdit.caloriesPerMinute"
+          controlId="caloriesBurnedPerMinute"
+        >
 
           <input
             id="caloriesBurnedPerMinute"
@@ -319,16 +289,14 @@
             [(ngModel)]="exercise.caloriesBurnedPerMinute"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Időtartam -->
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="durationSeconds"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.durationSeconds' | translate }}
-          </label>
+        <app-form-field
+          class="min-w-0"
+          labelKey="coachExerciseEdit.durationSeconds"
+          controlId="durationSeconds"
+        >
 
           <input
             id="durationSeconds"
@@ -337,16 +305,14 @@
             [(ngModel)]="exercise.durationSeconds"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Erő típusa -->
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="forceType"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.forceType' | translate }}
-          </label>
+        <app-form-field
+          class="min-w-0"
+          labelKey="coachExerciseEdit.forceType"
+          controlId="forceType"
+        >
 
           <input
             id="forceType"
@@ -355,16 +321,14 @@
             [(ngModel)]="exercise.forceType"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Mechanika -->
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="mechanic"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.mechanic' | translate }}
-          </label>
+        <app-form-field
+          class="min-w-0"
+          labelKey="coachExerciseEdit.mechanic"
+          controlId="mechanic"
+        >
 
           <input
             id="mechanic"
@@ -373,16 +337,14 @@
             [(ngModel)]="exercise.mechanic"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Variációs csoport -->
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="variationGroup"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.variationGroup' | translate }}
-          </label>
+        <app-form-field
+          class="min-w-0"
+          labelKey="coachExerciseEdit.variationGroup"
+          controlId="variationGroup"
+        >
 
           <input
             id="variationGroup"
@@ -391,16 +353,14 @@
             [(ngModel)]="exercise.variationGroup"
             class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
           />
-        </div>
+        </app-form-field>
 
         <!-- Egyoldalas gyakorlat -->
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="isUnilateral"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.isUnilateral' | translate }}
-          </label>
+        <app-form-field
+          class="min-w-0"
+          labelKey="coachExerciseEdit.isUnilateral"
+          controlId="isUnilateral"
+        >
 
           <select
             id="isUnilateral"
@@ -416,16 +376,14 @@
               {{ 'common.yes' | translate }}
             </option>
           </select>
-        </div>
+        </app-form-field>
 
         <!-- Testsúlyos gyakorlat -->
-        <div class="flex min-w-0 flex-col gap-2">
-          <label
-            for="isBodyweight"
-            class="text-sm font-semibold text-content-700"
-          >
-            {{ 'coachExerciseEdit.isBodyweight' | translate }}
-          </label>
+        <app-form-field
+          class="min-w-0"
+          labelKey="coachExerciseEdit.isBodyweight"
+          controlId="isBodyweight"
+        >
 
           <select
             id="isBodyweight"
@@ -441,7 +399,7 @@
               {{ 'common.yes' | translate }}
             </option>
           </select>
-        </div>
+        </app-form-field>
 
         <!-- ======================================================
              MENTÉS

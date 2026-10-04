@@ -1,6 +1,7 @@
 import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { expect, test } from '@playwright/test';
 import { loginAs, navigateSpa, setTestLanguage } from '../../helpers/read-only';
+import { findExistingExercise } from '../../helpers/db';
 
 test('COACH GUI: exercise search renders the backend search result and preserves edit actions', async ({ page }) => {
   await setTestLanguage(page);
@@ -13,9 +14,30 @@ test('COACH GUI: exercise search renders the backend search result and preserves
   const response = await responsePromise;
   expect(response.ok()).toBeTruthy();
 
-  await expect(page.locator('input').first()).toBeVisible();
-  const cards = page.locator('app-card').filter({ has: page.locator('h3') });
-  if (await cards.count()) {
-    await expect(cards.first().getByRole('button').filter({ hasText: /edit|szerkeszt/i }).first()).toBeVisible();
-  }
+  const exercise = await findExistingExercise();
+  expect(exercise, 'A coach exercise search E2E teszthez nincs lefordított exercise rekord a teszt DB-ben.').not.toBeNull();
+  expect(exercise!.name.trim(), 'A kiválasztott exercise fordított neve üres.').not.toBe('');
+
+  const search = page.locator('#exerciseSearch');
+  await expect(search).toBeVisible();
+
+  const searchResponsePromise = page.waitForResponse((r) => {
+    if (r.request().method() !== 'GET' || !r.url().includes(API_ENDPOINTS.exercises.search)) {
+      return false;
+    }
+    const url = new URL(r.url());
+    return url.searchParams.get('search') === exercise!.name;
+  });
+
+  await search.fill(exercise!.name);
+  await page.getByRole('button', { name: /keres|search/i }).click();
+
+  const searchResponse = await searchResponsePromise;
+  expect(searchResponse.ok()).toBeTruthy();
+
+  const card = page.locator('app-card').filter({
+    has: page.locator('h3', { hasText: exercise!.name }),
+  }).first();
+  await expect(card).toBeVisible({ timeout: 15_000 });
+  await expect(card.getByRole('button', { name: /edit|szerkeszt/i })).toBeVisible();
 });

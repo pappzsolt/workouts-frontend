@@ -1,20 +1,29 @@
 <select
   [id]="id"
   [name]="name"
+  [disabled]="disabled"
   [ngModel]="value"
   (ngModelChange)="onValueChange($event)"
   [ngModelOptions]="{ standalone: true }"
   [class]="className"
 >
   @if (placeholder) {
-    <option [value]="placeholderValue">
-      {{ placeholder | translate }}
-    </option>
+    @if (typeof placeholderValue === 'string') {
+      <option [value]="placeholderValue" [disabled]="placeholderDisabled">
+        {{ placeholder | translate }}
+      </option>
+    } @else {
+      <option [ngValue]="placeholderValue" [disabled]="placeholderDisabled">
+        {{ placeholder | translate }}
+      </option>
+    }
   }
 
   @for (option of options; track option.value) {
-    <option [value]="option.value">
-      {{ option.label | translate }}
-    </option>
+    @if (typeof option.value === 'string') {
+      <option [value]="option.value">{{ option.label | translate }}</option>
+    } @else {
+      <option [ngValue]="option.value">{{ option.label | translate }}</option>
+    }
   }
 </select>

@@ -20,7 +20,7 @@ test.describe('COACH GUI: Program Builder workout → selected exercises', () =>
 
       await assertSelectedOnlyModal(page, fixture, workoutBody);
 
-      expect(
+      await expect(
         page.locator('app-coach-program-builder-workouts').getByText(fixture.workoutName, {
           exact: true,
         }),

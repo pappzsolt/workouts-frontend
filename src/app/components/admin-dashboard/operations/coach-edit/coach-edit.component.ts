@@ -4,6 +4,9 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CoachEditService } from '../../../../services/admin/coach-edit.service';
 import { Coach } from '../../../../models/coach.model';
 
+import { AppSelectComponent } from '../../../shared/components/app-select/app-select.component';
+import type { SelectOption } from '../../../../models/common/select-option.model';
+
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
@@ -11,7 +14,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   standalone: true,
   templateUrl: './coach-edit.component.html',
   styleUrls: ['./coach-edit.component.css'],
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, AppSelectComponent],
   providers: [CoachEditService],
 })
 export class CoachEditComponent implements OnInit {
@@ -20,6 +23,13 @@ export class CoachEditComponent implements OnInit {
   selectedCoachId: number | null = null;
 
   coaches: Coach[] = [];
+
+  get coachOptions(): SelectOption<number>[] {
+    return this.coaches.map((coach) => ({
+      value: coach.id,
+      label: `${coach.name} (${coach.email})`,
+    }));
+  }
 
   selectedCoach: Coach = {
     id: 0,
@@ -175,8 +185,5 @@ export class CoachEditComponent implements OnInit {
     };
   }
 
-  trackByCoach(index: number, coach: Coach): number {
-    return coach.id;
-  }
 
 }

@@ -1,28 +1,17 @@
 <div class="mb-5">
-  <label class="mb-2 block text-sm font-semibold text-content-700">
+  <label for="coachProgramSelect" class="mb-2 block text-sm font-semibold text-content-700">
     {{ 'coachProgramSelect.program' | translate }}:
   </label>
 
-  <select
-    [(ngModel)]="selectedProgramId"
-    (ngModelChange)="onProgramSelect($event)"
-    class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
-  >
-    <option
-      [ngValue]="null"
-      disabled
-      selected
-    >
-      {{ 'coachProgramSelect.selectProgram' | translate }}
-    </option>
-
-    <option
-      *ngFor="let program of programs; trackBy: trackByProgram"
-      [value]="program.programId"
-    >
-      {{ program.programName }}
-    </option>
-  </select>
+  <app-select
+    id="coachProgramSelect"
+    [value]="selectedProgramId"
+    [options]="programOptions"
+    placeholder="coachProgramSelect.selectProgram"
+    [placeholderValue]="undefined"
+    [placeholderDisabled]="true"
+    (valueChange)="onProgramSelect($event)"
+  ></app-select>
 </div>
 
 <div

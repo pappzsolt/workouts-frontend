@@ -17,6 +17,10 @@ test.describe('AUTH: login + refresh token rotation', () => {
       expect(body.success).toBeTruthy();
       expect(body.data?.accessToken).toBeTruthy();
       expect(body.data?.refreshToken).toBeTruthy();
+
+      const payload = JSON.parse(Buffer.from(body.data.accessToken.split('.')[1], 'base64url').toString('utf8'));
+      expect(String(payload.roles ?? '').split(',').map((role: string) => role.trim())).toContain('ROLE_USER');
+      expect(Number(payload.exp)).toBeGreaterThan(Math.floor(Date.now() / 1000));
     } finally {
       await api.dispose();
     }

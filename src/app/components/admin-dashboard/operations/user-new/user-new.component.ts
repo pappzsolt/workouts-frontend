@@ -14,12 +14,15 @@ import { Role } from '../../../../models/role.model';
 import { CreateUserRequest } from '../../../../models/user-new-model';
 import type { ApiResponse } from '../../../../models/backend-dto/common/api-response';
 
+import { AppSelectComponent } from '../../../shared/components/app-select/app-select.component';
+import type { SelectOption } from '../../../../models/common/select-option.model';
+
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
 @Component({
   selector: 'app-user-new',
   standalone: true,
-  imports: [...SHARED_IMPORTS, RoleSelectComponent, CoachSelectComponent, MessageComponent],
+  imports: [...SHARED_IMPORTS, AppSelectComponent, RoleSelectComponent, CoachSelectComponent, MessageComponent],
   templateUrl: './user-new.component.html',
   styleUrls: ['./user-new.component.css'],
 })
@@ -52,6 +55,11 @@ export class UserNewComponent {
     coachName: '',
     roleIds: [],
   };
+
+  readonly genderOptions: SelectOption[] = [
+    { value: 'male', label: 'common.male' },
+    { value: 'female', label: 'common.female' },
+  ];
 
   roles: Role[] = [];
 
@@ -138,6 +146,7 @@ export class UserNewComponent {
           this.showSuccess(res.message || 'adminUserNew.createSuccess');
 
           form.resetForm();
+          this.user.gender = '';
 
           this.user.roleIds = [];
 

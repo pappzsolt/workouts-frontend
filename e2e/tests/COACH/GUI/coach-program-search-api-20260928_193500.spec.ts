@@ -15,14 +15,17 @@ test('COACH GUI: program search triggers the coach-search API and renders its pa
 
   const search = page.locator('input#programSearch');
   await expect(search).toBeVisible();
-  await search.fill('a');
-
-  const searchResponse = await page.waitForResponse((r) =>
+  const searchResponsePromise = page.waitForResponse((r) =>
     r.request().method() === 'GET' &&
     r.url().includes(API_ENDPOINTS.programs.coachSearch) &&
     new URL(r.url()).searchParams.get('search') === 'a',
   );
-  await search.press('Enter').catch(() => {});
-  await searchResponse;
+
+  // app-search emits automatically after its 300 ms debounce; Enter is not
+  // part of the production component contract.
+  await search.fill('a');
+
+  const searchResponse = await searchResponsePromise;
+  expect(searchResponse.ok()).toBeTruthy();
   await expect(page).toHaveURL(/\/coach\/programs$/);
 });

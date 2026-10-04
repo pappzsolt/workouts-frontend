@@ -14,8 +14,8 @@ test('COACH MOBILE GUI: program search sends the entered query and keeps the res
   await expect(search).toBeVisible();
   const query = 'a';
   const response = page.waitForResponse(r => r.request().method() === 'GET' && r.url().includes(API_ENDPOINTS.programs.coachSearch) && new URL(r.url()).searchParams.get('search') === query);
+  // app-search emits automatically after its 300 ms debounce.
   await search.fill(query);
-  await search.press('Enter').catch(() => {});
   expect((await response).ok()).toBeTruthy();
   expect(await page.locator('body').evaluate(el => el.scrollWidth)).toBeLessThanOrEqual(391);
 });

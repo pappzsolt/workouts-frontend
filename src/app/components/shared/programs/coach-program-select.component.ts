@@ -5,12 +5,15 @@ import { CoachProgramSelectService } from '../../../services/coach/coach-program
 
 import type { CoachProgram } from '../../../models/coach-program.model';
 
+import { AppSelectComponent } from '../components/app-select/app-select.component';
+import type { SelectOption } from '../../../models/common/select-option.model';
+
 import { SHARED_IMPORTS } from '../shared-imports';
 
 @Component({
   selector: 'app-coach-program-select',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, AppSelectComponent],
   templateUrl: './coach-program-select.component.html',
 })
 export class CoachProgramSelectComponent implements OnInit {
@@ -29,6 +32,10 @@ export class CoachProgramSelectComponent implements OnInit {
 
   @Output()
   selectedProgramIdChange = new EventEmitter<number>();
+
+  get programOptions(): SelectOption<number>[] {
+    return this.programs.map((program) => ({ value: program.programId, label: program.programName }));
+  }
 
   ngOnInit(): void {
     this.loadPrograms();
@@ -64,14 +71,12 @@ export class CoachProgramSelectComponent implements OnInit {
     });
   }
 
-  onProgramSelect(programId: number): void {
+  onProgramSelect(programId: number | undefined): void {
+    if (programId === undefined) return;
     this.selectedProgramId = programId;
 
     this.selectedProgramIdChange.emit(programId);
   }
 
-  trackByProgram(index: number, program: CoachProgram): number {
-    return program.programId;
-  }
 
 }

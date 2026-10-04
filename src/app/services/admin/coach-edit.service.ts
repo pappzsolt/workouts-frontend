@@ -14,8 +14,6 @@ import type { MemberResponse } from '../../models/backend-dto/members/member-res
   providedIn: 'root',
 })
 export class CoachEditService {
-  private readonly coachesUrl = API_ENDPOINTS.allCoaches;
-
   private readonly membersUrl = API_ENDPOINTS.members;
 
   constructor(private readonly http: HttpClient) {}
@@ -27,13 +25,14 @@ export class CoachEditService {
    * UI modell: Coach
    */
   getCoaches(): Observable<Coach[]> {
-    return this.http.get<ApiResponse<MemberResponse[]>>(this.coachesUrl).pipe(
+    return this.http.get<ApiResponse<MemberResponse[]>>(this.membersUrl).pipe(
       map((response) => {
         if (response.data == null) {
           throw new Error('Az edzők válaszában nincs adat.');
         }
 
         return response.data
+          .filter((item) => item.type === 'coach')
           .filter(this.isCompleteCoachResponse)
           .map((item) => this.mapCoach(item));
       }),

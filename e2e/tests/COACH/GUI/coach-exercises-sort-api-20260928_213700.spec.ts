@@ -10,11 +10,7 @@ test('COACH GUI: exercise sort toggles the real exercise-search API sort directi
   const controller = page.locator('app-exercise-controller');
   await expect(controller).toBeVisible({ timeout: 15000 });
 
-  // The sort control is the second toolbar button in the current component:
-  // first is Search, second is Sort by name. This targets the real rendered control.
-  const sortButton = controller.locator('button').filter({
-    has: page.locator('span.text-lg.font-bold'),
-  }).first();
+  const sortButton = controller.getByRole('button', { name: /^(gyakorlat neve|exercise name|übungsname)$/i });
   await expect(sortButton).toBeVisible({ timeout: 15000 });
 
   const responsePromise = page.waitForResponse(r => {

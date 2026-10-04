@@ -1,4 +1,5 @@
 import { API_ENDPOINTS } from '../../helpers/api-endpoints';
+import { authenticateAndOpen } from '../../helpers/auth-session';
 import { expect, request, test, type APIRequestContext, type Page } from '@playwright/test';
 import { Pool } from 'pg';
 
@@ -31,16 +32,7 @@ function suffix(): string {
 }
 
 async function loginAsCoach(page: Page): Promise<void> {
-  const username = process.env.E2E_COACH_USERNAME;
-  const password = process.env.E2E_COACH_PASSWORD;
-  if (!username || !password || password === 'CHANGE_ME') {
-    throw new Error('Hiányzó E2E_COACH_USERNAME / E2E_COACH_PASSWORD.');
-  }
-  await page.goto('/login');
-  await page.locator('input[formcontrolname="username"]').fill(username);
-  await page.locator('input[formcontrolname="password"]').fill(password);
-  await page.locator('form button[type="submit"]').click();
-  await expect(page).toHaveURL(/\/coach\/dashboard$/, { timeout: 15_000 });
+  await authenticateAndOpen(page, 'coach');
 }
 
 async function apiFor(page: Page): Promise<APIRequestContext> {

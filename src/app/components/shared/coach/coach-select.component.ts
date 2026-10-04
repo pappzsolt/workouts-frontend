@@ -5,32 +5,29 @@ import { LoggerService } from '../../../services/logger.service';
 
 import { CoachNameIdService } from '../../../services/coach/coach-name-id.service';
 
+import { AppSelectComponent } from '../components/app-select/app-select.component';
+import type { SelectOption } from '../../../models/common/select-option.model';
+
 import { SHARED_IMPORTS } from '../shared-imports';
 
 @Component({
   selector: 'app-coach-select',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, AppSelectComponent],
   template: `
     <div>
       <label for="coachSelect" class="block mb-1">
         {{ 'coachSelect.coach' | translate }}
       </label>
 
-      <select
+      <app-select
         id="coachSelect"
-        [(ngModel)]="selectedCoachId"
-        (change)="onCoachChange()"
-        class="border rounded px-2 py-1 w-full"
-      >
-        <option value="">
-          {{ 'coachSelect.select' | translate }}
-        </option>
-
-        <option *ngFor="let coach of coaches; trackBy: trackByCoach" [ngValue]="coach.id">
-          {{ coach.name }}
-        </option>
-      </select>
+        [value]="selectedCoachId"
+        [options]="coachOptions"
+        placeholder="coachSelect.select"
+        [placeholderValue]="undefined"
+        (valueChange)="selectedCoachId = $event; onCoachChange()"
+      ></app-select>
     </div>
   `,
 })
@@ -51,6 +48,10 @@ export class CoachSelectComponent implements OnInit {
   coachSelected = new EventEmitter<CoachNameId>();
 
   constructor(private coachService: CoachNameIdService) {}
+
+  get coachOptions(): SelectOption<number>[] {
+    return this.coaches.map((coach) => ({ value: coach.id, label: coach.name }));
+  }
 
   ngOnInit(): void {
     this.coachService.getAllCoaches().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -78,8 +79,5 @@ export class CoachSelectComponent implements OnInit {
     this.selectedCoachIdChange.emit(selectedCoachId);
   }
 
-  trackByCoach(index: number, coach: CoachNameId): number {
-    return coach.id;
-  }
 
 }

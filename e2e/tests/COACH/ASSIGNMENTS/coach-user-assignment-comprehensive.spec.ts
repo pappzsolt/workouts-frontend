@@ -1,4 +1,5 @@
 import { API_ENDPOINTS } from '../../helpers/api-endpoints';
+import { authenticateAndOpen } from '../../helpers/auth-session';
 
 import { expect, request, test, type APIRequestContext, type Page } from '@playwright/test';
 import { Pool } from 'pg';
@@ -31,14 +32,7 @@ async function dbOne<T=any>(sql:string, params:unknown[]=[]):Promise<T|null>{ re
 async function dbCount(sql:string,params:unknown[]=[]):Promise<number>{ const r=await dbOne<{count:string}>(sql,params); return Number(r?.count??0); }
 
 async function login(page:Page, role:'coach'|'user'):Promise<void>{
-  const username=process.env[role==='coach'?'E2E_COACH_USERNAME':'E2E_USER_USERNAME'];
-  const password=process.env[role==='coach'?'E2E_COACH_PASSWORD':'E2E_USER_PASSWORD'];
-  if(!username||!password||password==='CHANGE_ME') throw new Error(`Hiányzó E2E ${role} credentials.`);
-  await page.goto('/login');
-  await page.locator('input[formcontrolname="username"]').fill(username);
-  await page.locator('input[formcontrolname="password"]').fill(password);
-  await page.locator('form button[type="submit"]').click();
-  await expect(page).toHaveURL(role==='coach'?/\/coach\/dashboard$/:/\/user\/dashboard$/,{timeout:15000});
+  await authenticateAndOpen(page, role);
 }
 async function apiFor(page:Page):Promise<APIRequestContext>{
   const token=await page.evaluate(()=>localStorage.getItem('accessToken'));

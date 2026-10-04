@@ -74,6 +74,7 @@
         <div class="divide-y divide-surface-100">
           <div
             *ngFor="let workout of selectedWorkouts; let i = index; trackBy: trackByWorkoutId"
+            data-testid="selected-workout"
             class="flex flex-col gap-4 px-4 py-4 transition hover:bg-surface-50 sm:flex-row sm:items-center sm:px-5"
           >
             <!-- SORSZÁM -->

@@ -59,16 +59,11 @@
         (buttonClick)="viewMode = 'grid'"
       ></app-button>
 
-      <button
-        type="button"
-        (click)="viewMode = 'table'"
-        [class.bg-primary-600]="viewMode === 'table'"
-        [class.text-white]="viewMode === 'table'"
-        [class.border-primary-600]="viewMode === 'table'"
-        class="rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-sm font-semibold text-content-700 transition-all duration-200 hover:border-primary-300 hover:bg-primary-50"
-      >
-        {{ 'adminMemberSearch.tableView' | translate }}
-      </button>
+      <app-button
+        [variant]="viewMode === 'table' ? 'primary' : 'secondary'"
+        [label]="'adminMemberSearch.tableView' | translate"
+        (buttonClick)="viewMode = 'table'"
+      ></app-button>
     </div>
 
     <!-- Találatok -->

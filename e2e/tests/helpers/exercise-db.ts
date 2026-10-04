@@ -32,6 +32,53 @@ export async function getExerciseInDatabase(
   );
 }
 
+export async function resolveExistingExerciseId(
+  language = 'hu',
+): Promise<number> {
+  const configured = process.env.E2E_EXERCISE_ID?.trim();
+
+  if (configured) {
+    const id = Number(configured);
+    if (!Number.isInteger(id) || id <= 0) {
+      throw new Error(`E2E_EXERCISE_ID érvénytelen: ${configured}`);
+    }
+
+    const row = await getExerciseInDatabase(id, language);
+    if (!row) {
+      throw new Error(`Az E2E_EXERCISE_ID=${id} exercise nem található a teszt DB-ben.`);
+    }
+    if (!String(row.name ?? '').trim()) {
+      throw new Error(
+        `Az E2E_EXERCISE_ID=${id} exercise-hez nincs használható ${language} fordítás.`,
+      );
+    }
+
+    return id;
+  }
+
+  const row = await dbOne<{ id: number }>(
+    `SELECT e.id
+       FROM public.exercises e
+       JOIN public.exercise_translations et
+         ON et.exercise_id = e.id
+       JOIN public.languages l
+         ON l.id = et.language_id
+      WHERE l.code = $1
+        AND NULLIF(BTRIM(et.name), '') IS NOT NULL
+      ORDER BY e.id
+      LIMIT 1`,
+    [language],
+  );
+
+  if (!row) {
+    throw new Error(
+      `Nem található használható, ${language} fordítással rendelkező exercise a teszt DB-ben.`,
+    );
+  }
+
+  return Number(row.id);
+}
+
 export async function assertExerciseDeleted(id: number): Promise<void> {
   const row = await getExerciseInDatabase(id);
   if (row) {

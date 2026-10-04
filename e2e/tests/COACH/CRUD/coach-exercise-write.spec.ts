@@ -1,4 +1,5 @@
 import { API_ENDPOINTS } from '../../helpers/api-endpoints';
+import { authenticateAndOpen } from '../../helpers/auth-session';
 import { expect, request, test, type Page } from '@playwright/test';
 
 import {
@@ -7,6 +8,7 @@ import {
   assertExerciseUnchangedExceptDescription,
   closeExerciseDatabase,
   getExerciseInDatabase,
+  resolveExistingExerciseId,
 } from '../../helpers/exercise-db';
 
 const BASE_API_URL =
@@ -15,9 +17,6 @@ const BASE_API_URL =
 const LANGUAGE =
   process.env.E2E_LANGUAGE ?? 'hu';
 
-const EXERCISE_ID = Number(
-  process.env.E2E_EXERCISE_ID ?? 1046,
-);
 
 type ExerciseUiSnapshot = {
   id: number;
@@ -72,53 +71,7 @@ function booleanOrFalse(value: unknown): boolean {
 }
 
 async function loginAsCoach(page: Page): Promise<void> {
-  const username = process.env.E2E_COACH_USERNAME;
-  const password = process.env.E2E_COACH_PASSWORD;
-
-  if (!username || !password || password === 'CHANGE_ME') {
-    throw new Error(
-      'Hiányzó E2E_COACH_USERNAME / E2E_COACH_PASSWORD a .env fájlból.',
-    );
-  }
-
-  await page.goto('/login');
-
-  await page.locator('input[formcontrolname="username"]').fill(username);
-  await page.locator('input[formcontrolname="password"]').fill(password);
-  await page.locator('form button[type="submit"]').click();
-
-  await expect(page).toHaveURL(/\/coach\/dashboard$/, {
-    timeout: 15_000,
-  });
-
-  const tokenInfo = await page.evaluate(() => {
-    const token = localStorage.getItem('accessToken');
-
-    if (!token) {
-      return null;
-    }
-
-    try {
-      const payload = JSON.parse(
-        atob(
-          token
-            .split('.')[1]
-            .replace(/-/g, '+')
-            .replace(/_/g, '/'),
-        ),
-      );
-
-      return {
-        roles: payload.roles ?? payload.authorities ?? null,
-        subject: payload.sub ?? null,
-      };
-    } catch {
-      return null;
-    }
-  });
-
-  expect(tokenInfo).not.toBeNull();
-  expect(String(tokenInfo?.roles ?? '')).toContain('ROLE_COACH');
+  await authenticateAndOpen(page, 'coach');
 }
 
 async function waitForExerciseEdit(
@@ -506,10 +459,8 @@ async function createExerciseThroughUi(
   await form.locator('#videoUrl').fill(exercise.videoUrl);
   await form.locator('#muscleGroup').fill(exercise.muscleGroup);
   await form.locator('#equipment').fill(exercise.equipment);
-  await form.locator('#difficultyLevel').locator('select').selectOption('medium').catch(async () => {
-    // app-select may expose the native select directly in some Angular builds.
-    await form.locator('select#difficultyLevel').selectOption('medium');
-  });
+  // AppSelectComponent a natív <select>-re teszi az id-t.
+  await form.locator('select#difficultyLevel').selectOption('medium');
   await form.locator('#category').fill(exercise.category);
   await form.locator('#caloriesBurnedPerMinute').fill(String(exercise.caloriesBurnedPerMinute));
   await form.locator('#durationSeconds').fill(String(exercise.durationSeconds));
@@ -608,6 +559,8 @@ test.describe(
     test(
       'UPDATE: csak description módosítása → API/DB verification → reload → restore',
       async ({ page }) => {
+        const exerciseId = await resolveExistingExerciseId(LANGUAGE);
+
         page.on('console', (msg) => {
           console.log(
             `[browser:${msg.type()}] ${msg.text()}`,
@@ -627,8 +580,8 @@ test.describe(
         });
 
         expect(
-          Number.isInteger(EXERCISE_ID) &&
-            EXERCISE_ID > 0,
+          Number.isInteger(exerciseId) &&
+            exerciseId > 0,
         ).toBeTruthy();
 
         await loginAsCoach(page);
@@ -639,20 +592,25 @@ test.describe(
 
         const dbBefore =
           await getExerciseInDatabase(
-            EXERCISE_ID,
+            exerciseId,
             LANGUAGE,
           );
+
+        expect(
+          dbBefore,
+          `Exercise ${exerciseId} nem található a teszt DB-ben.`,
+        ).not.toBeNull();
 
         const uiBefore =
           await readExerciseFromUi(
             page,
-            EXERCISE_ID,
+            exerciseId,
           );
 
         const expectedBaselineDescription =
           dbBefore.description ?? '';
 
-        expect(uiBefore.id).toBe(EXERCISE_ID);
+        expect(uiBefore.id).toBe(exerciseId);
 
         expect(uiBefore.name).toBe(
           valueOrEmpty(dbBefore.name),
@@ -670,7 +628,7 @@ test.describe(
           '[E2E EXERCISE UPDATE] MÓDOSÍTÁS ELŐTT',
         );
         console.log(
-          `exerciseId       : ${EXERCISE_ID}`,
+          `exerciseId       : ${exerciseId}`,
         );
         console.log(
           `language         : ${LANGUAGE}`,
@@ -695,14 +653,14 @@ test.describe(
 
         logChange(
           'MÓDOSÍTÁS',
-          EXERCISE_ID,
+          exerciseId,
           dbBefore.description,
           updatedDescription,
         );
 
         await updateDescriptionThroughUi(
           page,
-          EXERCISE_ID,
+          exerciseId,
           uiBefore,
           dbBefore,
           updatedDescription,
@@ -714,7 +672,7 @@ test.describe(
 
         const dbAfter =
           await assertExerciseDescriptionInDatabase(
-            EXERCISE_ID,
+            exerciseId,
             updatedDescription,
             LANGUAGE,
           );
@@ -732,7 +690,7 @@ test.describe(
           '[E2E EXERCISE UPDATE] ADATBÁZIS UPDATE ELLENŐRIZVE',
         );
         console.log(
-          `exerciseId       : ${EXERCISE_ID}`,
+          `exerciseId       : ${exerciseId}`,
         );
         console.log(
           `description DB   : ${JSON.stringify(dbBefore.description)}`,
@@ -756,7 +714,7 @@ test.describe(
 
         await waitForExerciseEdit(
           page,
-          EXERCISE_ID,
+          exerciseId,
         );
 
         const reloadedForm =
@@ -776,7 +734,7 @@ test.describe(
 
         logChange(
           'RESTORE',
-          EXERCISE_ID,
+          exerciseId,
           updatedDescription,
           expectedBaselineDescription,
         );
@@ -784,12 +742,12 @@ test.describe(
         const currentUi =
           await readExerciseFromUi(
             page,
-            EXERCISE_ID,
+            exerciseId,
           );
 
         await updateDescriptionThroughUi(
           page,
-          EXERCISE_ID,
+          exerciseId,
           currentUi,
           dbBefore,
           expectedBaselineDescription,
@@ -801,7 +759,7 @@ test.describe(
 
         const dbRestored =
           await assertExerciseDescriptionInDatabase(
-            EXERCISE_ID,
+            exerciseId,
             dbBefore.description,
             LANGUAGE,
           );
@@ -819,7 +777,7 @@ test.describe(
           '[E2E EXERCISE UPDATE] RESTORE ELLENŐRIZVE',
         );
         console.log(
-          `exerciseId       : ${EXERCISE_ID}`,
+          `exerciseId       : ${exerciseId}`,
         );
         console.log(
           `description MOST : ${JSON.stringify(dbAfter.description)}`,
@@ -846,7 +804,7 @@ test.describe(
 
         await waitForExerciseEdit(
           page,
-          EXERCISE_ID,
+          exerciseId,
         );
 
         const finalForm =

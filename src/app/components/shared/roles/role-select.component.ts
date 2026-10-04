@@ -31,12 +31,11 @@ import { SHARED_IMPORTS } from '../shared-imports';
         </option>
       </select>
 
-      <div
+      <app-message
         *ngIf="errorMessage"
-        class="mt-3 rounded-xl border border-delete-200 bg-delete-50 px-4 py-3 text-sm font-medium text-delete-700"
-      >
-        {{ errorMessage | translate }}
-      </div>
+        [message]="errorMessage"
+        type="error"
+      ></app-message>
     </div>
   `,
 })

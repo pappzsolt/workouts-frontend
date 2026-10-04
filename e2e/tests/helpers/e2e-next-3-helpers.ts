@@ -1,6 +1,7 @@
 import { API_ENDPOINTS } from './api-endpoints';
 import { expect, request, type APIRequestContext, type Page } from '@playwright/test';
 import { Pool } from 'pg';
+import { authenticateAndOpen } from './auth-session';
 
 export const BASE_API_URL = process.env.E2E_API_URL ?? 'http://localhost:8080';
 export const LANGUAGE = process.env.E2E_LANGUAGE ?? 'hu';
@@ -40,36 +41,7 @@ export async function dbCount(sql: string, params: unknown[] = []): Promise<numb
 }
 
 export async function login(page: Page, role: 'coach' | 'user' | 'admin') {
-  const prefix = role === 'coach' ? 'COACH' : role === 'user' ? 'USER' : 'ADMIN';
-  const username = process.env[`E2E_${prefix}_USERNAME`];
-  const password = process.env[`E2E_${prefix}_PASSWORD`];
-
-  if (!username || !password || password === 'CHANGE_ME') {
-    throw new Error(`Hiányzó E2E ${role} credentials.`);
-  }
-
-  // A tesztek coach -> user -> coach (és admin -> user) szerepkört
-  // váltanak ugyanazon browser contextben. A korábbi JWT/refresh token
-  // nem maradhat a következő login előtt.
-  await page.goto('/login');
-  await page.evaluate(() => {
-    localStorage.clear();
-    sessionStorage.clear();
-  });
-  await page.goto('/login');
-
-  await page.locator('input[formcontrolname="username"]').fill(username);
-  await page.locator('input[formcontrolname="password"]').fill(password);
-  await page.locator('form button[type="submit"]').click();
-
-  const expectedUrl =
-    role === 'coach'
-      ? /\/coach\/dashboard$/
-      : role === 'admin'
-        ? /\/admin\/dashboard$/
-        : /\/user\/dashboard$/;
-
-  await expect(page).toHaveURL(expectedUrl, { timeout: 15000 });
+  await authenticateAndOpen(page, role);
 }
 
 export async function apiFor(page: Page): Promise<APIRequestContext> {

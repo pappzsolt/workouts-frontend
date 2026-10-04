@@ -99,20 +99,12 @@
 
       <!-- Nem -->
       <app-form-field labelKey="common.gender" controlId="gender">
-        <select
+        <app-select
           id="gender"
           name="gender"
-          [(ngModel)]="user.gender"
-          class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
-        >
-          <option value="male">
-            {{ 'common.male' | translate }}
-          </option>
-
-          <option value="female">
-            {{ 'common.female' | translate }}
-          </option>
-        </select>
+          [(value)]="user.gender"
+          [options]="genderOptions"
+        ></app-select>
       </app-form-field>
 
       <!-- Célok -->

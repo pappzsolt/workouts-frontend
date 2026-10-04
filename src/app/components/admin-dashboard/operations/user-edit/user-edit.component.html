@@ -182,12 +182,11 @@
       <div
         class="flex min-w-0 sm:col-span-2 sm:justify-end"
       >
-        <button
+        <app-button
+          variant="save"
           type="submit"
-          class="min-h-11 w-full rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:from-primary-700 hover:to-primary-700 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-primary-200/50 active:scale-[0.99] sm:w-auto"
-        >
-          {{ 'common.save' | translate }}
-        </button>
+          [label]="'common.save' | translate"
+        ></app-button>
       </div>
 
     </form>

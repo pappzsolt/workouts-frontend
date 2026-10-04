@@ -16,6 +16,44 @@ import {
 
 export const LANGUAGE = process.env.E2E_LANGUAGE ?? 'hu';
 
+
+async function cleanupFixtureParts(
+  api: APIRequestContext,
+  programId: number | undefined,
+  workoutId: number | undefined,
+  exerciseIds: number[],
+): Promise<void> {
+  const errors: string[] = [];
+
+  if (programId !== undefined) {
+    try {
+      await deleteProgram(api, programId);
+    } catch (error) {
+      errors.push(`program ${programId}: ${String(error)}`);
+    }
+  }
+
+  if (workoutId !== undefined) {
+    try {
+      await deleteWorkout(api, workoutId);
+    } catch (error) {
+      errors.push(`workout ${workoutId}: ${String(error)}`);
+    }
+  }
+
+  for (const exerciseId of [...exerciseIds].reverse()) {
+    try {
+      await deleteExercise(api, exerciseId);
+    } catch (error) {
+      errors.push(`exercise ${exerciseId}: ${String(error)}`);
+    }
+  }
+
+  if (errors.length > 0) {
+    throw new Error(`Program Builder fixture cleanup failed:\n${errors.join('\n')}`);
+  }
+}
+
 export type ProgramBuilderFixture = {
   programId: number;
   workoutId: number;
@@ -68,10 +106,13 @@ export async function createProgramBuilderFixture(
       'POST /api/program-workouts',
     );
   } catch (error) {
-    await deleteProgram(api, programId).catch(() => undefined);
-    await deleteWorkout(api, workoutId).catch(() => undefined);
-    for (const exerciseId of exerciseIds.reverse()) {
-      await deleteExercise(api, exerciseId).catch(() => undefined);
+    try {
+      await cleanupFixtureParts(api, programId, workoutId, exerciseIds);
+    } catch (cleanupError) {
+      throw new AggregateError(
+        [error, cleanupError],
+        'Program Builder fixture creation and cleanup both failed.',
+      );
     }
     throw error;
   }
@@ -89,15 +130,13 @@ export async function cleanupProgramBuilderFixture(
   api: APIRequestContext,
   fixture: ProgramBuilderFixture,
 ): Promise<void> {
-  // API-only cleanup.
-  // Deleting the program first removes the program-workout relation;
-  // then the workout can be removed, followed by the exercises.
-  await deleteProgram(api, fixture.programId).catch(() => undefined);
-  await deleteWorkout(api, fixture.workoutId).catch(() => undefined);
-
-  for (const exerciseId of fixture.exerciseIds) {
-    await deleteExercise(api, exerciseId).catch(() => undefined);
-  }
+  // API-only cleanup. Every failure is reported; none is swallowed.
+  await cleanupFixtureParts(
+    api,
+    fixture.programId,
+    fixture.workoutId,
+    fixture.exerciseIds,
+  );
 }
 
 export async function loginAndCreateFixture(
@@ -149,11 +188,9 @@ export async function openProgramBuilderStep2(
   // loading instead of coupling this helper to its internal request order.
   await expect(workoutName).toBeVisible({ timeout: 20_000 });
 
-  // In the actual component the workout name is an <h5>. Its row is the
-  // third div ancestor: h5 -> name wrapper -> workout info -> workout row.
-  // Do not search for the first ancestor containing any button because that
-  // makes the locator dependent on unrelated nested markup.
-  const workoutRow = workoutName.locator('xpath=ancestor::div[3]');
+  const workoutRow = page.getByTestId('selected-workout').filter({
+    has: page.getByRole('heading', { name: fixture.workoutName, exact: true }),
+  });
 
   await expect(workoutRow).toBeVisible({ timeout: 15_000 });
 }
@@ -169,10 +206,9 @@ export async function openFixtureWorkout(
 
   await expect(workoutName).toBeVisible({ timeout: 15_000 });
 
-  // The workout name is rendered by the component as an <h5>. Walk to the
-  // concrete workout row instead of relying on a generic ancestor that merely
-  // happens to contain a button.
-  const workoutRow = workoutName.locator('xpath=ancestor::div[3]');
+  const workoutRow = page.getByTestId('selected-workout').filter({
+    has: page.getByRole('heading', { name: fixture.workoutName, exact: true }),
+  });
 
   const exercisesButton = workoutRow.getByRole('button', {
     name: /gyakorlatok|exercises/i,

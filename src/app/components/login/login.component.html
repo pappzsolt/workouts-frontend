@@ -25,32 +25,34 @@
     >
 
       <!-- Username -->
-      <div class="flex flex-col gap-2">
-        <label class="text-sm font-semibold text-content-700">
-          {{ 'login.username' | translate }}
-        </label>
+      <app-form-field
+        labelKey="login.username"
+        controlId="login-username"
+      >
 
         <input
+          id="login-username"
           formControlName="username"
           type="text"
           [placeholder]="'login.usernamePlaceholder' | translate"
           class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
-      </div>
+      </app-form-field>
 
       <!-- Password -->
-      <div class="flex flex-col gap-2">
-        <label class="text-sm font-semibold text-content-700">
-          {{ 'login.password' | translate }}
-        </label>
+      <app-form-field
+        labelKey="login.password"
+        controlId="login-password"
+      >
 
         <input
+          id="login-password"
           formControlName="password"
           type="password"
           [placeholder]="'login.passwordPlaceholder' | translate"
           class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 placeholder:text-content-400 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
         />
-      </div>
+      </app-form-field>
 
       <!-- Error -->
       <div
