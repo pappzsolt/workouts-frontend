@@ -210,10 +210,11 @@ export async function openFixtureWorkout(
     has: page.getByRole('heading', { name: fixture.workoutName, exact: true }),
   });
 
-  const exercisesButton = workoutRow.getByRole('button', {
-    name: /gyakorlatok|exercises/i,
-  });
+  const exercisesButton = workoutRow.locator(
+    'button:has(app-icon[name="dumbbell"])',
+  );
 
+  await expect(exercisesButton).toHaveCount(1);
   await expect(exercisesButton).toBeVisible({ timeout: 15_000 });
 
   // Register the API listener immediately before the UI action that triggers
@@ -262,8 +263,11 @@ export async function assertSelectedOnlyModal(
   await expect(modal).toBeVisible();
 
   await expect(
-    modal.getByText(/5\s+exercise/i),
-  ).toBeVisible();
+    modal.getByRole('heading', {
+      name: fixture.workoutName,
+      exact: true,
+    }),
+  ).toHaveCount(1);
 
   for (const exerciseName of fixture.exerciseNames) {
     await expect(

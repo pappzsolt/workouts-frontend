@@ -1,6 +1,8 @@
 import { expect, type Page } from '@playwright/test';
 import { API_ENDPOINTS } from './api-endpoints';
 
+const BASE_API_URL = process.env.E2E_API_URL ?? 'http://localhost:8080';
+
 export type UserWorkoutApiRecord = Record<string, unknown>;
 
 function readProgramId(program: Record<string, unknown>): number | null {
@@ -29,7 +31,8 @@ export async function findAssignedProgramWithWorkouts(
       continue;
     }
 
-    const response = await page.request.get(API_ENDPOINTS.workouts.byProgram(programId), {
+    const endpoint = API_ENDPOINTS.workouts.byProgram(programId);
+    const response = await page.request.get(`${BASE_API_URL}${endpoint}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -38,12 +41,22 @@ export async function findAssignedProgramWithWorkouts(
       },
     });
 
+    const responseText = await response.text();
     expect(
       response.ok(),
-      `GET ${API_ENDPOINTS.workouts.byProgram(programId)} fixture discovery: ${response.status()}`,
+      `GET ${endpoint} fixture discovery: HTTP ${response.status()} body=${responseText}`,
     ).toBeTruthy();
 
-    const body = await response.json() as { data?: UserWorkoutApiRecord[] };
+    let body: { data?: UserWorkoutApiRecord[] };
+    try {
+      body = responseText ? JSON.parse(responseText) as { data?: UserWorkoutApiRecord[] } : {};
+    } catch {
+      throw new Error(
+        `GET ${endpoint} fixture discovery nem JSON választ adott: ` +
+        `HTTP ${response.status()} body=${responseText}`,
+      );
+    }
+
     const workouts = Array.isArray(body.data) ? body.data : [];
 
     if (workouts.length === 0) {

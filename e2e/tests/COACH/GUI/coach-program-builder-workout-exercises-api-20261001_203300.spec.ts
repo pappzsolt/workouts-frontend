@@ -20,8 +20,25 @@ test.describe('COACH GUI: Program Builder workout → selected exercises', () =>
 
       await assertSelectedOnlyModal(page, fixture, workoutBody);
 
+      const selectedWorkoutRow = page.getByTestId('selected-workout').filter({
+        has: page.getByRole('heading', {
+          name: fixture.workoutName,
+          exact: true,
+        }),
+      });
+
+      await expect(selectedWorkoutRow).toHaveCount(1);
       await expect(
-        page.locator('app-coach-program-builder-workouts').getByText(fixture.workoutName, {
+        selectedWorkoutRow.getByRole('heading', {
+          name: fixture.workoutName,
+          exact: true,
+        }),
+      ).toHaveCount(1);
+
+      const modal = page.locator('[role="dialog"]').first();
+      await expect(
+        modal.getByRole('heading', {
+          name: fixture.workoutName,
           exact: true,
         }),
       ).toHaveCount(1);

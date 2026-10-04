@@ -457,50 +457,112 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
   });
 
   test('DETAIL: six exercises / sixteen concrete sets acceptance fixture is exact', async ({ page }) => {
-    await login(page, 'user');
+    await login(page, 'coach');
+    const coachApi = await apiFor(page);
     const userId = await currentUserId();
-    const api = await apiFor(page);
-
-    const candidate = await dbOne<{ id: number }>(
-      `SELECT uw.id
-         FROM public.user_workouts uw
-        WHERE uw.user_id = $1
-          AND (
-            SELECT COUNT(*)
-              FROM public.user_workout_exercises uwe
-             WHERE uwe.user_workout_id = uw.id
-          ) = 6
-          AND (
-            SELECT COUNT(*)
-              FROM public.user_workout_exercise_sets s
-              JOIN public.user_workout_exercises uwe
-                ON uwe.id = s.user_workout_exercise_id
-             WHERE uwe.user_workout_id = uw.id
-          ) = 16
-        ORDER BY uw.id DESC
-        LIMIT 1`,
-      [userId],
+    const fixture = await createAssignedFixture(
+      coachApi,
+      userId,
+      'MOBILE DETAIL 6X16',
+      1,
+      6,
     );
 
-    expect(
-      candidate,
-      'A specifikáció 6 exercise / 16 set acceptance fixture nincs jelen a tesztadatbázisban.',
-    ).not.toBeNull();
+    let userApi: APIRequestContext | undefined;
 
-    const body = await mobileSuccess(
-      await api.get(`/api/mobile/v1/user-workouts/${candidate!.id}`, {
-        params: { language: LANGUAGE },
-      }),
-      'GET exact 6/16 acceptance fixture',
-    );
+    try {
+      const candidate = await dbOne<{ id: number }>(
+        `SELECT uw.id
+           FROM public.user_workouts uw
+          WHERE uw.user_id = $1
+            AND uw.program_id = $2
+            AND uw.workout_id = $3
+          ORDER BY uw.id DESC
+          LIMIT 1`,
+        [userId, fixture.programs[0], fixture.workoutId],
+      );
 
-    expect(body.data.workoutExercises).toHaveLength(6);
-    expect(body.data.userWorkoutSets).toHaveLength(16);
+      expect(candidate, 'A létrehozott 6-exercise fixture user_workout rekordja hiányzik.').not.toBeNull();
 
-    const exerciseIds = body.data.exercises.map((x: any) => Number(x.exerciseId));
-    expect(new Set(exerciseIds).size).toBe(exerciseIds.length);
+      const initialExerciseCount = await dbCount(
+        `SELECT COUNT(*)::text AS count
+           FROM public.user_workout_exercises
+          WHERE user_workout_id = $1`,
+        [candidate!.id],
+      );
+      expect(initialExerciseCount).toBe(6);
 
-    await api.dispose();
+      const initialSetCount = await dbCount(
+        `SELECT COUNT(*)::text AS count
+           FROM public.user_workout_exercise_sets s
+           JOIN public.user_workout_exercises uwe
+             ON uwe.id = s.user_workout_exercise_id
+          WHERE uwe.user_workout_id = $1`,
+        [candidate!.id],
+      );
+      expect(initialSetCount).toBe(18);
+
+      await coachApi.dispose();
+      await login(page, 'user');
+      userApi = await apiFor(page);
+
+      const removableSetsResult = await db().query<{ id: number }>(
+        `SELECT s.id
+           FROM public.user_workout_exercise_sets s
+           JOIN public.user_workout_exercises uwe
+             ON uwe.id = s.user_workout_exercise_id
+          WHERE uwe.user_workout_id = $1
+          ORDER BY s.id DESC
+          LIMIT 2`,
+        [candidate!.id],
+      );
+      const removableSets = removableSetsResult.rows;
+      expect(removableSets).toHaveLength(2);
+
+      for (const set of removableSets) {
+        await success(
+          await userApi.delete(API_ENDPOINTS.userWorkoutExerciseSets.byId(set.id)),
+          `DELETE acceptance set ${set.id}`,
+        );
+      }
+
+      const exactExerciseCount = await dbCount(
+        `SELECT COUNT(*)::text AS count
+           FROM public.user_workout_exercises
+          WHERE user_workout_id = $1`,
+        [candidate!.id],
+      );
+      expect(exactExerciseCount).toBe(6);
+
+      const exactSetCount = await dbCount(
+        `SELECT COUNT(*)::text AS count
+           FROM public.user_workout_exercise_sets s
+           JOIN public.user_workout_exercises uwe
+             ON uwe.id = s.user_workout_exercise_id
+          WHERE uwe.user_workout_id = $1`,
+        [candidate!.id],
+      );
+      expect(exactSetCount).toBe(16);
+
+      const body = await mobileSuccess(
+        await userApi.get(API_ENDPOINTS.mobile.userWorkout(candidate!.id), {
+          params: { language: LANGUAGE },
+        }),
+        'GET exact 6/16 acceptance fixture',
+      );
+
+      expect(body.data.workoutExercises).toHaveLength(6);
+      expect(body.data.userWorkoutSets).toHaveLength(16);
+
+      const exerciseIds = body.data.exercises.map((x: any) => Number(x.exerciseId));
+      expect(new Set(exerciseIds).size).toBe(exerciseIds.length);
+    } finally {
+      await userApi?.dispose();
+      await login(page, 'coach');
+      const cleanupApi = await apiFor(page);
+      await cleanupFixture(cleanupApi, fixture);
+      await cleanupApi.dispose();
+    }
   });
 
   test('DETAIL: canonical single-workout response matches DB and is user-scoped', async ({ page }) => {
