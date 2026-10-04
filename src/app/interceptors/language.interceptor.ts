@@ -29,6 +29,12 @@ export class LanguageInterceptor implements HttpInterceptor {
      * -> HTTP_INTERCEPTORS
      * körkörös függőség.
      */
+    // Ha a hívó service explicit language paramétert adott meg,
+    // azt nem írjuk felül a globális UI nyelvvel.
+    if (request.params.has('language')) {
+      return next.handle(request);
+    }
+
     const language = localStorage.getItem('language') || this.defaultLanguage;
 
     const languageRequest = request.clone({

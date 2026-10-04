@@ -309,7 +309,7 @@ export class CoachProgramBuilderComponent implements OnInit {
       durationDays: this.durationDays,
       difficultyLevel: this.difficultyLevel,
       userId: null,
-      languageCode: null,
+      languageCode: this.languageService.getCurrentLanguage(),
       workouts: null,
     };
 
@@ -378,7 +378,7 @@ export class CoachProgramBuilderComponent implements OnInit {
       durationDays: this.durationDays,
       difficultyLevel: this.difficultyLevel,
       userId: null,
-      languageCode: null,
+      languageCode: this.languageService.getCurrentLanguage(),
       workouts: null,
     };
 

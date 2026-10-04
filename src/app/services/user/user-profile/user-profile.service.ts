@@ -4,10 +4,8 @@ import { Observable, map } from 'rxjs';
 
 import { RawUser } from '../../../models/user-profil.model';
 import type { CoachNameId } from '../../../models/common/coach-name-id.model';
-import { Role } from '../../../models/role.model';
 import type { MemberResponse } from '../../../models/backend-dto/members/member-response';
 import type { CoachDto } from '../../../models/backend-dto/coach/coach-dto';
-import type { RoleDto } from '../../../models/backend-dto/roles/role-dto';
 import type { MemberRequest } from '../../../models/backend-dto/members/member-request';
 import { API_ENDPOINTS } from '../../../api-endpoints';
 import { ApiResponse } from '../../../models/backend-dto/common/api-response';
@@ -19,36 +17,12 @@ export class UserProfilService {
   private readonly http = inject(HttpClient);
 
   private readonly coachesUrl = API_ENDPOINTS.allCoaches;
-  private readonly usersUrl = API_ENDPOINTS.allUsers;
-  private readonly rolesUrl = API_ENDPOINTS.roles;
-
-  getUsers(): Observable<RawUser[]> {
-    return this.http
-      .get<ApiResponse<MemberResponse[]>>(this.usersUrl)
-      .pipe(map((response) => (response.data ?? []).flatMap((member) => {
-        const user = this.toRawUser(member);
-        return user == null ? [] : [user];
-      })));
-  }
-
   getCoaches(): Observable<CoachNameId[]> {
     return this.http.get<ApiResponse<CoachDto[]>>(this.coachesUrl).pipe(
       map((response) =>
         (response.data ?? []).flatMap((coach) =>
           coach.id != null && coach.name != null
             ? [{ id: coach.id, name: coach.name }]
-            : [],
-        ),
-      ),
-    );
-  }
-
-  getRoles(): Observable<Role[]> {
-    return this.http.get<ApiResponse<RoleDto[]>>(this.rolesUrl).pipe(
-      map((response) =>
-        (response.data ?? []).flatMap((role) =>
-          role.id != null && role.name != null
-            ? [{ id: role.id, name: role.name }]
             : [],
         ),
       ),

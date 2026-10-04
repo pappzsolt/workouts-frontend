@@ -56,7 +56,7 @@ export class CoachNewProgramComponent implements OnInit {
     }
 
     const date = new Date(`${startDate}T00:00:00`);
-    date.setDate(date.getDate() + durationDays);
+    date.setDate(date.getDate() + durationDays - 1);
 
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -94,7 +94,7 @@ export class CoachNewProgramComponent implements OnInit {
       durationDays: this.program.durationDays ?? null,
       difficultyLevel: this.program.difficultyLevel ?? null,
       userId: null,
-      languageCode: null,
+      languageCode: this.languageService.getCurrentLanguage(),
       workouts: null,
     };
 

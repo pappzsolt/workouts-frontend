@@ -9,6 +9,7 @@ import { Program } from '../../../../../models/program.model';
 import type { ProgramCreationRequest } from '../../../../../models/backend-dto/programcreator/program-creation-request';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
+import { LanguageService } from '../../../../../services/shared/language.service';
 
 @Component({
   selector: 'app-coach-program-edit',
@@ -37,6 +38,7 @@ export class CoachProgramEditComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private programService: CoachProgramService,
+    private languageService: LanguageService,
   ) {}
 
   ngOnInit(): void {
@@ -86,7 +88,7 @@ export class CoachProgramEditComponent implements OnInit {
     }
 
     const date = new Date(`${startDate}T00:00:00`);
-    date.setDate(date.getDate() + durationDays);
+    date.setDate(date.getDate() + durationDays - 1);
 
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -109,7 +111,7 @@ export class CoachProgramEditComponent implements OnInit {
       durationDays: this.program.durationDays ?? null,
       difficultyLevel: this.program.difficultyLevel ?? null,
       userId: null,
-      languageCode: null,
+      languageCode: this.languageService.getCurrentLanguage(),
       workouts: null,
     };
 

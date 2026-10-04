@@ -112,7 +112,7 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
     }
 
     const date = new Date(`${startDate}T00:00:00`);
-    date.setDate(date.getDate() + durationDays);
+    date.setDate(date.getDate() + durationDays - 1);
 
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -142,7 +142,7 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
       durationDays: this.form.value.durationDays,
       difficultyLevel: this.form.value.difficultyLevel,
       userId: null,
-      languageCode: null,
+      languageCode: this.languageService.getCurrentLanguage(),
       workouts: null,
     };
 
@@ -157,7 +157,7 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
       durationDays: program.durationDays ?? null,
       startDate: program.startDate ?? null,
       difficultyLevel: program.difficultyLevel ?? null,
-      languageCode: null,
+      languageCode: this.languageService.getCurrentLanguage(),
       workouts: null,
     };
 
