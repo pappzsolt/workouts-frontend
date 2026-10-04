@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { LoggerService } from '../logger.service';
 import { HttpClient, HttpBackend } from '@angular/common/http';
-import { Observable, map, tap } from 'rxjs';
+import { Observable, finalize, map, shareReplay, tap } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
@@ -18,6 +18,8 @@ export class AuthService {
   private readonly apiUrl = API_ENDPOINTS.auth;
 
   private readonly rawHttp: HttpClient;
+
+  private refreshInFlight$: Observable<LoginResponse> | null = null;
 
   constructor(
     private readonly http: HttpClient,
@@ -141,13 +143,17 @@ export class AuthService {
   }
 
   refreshAccessToken(): Observable<LoginResponse> {
+    if (this.refreshInFlight$) {
+      return this.refreshInFlight$;
+    }
+
     const refreshToken = localStorage.getItem('refreshToken');
 
     if (!refreshToken) {
       throw new Error('Nincs refresh token.');
     }
 
-    return this.rawHttp
+    const request$ = this.rawHttp
       .post<ApiResponse<LoginResponse>>(API_ENDPOINTS.authRefresh, { refreshToken })
       .pipe(
         map((response) => {
@@ -161,12 +167,37 @@ export class AuthService {
           localStorage.setItem('accessToken', response.accessToken);
           localStorage.setItem('refreshToken', response.refreshToken);
         }),
+        finalize(() => {
+          this.refreshInFlight$ = null;
+        }),
+        shareReplay({ bufferSize: 1, refCount: false }),
       );
+
+    this.refreshInFlight$ = request$;
+
+    return request$;
   }
 
   logout(): void {
+    const refreshToken = localStorage.getItem('refreshToken');
+
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
+
+    if (!refreshToken) {
+      return;
+    }
+
+    this.rawHttp
+      .post<ApiResponse<null>>(API_ENDPOINTS.authLogout, { refreshToken })
+      .subscribe({
+        error: (error) => {
+          this.logger.warn(
+            '[AuthService] Refresh token visszavonása sikertelen.',
+            error,
+          );
+        },
+      });
   }
 
   getAccessToken(): string | null {
@@ -232,15 +263,22 @@ export class AuthService {
     }
   }
 
+  getUserRoles(): string[] {
+    return (this.getUserRole() ?? '')
+      .split(',')
+      .map((role) => role.trim())
+      .filter((role) => role.length > 0);
+  }
+
   isAdmin(): boolean {
-    return this.getUserRole() === 'ROLE_ADMIN';
+    return this.getUserRoles().includes('ROLE_ADMIN');
   }
 
   isCoach(): boolean {
-    return this.getUserRole() === 'ROLE_COACH';
+    return this.getUserRoles().includes('ROLE_COACH');
   }
 
   isUser(): boolean {
-    return this.getUserRole() === 'ROLE_USER';
+    return this.getUserRoles().includes('ROLE_USER');
   }
 }

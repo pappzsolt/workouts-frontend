@@ -1,6 +1,14 @@
 /** GENERATED FROM BACKEND JAVA DTO. Do not add UI-only fields here. */
-import type { ExerciseRequest } from '../exercise/exercise-request';
-import type { WorkoutRequest } from '../workout/workout-request';
+
+export interface ProgramCreationExerciseRequest {
+  exerciseId: number | null;
+  orderIndex: number | null;
+}
+
+export interface ProgramCreationWorkoutRequest {
+  workoutId: number | null;
+  exercises: ProgramCreationExerciseRequest[] | null;
+}
 
 export interface ProgramCreationRequest {
   userId: number | null;
@@ -10,9 +18,5 @@ export interface ProgramCreationRequest {
   startDate: string | null;
   difficultyLevel: string | null;
   languageCode: string | null;
-  workouts: Array<WorkoutRequest> | null;
-  workoutId: number | null;
-  exercises: Array<ExerciseRequest> | null;
-  exerciseId: number | null;
-  orderIndex: number | null;
+  workouts: ProgramCreationWorkoutRequest[] | null;
 }

@@ -144,10 +144,6 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
       userId: null,
       languageCode: null,
       workouts: null,
-      workoutId: null,
-      exercises: null,
-      exerciseId: null,
-      orderIndex: null,
     };
 
     // ==========================================================
@@ -163,10 +159,6 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
       difficultyLevel: program.difficultyLevel ?? null,
       languageCode: null,
       workouts: null,
-      workoutId: null,
-      exercises: null,
-      exerciseId: null,
-      orderIndex: null,
     };
 
     // ==========================================================

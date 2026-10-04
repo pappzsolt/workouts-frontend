@@ -111,10 +111,6 @@ export class CoachProgramEditComponent implements OnInit {
       userId: null,
       languageCode: null,
       workouts: null,
-      workoutId: null,
-      exercises: null,
-      exerciseId: null,
-      orderIndex: null,
     };
 
     this.programService.updateProgram(this.program.id, request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({

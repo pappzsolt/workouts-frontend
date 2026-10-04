@@ -157,7 +157,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
   loadWorkouts(): void {
     this.loadingWorkouts = true;
 
-    this.workoutBuilderService.loadWorkouts().subscribe({
+    this.workoutBuilderService.loadWorkouts().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         this.workouts = response.data ?? [];
         this.loadingWorkouts = false;
@@ -178,7 +178,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
   loadExercises(): void {
     this.loadingExercises = true;
 
-    this.workoutBuilderService.loadExercises().subscribe({
+    this.workoutBuilderService.loadExercises().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         this.exercises = response.data ?? [];
         this.loadingExercises = false;
@@ -197,7 +197,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
       return;
     }
 
-    this.workoutBuilderService.loadProgramWorkouts(this.programId).subscribe({
+    this.workoutBuilderService.loadProgramWorkouts(this.programId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: ({ programWorkouts, allWorkouts }) => {
         this.programWorkouts = programWorkouts;
 
@@ -260,7 +260,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
     this.isNewWorkout =
       newWorkoutId !== null && Number(newWorkoutId) === workoutId;
 
-    this.workoutBuilderService.getWorkoutExercises(workoutId).subscribe({
+    this.workoutBuilderService.getWorkoutExercises(workoutId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (loadedWorkout) => {
         this.selectedWorkout = loadedWorkout;
         this.selectedWorkoutExercises = loadedWorkout.exercises ?? [];
@@ -379,6 +379,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
 
     this.workoutBuilderService
       .saveExercises(workoutId, this.exerciseDialogExercises, existingExerciseIds)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ results, workout }) => {
           const failed = results.filter((result) => !result.success);
@@ -505,6 +506,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
 
     this.workoutBuilderService
       .removeWorkout(this.programId, workoutId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
           if (!response.success) {
@@ -537,7 +539,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
       return;
     }
 
-    this.workoutBuilderService.reindexWorkouts(this.programWorkouts).subscribe({
+    this.workoutBuilderService.reindexWorkouts(this.programWorkouts).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (results) => {
         const failed = results.find((result) => !result.success);
 
@@ -582,6 +584,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
 
     this.workoutBuilderService
       .updateWorkoutDay(programWorkout.id, dayIndex)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
           if (!response.success || !response.data) {
@@ -682,7 +685,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
 
     this.copyInProgress = true;
 
-    this.workoutBuilderService.copyWorkout(request).subscribe({
+    this.workoutBuilderService.copyWorkout(request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         this.copyInProgress = false;
 

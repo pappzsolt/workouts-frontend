@@ -131,7 +131,7 @@ export class CoachProgramBuilderComponent implements OnInit {
       return;
     }
 
-    this.coachProgramService.getProgramById(this.programId).subscribe({
+    this.coachProgramService.getProgramById(this.programId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         if (response?.success && response.data) {
           const program = response.data;
@@ -172,7 +172,7 @@ export class CoachProgramBuilderComponent implements OnInit {
       return;
     }
 
-    this.assignProgramService.getAssignedUserIds(this.programId).subscribe({
+    this.assignProgramService.getAssignedUserIds(this.programId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         const assignedUserIds = response?.data ?? [];
 
@@ -229,7 +229,7 @@ export class CoachProgramBuilderComponent implements OnInit {
       return;
     }
 
-    this.assignProgramService.assignProgramToUser(this.selectedUserId, this.programId).subscribe({
+    this.assignProgramService.assignProgramToUser(this.selectedUserId, this.programId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.router.navigate(['/coach/dashboard'], {
           queryParams: {
@@ -311,13 +311,9 @@ export class CoachProgramBuilderComponent implements OnInit {
       userId: null,
       languageCode: null,
       workouts: null,
-      workoutId: null,
-      exercises: null,
-      exerciseId: null,
-      orderIndex: null,
     };
 
-    this.coachProgramService.createProgram(request).subscribe({
+    this.coachProgramService.createProgram(request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response: ApiResponse<number>) => {
         if (response.success && response.data !== null) {
           this.programId = response.data;
@@ -384,13 +380,9 @@ export class CoachProgramBuilderComponent implements OnInit {
       userId: null,
       languageCode: null,
       workouts: null,
-      workoutId: null,
-      exercises: null,
-      exerciseId: null,
-      orderIndex: null,
     };
 
-    this.coachProgramService.updateProgram(this.programId, request).subscribe({
+    this.coachProgramService.updateProgram(this.programId, request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         if (response.success) {
           this.creatingProgram = false;

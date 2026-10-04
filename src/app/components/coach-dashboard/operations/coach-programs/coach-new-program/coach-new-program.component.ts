@@ -96,10 +96,6 @@ export class CoachNewProgramComponent implements OnInit {
       userId: null,
       languageCode: null,
       workouts: null,
-      workoutId: null,
-      exercises: null,
-      exerciseId: null,
-      orderIndex: null,
     };
 
 

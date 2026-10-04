@@ -85,7 +85,8 @@ export class UserProfilService {
       gender: user.extraFields?.gender ?? null,
       goals: user.extraFields?.goals ?? null,
       avatarUrl: user.avatarUrl ?? null,
-      coachId: user.extraFields?.coach_id ?? null,
+      // Saját profilból a coach-hozzárendelés nem módosítható.
+      coachId: null,
       phone: null,
       specialization: null,
       roleIds: null,

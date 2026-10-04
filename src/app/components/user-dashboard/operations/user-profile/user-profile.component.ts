@@ -196,6 +196,10 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
       email: this.selectedUser.email,
 
+      password: this.selectedUser.password?.trim()
+        ? this.selectedUser.password
+        : undefined,
+
       avatarUrl: this.selectedUser.avatarUrl,
 
       /**

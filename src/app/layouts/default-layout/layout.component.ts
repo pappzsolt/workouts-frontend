@@ -58,15 +58,15 @@ export class LayoutComponent implements OnInit {
   }
 
   isAdmin(): boolean {
-    return this.role === 'ROLE_ADMIN';
+    return this.authService.isAdmin();
   }
 
   isCoach(): boolean {
-    return this.role === 'ROLE_COACH';
+    return this.authService.isCoach();
   }
 
   isUser(): boolean {
-    return this.role === 'ROLE_USER';
+    return this.authService.isUser();
   }
 
   handleMenuAction(action: string): void {

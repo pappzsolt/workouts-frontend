@@ -8,6 +8,7 @@ export const API_ENDPOINTS = {
   auth: `${environment.apiUrl}/auth`,
   authLogin: `${environment.apiUrl}/auth/login`,
   authRefresh: `${environment.apiUrl}/auth/refresh`,
+  authLogout: `${environment.apiUrl}/auth/logout`,
   authForgotPassword: `${environment.apiUrl}/auth/forgot-password`,
   authResetPassword: `${environment.apiUrl}/auth/reset-password`,
 
