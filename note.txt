@@ -9,6 +9,12 @@ git add .
 git commit -m "Add trusted proxy config to production deploy"
 git push gitlab master
 
+
+---
+git add -A
+git commit -m "Update local test CORS configuration"
+git push gitlab master
+
 -----------
 tekepites menete :
 /home/svc_ansible

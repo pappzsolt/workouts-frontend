@@ -725,10 +725,8 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
     return workout.id;
   }
 
-  trackBySelectedWorkoutOccurrence(
+  readonly trackBySelectedWorkoutOccurrence = (
     index: number,
     _workout: WorkoutWithExercises,
-  ): number {
-    return this.programWorkouts[index]?.id ?? index;
-  }
+  ): number => this.programWorkouts[index]?.id ?? index;
 }
