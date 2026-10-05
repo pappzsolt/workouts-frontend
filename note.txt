@@ -1,3 +1,9 @@
+git status
+git add src
+git commit -m "Fix remaining P1 and P2 frontend issues"
+git push gitlab master
+
+
 tekepites menete :
 /home/svc_ansible
 git clone
