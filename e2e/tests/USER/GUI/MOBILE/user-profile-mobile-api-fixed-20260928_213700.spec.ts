@@ -10,7 +10,7 @@ test('USER MOBILE GUI: profile username matches the authenticated member API', a
   const profilePromise = page.waitForResponse(r => {
     if (r.request().method() !== 'GET') return false;
     const url = new URL(r.url());
-    return /^\/api\/members\/\d+$/.test(url.pathname);
+    return /^\/api\/members\/users\/\d+$/.test(url.pathname);
   });
 
   await navigateSpa(page, '/user/profile');

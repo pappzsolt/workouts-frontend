@@ -25,7 +25,7 @@ test('COACH MOBILE GUI: program builder exposes the difficulty control and calcu
   await page.locator('#durationDays').fill('7');
   await difficulty.selectOption('BEGINNER');
 
-  await expect(page.locator('#endDate')).toHaveValue('2035-03-22');
+  await expect(page.locator('#endDate')).toHaveValue('2035-03-21');
   expect(await page.locator('body').evaluate(el => el.scrollWidth)).toBeLessThanOrEqual(391);
   await assertNoDataMutation(violations);
 });

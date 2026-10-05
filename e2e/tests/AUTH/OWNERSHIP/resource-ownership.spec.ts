@@ -21,9 +21,10 @@ test('USER ownership: own workout readable, foreign program/workout/member/sets 
     expect(set).not.toBeNull();
     const before=await snapshotProgram(foreign.programId);
     await login(page,'user'); userApi=await apiFor(page);
-    await success(await userApi.get(API_ENDPOINTS.exercises.userWorkout(ownUw!.id)),'Own user workout');
+    await rejected(await userApi.get(API_ENDPOINTS.exercises.userWorkout(ownUw!.id)), 'Missing required language parameter', 400);
+    await success(await userApi.get(API_ENDPOINTS.exercises.userWorkout(ownUw!.id), { params: { language: process.env.E2E_LANGUAGE ?? 'hu' } }),'Own user workout');
     await rejected(await userApi.get(API_ENDPOINTS.programs.byId(foreign.programId)),'Foreign assigned program',403);
-    await rejected(await userApi.get(API_ENDPOINTS.exercises.userWorkout(foreignUw!.id)),'Foreign workout',403);
+    await rejected(await userApi.get(API_ENDPOINTS.exercises.userWorkout(foreignUw!.id), { params: { language: process.env.E2E_LANGUAGE ?? 'hu' } }),'Foreign workout',403);
     await rejected(await userApi.get(`/api/members/users/${other}`),'Foreign member',403);
     await rejected(await userApi.put(API_ENDPOINTS.userWorkoutExerciseSets.byId(set!.id),{data:{setNumber:set!.set_number,targetRepetitions:set!.target_repetitions,targetWeightKg:set!.target_weight_kg,actualRepetitions:set!.target_repetitions,actualWeightKg:set!.target_weight_kg,completed:true,notes:'must not be stored'}}),'Foreign set update',403);
     await rejected(await userApi.delete(API_ENDPOINTS.userWorkoutExerciseSets.byId(set!.id)),'Foreign set deletion',403);

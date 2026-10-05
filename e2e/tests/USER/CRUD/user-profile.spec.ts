@@ -26,7 +26,9 @@ test('Own profile CRUD: changes persist; request ID, coach and roles cannot redi
     expect(await dbOne('SELECT * FROM users WHERE id=$1',[other])).toEqual(foreign);
     expect((await db().query('SELECT * FROM user_roles WHERE user_id=$1 ORDER BY role_id',[me])).rows).toEqual(roles);
     const body=await success(await api.get(`/api/members/users/${me}`),'Read modified own profile');
-    expect(body.data.goals).toBe(goals);
+    expect(body.data.type).toBe('user');
+    expect(Number(body.data.id)).toBe(me);
+    expect(body.data.extraFields.goals).toBe(goals);
     await rejected(await api.get(API_ENDPOINTS.members.users),'USER cannot list all users',403);
   } finally {
     try {

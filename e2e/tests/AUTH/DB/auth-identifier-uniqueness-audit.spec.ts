@@ -1,4 +1,6 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, request } from '@playwright/test';
+import { API_ENDPOINTS } from '../../helpers/api-endpoints';
+import { BASE_API_URL } from '../../helpers/e2e-next-3-helpers';
 import { Pool, type PoolClient } from 'pg';
 import { randomUUID } from 'node:crypto';
 
@@ -87,9 +89,6 @@ for (const kind of ['USER', 'COACH'] as const) {
     expect(identifier, `Missing E2E_${kind}_USERNAME`).toBeTruthy();
     expect(password, `Missing E2E_${kind}_PASSWORD`).toBeTruthy();
     const p = pool();
-    const { request } = await import('@playwright/test');
-    const { API_ENDPOINTS } = await import('../../helpers/api-endpoints');
-    const { BASE_API_URL } = await import('../../helpers/e2e-next-3-helpers');
     const api = await request.newContext({ baseURL: BASE_API_URL });
     try {
       const table = kind === 'USER' ? 'users' : 'coaches';

@@ -7,7 +7,7 @@ test('COACH GUI: profile page renders after the authenticated coach profile API 
 
   const apiPromise = page.waitForResponse(r =>
     r.request().method() === 'GET' &&
-    /^\/api\/members\/\d+$/.test(new URL(r.url()).pathname),
+    /^\/api\/members\/coaches\/\d+$/.test(new URL(r.url()).pathname),
   );
   await navigateSpa(page, '/coach/profile');
   const response = await apiPromise;

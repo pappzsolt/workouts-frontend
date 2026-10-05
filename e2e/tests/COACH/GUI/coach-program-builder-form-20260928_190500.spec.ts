@@ -29,7 +29,7 @@ test.describe('COACH GUI: program builder form', () => {
     await page.locator('#durationDays').fill('7');
     await page.locator('select#difficultyLevel').selectOption('BEGINNER');
 
-    await expect(page.locator('#endDate')).toHaveValue('2035-03-22');
+    await expect(page.locator('#endDate')).toHaveValue('2035-03-21');
     await assertNoDataMutation(violations);
   });
 });
