@@ -531,7 +531,6 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
             (programWorkout) => programWorkout.id !== programWorkoutId,
           );
 
-          this.reindexProgramWorkouts();
         },
         error: (error) => {
           this.message =
@@ -540,43 +539,6 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
           this.messageType = 'error';
         },
       });
-  }
-
-  reindexProgramWorkouts(): void {
-    if (this.programId === null) {
-      return;
-    }
-
-    this.workoutBuilderService.reindexWorkouts(this.programWorkouts).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (results) => {
-        const failed = results.find((result) => !result.success);
-
-        if (failed) {
-          this.message =
-            failed.message ||
-            'coachProgramBuilder.updateWorkoutDayError';
-          this.messageType = 'error';
-          this.loadProgramWorkouts();
-          return;
-        }
-
-        this.programWorkouts = results
-          .map(
-            (result, index) =>
-              result.data ?? {
-                ...this.programWorkouts[index],
-                dayIndex: index + 1,
-              },
-          )
-          .sort((a, b) => a.dayIndex - b.dayIndex);
-
-        this.selectedWorkouts = this.programWorkouts
-          .map((pw) => this.workouts.find((workout) => workout.id === pw.workoutId))
-          .filter(
-            (workout): workout is WorkoutWithExercises => workout !== undefined,
-          );
-      },
-    });
   }
 
   updateWorkoutDay(programWorkoutId: number, dayIndex: number): void {

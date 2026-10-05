@@ -115,7 +115,7 @@ test.describe('Coach - ProgramWorkout endpoint matrix', () => {
             dayIndex: 3,
           },
         }),
-        'duplicate same program/workout/dayIndex',
+        'duplicate same program/workout/dayIndex', 409,
       );
 
       expect(
@@ -262,7 +262,7 @@ test.describe('Coach - ProgramWorkout endpoint matrix', () => {
             dayIndex: 1,
           },
         }),
-        'POST invalid program-workout',
+        'POST invalid program-workout', 403,
       );
 
       expect(
@@ -285,12 +285,12 @@ test.describe('Coach - ProgramWorkout endpoint matrix', () => {
             dayIndex: 1,
           },
         }),
-        'PUT invalid program-workout',
+        'PUT invalid program-workout', 404,
       );
 
       await rejected(
         await api.delete(`${API_ENDPOINTS.programWorkouts.deleteById(invalidProgramId)}`),
-        'DELETE invalid program-workout id',
+        'DELETE invalid program-workout id', 404,
       );
     } finally {
       await api.dispose();

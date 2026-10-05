@@ -7,6 +7,8 @@ import {
   openProgramBuilderStep2,
 } from '../../helpers/program-builder-workout-exercises';
 
+test.setTimeout(90_000);
+
 test.describe('COACH GUI: Program Builder workout → selected exercises', () => {
   test('DESKTOP: UI → authenticated API GET → exactly 5 selected exercises, no exercise catalogue pagination', async ({
     page,

@@ -69,11 +69,7 @@ export async function success(response: any, label: string): Promise<any> {
   return body;
 }
 
-export async function rejected(response: any, label: string) {
-  const { text, body } = await json(response);
-  expect(response.ok(), `${label}: váratlan HTTP ${response.status()} ${text}`).toBeFalsy();
-  return body;
-}
+export { expectRejected as rejected } from './expect-rejected';
 
 export async function currentUserId(): Promise<number> {
   const username = process.env.E2E_USER_USERNAME;
@@ -222,4 +218,10 @@ export async function deleteWorkout(api: APIRequestContext, id: number) {
 
 export async function deleteExercise(api: APIRequestContext, id: number) {
   await success(await api.delete(`${API_ENDPOINTS.exercises.byId(id)}`), `DELETE /api/exercises/${id}`);
+}
+
+export async function closeDb(): Promise<void> {
+  const existing = pool;
+  pool = undefined;
+  if (existing) await existing.end();
 }

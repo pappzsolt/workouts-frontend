@@ -1,3 +1,4 @@
+import { expectRejected as rejected } from '../../helpers/expect-rejected';
 import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { authenticateAndOpen } from '../../helpers/auth-session';
 
@@ -41,7 +42,7 @@ async function apiFor(page:Page):Promise<APIRequestContext>{
 }
 async function json(response:any){const text=await response.text(); let body:any=null; if(text) body=JSON.parse(text); return {text,body};}
 async function success(response:any,label:string){const {text,body}=await json(response); expect(response.ok(),`${label}: HTTP ${response.status()} ${text}`).toBeTruthy(); expect(body?.success??true,`${label}: success=false: ${text}`).toBeTruthy(); return body;}
-async function rejected(response:any,label:string){const {text,body}=await json(response); expect(response.ok(),`${label}: váratlan HTTP ${response.status()} ${text}`).toBeFalsy(); return body;}
+
 
 async function coachUserId():Promise<number>{
   const username=process.env.E2E_COACH_USERNAME;
@@ -93,7 +94,7 @@ test.describe('Coach - Program ↔ User assignment comprehensive',()=>{
   expect(target, 'The configured E2E database must contain an ADMIN user for the authorization check.').toBeTruthy();
   const programId=await createProgram(api,`E2E FORBIDDEN ASSIGN ${suffix()}`);
   try{
-   await rejected(await api.post(API_ENDPOINTS.programs.assign,{data:{userId:Number(target!.id),programId}}),'foreign user assignment');
+   await rejected(await api.post(API_ENDPOINTS.programs.assign,{data:{userId:Number(target!.id),programId}}),'foreign user assignment', 403);
    expect(await dbCount(`SELECT count(*)::text count FROM public.user_programs WHERE user_id=$1 AND program_id=$2`,[Number(target!.id),programId])).toBe(0);
   }finally{ await deleteProgram(api,programId); await api.dispose(); }
  });

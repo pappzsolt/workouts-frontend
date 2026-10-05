@@ -40,15 +40,15 @@ test('PROGRAM CREATOR: create → update → DB → API cleanup', async ({ page 
 test('PROGRAM CREATOR NEGATIVE: USER cannot create or update programs', async ({ page }) => {
   await login(page, 'user');
   const api = await apiFor(page);
-  expect((await api.post(API_ENDPOINTS.userPrograms.base, { data:{
+  await rejected(await api.post(API_ENDPOINTS.userPrograms.base, { data:{
     userId:null, programName:`Forbidden ${suffix()}`, programDescription:'x',
     durationDays:30,startDate:'2035-03-01',difficultyLevel:'intermediate',
     languageCode:LANGUAGE,workouts:null
-  }})).ok()).toBeFalsy();
+  }}), 'Role restricted endpoint', 403);
 
   const denied = await rejected(await api.put(API_ENDPOINTS.userPrograms.byId(999999999), {
     data:{userId:null,programName:'Forbidden',programDescription:'x',durationDays:30,
       startDate:'2035-03-01',difficultyLevel:'intermediate',languageCode:LANGUAGE,workouts:null}
-  }), 'USER PUT program creator');
+  }), 'USER PUT program creator', 403);
   expect(denied).toBeTruthy();
 });

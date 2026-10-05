@@ -1,3 +1,4 @@
+import { expectRejected as rejected } from '../../helpers/expect-rejected';
 import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { authenticateAndOpen } from '../../helpers/auth-session';
 import { expect, request, test, type APIRequestContext, type Page } from '@playwright/test';
@@ -53,11 +54,7 @@ async function success(response: any, label: string): Promise<any> {
   return body;
 }
 
-async function rejected(response: any, label: string): Promise<string> {
-  const text = await response.text();
-  expect(response.ok(), `${label}: váratlan siker HTTP ${response.status()} ${text}`).toBeFalsy();
-  return text;
-}
+
 
 async function dbOne<T = any>(sql: string, params: unknown[] = []): Promise<T | null> {
   const result = await db().query<T>(sql, params);
@@ -289,7 +286,7 @@ test.describe('Coach - COMPLETE Program endpoint matrix', () => {
     const api = await apiFor(page);
     const missingId = 2147483000;
 
-    await rejected(await api.get(`${API_ENDPOINTS.programs.byId(missingId)}?language=${LANGUAGE}`), 'GET missing program');
+    await rejected(await api.get(`${API_ENDPOINTS.programs.byId(missingId)}?language=${LANGUAGE}`), 'GET missing program', 403);
     await rejected(await api.put(`${API_ENDPOINTS.userPrograms.byId(missingId)}`, {
       data: {
         userId: null,
@@ -301,9 +298,9 @@ test.describe('Coach - COMPLETE Program endpoint matrix', () => {
         languageCode: LANGUAGE,
         workouts: null,
       },
-    }), 'PUT missing program');
+    }), 'PUT missing program', 400);
 
-    await rejected(await api.post(API_ENDPOINTS.programs.assign, { data: { userId: 2147483000, programId: missingId } }), 'POST assign invalid IDs');
+    await rejected(await api.post(API_ENDPOINTS.programs.assign, { data: { userId: 2147483000, programId: missingId } }), 'POST assign invalid IDs', 403);
     await api.dispose();
   });
 });

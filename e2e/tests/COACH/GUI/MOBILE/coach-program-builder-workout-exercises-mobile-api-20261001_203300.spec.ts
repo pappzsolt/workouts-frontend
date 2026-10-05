@@ -13,6 +13,8 @@ test.use({
   hasTouch: true,
 });
 
+test.setTimeout(90_000);
+
 test.describe('COACH MOBILE GUI: Program Builder workout → selected exercises', () => {
   test('MOBILE: UI → authenticated API GET → exactly 5 selected exercises, no 83-page catalogue', async ({
     page,

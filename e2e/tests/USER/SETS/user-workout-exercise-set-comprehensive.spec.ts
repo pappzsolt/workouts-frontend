@@ -365,7 +365,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
 
       await rejected(
         await userApi.get(`${API_ENDPOINTS.userWorkoutExerciseSets.byId(userWorkoutExerciseId)}`),
-        'GET foreign user set',
+        'GET foreign user set', 403,
       );
 
       await rejected(
@@ -380,12 +380,12 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
             notes: 'MUST NOT UPDATE',
           },
         }),
-        'PUT foreign user set',
+        'PUT foreign user set', 403,
       );
 
       await rejected(
         await userApi.delete(`${API_ENDPOINTS.userWorkoutExerciseSets.byId(setId)}`),
-        'DELETE foreign user set',
+        'DELETE foreign user set', 403,
       );
 
       const after = await dbOne<{

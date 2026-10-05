@@ -144,14 +144,14 @@ test.describe('User - Program Statistics endpoint matrix', () => {
         await userApi.get(
           `${API_ENDPOINTS.statistics.userProgramWorkouts}?from=2035-12-31&to=2035-01-01`,
         ),
-        'GET workouts invalid date range',
+        'GET workouts invalid date range', 400,
       );
 
       await rejected(
         await userApi.get(
           `${API_ENDPOINTS.statistics.userExerciseStrength(0)}?from=2035-01-01&to=2035-12-31&language=${LANGUAGE}`,
         ),
-        'GET strength progress invalid exercise id',
+        'GET strength progress invalid exercise id', 400,
       );
     } finally {
       await userApi.dispose();
@@ -163,14 +163,14 @@ test.describe('User - Program Statistics endpoint matrix', () => {
     try {
       await rejected(
         await coachApi.get(`${API_ENDPOINTS.statistics.userProgram}?language=${LANGUAGE}`),
-        'GET program statistics as coach',
+        'GET program statistics as coach', 403,
       );
 
       await rejected(
         await coachApi.get(
           `${API_ENDPOINTS.statistics.userProgramWorkouts}?from=2035-01-01&to=2035-12-31`,
         ),
-        'GET workout statistics as coach',
+        'GET workout statistics as coach', 403,
       );
     } finally {
       await coachApi.dispose();

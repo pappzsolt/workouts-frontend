@@ -268,7 +268,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
             size: 6,
           },
         }),
-        'GET exercise-search page=-1',
+        'GET exercise-search page=-1', 400,
       );
 
       await rejected(
@@ -280,7 +280,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
             size: 0,
           },
         }),
-        'GET exercise-search size=0',
+        'GET exercise-search size=0', 400,
       );
 
       await success(
@@ -442,7 +442,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
         await api.post(API_ENDPOINTS.workoutExercises.base, {
           params: { workoutId, exerciseId },
         }),
-        'duplicate workout-exercise assignment',
+        'duplicate workout-exercise assignment', 400,
       );
       expect(await workoutExerciseCount(workoutId, exerciseId)).toBe(1);
 
@@ -470,7 +470,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
         await api.put(API_ENDPOINTS.workoutExercises.order, {
           params: { workoutId, exerciseId, orderIndex: -1 },
         }),
-        'PUT negative order-index',
+        'PUT negative order-index', 400,
       );
 
       await success(
@@ -492,7 +492,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
         await api.delete(API_ENDPOINTS.workoutExercises.base, {
           params: { workoutId, exerciseId },
         }),
-        'DELETE missing workout-exercise relation',
+        'DELETE missing workout-exercise relation', 400,
       );
 
       await deleteExercise(api, exerciseId2);
@@ -575,12 +575,12 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
             done: false,
           },
         }),
-        'PUT invalid workout ID',
+        'PUT invalid workout ID', 404,
       );
 
       await rejected(
         await api.delete(`${API_ENDPOINTS.workouts.byId(invalidId)}`),
-        'DELETE invalid workout ID',
+        'DELETE invalid workout ID', 404,
       );
 
       await rejected(
@@ -592,12 +592,12 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
             description: 'must not exist',
           },
         }),
-        'PUT invalid exercise ID',
+        'PUT invalid exercise ID', 400,
       );
 
       await rejected(
         await api.delete(`${API_ENDPOINTS.exercises.byId(invalidId)}`),
-        'DELETE invalid exercise ID',
+        'DELETE invalid exercise ID', 400,
       );
 
       const invalidWorkoutBefore = await dbCount(
@@ -615,7 +615,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
         await api.post(API_ENDPOINTS.workoutExercises.base, {
           params: { workoutId: invalidId, exerciseId: invalidId },
         }),
-        'POST assign invalid workout/exercise IDs',
+        'POST assign invalid workout/exercise IDs', 403,
       );
 
       expect(
@@ -635,7 +635,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
             orderIndex: 0,
           },
         }),
-        'PUT order-index invalid IDs',
+        'PUT order-index invalid IDs', 403,
       );
     } finally {
       await api.dispose();
@@ -666,7 +666,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
             description: marker,
           },
         }),
-        'POST /api/exercises empty name',
+        'POST /api/exercises empty name', 400,
       );
 
       expect(

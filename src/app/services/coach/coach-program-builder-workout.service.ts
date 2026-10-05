@@ -130,42 +130,6 @@ export class CoachProgramBuilderWorkoutService {
     );
   }
 
-  reindexWorkouts(
-    programWorkouts: ProgramWorkoutAssignment[],
-  ): Observable<ApiResponse<ProgramWorkoutAssignment>[]> {
-    const updates = programWorkouts.map((programWorkout, index) => ({
-      ...programWorkout,
-      dayIndex: index + 1,
-    }));
-
-    return from(updates).pipe(
-      concatMap((programWorkout) => {
-        if (programWorkout.id == null) {
-          return of({
-            success: true,
-            data: programWorkout,
-            message: null,
-          } satisfies ApiResponse<ProgramWorkoutAssignment>);
-        }
-
-        return this.programWorkoutService
-          .updateProgramWorkout(programWorkout.id, programWorkout.dayIndex)
-          .pipe(
-            catchError((error: HttpErrorResponse) =>
-              of({
-                success: false,
-                data: null,
-                message:
-                  error?.error?.message ||
-                  'coachProgramBuilder.updateWorkoutDayError',
-              } satisfies ApiResponse<ProgramWorkoutAssignment>),
-            ),
-          );
-      }),
-      toArray(),
-    );
-  }
-
   updateWorkoutDay(
     programWorkoutId: number,
     dayIndex: number,

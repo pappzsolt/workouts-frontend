@@ -12,6 +12,7 @@ import {
   login,
   success,
   suffix,
+  dbOne,
 } from './e2e-next-3-helpers';
 
 export const LANGUAGE = process.env.E2E_LANGUAGE ?? 'hu';
@@ -78,13 +79,7 @@ export async function createProgramBuilderFixture(
   const exerciseNames: string[] = [];
 
   try {
-    // IMPORTANT: the backend does not allow adding new exercises to a workout
-    // after the workout has already been assigned to a program.
-    // Therefore the fixture must be built in this order:
-    //   1. create program
-    //   2. create workout
-    //   3. create + assign the 5 exercises
-    //   4. only then attach the workout to the program
+    // Create only source data. The program/workout relation is exercised through the GUI.
     for (let index = 1; index <= 5; index++) {
       const name = `E2E PB exercise ${index} ${suffixValue}`;
       const exerciseId = await createExercise(api, name);
@@ -95,16 +90,6 @@ export async function createProgramBuilderFixture(
       await assignExercise(api, workoutId, exerciseId);
     }
 
-    await success(
-      await api.post(API_ENDPOINTS.programWorkouts.base, {
-        data: {
-          programId,
-          workoutId,
-          dayIndex: 1,
-        },
-      }),
-      'POST /api/program-workouts',
-    );
   } catch (error) {
     try {
       await cleanupFixtureParts(api, programId, workoutId, exerciseIds);
@@ -179,6 +164,8 @@ export async function openProgramBuilderStep2(
   await expect(
     page.locator('app-coach-program-builder-workouts'),
   ).toBeVisible({ timeout: 15_000 });
+
+  await addWorkoutThroughPicker(page, fixture.programId, fixture.workoutId, fixture.workoutName, 1);
 
   const workoutName = page.getByText(fixture.workoutName, {
     exact: true,
@@ -285,4 +272,57 @@ export async function assertSelectedOnlyModal(
       name: /következő|next/i,
     }),
   ).toHaveCount(0);
+}
+
+/** Traverse actual picker pages. Never fill a relation through an API fixture. */
+export async function addWorkoutThroughPicker(
+  page: Page, programId: number, workoutId: number, workoutName: string, expectedDay: number,
+): Promise<void> {
+  const builder = page.locator('app-coach-program-builder-workouts');
+  const board = builder.locator('app-coach-workout-board');
+  if (!(await board.isVisible())) {
+    await builder.getByTestId('open-workout-picker').click();
+  }
+  const checkbox = board.locator(`#compact-workout-${workoutId}`);
+  // Start at the first page, then traverse until the target row is present.
+  const previous = board.locator('app-pagination').getByRole('button', { name: /előző|previous/i });
+  const next = board.locator('app-pagination').getByRole('button', { name: /következő|next/i });
+  const pagination = board.locator('app-pagination');
+  while (await previous.isVisible() && await previous.isEnabled()) {
+    const before = await pagination.innerText();
+    await previous.click();
+    await expect(pagination).not.toHaveText(before);
+  }
+  for (let traversed = 0; ; traversed++) {
+    await expect(board.locator('input[type="checkbox"]').first()).toBeVisible({ timeout: 15000 });
+    if (await checkbox.count()) break;
+    if (traversed >= 100 || !(await next.isVisible()) || !(await next.isEnabled())) {
+      throw new Error(`Workout ${workoutId} is missing from the real picker pages.`);
+    }
+    const before = await pagination.innerText();
+    const oldIds = await board.locator('input[type="checkbox"]').evaluateAll(nodes => nodes.map(n => n.id));
+    await next.click();
+    await expect(pagination).not.toHaveText(before);
+    await expect.poll(async () => board.locator('input[type="checkbox"]').evaluateAll(nodes => nodes.map(n => n.id))).not.toEqual(oldIds);
+  }
+  await checkbox.check();
+  await expect(checkbox).toBeChecked();
+  const responsePromise = page.waitForResponse(response => {
+    if (response.request().method() !== 'POST' || new URL(response.url()).pathname !== API_ENDPOINTS.programWorkouts.base) return false;
+    const body = response.request().postDataJSON();
+    return body.programId === programId && body.workoutId === workoutId;
+  });
+  await builder.getByTestId('add-workouts-to-program').click();
+  const response = await responsePromise;
+  expect(response.status()).toBe(200);
+  const body = await response.json();
+  expect(body.success).toBe(true);
+  expect(body.data.workoutId).toBe(workoutId);
+  expect(body.data.dayIndex).toBe(expectedDay);
+  const occurrenceId = Number(body.data.id);
+  expect(occurrenceId).toBeGreaterThan(0);
+  const row = await dbOne<{ program_id: number; workout_id: number; day_index: number }>(
+    'SELECT program_id, workout_id, day_index FROM public.program_workouts WHERE id=$1', [occurrenceId]);
+  expect(row).toEqual({ program_id: programId, workout_id: workoutId, day_index: expectedDay });
+  await expect(builder.getByTestId('selected-workout').filter({ has: page.getByRole('heading', { name: workoutName, exact: true }) }).filter({ hasText: `${expectedDay}. nap` })).toHaveCount(1);
 }

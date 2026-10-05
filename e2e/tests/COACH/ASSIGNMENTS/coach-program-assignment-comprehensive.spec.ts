@@ -1,3 +1,4 @@
+import { expectRejected as rejected } from '../../helpers/expect-rejected';
 import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { authenticateAndOpen } from '../../helpers/auth-session';
 import { expect, request, test, type APIRequestContext, type Page } from '@playwright/test';
@@ -94,19 +95,7 @@ async function success(response: any, label: string): Promise<any> {
   return body;
 }
 
-async function rejected(
-  response: any,
-  label: string,
-): Promise<any> {
-  const { text, body } = await readJson(response);
 
-  expect(
-    response.ok(),
-    `${label}: váratlan siker HTTP ${response.status()} ${text}`,
-  ).toBeFalsy();
-
-  return body;
-}
 
 async function dbOne<T = any>(
   sql: string,
@@ -511,7 +500,7 @@ test.describe(
                 programId,
               },
             }),
-            'POST /api/programs/assign foreign user',
+            'POST /api/programs/assign foreign user', 403,
           );
 
           const after = await dbCount(
@@ -555,7 +544,7 @@ test.describe(
               programId: missingProgramId,
             },
           }),
-          'POST /api/programs/assign invalid IDs',
+          'POST /api/programs/assign invalid IDs', 403,
         );
 
         const after = await dbCount(

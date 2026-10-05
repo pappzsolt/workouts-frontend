@@ -153,11 +153,11 @@ test.describe('MEMBER CONTROLLER: admin CRUD/read + user/coach profile access', 
       );
       expect(changed?.goals).toBe(changedGoals);
 
-      await rejected(await api.get(API_ENDPOINTS.members.base), 'USER GET /api/members');
-      await rejected(await api.get(API_ENDPOINTS.members.users), 'USER GET /api/members/users');
+      await rejected(await api.get(API_ENDPOINTS.members.base), 'USER GET /api/members', 403);
+      await rejected(await api.get(API_ENDPOINTS.members.users), 'USER GET /api/members/users', 403);
       await rejected(
         await api.post(API_ENDPOINTS.members.base, { data: { type: 'user' } }),
-        'USER POST /api/members',
+        'USER POST /api/members', 403,
       );
     } finally {
       await success(

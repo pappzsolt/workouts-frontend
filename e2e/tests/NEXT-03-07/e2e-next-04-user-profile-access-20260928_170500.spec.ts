@@ -19,11 +19,11 @@ test('USER READ: own member and public coach list; protected coach/admin endpoin
   const coaches = await success(await api.get(API_ENDPOINTS.members.coaches), 'GET all-coaches');
   expect(coaches.data.length).toBeGreaterThan(0);
 
-  expect((await api.get(API_ENDPOINTS.users.nameId)).ok()).toBeFalsy();
-  expect((await api.get(API_ENDPOINTS.roles.base)).ok()).toBeFalsy();
-  expect((await api.post(API_ENDPOINTS.userPrograms.base, { data: {
+  await rejected(await api.get(API_ENDPOINTS.users.nameId), 'Role restricted endpoint', 403);
+  await rejected(await api.get(API_ENDPOINTS.roles.base), 'Role restricted endpoint', 403);
+  await rejected(await api.post(API_ENDPOINTS.userPrograms.base, { data: {
     userId:null, programName:`Forbidden ${suffix()}`, programDescription:'forbidden',
     durationDays:30, startDate:'2035-03-01', difficultyLevel:'intermediate',
     languageCode:LANGUAGE, workouts:null
-  }})).ok()).toBeFalsy();
+  }}), 'Role restricted endpoint', 403);
 });
