@@ -6,7 +6,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { ApiResponse } from '../../../../models/backend-dto/common/api-response';
 import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
-import { skip } from 'rxjs';
+import { skip, from, concatMap, tap, toArray, finalize, Subscription } from 'rxjs';
+import { ProgramAssignmentState } from '../../../../models/program-assignment-state';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppCardComponent } from '../../../../components/shared/components/app-card/app-card.component';
 import { AssignProgramService } from '../../../../services/coach/assign-program/assignprogram.service';
@@ -49,7 +50,15 @@ export class CoachProgramBuilderComponent implements OnInit {
 
   endDate = '';
 
-  selectedUserId?: number;
+  readonly assignmentState = new ProgramAssignmentState();
+  assigningProgram = false;
+  assignedUsersLoaded = true;
+  userSelectionReady = false;
+  private assignedUsersRequest?: Subscription;
+
+  selectUsers(ids: number[]): void {
+    this.assignmentState.select(ids);
+  }
 
   durationDays: number | null = null;
 
@@ -110,6 +119,7 @@ export class CoachProgramBuilderComponent implements OnInit {
         return;
       }
 
+      this.assignedUsersLoaded = false;
       this.isEditMode = true;
       this.programId = parsedProgramId;
       this.currentStep = newWorkoutId ? 2 : 1;
@@ -143,17 +153,7 @@ export class CoachProgramBuilderComponent implements OnInit {
           this.durationDays = program.durationDays ?? null;
           this.difficultyLevel = program.difficultyLevel ?? '';
 
-          // ==================================================
-          // PROGRAMHOZ RENDELT USER
-          // ==================================================
-          //
-          // A backend a hozzárendelt user(eke)t külön endpointon adja:
-          // GET /api/programs/{programId}/assigned-users
-          //
-          // A builder UI jelenleg egy felhasználót tud megjeleníteni,
-          // ezért meglévő program szerkesztésekor az első hozzárendelt
-          // usert állítjuk be a select értékének.
-          this.loadAssignedUser();
+          this.loadAssignedUsers();
         } else {
           this.message = 'coachProgramBuilder.loadProgramError';
           this.messageType = 'error';
@@ -166,29 +166,29 @@ export class CoachProgramBuilderComponent implements OnInit {
       },
     });
   }
-  private loadAssignedUser(): void {
-    if (this.programId === null) {
-      this.selectedUserId = undefined;
-      return;
-    }
-
-    this.assignProgramService.getAssignedUserIds(this.programId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (response) => {
-        const assignedUserIds = response?.data ?? [];
-
-        this.selectedUserId =
-          assignedUserIds.length > 0
-            ? Number(assignedUserIds[0])
-            : undefined;
-      },
-      error: (err) => {
-        this.logger.error(
-          'Hiba a programhoz rendelt felhasználó lekérésekor:',
-          err,
-        );
-        this.selectedUserId = undefined;
-      },
-    });
+  private loadAssignedUsers(): void {
+    if (this.programId === null) return;
+    this.assignedUsersRequest?.unsubscribe();
+    this.assignedUsersLoaded = false;
+    this.assignedUsersRequest = this.assignProgramService.getAssignedUserIds(this.programId)
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: response => {
+          try {
+            if (!response.success || !Array.isArray(response.data)) throw new Error('Invalid assignment response');
+            this.assignmentState.loadAssigned(response.data);
+            this.assignedUsersLoaded = true;
+          } catch (error) {
+            this.logger.error('Hibás program-hozzárendelési válasz', error);
+            this.message = 'coachProgramBuilder.assignError';
+            this.messageType = 'error';
+          }
+        },
+        error: error => {
+          this.logger.error('A hozzárendelt felhasználók betöltése sikertelen', error);
+          this.message = 'coachProgramBuilder.assignError';
+          this.messageType = 'error';
+        },
+      });
   }
 
   // ==========================================================
@@ -215,35 +215,33 @@ export class CoachProgramBuilderComponent implements OnInit {
   // ==========================================================
 
   finishProgram(): void {
-    if (this.programId === null) {
-      this.message = 'coachProgramBuilder.loadProgramError';
-      this.messageType = 'error';
-
-      return;
-    }
-
-    if (!this.selectedUserId) {
+    if (this.programId === null || this.assigningProgram || !this.assignedUsersLoaded || !this.userSelectionReady) return;
+    if (!this.assignmentState.selectedUserIds.length) {
       this.message = 'coachProgramBuilder.noUserSelected';
       this.messageType = 'error';
-
       return;
     }
-
-    this.assignProgramService.assignProgramToUser(this.selectedUserId, this.programId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    const programId = this.programId;
+    this.assigningProgram = true;
+    this.message = '';
+    // Successful requests are recorded immediately: retry only the remaining users.
+    from(this.assignmentState.pendingUserIds).pipe(
+      concatMap(userId => this.assignProgramService.assignProgramToUser(userId, programId).pipe(
+        tap(response => {
+          if (!response.success) throw new Error(response.message || 'coachProgramBuilder.assignError');
+          this.assignmentState.markAssigned(userId);
+        }),
+      )),
+      toArray(),
+      finalize(() => { this.assigningProgram = false; }),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
       next: () => {
-        this.router.navigate(['/coach/dashboard'], {
-          queryParams: {
-            section: 'assignments',
-            programId: this.programId,
-          },
-        });
+        this.router.navigate(['/coach/dashboard'], { queryParams: { section: 'assignments', programId } });
       },
-
-      error: (err: HttpErrorResponse) => {
-        const backendMessage = err?.error?.message ?? err?.message;
-
-        this.message = backendMessage || 'coachProgramBuilder.assignError';
-
+      error: (error: HttpErrorResponse | Error) => {
+        this.message = (error instanceof HttpErrorResponse ? error.error?.message : error.message)
+          || 'coachProgramBuilder.assignError';
         this.messageType = 'error';
       },
     });

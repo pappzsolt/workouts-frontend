@@ -16,7 +16,7 @@ import { skip, Subscription } from 'rxjs';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
-import { UserSelectComponent } from '../../../shared/user/user-select.component';
+import { UserMultiSelectComponent } from '../../../shared/user/user-multi-select.component';
 
 import {
   Exercise,
@@ -38,7 +38,7 @@ import { WorkoutCopyDialogComponent } from './workout-copy-dialog.component';
     ...SHARED_IMPORTS,
     ProgramExerciseDialogComponent,
     CoachWorkoutBoardComponent,
-    UserSelectComponent,
+    UserMultiSelectComponent,
     WorkoutCopyDialogComponent,
   ],
   templateUrl: './coach-program-builder-workouts.component.html',
@@ -46,14 +46,18 @@ import { WorkoutCopyDialogComponent } from './workout-copy-dialog.component';
 export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
   private readonly destroyRef = inject(DestroyRef);
 
-  @Input() selectedUserId: number | undefined;
+  @Input() selectedUserIds: number[] = [];
+  @Input() assignedUserIds: number[] = [];
+  @Input() assignmentBusy = false;
+  userSelectionReady = false;
   @Input() isEditMode = false;
   @Input() programId: number | null = null;
   @Input() currentStep = 2;
 
   @Output() readonly previousStep = new EventEmitter<void>();
   @Output() readonly finishProgram = new EventEmitter<void>();
-  @Output() readonly selectedUserIdChange = new EventEmitter<number | undefined>();
+  @Output() readonly selectedUserIdsChange = new EventEmitter<number[]>();
+  @Output() readonly userSelectionReadyChange = new EventEmitter<boolean>();
   @Output() readonly goToCreateWorkout = new EventEmitter<void>();
 
   workouts: WorkoutWithExercises[] = [];

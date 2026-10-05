@@ -254,13 +254,16 @@
 
     <app-coach-program-builder-workouts
       *ngIf="currentStep === 2"
-      [selectedUserId]="selectedUserId"
+      [selectedUserIds]="assignmentState.selectedUserIds"
+      [assignedUserIds]="assignmentState.assignedUserIds"
+      [assignmentBusy]="assigningProgram || !assignedUsersLoaded"
       [isEditMode]="isEditMode"
       [programId]="programId"
       [currentStep]="currentStep"
       (previousStep)="previousStep()"
       (finishProgram)="finishProgram()"
-      (selectedUserIdChange)="selectedUserId = $event"
+      (selectedUserIdsChange)="selectUsers($event)"
+      (userSelectionReadyChange)="userSelectionReady = $event"
       (goToCreateWorkout)="goToCreateWorkout()"
     ></app-coach-program-builder-workouts>
 

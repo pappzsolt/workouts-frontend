@@ -287,16 +287,19 @@
       </button>
 
       <div class="w-full min-w-0 lg:max-w-sm">
-        <app-user-select
-          [selectedUserId]="selectedUserId"
-          (selectedUserIdChange)="selectedUserIdChange.emit($event)"
-          [disabled]="isEditMode && selectedUserId !== undefined"
-        ></app-user-select>
+        <app-user-multi-select
+          [selectedUserIds]="selectedUserIds"
+          [assignedUserIds]="assignedUserIds"
+          (selectedUserIdsChange)="selectedUserIdsChange.emit($event)"
+          (readyChange)="userSelectionReady = $event; userSelectionReadyChange.emit($event)"
+          [disabled]="assignmentBusy"
+        ></app-user-multi-select>
       </div>
 
       <button
         type="button"
-        [disabled]="programId === null || !selectedUserId"
+        data-testid="finish-program"
+        [disabled]="programId === null || !selectedUserIds.length || assignmentBusy || !userSelectionReady"
         (click)="finishProgram.emit()"
         class="w-full rounded-lg bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto"
       >
