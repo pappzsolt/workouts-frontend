@@ -1,4 +1,3 @@
-```
 <div
   class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8"
 >
@@ -51,202 +50,9 @@
          1. LÉPÉS - PROGRAM
          ====================================================== -->
 
-    <app-card *ngIf="currentStep === 1" class="min-w-0 overflow-hidden">
-
-      <!-- Step header -->
-      <div
-        class="flex items-start gap-4 border-b border-surface-100 px-5 py-5 sm:px-6"
-      >
-        <span
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-600 text-sm font-bold text-white shadow-sm"
-        >
-          1
-        </span>
-
-        <div class="min-w-0">
-          <h3 class="text-lg font-bold text-content-800 sm:text-xl">
-            {{
-              isEditMode
-                ? ('coachProgramBuilder.editProgram' | translate)
-                : ('coachProgramBuilder.createProgram' | translate)
-            }}
-          </h3>
-
-          <p class="mt-1 text-sm leading-6 text-content-500">
-            {{
-              isEditMode
-                ? ('coachProgramBuilder.editProgramDescription' | translate)
-                : ('coachProgramBuilder.createProgramDescription' | translate)
-            }}
-          </p>
-        </div>
-      </div>
-
-      <!-- Form -->
-      <div class="grid min-w-0 grid-cols-1 gap-5 p-5 sm:p-6">
-
-        <!-- PROGRAM NÉV -->
-        <div class="min-w-0 sm:col-span-2">
-          <label
-            for="programName"
-            class="mb-2 block text-sm font-semibold text-content-700"
-          >
-            {{ 'coachProgramBuilder.programName' | translate }}
-          </label>
-
-          <input
-            id="programName"
-            type="text"
-            [(ngModel)]="programName"
-            [placeholder]="'coachProgramBuilder.programNamePlaceholder'"
-            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
-          />
-        </div>
-
-        <!-- PROGRAM LEÍRÁS -->
-        <div class="min-w-0 sm:col-span-2">
-          <label
-            for="programDescription"
-            class="mb-2 block text-sm font-semibold text-content-700"
-          >
-            {{ 'coachProgramBuilder.programDescription' | translate }}
-          </label>
-
-          <textarea
-            id="programDescription"
-            rows="5"
-            [(ngModel)]="programDescription"
-            [placeholder]="'coachProgramBuilder.programDescriptionPlaceholder' | translate"
-            class="block w-full resize-y rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
-          ></textarea>
-        </div>
-
-        <!-- PROGRAM KEZDÉS DÁTUMA -->
-        <div class="min-w-0">
-          <label
-            for="startDate"
-            class="mb-2 block text-sm font-semibold text-content-700"
-          >
-            {{ 'coachProgramBuilder.startDate' | translate }}
-          </label>
-
-          <input
-            id="startDate"
-            name="startDate"
-            type="date"
-            [(ngModel)]="startDate"
-            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
-          />
-        </div>
-
-        <!-- PROGRAM KALKULÁLT BEFEJEZÉS -->
-        <div class="min-w-0">
-          <label
-            for="endDate"
-            class="mb-2 block text-sm font-semibold text-content-700"
-          >
-            {{ 'coachProgramBuilder.endDate' | translate }}
-          </label>
-
-          <input
-            id="endDate"
-            name="endDate"
-            type="date"
-            [value]="calculatedEndDate || endDate"
-            readonly
-            class="block w-full rounded-lg border border-surface-300 bg-surface-100 px-3.5 py-2.5 text-base text-content-600 shadow-sm outline-none sm:text-sm"
-          />
-        </div>
-
-        <!-- PROGRAM IDŐTARTAMA -->
-        <div class="min-w-0">
-          <label
-            for="durationDays"
-            class="mb-2 block text-sm font-semibold text-content-700"
-          >
-            {{ 'coachProgramBuilder.programDuration' | translate }}
-          </label>
-
-          <div class="relative">
-            <input
-              id="durationDays"
-              type="number"
-              min="1"
-              [(ngModel)]="durationDays"
-              [placeholder]="'coachProgramBuilder.programDurationPlaceholder' | translate"
-              class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 pr-20 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
-            />
-
-            <span
-              class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm font-medium text-content-500"
-            >
-              {{ 'coachProgramBuilder.days' | translate }}
-            </span>
-          </div>
-        </div>
-
-        <!-- NEHÉZSÉGI SZINT -->
-        <div class="min-w-0">
-          <label
-            for="difficultyLevel"
-            class="mb-2 block text-sm font-semibold text-content-700"
-          >
-            {{ 'coachProgramBuilder.difficultyLevel' | translate }}
-          </label>
-
-          <app-select
-            id="difficultyLevel"
-            name="difficultyLevel"
-            [(value)]="difficultyLevel"
-            [placeholder]="'coachProgramBuilder.selectDifficulty'"
-            placeholderValue=""
-            [className]="'block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm'"
-            [options]="[
-    { value: 'BEGINNER', label: 'coachProgramBuilder.beginner' },
-    { value: 'INTERMEDIATE', label: 'coachProgramBuilder.intermediate' },
-    { value: 'ADVANCED', label: 'coachProgramBuilder.advanced' }
-  ]"
-          />
-        </div>
-
-        <!-- PROGRAM MENTÉSE / MÓDOSÍTÁSA -->
-        <div
-          class="flex justify-end pt-1 sm:col-span-2"
-        >
-          <button
-            type="button"
-            [disabled]="
-              creatingProgram ||
-              !programName.trim() ||
-              !startDate ||
-              durationDays === null ||
-              durationDays <= 0 ||
-              !difficultyLevel
-            "
-            (click)="nextStep()"
-            class="w-full rounded-lg bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-          >
-            <span>
-              {{
-                creatingProgram
-                  ? (isEditMode
-                    ? ('coachProgramBuilder.updatingProgram' | translate)
-                    : ('coachProgramBuilder.creatingProgram' | translate))
-                  : (isEditMode
-                    ? ('coachProgramBuilder.editProgram' | translate)
-                    : ('coachProgramBuilder.createProgram' | translate))
-              }}
-            </span>
-
-            <span *ngIf="!creatingProgram" class="ml-2">
-              →
-            </span>
-          </button>
-        </div>
-
-      </div>
-
-    </app-card>
+    <app-program-details-form *ngIf="currentStep === 1"
+      [form]="document.form" [isEditMode]="isEditMode" [creatingProgram]="document.busy"
+      (save)="saveProgram()"></app-program-details-form>
 
     <!-- ======================================================
          2. LÉPÉS - WORKOUTOK
@@ -254,21 +60,19 @@
 
     <app-coach-program-builder-workouts
       *ngIf="currentStep === 2"
-      [selectedUserIds]="assignmentState.selectedUserIds"
-      [assignedUserIds]="assignmentState.assignedUserIds"
-      [assignmentBusy]="assigningProgram || !assignedUsersLoaded"
+      [selectedUserIds]="assignment.state.selectedUserIds"
+      [assignedUserIds]="assignment.state.assignedUserIds"
+      [assignmentBusy]="assignment.busy || !assignment.loaded"
       [isEditMode]="isEditMode"
       [programId]="programId"
       [currentStep]="currentStep"
       (previousStep)="previousStep()"
       (finishProgram)="finishProgram()"
-      (selectedUserIdsChange)="selectUsers($event)"
-      (userSelectionReadyChange)="userSelectionReady = $event"
+      (selectedUserIdsChange)="assignment.state.select($event)"
+      (userSelectionReadyChange)="assignment.selectionReady = $event"
       (goToCreateWorkout)="goToCreateWorkout()"
     ></app-coach-program-builder-workouts>
 
 
   </div>
 </div>
-
-```

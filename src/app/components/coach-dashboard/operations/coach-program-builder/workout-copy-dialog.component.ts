@@ -17,6 +17,7 @@ export class WorkoutCopyDialogComponent {
   @Input() dayIndex = 1;
   @Output() dayIndexChange = new EventEmitter<number>();
   @Input() inProgress = false;
+  @Input() errorMessage = '';
 
   @Output() cancel = new EventEmitter<void>();
   @Output() confirm = new EventEmitter<void>();

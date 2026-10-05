@@ -24,8 +24,8 @@
   <div class="flex min-w-0 flex-col gap-6 p-5 sm:p-6">
     <!-- ÜZENET -->
     <app-message
-      [message]="message"
-      [type]="messageType"
+      [message]="occurrences.message"
+      [type]="occurrences.messageType"
     ></app-message>
 
     <!-- ======================================================
@@ -46,12 +46,12 @@
         <span
           class="flex h-8 min-w-8 shrink-0 items-center justify-center rounded-full bg-info-100 px-2 text-xs font-bold text-info-700"
         >
-          {{ selectedWorkouts.length }}
+          {{ occurrences.state.occurrences.length }}
         </span>
       </div>
 
       <div
-        *ngIf="selectedWorkouts.length === 0"
+        *ngIf="occurrences.state.occurrences.length === 0"
         class="rounded-xl border border-dashed border-surface-300 bg-white px-5 py-8 text-center"
       >
         <div class="mb-2 flex justify-center text-content-400">
@@ -68,12 +68,12 @@
       </div>
 
       <div
-        *ngIf="selectedWorkouts.length > 0"
+        *ngIf="occurrences.state.occurrences.length > 0"
         class="overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm"
       >
         <div class="divide-y divide-surface-100">
           <div
-            *ngFor="let occurrence of state.occurrences; let i = index; trackBy: trackBySelectedWorkoutOccurrence"
+            *ngFor="let occurrence of occurrences.state.occurrences; let i = index; trackBy: trackBySelectedWorkoutOccurrence"
             data-testid="selected-workout"
             [attr.data-occurrence-id]="occurrence.assignment.id"
             class="flex flex-col gap-4 px-4 py-4 transition hover:bg-surface-50 sm:flex-row sm:items-center sm:px-5"
@@ -139,7 +139,7 @@
 
               <button
                 type="button"
-                (click)="openCopyWorkout(occurrence.workout)"
+                (click)="copySourceWorkout = occurrence.workout"
                 [attr.aria-label]="'coachProgramBuilder.copyWorkoutAria' | translate"
                 class="inline-flex min-h-10 items-center gap-2 rounded-lg border border-surface-300 bg-white px-3 py-2 text-sm font-semibold text-content-700 shadow-sm transition hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/10"
               >
@@ -150,7 +150,7 @@
               <button
                 type="button"
                 data-testid="remove-workout-occurrence"
-                (click)="removeWorkout(occurrence.assignment.id)"
+                (click)="occurrences.remove(occurrence.assignment.id)"
                 [attr.aria-label]="'coachProgramBuilder.removeWorkoutAria' | translate"
                 class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-delete-200 bg-white text-delete-600 transition hover:bg-delete-50 focus:outline-none focus:ring-4 focus:ring-delete-600/10"
               >
@@ -249,7 +249,7 @@
         [selectedWorkoutIds]="pendingWorkoutIds"
         [multiSelect]="true"
         [compactSelection]="true"
-        (workoutsChange)="onWorkoutPickerChange($event)"
+        (workoutsChange)="pendingWorkoutIds = $event"
       ></app-coach-workout-board>
 
       <div class="mt-4 flex flex-col-reverse gap-3 border-t border-primary-100 pt-4 sm:flex-row sm:justify-end">
@@ -263,7 +263,7 @@
 
         <button
           type="button"
-          [disabled]="pendingWorkoutIds.length === 0"
+          [disabled]="pendingWorkoutIds.length === 0 || occurrences.busy || occurrences.loading"
           data-testid="add-workouts-to-program"
           (click)="addPendingWorkouts()"
           class="min-h-11 rounded-lg bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:from-primary-800 hover:to-primary-800 disabled:cursor-not-allowed disabled:opacity-50"
@@ -310,27 +310,13 @@
   </div>
 </app-card>
 
-<app-program-exercise-dialog
-  *ngIf="exerciseDialogOpen"
-  [exerciseDialogWorkout]="exerciseDialogWorkout"
-  [exerciseDialogIsNewWorkout]="exerciseDialogIsNewWorkout"
-  [initialExercises]="selectedExercises"
-  [selectedWorkoutExercises]="selectedWorkoutExercises"
-  [exercises]="exercises"
-  [dayIndex]="getWorkoutDayIndex(selectedProgramWorkoutId)"
-  (close)="closeExerciseDialog()"
-  (workoutSaved)="onWorkoutExercisesSaved($event)"
-  (saveError)="onExerciseSaveError($event)"
-></app-program-exercise-dialog>
+<app-program-exercise-dialog *ngIf="exerciseWorkoutId !== null"
+  [workoutId]="exerciseWorkoutId" [exerciseDialogIsNewWorkout]="exerciseIsNewWorkout"
+  [dayIndex]="occurrences.dayIndex(exerciseOccurrenceId)"
+  (close)="closeExerciseDialog()" (workoutSaved)="reload()"
+  (saveError)="occurrences.fail($event)"></app-program-exercise-dialog>
 
-<!-- WORKOUT MÁSOLÁS -->
-<app-workout-copy-dialog
-  *ngIf="copyDialogOpen"
-  [sourceWorkout]="copySourceWorkout"
-  [(workoutName)]="copyWorkoutName"
-  [(workoutDate)]="copyWorkoutDate"
-  [(dayIndex)]="copyWorkoutDayIndex"
-  [inProgress]="copyInProgress"
-  (cancel)="cancelCopyWorkout()"
-  (confirm)="confirmCopyWorkout()"
-></app-workout-copy-dialog>
+<app-program-workout-copy *ngIf="copySourceWorkout !== null"
+  [sourceWorkout]="copySourceWorkout" [programId]="programId"
+  [nextDayIndex]="occurrences.state.nextDayIndex" (close)="copySourceWorkout = null"
+  (copied)="onCopied()" (failed)="occurrences.fail($event)"></app-program-workout-copy>

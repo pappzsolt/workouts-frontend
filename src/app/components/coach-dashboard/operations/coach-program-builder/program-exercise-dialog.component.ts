@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter, DestroyRef, OnChanges, SimpleChanges, inject } from '@angular/core';
+import { forkJoin, Subscription } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exercises-board/coach-exercises-board.component';
@@ -13,11 +14,12 @@ import type { Exercise, WorkoutWithExercises, WorkoutExercise } from '../../../.
 export class ProgramExerciseDialogComponent implements OnChanges {
   private readonly destroyRef = inject(DestroyRef);
   private readonly workoutBuilderService = inject(CoachProgramBuilderWorkoutService);
-  @Input() exerciseDialogWorkout: WorkoutWithExercises | null = null;
+  @Input() workoutId: number | null = null;
+  exerciseDialogWorkout: WorkoutWithExercises | null = null;
   @Input() exerciseDialogIsNewWorkout = false;
-  @Input() exercises: Exercise[] = [];
-  @Input() initialExercises: Exercise[] = [];
-  @Input() selectedWorkoutExercises: WorkoutExercise[] = [];
+  exercises: Exercise[] = [];
+  initialExercises: Exercise[] = [];
+  selectedWorkoutExercises: WorkoutExercise[] = [];
   @Input() dayIndex = 1;
   @Output() readonly close = new EventEmitter<void>();
   @Output() readonly workoutSaved = new EventEmitter<WorkoutWithExercises>();
@@ -29,11 +31,38 @@ export class ProgramExerciseDialogComponent implements OnChanges {
   loadingExercises = false;
   errorMessage = '';
 
+  private loadRequest?: Subscription;
+
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['initialExercises'] || changes['exerciseDialogWorkout']) {
-      this.exerciseDialogExercises = [...this.initialExercises];
-      this.errorMessage = '';
-    }
+    if (!changes['workoutId'] || this.workoutId === null) return;
+    this.loadRequest?.unsubscribe();
+    this.exerciseDialogWorkout = null;
+    this.errorMessage = '';
+    this.loadingExercises = true;
+    this.loadRequest = forkJoin({
+      workout: this.workoutBuilderService.getWorkoutExercises(this.workoutId),
+      catalog: this.workoutBuilderService.loadExercises(),
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: ({ workout, catalog }) => {
+        if (!catalog.success || !Array.isArray(catalog.data)) {
+          this.loadingExercises = false;
+          this.reportSaveError(catalog.message || 'coachProgramBuilder.loadExercisesError');
+          this.close.emit();
+          return;
+        }
+        this.exerciseDialogWorkout = workout;
+        this.selectedWorkoutExercises = workout.exercises ?? [];
+        this.initialExercises = this.selectedWorkoutExercises.map(row => row.exercise);
+        this.exerciseDialogExercises = [...this.initialExercises];
+        this.exercises = catalog.data;
+        this.loadingExercises = false;
+      },
+      error: () => {
+        this.loadingExercises = false;
+        this.reportSaveError('coachProgramBuilder.loadWorkoutExercisesError');
+        this.close.emit();
+      },
+    });
   }
 
   onExercisesChange(updatedExercises: Exercise[]): void {

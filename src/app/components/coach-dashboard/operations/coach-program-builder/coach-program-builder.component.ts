@@ -1,473 +1,90 @@
-import { HttpErrorResponse } from '@angular/common/http';
-
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
-import { LoggerService } from '../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
-
-import { ApiResponse } from '../../../../models/backend-dto/common/api-response';
-import { CoachProgramService } from '../../../../services/coach/coach-program/coach-program.service';
-import { skip, from, concatMap, tap, toArray, finalize, Subscription } from 'rxjs';
-import { ProgramAssignmentState } from '../../../../models/program-assignment-state';
+import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AppCardComponent } from '../../../../components/shared/components/app-card/app-card.component';
-import { AssignProgramService } from '../../../../services/coach/assign-program/assignprogram.service';
-import { LanguageService } from '../../../../services/shared/language.service';
-import { AppSelectComponent } from '../../../../components/shared/components/app-select/app-select.component';
-import type { ProgramDto } from '../../../../models/backend-dto/programs/program-dto';
-import type { ProgramCreationRequest } from '../../../../models/backend-dto/programcreator/program-creation-request';
-
+import { skip } from 'rxjs';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { LanguageService } from '../../../../services/shared/language.service';
+import { ProgramBuilderDocumentStore } from '../../../../services/coach/program-builder/program-builder-document.store';
+import { ProgramBuilderAssignmentStore } from '../../../../services/coach/program-builder/program-builder-assignment.store';
+import { ProgramDetailsFormComponent } from './program-details-form.component';
 import { CoachProgramBuilderWorkoutsComponent } from './coach-program-builder-workouts.component';
 
+/** Coordinates route and steps. Form, document persistence and assignment each have one owner. */
 @Component({
-  selector: 'app-coach-program-builder',
-  standalone: true,
-  imports: [
-    ...SHARED_IMPORTS,
-    AppCardComponent,
-    AppSelectComponent,
-    CoachProgramBuilderWorkoutsComponent,
-  ],
+  selector: 'app-coach-program-builder', standalone: true,
+  imports: [...SHARED_IMPORTS, ProgramDetailsFormComponent, CoachProgramBuilderWorkoutsComponent],
+  providers: [ProgramBuilderDocumentStore, ProgramBuilderAssignmentStore],
   templateUrl: './coach-program-builder.component.html',
   styleUrl: './coach-program-builder.component.css',
 })
 export class CoachProgramBuilderComponent implements OnInit {
-  private readonly logger = inject(LoggerService);
-
+  readonly document = inject(ProgramBuilderDocumentStore);
+  readonly assignment = inject(ProgramBuilderAssignmentStore);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+  private readonly language = inject(LanguageService);
   private readonly destroyRef = inject(DestroyRef);
-
   currentStep = 1;
-
-  // ==========================================================
-  // PROGRAM ADATOK
-  // ==========================================================
-
-  programName = '';
-
-  programDescription = '';
-
-  startDate = '';
-
-  endDate = '';
-
-  readonly assignmentState = new ProgramAssignmentState();
-  assigningProgram = false;
-  assignedUsersLoaded = true;
-  userSelectionReady = false;
-  private assignedUsersRequest?: Subscription;
-
-  selectUsers(ids: number[]): void {
-    this.assignmentState.select(ids);
-  }
-
-  durationDays: number | null = null;
-
-  difficultyLevel = '';
-
   programId: number | null = null;
-
-  /**
-   * true:
-   *   meglévő program szerkesztése
-   *
-   * false:
-   *   új program létrehozása
-   */
   isEditMode = false;
-
-  creatingProgram = false;
-
-  // ==========================================================
-  // ÜZENETEK
-  // ==========================================================
-
   message = '';
   messageType: 'success' | 'error' | 'info' = 'info';
 
-  constructor(
-    private coachProgramService: CoachProgramService,
-    private route: ActivatedRoute,
-    private router: Router,
-    private assignProgramService: AssignProgramService,
-    private languageService: LanguageService,
-  ) {}
-
-  // ==========================================================
-  // INIT
-  // ==========================================================
-
   ngOnInit(): void {
-    this.isEditMode = false;
-
-    const programId = this.route.snapshot.queryParamMap.get('programId');
-    const newWorkoutId = this.route.snapshot.queryParamMap.get('newWorkoutId');
-
-    this.languageService.language$
-      .pipe(skip(1), takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-        if (this.programId !== null) {
-          this.loadProgram();
-        }
-      });
-
-    if (programId) {
-      const parsedProgramId = Number(programId);
-
-      if (Number.isNaN(parsedProgramId) || parsedProgramId <= 0) {
-        this.message = 'coachProgramBuilder.invalidProgramId';
-        this.messageType = 'error';
-        return;
-      }
-
-      this.assignedUsersLoaded = false;
+    const value = this.route.snapshot.queryParamMap.get('programId');
+    if (value !== null) {
+      const id = Number(value);
+      if (!Number.isInteger(id) || id <= 0) { this.fail(new Error('coachProgramBuilder.invalidProgramId')); return; }
+      this.programId = id;
       this.isEditMode = true;
-      this.programId = parsedProgramId;
-      this.currentStep = newWorkoutId ? 2 : 1;
+      this.assignment.loaded = false;
+      this.currentStep = this.route.snapshot.queryParamMap.has('newWorkoutId') ? 2 : 1;
       this.loadProgram();
-      return;
     }
-
-    this.currentStep = 1;
+    this.language.language$.pipe(skip(1), takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadProgram());
   }
 
-  // ==========================================================
-  // PROGRAM BETÖLTÉSE
-  // ==========================================================
   loadProgram(): void {
-    if (this.programId === null) {
-      this.message = 'coachProgramBuilder.loadProgramError';
-      this.messageType = 'error';
-
-      return;
-    }
-
-    this.coachProgramService.getProgramById(this.programId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (response) => {
-        if (response?.success && response.data) {
-          const program = response.data;
-
-          this.programName = program.programName ?? '';
-          this.programDescription = program.programDescription ?? '';
-          this.startDate = program.startDate ?? '';
-          this.endDate = program.endDate ?? '';
-          this.durationDays = program.durationDays ?? null;
-          this.difficultyLevel = program.difficultyLevel ?? '';
-
-          this.loadAssignedUsers();
-        } else {
-          this.message = 'coachProgramBuilder.loadProgramError';
-          this.messageType = 'error';
-        }
-      },
-
-      error: () => {
-        this.message = 'coachProgramBuilder.loadProgramError';
-        this.messageType = 'error';
-      },
-    });
-  }
-  private loadAssignedUsers(): void {
     if (this.programId === null) return;
-    this.assignedUsersRequest?.unsubscribe();
-    this.assignedUsersLoaded = false;
-    this.assignedUsersRequest = this.assignProgramService.getAssignedUserIds(this.programId)
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: response => {
-          try {
-            if (!response.success || !Array.isArray(response.data)) throw new Error('Invalid assignment response');
-            this.assignmentState.loadAssigned(response.data);
-            this.assignedUsersLoaded = true;
-          } catch (error) {
-            this.logger.error('Hibás program-hozzárendelési válasz', error);
-            this.message = 'coachProgramBuilder.assignError';
-            this.messageType = 'error';
-          }
-        },
-        error: error => {
-          this.logger.error('A hozzárendelt felhasználók betöltése sikertelen', error);
-          this.message = 'coachProgramBuilder.assignError';
-          this.messageType = 'error';
-        },
+    const id = this.programId;
+    this.document.load(id, () => this.assignment.load(id, error => this.fail(error)), error => this.fail(error));
+  }
+
+  saveProgram(): void {
+    if (this.document.busy) return;
+    try {
+      this.document.save(this.programId).subscribe({
+        next: id => { this.programId = id; this.currentStep = 2; },
+        error: error => this.fail(error),
       });
+    } catch (error) { this.fail(error); }
   }
-
-  // ==========================================================
-  // ÚJ WORKOUT LÉTREHOZÁSA
-  // ==========================================================
-  goToCreateWorkout(): void {
-    if (this.programId === null) {
-      this.message = 'coachProgramBuilder.loadProgramError';
-      this.messageType = 'error';
-
-      return;
-    }
-
-    this.router.navigate(['/coach/workouts/new'], {
-      queryParams: {
-        fromProgramBuilder: 'true',
-        programId: this.programId,
-      },
-    });
-  }
-
-  // ==========================================================
-  // PROGRAM BEFEJEZÉSE
-  // ==========================================================
 
   finishProgram(): void {
-    if (this.programId === null || this.assigningProgram || !this.assignedUsersLoaded || !this.userSelectionReady) return;
-    if (!this.assignmentState.selectedUserIds.length) {
-      this.message = 'coachProgramBuilder.noUserSelected';
-      this.messageType = 'error';
-      return;
-    }
-    const programId = this.programId;
-    this.assigningProgram = true;
-    this.message = '';
-    // Successful requests are recorded immediately: retry only the remaining users.
-    from(this.assignmentState.pendingUserIds).pipe(
-      concatMap(userId => this.assignProgramService.assignProgramToUser(userId, programId).pipe(
-        tap(response => {
-          if (!response.success) throw new Error(response.message || 'coachProgramBuilder.assignError');
-          this.assignmentState.markAssigned(userId);
-        }),
-      )),
-      toArray(),
-      finalize(() => { this.assigningProgram = false; }),
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe({
-      next: () => {
-        this.router.navigate(['/coach/dashboard'], { queryParams: { section: 'assignments', programId } });
-      },
-      error: (error: HttpErrorResponse | Error) => {
-        this.message = (error instanceof HttpErrorResponse ? error.error?.message : error.message)
-          || 'coachProgramBuilder.assignError';
-        this.messageType = 'error';
-      },
-    });
+    if (this.programId === null || this.assignment.busy) return;
+    const id = this.programId;
+    try {
+      this.assignment.save(id).subscribe({
+        next: () => this.router.navigate(['/coach/dashboard'], { queryParams: { section: 'assignments', programId: id } }),
+        error: error => this.fail(error),
+      });
+    } catch (error) { this.fail(error); }
   }
 
-  // ==========================================================
-  // WORKOUTOK BETÖLTÉSE
-  // ==========================================================
-
-  // ==========================================================
-  // WORKOUTOK BETÖLTÉSE
-  // ==========================================================
-
-  // ==========================================================
-  // EXERCISE-EK BETÖLTÉSE
-  // ==========================================================
-  // ==========================================================
-  // KALKULÁLT BEFEJEZÉSI DÁTUM
-  // ==========================================================
-
-  get calculatedEndDate(): string {
-    if (!this.startDate || !this.durationDays || this.durationDays <= 0) {
-      return '';
-    }
-
-    const date = new Date(`${this.startDate}T00:00:00`);
-    date.setDate(date.getDate() + this.durationDays - 1);
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-
-    return `${year}-${month}-${day}`;
+  goToCreateWorkout(): void {
+    if (this.programId === null) return;
+    this.router.navigate(['/coach/workouts/new'], { queryParams: { fromProgramBuilder: 'true', programId: this.programId } });
   }
-
-  // ==========================================================
-  // PROGRAM LÉTREHOZÁSA
-  createProgram(): void {
-    if (!this.programName.trim()) {
-      return;
-    }
-
-    if (!this.startDate) {
-      this.message = 'coachProgramBuilder.startDateRequired';
-      this.messageType = 'error';
-      return;
-    }
-
-    if (this.durationDays === null || this.durationDays <= 0) {
-      return;
-    }
-
-    if (!this.difficultyLevel) {
-      return;
-    }
-
-    this.creatingProgram = true;
-
-    const request: ProgramCreationRequest = {
-      programName: this.programName.trim(),
-      programDescription: this.programDescription.trim(),
-      startDate: this.startDate || null,
-      durationDays: this.durationDays,
-      difficultyLevel: this.difficultyLevel,
-      userId: null,
-      languageCode: this.languageService.getCurrentLanguage(),
-      workouts: null,
-    };
-
-    this.coachProgramService.createProgram(request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (response: ApiResponse<number>) => {
-        if (response.success && response.data !== null) {
-          this.programId = response.data;
-
-
-          this.currentStep = 2;
-        } else {
-          this.message = response.message || 'coachProgramBuilder.createError';
-
-          this.messageType = 'error';
-        }
-
-        this.creatingProgram = false;
-      },
-
-      error: (error: HttpErrorResponse) => {
-        this.message = error?.error?.message || 'coachProgramBuilder.createError';
-
-        this.messageType = 'error';
-
-        this.creatingProgram = false;
-      },
-    });
-  }
-
-  // ==========================================================
-  // PROGRAM MÓDOSÍTÁSA
-  // ==========================================================
-
-  updateProgram(): void {
-    if (this.programId === null) {
-      this.message = 'coachProgramBuilder.updateError';
-      this.messageType = 'error';
-
-      return;
-    }
-
-    if (!this.programName.trim()) {
-      return;
-    }
-
-    if (!this.startDate) {
-      this.message = 'coachProgramBuilder.startDateRequired';
-      this.messageType = 'error';
-      return;
-    }
-
-    if (this.durationDays === null || this.durationDays <= 0) {
-      return;
-    }
-
-    if (!this.difficultyLevel) {
-      return;
-    }
-
-    this.creatingProgram = true;
-
-    const request: ProgramCreationRequest = {
-      programName: this.programName.trim(),
-      programDescription: this.programDescription.trim(),
-      startDate: this.startDate || null,
-      durationDays: this.durationDays,
-      difficultyLevel: this.difficultyLevel,
-      userId: null,
-      languageCode: this.languageService.getCurrentLanguage(),
-      workouts: null,
-    };
-
-    this.coachProgramService.updateProgram(this.programId, request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (response) => {
-        if (response.success) {
-          this.creatingProgram = false;
-
-          this.currentStep = 2;
-
-        } else {
-          this.message = response.message || 'coachProgramBuilder.updateError';
-
-          this.messageType = 'error';
-
-          this.creatingProgram = false;
-        }
-      },
-
-      error: (error: HttpErrorResponse) => {
-        this.message = error?.error?.message || 'coachProgramBuilder.updateError';
-
-        this.messageType = 'error';
-
-        this.creatingProgram = false;
-      },
-    });
-  }
-
-  // ==========================================================
-  // WORKOUT MÁR KIVÁLASZTVA?
-  // ==========================================================
-
-  // ==========================================================
-  // WORKOUT HOZZÁADÁSA
-  // ==========================================================
-
-  // ==========================================================
-  // WORKOUT ELTÁVOLÍTÁSA
-  // ==========================================================
-
-  // ==========================================================
-  // DAY INDEX ÚJRASZÁMOZÁSA
-  // ==========================================================
-
-  // ==========================================================
-  // WORKOUT NAPJÁNAK MÓDOSÍTÁSA
-  // ==========================================================
-
-  // ==========================================================
-  // WORKOUT DAY INDEX LEKÉRÉSE
-  // ==========================================================
-
-  // ==========================================================
-  // KÖVETKEZŐ LÉPÉS
-  // ==========================================================
-
-  nextStep(): void {
-    if (this.currentStep === 1) {
-      if (this.programId === null) {
-        this.createProgram();
-      } else {
-        this.updateProgram();
-      }
-
-      return;
-    }
-
-    if (this.currentStep < 2) {
-      this.currentStep++;
-    }
-  }
-
-  // ==========================================================
-  // ELŐZŐ LÉPÉS
-  // ==========================================================
 
   previousStep(): void {
-    if (this.currentStep === 2 && this.isEditMode) {
-      this.router.navigate(['/coach/dashboard'], {
-        queryParams: {
-          section: 'programs',
-        },
-      });
-
-      return;
-    }
-
-    if (this.currentStep > 1) {
-      this.currentStep--;
-    }
+    if (this.isEditMode) this.router.navigate(['/coach/dashboard'], { queryParams: { section: 'programs' } });
+    else this.currentStep = 1;
   }
 
+  private fail(error: unknown): void {
+    this.message = error instanceof HttpErrorResponse ? error.error?.message || 'coachProgramBuilder.loadProgramError'
+      : error instanceof Error ? error.message : 'coachProgramBuilder.loadProgramError';
+    this.messageType = 'error';
+  }
 }

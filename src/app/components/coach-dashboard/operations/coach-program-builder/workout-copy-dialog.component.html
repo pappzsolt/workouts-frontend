@@ -24,6 +24,7 @@
       ><app-icon name="x" sizeClass="h-5 w-5" /></button>
     </div>
 
+    <app-message *ngIf="errorMessage" [message]="errorMessage" type="error" class="block px-5 pt-4"></app-message>
     <div class="grid grid-cols-1 gap-5 p-5 sm:p-6">
       <div class="min-w-0">
         <label for="copyWorkoutName" class="mb-2 block text-sm font-semibold text-content-700">
