@@ -50,7 +50,7 @@ export class CoachEditService {
    */
   getCoach(id: number): Observable<Coach> {
     return this.http
-      .get<ApiResponse<MemberResponse>>(API_ENDPOINTS.memberById(id))
+      .get<ApiResponse<MemberResponse>>(API_ENDPOINTS.memberCoachById(id))
       .pipe(
         map((response) => {
           if (response.data == null || !this.isCompleteCoachResponse(response.data)) {

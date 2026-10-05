@@ -18,7 +18,7 @@ export class CoachProfileService {
 
   getMemberById(id: number): Observable<Member & { createdAt?: string }> {
     return this.http
-      .get<ApiResponse<MemberResponse>>(API_ENDPOINTS.memberById(id))
+      .get<ApiResponse<MemberResponse>>(API_ENDPOINTS.memberCoachById(id))
       .pipe(
         map((response): Member & { createdAt?: string } => {
           const member = response.data;

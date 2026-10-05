@@ -31,7 +31,7 @@ export class UserProfilService {
 
   getMemberById(id: number): Observable<RawUser> {
     return this.http
-      .get<ApiResponse<MemberResponse>>(API_ENDPOINTS.memberById(id))
+      .get<ApiResponse<MemberResponse>>(API_ENDPOINTS.memberUserById(id))
       .pipe(
         map((response) => {
           const user = response.data == null ? null : this.toRawUser(response.data);

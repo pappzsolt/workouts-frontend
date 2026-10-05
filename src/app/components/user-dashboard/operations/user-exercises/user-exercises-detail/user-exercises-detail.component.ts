@@ -220,6 +220,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
         set.actualWeightKg,
         set.notes,
       )
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           set.completed = completed;
@@ -340,7 +341,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
     this.pendingSetSaves.set(set.id, request$);
 
-    request$.subscribe({
+    request$.pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.updateExerciseDone();
 

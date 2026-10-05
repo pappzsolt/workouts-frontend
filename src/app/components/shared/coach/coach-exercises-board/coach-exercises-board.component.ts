@@ -160,7 +160,7 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges, OnDestro
     this.message = '';
     this.messageType = '';
 
-    this.exerciseService.getAllExercises().subscribe({
+    this.exerciseService.getAllExercises().pipe(takeUntil(this.destroy$)).subscribe({
       next: (response: ApiResponse<Exercise[]>) => {
         this.loading = false;
 

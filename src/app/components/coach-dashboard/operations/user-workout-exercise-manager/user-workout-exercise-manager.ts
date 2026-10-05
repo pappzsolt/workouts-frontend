@@ -134,7 +134,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
     this.selectedSets = [];
     this.selectedSetIndex = 0;
 
-    this.setService.getSetsByUserWorkoutExerciseId(userWorkoutExerciseId).subscribe({
+    this.setService.getSetsByUserWorkoutExerciseId(userWorkoutExerciseId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
         if (res.success && res.data) {
           this.selectedSets = res.data;
@@ -228,7 +228,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.setService.addSet(userWorkoutExerciseId).subscribe({
+    this.setService.addSet(userWorkoutExerciseId).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         // The new set is appended; focus it after reload.
         this.selectedSetIndex = this.selectedSets.length;
@@ -263,7 +263,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
       notes: set.notes,
     };
 
-    this.setService.updateSet(set.id, data).subscribe({
+    this.setService.updateSet(set.id, data).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         this.showMessage(
           'userWorkoutExerciseManager.updateSetSuccess',
@@ -344,6 +344,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
 
     this.service
       .addUserWorkout(this.selectedUserId, this.selectedProgramId, this.scheduledAt)
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
           if (res.success && res.data && res.data.length > 0) {
@@ -379,6 +380,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
 
     this.service
       .getUserProgramWithExercises(this.selectedUserId, this.selectedProgramId)
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
           if (res.success && res.data) {
@@ -544,7 +546,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.service.updateUserWorkoutScheduledDate(workout.userWorkoutId, scheduledAt).subscribe({
+    this.service.updateUserWorkoutScheduledDate(workout.userWorkoutId, scheduledAt).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
         if (res.success) {
           workout.scheduledAt = scheduledAt;
@@ -605,7 +607,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.service.updateExerciseOrderIndex(workoutId, exerciseId, orderIndex).subscribe({
+    this.service.updateExerciseOrderIndex(workoutId, exerciseId, orderIndex).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
         const workout = this.dayGroups
           .flatMap((day) => day.workouts)

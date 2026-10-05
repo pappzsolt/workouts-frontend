@@ -78,6 +78,8 @@ export const API_ENDPOINTS = {
   // ============================================================
 
   memberById: (id: number) => `${environment.apiUrl}/members/${id}`,
+  memberUserById: (id: number) => `${environment.apiUrl}/members/users/${id}`,
+  memberCoachById: (id: number) => `${environment.apiUrl}/members/coaches/${id}`,
   coachById: (id: number) => `${environment.apiUrl}/coaches/${id}`,
   allUsers: `${environment.apiUrl}/members/users`,
   myProfile: `${environment.apiUrl}/members/me`,

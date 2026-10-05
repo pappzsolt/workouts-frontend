@@ -139,7 +139,7 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
 
   loadWorkouts(): void {
 
-    this.coachWorkoutsService.getUniqueWorkoutsWithExercises().subscribe({
+    this.coachWorkoutsService.getUniqueWorkoutsWithExercises().pipe(takeUntil(this.destroy$)).subscribe({
       next: (response) => {
 
         const res = response.data;
@@ -291,7 +291,7 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
 
     this.newWorkout.programId = this.programId;
 
-    this.coachWorkoutsService.addWorkout(this.newWorkout).subscribe({
+    this.coachWorkoutsService.addWorkout(this.newWorkout).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
         if (res.data?.done === true) {
           this.setMessage(res.data.message || res.message || 'coachWorkouts.addSuccess', 'success');

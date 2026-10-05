@@ -270,7 +270,7 @@ export class CoachProgramBuilderComponent implements OnInit {
     }
 
     const date = new Date(`${this.startDate}T00:00:00`);
-    date.setDate(date.getDate() + this.durationDays);
+    date.setDate(date.getDate() + this.durationDays - 1);
 
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
