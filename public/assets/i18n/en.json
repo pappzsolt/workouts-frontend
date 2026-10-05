@@ -1,7 +1,8 @@
 {
   "language": {
     "english": "English",
-    "hungarian": "Hungarian"
+    "hungarian": "Hungarian",
+    "german": "German"
   },
   "menu": {
     "navigation": "Main navigation",
@@ -11,7 +12,9 @@
     "profile": "Profile",
     "programBuilder": "Program Builder",
     "dashboard": "Dashboard",
-    "logout": "Logout"
+    "logout": "Logout",
+    "settings": "Settings",
+    "security": "Security"
   },
   "header": {
     "user": "User",
@@ -63,7 +66,10 @@
     "edit": "Edit",
     "duration": "Duration",
     "minutes": "minutes",
-    "exercises": "Exercises"
+    "exercises": "Exercises",
+    "back": "Back",
+    "close": "Close",
+    "done": "Done"
   },
   "adminChoiceEdit": {
     "title": "Edit Entries",
@@ -138,7 +144,31 @@
     "availableExercises": "Available exercises",
     "save": "Save to selected workouts and exercises",
     "savedRelations": "Saved relations",
-    "batchSummary": "Partial success: {{successCount}} assignment(s) succeeded, {{errorCount}} failed. {{errors}}"
+    "batchSummary": "Partial success: {{successCount}} assignment(s) succeeded, {{errorCount}} failed. {{errors}}",
+    "breadcrumbProgram": "Program",
+    "breadcrumbWorkout": "Workout",
+    "breadcrumbExercises": "Exercises",
+    "description": "Select a workout, then add the exercises that belong to it in a separate dialog.",
+    "exerciseCount": "{{count}} exercise(s)",
+    "workoutSelected": "Workout selected",
+    "manageExercises": "Manage exercises",
+    "changeWorkout": "Change workout",
+    "selectedExercisesTitle": "Selected exercises",
+    "selectedExercisesDescription": "These exercises will be added to this workout.",
+    "noExercisesSelected": "No exercises selected yet — click “Manage exercises”.",
+    "selectWorkoutTitle": "Select workout",
+    "selectWorkoutDescription": "Select a workout. You can then manage its exercises in a separate panel.",
+    "stepTwo": "Step 2",
+    "selectedCount": "{{count}} exercise(s) selected",
+    "modalTitle": "Exercises — {{workoutName}}",
+    "selectorDescription": "Find and select the exercises you want to add.",
+    "errors": {
+      "selectWorkout": "Select a workout.",
+      "selectExercise": "Select at least one exercise.",
+      "noExercise": "The selected exercise was not found.",
+      "assign": "An error occurred while assigning exercises to the workout.",
+      "assignSuccess": "Exercises assigned to the workout successfully."
+    }
   },
   "coachExerciseEdit": {
     "title": "Edit Exercise",
@@ -183,7 +213,8 @@
     "sortByName": "Exercise name",
     "noSearchResults": "No exercises match the search.",
     "noExercises": "No exercises found.",
-    "addExercise": "Add new exercise"
+    "addExercise": "Add new exercise",
+    "loadError": "Failed to load exercises."
   },
   "coachWorkouts": {
     "title": "Workouts",
@@ -292,7 +323,12 @@
     "saveExerciseError": "Failed to save the exercise.",
     "startDateRequired": "Start date is required.",
     "startDate": "Start date",
-    "endDate": "End date"
+    "endDate": "End date",
+    "dayNumber": "Day {{day}}",
+    "selectionCount": "{{count}} selected",
+    "addExercise": "Add exercise",
+    "addExerciseDescription": "Add an exercise to the workout.",
+    "save": "Save"
   },
   "coachNewProgram": {
     "createSuccess": "Program created successfully!",
@@ -313,7 +349,9 @@
     "beginner": "Beginner",
     "intermediate": "Intermediate",
     "advanced": "Advanced",
-    "startDateRequired": "Start date is required."
+    "startDateRequired": "Start date is required.",
+    "startDate": "Start date",
+    "endDate": "End date"
   },
   "coachProgramEdit": {
     "idNotFound": "Program ID not found.",
@@ -336,7 +374,9 @@
     "save": "Save Program",
     "beginner": "Beginner",
     "intermediate": "Intermediate",
-    "advanced": "Advanced"
+    "advanced": "Advanced",
+    "startDate": "Start date",
+    "endDate": "End date"
   },
   "coachPrograms": {
     "noPrograms": "There are no programs for the coach.",
@@ -456,7 +496,8 @@
     "page": "Page",
     "searchPlaceholder": "Search exercises...",
     "noSearchResults": "No results found.",
-    "exercisesLocked": "The exercise list of this workout cannot be modified."
+    "exercisesLocked": "The exercise list of this workout cannot be modified.",
+    "exercise": "Exercise"
   },
   "coachProgramSelect": {
     "loadError": "Error loading programs.",
@@ -535,7 +576,8 @@
     "setUpdateError": "An error occurred while updating the set.",
     "saveSuccess": "The set was successfully saved.",
     "saveError": "An error occurred while saving the set.",
-    "invalidSet": "Invalid set."
+    "invalidSet": "Invalid set.",
+    "notesPlaceholder": "E.g. This set felt difficult..."
   },
   "userMyPrograms": {
     "title": "My Programs",
@@ -627,7 +669,8 @@
     "completedWorkouts": "Completed Workouts",
     "unknownProgram": "Unknown program",
     "noPendingWorkouts": "No workouts to complete.",
-    "noCompletedWorkouts": "No completed workouts yet."
+    "noCompletedWorkouts": "No completed workouts yet.",
+    "groupingAria": "Workout grouping"
   },
   "coachProgramBoard": {
     "loading": "Loading...",
@@ -721,7 +764,13 @@
     "createUserWorkoutError": "An error occurred while creating the user's workout.",
     "deleteConfirmTitle": "Delete set",
     "cancel": "Cancel",
-    "deleteSetSuccess": "Set #{{setNumber}} was successfully deleted."
+    "deleteSetSuccess": "Set #{{setNumber}} was successfully deleted.",
+    "previousWorkout": "Previous workout",
+    "nextWorkout": "Next workout",
+    "workoutNumber": "Workout {{number}}",
+    "previousSet": "Previous set",
+    "nextSet": "Next set",
+    "setNumberAria": "Set {{number}}"
   },
   "assignProgram": {
     "title": "Assign Program",
@@ -821,7 +870,9 @@
     "availableWorkouts": "Available workouts",
     "programs": "Programs",
     "save": "Save",
-    "selectedWorkouts": "Selected workouts"
+    "selectedWorkouts": "Selected workouts",
+    "loadError": "Failed to load data.",
+    "unknownError": "An unknown error occurred."
   },
   "forgotPassword": {
     "title": "Forgot password",
@@ -849,6 +900,7 @@
     "passwordMismatch": "The two passwords do not match.",
     "serviceUnavailable": "The service is currently unavailable. Please try again later.",
     "resetFailed": "The password reset failed.",
-    "success": "Your password has been changed successfully."
+    "success": "Your password has been changed successfully.",
+    "invalidToken": "The password reset token is invalid or has expired."
   }
 }

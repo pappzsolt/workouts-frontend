@@ -1,16 +1,18 @@
 import { Component, Input } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { BackNavigationService } from '../../../../services/shared/back-navigation.service';
 
 @Component({
   selector: 'app-back-button',
   standalone: true,
+  imports: [TranslatePipe],
   templateUrl: './back-button.component.html',
 })
 export class BackButtonComponent {
   @Input() fallbackUrl = '/';
   @Input() targetUrl: string | null = null;
   @Input() targetState: Record<string, unknown> | undefined;
-  @Input() label = 'Vissza';
+  @Input() label = 'common.back';
 
   constructor(private readonly backNavigationService: BackNavigationService) {}
 

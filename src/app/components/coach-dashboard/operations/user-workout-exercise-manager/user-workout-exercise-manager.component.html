@@ -37,8 +37,8 @@
           type="button"
           class="stepper-nav-button"
           [disabled]="selectedWorkoutIndex === 0"
-          title="Előző workout"
-          aria-label="Előző workout"
+          [title]="'userWorkoutExerciseManager.previousWorkout' | translate"
+          [attr.aria-label]="'userWorkoutExerciseManager.previousWorkout' | translate"
           (click)="previousWorkout()"
         >
           <app-icon name="chevron-left" sizeClass="h-5 w-5"></app-icon>
@@ -65,8 +65,8 @@
           type="button"
           class="stepper-nav-button"
           [disabled]="selectedWorkoutIndex >= workoutPages.length - 1"
-          title="Következő workout"
-          aria-label="Következő workout"
+          [title]="'userWorkoutExerciseManager.nextWorkout' | translate"
+          [attr.aria-label]="'userWorkoutExerciseManager.nextWorkout' | translate"
           (click)="nextWorkout()"
         >
           <app-icon name="chevron-right" sizeClass="h-5 w-5"></app-icon>
@@ -79,7 +79,7 @@
           type="button"
           class="workout-dot"
           [class.workout-dot-active]="i === selectedWorkoutIndex"
-          [attr.aria-label]="'Workout ' + (i + 1)"
+          [attr.aria-label]="'userWorkoutExerciseManager.workoutNumber' | translate:{ number: i + 1 }"
           (click)="selectWorkout(i)"
         >
           {{ i + 1 }}
@@ -226,8 +226,8 @@
                 type="button"
                 class="set-nav-button"
                 [disabled]="selectedSetIndex === 0"
-                title="Előző set"
-                aria-label="Előző set"
+                [title]="'userWorkoutExerciseManager.previousSet' | translate"
+                [attr.aria-label]="'userWorkoutExerciseManager.previousSet' | translate"
                 (click)="previousSet()"
               >
                 <app-icon name="chevron-left" sizeClass="h-5 w-5"></app-icon>
@@ -240,7 +240,7 @@
                   class="set-progress-item"
                   [class.set-progress-item-active]="i === selectedSetIndex"
                   [class.set-progress-item-done]="set.completed"
-                  [attr.aria-label]="'Set ' + (i + 1)"
+                  [attr.aria-label]="'userWorkoutExerciseManager.setNumberAria' | translate:{ number: i + 1 }"
                   (click)="selectSet(i)"
                 >
                   {{ i + 1 }}
@@ -251,8 +251,8 @@
                 type="button"
                 class="set-nav-button"
                 [disabled]="selectedSetIndex >= selectedSets.length - 1"
-                title="Következő set"
-                aria-label="Következő set"
+                [title]="'userWorkoutExerciseManager.nextSet' | translate"
+                [attr.aria-label]="'userWorkoutExerciseManager.nextSet' | translate"
                 (click)="nextSet()"
               >
                 <app-icon name="chevron-right" sizeClass="h-5 w-5"></app-icon>

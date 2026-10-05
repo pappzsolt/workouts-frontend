@@ -1,7 +1,8 @@
 {
   "language": {
     "english": "Angol",
-    "hungarian": "Magyar"
+    "hungarian": "Magyar",
+    "german": "Német"
   },
   "menu": {
     "navigation": "Fő navigáció",
@@ -11,7 +12,9 @@
     "profile": "Profil",
     "programBuilder": "Program Builder",
     "dashboard": "Dashboard",
-    "logout": "Kijelentkezés"
+    "logout": "Kijelentkezés",
+    "settings": "Beállítások",
+    "security": "Biztonság"
   },
   "header": {
     "user": "Felhasználó",
@@ -63,7 +66,10 @@
     "edit": "Szerkesztés",
     "duration": "Időtartam",
     "minutes": "perc",
-    "exercises": "Gyakorlatok"
+    "exercises": "Gyakorlatok",
+    "back": "Vissza",
+    "close": "Bezárás",
+    "done": "Kész"
   },
   "adminChoiceEdit": {
     "title": "Bejegyzések módosítása",
@@ -138,7 +144,31 @@
     "availableExercises": "Elérhető exercise-ek",
     "save": "Mentés a kiválasztott workoutokhoz és exercise-ekhez",
     "savedRelations": "Mentett kapcsolatok",
-    "batchSummary": "Részleges siker: {{successCount}} hozzárendelés sikerült, {{errorCount}} sikertelen. {{errors}}"
+    "batchSummary": "Részleges siker: {{successCount}} hozzárendelés sikerült, {{errorCount}} sikertelen. {{errors}}",
+    "breadcrumbProgram": "Program",
+    "breadcrumbWorkout": "Workout",
+    "breadcrumbExercises": "Gyakorlatok",
+    "description": "Válaszd ki a workoutot, majd külön ablakban add hozzá a hozzá tartozó gyakorlatokat.",
+    "exerciseCount": "{{count}} gyakorlat",
+    "workoutSelected": "Workout kiválasztva",
+    "manageExercises": "Gyakorlatok kezelése",
+    "changeWorkout": "Workout cseréje",
+    "selectedExercisesTitle": "Kiválasztott gyakorlatok",
+    "selectedExercisesDescription": "Ezek kerülnek hozzáadásra ehhez a workouthoz.",
+    "noExercisesSelected": "Még nincs kiválasztott gyakorlat — kattints a „Gyakorlatok kezelése” gombra.",
+    "selectWorkoutTitle": "Workout kiválasztása",
+    "selectWorkoutDescription": "Válassz ki egy workoutot. Ezután külön panelben kezelheted a gyakorlatokat.",
+    "stepTwo": "2. lépés",
+    "selectedCount": "{{count}} gyakorlat kiválasztva",
+    "modalTitle": "Gyakorlatok — {{workoutName}}",
+    "selectorDescription": "Keresd meg és jelöld ki a hozzáadni kívánt gyakorlatokat.",
+    "errors": {
+      "selectWorkout": "Válassz ki egy workoutot.",
+      "selectExercise": "Válassz ki legalább egy gyakorlatot.",
+      "noExercise": "A kiválasztott gyakorlat nem található.",
+      "assign": "Hiba történt a gyakorlatok workouthoz rendelésekor.",
+      "assignSuccess": "A gyakorlatok sikeresen hozzárendelve a workouthoz."
+    }
   },
   "coachExerciseEdit": {
     "title": "Gyakorlat szerkesztése",
@@ -183,7 +213,8 @@
     "sortByName": "Gyakorlat neve",
     "noSearchResults": "Nincs a keresésnek megfelelő gyakorlat.",
     "noExercises": "Nincsenek gyakorlatok.",
-    "addExercise": "Új gyakorlat hozzáadása"
+    "addExercise": "Új gyakorlat hozzáadása",
+    "loadError": "Nem sikerült betölteni a gyakorlatokat."
   },
   "coachWorkouts": {
     "title": "Edzések",
@@ -292,7 +323,12 @@
     "saveExerciseError": "Nem sikerült menteni a gyakorlatot.",
     "startDateRequired": "A kezdési dátum megadása kötelező.",
     "startDate": "Kezdés dátuma",
-    "endDate": "Befejezés dátuma"
+    "endDate": "Befejezés dátuma",
+    "dayNumber": "{{day}}. nap",
+    "selectionCount": "{{count}} kijelölve",
+    "addExercise": "Gyakorlat hozzáadása",
+    "addExerciseDescription": "Adj hozzá gyakorlatot a workouthoz.",
+    "save": "Mentés"
   },
   "coachNewProgram": {
     "createSuccess": "Program sikeresen létrehozva!",
@@ -313,7 +349,9 @@
     "beginner": "Kezdő",
     "intermediate": "Középhaladó",
     "advanced": "Haladó",
-    "startDateRequired": "A kezdési dátum megadása kötelező."
+    "startDateRequired": "A kezdési dátum megadása kötelező.",
+    "startDate": "Kezdés dátuma",
+    "endDate": "Befejezés dátuma"
   },
   "coachProgramEdit": {
     "idNotFound": "Program ID nem található.",
@@ -336,7 +374,9 @@
     "save": "Program mentése",
     "beginner": "Kezdő",
     "intermediate": "Középhaladó",
-    "advanced": "Haladó"
+    "advanced": "Haladó",
+    "startDate": "Kezdés dátuma",
+    "endDate": "Befejezés dátuma"
   },
   "coachPrograms": {
     "noPrograms": "Nincsenek programok a coachhoz.",
@@ -456,7 +496,8 @@
     "page": "Oldal",
     "searchPlaceholder": "Exercise keresése...",
     "noSearchResults": "Nincs találat.",
-    "exercisesLocked": "Ennek az edzésnek a gyakorlatai nem módosíthatók."
+    "exercisesLocked": "Ennek az edzésnek a gyakorlatai nem módosíthatók.",
+    "exercise": "Gyakorlat"
   },
   "coachProgramSelect": {
     "loadError": "Hiba a programok lekérése során",
@@ -535,7 +576,8 @@
     "saveSuccess": "A sorozat sikeresen mentve.",
     "saveError": "Hiba történt a sorozat mentésekor.",
     "save": "Mentés",
-    "invalidSet": "Érvénytelen sorozat."
+    "invalidSet": "Érvénytelen sorozat.",
+    "notesPlaceholder": "Pl.: Ez a sorozat nehéz volt..."
   },
   "userMyPrograms": {
     "title": "Programjaim",
@@ -627,7 +669,8 @@
     "completedWorkouts": "Elvégzett edzések",
     "unknownProgram": "Ismeretlen program",
     "noPendingWorkouts": "Nincs elvégzendő edzés.",
-    "noCompletedWorkouts": "Még nincs elvégzett edzés."
+    "noCompletedWorkouts": "Még nincs elvégzett edzés.",
+    "groupingAria": "Edzések csoportosítása"
   },
   "coachProgramBoard": {
     "loading": "Betöltés...",
@@ -721,7 +764,13 @@
     "createUserWorkoutError": "Hiba történt a felhasználói edzés létrehozásakor.",
     "deleteConfirmTitle": "Sorozat törlése",
     "cancel": "Mégse",
-    "deleteSetSuccess": "A(z) #{{setNumber}} sorozat sikeresen törölve."
+    "deleteSetSuccess": "A(z) #{{setNumber}} sorozat sikeresen törölve.",
+    "previousWorkout": "Előző workout",
+    "nextWorkout": "Következő workout",
+    "workoutNumber": "Workout {{number}}",
+    "previousSet": "Előző set",
+    "nextSet": "Következő set",
+    "setNumberAria": "Set {{number}}"
   },
   "assignProgram": {
     "title": "Program hozzárendelés",
@@ -821,7 +870,9 @@
     "availableWorkouts": "Elérhető edzések",
     "programs": "Programok",
     "save": "Mentés",
-    "selectedWorkouts": "Kiválasztott edzések"
+    "selectedWorkouts": "Kiválasztott edzések",
+    "loadError": "Nem sikerült betölteni az adatokat.",
+    "unknownError": "Ismeretlen hiba történt."
   },
   "forgotPassword": {
     "title": "Elfelejtett jelszó",
@@ -849,6 +900,7 @@
     "passwordMismatch": "A két jelszó nem egyezik.",
     "serviceUnavailable": "A szolgáltatás jelenleg nem elérhető. Kérlek próbáld meg később.",
     "resetFailed": "A jelszó visszaállítása nem sikerült.",
-    "success": "A jelszó sikeresen megváltozott."
+    "success": "A jelszó sikeresen megváltozott.",
+    "invalidToken": "A jelszó-visszaállítási token érvénytelen vagy lejárt."
   }
 }

@@ -18,15 +18,15 @@ import { AuthService } from '../../services/auth/auth.service';
 })
 export class MainLayoutComponent {
   menuItems: MenuItem[] = [
-    { label: 'Dashboard', path: '/dashboard' },
+    { label: 'menu.dashboard', path: '/dashboard' },
     {
-      label: 'Settings',
+      label: 'menu.settings',
       children: [
-        { label: 'Profile', path: '/settings/profile' },
-        { label: 'Security', path: '/settings/security' },
+        { label: 'menu.profile', path: '/settings/profile' },
+        { label: 'menu.security', path: '/settings/security' },
       ],
     },
-    { label: 'Logout', action: 'logout' },
+    { label: 'menu.logout', action: 'logout' },
   ];
 
   constructor(

@@ -1,19 +1,21 @@
 import { Component } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 
 import { LanguageCode, LanguageService } from '../../../services/shared/language.service';
 
 @Component({
   selector: 'app-language-selector',
   standalone: true,
+  imports: [TranslatePipe],
   template: `
     <select
       [value]="languageService.getCurrentLanguage()"
       (change)="onLanguageChange($event)"
       class="bg-white text-primary-600 px-3 py-1 rounded-full font-medium shadow-sm"
     >
-      <option value="hu">Magyar</option>
-      <option value="en">English</option>
-      <option value="de">Deutsch</option>
+      <option value="hu">{{ 'language.hungarian' | translate }}</option>
+      <option value="en">{{ 'language.english' | translate }}</option>
+      <option value="de">{{ 'language.german' | translate }}</option>
     </select>
   `,
 })

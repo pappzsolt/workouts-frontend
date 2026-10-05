@@ -73,7 +73,7 @@ export class ResetPasswordComponent {
           const httpError = error as HttpErrorResponse;
           this.errorMessage =
             httpError.status === 400
-              ? (httpError.error?.message ?? 'A jelszó-visszaállítási token érvénytelen vagy lejárt.')
+              ? (httpError.error?.message ?? 'resetPassword.invalidToken')
               : httpError.status === 503
                 ? 'resetPassword.serviceUnavailable'
                 : 'resetPassword.resetFailed';

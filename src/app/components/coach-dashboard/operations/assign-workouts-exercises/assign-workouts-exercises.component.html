@@ -6,11 +6,11 @@
       <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div class="min-w-0">
           <div class="flex items-center gap-2 text-xs font-semibold text-content-400">
-            <span>Program</span>
+            <span>{{ 'assignWorkoutExercises.breadcrumbProgram' | translate }}</span>
             <span>›</span>
-            <span>Workout</span>
+            <span>{{ 'assignWorkoutExercises.breadcrumbWorkout' | translate }}</span>
             <span>›</span>
-            <span class="text-primary-700">Gyakorlatok</span>
+            <span class="text-primary-700">{{ 'assignWorkoutExercises.breadcrumbExercises' | translate }}</span>
           </div>
 
           <h1 class="mt-2 text-xl font-bold tracking-tight text-content-800 sm:text-2xl">
@@ -18,13 +18,13 @@
           </h1>
 
           <p class="mt-1 max-w-2xl text-sm leading-6 text-content-500">
-            Válaszd ki a workoutot, majd külön ablakban add hozzá a hozzá tartozó gyakorlatokat.
+            {{ 'assignWorkoutExercises.description' | translate }}
           </p>
         </div>
 
         <div class="flex shrink-0 items-center gap-2">
           <span class="rounded-full bg-primary-50 px-3 py-1.5 text-xs font-semibold text-primary-700">
-            {{ selectedExercises.length }} gyakorlat
+            {{ 'assignWorkoutExercises.exerciseCount' | translate:{ count: selectedExercises.length } }}
           </span>
         </div>
       </div>
@@ -52,7 +52,7 @@
                   1
                 </span>
                 <span class="rounded-full bg-primary-50 px-2.5 py-1 text-xs font-semibold text-primary-700">
-                  Workout kiválasztva
+                  {{ 'assignWorkoutExercises.workoutSelected' | translate }}
                 </span>
               </div>
 
@@ -79,7 +79,7 @@
 
                 @if (selectedWorkout.durationMinutes) {
                   <span class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600">
-                    {{ selectedWorkout.durationMinutes }} perc
+                    {{ selectedWorkout.durationMinutes }} {{ 'common.minutes' | translate }}
                   </span>
                 }
 
@@ -98,7 +98,7 @@
                 class="rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20"
               >
                 <span class="mr-2">+</span>
-                Gyakorlatok kezelése
+                {{ 'assignWorkoutExercises.manageExercises' | translate }}
               </button>
 
               @if (!fromProgramBuilder) {
@@ -107,7 +107,7 @@
                   (click)="changeWorkout()"
                   class="rounded-xl border border-surface-200 bg-white px-4 py-2.5 text-sm font-semibold text-content-600 transition hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700"
                 >
-                  Workout cseréje
+                  {{ 'assignWorkoutExercises.changeWorkout' | translate }}
                 </button>
               }
             </div>
@@ -119,10 +119,10 @@
           <div class="mb-3 flex items-center justify-between gap-3">
             <div>
               <h3 class="text-base font-bold text-content-800">
-                Kiválasztott gyakorlatok
+                {{ 'assignWorkoutExercises.selectedExercisesTitle' | translate }}
               </h3>
               <p class="mt-0.5 text-xs text-content-500">
-                Ezek kerülnek hozzáadásra ehhez a workouthoz.
+                {{ 'assignWorkoutExercises.selectedExercisesDescription' | translate }}
               </p>
             </div>
 
@@ -160,7 +160,7 @@
               (click)="openExerciseSelector()"
               class="flex w-full items-center justify-center rounded-xl border border-dashed border-surface-300 bg-white px-4 py-6 text-sm font-medium text-content-500 transition hover:border-primary-300 hover:bg-primary-50/40 hover:text-primary-700"
             >
-              Még nincs kiválasztott gyakorlat — kattints a „Gyakorlatok kezelése” gombra.
+              {{ 'assignWorkoutExercises.noExercisesSelected' | translate }}
             </button>
           }
         </div>
@@ -179,10 +179,10 @@
 
             <div>
               <h2 class="text-lg font-bold text-content-800 sm:text-xl">
-                Workout kiválasztása
+                {{ 'assignWorkoutExercises.selectWorkoutTitle' | translate }}
               </h2>
               <p class="mt-1 text-sm text-content-500">
-                Válassz ki egy workoutot. Ezután külön panelben kezelheted a gyakorlatokat.
+                {{ 'assignWorkoutExercises.selectWorkoutDescription' | translate }}
               </p>
             </div>
           </div>
@@ -211,7 +211,7 @@
               {{ selectedWorkout.name }}
             </span>
             <span class="mx-1">·</span>
-            {{ selectedExercises.length }} gyakorlat
+            {{ 'assignWorkoutExercises.exerciseCount' | translate:{ count: selectedExercises.length } }}
           </div>
 
           <button
@@ -251,10 +251,10 @@
           <div class="min-w-0">
             <div class="flex flex-wrap items-center gap-2">
               <span class="rounded-full bg-primary-50 px-2.5 py-1 text-xs font-semibold text-primary-700">
-                2. lépés
+                {{ 'assignWorkoutExercises.stepTwo' | translate }}
               </span>
               <span class="text-xs font-medium text-content-400">
-                {{ selectedExercises.length }} kiválasztva
+                {{ 'assignWorkoutExercises.selectedCount' | translate:{ count: selectedExercises.length } }}
               </span>
             </div>
 
@@ -262,11 +262,11 @@
               id="exercise-selector-title"
               class="mt-1 break-words text-lg font-bold text-content-800 sm:text-xl"
             >
-              Gyakorlatok — {{ selectedWorkout.name }}
+              {{ 'assignWorkoutExercises.modalTitle' | translate:{ workoutName: selectedWorkout.name } }}
             </h2>
 
             <p class="mt-1 text-sm text-content-500">
-              Keresd meg és jelöld ki a hozzáadni kívánt gyakorlatokat.
+              {{ 'assignWorkoutExercises.selectorDescription' | translate }}
             </p>
           </div>
 
@@ -274,7 +274,7 @@
             type="button"
             (click)="closeExerciseSelector()"
             class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-content-500 transition hover:bg-surface-100 hover:text-content-800"
-            aria-label="Bezárás"
+            [attr.aria-label]="'common.close' | translate"
           >
             <app-icon name="x" sizeClass="h-5 w-5" />
           </button>
@@ -294,7 +294,7 @@
       <div class="shrink-0 border-t border-surface-100 bg-white px-4 py-3 sm:px-6">
         <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <span class="text-sm text-content-500">
-            {{ selectedExercises.length }} gyakorlat kiválasztva
+            {{ 'assignWorkoutExercises.selectedCount' | translate:{ count: selectedExercises.length } }}
           </span>
 
           <button
@@ -302,7 +302,7 @@
             (click)="closeExerciseSelector()"
             class="w-full rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 sm:w-auto"
           >
-            Kész
+            {{ 'common.done' | translate }}
           </button>
         </div>
       </div>

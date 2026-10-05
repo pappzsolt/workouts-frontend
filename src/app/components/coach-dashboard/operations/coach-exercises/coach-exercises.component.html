@@ -67,7 +67,7 @@
               type="text"
               [(ngModel)]="searchTerm"
               class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-sm text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10"
-              [placeholder]="'coachExercises.searchPlaceholder'"
+              [placeholder]="'coachExercises.searchPlaceholder' | translate"
               autocomplete="off"
             />
 
@@ -244,7 +244,7 @@
       type="button"
       class="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-primary-700 to-primary-800 text-2xl text-white shadow-lg transition duration-200 hover:scale-105 hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20"
       (click)="goToNewExercise()"
-      [title]="'coachExercises.addExercise'"
+      [title]="'coachExercises.addExercise' | translate"
     >
       <app-icon name="circle-plus" sizeClass="h-5 w-5" />
     </button>

@@ -28,7 +28,7 @@ export class RoleService {
       ),
       catchError((error) => {
         this.logger.error('Hiba a role-ok lekérésekor:', error);
-        return throwError(() => new Error(error?.message || 'Hiba a role-ok lekérésekor'));
+        return throwError(() => new Error(error?.message || 'roleSelect.loadError'));
       }),
     );
   }
