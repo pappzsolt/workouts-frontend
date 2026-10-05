@@ -3,7 +3,13 @@ git add src
 git commit -m "Fix remaining P1 and P2 frontend issues"
 git push gitlab master
 
+-------------------
 
+git add .
+git commit -m "Add trusted proxy config to production deploy"
+git push gitlab master
+
+-----------
 tekepites menete :
 /home/svc_ansible
 git clone
