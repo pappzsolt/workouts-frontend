@@ -69,6 +69,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
   selectedWorkoutExercises: WorkoutExercise[] = [];
 
   selectedWorkoutId: number | null = null;
+  selectedProgramWorkoutId: number | null = null;
   selectedWorkout: WorkoutWithExercises | null = null;
 
   selectedWorkouts: WorkoutWithExercises[] = [];
@@ -144,11 +145,6 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
     return !this.exerciseDialogIsNewWorkout;
   }
 
-  get selectedWorkoutIds(): number[] {
-    return this.selectedWorkouts
-      .map((workout) => workout.id)
-      .filter((id): id is number => Number.isInteger(id));
-  }
 
   get selectedExerciseCount(): number {
     return this.exerciseDialogExercises.length;
@@ -241,7 +237,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
    * A Program Builder fő nézete csak workout szintű információt mutat.
    * Az exercise-ok külön megtekintési/szerkesztési ablakban jelennek meg.
    */
-  selectWorkout(workoutId: number): void {
+  selectWorkout(workoutId: number, programWorkoutId: number | null = null): void {
     if (!workoutId) {
       return;
     }
@@ -253,6 +249,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
     }
 
     this.selectedWorkoutId = workoutId;
+    this.selectedProgramWorkoutId = programWorkoutId;
     this.selectedWorkout = workout;
     this.loadingExercises = true;
 
@@ -310,6 +307,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
     this.exerciseAddDialogExercises = [];
     this.exerciseDialogOpen = false;
     this.exerciseDialogWorkout = null;
+    this.selectedProgramWorkoutId = null;
     this.exerciseDialogExercises = [];
     this.exerciseDialogIsNewWorkout = false;
   }
@@ -430,9 +428,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
       return;
     }
 
-    const newIds = this.pendingWorkoutIds.filter(
-      (id) => !this.selectedWorkoutIds.includes(id),
-    );
+    const newIds = [...this.pendingWorkoutIds];
 
     if (!newIds.length) {
       this.message = 'coachProgramBuilder.addedToProgram';
@@ -497,27 +493,27 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
       });
   }
 
-  isWorkoutSelected(workoutId: number): boolean {
-    return this.selectedWorkoutIds.includes(workoutId);
-  }
 
-  removeWorkout(workoutId: number, occurrenceIndex: number): void {
-    if (this.programId === null) {
+  removeWorkout(programWorkoutId: number): void {
+    if (this.programId === null || !programWorkoutId) {
       this.message = 'coachProgramBuilder.removeWorkoutError';
       this.messageType = 'error';
       return;
     }
 
+    const occurrenceIndex = this.programWorkouts.findIndex(
+      (programWorkout) => programWorkout.id === programWorkoutId,
+    );
     const occurrence = this.programWorkouts[occurrenceIndex];
 
-    if (!occurrence?.id || occurrence.workoutId !== workoutId) {
+    if (occurrenceIndex < 0 || !occurrence) {
       this.message = 'coachProgramBuilder.removeWorkoutError';
       this.messageType = 'error';
       return;
     }
 
     this.workoutBuilderService
-      .removeWorkout(occurrence.id)
+      .removeWorkout(programWorkoutId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
@@ -532,7 +528,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
             (_workout, index) => index !== occurrenceIndex,
           );
           this.programWorkouts = this.programWorkouts.filter(
-            (programWorkout) => programWorkout.id !== occurrence.id,
+            (programWorkout) => programWorkout.id !== programWorkoutId,
           );
 
           this.reindexProgramWorkouts();
@@ -583,19 +579,19 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
     });
   }
 
-  updateWorkoutDay(workoutId: number, dayIndex: number): void {
+  updateWorkoutDay(programWorkoutId: number, dayIndex: number): void {
     const programWorkout = this.programWorkouts.find(
-      (pw) => pw.workoutId === workoutId,
+      (pw) => pw.id === programWorkoutId,
     );
 
-    if (!programWorkout?.id) {
+    if (!programWorkout) {
       this.message = 'coachProgramBuilder.updateWorkoutDayError';
       this.messageType = 'error';
       return;
     }
 
     this.workoutBuilderService
-      .updateWorkoutDay(programWorkout.id, dayIndex)
+      .updateWorkoutDay(programWorkoutId, dayIndex)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
@@ -629,9 +625,13 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
       });
   }
 
-  getWorkoutDayIndex(workoutId: number): number {
+  getWorkoutDayIndex(programWorkoutId: number | null): number {
+    if (programWorkoutId === null) {
+      return 1;
+    }
+
     return (
-      this.programWorkouts.find((pw) => pw.workoutId === workoutId)?.dayIndex ??
+      this.programWorkouts.find((pw) => pw.id === programWorkoutId)?.dayIndex ??
       1
     );
   }
