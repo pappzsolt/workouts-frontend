@@ -497,15 +497,23 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
     return this.selectedWorkoutIds.includes(workoutId);
   }
 
-  removeWorkout(workoutId: number): void {
+  removeWorkout(workoutId: number, occurrenceIndex: number): void {
     if (this.programId === null) {
       this.message = 'coachProgramBuilder.removeWorkoutError';
       this.messageType = 'error';
       return;
     }
 
+    const occurrence = this.programWorkouts[occurrenceIndex];
+
+    if (!occurrence?.id || occurrence.workoutId !== workoutId) {
+      this.message = 'coachProgramBuilder.removeWorkoutError';
+      this.messageType = 'error';
+      return;
+    }
+
     this.workoutBuilderService
-      .removeWorkout(this.programId, workoutId)
+      .removeWorkout(occurrence.id)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (response) => {
@@ -517,10 +525,10 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
           }
 
           this.selectedWorkouts = this.selectedWorkouts.filter(
-            (workout) => workout.id !== workoutId,
+            (_workout, index) => index !== occurrenceIndex,
           );
           this.programWorkouts = this.programWorkouts.filter(
-            (programWorkout) => programWorkout.workoutId !== workoutId,
+            (programWorkout) => programWorkout.id !== occurrence.id,
           );
 
           this.reindexProgramWorkouts();
@@ -715,5 +723,12 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
     workout: WorkoutWithExercises,
   ): number {
     return workout.id;
+  }
+
+  trackBySelectedWorkoutOccurrence(
+    index: number,
+    _workout: WorkoutWithExercises,
+  ): number {
+    return this.programWorkouts[index]?.id ?? index;
   }
 }

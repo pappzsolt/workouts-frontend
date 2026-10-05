@@ -123,12 +123,10 @@ export class CoachProgramBuilderWorkoutService {
   }
 
   removeWorkout(
-    programId: number,
-    workoutId: number,
+    programWorkoutId: number,
   ): Observable<ApiResponse<void>> {
     return this.programWorkoutService.deleteProgramWorkout(
-      programId,
-      workoutId,
+      programWorkoutId,
     );
   }
 

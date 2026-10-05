@@ -134,8 +134,8 @@ export const API_ENDPOINTS = {
     `${environment.apiUrl}/program-workouts/workouts/${workoutId}/assigned`,
   programWorkoutsByProgram: (programId: number) =>
     `${environment.apiUrl}/program-workouts?programId=${programId}`,
-  programWorkoutDelete: (programId: number, workoutId: number) =>
-    `${environment.apiUrl}/program-workouts/${programId}/${workoutId}`,
+  programWorkoutDeleteById: (id: number) =>
+    `${environment.apiUrl}/program-workouts/id/${id}`,
   programWorkoutsDelete: (programId: number) =>
     `${environment.apiUrl}/program-workouts/${programId}`,
   programWorkoutUpdate: (id: number) => `${environment.apiUrl}/program-workouts/${id}`,

@@ -73,7 +73,7 @@
       >
         <div class="divide-y divide-surface-100">
           <div
-            *ngFor="let workout of selectedWorkouts; let i = index; trackBy: trackByWorkoutId"
+            *ngFor="let workout of selectedWorkouts; let i = index; trackBy: trackBySelectedWorkoutOccurrence"
             data-testid="selected-workout"
             class="flex flex-col gap-4 px-4 py-4 transition hover:bg-surface-50 sm:flex-row sm:items-center sm:px-5"
           >
@@ -92,10 +92,10 @@
                 </h5>
 
                 <span
-                  *ngIf="getWorkoutDayIndex(workout.id)"
+                  *ngIf="programWorkouts[i]?.dayIndex"
                   class="rounded-full bg-surface-100 px-2.5 py-1 text-xs font-semibold text-content-600"
                 >
-                  {{ getWorkoutDayIndex(workout.id) }}. nap
+                  {{ programWorkouts[i]?.dayIndex }}. nap
                 </span>
               </div>
 
@@ -148,7 +148,7 @@
 
               <button
                 type="button"
-                (click)="removeWorkout(workout.id)"
+                (click)="removeWorkout(workout.id, i)"
                 [attr.aria-label]="'coachProgramBuilder.removeWorkoutAria' | translate"
                 class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-delete-200 bg-white text-delete-600 transition hover:bg-delete-50 focus:outline-none focus:ring-4 focus:ring-delete-600/10"
               >

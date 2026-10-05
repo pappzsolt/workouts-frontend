@@ -58,11 +58,10 @@ export class ProgramWorkoutService {
   }
 
   deleteProgramWorkout(
-    programId: number,
-    workoutId: number,
+    id: number,
   ): Observable<ApiResponse<void>> {
     return this.http.delete<ApiResponse<void>>(
-      API_ENDPOINTS.programWorkoutDelete(programId, workoutId),
+      API_ENDPOINTS.programWorkoutDeleteById(id),
     );
   }
 

@@ -12,6 +12,7 @@ import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts
 
 import { Workout } from '../../../../models/workout.model';
 import { CoachProgram } from '../../../../models/coach-program.model';
+import type { ProgramWorkoutAssignment } from '../../../../models/program-workout-assignment.model';
 
 import { ProgramWorkoutService } from '../../../../services/coach/program-workout.service';
 import { CoachProgramSelectService } from '../../../../services/coach/coach-program-select/coach-program-select.service';
@@ -41,6 +42,8 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
   selectedProgramId?: number;
 
   selectedWorkoutIds: number[] = [];
+
+  private programWorkoutAssignments: ProgramWorkoutAssignment[] = [];
 
   message: string | null = null;
 
@@ -89,6 +92,7 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
   onProgramSelected(programId: number): void {
     this.selectedProgramId = programId;
     this.selectedWorkoutIds = [];
+    this.programWorkoutAssignments = [];
 
     this.programWorkoutService
       .getWorkoutsForProgram(programId)
@@ -101,9 +105,15 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
             return;
           }
 
-          this.selectedWorkoutIds = (response.data ?? [])
-            .map((assignment) => assignment.workoutId)
-            .filter((id): id is number => Number.isInteger(id) && id > 0);
+          this.programWorkoutAssignments = response.data ?? [];
+
+          this.selectedWorkoutIds = Array.from(
+            new Set(
+              this.programWorkoutAssignments
+                .map((assignment) => assignment.workoutId)
+                .filter((id): id is number => Number.isInteger(id) && id > 0),
+            ),
+          );
         },
         error: (error) => {
           this.message = error.error?.message || 'programWorkouts.loadError';
@@ -206,35 +216,56 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.programWorkoutService.deleteProgramWorkout(this.selectedProgramId, wid)
-      .pipe(takeUntil(this.destroy$))
+    const occurrences = this.programWorkoutAssignments.filter(
+      (assignment) => assignment.workoutId === wid,
+    );
+
+    if (occurrences.length === 0) {
+      this.message = 'programWorkouts.unknownError';
+      this.messageStatus = 'error';
+      return;
+    }
+
+    from(occurrences)
+      .pipe(
+        concatMap((assignment) =>
+          this.programWorkoutService.deleteProgramWorkout(assignment.id),
+        ),
+        toArray(),
+        takeUntil(this.destroy$),
+      )
       .subscribe({
-      next: (res) => {
-        if (!res.success) {
-          this.message = res.message || 'programWorkouts.unknownError';
+        next: (responses) => {
+          const failed = responses.find((response) => !response.success);
+
+          if (failed) {
+            this.message = failed.message || 'programWorkouts.unknownError';
+            this.messageStatus = 'error';
+            return;
+          }
+
+          this.programWorkoutAssignments = this.programWorkoutAssignments.filter(
+            (assignment) => assignment.workoutId !== wid,
+          );
+          this.selectedWorkoutIds = this.selectedWorkoutIds.filter((id) => id !== wid);
+          this.message = responses.at(-1)?.message ?? 'programWorkouts.assignSuccess';
+          this.messageStatus = 'success';
+
+          this.onWorkoutsChange(this.selectedWorkoutIds);
+
+          timer(5000)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => {
+              this.message = null;
+              this.messageStatus = '';
+            });
+        },
+
+        error: (err) => {
+          this.message = err.error?.message || 'programWorkouts.unknownError';
           this.messageStatus = 'error';
-          return;
-        }
-
-        this.selectedWorkoutIds = this.selectedWorkoutIds.filter((id) => id !== wid);
-        this.message = res.message;
-        this.messageStatus = 'success';
-
-        this.onWorkoutsChange(this.selectedWorkoutIds);
-
-        timer(5000)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe(() => {
-            this.message = null;
-            this.messageStatus = '';
-          });
-      },
-
-      error: (err) => {
-        this.message = err.error?.message || 'programWorkouts.unknownError';
-        this.messageStatus = 'error';
-      },
-    });
+        },
+      });
   }
 
   ngOnDestroy(): void {
