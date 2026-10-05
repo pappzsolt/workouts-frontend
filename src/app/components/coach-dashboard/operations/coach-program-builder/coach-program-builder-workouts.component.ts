@@ -448,7 +448,10 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
       return;
     }
 
-    const startDayIndex = this.selectedWorkouts.length + 1;
+    const startDayIndex =
+      this.programWorkouts.length === 0
+        ? 1
+        : Math.max(...this.programWorkouts.map((programWorkout) => programWorkout.dayIndex)) + 1;
 
     from(requests)
       .pipe(
