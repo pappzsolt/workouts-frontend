@@ -3,7 +3,7 @@ import { LoggerService } from '../../../../services/logger.service';
 
 import { HttpErrorResponse } from '@angular/common/http';
 
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 import { Workout } from '../../../../models/workout.model';
 import { AppSearchComponent } from '../../components/app-search/app-search.component';
@@ -30,7 +30,10 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
   private readonly destroy$ = new Subject<void>();
 
   @Input()
-  externalWorkouts: Workout[] = [];
+  externalWorkouts: Workout[] | null = null;
+
+  private request?: Subscription;
+  private initialized = false;
 
   @Input()
   selectedWorkoutIds: number[] = [];
@@ -72,6 +75,7 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
   // ==========================================================
 
   ngOnInit(): void {
+    this.initialized = true;
     if (this.compactSelection) {
       this.itemsPerPage = 8;
     }
@@ -86,11 +90,9 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
   // ==========================================================
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['externalWorkouts'] && this.externalWorkouts?.length) {
-      this.workouts = [...this.externalWorkouts];
-
-      this.message = '';
-      this.messageType = '';
+    if (this.initialized && changes['externalWorkouts']) {
+      this.currentPage = 1;
+      this.loadWorkouts();
     }
   }
 
@@ -99,6 +101,23 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
   // ==========================================================
 
   loadWorkouts(): void {
+    this.request?.unsubscribe();
+    if (this.externalWorkouts != null) {
+      const term = this.searchTerm.trim().toLocaleLowerCase();
+      const filtered = this.externalWorkouts
+        .filter((workout) => workout.name?.toLocaleLowerCase().includes(term))
+        .slice()
+        .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? '') *
+          (this.sortDirection === 'asc' ? 1 : -1));
+      this.totalPages = Math.max(1, Math.ceil(filtered.length / this.itemsPerPage));
+      this.currentPage = Math.min(this.currentPage, this.totalPages);
+      this.workouts = filtered.slice((this.currentPage - 1) * this.itemsPerPage,
+        this.currentPage * this.itemsPerPage);
+      this.loading = false;
+      this.message = filtered.length ? '' : 'coachWorkoutBoard.noWorkouts';
+      this.messageType = filtered.length ? '' : 'error';
+      return;
+    }
     this.loading = true;
 
     this.message = '';
@@ -106,7 +125,7 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
 
     const backendPage = this.currentPage - 1;
 
-    this.workoutService
+    this.request = this.workoutService
       .searchMyWorkouts(
         this.searchTerm.trim(),
         backendPage,
@@ -114,6 +133,7 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
         this.languageService.getCurrentLanguage(),
         this.sortDirection,
       )
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
           this.loading = false;
@@ -176,7 +196,7 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
     if (this.multiSelect) {
       if (checked) {
         if (!this.selectedWorkoutIds.includes(id)) {
-          this.selectedWorkoutIds.push(id);
+          this.selectedWorkoutIds = [...this.selectedWorkoutIds, id];
         }
       } else {
         this.selectedWorkoutIds = this.selectedWorkoutIds.filter((wid) => wid !== id);
@@ -194,6 +214,7 @@ export class CoachWorkoutBoardComponent implements OnInit, OnChanges, OnDestroy 
   // ==========================================================
 
   ngOnDestroy(): void {
+    this.request?.unsubscribe();
     this.destroy$.next();
     this.destroy$.complete();
   }

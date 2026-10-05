@@ -52,7 +52,7 @@ export class ProgramWorkoutService {
       .pipe(
         map((response) => ({
           ...response,
-          data: this.mapAssignments(response.data),
+          data: response.success ? this.mapAssignments(response.data) : null,
         })),
       );
   }
@@ -91,58 +91,40 @@ export class ProgramWorkoutService {
   private mapAssignmentResponse(
     response: ApiResponse<ProgramWorkoutAssignmentDto>,
   ): ApiResponse<ProgramWorkoutAssignment> {
+    if (response.success && response.data == null) {
+      throw new Error('Missing program-workout assignment received from backend.');
+    }
     return {
       ...response,
-      data: response.data == null ? null : this.mapAssignment(response.data),
+      data: response.success && response.data != null ? this.mapAssignment(response.data) : null,
     };
   }
 
   private mapAssignments(
     assignments: ProgramWorkoutAssignmentDto[] | null,
   ): ProgramWorkoutAssignment[] {
-    return (assignments ?? [])
-      .filter(this.hasCompleteAssignment)
-      .map((assignment) => ({
-        id: assignment.id,
-        programId: assignment.programId,
-        workoutId: assignment.workoutId,
-        dayIndex: assignment.dayIndex,
-      }));
+    if (!Array.isArray(assignments)) {
+      throw new Error('Invalid program-workout list received from backend.');
+    }
+    return assignments.map((assignment) => this.mapAssignment(assignment));
   }
 
   private mapAssignment(
     assignment: ProgramWorkoutAssignmentDto,
   ): ProgramWorkoutAssignment {
-    if (
-      assignment.id == null ||
-      assignment.programId == null ||
-      assignment.workoutId == null ||
-      assignment.dayIndex == null
-    ) {
-      throw new Error('Incomplete program-workout assignment received from backend.');
+    if (!assignment || ![assignment.id, assignment.programId,
+      assignment.workoutId, assignment.dayIndex].every(
+        (value) => Number.isInteger(value) && Number(value) > 0,
+      )) {
+      throw new Error('Invalid program-workout assignment received from backend.');
     }
 
     return {
-      id: assignment.id,
-      programId: assignment.programId,
-      workoutId: assignment.workoutId,
-      dayIndex: assignment.dayIndex,
+      id: assignment.id!,
+      programId: assignment.programId!,
+      workoutId: assignment.workoutId!,
+      dayIndex: assignment.dayIndex!,
     };
   }
 
-  private hasCompleteAssignment(
-    assignment: ProgramWorkoutAssignmentDto,
-  ): assignment is ProgramWorkoutAssignmentDto & {
-    id: number;
-    programId: number;
-    workoutId: number;
-    dayIndex: number;
-  } {
-    return (
-      assignment.id != null &&
-      assignment.programId != null &&
-      assignment.workoutId != null &&
-      assignment.dayIndex != null
-    );
-  }
 }

@@ -10,12 +10,14 @@ import { CoachWorkoutsService } from './coach-workouts/coach-workouts.service';
 import { ProgramWorkoutService } from './program-workout.service';
 import { WorkoutExerciseService } from './workout-exercises.service';
 import { WorkoutCopyService } from './workout-copy.service';
+import { ProgramWorkoutState } from '../../models/program-workout-state';
 import type { WorkoutCopyRequest } from '../../models/backend-dto/workout/workout-copy-request';
 
 
 export interface ProgramBuilderWorkoutLoad {
   programWorkouts: ProgramWorkoutAssignment[];
   allWorkouts: WorkoutWithExercises[];
+  state: ProgramWorkoutState;
 }
 
 @Injectable({
@@ -44,19 +46,26 @@ export class CoachProgramBuilderWorkoutService {
 
   loadProgramWorkouts(programId: number): Observable<ProgramBuilderWorkoutLoad> {
     return this.programWorkoutService.getWorkoutsForProgram(programId).pipe(
-      map((response: ApiResponse<ProgramWorkoutAssignment[]>) => ({
-        programWorkouts: [...(response.data ?? [])].sort(
+      map((response: ApiResponse<ProgramWorkoutAssignment[]>) => {
+        if (!response.success || !Array.isArray(response.data)) {
+          throw new Error(response.message || 'Failed to load program workouts.');
+        }
+        return { programWorkouts: [...(response.data ?? [])].sort(
           (a, b) => a.dayIndex - b.dayIndex,
         ),
-      })),
+      }; }),
       // Keep the two backend reads in one operation so the component only
       // coordinates state and UI messages.
       concatMap(({ programWorkouts }) =>
         this.exerciseService.getWorkoutsWithExercises().pipe(
-          map((response: ApiResponse<WorkoutWithExercises[]>) => ({
-            programWorkouts,
-            allWorkouts: response.data ?? [],
-          })),
+          map((response: ApiResponse<WorkoutWithExercises[]>) => {
+            if (!response.success || !Array.isArray(response.data)) {
+              throw new Error(response.message || 'Failed to load workouts.');
+            }
+            const state = new ProgramWorkoutState();
+            state.load(programWorkouts, response.data);
+            return { programWorkouts, allWorkouts: response.data, state };
+          }),
         ),
       ),
     );
@@ -119,6 +128,19 @@ export class CoachProgramBuilderWorkoutService {
       programId,
       workoutId,
       dayIndex,
+    );
+  }
+
+  addWorkouts(programId: number, workoutIds: number[], startDayIndex: number):
+    Observable<ApiResponse<ProgramWorkoutAssignment>[]> {
+    return from(workoutIds).pipe(
+      concatMap((workoutId, index) => this.addWorkout(programId, workoutId, startDayIndex + index).pipe(
+        catchError((error: HttpErrorResponse) => of({
+          success: false, data: null,
+          message: error?.error?.message || 'coachProgramBuilder.addWorkoutError',
+        } satisfies ApiResponse<ProgramWorkoutAssignment>)),
+      )),
+      toArray(),
     );
   }
 

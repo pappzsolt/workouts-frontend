@@ -73,9 +73,9 @@
       >
         <div class="divide-y divide-surface-100">
           <div
-            *ngFor="let workout of selectedWorkouts; let i = index; trackBy: trackBySelectedWorkoutOccurrence"
+            *ngFor="let occurrence of state.occurrences; let i = index; trackBy: trackBySelectedWorkoutOccurrence"
             data-testid="selected-workout"
-            [attr.data-occurrence-id]="programWorkouts[i]?.id"
+            [attr.data-occurrence-id]="occurrence.assignment.id"
             class="flex flex-col gap-4 px-4 py-4 transition hover:bg-surface-50 sm:flex-row sm:items-center sm:px-5"
           >
             <!-- SORSZÁM -->
@@ -89,39 +89,39 @@
             <div class="min-w-0 flex-1">
               <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
                 <h5 class="break-words text-base font-bold text-content-800">
-                  {{ workout.name }}
+                  {{ occurrence.workout.name }}
                 </h5>
 
                 <span
-                  *ngIf="programWorkouts[i]?.dayIndex"
+                  *ngIf="occurrence.assignment.dayIndex"
                   class="rounded-full bg-surface-100 px-2.5 py-1 text-xs font-semibold text-content-600"
                 >
-                  {{ programWorkouts[i]?.dayIndex }}. nap
+                  {{ occurrence.assignment.dayIndex }}. nap
                 </span>
               </div>
 
               <div class="mt-2 flex flex-wrap gap-2">
                 <span class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600">
                   <app-icon name="dumbbell" sizeClass="h-4 w-4 inline-block align-middle mr-1" />
-                  {{ workout.exercises.length }}
+                  {{ occurrence.workout.exercises.length }}
                   {{ 'coachProgramBuilder.exercise' | translate }}
                 </span>
 
                 <span
-                  *ngIf="workout.durationMinutes"
+                  *ngIf="occurrence.workout.durationMinutes"
                   class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600"
                 >
                   <app-icon name="timer" sizeClass="h-4 w-4 inline-block align-middle mr-1" />
-                  {{ workout.durationMinutes }}
+                  {{ occurrence.workout.durationMinutes }}
                   {{ 'coachProgramBuilder.minutes' | translate }}
                 </span>
 
                 <span
-                  *ngIf="workout.intensityLevel"
+                  *ngIf="occurrence.workout.intensityLevel"
                   class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600"
                 >
                   <app-icon name="chart-column-increasing" sizeClass="h-4 w-4 inline-block align-middle mr-1" />
-                  {{ workout.intensityLevel }}
+                  {{ occurrence.workout.intensityLevel }}
                 </span>
               </div>
             </div>
@@ -130,7 +130,7 @@
             <div class="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
               <button
                 type="button"
-                (click)="selectWorkout(workout.id, programWorkouts[i]?.id ?? null)"
+                (click)="selectWorkout(occurrence.workout.id, occurrence.assignment.id)"
                 class="inline-flex min-h-10 items-center gap-2 rounded-lg border border-surface-300 bg-white px-3 py-2 text-sm font-semibold text-content-700 shadow-sm transition hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/10"
               >
                 <app-icon name="dumbbell" sizeClass="h-4 w-4" />
@@ -139,7 +139,7 @@
 
               <button
                 type="button"
-                (click)="openCopyWorkout(workout)"
+                (click)="openCopyWorkout(occurrence.workout)"
                 [attr.aria-label]="'coachProgramBuilder.copyWorkoutAria' | translate"
                 class="inline-flex min-h-10 items-center gap-2 rounded-lg border border-surface-300 bg-white px-3 py-2 text-sm font-semibold text-content-700 shadow-sm transition hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/10"
               >
@@ -150,7 +150,7 @@
               <button
                 type="button"
                 data-testid="remove-workout-occurrence"
-                (click)="removeWorkout(programWorkouts[i]?.id ?? 0)"
+                (click)="removeWorkout(occurrence.assignment.id)"
                 [attr.aria-label]="'coachProgramBuilder.removeWorkoutAria' | translate"
                 class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-delete-200 bg-white text-delete-600 transition hover:bg-delete-50 focus:outline-none focus:ring-4 focus:ring-delete-600/10"
               >
@@ -246,7 +246,6 @@
       </div>
 
       <app-coach-workout-board
-        [externalWorkouts]="workouts"
         [selectedWorkoutIds]="pendingWorkoutIds"
         [multiSelect]="true"
         [compactSelection]="true"
@@ -308,229 +307,18 @@
   </div>
 </app-card>
 
-<!-- ==========================================================
-     EXERCISE MODAL
-     ========================================================== -->
-<div
-  *ngIf="exerciseDialogOpen && exerciseDialogWorkout"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-surface-900/50 p-4 backdrop-blur-sm"
-  role="dialog"
-  aria-modal="true"
->
-  <div class="flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-2xl">
-    <div class="flex shrink-0 items-start justify-between gap-4 border-b border-surface-100 px-5 py-4 sm:px-6">
-      <div class="min-w-0">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="rounded-full bg-info-100 px-2.5 py-1 text-xs font-bold text-info-700">
-            {{ getWorkoutDayIndex(selectedProgramWorkoutId) }}. nap
-          </span>
-
-          <span class="text-sm font-semibold text-content-500">
-            {{ exerciseDialogExercises.length }}
-            {{ 'coachProgramBuilder.exercise' | translate }}
-          </span>
-        </div>
-
-        <h3 class="mt-2 break-words text-lg font-bold text-content-800 sm:text-xl">
-          {{ exerciseDialogWorkout.name }}
-        </h3>
-
-        <p class="mt-1 text-sm text-content-500">
-          {{
-            exerciseDialogIsNewWorkout
-              ? ('coachProgramBuilder.exercisesDescription' | translate)
-              : ('coachProgramBuilder.exercisesLocked' | translate)
-          }}
-        </p>
-      </div>
-
-      <button
-        type="button"
-        (click)="closeExerciseDialog()"
-        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-surface-200 bg-white text-content-500 transition hover:border-delete-200 hover:bg-delete-50 hover:text-delete-600"
-      >
-        <app-icon name="x" sizeClass="h-5 w-5" />
-      </button>
-    </div>
-
-    <div class="min-h-0 flex-1 overflow-y-auto p-5 sm:p-6">
-      <!-- Meglévő workout: csak a workouthoz tartozó exercise-ek jelennek meg. -->
-      <div *ngIf="!exerciseDialogIsNewWorkout" class="space-y-3">
-        <div class="flex items-center justify-between gap-3">
-          <h4 class="text-base font-bold text-content-800">
-            {{ 'coachProgramBuilder.selectedExercises' | translate }}
-          </h4>
-
-          <span
-            class="rounded-full bg-info-100 px-3 py-1 text-xs font-bold text-info-700"
-          >
-            {{ exerciseDialogExercises.length }}
-          </span>
-        </div>
-
-        <div
-          *ngIf="exerciseDialogExercises.length === 0"
-          class="rounded-xl border border-dashed border-surface-300 bg-surface-50 px-5 py-8 text-center"
-        >
-          <p class="text-sm font-semibold text-content-700">
-            {{ 'coachProgramBuilder.noExercises' | translate }}
-          </p>
-        </div>
-
-        <div
-          *ngIf="exerciseDialogExercises.length > 0"
-          class="overflow-hidden rounded-xl border border-surface-200 bg-white"
-        >
-          <div
-            *ngFor="let exercise of exerciseDialogExercises; let i = index"
-            class="flex items-center gap-3 border-b border-surface-100 px-4 py-3 last:border-b-0"
-          >
-            <span
-              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-info-100 text-xs font-bold text-info-700"
-            >
-              {{ i + 1 }}
-            </span>
-
-            <div class="min-w-0 flex-1">
-              <div class="break-words text-sm font-semibold text-content-800">
-                {{ exercise.name }}
-              </div>
-
-              <div
-                *ngIf="exercise.difficultyLevel"
-                class="mt-0.5 text-xs text-content-500"
-              >
-                {{ exercise.difficultyLevel }}
-              </div>
-            </div>
-
-            <span
-              *ngIf="exercise.equipment"
-              class="hidden shrink-0 rounded-lg bg-surface-100 px-2.5 py-1 text-xs font-medium text-content-500 sm:inline-flex"
-            >
-              {{ exercise.equipment }}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Új workout: a meglévő közös board marad a kiválasztáshoz. -->
-      <app-coach-exercises-board
-        *ngIf="exerciseDialogIsNewWorkout"
-        [externalExercises]="exercises"
-        [externalSelectedExercises]="exerciseDialogExercises"
-        [lockSelectedExercises]="false"
-        [compactSelection]="true"
-        (exercisesChange)="onExercisesChange($event)"
-      ></app-coach-exercises-board>
-
-      <div
-        *ngIf="!exerciseDialogIsNewWorkout"
-        class="mt-5 flex justify-center"
-      >
-        <button
-          type="button"
-          (click)="openExerciseAddDialog()"
-          class="inline-flex min-h-11 items-center gap-2 rounded-lg bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:from-primary-800 hover:to-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-600/20"
-        >
-          <app-icon name="circle-plus" sizeClass="h-4 w-4" />
-          {{ 'coachProgramBuilder.addExercise' | translate }}
-        </button>
-      </div>
-    </div>
-
-    <div class="flex shrink-0 flex-col-reverse gap-3 border-t border-surface-100 px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
-      <button
-        type="button"
-        (click)="closeExerciseDialog()"
-        class="min-h-11 w-full rounded-lg border border-surface-300 bg-white px-5 py-2.5 text-sm font-semibold text-content-700 transition hover:bg-surface-50 sm:w-auto"
-      >
-        {{ 'coachProgramBuilder.cancel' | translate }}
-      </button>
-
-      <button
-        *ngIf="exerciseDialogIsNewWorkout"
-        type="button"
-        [disabled]="loadingExercises"
-        (click)="saveExerciseDialog()"
-        class="min-h-11 w-full rounded-lg bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:from-primary-800 hover:to-primary-800 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
-      >
-        {{ 'coachProgramBuilder.save' | translate }}
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- ==========================================================
-     EXERCISE HOZZÁADÁSA
-     Az összes exercise katalógus csak itt jelenik meg.
-     ========================================================== -->
-<div
-  *ngIf="exerciseAddDialogOpen"
-  class="fixed inset-0 z-[60] flex items-center justify-center bg-surface-900/50 p-4 backdrop-blur-sm"
-  role="dialog"
-  aria-modal="true"
->
-  <div class="flex max-h-[92vh] w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-2xl">
-    <div class="flex shrink-0 items-start justify-between gap-4 border-b border-surface-100 px-5 py-4 sm:px-6">
-      <div class="min-w-0">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="rounded-full bg-info-100 px-2.5 py-1 text-xs font-bold text-info-700">
-            {{ exerciseAddDialogExercises.length }}
-          </span>
-
-          <span class="text-sm font-semibold text-content-500">
-            {{ 'coachProgramBuilder.selectedExercises' | translate }}
-          </span>
-        </div>
-
-        <h3 class="mt-2 text-lg font-bold text-content-800 sm:text-xl">
-          {{ 'coachProgramBuilder.addExercise' | translate }}
-        </h3>
-
-        <p class="mt-1 text-sm text-content-500">
-          {{ 'coachProgramBuilder.addExerciseDescription' | translate }}
-        </p>
-      </div>
-
-      <button
-        type="button"
-        (click)="closeExerciseAddDialog()"
-        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-surface-200 bg-white text-content-500 transition hover:border-delete-200 hover:bg-delete-50 hover:text-delete-600"
-      >
-        <app-icon name="x" sizeClass="h-5 w-5" />
-      </button>
-    </div>
-
-    <div class="min-h-0 flex-1 overflow-y-auto p-5 sm:p-6">
-      <app-coach-exercises-board
-        [externalExercises]="exercises"
-        [externalSelectedExercises]="exerciseAddDialogExercises"
-        [lockSelectedExercises]="false"
-        [compactSelection]="true"
-        (exercisesChange)="onExerciseAddDialogChange($event)"
-      ></app-coach-exercises-board>
-    </div>
-
-    <div class="flex shrink-0 flex-col-reverse gap-3 border-t border-surface-100 px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
-      <button
-        type="button"
-        (click)="closeExerciseAddDialog()"
-        class="min-h-11 w-full rounded-lg border border-surface-300 bg-white px-5 py-2.5 text-sm font-semibold text-content-700 transition hover:bg-surface-50 sm:w-auto"
-      >
-        {{ 'coachProgramBuilder.cancel' | translate }}
-      </button>
-
-      <button
-        type="button"
-        (click)="confirmExerciseAddDialog()"
-        class="min-h-11 w-full rounded-lg bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:from-primary-800 hover:to-primary-800 sm:w-auto"
-      >
-        {{ 'coachProgramBuilder.save' | translate }}
-      </button>
-    </div>
-  </div>
-</div>
+<app-program-exercise-dialog
+  *ngIf="exerciseDialogOpen"
+  [exerciseDialogWorkout]="exerciseDialogWorkout"
+  [exerciseDialogIsNewWorkout]="exerciseDialogIsNewWorkout"
+  [initialExercises]="selectedExercises"
+  [selectedWorkoutExercises]="selectedWorkoutExercises"
+  [exercises]="exercises"
+  [dayIndex]="getWorkoutDayIndex(selectedProgramWorkoutId)"
+  (close)="closeExerciseDialog()"
+  (workoutSaved)="onWorkoutExercisesSaved($event)"
+  (saveError)="onExerciseSaveError($event)"
+></app-program-exercise-dialog>
 
 <!-- WORKOUT MÁSOLÁS -->
 <app-workout-copy-dialog

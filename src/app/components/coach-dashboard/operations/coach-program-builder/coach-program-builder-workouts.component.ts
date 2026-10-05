@@ -11,19 +11,10 @@ import {
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import type { ApiResponse } from '../../../../models/backend-dto/common/api-response';
 import { ActivatedRoute } from '@angular/router';
-import {
-  catchError,
-  concatMap,
-  from,
-  of,
-  skip,
-  toArray,
-} from 'rxjs';
+import { skip, Subscription } from 'rxjs';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
-import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exercises-board/coach-exercises-board.component';
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
 import { UserSelectComponent } from '../../../shared/user/user-select.component';
 
@@ -32,10 +23,12 @@ import {
   WorkoutWithExercises,
   WorkoutExercise,
 } from '../../../../models/exercise.model';
+import { ProgramWorkoutState, type ProgramWorkoutOccurrence } from '../../../../models/program-workout-state';
 import type { ProgramWorkoutAssignment } from '../../../../models/program-workout-assignment.model';
 import { LanguageService } from '../../../../services/shared/language.service';
 import { CoachProgramBuilderWorkoutService } from '../../../../services/coach/coach-program-builder-workout.service';
 import type { WorkoutCopyRequest } from '../../../../models/backend-dto/workout/workout-copy-request';
+import { ProgramExerciseDialogComponent } from './program-exercise-dialog.component';
 import { WorkoutCopyDialogComponent } from './workout-copy-dialog.component';
 
 @Component({
@@ -43,7 +36,7 @@ import { WorkoutCopyDialogComponent } from './workout-copy-dialog.component';
   standalone: true,
   imports: [
     ...SHARED_IMPORTS,
-    CoachExercisesBoardComponent,
+    ProgramExerciseDialogComponent,
     CoachWorkoutBoardComponent,
     UserSelectComponent,
     WorkoutCopyDialogComponent,
@@ -72,8 +65,13 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
   selectedProgramWorkoutId: number | null = null;
   selectedWorkout: WorkoutWithExercises | null = null;
 
-  selectedWorkouts: WorkoutWithExercises[] = [];
-  programWorkouts: ProgramWorkoutAssignment[] = [];
+  state = new ProgramWorkoutState();
+  get selectedWorkouts(): WorkoutWithExercises[] {
+    return this.state.occurrences.map((row) => row.workout);
+  }
+  get programWorkouts(): ProgramWorkoutAssignment[] {
+    return this.state.assignments;
+  }
 
   /**
    * Meglévő workout hozzáadásakor a shared CoachWorkoutBoard
@@ -89,10 +87,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
    */
   exerciseDialogOpen = false;
   exerciseDialogWorkout: WorkoutWithExercises | null = null;
-  exerciseDialogExercises: Exercise[] = [];
   exerciseDialogIsNewWorkout = false;
-  exerciseAddDialogOpen = false;
-  exerciseAddDialogExercises: Exercise[] = [];
 
   copyDialogOpen = false;
   copySourceWorkout: WorkoutWithExercises | null = null;
@@ -109,6 +104,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
   messageType: 'success' | 'error' | 'info' = 'info';
 
   private initialized = false;
+  private programLoad?: Subscription;
 
   constructor(
     private readonly route: ActivatedRoute,
@@ -131,23 +127,11 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (
-      this.initialized &&
-      changes['programId'] &&
-      this.programId !== null &&
-      changes['programId'].currentValue !== changes['programId'].previousValue
-    ) {
-      this.loadProgramWorkouts();
+    if (changes['programId']) {
+      this.programLoad?.unsubscribe();
+      this.state = new ProgramWorkoutState();
+      if (this.initialized && this.programId !== null) this.loadProgramWorkouts();
     }
-  }
-
-  get lockSelectedExercises(): boolean {
-    return !this.exerciseDialogIsNewWorkout;
-  }
-
-
-  get selectedExerciseCount(): number {
-    return this.exerciseDialogExercises.length;
   }
 
   loadWorkouts(): void {
@@ -193,17 +177,10 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
       return;
     }
 
-    this.workoutBuilderService.loadProgramWorkouts(this.programId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: ({ programWorkouts, allWorkouts }) => {
-        this.programWorkouts = programWorkouts;
-
-        this.selectedWorkouts = this.programWorkouts
-          .map((programWorkout) =>
-            allWorkouts.find((workout) => workout.id === programWorkout.workoutId),
-          )
-          .filter(
-            (workout): workout is WorkoutWithExercises => workout !== undefined,
-          );
+    this.programLoad?.unsubscribe();
+    this.programLoad = this.workoutBuilderService.loadProgramWorkouts(this.programId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: ({ state, allWorkouts }) => {
+        this.state = state;
 
         const newWorkoutId = this.route.snapshot.queryParamMap.get('newWorkoutId');
 
@@ -225,8 +202,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
         }
       },
       error: () => {
-        this.programWorkouts = [];
-        this.selectedWorkouts = [];
+        this.state = new ProgramWorkoutState();
         this.message = 'coachProgramBuilder.loadProgramWorkoutsError';
         this.messageType = 'error';
       },
@@ -266,7 +242,9 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
           .filter((exercise): exercise is Exercise => exercise != null);
         this.loadingExercises = false;
 
-        this.openExerciseDialog();
+        this.exerciseDialogWorkout = loadedWorkout;
+        this.exerciseDialogIsNewWorkout = this.isNewWorkout;
+        this.exerciseDialogOpen = true;
       },
       error: () => {
         this.selectedWorkoutExercises = [];
@@ -282,134 +260,21 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
    * A shared exercise board visszaadja a kijelölést.
    * Meglévő workoutnál locked, új workoutnál módosítható.
    */
-  onExercisesChange(updatedExercises: Exercise[]): void {
-    if (!this.exerciseDialogIsNewWorkout) {
-      return;
-    }
-
-    this.exerciseDialogExercises = [...updatedExercises];
-    this.selectedExercises = [...updatedExercises];
-  }
-
-  openExerciseDialog(): void {
-    if (!this.selectedWorkout) {
-      return;
-    }
-
-    this.exerciseDialogWorkout = this.selectedWorkout;
-    this.exerciseDialogExercises = [...this.selectedExercises];
-    this.exerciseDialogIsNewWorkout = this.isNewWorkout;
-    this.exerciseDialogOpen = true;
-  }
-
   closeExerciseDialog(): void {
-    this.exerciseAddDialogOpen = false;
-    this.exerciseAddDialogExercises = [];
     this.exerciseDialogOpen = false;
     this.exerciseDialogWorkout = null;
     this.selectedProgramWorkoutId = null;
-    this.exerciseDialogExercises = [];
-    this.exerciseDialogIsNewWorkout = false;
   }
 
-  openExerciseAddDialog(): void {
-    this.exerciseAddDialogExercises = [...this.exerciseDialogExercises];
-    this.exerciseAddDialogOpen = true;
+  onWorkoutExercisesSaved(workout: WorkoutWithExercises): void {
+    this.selectedWorkout = workout;
+    this.selectedWorkoutExercises = workout.exercises ?? [];
+    this.selectedExercises = this.selectedWorkoutExercises.map((row) => row.exercise);
   }
 
-  closeExerciseAddDialog(): void {
-    this.exerciseAddDialogOpen = false;
-    this.exerciseAddDialogExercises = [];
-  }
-
-  onExerciseAddDialogChange(updatedExercises: Exercise[]): void {
-    this.exerciseAddDialogExercises = [...updatedExercises];
-  }
-
-  confirmExerciseAddDialog(): void {
-    const selectedIds = new Set(
-      this.exerciseAddDialogExercises.map((exercise) => exercise.id),
-    );
-
-    const addedExercises = this.exerciseAddDialogExercises.filter(
-      (exercise) =>
-        !this.exerciseDialogExercises.some(
-          (selected) => selected.id === exercise.id,
-        ),
-    );
-
-    const removedExercises = this.exerciseDialogExercises.filter(
-      (exercise) => !selectedIds.has(exercise.id),
-    );
-
-    // Keep the existing business rule: an existing workout is read-only.
-    if (!this.exerciseDialogIsNewWorkout) {
-      this.closeExerciseAddDialog();
-      return;
-    }
-
-    this.exerciseDialogExercises = [
-      ...this.exerciseDialogExercises.filter(
-        (exercise) => !removedExercises.some((removed) => removed.id === exercise.id),
-      ),
-      ...addedExercises,
-    ];
-
-    this.selectedExercises = [...this.exerciseDialogExercises];
-    this.closeExerciseAddDialog();
-  }
-
-  saveExerciseDialog(): void {
-    if (!this.exerciseDialogWorkout || !this.exerciseDialogIsNewWorkout) {
-      this.closeExerciseDialog();
-      return;
-    }
-
-    const workoutId = this.exerciseDialogWorkout.id;
-
-    const existingExerciseIds = new Set(
-      this.selectedWorkoutExercises
-        .map((workoutExercise) => workoutExercise.exercise?.id)
-        .filter((id): id is number => id != null),
-    );
-
-    this.loadingExercises = true;
-
-    this.workoutBuilderService
-      .saveExercises(workoutId, this.exerciseDialogExercises, existingExerciseIds)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: ({ results, workout }) => {
-          const failed = results.filter((result) => !result.success);
-
-          this.loadingExercises = false;
-
-          if (failed.length > 0) {
-            this.message = failed
-              .map(
-                (result) =>
-                  result.message || 'coachProgramBuilder.saveExerciseError',
-              )
-              .join(' ');
-            this.messageType = 'error';
-            return;
-          }
-
-          this.selectedWorkout = workout;
-          this.selectedWorkoutExercises = workout.exercises ?? [];
-          this.selectedExercises = this.selectedWorkoutExercises
-            .map((workoutExercise) => workoutExercise.exercise)
-            .filter((exercise): exercise is Exercise => exercise != null);
-
-          this.exerciseDialogExercises = [...this.selectedExercises];
-          this.closeExerciseDialog();
-        },
-        error: () => {
-          this.loadingExercises = false;
-          this.message = 'coachProgramBuilder.saveExerciseError';
-          this.messageType = 'error';
-        },
-      });
+  onExerciseSaveError(message: string): void {
+    this.message = message;
+    this.messageType = 'error';
   }
 
   /**
@@ -445,31 +310,9 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
      */
     const workoutIdsToAdd = [...newIds];
 
-    const startDayIndex =
-      this.programWorkouts.length === 0
-        ? 1
-        : Math.max(...this.programWorkouts.map((programWorkout) => programWorkout.dayIndex)) + 1;
-
-    from(workoutIdsToAdd)
-      .pipe(
-        concatMap((workoutId, index) =>
-          this.workoutBuilderService
-            .addWorkout(this.programId!, workoutId, startDayIndex + index)
-            .pipe(
-              catchError((error: HttpErrorResponse) =>
-                of({
-                  success: false,
-                  data: null,
-                  message:
-                    error?.error?.message ||
-                    'coachProgramBuilder.addWorkoutError',
-                } satisfies ApiResponse<ProgramWorkoutAssignment>),
-              ),
-            ),
-        ),
-        toArray(),
-        takeUntilDestroyed(this.destroyRef),
-      )
+    this.workoutBuilderService
+      .addWorkouts(this.programId, workoutIdsToAdd, this.state.nextDayIndex)
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((results) => {
         const failed = results.filter((result) => !result.success);
 
@@ -524,12 +367,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
             return;
           }
 
-          this.selectedWorkouts = this.selectedWorkouts.filter(
-            (_workout, index) => index !== occurrenceIndex,
-          );
-          this.programWorkouts = this.programWorkouts.filter(
-            (programWorkout) => programWorkout.id !== programWorkoutId,
-          );
+          this.state.remove(programWorkoutId);
 
         },
         error: (error) => {
@@ -565,18 +403,13 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
             return;
           }
 
-          programWorkout.dayIndex = response.data.dayIndex;
-          this.programWorkouts = [...this.programWorkouts].sort(
-            (a, b) => a.dayIndex - b.dayIndex,
-          );
+          try {
+            this.state.update(response.data);
+          } catch {
+            this.message = 'coachProgramBuilder.updateWorkoutDayError';
+            this.messageType = 'error';
+          }
 
-          this.selectedWorkouts = this.programWorkouts
-            .map((pw) =>
-              this.workouts.find((workout) => workout.id === pw.workoutId),
-            )
-            .filter(
-              (workout): workout is WorkoutWithExercises => workout !== undefined,
-            );
         },
         error: (error) => {
           this.message =
@@ -608,7 +441,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
     this.copySourceWorkout = workout;
     this.copyWorkoutName = `${workout.name} - másolat`;
     this.copyWorkoutDate = workout.workoutDate ?? '';
-    this.copyWorkoutDayIndex = this.selectedWorkouts.length + 1;
+    this.copyWorkoutDayIndex = this.state.nextDayIndex;
     this.copyDialogOpen = true;
   }
 
@@ -692,7 +525,6 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
   }
 
   readonly trackBySelectedWorkoutOccurrence = (
-    index: number,
-    _workout: WorkoutWithExercises,
-  ): number => this.programWorkouts[index]?.id ?? index;
+    _index: number, occurrence: ProgramWorkoutOccurrence,
+  ): number => occurrence.assignment.id;
 }
