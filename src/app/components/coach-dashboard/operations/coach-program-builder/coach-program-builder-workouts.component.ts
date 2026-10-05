@@ -440,24 +440,25 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
       return;
     }
 
-    const requests = newIds
-      .map((workoutId) => this.workouts.find((workout) => workout.id === workoutId))
-      .filter((workout): workout is WorkoutWithExercises => workout !== undefined);
-
-    if (!requests.length) {
-      return;
-    }
+    /*
+     * A picker saját, lapozott workout listát használhat, ezért a kijelölt ID-k
+     * nem feltétlenül találhatók meg a komponens this.workouts tömbjében.
+     * A program-workout API-nak csak a workoutId kell, így közvetlenül az ID-kat
+     * küldjük. Ezzel megszűnik az a csendes hiba, amikor requests üres lett és
+     * a gomb látszólag nem csinált semmit.
+     */
+    const workoutIdsToAdd = [...newIds];
 
     const startDayIndex =
       this.programWorkouts.length === 0
         ? 1
         : Math.max(...this.programWorkouts.map((programWorkout) => programWorkout.dayIndex)) + 1;
 
-    from(requests)
+    from(workoutIdsToAdd)
       .pipe(
-        concatMap((workout, index) =>
+        concatMap((workoutId, index) =>
           this.workoutBuilderService
-            .addWorkout(this.programId!, workout.id, startDayIndex + index)
+            .addWorkout(this.programId!, workoutId, startDayIndex + index)
             .pipe(
               catchError((error: HttpErrorResponse) =>
                 of({
