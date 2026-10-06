@@ -14,7 +14,8 @@
     "dashboard": "Übersicht",
     "logout": "Abmelden",
     "settings": "Einstellungen",
-    "security": "Sicherheit"
+    "security": "Sicherheit",
+    "loginAuditLogs": "Anmeldeprotokoll"
   },
   "header": {
     "user": "Benutzer",
@@ -28,7 +29,8 @@
     "usersList": "Benutzerliste",
     "userSearch": "Benutzersuche",
     "newUser": "Neuer Benutzer",
-    "editUser": "Benutzer bearbeiten"
+    "editUser": "Benutzer bearbeiten",
+    "loginAuditLogs": "Anmeldeprotokoll"
   },
   "adminUsers": {
     "title": "Benutzerliste",
@@ -235,10 +237,6 @@
     "title": "Coach-Profil"
   },
   "coachProgramBuilder": {
-    "updateSuccess": "Programmänderungen gespeichert.",
-    "removeWorkoutSuccess": "Training aus dem Programm entfernt.",
-    "updateWorkoutDaySuccess": "Trainingstag geändert.",
-    "saveExerciseSuccess": "Trainingsübungen gespeichert.",
     "title": "Programm-Builder",
     "editSubtitle": "Vorhandenes Trainingsprogramm bearbeiten",
     "createSubtitle": "Neues Trainingsprogramm erstellen",
@@ -515,7 +513,6 @@
     "loadError": "Beim Laden der Rollen ist ein Fehler aufgetreten."
   },
   "userSelect": {
-    "loadError": "Benutzer konnten nicht geladen werden.",
     "selectUser": "Benutzer auswählen",
     "selectUserOption": "-- Benutzer auswählen --"
   },
@@ -524,7 +521,6 @@
     "selectWorkoutOption": "-- Training auswählen --"
   },
   "coachSelect": {
-    "loadError": "Trainer konnten nicht geladen werden.",
     "coach": "Coach",
     "select": "-- Auswählen --"
   },
@@ -536,7 +532,6 @@
     "myWorkouts": "Meine Trainings"
   },
   "userExercises": {
-    "loadError": "Übungen konnten nicht geladen werden.",
     "unknownWorkout": "Unbekanntes Training",
     "exercises": "Übungen",
     "noDescription": "Keine Beschreibung",
@@ -587,7 +582,6 @@
     "notesPlaceholder": "Z. B.: Dieser Satz war schwierig..."
   },
   "userMyPrograms": {
-    "progressLoadError": "Programmfortschritt konnte nicht geladen werden.",
     "title": "Meine Programme",
     "loading": "Programme werden geladen...",
     "noPrograms": "Derzeit sind keine Programme verfügbar.",
@@ -661,7 +655,6 @@
     "completed": "Abgeschlossen"
   },
   "userWorkouts": {
-    "loadError": "Trainings konnten nicht geladen werden.",
     "program": "Programm",
     "date": "Datum",
     "intensity": "Intensität",
@@ -687,7 +680,6 @@
     "noPrograms": "Keine Programme."
   },
   "newExercise": {
-    "error": "Übung konnte nicht erstellt werden.",
     "title": "Neue Übung",
     "name": "Name",
     "description": "Beschreibung",
@@ -874,7 +866,6 @@
     "pageSize": "Einträge pro Seite"
   },
   "programWorkouts": {
-    "removeSuccess": "Training aus dem Programm entfernt.",
     "programNotSelected": "Kein Programm ausgewählt.",
     "noWorkoutsSelected": "Keine Trainings ausgewählt.",
     "assignSuccess": "Trainings erfolgreich zugewiesen.",
@@ -914,11 +905,47 @@
     "success": "Dein Passwort wurde erfolgreich geändert.",
     "invalidToken": "Das Token zum Zurücksetzen des Passworts ist ungültig oder abgelaufen."
   },
-  "coachNavigation": {
-    "label": "Trainer-Navigation",
-    "programWorkouts": "Programm-Workouts zuweisen"
-  },
-  "dashboardNavigation": {
-    "label": "Seitennavigation"
+  "adminLoginAudit": {
+    "title": "Anmeldeprotokoll",
+    "subtitle": "Administratives Auditprotokoll erfolgreicher Anmeldungen.",
+    "loading": "Anmeldeprotokoll wird geladen...",
+    "noResults": "Für die ausgewählten Filter wurden keine Anmeldeeinträge gefunden.",
+    "pageSize": "Zeilen pro Seite",
+    "accountTypes": {
+      "USER": "Benutzer",
+      "COACH": "Coach"
+    },
+    "filters": {
+      "accountType": "Kontotyp",
+      "allAccountTypes": "Alle Kontotypen",
+      "accountId": "Konto-ID",
+      "accountIdPlaceholder": "Zum Beispiel: 319",
+      "username": "Benutzername",
+      "usernamePlaceholder": "Nach Benutzername suchen",
+      "from": "Von",
+      "to": "Bis"
+    },
+    "actions": {
+      "clear": "Filter zurücksetzen",
+      "loading": "Wird geladen...",
+      "filter": "Filtern"
+    },
+    "summary": {
+      "total": "Treffer gesamt",
+      "page": "Seite"
+    },
+    "columns": {
+      "loggedInAt": "Anmeldezeit",
+      "accountType": "Kontotyp",
+      "accountId": "Konto-ID",
+      "username": "Benutzername",
+      "ipAddress": "IP-Adresse",
+      "userAgent": "Client / User-Agent"
+    },
+    "errors": {
+      "load": "Das Anmeldeprotokoll konnte nicht geladen werden.",
+      "invalidAccountId": "Die Konto-ID muss eine positive Zahl sein.",
+      "invalidDateRange": "Der Startzeitpunkt darf nicht nach dem Endzeitpunkt liegen."
+    }
   }
 }

@@ -1,0 +1,251 @@
+<div class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8">
+  <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
+    <div class="text-center">
+      <h2 class="break-words text-2xl font-bold tracking-tight text-content-800 sm:text-3xl">
+        {{ 'adminLoginAudit.title' | translate }}
+      </h2>
+      <p class="mx-auto mt-2 max-w-3xl text-sm text-content-500">
+        {{ 'adminLoginAudit.subtitle' | translate }}
+      </p>
+    </div>
+
+    <app-message
+      *ngIf="message"
+      [message]="message"
+      [type]="messageType"
+    ></app-message>
+
+    <form
+      class="rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5"
+      (ngSubmit)="applyFilters()"
+    >
+      <div class="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <app-form-field
+          [labelKey]="'adminLoginAudit.filters.accountType'"
+          controlId="login-audit-account-type"
+        >
+          <select
+            id="login-audit-account-type"
+            name="accountType"
+            [(ngModel)]="filters.accountType"
+            class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm text-content-800 outline-none transition focus:border-primary-400 focus:ring-4 focus:ring-primary-600/10"
+          >
+            <option value="">{{ 'adminLoginAudit.filters.allAccountTypes' | translate }}</option>
+            <option value="USER">{{ 'adminLoginAudit.accountTypes.USER' | translate }}</option>
+            <option value="COACH">{{ 'adminLoginAudit.accountTypes.COACH' | translate }}</option>
+          </select>
+        </app-form-field>
+
+        <app-form-field
+          [labelKey]="'adminLoginAudit.filters.accountId'"
+          controlId="login-audit-account-id"
+        >
+          <input
+            id="login-audit-account-id"
+            name="accountId"
+            type="number"
+            min="1"
+            step="1"
+            [(ngModel)]="filters.accountId"
+            [placeholder]="'adminLoginAudit.filters.accountIdPlaceholder' | translate"
+            class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm text-content-800 outline-none transition placeholder:text-content-400 focus:border-primary-400 focus:ring-4 focus:ring-primary-600/10"
+          />
+        </app-form-field>
+
+        <app-form-field
+          [labelKey]="'adminLoginAudit.filters.username'"
+          controlId="login-audit-username"
+        >
+          <input
+            id="login-audit-username"
+            name="username"
+            type="text"
+            [(ngModel)]="filters.username"
+            [placeholder]="'adminLoginAudit.filters.usernamePlaceholder' | translate"
+            class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm text-content-800 outline-none transition placeholder:text-content-400 focus:border-primary-400 focus:ring-4 focus:ring-primary-600/10"
+          />
+        </app-form-field>
+
+        <app-form-field
+          [labelKey]="'adminLoginAudit.filters.from'"
+          controlId="login-audit-from"
+        >
+          <input
+            id="login-audit-from"
+            name="from"
+            type="datetime-local"
+            [(ngModel)]="filters.from"
+            class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm text-content-800 outline-none transition focus:border-primary-400 focus:ring-4 focus:ring-primary-600/10"
+          />
+        </app-form-field>
+
+        <app-form-field
+          [labelKey]="'adminLoginAudit.filters.to'"
+          controlId="login-audit-to"
+        >
+          <input
+            id="login-audit-to"
+            name="to"
+            type="datetime-local"
+            [(ngModel)]="filters.to"
+            class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm text-content-800 outline-none transition focus:border-primary-400 focus:ring-4 focus:ring-primary-600/10"
+          />
+        </app-form-field>
+      </div>
+
+      <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:justify-end">
+        <app-button
+          type="button"
+          variant="secondary"
+          [label]="'adminLoginAudit.actions.clear' | translate"
+          (buttonClick)="clearFilters()"
+        ></app-button>
+
+        <app-button
+          type="submit"
+          variant="search"
+          lucideIcon="search"
+          [disabled]="loading"
+          [label]="(loading ? 'adminLoginAudit.actions.loading' : 'adminLoginAudit.actions.filter') | translate"
+        ></app-button>
+      </div>
+    </form>
+
+    <div
+      *ngIf="!loading"
+      class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-surface-200 bg-white px-4 py-3 text-sm text-content-600 shadow-sm"
+    >
+      <span>
+        {{ 'adminLoginAudit.summary.total' | translate }}:
+        <strong class="font-semibold text-content-800">{{ totalElements }}</strong>
+      </span>
+
+      <span *ngIf="totalPages > 0">
+        {{ 'adminLoginAudit.summary.page' | translate }}:
+        <strong class="font-semibold text-content-800">{{ currentPage }} / {{ totalPages }}</strong>
+      </span>
+    </div>
+
+    <div
+      *ngIf="loading"
+      class="flex min-h-32 items-center justify-center rounded-2xl border border-surface-200 bg-white px-4 py-8 text-center text-sm font-medium text-content-500 shadow-sm"
+    >
+      {{ 'adminLoginAudit.loading' | translate }}
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <div
+        *ngIf="logs.length > 0; else noLogs"
+        class="min-w-0 overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm"
+      >
+        <div class="w-full overflow-x-auto">
+          <table class="min-w-[1100px] w-full border-collapse text-left">
+            <thead>
+              <tr class="border-b border-surface-200 bg-surface-50">
+                <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-content-600">
+                  {{ 'adminLoginAudit.columns.loggedInAt' | translate }}
+                </th>
+                <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-content-600">
+                  {{ 'adminLoginAudit.columns.accountType' | translate }}
+                </th>
+                <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-content-600">
+                  {{ 'adminLoginAudit.columns.accountId' | translate }}
+                </th>
+                <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-content-600">
+                  {{ 'adminLoginAudit.columns.username' | translate }}
+                </th>
+                <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-content-600">
+                  {{ 'adminLoginAudit.columns.ipAddress' | translate }}
+                </th>
+                <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-content-600">
+                  {{ 'adminLoginAudit.columns.userAgent' | translate }}
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr
+                *ngFor="let log of logs; trackBy: trackByLog"
+                class="border-b border-surface-100 transition-colors last:border-b-0 hover:bg-surface-50"
+              >
+                <td class="whitespace-nowrap px-4 py-4 align-top text-sm font-medium text-content-700">
+                  {{ log.loggedInAt | date:'yyyy.MM.dd. HH:mm:ss' }}
+                </td>
+
+                <td class="px-4 py-4 align-top text-sm text-content-600">
+                  <span
+                    class="inline-flex rounded-full border px-3 py-1 text-xs font-semibold"
+                    [ngClass]="log.accountType === 'COACH'
+                      ? 'border-info-200 bg-info-50 text-info-700'
+                      : 'border-primary-200 bg-primary-50 text-primary-700'"
+                  >
+                    {{ ('adminLoginAudit.accountTypes.' + log.accountType) | translate }}
+                  </span>
+                </td>
+
+                <td class="px-4 py-4 align-top text-sm text-content-600">
+                  {{ log.accountId }}
+                </td>
+
+                <td class="px-4 py-4 align-top text-sm font-semibold text-content-800">
+                  <div class="max-w-52 break-words">{{ log.username }}</div>
+                </td>
+
+                <td class="px-4 py-4 align-top text-sm text-content-600">
+                  <span class="font-mono text-xs">{{ log.ipAddress || '—' }}</span>
+                </td>
+
+                <td class="px-4 py-4 align-top text-sm text-content-500">
+                  <div
+                    class="max-w-xl break-words"
+                    [attr.title]="log.userAgent || null"
+                  >
+                    {{ log.userAgent || '—' }}
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <ng-template #noLogs>
+        <div class="flex min-h-32 items-center justify-center rounded-2xl border border-surface-200 bg-white px-4 py-8 text-center text-sm font-medium text-content-500 shadow-sm">
+          {{ 'adminLoginAudit.noResults' | translate }}
+        </div>
+      </ng-template>
+
+      <app-pagination
+        *ngIf="totalPages > 0"
+        [totalItems]="totalElements"
+        [totalPagesOverride]="totalPages"
+        [pageSize]="pageSize"
+        [currentPage]="currentPage"
+        [pageSizeOptions]="pageSizeOptions"
+        [showPageSize]="false"
+        [showInfo]="false"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)"
+      ></app-pagination>
+
+      <div
+        *ngIf="totalPages > 0"
+        class="flex items-center justify-center gap-3 text-sm text-content-600"
+      >
+        <label for="login-audit-page-size" class="font-semibold text-content-700">
+          {{ 'adminLoginAudit.pageSize' | translate }}
+        </label>
+        <select
+          id="login-audit-page-size"
+          [ngModel]="pageSize"
+          (ngModelChange)="onPageSizeChange($event)"
+          class="min-h-10 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 outline-none transition focus:border-primary-400 focus:ring-4 focus:ring-primary-600/10"
+        >
+          <option *ngFor="let option of pageSizeOptions" [ngValue]="option">
+            {{ option }}
+          </option>
+        </select>
+      </div>
+    </ng-container>
+  </div>
+</div>

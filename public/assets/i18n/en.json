@@ -14,7 +14,8 @@
     "dashboard": "Dashboard",
     "logout": "Logout",
     "settings": "Settings",
-    "security": "Security"
+    "security": "Security",
+    "loginAuditLogs": "Login Audit Log"
   },
   "header": {
     "user": "User",
@@ -28,7 +29,8 @@
     "usersList": "User List",
     "userSearch": "User Search",
     "newUser": "New User",
-    "editUser": "Edit User"
+    "editUser": "Edit User",
+    "loginAuditLogs": "Login Audit Log"
   },
   "adminUsers": {
     "title": "User List",
@@ -235,10 +237,6 @@
     "title": "Coach Profile"
   },
   "coachProgramBuilder": {
-    "updateSuccess": "Program changes saved.",
-    "removeWorkoutSuccess": "Workout removed from the program.",
-    "updateWorkoutDaySuccess": "Workout day updated.",
-    "saveExerciseSuccess": "Workout exercises saved.",
     "title": "Program Builder",
     "editSubtitle": "Edit existing training program",
     "createSubtitle": "Create a new training program",
@@ -515,7 +513,6 @@
     "loadError": "An error occurred while loading roles."
   },
   "userSelect": {
-    "loadError": "Failed to load users.",
     "selectUser": "Select user",
     "selectUserOption": "-- Select user --"
   },
@@ -524,7 +521,6 @@
     "selectWorkoutOption": "-- Select workout --"
   },
   "coachSelect": {
-    "loadError": "Failed to load coaches.",
     "coach": "Coach",
     "select": "-- Select --"
   },
@@ -536,7 +532,6 @@
     "myWorkouts": "My Workouts"
   },
   "userExercises": {
-    "loadError": "Failed to load exercises.",
     "unknownWorkout": "Unknown Workout",
     "exercises": "Exercises",
     "noDescription": "No description",
@@ -587,7 +582,6 @@
     "notesPlaceholder": "E.g. This set felt difficult..."
   },
   "userMyPrograms": {
-    "progressLoadError": "Failed to load program progress.",
     "title": "My Programs",
     "loading": "Loading programs...",
     "noPrograms": "There are currently no available programs.",
@@ -661,7 +655,6 @@
     "completed": "Completed"
   },
   "userWorkouts": {
-    "loadError": "Failed to load workouts.",
     "program": "Program",
     "date": "Date",
     "intensity": "Intensity",
@@ -687,7 +680,6 @@
     "noPrograms": "No programs."
   },
   "newExercise": {
-    "error": "Failed to create exercise.",
     "title": "New Exercise",
     "name": "Name",
     "description": "Description",
@@ -874,7 +866,6 @@
     "pageSize": "Items per page"
   },
   "programWorkouts": {
-    "removeSuccess": "Workout removed from the program.",
     "programNotSelected": "No program selected.",
     "noWorkoutsSelected": "No workouts selected.",
     "assignSuccess": "Workouts assigned successfully.",
@@ -914,11 +905,47 @@
     "success": "Your password has been changed successfully.",
     "invalidToken": "The password reset token is invalid or has expired."
   },
-  "coachNavigation": {
-    "label": "Coach navigation",
-    "programWorkouts": "Assign program workouts"
-  },
-  "dashboardNavigation": {
-    "label": "Page navigation"
+  "adminLoginAudit": {
+    "title": "Login Audit Log",
+    "subtitle": "Administrative audit log of successful sign-ins.",
+    "loading": "Loading login audit log...",
+    "noResults": "No login audit entries match the selected filters.",
+    "pageSize": "Rows per page",
+    "accountTypes": {
+      "USER": "User",
+      "COACH": "Coach"
+    },
+    "filters": {
+      "accountType": "Account type",
+      "allAccountTypes": "All account types",
+      "accountId": "Account ID",
+      "accountIdPlaceholder": "For example: 319",
+      "username": "Username",
+      "usernamePlaceholder": "Search by username",
+      "from": "From",
+      "to": "To"
+    },
+    "actions": {
+      "clear": "Clear filters",
+      "loading": "Loading...",
+      "filter": "Filter"
+    },
+    "summary": {
+      "total": "Total results",
+      "page": "Page"
+    },
+    "columns": {
+      "loggedInAt": "Signed in at",
+      "accountType": "Account type",
+      "accountId": "Account ID",
+      "username": "Username",
+      "ipAddress": "IP address",
+      "userAgent": "Client / User-Agent"
+    },
+    "errors": {
+      "load": "Failed to load the login audit log.",
+      "invalidAccountId": "Account ID must be a positive number.",
+      "invalidDateRange": "The start time cannot be later than the end time."
+    }
   }
 }

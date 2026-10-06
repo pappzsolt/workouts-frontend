@@ -15,6 +15,7 @@ import { CoachNewComponent } from './components/admin-dashboard/operations/coach
 import { UserNewComponent } from './components/admin-dashboard/operations/user-new/user-new.component';
 import { CoachEditComponent } from './components/admin-dashboard/operations/coach-edit/coach-edit.component';
 import { UserEditComponent } from './components/admin-dashboard/operations/user-edit/user-edit.component';
+import { LoginAuditLogsComponent } from './components/admin-dashboard/operations/login-audit-logs/login-audit-logs.component';
 import { AssignWorkoutsExercisesComponent } from './components/coach-dashboard/operations/assign-workouts-exercises/assign-workouts-exercises.component';
 import { CoachDashboardComponent } from './components/coach-dashboard/dashboard/coach-dashboard.component';
 import { CoachProfileComponent } from './components/coach-dashboard/operations/coach-profile/coach-profile.component';
@@ -119,6 +120,11 @@ export const routes: Routes = [
       {
         path: 'users/edit',
         component: UserEditComponent,
+      },
+
+      {
+        path: 'login-audit-logs',
+        component: LoginAuditLogsComponent,
       },
 
       {

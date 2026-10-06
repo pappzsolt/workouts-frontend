@@ -14,7 +14,8 @@
     "dashboard": "Dashboard",
     "logout": "Kijelentkezés",
     "settings": "Beállítások",
-    "security": "Biztonság"
+    "security": "Biztonság",
+    "loginAuditLogs": "Bejelentkezési napló"
   },
   "header": {
     "user": "Felhasználó",
@@ -28,7 +29,8 @@
     "usersList": "Felhasználók listája",
     "userSearch": "Felhasználó keresés",
     "newUser": "Új felhasználó",
-    "editUser": "Felhasználó módosítás"
+    "editUser": "Felhasználó módosítás",
+    "loginAuditLogs": "Bejelentkezési napló"
   },
   "adminUsers": {
     "title": "Felhasználók listája",
@@ -235,10 +237,6 @@
     "title": "Coach profil"
   },
   "coachProgramBuilder": {
-    "updateSuccess": "A program módosításai mentve.",
-    "removeWorkoutSuccess": "Az edzés eltávolítva a programból.",
-    "updateWorkoutDaySuccess": "Az edzés napja módosítva.",
-    "saveExerciseSuccess": "Az edzés gyakorlatai mentve.",
     "title": "Program Builder",
     "editSubtitle": "Meglévő edzésprogram módosítása",
     "createSubtitle": "Új edzésprogram létrehozása",
@@ -515,7 +513,6 @@
     "loadError": "Hiba történt a szerepkörök lekérésekor."
   },
   "userSelect": {
-    "loadError": "A felhasználók betöltése sikertelen.",
     "selectUser": "Válassz felhasználót",
     "selectUserOption": "-- Válassz felhasználót --"
   },
@@ -524,7 +521,6 @@
     "selectWorkoutOption": "-- Válassz edzést --"
   },
   "coachSelect": {
-    "loadError": "Az edzők betöltése sikertelen.",
     "coach": "Coach",
     "select": "-- Válassz --"
   },
@@ -536,7 +532,6 @@
     "myWorkouts": "Edzéseim"
   },
   "userExercises": {
-    "loadError": "A gyakorlatok betöltése sikertelen.",
     "unknownWorkout": "Ismeretlen workout",
     "exercises": "Gyakorlatok",
     "noDescription": "Nincs leírás",
@@ -587,7 +582,6 @@
     "notesPlaceholder": "Pl.: Ez a sorozat nehéz volt..."
   },
   "userMyPrograms": {
-    "progressLoadError": "A programok haladásának betöltése sikertelen.",
     "title": "Programjaim",
     "loading": "Programok betöltése folyamatban...",
     "noPrograms": "Jelenleg nincsenek elérhető programok.",
@@ -661,7 +655,6 @@
     "completed": "Teljesítve"
   },
   "userWorkouts": {
-    "loadError": "Az edzések betöltése sikertelen.",
     "program": "Program",
     "date": "Dátum",
     "intensity": "Intenzitás",
@@ -687,7 +680,6 @@
     "noPrograms": "Nincsenek programok."
   },
   "newExercise": {
-    "error": "A gyakorlat létrehozása sikertelen.",
     "title": "Új Gyakorlat",
     "name": "Név",
     "description": "Leírás",
@@ -874,7 +866,6 @@
     "pageSize": "Elem oldalanként"
   },
   "programWorkouts": {
-    "removeSuccess": "Az edzés eltávolítva a programból.",
     "programNotSelected": "Nincs kiválasztott program.",
     "noWorkoutsSelected": "Nincsenek kiválasztott workoutok.",
     "assignSuccess": "A workoutok sikeresen hozzárendelve.",
@@ -914,11 +905,47 @@
     "success": "A jelszó sikeresen megváltozott.",
     "invalidToken": "A jelszó-visszaállítási token érvénytelen vagy lejárt."
   },
-  "coachNavigation": {
-    "label": "Edzői navigáció",
-    "programWorkouts": "Program edzéseinek hozzárendelése"
-  },
-  "dashboardNavigation": {
-    "label": "Oldalnavigáció"
+  "adminLoginAudit": {
+    "title": "Bejelentkezési napló",
+    "subtitle": "A sikeres bejelentkezések adminisztrációs audit naplója.",
+    "loading": "Bejelentkezési napló betöltése...",
+    "noResults": "A megadott feltételekkel nincs bejelentkezési naplóbejegyzés.",
+    "pageSize": "Sorok oldalanként",
+    "accountTypes": {
+      "USER": "Felhasználó",
+      "COACH": "Edző"
+    },
+    "filters": {
+      "accountType": "Fióktípus",
+      "allAccountTypes": "Minden fióktípus",
+      "accountId": "Fiókazonosító",
+      "accountIdPlaceholder": "Például: 319",
+      "username": "Felhasználónév",
+      "usernamePlaceholder": "Keresés felhasználónév alapján",
+      "from": "Kezdő időpont",
+      "to": "Záró időpont"
+    },
+    "actions": {
+      "clear": "Szűrők törlése",
+      "loading": "Betöltés...",
+      "filter": "Szűrés"
+    },
+    "summary": {
+      "total": "Összes találat",
+      "page": "Oldal"
+    },
+    "columns": {
+      "loggedInAt": "Bejelentkezés ideje",
+      "accountType": "Fióktípus",
+      "accountId": "Fiók ID",
+      "username": "Felhasználónév",
+      "ipAddress": "IP-cím",
+      "userAgent": "Kliens / User-Agent"
+    },
+    "errors": {
+      "load": "A bejelentkezési napló betöltése nem sikerült.",
+      "invalidAccountId": "A fiókazonosítónak pozitív számnak kell lennie.",
+      "invalidDateRange": "A kezdő időpont nem lehet későbbi a záró időpontnál."
+    }
   }
 }

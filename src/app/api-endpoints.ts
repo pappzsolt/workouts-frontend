@@ -24,6 +24,7 @@ export const API_ENDPOINTS = {
   usersNameId: `${environment.apiUrl}/users/name-id`,
   coachesNameId: `${environment.apiUrl}/coaches/name-id`,
   roles: `${environment.apiUrl}/roles`,
+  adminLoginAuditLogs: `${environment.apiUrl}/admin/login-audit-logs`,
 
   // ============================================================
   // PROGRAMS
