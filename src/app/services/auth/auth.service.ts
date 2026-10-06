@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { LoggerService } from '../logger.service';
-import { HttpClient, HttpBackend } from '@angular/common/http';
+import { HttpClient, HttpBackend, HttpParams } from '@angular/common/http';
 import { Observable, finalize, map, shareReplay, tap } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 
@@ -108,7 +108,11 @@ export class AuthService {
    */
   requestPasswordReset(email: string): Observable<{ message: string }> {
     return this.rawHttp
-      .post<ApiResponse<{ message: string }>>(API_ENDPOINTS.authForgotPassword, { email })
+      .post<ApiResponse<{ message: string }>>(
+        API_ENDPOINTS.authForgotPassword,
+        { email },
+        { params: this.languageParams() },
+      )
       .pipe(
         map((response) => {
           if (!response.success || !response.data) {
@@ -127,10 +131,14 @@ export class AuthService {
    */
   resetPassword(token: string, newPassword: string): Observable<void> {
     return this.rawHttp
-      .post<ApiResponse<null>>(API_ENDPOINTS.authResetPassword, {
-        token,
-        newPassword,
-      })
+      .post<ApiResponse<null>>(
+        API_ENDPOINTS.authResetPassword,
+        {
+          token,
+          newPassword,
+        },
+        { params: this.languageParams() },
+      )
       .pipe(
         map((response) => {
           if (!response.success) {
@@ -154,7 +162,11 @@ export class AuthService {
     }
 
     const request$ = this.rawHttp
-      .post<ApiResponse<LoginResponse>>(API_ENDPOINTS.authRefresh, { refreshToken })
+      .post<ApiResponse<LoginResponse>>(
+        API_ENDPOINTS.authRefresh,
+        { refreshToken },
+        { params: this.languageParams() },
+      )
       .pipe(
         map((response) => {
           if (!response.success || !response.data) {
@@ -189,7 +201,11 @@ export class AuthService {
     }
 
     this.rawHttp
-      .post<ApiResponse<null>>(API_ENDPOINTS.authLogout, { refreshToken })
+      .post<ApiResponse<null>>(
+        API_ENDPOINTS.authLogout,
+        { refreshToken },
+        { params: this.languageParams() },
+      )
       .subscribe({
         error: (error) => {
           this.logger.warn(
@@ -198,6 +214,16 @@ export class AuthService {
           );
         },
       });
+  }
+
+  private languageParams(): HttpParams {
+    const savedLanguage = localStorage.getItem('language');
+    const language =
+      savedLanguage === 'en' || savedLanguage === 'de' || savedLanguage === 'hu'
+        ? savedLanguage
+        : 'hu';
+
+    return new HttpParams().set('language', language);
   }
 
   getAccessToken(): string | null {
