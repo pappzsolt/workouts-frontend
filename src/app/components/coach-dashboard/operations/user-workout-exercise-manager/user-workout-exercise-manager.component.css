@@ -10,7 +10,7 @@
 
   background: var(--app-white);
   border-radius: 0.75rem;
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--app-content-900) 8%, transparent);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--app-shadow-color) 8%, transparent);
 }
 
 .page-title {

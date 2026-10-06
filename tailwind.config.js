@@ -1,3 +1,5 @@
+const plugin = require('tailwindcss/plugin');
+
 const primary = {
   50: '#ECFDF5',
   100: '#D1FAE5',
@@ -96,6 +98,9 @@ module.exports = {
     extend: {
       colors: {
         white: '#FFFFFF',
+        // Modal backdrops and shadows can be adjusted independently.
+        overlay: neutral[900],
+        shadow: neutral[900],
         primary,
         success: primary,
         edit: blue,
@@ -110,6 +115,10 @@ module.exports = {
         warning,
         delete: danger,
       },
+      // Tailwind's implicit border and focus colors also follow the palette.
+      borderColor: ({ theme }) => ({ DEFAULT: theme('colors.surface.300') }),
+      ringColor: ({ theme }) => ({ DEFAULT: theme('colors.primary.500') }),
+      ringOffsetColor: ({ theme }) => ({ DEFAULT: theme('colors.white') }),
       boxShadow: {
         sm: '0 1px 2px 0 color-mix(in srgb, var(--app-shadow-color) 5%, transparent)',
         DEFAULT:
@@ -122,5 +131,22 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(({ addBase, theme }) => {
+      // Export the same palette for component CSS and Angular Material.
+      // Adding a shade here automatically makes --app-<palette>-<shade> available.
+      const variables = {};
+      for (const name of Object.keys(module.exports.theme.extend.colors)) {
+        const palette = theme(`colors.${name}`);
+        if (typeof palette === 'string') {
+          variables[`--app-${name === 'shadow' ? 'shadow-color' : name}`] = palette;
+        } else {
+          for (const [shade, value] of Object.entries(palette)) {
+            variables[`--app-${name}-${shade}`] = value;
+          }
+        }
+      }
+      addBase({ ':root': variables });
+    }),
+  ],
 };

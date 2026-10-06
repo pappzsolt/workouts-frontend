@@ -25,37 +25,6 @@ body {
 
 @layer base {
   :root {
-    --app-white: theme('colors.white');
-    --app-primary-500: theme('colors.primary.500');
-    --app-primary-600: theme('colors.primary.600');
-    --app-primary-700: theme('colors.primary.700');
-    --app-primary-50: theme('colors.primary.50');
-    --app-primary-100: theme('colors.primary.100');
-    --app-primary-300: theme('colors.primary.300');
-    --app-primary-200: theme('colors.primary.200');
-    --app-primary-800: theme('colors.primary.800');
-    --app-primary-900: theme('colors.primary.900');
-    --app-surface-50: theme('colors.surface.50');
-    --app-surface-100: theme('colors.surface.100');
-    --app-surface-200: theme('colors.surface.200');
-    --app-surface-300: theme('colors.surface.300');
-    --app-surface-400: theme('colors.surface.400');
-    --app-content-400: theme('colors.content.400');
-    --app-content-500: theme('colors.content.500');
-    --app-content-600: theme('colors.content.600');
-    --app-content-700: theme('colors.content.700');
-    --app-content-800: theme('colors.content.800');
-    --app-content-900: theme('colors.content.900');
-    --app-success-500: theme('colors.success.500');
-    --app-success-100: theme('colors.success.100');
-    --app-success-600: theme('colors.success.600');
-    --app-success-700: theme('colors.success.700');
-    --app-delete-500: theme('colors.delete.500');
-    --app-delete-600: theme('colors.delete.600');
-    --app-pagination-600: theme('colors.pagination.600');
-    --app-pagination-700: theme('colors.pagination.700');
-    --app-shadow-color: var(--app-content-900);
-
     /* Angular Material M3 color roles, sourced from the Tailwind palette above. */
     --mat-sys-primary: var(--app-primary-600);
     --mat-sys-on-primary: var(--app-white);

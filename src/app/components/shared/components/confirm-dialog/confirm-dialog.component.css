@@ -1,4 +1,28 @@
-.confirm-backdrop { position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center; background: rgba(15, 23, 42, .58); padding: 1rem; }
-.confirm-panel { width: min(100%, 27rem); border-radius: 1rem; background: var(--app-surface-50, #fff); padding: 1.5rem; box-shadow: 0 24px 70px rgba(0,0,0,.25); }
-.confirm-title { margin: 0 0 1rem; font-size: 1.25rem; font-weight: 700; }
-.confirm-actions { display: flex; justify-content: flex-end; gap: .75rem; margin-top: 1.5rem; }
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--app-overlay) 58%, transparent);
+  padding: 1rem;
+}
+.confirm-panel {
+  width: min(100%, 27rem);
+  border-radius: 1rem;
+  background: var(--app-white);
+  padding: 1.5rem;
+  box-shadow: 0 24px 70px color-mix(in srgb, var(--app-shadow-color) 25%, transparent);
+}
+.confirm-title {
+  margin: 0 0 1rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
