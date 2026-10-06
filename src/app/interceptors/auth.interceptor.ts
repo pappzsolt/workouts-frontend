@@ -41,8 +41,8 @@ export class AuthInterceptor implements HttpInterceptor {
     req: HttpRequest<unknown>,
     next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
-    // A login és a refresh kérés nem függhet lejárt access tokentől.
-    if (this.isAuthEndpoint(req.url)) {
+    // A web login/refresh/logout nem függhet access tokentől.
+    if (this.isWebAuthEndpoint(req.url)) {
       return next.handle(req);
     }
 
@@ -69,11 +69,6 @@ export class AuthInterceptor implements HttpInterceptor {
     req: HttpRequest<unknown>,
     next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
-    if (!this.authService.getRefreshToken()) {
-      this.clearSessionAndRedirect();
-      return throwError(() => new Error('Nincs refresh token.'));
-    }
-
     if (this.isRefreshing) {
       return this.refreshResultSubject.pipe(
         filter((result): result is RefreshResult => result !== null),
@@ -131,8 +126,10 @@ export class AuthInterceptor implements HttpInterceptor {
     });
   }
 
-  private isAuthEndpoint(url: string): boolean {
-    return url === `${API_ENDPOINTS.auth}/login` || url === `${API_ENDPOINTS.auth}/refresh`;
+  private isWebAuthEndpoint(url: string): boolean {
+    return url === API_ENDPOINTS.authWebLogin
+      || url === API_ENDPOINTS.authWebRefresh
+      || url === API_ENDPOINTS.authWebLogout;
   }
 
   private clearSessionAndRedirect(): void {

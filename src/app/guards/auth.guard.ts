@@ -11,12 +11,11 @@ export const authGuard: CanActivateFn = () => {
     return true;
   }
 
-  if (auth.getRefreshToken()) {
-    return auth.refreshAccessToken().pipe(
-      map(() => true),
-      catchError(() => of(router.createUrlTree(['/login']))),
-    );
-  }
-
-  return router.createUrlTree(['/login']);
+  // Az access token csak memóriában él. F5 után ezért mindig megpróbálunk
+  // új access tokent kérni a HttpOnly refresh cookie-val. Ha nincs érvényes
+  // cookie, a backend 401-et ad és visszairányítunk loginra.
+  return auth.refreshAccessToken().pipe(
+    map(() => true),
+    catchError(() => of(router.createUrlTree(['/login']))),
+  );
 };

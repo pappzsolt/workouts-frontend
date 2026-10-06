@@ -15,9 +15,13 @@ import { ApiResponse } from '../../models/backend-dto/common/api-response';
 export class AuthService {
   private readonly logger = inject(LoggerService);
 
-  private readonly apiUrl = API_ENDPOINTS.auth;
-
   private readonly rawHttp: HttpClient;
+
+  /**
+   * A web access token kizárólag memóriában él.
+   * Böngésző-frissítés után a HttpOnly refresh cookie-ból kérünk újat.
+   */
+  private accessToken: string | null = null;
 
   private refreshInFlight$: Observable<LoginResponse> | null = null;
 
@@ -25,35 +29,32 @@ export class AuthService {
     private readonly http: HttpClient,
     httpBackend: HttpBackend,
   ) {
-    // A refresh kérést az interceptor megkerülésével küldjük,
-    // hogy a lejárt access token ne kerüljön rá a /auth/refresh kérésre.
+    // A refresh/logout kéréseket az interceptor megkerülésével küldjük.
     this.rawHttp = new HttpClient(httpBackend);
+
+    // Korábbi verzióból visszamaradt tokeneket eltávolítjuk. A továbbiakban
+    // sem access, sem refresh token nem kerül tartós browser storage-ba.
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
   }
 
   /**
-   * Bejelentkezés.
+   * Web login.
    *
-   * Backend válasz:
-   *
-   * ApiResponse<LoginResponse>
+   * A backend csak az access tokent adja JSON-ban; a refresh token
+   * HttpOnly cookie-ban érkezik, ezért withCredentials szükséges.
    */
   login(username: string, password: string): Observable<LoginResponse> {
     return this.http
-      .post<ApiResponse<LoginResponse>>(API_ENDPOINTS.authLogin, {
-        username,
-        password,
-      })
+      .post<ApiResponse<LoginResponse>>(
+        API_ENDPOINTS.authWebLogin,
+        { username, password },
+        {
+          params: this.languageParams(),
+          withCredentials: true,
+        },
+      )
       .pipe(
-        /*
-         * ApiResponse<LoginResponse>
-         *        ↓
-         * response.data
-         *        ↓
-         * LoginResponse
-         *
-         * Így a komponenseknek nem kell
-         * az ApiResponse struktúráját ismerniük.
-         */
         map((response) => {
           if (!response.success || !response.data) {
             throw new Error(response.message ?? 'Sikertelen bejelentkezés.');
@@ -61,21 +62,14 @@ export class AuthService {
 
           return response.data;
         }),
-
-        /*
-         * Tokenek mentése.
-         */
         tap((response) => {
-          localStorage.setItem('accessToken', response.accessToken);
-
-          localStorage.setItem('refreshToken', response.refreshToken);
+          this.accessToken = response.accessToken;
         }),
       );
   }
 
   /**
    * Ellenőrzi, hogy az access token létezik, értelmezhető és még nem járt le.
-   *
    * Az exp JWT-ben másodpercben értendő.
    */
   hasValidAccessToken(): boolean {
@@ -95,16 +89,7 @@ export class AuthService {
   }
 
   /**
-   * Access + refresh token frissítése.
-   *
-   * A backend refresh endpointja új access és új refresh tokent ad vissza
-   * (refresh-token rotation).
-   */
-  /**
    * Elfelejtett jelszó: reset email kérése.
-   *
-   * A backend szándékosan azonos választ ad létező és nem létező email címre.
-   * A kérés nyilvános endpoint, ezért a rawHttp klienst használjuk.
    */
   requestPasswordReset(email: string): Observable<{ message: string }> {
     return this.rawHttp
@@ -126,8 +111,6 @@ export class AuthService {
 
   /**
    * Jelszó visszaállítása az emailben kapott egyszer használatos tokennel.
-   *
-   * A backend ResetPasswordRequest DTO-ja csak a token + newPassword mezőket várja.
    */
   resetPassword(token: string, newPassword: string): Observable<ApiResponse<null>> {
     return this.rawHttp
@@ -150,22 +133,23 @@ export class AuthService {
       );
   }
 
+  /**
+   * Új access token kérése a böngésző által automatikusan küldött
+   * HttpOnly refresh cookie-val.
+   */
   refreshAccessToken(): Observable<LoginResponse> {
     if (this.refreshInFlight$) {
       return this.refreshInFlight$;
     }
 
-    const refreshToken = localStorage.getItem('refreshToken');
-
-    if (!refreshToken) {
-      throw new Error('Nincs refresh token.');
-    }
-
     const request$ = this.rawHttp
       .post<ApiResponse<LoginResponse>>(
-        API_ENDPOINTS.authRefresh,
-        { refreshToken },
-        { params: this.languageParams() },
+        API_ENDPOINTS.authWebRefresh,
+        {},
+        {
+          params: this.languageParams(),
+          withCredentials: true,
+        },
       )
       .pipe(
         map((response) => {
@@ -176,8 +160,7 @@ export class AuthService {
           return response.data;
         }),
         tap((response) => {
-          localStorage.setItem('accessToken', response.accessToken);
-          localStorage.setItem('refreshToken', response.refreshToken);
+          this.accessToken = response.accessToken;
         }),
         finalize(() => {
           this.refreshInFlight$ = null;
@@ -190,26 +173,30 @@ export class AuthService {
     return request$;
   }
 
+  /**
+   * A memóriában levő access token azonnal törlődik, majd a backend
+   * visszavonja a HttpOnly refresh tokent és törli a cookie-t.
+   */
   logout(): void {
-    const refreshToken = localStorage.getItem('refreshToken');
+    this.accessToken = null;
 
+    // Régi deploymentből esetleg visszamaradt storage tokeneket is töröljük.
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
 
-    if (!refreshToken) {
-      return;
-    }
-
     this.rawHttp
       .post<ApiResponse<null>>(
-        API_ENDPOINTS.authLogout,
-        { refreshToken },
-        { params: this.languageParams() },
+        API_ENDPOINTS.authWebLogout,
+        {},
+        {
+          params: this.languageParams(),
+          withCredentials: true,
+        },
       )
       .subscribe({
         error: (error) => {
           this.logger.warn(
-            '[AuthService] Refresh token visszavonása sikertelen.',
+            '[AuthService] Refresh cookie visszavonása sikertelen.',
             error,
           );
         },
@@ -227,13 +214,8 @@ export class AuthService {
   }
 
   getAccessToken(): string | null {
-    return localStorage.getItem('accessToken');
+    return this.accessToken;
   }
-
-  getRefreshToken(): string | null {
-    return localStorage.getItem('refreshToken');
-  }
-
 
   getUserRole(): string | null {
     const token = this.getAccessToken();
