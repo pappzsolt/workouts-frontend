@@ -1,3 +1,4 @@
+import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
 import type { SelectOption } from '../../../../models/common/select-option.model';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../services/logger.service';
@@ -144,6 +145,12 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
+          this.loading = false;
+          if (!response.success) {
+            this.exercises = []; this.totalElements = 0; this.totalPages = 1;
+            this.showError(responseMessage([response], 'coachExercises.loadError')); return;
+          }
+          this.message = responseMessage([response], ''); this.messageType = 'info';
           const searchResponse = response.data;
 
           this.exercises = searchResponse?.content ?? [];
@@ -162,10 +169,7 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
           this.totalPages = 1;
           this.loading = false;
 
-          const backendMessage =
-            typeof error.error === 'string' ? error.error : error.error?.message;
-
-          this.showError(backendMessage || 'coachExercises.loadError');
+          this.showError(errorMessage(error, 'coachExercises.loadError'));
         },
       });
   }

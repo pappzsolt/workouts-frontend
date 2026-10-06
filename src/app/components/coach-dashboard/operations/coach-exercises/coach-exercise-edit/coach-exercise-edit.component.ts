@@ -1,3 +1,4 @@
+import { errorMessage, responseMessage } from '../../../../../models/backend-dto/common/api-response-message';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -128,6 +129,11 @@ export class CoachExerciseEditComponent implements OnInit {
     this.exerciseService.getAllExercises(language).subscribe({
       next: (response: ApiResponse<Exercise[]>) => {
 
+        if (!response.success) {
+          this.loading = false; this.exerciseFound = false;
+          this.showError(responseMessage([response], 'coachExerciseEdit.loadError')); return;
+        }
+        this.message = responseMessage([response], ''); this.messageType = 'info';
         const exercises = response.data ?? [];
 
 
@@ -156,7 +162,7 @@ export class CoachExerciseEditComponent implements OnInit {
       error: (err) => {
         this.logger.error('Hiba az exercise betöltésénél:', err);
 
-        this.showError('coachExerciseEdit.loadError');
+        this.showError(errorMessage(err, 'coachExerciseEdit.loadError'));
 
         this.loading = false;
       },
@@ -175,6 +181,9 @@ export class CoachExerciseEditComponent implements OnInit {
       .updateExercise(this.exercise, this.currentLanguage)
       .subscribe({
         next: (response) => {
+          if (!response.success) {
+            this.saving = false; this.showError(responseMessage([response], 'coachExerciseEdit.saveError')); return;
+          }
 
           // A backend a módosított ExerciseDto-t az ApiResponse.data
           // mezőben adja vissza. Ezt visszatesszük a form modelljébe,
@@ -210,7 +219,7 @@ export class CoachExerciseEditComponent implements OnInit {
             };
           }
 
-          this.showSuccess('coachExerciseEdit.saveSuccess');
+          this.showSuccess(responseMessage([response], 'coachExerciseEdit.saveSuccess'));
 
           this.saving = false;
         },
@@ -218,7 +227,7 @@ export class CoachExerciseEditComponent implements OnInit {
         error: (err) => {
         this.logger.error('Hiba az exercise frissítésénél:', err);
 
-        this.showError('coachExerciseEdit.saveError');
+        this.showError(errorMessage(err, 'coachExerciseEdit.saveError'));
 
         this.saving = false;
       },

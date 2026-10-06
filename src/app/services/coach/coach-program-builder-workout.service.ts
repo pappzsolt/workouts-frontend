@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of, from } from 'rxjs';
 import { catchError, concatMap, map, toArray } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
+import { errorMessage, responseMessage } from '../../models/backend-dto/common/api-response-message';
 import { ApiResponse } from '../../models/backend-dto/common/api-response';
 import { Exercise, WorkoutWithExercises } from '../../models/exercise.model';
 import type { ProgramWorkoutAssignment } from '../../models/program-workout-assignment.model';
@@ -18,6 +19,7 @@ export interface ProgramBuilderWorkoutLoad {
   programWorkouts: ProgramWorkoutAssignment[];
   allWorkouts: WorkoutWithExercises[];
   state: ProgramWorkoutState;
+  message?: string;
 }
 
 @Injectable({
@@ -50,13 +52,13 @@ export class CoachProgramBuilderWorkoutService {
         if (!response.success || !Array.isArray(response.data)) {
           throw new Error(response.message || 'Failed to load program workouts.');
         }
-        return { programWorkouts: [...(response.data ?? [])].sort(
+        return { assignmentMessage: response.message, programWorkouts: [...(response.data ?? [])].sort(
           (a, b) => a.dayIndex - b.dayIndex,
         ),
       }; }),
       // Keep the two backend reads in one operation so the component only
       // coordinates state and UI messages.
-      concatMap(({ programWorkouts }) =>
+      concatMap(({ programWorkouts, assignmentMessage }) =>
         this.exerciseService.getWorkoutsWithExercises().pipe(
           map((response: ApiResponse<WorkoutWithExercises[]>) => {
             if (!response.success || !Array.isArray(response.data)) {
@@ -64,7 +66,8 @@ export class CoachProgramBuilderWorkoutService {
             }
             const state = new ProgramWorkoutState();
             state.load(programWorkouts, response.data);
-            return { programWorkouts, allWorkouts: response.data, state };
+            return { programWorkouts, allWorkouts: response.data, state,
+              message: responseMessage([{ message: assignmentMessage }, response], '') };
           }),
         ),
       ),
@@ -96,7 +99,7 @@ export class CoachProgramBuilderWorkoutService {
         ];
         return from(operations).pipe(
           concatMap(operation => operation().pipe(catchError((error: HttpErrorResponse) => of({
-            success: false, data: null, message: error?.error?.message || 'coachProgramBuilder.saveExerciseError',
+            success: false, data: null, message: errorMessage(error, 'coachProgramBuilder.saveExerciseError'),
           } satisfies ApiResponse<void>)))),
           toArray(),
         );
@@ -123,7 +126,7 @@ export class CoachProgramBuilderWorkoutService {
       concatMap((workoutId, index) => this.addWorkout(programId, workoutId, startDayIndex + index).pipe(
         catchError((error: HttpErrorResponse) => of({
           success: false, data: null,
-          message: error?.error?.message || 'coachProgramBuilder.addWorkoutError',
+          message: errorMessage(error, 'coachProgramBuilder.addWorkoutError'),
         } satisfies ApiResponse<ProgramWorkoutAssignment>)),
       )),
       toArray(),

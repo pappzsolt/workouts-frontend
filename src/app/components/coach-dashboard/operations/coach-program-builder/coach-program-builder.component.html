@@ -24,6 +24,14 @@
             {{ 'coachProgramBuilder.title' | translate }}
           </h1>
 
+          <p
+            *ngIf="isEditMode && document.form.programName.trim()"
+            data-testid="editing-program-name"
+            class="mt-2 break-words text-xl font-semibold text-white sm:text-2xl"
+          >
+            {{ document.form.programName }}
+          </p>
+
           <p class="mt-1 text-sm text-info-100 sm:text-base">
             {{
               isEditMode

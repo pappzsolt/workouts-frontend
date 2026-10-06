@@ -8,6 +8,7 @@ import type { CoachProgram } from '../../../models/coach-program.model';
 import { AppSelectComponent } from '../components/app-select/app-select.component';
 import type { SelectOption } from '../../../models/common/select-option.model';
 
+import { errorMessage } from '../../../models/backend-dto/common/api-response-message';
 import { SHARED_IMPORTS } from '../shared-imports';
 
 @Component({
@@ -72,10 +73,10 @@ export class CoachProgramSelectComponent implements OnInit, OnChanges {
         this.reportReady();
       },
 
-      error: () => {
+      error: error => {
         this.programs = [];
 
-        this.message = 'coachProgramSelect.loadError';
+        this.message = errorMessage(error, 'coachProgramSelect.loadError');
 
         this.loading = false;
         this.reportReady();

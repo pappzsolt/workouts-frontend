@@ -1,3 +1,4 @@
+import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LoggerService } from '../../../../services/logger.service';
@@ -73,7 +74,11 @@ export class CoachProfileComponent implements OnInit {
     }
 
     this.coachProfileService.getMemberById(userId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (profile) => {
+      next: response => {
+        if (!response.success || !response.data) {
+          this.showError(responseMessage([response], USER_MESSAGES.loadProfileError)); return;
+        }
+        const profile = response.data;
         this.profile = {
           id: profile.id,
           name: profile.usernameOrName ?? '',
@@ -85,13 +90,13 @@ export class CoachProfileComponent implements OnInit {
           created_at: profile.createdAt ?? '',
         };
 
-        this.showSuccess(USER_MESSAGES.profileLoaded);
+        this.showInfo(responseMessage([response], USER_MESSAGES.profileLoaded));
       },
 
       error: (error) => {
         this.logger.error('Coach profil betöltési hiba:', error);
 
-        this.showError(USER_MESSAGES.loadProfileError);
+        this.showError(errorMessage(error, USER_MESSAGES.loadProfileError));
       },
     });
   }
@@ -121,28 +126,20 @@ export class CoachProfileComponent implements OnInit {
     };
 
     this.coachProfileService.saveCoachProfile(payload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
+      next: response => {
+        if (!response.success) {
+          this.showError(responseMessage([response], USER_MESSAGES.saveProfileUnknownError)); return;
+        }
         this.profile.password_hash = '';
 
-        this.showSuccess(USER_MESSAGES.saveProfileSuccess);
+        this.showSuccess(responseMessage([response], USER_MESSAGES.saveProfileSuccess));
       },
 
       error: (error) => {
         this.logger.error('Coach profil mentési hiba:', error);
 
-        if (error.status === 0) {
-          this.showError(USER_MESSAGES.saveProfileNetworkError);
-
-          return;
-        }
-
-        if (error.error?.message) {
-          this.showError(error.error?.message || USER_MESSAGES.serverError);
-
-          return;
-        }
-
-        this.showError(USER_MESSAGES.saveProfileUnknownError);
+        this.showError(errorMessage(error, error.status === 0
+          ? USER_MESSAGES.saveProfileNetworkError : USER_MESSAGES.saveProfileUnknownError));
       },
     });
   }

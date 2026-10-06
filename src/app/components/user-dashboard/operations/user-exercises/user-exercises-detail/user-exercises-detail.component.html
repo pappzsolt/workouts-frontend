@@ -2,6 +2,7 @@
     <div class="px-4 sm:px-6 pt-2">
       <app-message
         [message]="message"
+        [messageParams]="messageParams"
         [type]="messageType"
       ></app-message>
     </div>
@@ -672,7 +673,7 @@
      ====================================================== -->
 
 <div
-  *ngIf="!workoutExercise"
+  *ngIf="!workoutExercise && messageType !== 'error'"
   class="min-h-full bg-transparent flex items-center justify-center p-4"
 >
 

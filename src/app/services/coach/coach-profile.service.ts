@@ -16,18 +16,19 @@ export class CoachProfileService {
   private http = inject(HttpClient);
   private authService = inject(AuthService);
 
-  getMemberById(id: number): Observable<Member & { createdAt?: string }> {
+  getMemberById(id: number): Observable<ApiResponse<Member & { createdAt?: string }>> {
     return this.http
       .get<ApiResponse<MemberResponse>>(API_ENDPOINTS.memberCoachById(id))
       .pipe(
-        map((response): Member & { createdAt?: string } => {
+        map((response): ApiResponse<Member & { createdAt?: string }> => {
+          if (!response.success) return { ...response, data: null };
           const member = response.data;
 
           if (member == null || member.id == null || member.usernameOrName == null || member.email == null) {
-            throw new Error('A coach profil válaszában nincs érvényes adat.');
+            throw new Error(response.message || 'userMessages.loadProfileError');
           }
 
-          return {
+          return { ...response, data: {
             id: member.id,
             type: member.type === 'coach' ? 'coach' : 'user',
             usernameOrName: member.usernameOrName,
@@ -35,12 +36,12 @@ export class CoachProfileService {
             avatarUrl: member.avatarUrl,
             roles: member.roles ?? [],
             extraFields: this.toExtraFields(member.extraFields),
-          };
+          } };
         }),
       );
   }
 
-  getLoggedInMemberProfile(): Observable<Member & { createdAt?: string }> {
+  getLoggedInMemberProfile(): Observable<ApiResponse<Member & { createdAt?: string }>> {
     const userId = this.authService.getUserId();
 
     if (!userId) {

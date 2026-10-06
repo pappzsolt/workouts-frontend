@@ -36,7 +36,7 @@
     <app-message
       *ngIf="message"
       [message]="message"
-      type="info"
+      [type]="messageType"
     ></app-message>
 
 
@@ -228,6 +228,7 @@
          ====================================================== -->
 
     <ng-template #noPrograms>
+      <ng-container *ngIf="!loading && !loadFailed">
 
       <div
         class="flex min-h-48 flex-col items-center justify-center
@@ -247,6 +248,7 @@
 
       </div>
 
+    </ng-container>
     </ng-template>
 
   </div>

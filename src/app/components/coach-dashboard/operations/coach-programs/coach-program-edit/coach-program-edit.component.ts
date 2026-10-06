@@ -1,3 +1,4 @@
+import { errorMessage, responseMessage } from '../../../../../models/backend-dto/common/api-response-message';
 import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LoggerService } from '../../../../../services/logger.service';
@@ -33,7 +34,7 @@ export class CoachProgramEditComponent implements OnInit {
   };
 
   message = '';
-  messageType: 'success' | 'error' | '' = '';
+  messageType: 'success' | 'error' | 'info' | '' = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -56,10 +57,11 @@ export class CoachProgramEditComponent implements OnInit {
           const dto = res.data;
 
           if (dto.programId == null || dto.programName == null) {
-            this.setMessage('coachProgramEdit.notFound', 'error');
+            this.setMessage(responseMessage([res], 'coachProgramEdit.notFound'), 'error');
             return;
           }
 
+          this.setMessage(responseMessage([res], ''), 'info');
           this.program = {
             id: dto.programId,
             programName: dto.programName,
@@ -70,14 +72,14 @@ export class CoachProgramEditComponent implements OnInit {
             difficultyLevel: dto.difficultyLevel ?? undefined,
           };
         } else {
-          this.setMessage('coachProgramEdit.notFound', 'error');
+          this.setMessage(responseMessage([res], 'coachProgramEdit.notFound'), 'error');
         }
       },
 
       error: (err) => {
         this.logger.error(err);
 
-        this.setMessage('coachProgramEdit.loadError', 'error');
+        this.setMessage(errorMessage(err, 'coachProgramEdit.loadError'), 'error');
       },
     });
   }
@@ -118,7 +120,7 @@ export class CoachProgramEditComponent implements OnInit {
     this.programService.updateProgram(this.program.id, request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         if (res.success) {
-          this.setMessage('coachProgramEdit.saveSuccess', 'success');
+          this.setMessage(responseMessage([res], 'coachProgramEdit.saveSuccess'), 'success');
         } else {
           this.setMessage(res.message || 'coachProgramEdit.saveError', 'error');
         }
@@ -127,12 +129,12 @@ export class CoachProgramEditComponent implements OnInit {
       error: (err) => {
         this.logger.error(err);
 
-        this.setMessage('coachProgramEdit.saveError', 'error');
+        this.setMessage(errorMessage(err, 'coachProgramEdit.saveError'), 'error');
       },
     });
   }
 
-  private setMessage(message: string, type: 'success' | 'error'): void {
+  private setMessage(message: string, type: 'success' | 'error' | 'info'): void {
     this.message = message;
     this.messageType = type;
   }

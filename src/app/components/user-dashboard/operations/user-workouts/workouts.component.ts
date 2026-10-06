@@ -1,8 +1,9 @@
+import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Observable, Subject, map, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 import { TranslateService } from '@ngx-translate/core';
 import { SidePaginationComponent } from '../../../../components/shared/components/side-pagination/side-pagination.component';
@@ -27,7 +28,12 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
 
   programName!: string;
 
-  workouts$!: Observable<UserWorkoutOccurrence[]>;
+  private loadRequest?: Subscription;
+  workouts: UserWorkoutOccurrence[] = [];
+  loading = false;
+  loaded = false;
+  message = '';
+  messageType: 'success' | 'error' | 'info' = 'info';
 
   pendingWorkouts: UserWorkoutOccurrence[] = [];
 
@@ -123,6 +129,7 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
     this.programId = Number(this.route.snapshot.paramMap.get('id'));
 
     if (Number.isNaN(this.programId) || this.programId <= 0) {
+      this.message = 'userWorkouts.loadError'; this.messageType = 'error';
       return;
     }
 
@@ -145,32 +152,26 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
   // ============================================================
 
   private loadWorkouts(): void {
-    this.workouts$ = this.workoutsService
-      .getWorkoutsByProgram(this.programId)
-      .pipe(
-        map((workouts) => {
-          // The program-workout endpoint is authoritative: it already returns
-          // the concrete programWorkoutId, userWorkoutId and completion state
-          // for the authenticated user. Do not reconstruct occurrence identity
-          // by joining a second scheduled-workouts endpoint.
-          const mappedWorkouts = workouts.map((workout) => ({
-            ...workout,
-            programWorkoutId:
-              workout.programWorkoutId != null ? Number(workout.programWorkoutId) : undefined,
-            userWorkoutId:
-              workout.userWorkoutId != null ? Number(workout.userWorkoutId) : undefined,
-            completed: workout.completed ?? null,
-          }));
-
-          this.pendingWorkouts = mappedWorkouts.filter((workout) => workout.completed !== true);
-          this.completedWorkouts = mappedWorkouts.filter((workout) => workout.completed === true);
-
-          this.pendingCurrentPage = 1;
-          this.completedCurrentPage = 1;
-
-          return mappedWorkouts;
-        }),
-      );
+    this.loadRequest?.unsubscribe();
+    this.loading = true; this.loaded = false; this.message = '';
+    this.loadRequest = this.workoutsService.getWorkoutsByProgram(this.programId)
+      .pipe(takeUntil(this.destroy$)).subscribe({
+        next: response => {
+          this.loading = false;
+          this.loaded = response.success;
+          this.message = responseMessage([response], response.success ? '' : 'userWorkouts.loadError');
+          this.messageType = response.success ? 'info' : 'error';
+          this.workouts = response.success ? response.data ?? [] : [];
+          this.pendingWorkouts = this.workouts.filter(workout => workout.completed !== true);
+          this.completedWorkouts = this.workouts.filter(workout => workout.completed === true);
+          this.pendingCurrentPage = 1; this.completedCurrentPage = 1;
+        },
+        error: error => {
+          this.loading = false; this.loaded = false;
+          this.workouts = []; this.pendingWorkouts = []; this.completedWorkouts = [];
+          this.message = errorMessage(error, 'userWorkouts.loadError'); this.messageType = 'error';
+        },
+      });
   }
 
   // ============================================================

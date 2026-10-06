@@ -83,6 +83,6 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
     });
   }
   closeExerciseDialog(): void { this.exerciseWorkoutId = null; this.exerciseOccurrenceId = null; }
-  onCopied(): void { this.occurrences.success('coachProgramBuilder.copySuccess'); this.reload(); }
+  onCopied(message: string): void { this.occurrences.success(message); this.reload(); }
   readonly trackBySelectedWorkoutOccurrence = (_index: number, row: ProgramWorkoutOccurrence): number => row.assignment.id;
 }

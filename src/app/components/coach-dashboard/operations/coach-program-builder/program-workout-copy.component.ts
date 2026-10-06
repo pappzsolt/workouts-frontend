@@ -1,5 +1,6 @@
 import { Component, DestroyRef, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { errorMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 import { WorkoutCopyDialogComponent } from './workout-copy-dialog.component';
 import { CoachProgramBuilderWorkoutService } from '../../../../services/coach/coach-program-builder-workout.service';
@@ -22,7 +23,7 @@ export class ProgramWorkoutCopyComponent implements OnInit {
   @Input() sourceWorkout: WorkoutWithExercises | null = null;
   @Input() nextDayIndex = 1;
   @Output() readonly close = new EventEmitter<void>();
-  @Output() readonly copied = new EventEmitter<void>();
+  @Output() readonly copied = new EventEmitter<string>();
   @Output() readonly failed = new EventEmitter<string>();
   name = '';
   date = '';
@@ -49,10 +50,10 @@ export class ProgramWorkoutCopyComponent implements OnInit {
         next: response => {
           this.busy = false;
           if (!response.success || response.data === null) { this.fail(response.message || 'coachProgramBuilder.copyError'); return; }
-          this.copied.emit();
+          this.copied.emit(response.message || 'coachProgramBuilder.copySuccess');
           this.close.emit();
         },
-        error: error => { this.busy = false; this.fail(error?.error?.message || 'coachProgramBuilder.copyError'); },
+        error: error => { this.busy = false; this.fail(errorMessage(error, 'coachProgramBuilder.copyError')); },
       });
   }
   private fail(message: string): void { this.message = message; this.failed.emit(message); }

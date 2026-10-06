@@ -235,6 +235,10 @@
     "title": "Coach Profile"
   },
   "coachProgramBuilder": {
+    "updateSuccess": "Program changes saved.",
+    "removeWorkoutSuccess": "Workout removed from the program.",
+    "updateWorkoutDaySuccess": "Workout day updated.",
+    "saveExerciseSuccess": "Workout exercises saved.",
     "title": "Program Builder",
     "editSubtitle": "Edit existing training program",
     "createSubtitle": "Create a new training program",
@@ -530,6 +534,7 @@
     "myWorkouts": "My Workouts"
   },
   "userExercises": {
+    "loadError": "Failed to load exercises.",
     "unknownWorkout": "Unknown Workout",
     "exercises": "Exercises",
     "noDescription": "No description",
@@ -580,6 +585,7 @@
     "notesPlaceholder": "E.g. This set felt difficult..."
   },
   "userMyPrograms": {
+    "progressLoadError": "Failed to load program progress.",
     "title": "My Programs",
     "loading": "Loading programs...",
     "noPrograms": "There are currently no available programs.",
@@ -653,6 +659,7 @@
     "completed": "Completed"
   },
   "userWorkouts": {
+    "loadError": "Failed to load workouts.",
     "program": "Program",
     "date": "Date",
     "intensity": "Intensity",
@@ -678,6 +685,7 @@
     "noPrograms": "No programs."
   },
   "newExercise": {
+    "error": "Failed to create exercise.",
     "title": "New Exercise",
     "name": "Name",
     "description": "Description",
@@ -864,6 +872,7 @@
     "pageSize": "Items per page"
   },
   "programWorkouts": {
+    "removeSuccess": "Workout removed from the program.",
     "programNotSelected": "No program selected.",
     "noWorkoutsSelected": "No workouts selected.",
     "assignSuccess": "Workouts assigned successfully.",

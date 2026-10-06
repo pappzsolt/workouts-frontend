@@ -1,7 +1,8 @@
+import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 import { UserMyProgramsService } from '../../../../services/user/user-my-program/user-my-programs.service';
 
@@ -21,7 +22,10 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 export class UserMyProgramsComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
-  programs$!: Observable<UserProgram[]>;
+  private loadRequest?: Subscription;
+  private progressRequest?: Subscription;
+  loadFailed = false;
+  loading = false;
 
   // ============================================================
   // PAGINATION
@@ -65,6 +69,7 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
   programProgress: Partial<Record<number, ProgramProgress>> = {};
 
   message = 'userMyPrograms.loading';
+  messageType: 'success' | 'error' | 'info' = 'info';
 
   // ============================================================
   // CONSTRUCTOR
@@ -107,13 +112,18 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
   // ============================================================
 
   private loadPrograms(): void {
+    this.loadRequest?.unsubscribe(); this.progressRequest?.unsubscribe();
+    this.loading = true; this.loadFailed = false; this.messageType = 'info';
     this.message = 'userMyPrograms.loading';
     this.programProgress = {};
 
-    this.programs$ = this.programsService.getPrograms();
-
-    this.programs$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: (programs) => {
+    this.loadRequest = this.programsService.getPrograms().pipe(takeUntil(this.destroy$)).subscribe({
+      next: response => {
+        this.loading = false;
+        this.loadFailed = !response.success;
+        this.messageType = response.success ? 'info' : 'error';
+        this.message = responseMessage([response], response.success ? '' : 'userMyPrograms.loadError');
+        const programs = response.success ? response.data ?? [] : [];
         // TELJES PROGRAMLISTA ELTÁROLÁSA
 
         this.allPrograms = programs ?? [];
@@ -121,7 +131,7 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
         // ÜRES LISTA KEZELÉSE
 
         if (this.allPrograms.length === 0) {
-          this.message = 'userMyPrograms.noPrograms';
+          if (response.success) this.message = responseMessage([response], 'userMyPrograms.noPrograms');
           this.programProgress = {};
 
           this.totalItems = 0;
@@ -131,7 +141,7 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
           return;
         }
 
-        this.message = '';
+
 
         // PAGINATION ADATOK FRISSÍTÉSE
 
@@ -143,17 +153,24 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
         // PROGRESS ADATOK LEKÉRÉSE
         // TOVÁBBRA IS AZ ÖSSZES PROGRAMHOZ
 
-        this.programsService
+        this.progressRequest = this.programsService
           .getProgramProgress(this.allPrograms.map((program) => program.id))
           .pipe(takeUntil(this.destroy$))
           .subscribe({
-            next: (progress) => {
+            next: response => {
+              if (!response.success) {
+                this.programProgress = {}; this.message = responseMessage([response], 'userMyPrograms.progressLoadError');
+                this.messageType = 'error'; return;
+              }
+              this.message = responseMessage([{ message: this.message }, response], '');
+              const progress = response.data ?? [];
               this.programProgress = Object.fromEntries(
                 progress.map((item) => [item.programId, item]),
               );
             },
 
-            error: () => {
+            error: error => {
+              this.message = errorMessage(error, 'userMyPrograms.progressLoadError'); this.messageType = 'error';
               /*
                * Ha a progress lekérése nem sikerül,
                * a programlista ettől még megjelenik.
@@ -163,8 +180,9 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
           });
       },
 
-      error: () => {
-        this.message = 'userMyPrograms.loadError';
+      error: error => {
+        this.loading = false; this.loadFailed = true; this.messageType = 'error';
+        this.message = errorMessage(error, 'userMyPrograms.loadError');
         this.programProgress = {};
 
         this.allPrograms = [];

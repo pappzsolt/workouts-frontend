@@ -28,12 +28,7 @@
          BETÖLTÉS
          ====================================================== -->
 
-    <div
-      *ngIf="loading"
-      class="rounded-2xl border border-surface-200 bg-white p-8 text-center text-content-500 shadow-sm"
-    >
-      {{ 'common.loading' | translate }}
-    </div>
+    <app-message *ngIf="loading" message="common.loading" type="info" class="block mb-4"></app-message>
 
     <ng-container *ngIf="!loading">
 
@@ -225,7 +220,7 @@
 
     <ng-template #noExercises>
 
-      <app-message
+      <app-message *ngIf="messageType !== 'error'"
         [message]="
           (searchTerm
             ? 'coachExercises.noSearchResults'

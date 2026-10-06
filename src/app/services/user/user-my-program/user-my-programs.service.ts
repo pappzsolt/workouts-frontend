@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map, catchError, throwError } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
 
@@ -18,7 +18,7 @@ export class UserMyProgramsService {
   private readonly languageService = inject(LanguageService);
   private readonly apiUrl = API_ENDPOINTS.assignedPrograms;
 
-  getPrograms(): Observable<UserProgram[]> {
+  getPrograms(): Observable<ApiResponse<UserProgram[]>> {
     const params = new HttpParams().set(
       'language',
       this.languageService.getCurrentLanguage(),
@@ -26,11 +26,9 @@ export class UserMyProgramsService {
 
     return this.http.get<ApiResponse<UserProgramDto[]>>(this.apiUrl, { params }).pipe(
       map((res) => {
-        if (!res?.data) {
-          return [];
-        }
+        if (!res.success) return { ...res, data: null };
 
-        return (res.data ?? []).filter((p): p is UserProgramDto & { id: number } => p.id != null).map((p) => ({
+        return { ...res, data: (res.data ?? []).filter((p): p is UserProgramDto & { id: number } => p.id != null).map((p) => ({
           id: p.id,
           name: p.name,
           description: p.description,
@@ -40,14 +38,13 @@ export class UserMyProgramsService {
           difficulty: p.difficulty,
           status: p.status,
           assignedAt: p.assignedAt,
-        }));
+        })) };
       }),
 
-      catchError((error) => throwError(() => error)),
     );
   }
 
-  getProgramProgress(programIds: number[]): Observable<ProgramProgress[]> {
+  getProgramProgress(programIds: number[]): Observable<ApiResponse<ProgramProgress[]>> {
     const params = programIds.reduce(
       (httpParams, programId) => httpParams.append('programIds', programId.toString()),
       new HttpParams(),
@@ -56,12 +53,12 @@ export class UserMyProgramsService {
     return this.http
       .get<ApiResponse<ProgramProgressDto[]>>(API_ENDPOINTS.assignedProgramsProgress, { params })
       .pipe(
-        map((res) => (res.data ?? []).filter((p): p is ProgramProgressDto & { programId: number } => p.programId != null).map((p) => ({
+        map((res) => ({ ...res, data: res.success ? (res.data ?? []).filter((p): p is ProgramProgressDto & { programId: number } => p.programId != null).map((p) => ({
           programId: p.programId,
           completedWorkouts: p.completedWorkouts ?? 0,
           totalWorkouts: p.totalWorkouts ?? 0,
           progressPercent: p.progressPercent ?? 0,
-        }))),
+        })) : null })),
       );
   }
 }

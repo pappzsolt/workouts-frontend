@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, DestroyRef, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { forkJoin, Subscription } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exercises-board/coach-exercises-board.component';
 import { CoachProgramBuilderWorkoutService } from '../../../../services/coach/coach-program-builder-workout.service';
@@ -23,6 +24,7 @@ export class ProgramExerciseDialogComponent implements OnChanges {
   @Input() dayIndex = 1;
   @Output() readonly close = new EventEmitter<void>();
   @Output() readonly workoutSaved = new EventEmitter<WorkoutWithExercises>();
+  @Output() readonly saveSuccess = new EventEmitter<string>();
   @Output() readonly saveError = new EventEmitter<string>();
   exerciseDialogOpen = true;
   exerciseDialogExercises: Exercise[] = [];
@@ -55,9 +57,9 @@ export class ProgramExerciseDialogComponent implements OnChanges {
         this.exercises = catalog.data;
         this.loadingExercises = false;
       },
-      error: () => {
+      error: error => {
         this.loadingExercises = false;
-        this.reportSaveError('coachProgramBuilder.loadWorkoutExercisesError');
+        this.reportSaveError(errorMessage(error, 'coachProgramBuilder.loadWorkoutExercisesError'));
         this.close.emit();
       },
     });
@@ -95,17 +97,17 @@ export class ProgramExerciseDialogComponent implements OnChanges {
           this.loadingExercises = false;
 
           if (failed.length > 0) {
-            this.reportSaveError(failed.map((result) =>
-              result.message || 'coachProgramBuilder.saveExerciseError').join(' '));
+            this.reportSaveError(responseMessage(results, 'coachProgramBuilder.saveExerciseError'));
             return;
           }
 
+          this.saveSuccess.emit(responseMessage(results, 'coachProgramBuilder.saveExerciseSuccess'));
           this.workoutSaved.emit(workout);
           this.close.emit();
         },
-        error: () => {
+        error: error => {
           this.loadingExercises = false;
-          this.reportSaveError('coachProgramBuilder.saveExerciseError');
+          this.reportSaveError(errorMessage(error, 'coachProgramBuilder.saveExerciseError'));
         },
       });
   }

@@ -318,9 +318,9 @@
   [workoutId]="exerciseWorkoutId" [exerciseDialogIsNewWorkout]="exerciseIsNewWorkout"
   [dayIndex]="occurrences.dayIndex(exerciseOccurrenceId)"
   (close)="closeExerciseDialog()" (workoutSaved)="reload()"
-  (saveError)="occurrences.fail($event)"></app-program-exercise-dialog>
+  (saveError)="occurrences.fail($event)" (saveSuccess)="occurrences.success($event)"></app-program-exercise-dialog>
 
 <app-program-workout-copy *ngIf="copySourceWorkout !== null"
   [sourceWorkout]="copySourceWorkout" [programId]="programId"
   [nextDayIndex]="occurrences.state.nextDayIndex" (close)="copySourceWorkout = null"
-  (copied)="onCopied()" (failed)="occurrences.fail($event)"></app-program-workout-copy>
+  (copied)="onCopied($event)" (failed)="occurrences.fail($event)"></app-program-workout-copy>

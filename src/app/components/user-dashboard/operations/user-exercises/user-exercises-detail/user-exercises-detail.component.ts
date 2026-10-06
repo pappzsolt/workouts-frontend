@@ -1,9 +1,11 @@
+import { errorMessage, responseMessage } from '../../../../../models/backend-dto/common/api-response-message';
+import type { ApiResponse } from '../../../../../models/backend-dto/common/api-response';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
 import { ActivatedRoute } from '@angular/router';
 
-import { Observable, Subject, combineLatest, distinctUntilChanged, filter, finalize, map, shareReplay, switchMap, takeUntil } from 'rxjs';
+import { Observable, Subject, combineLatest, distinctUntilChanged, filter, finalize, map, shareReplay, switchMap, takeUntil, tap } from 'rxjs';
 
 import { UserExerciseDetailService } from '../../../../../services/user/user-exercises-detail/user-exercises-detail.service';
 import { SidePaginationComponent } from '../../../../../components/shared/components/side-pagination/side-pagination.component';
@@ -110,7 +112,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
         },
         error: (error: HttpErrorResponse) => {
           this.message =
-            this.getBackendErrorMessage(error) ?? 'userExerciseDetail.loadError';
+            errorMessage(error, 'userExerciseDetail.loadError');
           this.messageType = 'error';
         },
       });
@@ -152,9 +154,15 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
    * Workout és exercise adatainak betöltése.
    */
   private applyExerciseDetailResponse(
-    response: { data?: UserWorkoutDetailDto | null },
+    response: ApiResponse<UserWorkoutDetailDto>,
     exerciseId: number,
   ): void {
+    if (!response.success) {
+      this.workout = undefined; this.workoutExercise = undefined;
+      this.message = responseMessage([response], 'userExerciseDetail.loadError'); this.messageType = 'error'; return;
+    }
+    this.message = responseMessage([response], ''); this.messageType = 'info';
+    this.workoutExercise = undefined;
     const workout = response.data;
 
     this.workout = workout ?? undefined;
@@ -222,17 +230,20 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       )
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => {
+        next: response => {
+          if (!response.success) {
+            this.message = responseMessage([response], 'userExerciseDetail.setUpdateError'); this.messageType = 'error'; return;
+          }
           set.completed = completed;
           this.updateExerciseDone();
-          this.message = 'userExerciseDetail.setUpdated';
-          this.messageParams = { setNumber: set.setNumber };
+          this.message = responseMessage([response], 'userExerciseDetail.setUpdated');
+          this.messageParams = response.message ? {} : { setNumber: set.setNumber };
           this.messageType = 'success';
         },
 
         error: (error: HttpErrorResponse) => {
           this.message =
-            this.getBackendErrorMessage(error) ?? 'userExerciseDetail.setUpdateError';
+            errorMessage(error, 'userExerciseDetail.setUpdateError');
           this.messageType = 'error';
         },
       });
@@ -293,7 +304,9 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
    * használja az összes set adat mentésére.
    */
   saveSetDetails(set: UserWorkoutExerciseSetDto, showSuccessMessage = true): void {
-    this.createSetSaveRequest(set, showSuccessMessage).pipe(takeUntil(this.destroy$)).subscribe();
+    this.createSetSaveRequest(set, showSuccessMessage).pipe(takeUntil(this.destroy$)).subscribe({
+      error: () => { /* The shared request reports the failure through MessageComponent. */ },
+    });
   }
 
   private createSetSaveRequest(
@@ -321,6 +334,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     this.messageParams = {};
     this.messageType = '';
 
+    let savedMessage = '';
     const request$ = this.exercisesService
       .updateSetCompleted(
         this.userWorkoutId,
@@ -334,28 +348,29 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
         set.notes,
       )
       .pipe(
-        map(() => void 0),
+        map(response => {
+          if (!response.success) throw new Error(responseMessage([response], 'userExerciseDetail.saveError'));
+          savedMessage = responseMessage([response], '');
+          return void 0;
+        }),
+        tap({
+          next: () => {
+            this.updateExerciseDone();
+            if (showSuccessMessage || savedMessage) {
+              this.message = savedMessage || 'userExerciseDetail.saveSuccess';
+              this.messageType = 'success';
+            }
+          },
+          error: error => {
+            this.message = errorMessage(error, 'userExerciseDetail.saveError');
+            this.messageType = 'error';
+          },
+        }),
         finalize(() => this.pendingSetSaves.delete(set.id!)),
         shareReplay({ bufferSize: 1, refCount: true }),
       );
 
     this.pendingSetSaves.set(set.id, request$);
-
-    request$.pipe(takeUntil(this.destroy$)).subscribe({
-      next: () => {
-        this.updateExerciseDone();
-
-        if (showSuccessMessage) {
-          this.message = 'userExerciseDetail.saveSuccess';
-          this.messageType = 'success';
-        }
-      },
-      error: (error: HttpErrorResponse) => {
-        this.message =
-          this.getBackendErrorMessage(error) ?? 'userExerciseDetail.saveError';
-        this.messageType = 'error';
-      },
-    });
 
     return request$;
   }
@@ -391,21 +406,6 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
           this.currentSetIndex = index;
         },
       });
-  }
-
-  private getBackendErrorMessage(error: HttpErrorResponse): string | undefined {
-    const body = error.error;
-
-    if (
-      typeof body === 'object' &&
-      body !== null &&
-      'message' in body &&
-      typeof body.message === 'string'
-    ) {
-      return body.message;
-    }
-
-    return error.message || undefined;
   }
 
 }

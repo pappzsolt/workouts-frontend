@@ -20,7 +20,7 @@ export class UserWorkoutsService {
   private readonly apiUrl = API_ENDPOINTS.workouts;
 
   /** Backend hívás – Workouts by program */
-  getWorkoutsByProgram(programId: number): Observable<UserWorkoutOccurrence[]> {
+  getWorkoutsByProgram(programId: number): Observable<ApiResponse<UserWorkoutOccurrence[]>> {
     return this.http
       .get<ApiResponse<RawWorkoutRecord[]>>(
         API_ENDPOINTS.workoutsByProgram(programId),
@@ -31,7 +31,7 @@ export class UserWorkoutsService {
         },
       )
       .pipe(
-        map((response) =>
+        map((response) => ({ ...response, data: response.success ?
           (response.data ?? []).map((item) => ({
             workoutId: Number(item.workoutId ?? item.workout_id ?? item.id),
             workoutName: item.workoutName ?? '',
@@ -60,7 +60,7 @@ export class UserWorkoutsService {
             durationSeconds: item.durationSeconds ?? null,
             feedback: item.feedback ?? null,
             notes: item.notes ?? null,
-          })),
+          })) : null }),
         ),
       );
   }

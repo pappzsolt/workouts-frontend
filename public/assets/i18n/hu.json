@@ -235,6 +235,10 @@
     "title": "Coach profil"
   },
   "coachProgramBuilder": {
+    "updateSuccess": "A program módosításai mentve.",
+    "removeWorkoutSuccess": "Az edzés eltávolítva a programból.",
+    "updateWorkoutDaySuccess": "Az edzés napja módosítva.",
+    "saveExerciseSuccess": "Az edzés gyakorlatai mentve.",
     "title": "Program Builder",
     "editSubtitle": "Meglévő edzésprogram módosítása",
     "createSubtitle": "Új edzésprogram létrehozása",
@@ -530,6 +534,7 @@
     "myWorkouts": "Edzéseim"
   },
   "userExercises": {
+    "loadError": "A gyakorlatok betöltése sikertelen.",
     "unknownWorkout": "Ismeretlen workout",
     "exercises": "Gyakorlatok",
     "noDescription": "Nincs leírás",
@@ -580,6 +585,7 @@
     "notesPlaceholder": "Pl.: Ez a sorozat nehéz volt..."
   },
   "userMyPrograms": {
+    "progressLoadError": "A programok haladásának betöltése sikertelen.",
     "title": "Programjaim",
     "loading": "Programok betöltése folyamatban...",
     "noPrograms": "Jelenleg nincsenek elérhető programok.",
@@ -653,6 +659,7 @@
     "completed": "Teljesítve"
   },
   "userWorkouts": {
+    "loadError": "Az edzések betöltése sikertelen.",
     "program": "Program",
     "date": "Dátum",
     "intensity": "Intenzitás",
@@ -678,6 +685,7 @@
     "noPrograms": "Nincsenek programok."
   },
   "newExercise": {
+    "error": "A gyakorlat létrehozása sikertelen.",
     "title": "Új Gyakorlat",
     "name": "Név",
     "description": "Leírás",
@@ -864,6 +872,7 @@
     "pageSize": "Elem oldalanként"
   },
   "programWorkouts": {
+    "removeSuccess": "Az edzés eltávolítva a programból.",
     "programNotSelected": "Nincs kiválasztott program.",
     "noWorkoutsSelected": "Nincsenek kiválasztott workoutok.",
     "assignSuccess": "A workoutok sikeresen hozzárendelve.",

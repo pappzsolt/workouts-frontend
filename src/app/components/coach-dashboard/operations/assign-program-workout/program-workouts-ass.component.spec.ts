@@ -27,8 +27,10 @@ describe('ProgramWorkoutsAssComponent persistence', () => {
   it('saves only additions and preserves existing day indices', () => {
     api.getWorkoutsForProgram.and.returnValue(of(ok([row(1, 10, 4)])));
     component.onProgramSelected(7); component.onWorkoutsChange([10, 20]);
-    api.addWorkoutToProgram.and.returnValue(of(ok(row(2, 20, 5))));
-    component.saveSelectedWorkouts(); component.saveSelectedWorkouts();
+    api.addWorkoutToProgram.and.returnValue(of({ ...ok(row(2, 20, 5)), message: 'Workout added' }));
+    component.saveSelectedWorkouts();
+    expect(component.message).toBe('Workout added');
+    component.saveSelectedWorkouts();
     expect(api.addWorkoutToProgram.calls.allArgs()).toEqual([[7, 20, 5]]);
     expect(component.programWorkoutAssignments.length).toBe(2);
   });

@@ -1,3 +1,4 @@
+import { errorMessage, responseMessage } from '../../../../../models/backend-dto/common/api-response-message';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
 import { Router } from '@angular/router';
@@ -66,7 +67,8 @@ export class CoachProgramComponent implements OnInit {
       });
   }
 
-  private loadCoachPrograms(language = this.languageService.getCurrentLanguage()): void {
+  private loadCoachPrograms(language = this.languageService.getCurrentLanguage(), savedMessage?: string): void {
+    if (!savedMessage) this.clearMessage();
     const backendPage = this.currentPage - 1;
 
     this.programService
@@ -96,7 +98,7 @@ export class CoachProgramComponent implements OnInit {
             }));
 
             this.showProgramsList = true;
-            this.clearMessage();
+            if (savedMessage) this.setMessage(savedMessage, 'success');
           } else {
             this.programs = [];
             this.totalItems = 0;
@@ -104,7 +106,7 @@ export class CoachProgramComponent implements OnInit {
             this.currentPage = 1;
             this.showProgramsList = false;
 
-            this.setMessage('coachPrograms.noPrograms', 'info');
+            this.setMessage(savedMessage || 'coachPrograms.noPrograms', savedMessage ? 'success' : 'info');
           }
         },
 
@@ -117,7 +119,7 @@ export class CoachProgramComponent implements OnInit {
           this.currentPage = 1;
           this.showProgramsList = false;
 
-          this.setMessage('coachPrograms.loadError', 'error');
+          this.setMessage(errorMessage(error, 'coachPrograms.loadError'), 'error');
         },
       });
   }
@@ -238,7 +240,11 @@ export class CoachProgramComponent implements OnInit {
       .deleteCoachProgram(programId)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: () => {
+        next: response => {
+          if (!response.success) {
+            this.deletingProgram = false;
+            this.setMessage(responseMessage([response], 'coachPrograms.deleteError'), 'error'); return;
+          }
           this.pendingDeleteProgramId = null;
           this.deletingProgram = false;
 
@@ -248,8 +254,9 @@ export class CoachProgramComponent implements OnInit {
             this.currentPage--;
           }
 
-          this.setMessage('coachPrograms.deleteSuccess', 'success');
-          this.loadCoachPrograms(this.languageService.getCurrentLanguage());
+          const message = responseMessage([response], 'coachPrograms.deleteSuccess');
+          this.setMessage(message, 'success');
+          this.loadCoachPrograms(this.languageService.getCurrentLanguage(), message);
         },
 
         error: (error) => {
@@ -260,7 +267,7 @@ export class CoachProgramComponent implements OnInit {
             error,
           );
 
-          this.setMessage('coachPrograms.deleteError', 'error');
+          this.setMessage(errorMessage(error, 'coachPrograms.deleteError'), 'error');
         },
       });
   }

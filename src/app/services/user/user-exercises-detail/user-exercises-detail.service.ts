@@ -59,8 +59,8 @@ export class UserExerciseDetailService {
     actualRepetitions: number | null,
     actualWeightKg: number | null,
     notes: string | null,
-  ): Observable<void> {
-    return this.http.patch<void>(API_ENDPOINTS.exerciseSetCompleted, {
+  ): Observable<ApiResponse<void>> {
+    return this.http.patch<ApiResponse<void>>(API_ENDPOINTS.exerciseSetCompleted, {
       userWorkoutId,
       programId,
       workoutId,

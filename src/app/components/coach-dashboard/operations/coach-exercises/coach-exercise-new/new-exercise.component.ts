@@ -1,10 +1,9 @@
+import { errorMessage, responseMessage } from '../../../../../models/backend-dto/common/api-response-message';
 import { Component, DestroyRef, Input, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { TranslateService } from '@ngx-translate/core';
 
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
-import { LanguageService } from '../../../../../services/shared/language.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { Exercise } from '../../../../../models/exercise.model';
@@ -31,12 +30,11 @@ export class NewExerciseComponent implements OnInit {
 
   message = '';
 
+  messageParams: Record<string, unknown> = {};
   messageType: 'success' | 'error' | '' = '';
 
   constructor(
     private exercisesService: ExerciseService,
-    private translate: TranslateService,
-    private languageService: LanguageService,
   ) {}
 
   // =============================
@@ -45,35 +43,9 @@ export class NewExerciseComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.workoutId) {
-      this.showError(this.translate.instant('newExercise.workoutIdRequired'));
+      this.showError('newExercise.workoutIdRequired');
     }
 
-    this.languageService.language$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.refreshMessage();
-    });
-  }
-
-  // =============================
-  // NYELVVÁLTÁS
-  // =============================
-
-  private refreshMessage(): void {
-    /*
-     * Ha nincs üzenet,
-     * nincs mit frissíteni.
-     */
-    if (!this.message) {
-      return;
-    }
-
-    /*
-     * A konkrét hiba/siker üzenet paramétereket is
-     * tartalmazhat, ezért itt nem tudjuk biztonságosan
-     * ugyanazt az üzenetet újra előállítani.
-     *
-     * Ezért nyelvváltáskor töröljük.
-     */
-    this.clearMessage();
   }
 
   // =============================
@@ -98,15 +70,15 @@ export class NewExerciseComponent implements OnInit {
       durationSeconds: this.newExercise.durationSeconds,
     };
 
-    this.exercisesService.addExercise(payload).subscribe({
+    this.exercisesService.addExercise(payload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.saving = false;
 
-        this.showSuccess(
-          this.translate.instant('newExercise.success', {
-            name: this.newExercise.name,
-          }),
-        );
+        if (!res.success) {
+          this.showError(responseMessage([res], 'newExercise.error')); return;
+        }
+        this.showSuccess(responseMessage([res], 'newExercise.success'));
+        this.messageParams = res.message ? {} : { name: this.newExercise.name };
 
         this.newExercise = this.createEmptyExercise();
       },
@@ -126,32 +98,7 @@ export class NewExerciseComponent implements OnInit {
   // =============================
 
   private handleError(err: HttpErrorResponse): void {
-    if (err.error && typeof err.error === 'string') {
-      this.showError(
-        this.translate.instant('newExercise.errorWithMessage', {
-          message: err.error,
-        }),
-      );
-
-      return;
-    }
-
-    if (err.error && err.error.message) {
-      this.showError(
-        this.translate.instant('newExercise.errorWithMessage', {
-          message: err.error.message,
-        }),
-      );
-
-      return;
-    }
-
-    this.showError(
-      this.translate.instant('newExercise.errorWithStatus', {
-        status: err.status,
-        statusText: err.statusText,
-      }),
-    );
+    this.showError(errorMessage(err, 'newExercise.error'));
   }
 
   // =============================
@@ -192,7 +139,7 @@ export class NewExerciseComponent implements OnInit {
 
   private clearMessage(): void {
     this.message = '';
-
+    this.messageParams = {};
     this.messageType = '';
   }
 }

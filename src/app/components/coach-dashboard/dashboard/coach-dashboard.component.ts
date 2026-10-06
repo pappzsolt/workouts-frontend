@@ -1,4 +1,5 @@
 import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -42,6 +43,8 @@ export class CoachDashboardComponent implements OnInit {
   showWorkoutExerciseManager = false;
 
   exerciseNotFound = false;
+  programBuilderMessage = '';
+  private readonly location = inject(Location);
 
   // =============================
   // PROGRAM
@@ -61,6 +64,8 @@ export class CoachDashboardComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((params) => {
         this.closeAllPanels();
+        const state = this.location.getState() as { programBuilderMessage?: unknown };
+        this.programBuilderMessage = typeof state?.programBuilderMessage === 'string' ? state.programBuilderMessage : '';
 
         // ==========================================================
         // EXERCISE NEM TALÁLHATÓ

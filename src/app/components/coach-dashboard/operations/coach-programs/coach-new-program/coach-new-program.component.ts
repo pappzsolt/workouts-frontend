@@ -1,3 +1,4 @@
+import { errorMessage, responseMessage } from '../../../../../models/backend-dto/common/api-response-message';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
 import { Router } from '@angular/router';
@@ -104,7 +105,7 @@ export class CoachNewProgramComponent implements OnInit {
 
         if (response.success) {
           this.messageType = 'success';
-          this.message = 'coachNewProgram.createSuccess';
+          this.message = responseMessage([response], 'coachNewProgram.createSuccess');
 
           timer(1500)
             .pipe(takeUntilDestroyed(this.destroyRef))
@@ -122,11 +123,7 @@ export class CoachNewProgramComponent implements OnInit {
 
         this.messageType = 'error';
 
-        if (err.error?.message) {
-          this.message = err.error?.message || 'coachNewProgram.createError';
-        } else {
-          this.message = 'coachNewProgram.createError';
-        }
+        this.message = errorMessage(err, 'coachNewProgram.createError');
       },
     });
   }

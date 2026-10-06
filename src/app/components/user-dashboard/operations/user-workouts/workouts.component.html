@@ -30,7 +30,9 @@
          WORKOUTOK
          ================================================== -->
 
-    <ng-container *ngIf="workouts$ | async as workouts">
+    <app-message [message]="message" [type]="messageType" class="block mb-4"></app-message>
+    <app-message *ngIf="loading" message="common.loading" type="info"></app-message>
+    <ng-container *ngIf="loaded">
       <ng-container *ngIf="workouts.length; else noWorkouts">
 
         <!-- ==================================================

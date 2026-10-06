@@ -1,3 +1,4 @@
+import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -23,6 +24,10 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
+  message = '';
+  messageType: 'success' | 'error' | 'info' = 'info';
+  loading = true;
+  loadFailed = false;
   workoutId!: number;
   programId!: number;
   userWorkoutId!: number;
@@ -103,16 +108,19 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
     // ID VALIDÁLÁS
 
     if (Number.isNaN(this.workoutId) || this.workoutId <= 0) {
+      this.loading = false; this.loadFailed = true; this.message = 'userExercises.loadError'; this.messageType = 'error';
       this.logger.error('Érvénytelen workout ID:', this.workoutId);
       return;
     }
 
     if (Number.isNaN(this.programId) || this.programId <= 0) {
+      this.loading = false; this.loadFailed = true; this.message = 'userExercises.loadError'; this.messageType = 'error';
       this.logger.error('Érvénytelen program ID:', this.programId);
       return;
     }
 
     if (Number.isNaN(this.userWorkoutId) || this.userWorkoutId <= 0) {
+      this.loading = false; this.loadFailed = true; this.message = 'userExercises.loadError'; this.messageType = 'error';
       this.logger.error('Érvénytelen userWorkout ID:', this.userWorkoutId);
       return;
     }
@@ -126,14 +134,19 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
       .pipe(
         map(([language]) => language),
         distinctUntilChanged(),
-        switchMap((language) =>
-          this.exercisesService.getWorkoutExercises(this.userWorkoutId, language),
-        ),
+        switchMap((language) => {
+          this.loading = true; this.message = ''; this.loadFailed = false;
+          return this.exercisesService.getWorkoutExercises(this.userWorkoutId, language);
+        }),
         takeUntil(this.destroy$),
       )
       .subscribe({
         next: (response) => {
-          const exercises = response.data?.exercises ?? [];
+          this.loading = false;
+          this.loadFailed = !response.success;
+          this.message = responseMessage([response], response.success ? '' : 'userExercises.loadError');
+          this.messageType = response.success ? 'info' : 'error';
+          const exercises = response.success ? response.data?.exercises ?? [] : [];
 
           if (response.data?.name) {
             this.workoutName = response.data.name;
@@ -145,6 +158,8 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
           this.updatePaginatedExercises();
         },
         error: (error) => {
+          this.loading = false; this.loadFailed = true;
+          this.message = errorMessage(error, 'userExercises.loadError'); this.messageType = 'error';
           this.logger.error('Hiba a gyakorlatok betöltésekor:', error);
 
           this.allExercises = [];

@@ -35,10 +35,11 @@ describe('ProgramBuilderDocumentStore', () => {
   it('preserves the existing ID on update and clears busy state after a failed save', () => {
     store.form.programName = 'Name'; store.form.startDate = '2035-03-15';
     store.form.durationDays = 7; store.form.difficultyLevel = 'BEGINNER';
-    api.updateProgram.and.returnValue(of({ success: true, data: null, message: null }));
+    api.updateProgram.and.returnValue(of({ success: true, data: null, message: 'Program updated' }));
     let result: number | undefined;
     store.save(42).subscribe(id => { result = id; });
     expect(result).toBe(42);
+    expect(store.message).toBe('Program updated');
     api.createProgram.and.returnValue(throwError(() => new Error('save failed')));
     const failed = jasmine.createSpy('failed');
     store.save(null).subscribe({ error: failed });

@@ -38,6 +38,9 @@
 
     </h2>
 
+    <app-message [message]="message" [type]="messageType" class="block mb-4"></app-message>
+    <app-message *ngIf="loading" message="common.loading" type="info"></app-message>
+
 
     <!-- ==================================================
          GYAKORLATOK
@@ -272,6 +275,7 @@
          ====================================================== -->
 
     <ng-template #noExercises>
+      <ng-container *ngIf="!loading && !loadFailed">
 
       <div
         class="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-surface-300 bg-white px-5 py-10 text-center shadow-md shadow-surface-200/40"
@@ -288,6 +292,7 @@
 
       </div>
 
+      </ng-container>
     </ng-template>
 
   </div>

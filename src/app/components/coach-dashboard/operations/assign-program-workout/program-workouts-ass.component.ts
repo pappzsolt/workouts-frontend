@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 
-import { HttpErrorResponse } from '@angular/common/http';
+import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -83,15 +83,16 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
       .subscribe({
         next: ({ programs, workouts }) => {
           if (!programs.success || !workouts.success) {
-            this.message = 'programWorkouts.loadError'; this.messageStatus = 'error'; return;
+            this.message = responseMessage([programs, workouts], 'programWorkouts.loadError'); this.messageStatus = 'error'; return;
           }
           this.programs = programs.data ?? [];
           this.workouts = workouts.data ?? [];
+          this.message = responseMessage([programs, workouts], ''); this.messageStatus = 'info';
         },
-        error: () => {
+        error: error => {
           this.programs = [];
           this.workouts = [];
-          this.message = 'programWorkouts.loadError';
+          this.message = errorMessage(error, 'programWorkouts.loadError');
           this.messageStatus = 'error';
         },
       });
@@ -124,6 +125,7 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
 
           this.programWorkoutAssignments = response.data ?? [];
           this.assignmentsReady = true;
+          this.message = response.message || ''; this.messageStatus = 'info';
 
           this.selectedWorkoutIds = Array.from(
             new Set(
@@ -134,7 +136,7 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
           );
         },
         error: (error) => {
-          this.message = error.error?.message || 'programWorkouts.loadError';
+          this.message = errorMessage(error, 'programWorkouts.loadError');
           this.messageStatus = 'error';
         },
       });
@@ -172,22 +174,25 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
     let nextDay = Math.max(0, ...this.programWorkoutAssignments.map(row => row.dayIndex)) + 1;
     this.busy = true;
     this.message = null;
+    const messages: { message: string | null }[] = [];
     from(removed).pipe(
       concatMap(row => this.programWorkoutService.deleteProgramWorkout(row.id).pipe(tap(response => {
         if (!response.success) throw new Error(response.message || 'programWorkouts.unknownError');
+        messages.push(response);
         this.programWorkoutAssignments = this.programWorkoutAssignments.filter(item => item.id !== row.id);
       }))),
       toArray(),
       concatMap(() => from(added).pipe(
         concatMap(workoutId => this.programWorkoutService.addWorkoutToProgram(programId, workoutId, nextDay).pipe(tap(response => {
           if (!response.success || !response.data) throw new Error(response.message || 'programWorkouts.unknownError');
+          messages.push(response);
           this.programWorkoutAssignments = [...this.programWorkoutAssignments, response.data];
           nextDay++;
         }))), toArray(),
       )),
       finalize(() => { this.busy = false; }), takeUntil(this.destroy$),
     ).subscribe({
-      next: () => { this.message = 'programWorkouts.assignSuccess'; this.messageStatus = 'success'; },
+      next: () => { this.message = responseMessage(messages, 'programWorkouts.assignSuccess'); this.messageStatus = 'success'; },
       error: error => this.fail(error),
     });
   }
@@ -212,7 +217,7 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
         }
       }), finalize(() => { this.busy = false; }), takeUntil(this.destroy$),
     ).subscribe({
-      next: () => { this.message = 'programWorkouts.assignSuccess'; this.messageStatus = 'success'; },
+      next: response => { this.message = responseMessage([response], 'programWorkouts.removeSuccess'); this.messageStatus = 'success'; },
       error: error => this.fail(error),
     });
   }
@@ -227,8 +232,7 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
   }
 
   private fail(error: unknown): void {
-    this.message = error instanceof HttpErrorResponse ? error.error?.message || 'programWorkouts.unknownError'
-      : error instanceof Error ? error.message : 'programWorkouts.unknownError';
+    this.message = errorMessage(error, 'programWorkouts.unknownError');
     this.messageStatus = 'error';
   }
 

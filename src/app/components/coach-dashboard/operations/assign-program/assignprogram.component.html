@@ -68,18 +68,13 @@
     </div>
 
     <!-- Loading -->
-    <div
-      *ngIf="loading"
-      class="rounded-xl border border-info-200 bg-info-50 px-4 py-3 text-center text-sm font-medium text-info-700 shadow-sm"
-    >
-      {{ 'assignProgram.loading' | translate }}
-    </div>
+    <app-message *ngIf="loading" message="assignProgram.loading" type="info"></app-message>
 
     <!-- Üzenet -->
     <app-message
       *ngIf="message"
       [message]="message"
-      [type]="success ? 'success' : 'error'"
+      [type]="messageType"
     ></app-message>
 
   </div>

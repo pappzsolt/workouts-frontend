@@ -235,6 +235,10 @@
     "title": "Coach-Profil"
   },
   "coachProgramBuilder": {
+    "updateSuccess": "Programmänderungen gespeichert.",
+    "removeWorkoutSuccess": "Training aus dem Programm entfernt.",
+    "updateWorkoutDaySuccess": "Trainingstag geändert.",
+    "saveExerciseSuccess": "Trainingsübungen gespeichert.",
     "title": "Programm-Builder",
     "editSubtitle": "Vorhandenes Trainingsprogramm bearbeiten",
     "createSubtitle": "Neues Trainingsprogramm erstellen",
@@ -530,6 +534,7 @@
     "myWorkouts": "Meine Trainings"
   },
   "userExercises": {
+    "loadError": "Übungen konnten nicht geladen werden.",
     "unknownWorkout": "Unbekanntes Training",
     "exercises": "Übungen",
     "noDescription": "Keine Beschreibung",
@@ -580,6 +585,7 @@
     "notesPlaceholder": "Z. B.: Dieser Satz war schwierig..."
   },
   "userMyPrograms": {
+    "progressLoadError": "Programmfortschritt konnte nicht geladen werden.",
     "title": "Meine Programme",
     "loading": "Programme werden geladen...",
     "noPrograms": "Derzeit sind keine Programme verfügbar.",
@@ -653,6 +659,7 @@
     "completed": "Abgeschlossen"
   },
   "userWorkouts": {
+    "loadError": "Trainings konnten nicht geladen werden.",
     "program": "Programm",
     "date": "Datum",
     "intensity": "Intensität",
@@ -678,6 +685,7 @@
     "noPrograms": "Keine Programme."
   },
   "newExercise": {
+    "error": "Übung konnte nicht erstellt werden.",
     "title": "Neue Übung",
     "name": "Name",
     "description": "Beschreibung",
@@ -864,6 +872,7 @@
     "pageSize": "Einträge pro Seite"
   },
   "programWorkouts": {
+    "removeSuccess": "Training aus dem Programm entfernt.",
     "programNotSelected": "Kein Programm ausgewählt.",
     "noWorkoutsSelected": "Keine Trainings ausgewählt.",
     "assignSuccess": "Trainings erfolgreich zugewiesen.",
