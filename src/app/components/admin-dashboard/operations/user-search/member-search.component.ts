@@ -1,3 +1,4 @@
+import { AppSearchComponent } from '../../../shared/components/app-search/app-search.component';
 import { Component, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -12,7 +13,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 @Component({
   selector: 'app-member-search',
   standalone: true,
-  imports: [...SHARED_IMPORTS, MessageComponent],
+  imports: [AppSearchComponent, ...SHARED_IMPORTS, MessageComponent],
   templateUrl: './member-search.component.html',
   styleUrls: ['./member-search.component.css'],
 })

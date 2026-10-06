@@ -262,47 +262,15 @@
                  KERESÉS
                  ================================================== -->
 
-            <div class="flex min-w-0 flex-col gap-2">
-              <label
-                for="exerciseSearch"
-                class="text-sm font-semibold text-content-700"
-              >
-                {{ 'coachWorkoutEdit.searchExercise' | translate }}
-              </label>
-
-              <div class="relative min-w-0">
-
-                <span
-                  class="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-lg"
-                >
-                  🔎
-                </span>
-
-                <input
-                  id="exerciseSearch"
-                  type="text"
-                  name="exerciseSearchTerm"
-                  [(ngModel)]="exerciseSearchTerm"
-                  [placeholder]="'coachWorkoutEdit.searchExercisePlaceholder' | translate"
-                  autocomplete="off"
-                  class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white py-2.5 pl-11 pr-11 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
-                />
-
-                <button
-                  *ngIf="exerciseSearchTerm"
-                  type="button"
-                  [attr.aria-label]="'coachWorkoutEdit.clearSearch' | translate"
-                  (click)="
-                    exerciseSearchTerm = '';
-                    selectedExerciseId = null
-                  "
-                  class="absolute right-3 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-lg text-sm font-bold text-content-400 transition hover:bg-surface-100 hover:text-content-700"
-                >
-                  <app-icon name="x" sizeClass="h-5 w-5" />
-                </button>
-
-              </div>
-            </div>
+            <app-search
+              inputId="exerciseSearch"
+              [searchTerm]="exerciseSearchTerm"
+              label="coachWorkoutEdit.searchExercise"
+              placeholder="coachWorkoutEdit.searchExercisePlaceholder"
+              [showClearButton]="true"
+              (searchTermChange)="onExerciseSearchChange($event)"
+              [debounceMs]="0" clearLabel="coachWorkoutEdit.clearSearch"
+            ></app-search>
 
             <!-- ==================================================
                  TALÁLATOK

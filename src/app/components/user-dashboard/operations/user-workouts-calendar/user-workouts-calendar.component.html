@@ -7,6 +7,16 @@
   <div
     class="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-5 px-2.5 py-4 sm:gap-6 sm:px-6 sm:py-8 lg:px-8"
   >
+    <app-search
+      inputId="calendarWorkoutSearch"
+      [searchTerm]="searchTerm"
+      label="coachWorkouts.search"
+      placeholder="coachWorkouts.searchPlaceholder"
+      [showClearButton]="true"
+      (searchTermChange)="onSearchChange($event)"
+      class="mb-4 block"
+    ></app-search>
+
     <!-- ==================================================
          NAPTÁR FEJLÉC
          ================================================== -->
@@ -159,6 +169,13 @@
       </div>
     </div>
 
+    <app-message
+      *ngIf="searchTerm.trim() && !hasWorkoutsInCurrentMonth()"
+      message="appSearch.noResults"
+      type="info"
+      class="hidden sm:block"
+    ></app-message>
+
     <!-- Mobilon az edzések listája olvashatóbb, mint a szűk havi rács. -->
     <section
       class="flex flex-col gap-3 sm:hidden"
@@ -197,7 +214,7 @@
       </ng-container>
       <app-message
         *ngIf="!hasWorkoutsInCurrentMonth()"
-        [message]="'userWorkoutsCalendar.noMonthWorkouts'"
+        [message]="searchTerm.trim() ? 'appSearch.noResults' : 'userWorkoutsCalendar.noMonthWorkouts'"
         type="info"
       ></app-message>
     </section>

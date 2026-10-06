@@ -1,3 +1,13 @@
+<app-search
+  inputId="programBoardSearch"
+  [searchTerm]="searchTerm"
+  label="appSearch.programsLabel"
+  placeholder="appSearch.programsPlaceholder"
+  [showClearButton]="true"
+  (searchTermChange)="searchTerm = $event"
+  class="mb-4 block"
+></app-search>
+
 <!-- Betöltés állapot -->
 <div
   *ngIf="loading"
@@ -16,11 +26,11 @@
 
 <!-- Program oszlopok -->
 <div
-  *ngIf="!loading && programs?.length"
+  *ngIf="!loading && filteredPrograms.length"
   class="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
 >
   <div
-    *ngFor="let program of programs; trackBy: trackByProgram"
+    *ngFor="let program of filteredPrograms; trackBy: trackByProgram"
     class="min-w-0"
   >
     <!-- Program kiválasztása rádiógombbal -->
@@ -74,8 +84,8 @@
 
 <!-- Nincs program -->
 <app-message
-  *ngIf="!loading && (!programs || !programs.length)"
-  [message]="'coachProgramBoard.noPrograms'"
+  *ngIf="!loading && !filteredPrograms.length"
+  [message]="searchTerm.trim() ? 'appSearch.noResults' : 'coachProgramBoard.noPrograms'"
   type="info"
   class="block"
 ></app-message>

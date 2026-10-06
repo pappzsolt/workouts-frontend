@@ -1,3 +1,4 @@
+import { AppSearchComponent } from '../../../shared/components/app-search/app-search.component';
 import { Component, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -16,7 +17,7 @@ interface LoginAuditFilters {
 @Component({
   selector: 'app-login-audit-logs',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [AppSearchComponent, ...SHARED_IMPORTS],
   templateUrl: './login-audit-logs.component.html',
   styleUrls: ['./login-audit-logs.component.css'],
 })

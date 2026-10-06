@@ -1,3 +1,5 @@
+import { matchesSearch } from '../components/app-search/search-match';
+import { AppSearchComponent } from '../components/app-search/app-search.component';
 import { errorMessage, responseMessage } from '../../../models/backend-dto/common/api-response-message';
 import type { CoachNameId } from '../../../models/common/coach-name-id.model';
 import { Component, EventEmitter, Output, Input, OnInit, inject, DestroyRef } from '@angular/core';
@@ -14,13 +16,23 @@ import { SHARED_IMPORTS } from '../shared-imports';
 @Component({
   selector: 'app-coach-select',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppSelectComponent],
+  imports: [AppSearchComponent, ...SHARED_IMPORTS, AppSelectComponent],
   template: `
     <div>
       <label for="coachSelect" class="block mb-1">
         {{ 'coachSelect.coach' | translate }}
       </label>
 
+      <app-search
+        inputId="coachSelectSearch"
+        [searchTerm]="searchTerm"
+        label="appSearch.coachesLabel"
+        placeholder="appSearch.coachesPlaceholder"
+        [showClearButton]="true"
+        (searchTermChange)="searchTerm = $event"
+        class="mb-3 block"
+      ></app-search>
+    <app-message *ngIf="searchTerm.trim() && !matchingOptions.length" message="appSearch.noResults" type="info" class="mb-3 block"></app-message>
       <app-select
         id="coachSelect"
         [value]="selectedCoachId"
@@ -53,8 +65,14 @@ export class CoachSelectComponent implements OnInit {
 
   constructor(private coachService: CoachNameIdService) {}
 
+  searchTerm = '';
+
+  get matchingOptions(): CoachNameId[] {
+    return this.coaches.filter(coach => matchesSearch(this.searchTerm, coach.name));
+  }
+
   get coachOptions(): SelectOption<number>[] {
-    return this.coaches.map((coach) => ({ value: coach.id, label: coach.name }));
+    return this.coaches.filter(coach => coach.id === this.selectedCoachId || matchesSearch(this.searchTerm, coach.name)).map((coach) => ({ value: coach.id, label: coach.name }));
   }
 
   ngOnInit(): void {

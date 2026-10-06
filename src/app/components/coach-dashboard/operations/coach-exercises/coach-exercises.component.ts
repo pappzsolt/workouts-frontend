@@ -1,3 +1,4 @@
+import { AppSearchComponent } from '../../../shared/components/app-search/app-search.component';
 import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
 import type { SelectOption } from '../../../../models/common/select-option.model';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
@@ -21,7 +22,7 @@ import { ExerciseSearchFieldComponent } from '../../../shared/components/exercis
 @Component({
   selector: 'app-exercise-controller',
   standalone: true,
-  imports: [...SHARED_IMPORTS, ExerciseSearchFieldComponent, AppCardComponent, PaginationComponent],
+  imports: [AppSearchComponent, ...SHARED_IMPORTS, ExerciseSearchFieldComponent, AppCardComponent, PaginationComponent],
   templateUrl: './coach-exercises.component.html',
   styleUrls: ['./coach-exercises.component.css'],
 })

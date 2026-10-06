@@ -947,5 +947,16 @@
       "invalidAccountId": "A fiókazonosítónak pozitív számnak kell lennie.",
       "invalidDateRange": "A kezdő időpont nem lehet későbbi a záró időpontnál."
     }
+  },
+  "appSearch": {
+    "clear": "Keresés törlése",
+    "usersLabel": "Felhasználók keresése",
+    "usersPlaceholder": "Felhasználónév…",
+    "adminUsersPlaceholder": "Név, e-mail vagy szerepkör…",
+    "coachesLabel": "Edzők keresése",
+    "coachesPlaceholder": "Edző neve…",
+    "programsLabel": "Programok keresése",
+    "programsPlaceholder": "Program neve vagy leírása…",
+    "noResults": "Nincs a keresésnek megfelelő találat."
   }
 }

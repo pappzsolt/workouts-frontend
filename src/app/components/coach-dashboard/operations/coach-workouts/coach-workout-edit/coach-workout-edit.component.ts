@@ -1,3 +1,4 @@
+import { AppSearchComponent } from '../../../../shared/components/app-search/app-search.component';
 import type { WorkoutExerciseView } from '../../../../../models/workout/workout-exercise-view.model';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
@@ -28,7 +29,7 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 @Component({
   selector: 'app-coach-workout-edit',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppSelectComponent],
+  imports: [AppSearchComponent, ...SHARED_IMPORTS, AppSelectComponent],
   templateUrl: './coach-workout-edit.component.html',
   styleUrls: ['./coach-workout-edit.component.css'],
 })
@@ -446,6 +447,11 @@ export class CoachWorkoutEditComponent implements OnInit {
   // ==========================================================
   // ELÉRHETŐ EXERCISE-EK
   // ==========================================================
+
+  onExerciseSearchChange(term: string): void {
+    this.exerciseSearchTerm = term;
+    if (!term) this.selectedExerciseId = null;
+  }
 
   get availableExercises(): Exercise[] {
     const locale = this.languageService.getCurrentLanguage();

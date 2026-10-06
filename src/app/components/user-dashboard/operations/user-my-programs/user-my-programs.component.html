@@ -32,6 +32,15 @@
     ></app-message>
 
 
+    <app-search
+      inputId="userProgramSearch"
+      [searchTerm]="searchTerm"
+      label="appSearch.programsLabel"
+      placeholder="appSearch.programsPlaceholder"
+      [showClearButton]="true"
+      (searchTermChange)="onSearchChange($event)"
+    ></app-search>
+
     <!-- PROGRAMOK -->
 
     <ng-container *ngIf="totalItems > 0; else noPrograms">
@@ -235,7 +244,7 @@
         <p
           class="text-sm font-medium text-content-500"
         >
-          {{ 'userMyPrograms.noPrograms' | translate }}
+          {{ (searchTerm.trim() ? 'appSearch.noResults' : 'userMyPrograms.noPrograms') | translate }}
         </p>
 
       </div>

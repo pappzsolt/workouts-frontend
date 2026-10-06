@@ -947,5 +947,16 @@
       "invalidAccountId": "Die Konto-ID muss eine positive Zahl sein.",
       "invalidDateRange": "Der Startzeitpunkt darf nicht nach dem Endzeitpunkt liegen."
     }
+  },
+  "appSearch": {
+    "clear": "Suche löschen",
+    "usersLabel": "Benutzer suchen",
+    "usersPlaceholder": "Benutzername…",
+    "adminUsersPlaceholder": "Name, E-Mail oder Rolle…",
+    "coachesLabel": "Trainer suchen",
+    "coachesPlaceholder": "Trainername…",
+    "programsLabel": "Programme suchen",
+    "programsPlaceholder": "Programmname oder Beschreibung…",
+    "noResults": "Keine Ergebnisse für diese Suche."
   }
 }

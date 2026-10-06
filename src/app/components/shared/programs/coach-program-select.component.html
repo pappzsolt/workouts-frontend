@@ -1,3 +1,13 @@
+<app-search
+  inputId="programSelectSearch"
+  [searchTerm]="searchTerm"
+  label="appSearch.programsLabel"
+  placeholder="appSearch.programsPlaceholder"
+  [showClearButton]="true"
+  (searchTermChange)="searchTerm = $event"
+  class="mb-3 block" [disabled]="loading"
+></app-search>
+<app-message *ngIf="searchTerm.trim() && !matchingOptions.length && !loading" message="appSearch.noResults" type="info" class="mb-3 block"></app-message>
 <div class="mb-5">
   <label for="coachProgramSelect" class="mb-2 block text-sm font-semibold text-content-700">
     {{ 'coachProgramSelect.program' | translate }}:

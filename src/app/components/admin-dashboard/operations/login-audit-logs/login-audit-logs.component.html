@@ -52,19 +52,15 @@
           />
         </app-form-field>
 
-        <app-form-field
-          [labelKey]="'adminLoginAudit.filters.username'"
-          controlId="login-audit-username"
-        >
-          <input
-            id="login-audit-username"
-            name="username"
-            type="text"
-            [(ngModel)]="filters.username"
-            [placeholder]="'adminLoginAudit.filters.usernamePlaceholder' | translate"
-            class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm text-content-800 outline-none transition placeholder:text-content-400 focus:border-primary-400 focus:ring-4 focus:ring-primary-600/10"
-          />
-        </app-form-field>
+        <app-search
+          inputId="login-audit-username"
+          [searchTerm]="filters.username"
+          label="adminLoginAudit.filters.username"
+          placeholder="adminLoginAudit.filters.usernamePlaceholder"
+          [showClearButton]="true"
+          (searchTermChange)="filters.username = $event"
+          [debounceMs]="0"
+        ></app-search>
 
         <app-form-field
           [labelKey]="'adminLoginAudit.filters.from'"

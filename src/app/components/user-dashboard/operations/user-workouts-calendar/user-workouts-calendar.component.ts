@@ -1,3 +1,5 @@
+import { matchesSearch } from '../../../shared/components/app-search/search-match';
+import { AppSearchComponent } from '../../../shared/components/app-search/app-search.component';
 import type { CalendarDay } from '../../../../models/common/calendar-day.model';
 import type { ScheduledWorkout } from '../../../../models/scheduled-workout/scheduled-workout.model';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
@@ -13,7 +15,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 @Component({
   selector: 'app-user-workouts-calendar',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [AppSearchComponent, ...SHARED_IMPORTS],
   templateUrl: './user-workouts-calendar.component.html',
   styleUrls: ['./user-workouts-calendar.component.css'],
 })
@@ -32,6 +34,12 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   // =========================================================
 
   scheduledWorkouts: ScheduledWorkout[] = [];
+  searchTerm = '';
+
+  onSearchChange(term: string): void {
+    this.searchTerm = term;
+    this.rebuildWorkoutDateIndex();
+  }
 
   /** Előre indexelt workoutok dátum szerint, hogy a template ne filterezze újra a teljes listát. */
   private workoutsByDate = new Map<string, ScheduledWorkout[]>();
@@ -285,7 +293,7 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
     this.workoutsByDate.clear();
 
     for (const workout of this.scheduledWorkouts) {
-      if (!workout.scheduledAt) {
+      if (!workout.scheduledAt || !matchesSearch(this.searchTerm, workout.workoutName)) {
         continue;
       }
 

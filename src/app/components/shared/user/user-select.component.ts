@@ -1,3 +1,5 @@
+import { matchesSearch } from '../components/app-search/search-match';
+import { AppSearchComponent } from '../components/app-search/app-search.component';
 import { errorMessage, responseMessage } from '../../../models/backend-dto/common/api-response-message';
 import type { UserNameId } from '../../../models/common/user-name-id.model';
 import { Component, OnInit, Input, Output, EventEmitter, inject, DestroyRef } from '@angular/core';
@@ -14,12 +16,22 @@ import { SHARED_IMPORTS } from '../shared-imports';
 @Component({
   selector: 'app-user-select',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppSelectComponent],
+  imports: [AppSearchComponent, ...SHARED_IMPORTS, AppSelectComponent],
   template: `
     <label for="userSelect" class="user-select-label">
       {{ 'userSelect.selectUser' | translate }}
     </label>
 
+    <app-search
+      inputId="userSelectSearch"
+      [searchTerm]="searchTerm"
+      label="appSearch.usersLabel"
+      placeholder="appSearch.usersPlaceholder"
+      [showClearButton]="true"
+      (searchTermChange)="searchTerm = $event"
+      class="mb-3 block" [disabled]="disabled"
+    ></app-search>
+    <app-message *ngIf="searchTerm.trim() && !matchingOptions.length" message="appSearch.noResults" type="info" class="mb-3 block"></app-message>
     <app-select
       id="userSelect"
       [value]="selectedUserId"
@@ -56,8 +68,14 @@ export class UserSelectComponent implements OnInit {
 
   constructor(private userService: UserNameIdService) {}
 
+  searchTerm = '';
+
+  get matchingOptions(): UserNameId[] {
+    return this.users.filter(user => matchesSearch(this.searchTerm, user.username));
+  }
+
   get userOptions(): SelectOption<number>[] {
-    return this.users.map((user) => ({ value: user.id, label: user.username }));
+    return this.users.filter(user => user.id === this.selectedUserId || matchesSearch(this.searchTerm, user.username)).map((user) => ({ value: user.id, label: user.username }));
   }
 
   ngOnInit(): void {

@@ -1,3 +1,5 @@
+import { matchesSearch } from '../components/app-search/search-match';
+import { AppSearchComponent } from '../components/app-search/app-search.component';
 import { Component, DestroyRef, EventEmitter, Input, OnChanges, OnInit, Output, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserNameIdService } from '../../../services/user/user-name-id.service';
@@ -7,12 +9,22 @@ import { SHARED_IMPORTS } from '../shared-imports';
 @Component({
   selector: 'app-user-multi-select',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [AppSearchComponent, ...SHARED_IMPORTS],
   template: `
+    <app-search
+      inputId="programUserSearch"
+      [searchTerm]="searchTerm"
+      label="appSearch.usersLabel"
+      placeholder="appSearch.usersPlaceholder"
+      [showClearButton]="true"
+      (searchTermChange)="searchTerm = $event"
+      class="mb-3 block" [disabled]="disabled || !ready"
+    ></app-search>
+    <app-message *ngIf="ready && searchTerm.trim() && !filteredUsers.length" message="appSearch.noResults" type="info" class="mb-3 block"></app-message>
     <fieldset data-testid="program-users" [disabled]="disabled || !ready"
       class="max-h-64 overflow-y-auto rounded-lg border border-surface-300 p-3">
       <legend class="px-1 text-sm font-semibold">{{ 'userSelect.selectUser' | translate }}</legend>
-      <label *ngFor="let user of users" class="flex min-h-11 items-center gap-3 break-words">
+      <label *ngFor="let user of filteredUsers" class="flex min-h-11 items-center gap-3 break-words">
         <input type="checkbox" [attr.data-user-id]="user.id"
           [checked]="selectedUserIds.includes(user.id)"
           [disabled]="assignedUserIds.includes(user.id)"
@@ -32,6 +44,11 @@ export class UserMultiSelectComponent implements OnInit, OnChanges {
   @Output() readonly selectedUserIdsChange = new EventEmitter<number[]>();
   @Output() readonly readyChange = new EventEmitter<boolean>();
   users: UserNameId[] = [];
+  searchTerm = '';
+
+  get filteredUsers(): UserNameId[] {
+    return this.users.filter(user => matchesSearch(this.searchTerm, user.username));
+  }
   ready = false;
   message = '';
   private loaded = false;

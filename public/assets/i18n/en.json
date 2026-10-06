@@ -947,5 +947,16 @@
       "invalidAccountId": "Account ID must be a positive number.",
       "invalidDateRange": "The start time cannot be later than the end time."
     }
+  },
+  "appSearch": {
+    "clear": "Clear search",
+    "usersLabel": "Search users",
+    "usersPlaceholder": "Username…",
+    "adminUsersPlaceholder": "Name, email or role…",
+    "coachesLabel": "Search coaches",
+    "coachesPlaceholder": "Coach name…",
+    "programsLabel": "Search programs",
+    "programsPlaceholder": "Program name or description…",
+    "noResults": "No results match your search."
   }
 }

@@ -1,3 +1,5 @@
+import { matchesSearch } from '../../components/app-search/search-match';
+import { AppSearchComponent } from '../../components/app-search/app-search.component';
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, inject } from '@angular/core';
 import { LoggerService } from '../../../../services/logger.service';
 
@@ -13,7 +15,7 @@ import { SHARED_IMPORTS } from '../../shared-imports';
 @Component({
   selector: 'app-coach-program-board',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [AppSearchComponent, ...SHARED_IMPORTS],
   templateUrl: './coach-program-board.component.html',
   styleUrls: ['./coach-program-board.component.css'],
 })
@@ -31,6 +33,12 @@ export class CoachProgramBoardComponent implements OnInit, OnDestroy {
 
   @Output()
   programSelected = new EventEmitter<number>();
+
+  searchTerm = '';
+
+  get filteredPrograms(): CoachProgram[] {
+    return this.programs.filter(program => matchesSearch(this.searchTerm, program.programName, program.programDescription));
+  }
 
   selectedProgramId: number | null = null;
 

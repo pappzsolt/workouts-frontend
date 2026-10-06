@@ -1,3 +1,5 @@
+import { matchesSearch } from '../components/app-search/search-match';
+import { AppSearchComponent } from '../components/app-search/app-search.component';
 import { Component, OnInit, OnChanges, Input, Output, EventEmitter, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -14,7 +16,7 @@ import { SHARED_IMPORTS } from '../shared-imports';
 @Component({
   selector: 'app-coach-program-select',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppSelectComponent],
+  imports: [AppSearchComponent, ...SHARED_IMPORTS, AppSelectComponent],
   templateUrl: './coach-program-select.component.html',
 })
 export class CoachProgramSelectComponent implements OnInit, OnChanges {
@@ -42,8 +44,14 @@ export class CoachProgramSelectComponent implements OnInit, OnChanges {
     this.readyChange.emit(!this.loading && this.programs.some(program => program.programId === this.selectedProgramId));
   }
 
+  searchTerm = '';
+
+  get matchingOptions(): CoachProgram[] {
+    return this.programs.filter(program => matchesSearch(this.searchTerm, program.programName, program.programDescription));
+  }
+
   get programOptions(): SelectOption<number>[] {
-    return this.programs.map((program) => ({ value: program.programId, label: program.programName }));
+    return this.programs.filter(program => program.programId === this.selectedProgramId || matchesSearch(this.searchTerm, program.programName, program.programDescription)).map((program) => ({ value: program.programId, label: program.programName }));
   }
 
   ngOnInit(): void {

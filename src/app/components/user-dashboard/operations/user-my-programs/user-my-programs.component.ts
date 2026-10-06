@@ -1,3 +1,5 @@
+import { matchesSearch } from '../../../shared/components/app-search/search-match';
+import { AppSearchComponent } from '../../../shared/components/app-search/app-search.component';
 import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
@@ -15,7 +17,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 @Component({
   selector: 'app-user-my-programs',
   standalone: true,
-  imports: [...SHARED_IMPORTS, SidePaginationComponent],
+  imports: [AppSearchComponent, ...SHARED_IMPORTS, SidePaginationComponent],
   templateUrl: './user-my-programs.component.html',
   styleUrls: ['./user-my-programs.component.css'],
 })
@@ -32,6 +34,17 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
   // ============================================================
 
   private allPrograms: UserProgram[] = [];
+  searchTerm = '';
+
+  get filteredPrograms(): UserProgram[] {
+    return this.allPrograms.filter(program => matchesSearch(this.searchTerm, program.name, program.description));
+  }
+
+  onSearchChange(term: string): void {
+    this.searchTerm = term;
+    this.currentPage = 1;
+    this.updatePaginatedPrograms();
+  }
 
   currentPage = 1;
   pageSize = 1;
@@ -201,7 +214,9 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     const endIndex = startIndex + this.pageSize;
 
-    this.paginatedPrograms = this.allPrograms.slice(startIndex, endIndex);
+    const programs = this.filteredPrograms;
+    this.totalItems = programs.length;
+    this.paginatedPrograms = programs.slice(startIndex, endIndex);
   }
 
   // ============================================================

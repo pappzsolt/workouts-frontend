@@ -20,6 +20,15 @@
     >
     </app-message>
 
+    <app-search
+      inputId="adminUserSearch"
+      [searchTerm]="searchTerm"
+      label="appSearch.usersLabel"
+      placeholder="appSearch.adminUsersPlaceholder"
+      [showClearButton]="true"
+      (searchTermChange)="onSearchChange($event)"
+    ></app-search>
+
     <!-- Felhasználók -->
     <ng-container *ngIf="paginatedUsers.length > 0; else noUsers">
 
@@ -110,7 +119,7 @@
       <div
         class="flex min-h-32 items-center justify-center rounded-2xl border border-surface-200 bg-white px-4 py-8 text-center text-sm font-medium text-content-500 shadow-sm"
       >
-        {{ 'adminUsers.noUsers' | translate }}
+        {{ (searchTerm.trim() ? 'appSearch.noResults' : 'adminUsers.noUsers') | translate }}
       </div>
     </ng-template>
 
