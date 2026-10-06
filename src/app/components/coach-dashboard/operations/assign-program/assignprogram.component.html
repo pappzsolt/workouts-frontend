@@ -19,28 +19,22 @@
 
       <!-- Felhasználó -->
       <div class="min-w-0">
-        <label
+        <label for="assignProgramUser"
           class="mb-2 block text-sm font-semibold text-content-700"
         >
           {{ 'assignProgram.user' | translate }}:
         </label>
 
-        <select
-          [(ngModel)]="userId"
+        <app-select
+          id="assignProgramUser"
+          name="userId"
+          [value]="userId"
+          (valueChange)="userId = $event ?? null"
+          [options]="userOptions"
+          placeholder="assignProgram.selectUser"
+          [placeholderValue]="null"
           [disabled]="loading || !usersReady"
-          class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
-        >
-          <option [ngValue]="null">
-            {{ 'assignProgram.selectUser' | translate }}
-          </option>
-
-          <option
-            *ngFor="let user of users; trackBy: trackByUser"
-            [ngValue]="user.id"
-          >
-            {{ user.username }}
-          </option>
-        </select>
+        ></app-select>
       </div>
 
       <!-- Program -->

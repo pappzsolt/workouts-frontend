@@ -1,7 +1,8 @@
 import { Component, DestroyRef, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, of } from 'rxjs';
+import { finalize } from 'rxjs';
+import { errorMessage, responseMessage } from '../../models/backend-dto/common/api-response-message';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -69,26 +70,20 @@ export class ResetPasswordComponent {
     this.authService
       .resetPassword(this.token, newPassword)
       .pipe(
-        catchError((error: unknown) => {
-          const httpError = error as HttpErrorResponse;
-          this.errorMessage =
-            httpError.status === 400
-              ? (httpError.error?.message ?? 'resetPassword.invalidToken')
-              : httpError.status === 503
-                ? 'resetPassword.serviceUnavailable'
-                : 'resetPassword.resetFailed';
-          this.loading = false;
-          return of(null);
-        }),
+        finalize(() => { this.loading = false; }),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe((response) => {
-        this.loading = false;
-
-        if (response === undefined) {
+      .subscribe({
+        next: response => {
           this.completed = true;
-          this.successMessage = 'resetPassword.success';
-        }
+          this.successMessage = responseMessage([response], 'resetPassword.success');
+        },
+        error: error => {
+          const status = error instanceof HttpErrorResponse ? error.status : undefined;
+          const fallback = status === 400 ? 'resetPassword.invalidToken'
+            : status === 503 ? 'resetPassword.serviceUnavailable' : 'resetPassword.resetFailed';
+          this.errorMessage = errorMessage(error, fallback);
+        },
       });
   }
 

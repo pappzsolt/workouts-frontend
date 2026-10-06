@@ -1,6 +1,8 @@
-import { Component, Input, Output, EventEmitter, OnInit, DestroyRef, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, DestroyRef, inject, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+import { AppSelectComponent } from '../components/app-select/app-select.component';
+import type { SelectOption } from '../../../models/common/select-option.model';
 import { Role } from '../../../models/role.model';
 import { RoleService } from '../../../services/roles/role.service';
 
@@ -9,27 +11,22 @@ import { SHARED_IMPORTS } from '../shared-imports';
 @Component({
   selector: 'app-role-select',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, AppSelectComponent],
   template: `
     <div class="w-full">
       <label for="roleSelect" class="mb-2 block text-sm font-semibold text-content-700">
         {{ 'roleSelect.role' | translate }}
       </label>
 
-      <select
+      <app-select
+        #roleSelect
         id="roleSelect"
-        [(ngModel)]="selectedRole"
-        (change)="onRoleChange()"
-        class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-4 py-2.5 text-base text-content-800 shadow-sm outline-none transition-all duration-200 hover:border-surface-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
-      >
-        <option [ngValue]="undefined">
-          {{ 'roleSelect.select' | translate }}
-        </option>
-
-        <option *ngFor="let role of roles; trackBy: trackByRole" [ngValue]="role">
-          {{ role.name }}
-        </option>
-      </select>
+        [value]="selectedRole?.id"
+        [options]="roleOptions"
+        placeholder="roleSelect.select"
+        [placeholderValue]="undefined"
+        (valueChange)="onRoleChange($event)"
+      ></app-select>
 
       <app-message
         *ngIf="errorMessage"
@@ -52,6 +49,12 @@ export class RoleSelectComponent implements OnInit {
   roleSelected = new EventEmitter<Role>();
 
   errorMessage = '';
+
+  @ViewChild('roleSelect') private select?: AppSelectComponent<number>;
+
+  get roleOptions(): SelectOption<number>[] {
+    return this.roles.map(role => ({ value: role.id, label: role.name }));
+  }
 
   constructor(private roleService: RoleService) {}
 
@@ -77,13 +80,12 @@ export class RoleSelectComponent implements OnInit {
     }
   }
 
-  onRoleChange(): void {
-    if (this.selectedRole) {
-      this.roleSelected.emit(this.selectedRole);
-
-      // Select visszaállítása
-      this.selectedRole = undefined;
-    }
+  onRoleChange(roleId: number | undefined): void {
+    const role = this.roles.find(item => item.id === roleId);
+    if (!role) return;
+    this.roleSelected.emit(role);
+    this.selectedRole = undefined;
+    this.select?.reset();
   }
 
   trackByRole(index: number, role: Role): number {

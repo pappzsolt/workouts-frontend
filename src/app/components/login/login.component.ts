@@ -5,7 +5,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LoggerService } from '../../services/logger.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth/auth.service';
-import { catchError, of } from 'rxjs';
+import { finalize } from 'rxjs';
+import { errorMessage } from '../../models/backend-dto/common/api-response-message';
 import { Router } from '@angular/router';
 import { USER_MESSAGES } from '../../constants/user-messages';
 import { SHARED_IMPORTS } from '../shared/shared-imports';
@@ -54,14 +55,9 @@ export class LoginComponent {
     this.authService
       .login(username, password)
       .pipe(
-        catchError((err) => {
-          this.logger.error('Login hiba:', err);
-          this.errorMessage = USER_MESSAGES.userOrPassFailed;
-          this.loading = false;
-          return of(null);
-        }),
-      )
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe((res: LoginResponse | null) => {
+        finalize(() => { this.loading = false; }),
+        takeUntilDestroyed(this.destroyRef),
+      ).subscribe({ next: (res: LoginResponse) => {
         this.loading = false;
 
         if (res) {
@@ -78,6 +74,9 @@ export class LoginComponent {
             this.router.navigate(['/login']);
           }
         }
-      });
+      }, error: error => {
+        this.logger.error('Login hiba:', error);
+        this.errorMessage = errorMessage(error, USER_MESSAGES.userOrPassFailed);
+      } });
   }
 }

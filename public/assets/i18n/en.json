@@ -515,6 +515,7 @@
     "loadError": "An error occurred while loading roles."
   },
   "userSelect": {
+    "loadError": "Failed to load users.",
     "selectUser": "Select user",
     "selectUserOption": "-- Select user --"
   },
@@ -523,6 +524,7 @@
     "selectWorkoutOption": "-- Select workout --"
   },
   "coachSelect": {
+    "loadError": "Failed to load coaches.",
     "coach": "Coach",
     "select": "-- Select --"
   },

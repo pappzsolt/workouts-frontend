@@ -1,7 +1,8 @@
 import { Component, DestroyRef, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { catchError, of } from 'rxjs';
+import { finalize } from 'rxjs';
+import { errorMessage } from '../../models/backend-dto/common/api-response-message';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
@@ -46,23 +47,16 @@ export class ForgotPasswordComponent {
     this.authService
       .requestPasswordReset(this.form.controls.email.value.trim())
       .pipe(
-        catchError((error: unknown) => {
-          const httpError = error as HttpErrorResponse;
-          this.errorMessage =
-            httpError.status === 503
-              ? 'forgotPassword.serviceUnavailable'
-              : 'forgotPassword.requestFailed';
-          this.loading = false;
-          return of(null);
-        }),
+        finalize(() => { this.loading = false; }),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe((response) => {
-        this.loading = false;
-
-        if (response) {
-          this.successMessage = response.message;
-        }
+      .subscribe({
+        next: response => { this.successMessage = response.message; },
+        error: error => {
+          const fallback = error instanceof HttpErrorResponse && error.status === 503
+            ? 'forgotPassword.serviceUnavailable' : 'forgotPassword.requestFailed';
+          this.errorMessage = errorMessage(error, fallback);
+        },
       });
   }
 

@@ -1,6 +1,6 @@
 import type { SelectOption, SelectValue } from '../../../../models/common/select-option.model';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { FormsModule, NgModel } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
@@ -27,7 +27,14 @@ export class AppSelectComponent<T extends SelectValue = string> {
   @Input() className =
     'block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm disabled:cursor-not-allowed disabled:bg-surface-50 disabled:text-content-400 disabled:opacity-80';
 
+  @ViewChild(NgModel) private model?: NgModel;
+
   @Output() valueChange = new EventEmitter<T>();
+
+  reset(value?: T): void {
+    this.value = value;
+    this.model?.reset({ value, disabled: this.disabled });
+  }
 
   onValueChange(value: T): void {
     this.valueChange.emit(value);

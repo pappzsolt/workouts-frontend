@@ -362,20 +362,12 @@
           controlId="isUnilateral"
         >
 
-          <select
+          <app-select
             id="isUnilateral"
             name="isUnilateral"
-            [(ngModel)]="exercise.isUnilateral"
-            class="min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
-          >
-            <option [ngValue]="false">
-              {{ 'common.no' | translate }}
-            </option>
-
-            <option [ngValue]="true">
-              {{ 'common.yes' | translate }}
-            </option>
-          </select>
+            [(value)]="exercise.isUnilateral"
+            [options]="yesNoOptions"
+          ></app-select>
         </app-form-field>
 
         <!-- Testsúlyos gyakorlat -->
@@ -385,20 +377,12 @@
           controlId="isBodyweight"
         >
 
-          <select
+          <app-select
             id="isBodyweight"
             name="isBodyweight"
-            [(ngModel)]="exercise.isBodyweight"
-            class="min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
-          >
-            <option [ngValue]="false">
-              {{ 'common.no' | translate }}
-            </option>
-
-            <option [ngValue]="true">
-              {{ 'common.yes' | translate }}
-            </option>
-          </select>
+            [(value)]="exercise.isBodyweight"
+            [options]="yesNoOptions"
+          ></app-select>
         </app-form-field>
 
         <!-- ======================================================

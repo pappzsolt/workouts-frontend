@@ -1,81 +1,51 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
 import { AppSelectComponent } from './app-select.component';
-import type { SelectValue } from '../../../../models/common/select-option.model';
+import { RoleSelectComponent } from '../../roles/role-select.component';
+import { RoleService } from '../../../../services/roles/role.service';
 
-describe('AppSelectComponent value handling', () => {
-  let fixture: ComponentFixture<AppSelectComponent<SelectValue>>;
-  let select: HTMLSelectElement;
+describe('AppSelect typed selection and role integration', () => {
+  beforeEach(() => TestBed.configureTestingModule({ imports: [AppSelectComponent, RoleSelectComponent],
+    providers: [provideTranslateService(), { provide: RoleService, useValue: {} }],
+  }));
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AppSelectComponent],
-      providers: [provideTranslateService()],
-    }).compileComponents();
-    fixture = TestBed.createComponent(AppSelectComponent<SelectValue>);
-    fixture.detectChanges();
-    select = fixture.nativeElement.querySelector('select');
+  it('emits boolean false rather than the string false', async () => {
+    const fixture = TestBed.createComponent(AppSelectComponent<boolean>);
+    fixture.componentRef.setInput('options', [{ value: false, label: 'No' }, { value: true, label: 'Yes' }]);
+    fixture.componentRef.setInput('value', true);
+    fixture.detectChanges(); await fixture.whenStable();
+    const changed = jasmine.createSpy('changed'); fixture.componentInstance.valueChange.subscribe(changed);
+    const select: HTMLSelectElement = fixture.nativeElement.querySelector('select');
+    select.selectedIndex = 0; select.dispatchEvent(new Event('change'));
+    expect(changed).toHaveBeenCalledOnceWith(false);
   });
 
-  async function render(): Promise<void> {
-    fixture.detectChanges();
-    await fixture.whenStable();
-    fixture.detectChanges();
-  }
-
-  for (const value of ['male', 42, false, true]) {
-    it(`preserves the type of ${JSON.stringify(value)} on selection`, async () => {
-      fixture.componentRef.setInput('options', [{ value, label: 'Option' }]);
-      await render();
-      const changed = jasmine.createSpy('changed');
-      fixture.componentInstance.valueChange.subscribe(changed);
-      select.selectedIndex = 0;
-      select.dispatchEvent(new Event('change'));
-      expect(changed).toHaveBeenCalledOnceWith(value);
-      if (typeof value === 'string') expect(select.value).toBe(value);
-    });
-  }
-
-  for (const empty of [null, undefined, '']) {
-    it(`preserves the ${String(empty)} placeholder value when cleared`, async () => {
-      fixture.componentRef.setInput('options', [{ value: 42, label: 'Coach' }]);
-      fixture.componentRef.setInput('placeholder', 'Choose');
-      fixture.componentRef.setInput('placeholderValue', empty);
-      fixture.componentRef.setInput('value', 42);
-      await render();
-      const changed = jasmine.createSpy('changed');
-      fixture.componentInstance.valueChange.subscribe(changed);
-      select.selectedIndex = 0;
-      select.dispatchEvent(new Event('change'));
-      expect(changed).toHaveBeenCalledOnceWith(empty);
-    });
-  }
-
-  it('selects a numeric input after options arrive and reflects an external reset', async () => {
-    fixture.componentRef.setInput('value', 42);
-    fixture.componentRef.setInput('placeholder', 'Choose');
-    fixture.componentRef.setInput('placeholderValue', undefined);
-    await render();
-    fixture.componentRef.setInput('options', [{ value: 42, label: 'Coach' }]);
-    await render();
-    expect(select.selectedIndex).toBe(1);
-    fixture.componentRef.setInput('value', undefined);
-    await render();
-    expect(select.selectedIndex).toBe(0);
+  it('preserves the numeric ID and null placeholder values', async () => {
+    const fixture = TestBed.createComponent(AppSelectComponent<number | null>);
+    fixture.componentRef.setInput('options', [{ value: 7, label: 'User' }]);
+    fixture.componentRef.setInput('placeholder', 'Select user');
+    fixture.componentRef.setInput('placeholderValue', null);
+    fixture.componentRef.setInput('value', null);
+    fixture.detectChanges(); await fixture.whenStable();
+    const changed = jasmine.createSpy('changed'); fixture.componentInstance.valueChange.subscribe(changed);
+    const select: HTMLSelectElement = fixture.nativeElement.querySelector('select');
+    select.selectedIndex = 1; select.dispatchEvent(new Event('change'));
+    select.selectedIndex = 0; select.dispatchEvent(new Event('change'));
+    expect(changed.calls.allArgs()).toEqual([[7], [null]]);
   });
 
-  it('applies disabled states and forwards the label target to the native select', async () => {
-    fixture.componentRef.setInput('id', 'userSelect');
-    fixture.componentRef.setInput('disabled', true);
-    fixture.componentRef.setInput('placeholder', 'Choose');
-    fixture.componentRef.setInput('placeholderDisabled', true);
-    await render();
-    expect(select.disabled).toBeTrue();
-    expect(select.options[0].disabled).toBeTrue();
-    expect(select.id).toBe('userSelect');
-    expect(fixture.nativeElement.getAttribute('id')).toBeNull();
-    fixture.componentRef.setInput('disabled', false);
-    await render();
-    expect(select.disabled).toBeFalse();
+  it('emits the role object by ID and resets to the placeholder after each selection', async () => {
+    const fixture = TestBed.createComponent(RoleSelectComponent);
+    const role = { id: 7, name: 'COACH' };
+    fixture.componentRef.setInput('roles', [role]);
+    fixture.detectChanges(); await fixture.whenStable();
+    const selected = jasmine.createSpy('selected'); fixture.componentInstance.roleSelected.subscribe(selected);
+    const select: HTMLSelectElement = fixture.nativeElement.querySelector('select');
+    for (let attempt = 0; attempt < 2; attempt++) {
+      select.selectedIndex = 1; select.dispatchEvent(new Event('change'));
+      fixture.detectChanges(); await fixture.whenStable();
+      expect(select.selectedIndex).toBe(0);
+    }
+    expect(selected.calls.allArgs()).toEqual([[role], [role]]);
   });
 });

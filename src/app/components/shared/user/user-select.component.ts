@@ -1,3 +1,4 @@
+import { errorMessage, responseMessage } from '../../../models/backend-dto/common/api-response-message';
 import type { UserNameId } from '../../../models/common/user-name-id.model';
 import { Component, OnInit, Input, Output, EventEmitter, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -28,6 +29,7 @@ import { SHARED_IMPORTS } from '../shared-imports';
       [placeholderValue]="undefined"
       (valueChange)="selectedUserId = $event; onChange($event)"
     ></app-select>
+    <app-message [message]="message" [type]="messageType" class="block mt-3"></app-message>
   `,
   styleUrls: ['./user-select.component.css'],
 })
@@ -37,6 +39,8 @@ export class UserSelectComponent implements OnInit {
   private readonly logger = inject(LoggerService);
 
   users: UserNameId[] = [];
+  message = '';
+  messageType: 'info' | 'error' = 'info';
 
   @Input()
   selectedUserId?: number;
@@ -59,10 +63,13 @@ export class UserSelectComponent implements OnInit {
   ngOnInit(): void {
     this.userService.getAllUsers().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
-        this.users = response.data ?? [];
+        this.users = response.success ? response.data ?? [] : [];
+        this.message = responseMessage([response], response.success ? '' : 'userSelect.loadError');
+        this.messageType = response.success ? 'info' : 'error';
       },
 
       error: (err) => {
+        this.message = errorMessage(err, 'userSelect.loadError'); this.messageType = 'error';
         this.logger.error('Hiba a felhasználók lekérésekor:', err);
         this.users = [];
       },

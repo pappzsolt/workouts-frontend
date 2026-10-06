@@ -1,3 +1,5 @@
+import { AppSelectComponent } from '../../../shared/components/app-select/app-select.component';
+import type { SelectOption } from '../../../../models/common/select-option.model';
 import type { UserNameId } from '../../../../models/common/user-name-id.model';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -16,7 +18,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 @Component({
   selector: 'app-assignprogram',
   standalone: true,
-  imports: [...SHARED_IMPORTS, CoachProgramSelectComponent],
+  imports: [...SHARED_IMPORTS, CoachProgramSelectComponent, AppSelectComponent],
   templateUrl: './assignprogram.component.html',
   styleUrls: ['./assignprogram.component.css'],
 })
@@ -47,6 +49,10 @@ export class AssignProgramComponent implements OnInit, OnDestroy {
   messageType: 'success' | 'error' | 'info' = 'info';
 
   users: UserNameId[] = [];
+
+  get userOptions(): SelectOption<number | null>[] {
+    return this.users.map(user => ({ value: user.id, label: user.username }));
+  }
 
   ngOnInit(): void {
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe((params) => {

@@ -1,3 +1,4 @@
+import { errorMessage, responseMessage } from '../../../models/backend-dto/common/api-response-message';
 import type { CoachNameId } from '../../../models/common/coach-name-id.model';
 import { Component, EventEmitter, Output, Input, OnInit, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -28,6 +29,7 @@ import { SHARED_IMPORTS } from '../shared-imports';
         [placeholderValue]="undefined"
         (valueChange)="selectedCoachId = $event; onCoachChange()"
       ></app-select>
+      <app-message [message]="message" [type]="messageType" class="block mt-3"></app-message>
     </div>
   `,
 })
@@ -37,6 +39,8 @@ export class CoachSelectComponent implements OnInit {
   private readonly logger = inject(LoggerService);
 
   coaches: CoachNameId[] = [];
+  message = '';
+  messageType: 'info' | 'error' = 'info';
 
   @Input()
   selectedCoachId?: number;
@@ -55,12 +59,17 @@ export class CoachSelectComponent implements OnInit {
 
   ngOnInit(): void {
     this.coachService.getAllCoaches().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (coaches) => {
-
-        this.coaches = coaches;
+      next: response => {
+        this.coaches = response.success ? response.data ?? [] : [];
+        this.message = responseMessage([response], response.success ? '' : 'coachSelect.loadError');
+        this.messageType = response.success ? 'info' : 'error';
       },
 
-      error: (err) => this.logger.error('Hiba a coachok lekérésénél', err),
+      error: err => {
+        this.coaches = [];
+        this.message = errorMessage(err, 'coachSelect.loadError'); this.messageType = 'error';
+        this.logger.error('Hiba a coachok lekérésénél', err);
+      },
     });
   }
 

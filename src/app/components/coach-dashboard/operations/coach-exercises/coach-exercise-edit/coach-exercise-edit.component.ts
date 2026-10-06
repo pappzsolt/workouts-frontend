@@ -11,13 +11,15 @@ import type { ExerciseDto } from '../../../../../models/backend-dto/exercise/exe
 
 import { LanguageCode, LanguageService } from '../../../../../services/shared/language.service';
 
+import { AppSelectComponent } from '../../../../shared/components/app-select/app-select.component';
+import type { SelectOption } from '../../../../../models/common/select-option.model';
 import { MessageComponent } from '../../../../shared/components/message/message.component';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
 @Component({
   selector: 'app-coach-exercise-edit',
   standalone: true,
-  imports: [...SHARED_IMPORTS, MessageComponent],
+  imports: [...SHARED_IMPORTS, MessageComponent, AppSelectComponent],
   templateUrl: './coach-exercise-edit.component.html',
   styleUrls: ['./coach-exercise-edit.component.css'],
 })
@@ -69,6 +71,11 @@ export class CoachExerciseEditComponent implements OnInit {
     isBodyweight: false,
     variationGroup: '',
   };
+
+  readonly yesNoOptions: SelectOption<boolean>[] = [
+    { value: false, label: 'common.no' },
+    { value: true, label: 'common.yes' },
+  ];
 
   loading = false;
   saving = false;

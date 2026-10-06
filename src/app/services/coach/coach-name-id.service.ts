@@ -24,21 +24,19 @@ export class CoachNameIdService {
    *
    * A komponensek felé:
    *
-   * CoachNameId[]
+   * ApiResponse<CoachNameId[]>
    */
-  getAllCoaches(): Observable<CoachNameId[]> {
+  getAllCoaches(): Observable<ApiResponse<CoachNameId[]>> {
     return this.http.get<ApiResponse<CoachDto[]>>(this.apiUrl).pipe(
       map((response) => {
-        if (!response.success) {
-          throw new Error(response.message ?? 'A coach-ok lekérése sikertelen.');
-        }
+        if (!response.success) return { ...response, data: null };
 
-        return (response.data ?? [])
+        return { ...response, data: (response.data ?? [])
           .filter((coach): coach is CoachDto & { id: number } => coach.id != null)
           .map((coach) => ({
             id: coach.id,
             name: coach.name ?? '',
-          }));
+          })) };
       }),
     );
   }

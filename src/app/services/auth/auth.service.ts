@@ -129,7 +129,7 @@ export class AuthService {
    *
    * A backend ResetPasswordRequest DTO-ja csak a token + newPassword mezőket várja.
    */
-  resetPassword(token: string, newPassword: string): Observable<void> {
+  resetPassword(token: string, newPassword: string): Observable<ApiResponse<null>> {
     return this.rawHttp
       .post<ApiResponse<null>>(
         API_ENDPOINTS.authResetPassword,
@@ -145,7 +145,7 @@ export class AuthService {
             throw new Error(response.message ?? 'A jelszó visszaállítása sikertelen.');
           }
 
-          return undefined;
+          return response;
         }),
       );
   }

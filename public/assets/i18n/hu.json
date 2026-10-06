@@ -515,6 +515,7 @@
     "loadError": "Hiba történt a szerepkörök lekérésekor."
   },
   "userSelect": {
+    "loadError": "A felhasználók betöltése sikertelen.",
     "selectUser": "Válassz felhasználót",
     "selectUserOption": "-- Válassz felhasználót --"
   },
@@ -523,6 +524,7 @@
     "selectWorkoutOption": "-- Válassz edzést --"
   },
   "coachSelect": {
+    "loadError": "Az edzők betöltése sikertelen.",
     "coach": "Coach",
     "select": "-- Válassz --"
   },

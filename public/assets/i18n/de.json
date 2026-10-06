@@ -515,6 +515,7 @@
     "loadError": "Beim Laden der Rollen ist ein Fehler aufgetreten."
   },
   "userSelect": {
+    "loadError": "Benutzer konnten nicht geladen werden.",
     "selectUser": "Benutzer auswählen",
     "selectUserOption": "-- Benutzer auswählen --"
   },
@@ -523,6 +524,7 @@
     "selectWorkoutOption": "-- Training auswählen --"
   },
   "coachSelect": {
+    "loadError": "Trainer konnten nicht geladen werden.",
     "coach": "Coach",
     "select": "-- Auswählen --"
   },

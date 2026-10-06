@@ -55,12 +55,7 @@
       </app-form-field>
 
       <!-- Error -->
-      <div
-        *ngIf="errorMessage"
-        class="rounded-xl border border-delete-200 bg-delete-50 px-4 py-3 text-sm font-medium text-delete-700"
-      >
-        {{ errorMessage | translate }}
-      </div>
+      <app-message *ngIf="errorMessage" [message]="errorMessage" type="error" class="block mb-4"></app-message>
 
       <!-- Login button -->
       <app-button
