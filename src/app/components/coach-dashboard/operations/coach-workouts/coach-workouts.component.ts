@@ -1,3 +1,4 @@
+import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, inject } from '@angular/core';
 import { LoggerService } from '../../../../services/logger.service';
 import { Router } from '@angular/router';
@@ -68,6 +69,14 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
   message: string = '';
 
   messageType: 'success' | 'error' | '' = '';
+
+  // ==========================================================
+  // WORKOUT TÖRLÉS
+  // ==========================================================
+
+  pendingDeleteWorkoutId: number | null = null;
+  pendingDeleteWorkoutName = '';
+  deletingWorkout = false;
 
   // ==========================================================
   // ÚJ WORKOUT FORM
@@ -332,6 +341,113 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
 
       this.message = USER_MESSAGES.workoutClickError;
     });
+  }
+
+  // ==========================================================
+  // WORKOUT TÖRLÉSE
+  // ==========================================================
+
+  requestDeleteWorkout(workout: Workout, event: MouseEvent): void {
+    event.stopPropagation();
+
+    const workoutId = workout.id;
+    if (workoutId == null || workoutId <= 0) {
+      this.logger.error('Érvénytelen workout ID törléshez:', workoutId);
+      this.setMessage('A workout nem törölhető: érvénytelen azonosító.', 'error');
+      return;
+    }
+
+    this.pendingDeleteWorkoutId = workoutId;
+    this.pendingDeleteWorkoutName = workout.workoutName ?? workout.name ?? '';
+    this.message = '';
+    this.messageType = '';
+  }
+
+  cancelDeleteWorkout(): void {
+    if (this.deletingWorkout) {
+      return;
+    }
+
+    this.pendingDeleteWorkoutId = null;
+    this.pendingDeleteWorkoutName = '';
+  }
+
+  confirmDeleteWorkout(): void {
+    const workoutId = this.pendingDeleteWorkoutId;
+
+    if (workoutId === null || this.deletingWorkout) {
+      return;
+    }
+
+    this.deletingWorkout = true;
+
+    this.coachWorkoutsService
+      .deleteWorkout(workoutId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.deletingWorkout = false;
+
+          if (!response.success) {
+            this.setMessage(responseMessage([response], 'A workout törlése sikertelen.'), 'error');
+            return;
+          }
+
+          this.pendingDeleteWorkoutId = null;
+          this.pendingDeleteWorkoutName = '';
+
+          const savedMessage = responseMessage([response], 'Workout sikeresen törölve.');
+
+          // Lokálisan is kivesszük, így nincs villanás a frissítés előtt.
+          this.workouts = this.workouts.filter((workout) => workout.id !== workoutId);
+          this.updatePagination();
+
+          this.setMessage(savedMessage, 'success');
+          this.loadWorkoutsKeepingMessage(savedMessage);
+        },
+        error: (error) => {
+          this.deletingWorkout = false;
+          this.logger.error('[CoachWorkouts] workout törlési hiba:', error);
+          this.setMessage(errorMessage(error, 'A workout törlése sikertelen.'), 'error');
+        },
+      });
+  }
+
+  get deleteWorkoutConfirmMessage(): string {
+    const name = this.pendingDeleteWorkoutName.trim();
+    return name
+      ? `Biztosan törlöd ezt a workoutot: ${name}? A művelet nem vonható vissza.`
+      : 'Biztosan törlöd ezt a workoutot? A művelet nem vonható vissza.';
+  }
+
+  /**
+   * Törlés után a backendről újratöltjük a listát, de a sikerüzenetet
+   * megtartjuk.
+   */
+  private loadWorkoutsKeepingMessage(savedMessage: string): void {
+    this.coachWorkoutsService
+      .getUniqueWorkoutsWithExercises()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          this.workouts = (response.data ?? []).map((w: WorkoutWithExercises): Workout => ({
+            id: w.id,
+            workoutName: w.name ?? '',
+            description: w.description ?? '',
+            durationMinutes: w.durationMinutes,
+            difficultyLevel: undefined,
+            exercises: w.exercises ?? [],
+          }));
+
+          this.updatePagination();
+          this.message = savedMessage;
+          this.messageType = 'success';
+        },
+        error: (error) => {
+          this.logger.error('[CoachWorkouts] törlés utáni újratöltési hiba:', error);
+          this.setMessage(savedMessage, 'success');
+        },
+      });
   }
 
   // ==========================================================

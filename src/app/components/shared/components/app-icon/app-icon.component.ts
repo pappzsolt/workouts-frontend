@@ -24,6 +24,7 @@ import {
   LucideSave,
   LucideSearch,
   LucideTimer,
+  LucideTrash2,
   LucideUserPlus,
   LucideUserRound,
   LucideUsers,
@@ -35,7 +36,7 @@ export type AppIconName =
   | 'calendar-days' | 'chart-column-increasing' | 'chevron-left' | 'chevron-right'
   | 'circle' | 'circle-check' | 'circle-plus' | 'circle-x' | 'clipboard-list'
   | 'dumbbell' | 'file-text' | 'flame' | 'link' | 'menu' | 'pencil' | 'plus'
-  | 'save' | 'search' | 'timer' | 'user-plus' | 'user-round' | 'users' | 'x';
+  | 'save' | 'search' | 'timer' | 'trash-2' | 'user-plus' | 'user-round' | 'users' | 'x';
 
 @Component({
   selector: 'app-icon',
@@ -65,6 +66,7 @@ export type AppIconName =
     LucideSave,
     LucideSearch,
     LucideTimer,
+    LucideTrash2,
     LucideUserPlus,
     LucideUserRound,
     LucideUsers,
