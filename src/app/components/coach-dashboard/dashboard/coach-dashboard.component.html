@@ -44,6 +44,13 @@
       ></app-dashboard-action>
 
       <app-dashboard-action
+        icon="users-three"
+        tone="edit"
+        [label]="'assignProgram.title' | translate"
+        (activated)="toggleAssignments()"
+      ></app-dashboard-action>
+
+      <app-dashboard-action
         icon="chart-line-up"
         tone="sort"
         [label]="'coachDashboard.workoutExerciseManager' | translate"
@@ -61,6 +68,15 @@
     >
       <div class="min-w-0 p-4 sm:p-6">
         <app-coach-program></app-coach-program>
+      </div>
+    </div>
+
+    <div
+      *ngIf="showAssignments"
+      class="min-w-0 overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm"
+    >
+      <div class="min-w-0 p-4 sm:p-6">
+        <app-assignprogram></app-assignprogram>
       </div>
     </div>
 

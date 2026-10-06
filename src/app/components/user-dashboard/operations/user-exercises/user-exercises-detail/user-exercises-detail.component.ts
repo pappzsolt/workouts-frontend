@@ -5,7 +5,7 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
 import { ActivatedRoute } from '@angular/router';
 
-import { Observable, Subject, combineLatest, distinctUntilChanged, filter, finalize, map, shareReplay, switchMap, takeUntil, tap } from 'rxjs';
+import { EMPTY, Observable, Subject, catchError, combineLatest, concatMap, defer, distinctUntilChanged, finalize, map, of, shareReplay, switchMap, takeUntil, tap } from 'rxjs';
 
 import { UserExerciseDetailService } from '../../../../../services/user/user-exercises-detail/user-exercises-detail.service';
 import { SidePaginationComponent } from '../../../../../components/shared/components/side-pagination/side-pagination.component';
@@ -49,7 +49,11 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
    * Egy sethez egyszerre csak egy mentési HTTP kérés futhat.
    * Így a blur és a lapozás nem indít párhuzamos mentéseket ugyanarra a setre.
    */
-  private readonly pendingSetSaves = new Map<number, Observable<void>>();
+  private readonly pendingSetSaves = new Map<string, {
+    signature: string;
+    request: Observable<void>;
+    confirmed: { completed: boolean };
+  }>();
 
   constructor(
     private route: ActivatedRoute,
@@ -58,64 +62,47 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.workoutId = Number(this.route.snapshot.paramMap.get('workoutId'));
-
-    const queryParams = this.route.snapshot.queryParamMap;
-
-    const programIdParam = queryParams.get('programId');
-    const userWorkoutIdParam = queryParams.get('userWorkoutId');
-    const programWorkoutIdParam = queryParams.get('programWorkoutId');
-
-    this.programId = Number(programIdParam);
-    this.userWorkoutId = Number(userWorkoutIdParam);
-
-    const parsedProgramWorkoutId = Number(programWorkoutIdParam);
-    this.programWorkoutId = Number.isFinite(parsedProgramWorkoutId) && parsedProgramWorkoutId > 0
-      ? parsedProgramWorkoutId
-      : undefined;
-
-    if (!this.userWorkoutId || Number.isNaN(this.userWorkoutId)) {
-      this.logger.error('[UserExerciseDetail] Érvénytelen userWorkoutId:', userWorkoutIdParam);
-      return;
-    }
-
-    combineLatest([
-      this.route.paramMap.pipe(
-        map((params) => Number(params.get('exerciseId'))),
-        filter((exerciseId) => Number.isFinite(exerciseId) && exerciseId > 0),
-      ),
-      this.languageService.language$,
-    ])
+    combineLatest([this.route.paramMap, this.route.queryParamMap, this.languageService.language$])
       .pipe(
-        map(([exerciseId, language]) => ({ exerciseId, language })),
-        distinctUntilChanged(
-          (previous, current) =>
-            previous.exerciseId === current.exerciseId &&
-            previous.language === current.language,
-        ),
-        switchMap(({ exerciseId, language }) => {
-          this.currentExerciseId = exerciseId;
+        map(([params, query, language]) => ({
+          workoutId: Number(params.get('workoutId')),
+          exerciseId: Number(params.get('exerciseId')),
+          programId: Number(query.get('programId')),
+          userWorkoutId: Number(query.get('userWorkoutId')),
+          programWorkoutId: Number(query.get('programWorkoutId')),
+          language,
+        })),
+        distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current)),
+        switchMap(context => {
+          this.workoutId = context.workoutId;
+          this.programId = context.programId;
+          this.userWorkoutId = context.userWorkoutId;
+          this.programWorkoutId = Number.isInteger(context.programWorkoutId) && context.programWorkoutId > 0
+            ? context.programWorkoutId : undefined;
+          this.currentExerciseId = context.exerciseId;
           this.currentSetIndex = 0;
+          this.workout = undefined;
+          this.workoutExercise = undefined;
           this.message = '';
           this.messageParams = {};
           this.messageType = '';
-
-          return this.exercisesService.getWorkoutExercises(this.userWorkoutId, language).pipe(
-            map((response) => ({ response, exerciseId })),
+          if (![context.workoutId, context.exerciseId, context.programId, context.userWorkoutId]
+              .every(id => Number.isInteger(id) && id > 0)) {
+            this.message = 'userExerciseDetail.loadError';
+            this.messageType = 'error';
+            return EMPTY;
+          }
+          return this.exercisesService.getWorkoutExercises(context.userWorkoutId, context.language).pipe(
+            map(response => ({ response, exerciseId: context.exerciseId })),
+            catchError(error => {
+              this.message = errorMessage(error, 'userExerciseDetail.loadError');
+              this.messageType = 'error';
+              return EMPTY;
+            }),
           );
         }),
         takeUntil(this.destroy$),
-      )
-      .subscribe({
-        next: ({ response, exerciseId }) => {
-          this.applyExerciseDetailResponse(response, exerciseId);
-        },
-        error: (error: HttpErrorResponse) => {
-          this.message =
-            errorMessage(error, 'userExerciseDetail.loadError');
-          this.messageType = 'error';
-        },
-      });
+      ).subscribe(({ response, exerciseId }) => this.applyExerciseDetailResponse(response, exerciseId));
   }
 
   ngOnDestroy(): void {
@@ -200,53 +187,9 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
    * és aktuális adatainak frissítése a backendben.
    */
   updateSetCompleted(set: UserWorkoutExerciseSetDto, completed: boolean): void {
-    if (!this.workoutExercise) {
-      return;
-    }
-
-    const exerciseId = this.workoutExercise.exercise.id;
-
-    if (exerciseId == null || set.id == null) {
-      this.message = 'userExerciseDetail.invalidSet';
-      this.messageType = 'error';
-      return;
-    }
-
-    this.message = '';
-    this.messageParams = {};
-    this.messageType = '';
-
-    this.exercisesService
-      .updateSetCompleted(
-        this.userWorkoutId,
-        this.programId,
-        this.workoutId,
-        exerciseId,
-        set.id,
-        completed,
-        set.actualRepetitions,
-        set.actualWeightKg,
-        set.notes,
-      )
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: response => {
-          if (!response.success) {
-            this.message = responseMessage([response], 'userExerciseDetail.setUpdateError'); this.messageType = 'error'; return;
-          }
-          set.completed = completed;
-          this.updateExerciseDone();
-          this.message = responseMessage([response], 'userExerciseDetail.setUpdated');
-          this.messageParams = response.message ? {} : { setNumber: set.setNumber };
-          this.messageType = 'success';
-        },
-
-        error: (error: HttpErrorResponse) => {
-          this.message =
-            errorMessage(error, 'userExerciseDetail.setUpdateError');
-          this.messageType = 'error';
-        },
-      });
+    this.createSetSaveRequest(set, true, completed).pipe(takeUntil(this.destroy$)).subscribe({
+      error: () => { /* The shared save reports the failure. */ },
+    });
   }
 
   /**
@@ -312,67 +255,66 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   private createSetSaveRequest(
     set: UserWorkoutExerciseSetDto,
     showSuccessMessage = true,
+    completed?: boolean,
   ): Observable<void> {
-    if (!this.workoutExercise) {
-      return new Observable<void>((subscriber) => subscriber.complete());
-    }
-
-    const exerciseId = this.workoutExercise.exercise.id;
-
-    if (exerciseId == null || set.id == null) {
+    const exercise = this.workoutExercise;
+    const exerciseId = exercise?.exercise.id;
+    if (!exercise || exerciseId == null || set.id == null) {
       this.message = 'userExerciseDetail.invalidSet';
       this.messageType = 'error';
-      return new Observable<void>((subscriber) => subscriber.complete());
+      return EMPTY;
     }
 
-    const existingSave = this.pendingSetSaves.get(set.id);
-    if (existingSave) {
-      return existingSave;
-    }
-
+    // Capture the occurrence and values at the time of the edit. A queued save
+    // must never use identifiers from a different route or later form values.
+    const args = [this.userWorkoutId, this.programId, this.workoutId, exerciseId, set.id,
+      completed ?? (set.completed === true), set.actualRepetitions, set.actualWeightKg, set.notes] as const;
+    const key = `${this.userWorkoutId}:${set.id}`;
+    const signature = JSON.stringify(args);
+    const previous = this.pendingSetSaves.get(key);
+    if (previous?.signature === signature) return previous.request;
+    const confirmed = previous?.confirmed ?? { completed: set.completed === true };
+    if (completed !== undefined) set.completed = completed;
+    const isCurrent = (): boolean => this.workoutExercise === exercise && this.userWorkoutId === args[0];
     this.message = '';
     this.messageParams = {};
     this.messageType = '';
 
-    let savedMessage = '';
-    const request$ = this.exercisesService
-      .updateSetCompleted(
-        this.userWorkoutId,
-        this.programId,
-        this.workoutId,
-        exerciseId,
-        set.id,
-        set.completed === true,
-        set.actualRepetitions,
-        set.actualWeightKg,
-        set.notes,
-      )
-      .pipe(
-        map(response => {
-          if (!response.success) throw new Error(responseMessage([response], 'userExerciseDetail.saveError'));
-          savedMessage = responseMessage([response], '');
-          return void 0;
-        }),
-        tap({
-          next: () => {
-            this.updateExerciseDone();
-            if (showSuccessMessage || savedMessage) {
-              this.message = savedMessage || 'userExerciseDetail.saveSuccess';
-              this.messageType = 'success';
-            }
-          },
-          error: error => {
-            this.message = errorMessage(error, 'userExerciseDetail.saveError');
-            this.messageType = 'error';
-          },
-        }),
-        finalize(() => this.pendingSetSaves.delete(set.id!)),
-        shareReplay({ bufferSize: 1, refCount: true }),
-      );
-
-    this.pendingSetSaves.set(set.id, request$);
-
-    return request$;
+    const entry = { signature, confirmed, request: EMPTY as Observable<void> };
+    // Changed payloads queue behind the existing request; identical blur/page
+    // saves share it. Recover an earlier failure so a newer edit can still save.
+    entry.request = (previous ? previous.request.pipe(catchError(() => of(void 0))) : of(void 0)).pipe(
+      concatMap(() => defer(() => this.exercisesService.updateSetCompleted(...args))),
+      map(response => {
+        if (!response.success) throw new Error(responseMessage([response], 'userExerciseDetail.saveError'));
+        confirmed.completed = args[5];
+        if (isCurrent()) {
+          this.updateExerciseDone();
+          if (showSuccessMessage || response.message) {
+            this.message = responseMessage([response], completed === undefined
+              ? 'userExerciseDetail.saveSuccess' : 'userExerciseDetail.setUpdated');
+            this.messageParams = completed !== undefined && !response.message ? { setNumber: set.setNumber } : {};
+            this.messageType = 'success';
+          }
+        }
+        return void 0;
+      }),
+      tap({ error: error => {
+        if (isCurrent() && this.pendingSetSaves.get(key) === entry) {
+          set.completed = confirmed.completed;
+          this.updateExerciseDone();
+          this.message = errorMessage(error, completed === undefined
+            ? 'userExerciseDetail.saveError' : 'userExerciseDetail.setUpdateError');
+          this.messageType = 'error';
+        }
+      } }),
+      finalize(() => {
+        if (this.pendingSetSaves.get(key) === entry) this.pendingSetSaves.delete(key);
+      }),
+      shareReplay({ bufferSize: 1, refCount: true }),
+    );
+    this.pendingSetSaves.set(key, entry);
+    return entry.request;
   }
 
   goToSet(index: number): void {
@@ -386,6 +328,8 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const exercise = this.workoutExercise;
+    const userWorkoutId = this.userWorkoutId;
     const currentSet = sets[this.currentSetIndex];
 
     if (!currentSet) {
@@ -399,11 +343,10 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
-          this.currentSetIndex = index;
+          if (this.workoutExercise === exercise && this.userWorkoutId === userWorkoutId) this.currentSetIndex = index;
         },
         error: () => {
-          // Hiba esetén sem veszítjük el a felhasználó navigációját.
-          this.currentSetIndex = index;
+          if (this.workoutExercise === exercise && this.userWorkoutId === userWorkoutId) this.currentSetIndex = index;
         },
       });
   }

@@ -12,11 +12,11 @@
 
   <div class="add-workout-section">
     <div class="add-workout-controls">
-      <app-user-select [(selectedUserId)]="selectedUserId"></app-user-select>
+      <app-user-select [selectedUserId]="selectedUserId" (selectedUserIdChange)="onUserChanged($event)"></app-user-select>
 
       <label class="form-field">
         <span>{{ 'userWorkoutExerciseManager.program' | translate }}:</span>
-        <app-coach-program-select [(selectedProgramId)]="selectedProgramId"></app-coach-program-select>
+        <app-coach-program-select [selectedProgramId]="selectedProgramId" (selectedProgramIdChange)="onProgramChanged($event)"></app-coach-program-select>
       </label>
 
       <app-button

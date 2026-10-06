@@ -25,11 +25,13 @@
     >
       <app-user-select
         [(selectedUserId)]="selectedUserId"
+        [disabled]="!ready || saving"
         (userSelected)="onUserSelected($event)"
       >
       </app-user-select>
     </div>
 
+    <fieldset [disabled]="!ready || saving" class="min-w-0">
     <!-- Form -->
     <form
       (ngSubmit)="onSave()"
@@ -186,9 +188,11 @@
           variant="save"
           type="submit"
           [label]="'common.save' | translate"
+          [disabled]="!ready || saving || !selectedUser.id"
         ></app-button>
       </div>
 
     </form>
+    </fieldset>
   </div>
 </div>

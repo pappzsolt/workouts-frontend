@@ -8,6 +8,7 @@ import { CoachProgramComponent } from '../operations/coach-programs/coach-progra
 import { ExerciseControllerComponent } from '../operations/coach-exercises/coach-exercises.component';
 import { AssignWorkoutsExercisesComponent } from '../operations/assign-workouts-exercises/assign-workouts-exercises.component';
 import { UserWorkoutExerciseManagerComponent } from '../operations/user-workout-exercise-manager/user-workout-exercise-manager';
+import { AssignProgramComponent } from '../operations/assign-program/assignprogram.component';
 import { ProgramWorkoutsAssComponent } from '../operations/assign-program-workout/program-workouts-ass.component';
 
 import { SHARED_IMPORTS } from '../../shared/shared-imports';
@@ -25,6 +26,7 @@ import { DashboardActionComponent } from '../../shared/components/dashboard-acti
     AssignWorkoutsExercisesComponent,
     UserWorkoutExerciseManagerComponent,
     ProgramWorkoutsAssComponent,
+    AssignProgramComponent,
   ],
   templateUrl: './coach-dashboard.component.html',
   styleUrls: ['./coach-dashboard.component.css'],
@@ -140,6 +142,10 @@ export class CoachDashboardComponent implements OnInit {
 
   togglePrograms(): void {
     this.toggleSection('programs', this.showPrograms);
+  }
+
+  toggleAssignments(): void {
+    this.toggleSection('assignments', this.showAssignments);
   }
 
   toggleExercises(): void {

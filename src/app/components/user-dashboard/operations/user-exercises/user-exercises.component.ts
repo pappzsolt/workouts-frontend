@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Subject, combineLatest, distinctUntilChanged, filter, map, switchMap, takeUntil } from 'rxjs';
+import { EMPTY, Subject, catchError, combineLatest, distinctUntilChanged, map, switchMap, takeUntil } from 'rxjs';
 
 import { UserExerciseService } from '../../../../services/user/user-exercise/user-exercise.service';
 import { LanguageService } from '../../../../services/shared/language.service';
@@ -83,90 +83,58 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
   // ============================================================
 
   ngOnInit(): void {
-    // WORKOUT ID A ROUTE PARAMÉTERBŐL
-
-    this.workoutId = Number(this.route.snapshot.paramMap.get('workoutId'));
-
-    // NAVIGATION STATE
-
-    const queryParams = this.route.snapshot.queryParamMap;
-
-    this.workoutName = queryParams.get('workoutName') || 'userExercises.unknownWorkout';
-
-    const programIdParam = queryParams.get('programId');
-    const userWorkoutIdParam = queryParams.get('userWorkoutId');
-    const programWorkoutIdParam = queryParams.get('programWorkoutId');
-
-    this.programId = Number(programIdParam);
-    this.userWorkoutId = Number(userWorkoutIdParam);
-
-    const parsedProgramWorkoutId = Number(programWorkoutIdParam);
-    this.programWorkoutId = Number.isFinite(parsedProgramWorkoutId) && parsedProgramWorkoutId > 0
-      ? parsedProgramWorkoutId
-      : undefined;
-
-    // ID VALIDÁLÁS
-
-    if (Number.isNaN(this.workoutId) || this.workoutId <= 0) {
-      this.loading = false; this.loadFailed = true; this.message = 'userExercises.loadError'; this.messageType = 'error';
-      this.logger.error('Érvénytelen workout ID:', this.workoutId);
-      return;
-    }
-
-    if (Number.isNaN(this.programId) || this.programId <= 0) {
-      this.loading = false; this.loadFailed = true; this.message = 'userExercises.loadError'; this.messageType = 'error';
-      this.logger.error('Érvénytelen program ID:', this.programId);
-      return;
-    }
-
-    if (Number.isNaN(this.userWorkoutId) || this.userWorkoutId <= 0) {
-      this.loading = false; this.loadFailed = true; this.message = 'userExercises.loadError'; this.messageType = 'error';
-      this.logger.error('Érvénytelen userWorkout ID:', this.userWorkoutId);
-      return;
-    }
-
-    // NYELV + KÉRÉS KEZELÉSE: switchMap biztosítja, hogy egy régi
-    // nyelvi kérés válasza ne írja felül az újabb állapotot.
-    combineLatest([
-      this.languageService.language$,
-      this.route.queryParamMap,
-    ])
+    combineLatest([this.route.paramMap, this.route.queryParamMap, this.languageService.language$])
       .pipe(
-        map(([language]) => language),
-        distinctUntilChanged(),
-        switchMap((language) => {
-          this.loading = true; this.message = ''; this.loadFailed = false;
-          return this.exercisesService.getWorkoutExercises(this.userWorkoutId, language);
-        }),
-        takeUntil(this.destroy$),
-      )
-      .subscribe({
-        next: (response) => {
-          this.loading = false;
-          this.loadFailed = !response.success;
-          this.message = responseMessage([response], response.success ? '' : 'userExercises.loadError');
-          this.messageType = response.success ? 'info' : 'error';
-          const exercises = response.success ? response.data?.exercises ?? [] : [];
-
-          if (response.data?.name) {
-            this.workoutName = response.data.name;
-          }
-
-          this.allExercises = exercises;
-          this.totalItems = this.allExercises.length;
-          this.currentPage = 1;
-          this.updatePaginatedExercises();
-        },
-        error: (error) => {
-          this.loading = false; this.loadFailed = true;
-          this.message = errorMessage(error, 'userExercises.loadError'); this.messageType = 'error';
-          this.logger.error('Hiba a gyakorlatok betöltésekor:', error);
-
+        map(([params, query, language]) => ({
+          workoutId: Number(params.get('workoutId')),
+          programId: Number(query.get('programId')),
+          userWorkoutId: Number(query.get('userWorkoutId')),
+          programWorkoutId: Number(query.get('programWorkoutId')),
+          workoutName: query.get('workoutName') || 'userExercises.unknownWorkout',
+          language,
+        })),
+        distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current)),
+        switchMap(context => {
+          this.workoutId = context.workoutId;
+          this.programId = context.programId;
+          this.userWorkoutId = context.userWorkoutId;
+          this.programWorkoutId = Number.isInteger(context.programWorkoutId) && context.programWorkoutId > 0
+            ? context.programWorkoutId : undefined;
+          this.workoutName = context.workoutName;
           this.allExercises = [];
           this.paginatedExercises = [];
           this.totalItems = 0;
           this.currentPage = 1;
-        },
+          this.message = '';
+          this.loadFailed = false;
+          if (![this.workoutId, this.programId, this.userWorkoutId].every(id => Number.isInteger(id) && id > 0)) {
+            this.loading = false;
+            this.loadFailed = true;
+            this.message = 'userExercises.loadError';
+            this.messageType = 'error';
+            return EMPTY;
+          }
+          this.loading = true;
+          return this.exercisesService.getWorkoutExercises(context.userWorkoutId, context.language).pipe(
+            catchError(error => {
+              this.loading = false;
+              this.loadFailed = true;
+              this.message = errorMessage(error, 'userExercises.loadError');
+              this.messageType = 'error';
+              return EMPTY;
+            }),
+          );
+        }),
+        takeUntil(this.destroy$),
+      ).subscribe(response => {
+        this.loading = false;
+        this.loadFailed = !response.success;
+        this.message = responseMessage([response], response.success ? '' : 'userExercises.loadError');
+        this.messageType = response.success ? 'info' : 'error';
+        this.allExercises = response.success ? response.data?.exercises ?? [] : [];
+        if (response.success && response.data?.name) this.workoutName = response.data.name;
+        this.totalItems = this.allExercises.length;
+        this.updatePaginatedExercises();
       });
   }
 

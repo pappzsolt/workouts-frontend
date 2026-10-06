@@ -1,3 +1,4 @@
+import { finalize, forkJoin } from 'rxjs';
 import type { UserNameId } from '../../../../models/common/user-name-id.model';
 import { Component, OnInit, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -78,6 +79,10 @@ export class UserEditComponent implements OnInit {
   // ÜZENET
   // =============================
 
+  loading = true;
+  ready = false;
+  saving = false;
+
   message = '';
 
   messageType: 'success' | 'error' | '' = '';
@@ -97,70 +102,30 @@ export class UserEditComponent implements OnInit {
   // =============================
 
   ngOnInit(): void {
-    this.loadCoaches();
-
-    this.loadRoles();
-
-    this.loadUsers();
-  }
-
-  // =============================
-  // COACHOK BETÖLTÉSE
-  // =============================
-
-  private loadCoaches(): void {
-    this.userService.getCoaches().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (coaches) => {
+    forkJoin({
+      coaches: this.userService.getCoaches(),
+      roles: this.roleService.getRoles(),
+      users: this.userService.getUsers(),
+    }).pipe(
+      finalize(() => { this.loading = false; }),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: ({ coaches, roles, users }) => {
         this.coaches = coaches;
-
-        this.cdr.detectChanges();
-      },
-
-      error: () => {
-        this.showError('adminUserEdit.loadCoachesError');
-      },
-    });
-  }
-
-  // =============================
-  // ROLE-OK BETÖLTÉSE
-  // =============================
-
-  private loadRoles(): void {
-    this.roleService.getRoles().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (roles) => {
         this.roles = roles;
-
-        this.cdr.detectChanges();
-      },
-
-      error: () => {
-        this.showError('adminUserEdit.loadRolesError');
-      },
-    });
-  }
-
-  // =============================
-  // FELHASZNÁLÓK BETÖLTÉSE
-  // =============================
-
-  private loadUsers(): void {
-    this.userService.getUsers().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (users) => {
         this.users = users;
-
-        if (this.users.length > 0) {
-          this.selectedUserId = this.users[0].id;
-
-          this.patchUserFromRaw(this.users[0]);
+        if (!roles.length) {
+          this.showError('adminUserEdit.loadRolesError');
+          return;
         }
-
-        this.cdr.detectChanges();
+        const user = users.find(current => current.id === this.selectedUserId) ?? users[0];
+        if (user) {
+          this.selectedUserId = user.id;
+          this.patchUserFromRaw(user);
+        }
+        this.ready = true;
       },
-
-      error: () => {
-        this.showError('adminUserEdit.loadUsersError');
-      },
+      error: () => this.showError('adminUserEdit.loadUsersError'),
     });
   }
 
@@ -239,6 +204,7 @@ export class UserEditComponent implements OnInit {
   // =============================
 
   onSave(): void {
+    if (!this.ready || this.saving || !this.selectedUser.id) return;
     this.clearMessage();
 
     try {
@@ -246,8 +212,19 @@ export class UserEditComponent implements OnInit {
 
       const rawUser = this.createRawUser();
 
-      this.userService.updateUser(rawUser, this.selectedUser.roleIds || []).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: () => {
+      this.saving = true;
+      this.userService.updateUser(rawUser, this.selectedUser.roleIds || []).pipe(
+        finalize(() => { this.saving = false; }),
+        takeUntilDestroyed(this.destroyRef),
+      ).subscribe({
+        next: response => {
+          if (!response.success) {
+            this.showError(response.message || 'adminUserEdit.updateError');
+            return;
+          }
+          const index = this.users.findIndex(user => user.id === rawUser.id);
+          if (index >= 0) this.users[index] = { ...rawUser, password: undefined };
+          this.selectedUser.password = '';
           this.showSuccess('adminUserEdit.updateSuccess');
         },
 
@@ -256,6 +233,7 @@ export class UserEditComponent implements OnInit {
         },
       });
     } catch {
+      this.saving = false;
       this.showError('adminUserEdit.saveError');
     }
   }
@@ -269,7 +247,7 @@ export class UserEditComponent implements OnInit {
       return;
     }
 
-    const defaultRole = this.roles.find((role) => role.name === 'user');
+    const defaultRole = this.roles.find((role) => role.name === 'ROLE_USER' || role.name === 'user');
 
     if (!defaultRole) {
       return;
@@ -291,6 +269,7 @@ export class UserEditComponent implements OnInit {
       id: this.selectedUser.id,
 
       usernameOrName: this.selectedUser.username,
+      password: this.selectedUser.password,
 
       email: this.selectedUser.email,
 

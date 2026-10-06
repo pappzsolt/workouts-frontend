@@ -6,7 +6,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 import { WorkoutExercisesManagerService } from '../../../../services/coach/workout-exercises-manager.service';
 import { UserWorkoutExerciseSetService } from '../../../../services/coach/user-workout-exercise-set';
@@ -30,6 +30,8 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 })
 export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
+  private programRequest?: Subscription;
+  private setsRequest?: Subscription;
 
   // ============================
   // USER / PROGRAM
@@ -97,10 +99,6 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
       if (this.selectedUserId && this.selectedProgramId) {
         this.loadUserProgramWithExercises();
       }
-
-      if (this.selectedUserWorkoutExerciseId) {
-        this.loadSets(this.selectedUserWorkoutExerciseId);
-      }
     });
   }
 
@@ -119,11 +117,40 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  onUserChanged(userId: number): void {
+    this.selectedUserId = userId;
+    this.clearProgramData();
+  }
+
+  onProgramChanged(programId: number): void {
+    this.selectedProgramId = programId;
+    this.clearProgramData();
+  }
+
+  private clearSets(): void {
+    this.setsRequest?.unsubscribe();
+    this.selectedSets = [];
+    this.selectedUserWorkoutExerciseId = undefined;
+    this.selectedSetIndex = 0;
+    this.setPendingDeletion = null;
+  }
+
+  private clearProgramData(): void {
+    this.programRequest?.unsubscribe();
+    this.clearSets();
+    this.userProgramData = [];
+    this.dayGroups = [];
+    this.workoutPages = [];
+    this.selectedWorkoutIndex = 0;
+    this.selectedExerciseIndex = 0;
+  }
+
   // ============================
   // SETS LEKÉRÉSE
   // ============================
 
   loadSets(userWorkoutExerciseId: number): void {
+    this.clearSets();
     if (!userWorkoutExerciseId || userWorkoutExerciseId <= 0) {
       this.selectedSets = [];
       this.selectedUserWorkoutExerciseId = undefined;
@@ -134,7 +161,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
     this.selectedSets = [];
     this.selectedSetIndex = 0;
 
-    this.setService.getSetsByUserWorkoutExerciseId(userWorkoutExerciseId).pipe(takeUntil(this.destroy$)).subscribe({
+    this.setsRequest = this.setService.getSetsByUserWorkoutExerciseId(userWorkoutExerciseId).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
         if (res.success && res.data) {
           this.selectedSets = res.data;
@@ -162,8 +189,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
     this.selectedWorkoutIndex = index;
     this.selectedExerciseIndex = 0;
     this.selectedSetIndex = 0;
-    this.selectedUserWorkoutExerciseId = undefined;
-    this.selectedSets = [];
+    this.clearSets();
 
     const firstExercise = this.selectedWorkout?.exercises[0];
     if (firstExercise?.userWorkoutExerciseId != null) {
@@ -192,9 +218,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
     if (exercise.userWorkoutExerciseId != null) {
       this.loadSets(exercise.userWorkoutExerciseId);
     } else {
-      this.selectedSets = [];
-      this.selectedSetIndex = 0;
-      this.selectedUserWorkoutExerciseId = undefined;
+      this.clearSets();
     }
   }
 
@@ -230,6 +254,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
 
     this.setService.addSet(userWorkoutExerciseId).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
+        if (this.selectedUserWorkoutExerciseId !== userWorkoutExerciseId) return;
         // The new set is appended; focus it after reload.
         this.selectedSetIndex = this.selectedSets.length;
         this.loadSets(userWorkoutExerciseId);
@@ -304,6 +329,8 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
     const userWorkoutExerciseId = this.selectedUserWorkoutExerciseId;
     this.setService.deleteSet(set.id).pipe(takeUntil(this.destroy$)).subscribe({
       next: () => {
+        this.deletingSet = false;
+        if (this.selectedUserWorkoutExerciseId !== userWorkoutExerciseId) return;
         const deletedIndex = this.selectedSets.findIndex((currentSet) => currentSet.id === set.id);
         this.selectedSets = this.selectedSets.filter((currentSet) => currentSet.id !== set.id);
         this.selectedSetIndex = Math.min(
@@ -315,8 +342,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
         this.showMessage('userWorkoutExerciseManager.deleteSetSuccess', 'success', {
           setNumber: set.setNumber,
         });
-        if (userWorkoutExerciseId) {
-          this.loadSets(userWorkoutExerciseId);
+        if (userWorkoutExerciseId && this.selectedUserWorkoutExerciseId === userWorkoutExerciseId) {
           this.loadUserProgramWithExercises();
         }
       },
@@ -373,12 +399,17 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
   // ============================
 
   loadUserProgramWithExercises(): void {
+    this.programRequest?.unsubscribe();
+    this.clearSets();
+    this.userProgramData = [];
+    this.dayGroups = [];
+    this.workoutPages = [];
     if (!this.selectedUserId || !this.selectedProgramId) {
       this.showMessage('userWorkoutExerciseManager.selectUserAndProgram', 'error');
       return;
     }
 
-    this.service
+    this.programRequest = this.service
       .getUserProgramWithExercises(this.selectedUserId, this.selectedProgramId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -412,8 +443,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
               if (exercise?.userWorkoutExerciseId != null) {
                 this.loadSets(exercise.userWorkoutExerciseId);
               } else {
-                this.selectedSets = [];
-                this.selectedSetIndex = 0;
+                this.clearSets();
               }
             }
           } else {
@@ -427,8 +457,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
           }
         },
         error: () => {
-          this.userProgramData = [];
-          this.dayGroups = [];
+          this.clearProgramData();
         },
       });
   }
