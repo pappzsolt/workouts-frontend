@@ -187,14 +187,17 @@
                  ================================================== -->
 
             <div class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
-              <button
+              <app-button
                 type="button"
-                (click)="editProgram(program.id, $event)"
-                class="inline-flex min-h-10 w-full items-center justify-center gap-2 rounded-xl border border-info-200 bg-white px-4 py-2 text-sm font-semibold text-info-700 shadow-sm transition duration-150 hover:border-primary-300 hover:bg-primary-50 focus:outline-none focus:ring-4 focus:ring-primary-500/10 active:scale-[0.98]"
+                (buttonClick)="editProgram(program.id, $event)"
+                variant="edit"
+                appearance="solid"
+                [fullWidth]="true"
+                class="block w-full"
               >
                 <span><app-icon name="pencil" sizeClass="h-5 w-5" /></span>
                 <span>{{ 'coachPrograms.edit' | translate }}</span>
-              </button>
+              </app-button>
 
               <app-button
                 variant="delete"

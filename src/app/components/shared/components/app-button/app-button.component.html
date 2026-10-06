@@ -5,23 +5,30 @@
   [attr.aria-label]="ariaLabel || label || title || null"
   [attr.aria-expanded]="ariaExpanded"
   [attr.aria-controls]="ariaControls || null"
+  [attr.aria-pressed]="ariaPressed"
+  [attr.aria-current]="ariaCurrent"
   (click)="onClick($event)"
   [ngClass]="[
-    'inline-flex items-center justify-center gap-2 font-semibold transition duration-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50',
-
+    'inline-flex min-w-0 items-center gap-2 font-semibold transition duration-200 focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-50',
+    align === 'start' ? 'justify-start text-left' : 'justify-center text-center',
+    fullWidth ? 'w-full' : '',
     floating
-      ? 'fixed bottom-5 right-5 z-50 h-14 w-14 rounded-full text-2xl shadow-xl transition duration-200 hover:scale-105 focus:ring-4 active:scale-95 sm:bottom-7 sm:right-7'
-      : 'rounded-xl',
-
-    !floating && size === 'sm' ? 'px-3 py-1.5 text-xs' : '',
-
-    !floating && size === 'md' ? 'px-4 py-2.5 text-sm' : '',
-
-    !floating && size === 'lg' ? 'px-6 py-3 text-base' : '',
-
-    floating
-      ? getFloatingClasses()
-      : getVariantClasses()
+      ? 'fixed bottom-5 right-5 z-50 h-14 w-14 rounded-full shadow-xl hover:scale-105 active:scale-95 sm:bottom-7 sm:right-7'
+      : round
+        ? 'rounded-full'
+        : 'rounded-xl',
+    !floating && iconOnly
+      ? size === 'sm'
+        ? 'h-9 w-9 shrink-0 p-0'
+        : size === 'lg'
+          ? 'h-12 w-12 shrink-0 p-0'
+          : 'h-11 w-11 shrink-0 p-0'
+      : '',
+    !floating && !iconOnly && size === 'sm' ? 'min-h-9 px-3 py-1.5 text-xs' : '',
+    !floating && !iconOnly && size === 'md' ? 'min-h-11 px-4 py-2.5 text-sm' : '',
+    !floating && !iconOnly && size === 'lg' ? 'min-h-12 px-6 py-3 text-base' : '',
+    floating ? getFloatingClasses() : getAppearanceClasses(),
+    buttonClass,
   ]"
 >
   @if (lucideIcon) {
@@ -32,4 +39,5 @@
   @if (label) {
     <span>{{ label }}</span>
   }
+  <ng-content></ng-content>
 </button>

@@ -37,14 +37,17 @@
         ></div>
 
         <!-- Előző hónap -->
-        <button
+        <app-button
           type="button"
-          (click)="previousMonth()"
-          class="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/30 bg-white/95 text-2xl font-semibold text-primary-700 shadow-sm transition-all duration-200 hover:bg-white hover:shadow-md focus:outline-none focus:ring-4 focus:ring-white/30 sm:h-11 sm:w-11"
-          [attr.aria-label]="'userWorkoutsCalendar.previousMonth' | translate"
+          (buttonClick)="previousMonth()"
+          [ariaLabel]="'userWorkoutsCalendar.previousMonth' | translate"
+          variant="secondary"
+          appearance="outline"
+          [iconOnly]="true"
+          lucideIcon="chevron-left"
         >
-          ‹
-        </button>
+
+        </app-button>
 
         <!-- Hónap és év -->
         <h2
@@ -55,14 +58,17 @@
         </h2>
 
         <!-- Következő hónap -->
-        <button
+        <app-button
           type="button"
-          (click)="nextMonth()"
-          class="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/30 bg-white/95 text-2xl font-semibold text-primary-700 shadow-sm transition-all duration-200 hover:bg-white hover:shadow-md focus:outline-none focus:ring-4 focus:ring-white/30 sm:h-11 sm:w-11"
-          [attr.aria-label]="'userWorkoutsCalendar.nextMonth' | translate"
+          (buttonClick)="nextMonth()"
+          [ariaLabel]="'userWorkoutsCalendar.nextMonth' | translate"
+          variant="secondary"
+          appearance="outline"
+          [iconOnly]="true"
+          lucideIcon="chevron-right"
         >
-          ›
-        </button>
+
+        </app-button>
       </div>
     </div>
 
@@ -257,14 +263,16 @@
         </div>
 
         <!-- Bezárás -->
-        <button
+        <app-button
           type="button"
-          (click)="closeWorkoutDetails()"
-          [attr.aria-label]="'userWorkoutsCalendar.close' | translate"
-          class="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-xl font-semibold text-white transition-colors hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50"
+          (buttonClick)="closeWorkoutDetails()"
+          [ariaLabel]="'userWorkoutsCalendar.close' | translate"
+          variant="secondary"
+          appearance="outline"
+          [iconOnly]="true"
         >
           <app-icon name="x" sizeClass="h-5 w-5" />
-        </button>
+        </app-button>
       </div>
 
       <!-- ==================================================

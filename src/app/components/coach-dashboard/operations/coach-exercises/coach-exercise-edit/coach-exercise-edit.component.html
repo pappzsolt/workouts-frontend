@@ -392,14 +392,18 @@
         <div
           class="col-span-full flex justify-end border-t border-info-100 pt-5"
         >
-          <button
+          <app-button
             type="submit"
             [disabled]="!exerciseForm.form.valid || saving"
-            class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-info-500/20 transition duration-150 hover:from-primary-700 hover:to-primary-700 hover:shadow-lg hover:shadow-info-500/25 focus:outline-none focus:ring-4 focus:ring-primary-500/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:from-surface-300 disabled:to-surface-300 disabled:shadow-none sm:w-auto"
+            variant="save"
+            appearance="solid"
+            [fullWidth]="true"
+            buttonClass="sm:w-auto"
+            class="block w-full sm:w-auto"
           >
             <span><app-icon name="save" sizeClass="h-5 w-5" /></span>
             <span>{{ 'coachExerciseEdit.save' | translate }}</span>
-          </button>
+          </app-button>
         </div>
 
       </form>

@@ -1,3 +1,4 @@
+import { AppButtonComponent } from '../app-button/app-button.component';
 import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -7,7 +8,7 @@ import { MessageComponent } from '../message/message.component';
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [CommonModule, TranslatePipe, MessageComponent],
+  imports: [AppButtonComponent, CommonModule, TranslatePipe, MessageComponent],
   templateUrl: './confirm-dialog.component.html',
   styleUrls: ['./confirm-dialog.component.css'],
 })

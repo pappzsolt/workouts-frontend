@@ -18,20 +18,19 @@ import { SHARED_IMPORTS } from '../shared-imports';
   standalone: true,
   imports: [AppSearchComponent, ...SHARED_IMPORTS, AppSelectComponent],
   template: `
-    <label for="userSelect" class="user-select-label">
-      {{ 'userSelect.selectUser' | translate }}
-    </label>
-
     <app-search
       inputId="userSelectSearch"
       [searchTerm]="searchTerm"
       label="appSearch.usersLabel"
       placeholder="appSearch.usersPlaceholder"
       [showClearButton]="true"
-      (searchTermChange)="searchTerm = $event"
+      (searchTermChange)="onSearchChange($event)"
       class="mb-3 block" [disabled]="disabled"
     ></app-search>
     <app-message *ngIf="searchTerm.trim() && !matchingOptions.length" message="appSearch.noResults" type="info" class="mb-3 block"></app-message>
+    <label for="userSelect" class="user-select-label">
+      {{ 'userSelect.selectUser' | translate }}
+    </label>
     <app-select
       id="userSelect"
       [value]="selectedUserId"
@@ -76,6 +75,15 @@ export class UserSelectComponent implements OnInit {
 
   get userOptions(): SelectOption<number>[] {
     return this.users.filter(user => user.id === this.selectedUserId || matchesSearch(this.searchTerm, user.username)).map((user) => ({ value: user.id, label: user.username }));
+  }
+
+  onSearchChange(term: string): void {
+    this.searchTerm = term;
+    if (!term.trim()) return;
+    const first = this.matchingOptions[0];
+    if (!first || first.id === this.selectedUserId) return;
+    this.selectedUserId = first.id;
+    this.onChange(first.id);
   }
 
   ngOnInit(): void {

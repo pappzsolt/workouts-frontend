@@ -1,3 +1,4 @@
+import { AppButtonComponent } from '../app-button/app-button.component';
 import { Component, Input } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 import { BackNavigationService } from '../../../../services/shared/back-navigation.service';
@@ -5,7 +6,7 @@ import { BackNavigationService } from '../../../../services/shared/back-navigati
 @Component({
   selector: 'app-back-button',
   standalone: true,
-  imports: [TranslatePipe],
+  imports: [AppButtonComponent, TranslatePipe],
   templateUrl: './back-button.component.html',
 })
 export class BackButtonComponent {

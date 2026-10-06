@@ -16,6 +16,7 @@ import { SHARED_IMPORTS } from '../shared-imports';
 @Component({
   selector: 'app-coach-program-select',
   standalone: true,
+  host: { class: 'block min-w-0' },
   imports: [AppSearchComponent, ...SHARED_IMPORTS, AppSelectComponent],
   templateUrl: './coach-program-select.component.html',
 })
@@ -52,6 +53,14 @@ export class CoachProgramSelectComponent implements OnInit, OnChanges {
 
   get programOptions(): SelectOption<number>[] {
     return this.programs.filter(program => program.programId === this.selectedProgramId || matchesSearch(this.searchTerm, program.programName, program.programDescription)).map((program) => ({ value: program.programId, label: program.programName }));
+  }
+
+  onSearchChange(term: string): void {
+    this.searchTerm = term;
+    if (!term.trim()) return;
+    const first = this.matchingOptions[0];
+    if (!first || first.programId === this.selectedProgramId) return;
+    this.onProgramSelect(first.programId);
   }
 
   ngOnInit(): void {

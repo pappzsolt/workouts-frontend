@@ -1,3 +1,4 @@
+import { AppButtonComponent } from '../app-button/app-button.component';
 import {
   Component,
   DestroyRef,
@@ -17,7 +18,7 @@ import { AppIconComponent } from '../app-icon/app-icon.component';
 @Component({
   selector: 'app-search',
   standalone: true,
-  imports: [FormsModule, TranslatePipe, AppIconComponent],
+  imports: [AppButtonComponent, FormsModule, TranslatePipe, AppIconComponent],
   templateUrl: './app-search.component.html',
   styleUrl: './app-search.component.css',
 })

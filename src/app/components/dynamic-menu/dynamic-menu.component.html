@@ -16,25 +16,33 @@
         </a>
 
         <!-- Action (logout) -->
-        <button
+        <app-button
           type="button"
           *ngIf="item.action"
-          class="flex w-full cursor-pointer items-center rounded-xl border-0 bg-transparent px-4 py-3 text-left text-sm font-medium text-content-700 transition-all duration-200 hover:bg-surface-100 hover:text-content-900 focus:outline-none focus:ring-2 focus:ring-primary-300"
-          (click)="onAction(item)"
+          (buttonClick)="onAction(item)"
+          variant="secondary"
+          appearance="ghost"
+          [fullWidth]="true"
+          align="start"
+          class="block w-full"
         >
           {{ item.label | translate }}
-        </button>
+        </app-button>
 
         <!-- Dropdown -->
         <ng-container *ngIf="item.children">
-          <button
+          <app-button
             type="button"
-            [attr.aria-expanded]="isOpen(item)"
-            class="flex w-full cursor-pointer items-center rounded-xl border-0 bg-transparent px-4 py-3 text-left text-sm font-semibold text-content-700 transition-all duration-200 hover:bg-surface-100 hover:text-content-900 focus:outline-none focus:ring-2 focus:ring-primary-300"
-            (click)="toggle(item)"
+            [ariaExpanded]="isOpen(item)"
+            (buttonClick)="toggle(item)"
+            variant="secondary"
+            appearance="ghost"
+            [fullWidth]="true"
+            align="start"
+            class="block w-full"
           >
             {{ item.label | translate }}
-          </button>
+          </app-button>
 
           <!-- Dropdown submenu -->
           <ul

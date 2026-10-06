@@ -306,14 +306,15 @@
     >
 
       <!-- Előző -->
-      <button
+      <app-button
         type="button"
-        (click)="prevPage()"
+        (buttonClick)="prevPage()"
         [disabled]="currentPage === 1"
-        class="min-h-10 rounded-xl border border-surface-300 bg-white px-4 py-2 text-sm font-semibold text-content-700 shadow-sm transition-all duration-200 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 disabled:cursor-not-allowed disabled:opacity-40"
+        variant="secondary"
+        appearance="outline"
       >
         {{ 'common.previous' | translate }}
-      </button>
+      </app-button>
 
       <!-- Oldalszámok -->
       <ng-container
@@ -321,27 +322,29 @@
           let page of [].constructor(totalPages); let i = index; trackBy: trackByIndex
         "
       >
-        <button
+        <app-button
           type="button"
-          (click)="goToPage(i + 1)"
-          [class.bg-primary-600]="currentPage === i + 1"
-          [class.text-white]="currentPage === i + 1"
-          [class.border-primary-600]="currentPage === i + 1"
-          class="min-h-10 min-w-10 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm font-semibold text-content-700 shadow-sm transition-all duration-200 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700"
+          (buttonClick)="goToPage(i + 1)"
+          variant="secondary"
+          appearance="outline"
+          size="sm"
+          [active]="currentPage === i + 1"
+          [ariaCurrent]="currentPage === i + 1 ? 'page' : null"
         >
           {{ i + 1 }}
-        </button>
+        </app-button>
       </ng-container>
 
       <!-- Következő -->
-      <button
+      <app-button
         type="button"
-        (click)="nextPage()"
+        (buttonClick)="nextPage()"
         [disabled]="currentPage === totalPages"
-        class="min-h-10 rounded-xl border border-surface-300 bg-white px-4 py-2 text-sm font-semibold text-content-700 shadow-sm transition-all duration-200 hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 disabled:cursor-not-allowed disabled:opacity-40"
+        variant="secondary"
+        appearance="outline"
       >
         {{ 'common.next' | translate }}
-      </button>
+      </app-button>
 
     </div>
 

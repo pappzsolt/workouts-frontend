@@ -160,18 +160,15 @@
         <div
           class="flex justify-end pt-1 sm:col-span-2"
         >
-          <button
+          <app-button
             type="button"
-            [disabled]="
-              creatingProgram ||
-              !form.programName.trim() ||
-              !form.startDate ||
-              form.durationDays === null ||
-              form.durationDays <= 0 ||
-              !form.difficultyLevel
-            "
-            (click)="save.emit()"
-            class="w-full rounded-lg bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            [disabled]=" creatingProgram || !form.programName.trim() || !form.startDate || form.durationDays === null || form.durationDays <= 0 || !form.difficultyLevel "
+            (buttonClick)="save.emit()"
+            variant="save"
+            appearance="solid"
+            [fullWidth]="true"
+            buttonClass="sm:w-auto"
+            class="block w-full sm:w-auto"
           >
             <span>
               {{
@@ -188,7 +185,7 @@
             <span *ngIf="!creatingProgram" class="ml-2">
               →
             </span>
-          </button>
+          </app-button>
         </div>
 
       </div>

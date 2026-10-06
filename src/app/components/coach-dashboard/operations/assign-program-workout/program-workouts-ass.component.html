@@ -62,15 +62,17 @@
               {{ workoutName(row.workoutId) }} — {{ row.dayIndex }}
             </span>
 
-            <button
+            <app-button
               type="button"
               [disabled]="busy || loadingAssignments || !assignmentsReady"
-              (click)="removeWorkout(row.id)"
-              class="rounded-lg bg-delete-50 px-3 py-2 text-sm font-semibold text-delete-600 transition hover:bg-delete-100"
+              (buttonClick)="removeWorkout(row.id)"
               [title]="'common.remove' | translate"
+              variant="delete"
+              appearance="ghost"
+              [iconOnly]="true"
             >
               <app-icon name="x" sizeClass="h-5 w-5" />
-            </button>
+            </app-button>
           </div>
         }
       </div>
@@ -78,21 +80,30 @@
       @for (wid of pendingWorkoutIds; track wid) {
         <div class="flex items-center justify-between py-3">
           <span>{{ workoutName(wid) }}</span>
-          <button type="button" [disabled]="busy || loadingAssignments || !assignmentsReady" (click)="removePendingWorkout(wid)">
+          <app-button
+            type="button"
+            [disabled]="busy || loadingAssignments || !assignmentsReady"
+            (buttonClick)="removePendingWorkout(wid)"
+            variant="delete"
+            appearance="ghost"
+            [iconOnly]="true"
+            [ariaLabel]="'common.remove' | translate"
+          >
             <app-icon name="x" sizeClass="h-5 w-5" />
-          </button>
+          </app-button>
         </div>
       }
       <!-- Mentés -->
       <div class="mt-6 flex justify-end">
-        <button
+        <app-button
           type="button"
           [disabled]="busy || loadingAssignments || !assignmentsReady"
-          (click)="saveSelectedWorkouts()"
-          class="rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-6 py-3 font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 hover:shadow-md"
+          (buttonClick)="saveSelectedWorkouts()"
+          variant="save"
+          appearance="solid"
         >
           {{ 'programWorkouts.save' | translate }}
-        </button>
+        </app-button>
       </div>
     </div>
   }

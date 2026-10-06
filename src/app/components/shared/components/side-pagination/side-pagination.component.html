@@ -27,59 +27,39 @@
          ELŐZŐ
          ================================================== -->
 
-    <button
+    <app-button
       *ngIf="totalPages > 1"
       type="button"
-      [attr.aria-label]="'common.previous' | translate"
+      [ariaLabel]="'common.previous' | translate"
       [disabled]="currentPage <= 1"
-      (click)="onPreviousPage()"
-      class="absolute -left-3 top-1/2 z-10
-             flex h-11 w-11 -translate-y-1/2
-             items-center justify-center
-             rounded-full
-             border border-primary-700
-             bg-primary-700
-             text-white
-             shadow-sm
-             transition
-             hover:border-primary-800
-             hover:bg-primary-800
-             disabled:cursor-not-allowed
-             disabled:opacity-30
-             sm:-left-5
-             sm:h-11 sm:w-11"
+      (buttonClick)="onPreviousPage()"
+      variant="secondary"
+      appearance="outline"
+      [iconOnly]="true"
+      [round]="true"
+      class="absolute top-1/2 z-10 -translate-y-1/2 -left-3 sm:-left-5"
     >
       <app-icon name="chevron-left" sizeClass="h-5 w-5" />
-    </button>
+    </app-button>
 
     <!-- ==================================================
          KÖVETKEZŐ
          ================================================== -->
 
-    <button
+    <app-button
       *ngIf="totalPages > 1"
       type="button"
-      [attr.aria-label]="'common.next' | translate"
+      [ariaLabel]="'common.next' | translate"
       [disabled]="currentPage >= totalPages"
-      (click)="onNextPage()"
-      class="absolute -right-3 top-1/2 z-10
-             flex h-11 w-11 -translate-y-1/2
-             items-center justify-center
-             rounded-full
-             border border-primary-700
-             bg-primary-700
-             text-white
-             shadow-sm
-             transition
-             hover:border-primary-800
-             hover:bg-primary-800
-             disabled:cursor-not-allowed
-             disabled:opacity-30
-             sm:-right-5
-             sm:h-11 sm:w-11"
+      (buttonClick)="onNextPage()"
+      variant="secondary"
+      appearance="outline"
+      [iconOnly]="true"
+      [round]="true"
+      class="absolute top-1/2 z-10 -translate-y-1/2 -right-3 sm:-right-5"
     >
       <app-icon name="chevron-right" sizeClass="h-5 w-5" />
-    </button>
+    </app-button>
 
   </div>
 

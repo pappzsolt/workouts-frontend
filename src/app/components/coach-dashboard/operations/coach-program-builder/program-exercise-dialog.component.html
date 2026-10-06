@@ -34,14 +34,17 @@
         </p>
       </div>
 
-      <button
+      <app-button
         type="button"
         [disabled]="loadingExercises"
-        (click)="close.emit()"
-        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-surface-200 bg-white text-content-500 transition hover:border-delete-200 hover:bg-delete-50 hover:text-delete-600"
+        (buttonClick)="close.emit()"
+        variant="delete"
+        appearance="ghost"
+        [iconOnly]="true"
+        [ariaLabel]="'common.close' | translate"
       >
         <app-icon name="x" sizeClass="h-5 w-5" />
-      </button>
+      </app-button>
     </div>
 
     <div class="min-h-0 flex-1 overflow-y-auto p-5 sm:p-6">
@@ -122,24 +125,32 @@
     </div>
 
     <div class="flex shrink-0 flex-col-reverse gap-3 border-t border-surface-100 px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
-      <button
+      <app-button
         type="button"
         [disabled]="loadingExercises"
-        (click)="close.emit()"
-        class="min-h-11 w-full rounded-lg border border-surface-300 bg-white px-5 py-2.5 text-sm font-semibold text-content-700 transition hover:bg-surface-50 sm:w-auto"
+        (buttonClick)="close.emit()"
+        variant="secondary"
+        appearance="outline"
+        [fullWidth]="true"
+        buttonClass="sm:w-auto"
+        class="block w-full sm:w-auto"
       >
         {{ 'coachProgramBuilder.cancel' | translate }}
-      </button>
+      </app-button>
 
-      <button
+      <app-button
         *ngIf="exerciseDialogIsNewWorkout"
         type="button"
         [disabled]="loadingExercises"
-        (click)="saveExerciseDialog()"
-        class="min-h-11 w-full rounded-lg bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:from-primary-800 hover:to-primary-800 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+        (buttonClick)="saveExerciseDialog()"
+        variant="save"
+        appearance="solid"
+        [fullWidth]="true"
+        buttonClass="sm:w-auto"
+        class="block w-full sm:w-auto"
       >
         {{ 'coachProgramBuilder.save' | translate }}
-      </button>
+      </app-button>
     </div>
   </div>
 </div>

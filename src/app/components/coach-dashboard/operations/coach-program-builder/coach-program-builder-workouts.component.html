@@ -128,36 +128,40 @@
 
             <!-- MŰVELETEK -->
             <div class="flex shrink-0 flex-wrap items-center gap-2 sm:justify-end">
-              <button
+              <app-button
                 type="button"
-                (click)="selectWorkout(occurrence.workout.id, occurrence.assignment.id)"
-                class="inline-flex min-h-10 items-center gap-2 rounded-lg border border-surface-300 bg-white px-3 py-2 text-sm font-semibold text-content-700 shadow-sm transition hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/10"
+                (buttonClick)="selectWorkout(occurrence.workout.id, occurrence.assignment.id)"
+                variant="secondary"
+                appearance="outline"
               >
                 <app-icon name="dumbbell" sizeClass="h-4 w-4" />
                 {{ 'coachProgramBuilder.exercises' | translate }}
-              </button>
+              </app-button>
 
-              <button
+              <app-button
                 type="button"
                 [disabled]="occurrences.busy || occurrences.loading || assignmentBusy"
-                (click)="copySourceWorkout = occurrence.workout"
-                [attr.aria-label]="'coachProgramBuilder.copyWorkoutAria' | translate"
-                class="inline-flex min-h-10 items-center gap-2 rounded-lg border border-surface-300 bg-white px-3 py-2 text-sm font-semibold text-content-700 shadow-sm transition hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/10"
+                (buttonClick)="copySourceWorkout = occurrence.workout"
+                [ariaLabel]="'coachProgramBuilder.copyWorkoutAria' | translate"
+                variant="secondary"
+                appearance="outline"
               >
                 <app-icon name="clipboard-list" sizeClass="h-4 w-4" />
                 {{ 'coachProgramBuilder.copyWorkout' | translate }}
-              </button>
+              </app-button>
 
-              <button
+              <app-button
                 type="button"
                 data-testid="remove-workout-occurrence"
                 [disabled]="occurrences.busy || occurrences.loading || assignmentBusy"
-                (click)="occurrences.remove(occurrence.assignment.id)"
-                [attr.aria-label]="'coachProgramBuilder.removeWorkoutAria' | translate"
-                class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-delete-200 bg-white text-delete-600 transition hover:bg-delete-50 focus:outline-none focus:ring-4 focus:ring-delete-600/10"
+                (buttonClick)="occurrences.remove(occurrence.assignment.id)"
+                [ariaLabel]="'coachProgramBuilder.removeWorkoutAria' | translate"
+                variant="delete"
+                appearance="ghost"
+                [iconOnly]="true"
               >
                 <app-icon name="x" sizeClass="h-4 w-4" />
-              </button>
+              </app-button>
             </div>
           </div>
         </div>
@@ -256,23 +260,25 @@
       ></app-coach-workout-board>
 
       <div class="mt-4 flex flex-col-reverse gap-3 border-t border-primary-100 pt-4 sm:flex-row sm:justify-end">
-        <button
+        <app-button
           type="button"
-          (click)="showWorkoutPicker = false; pendingWorkoutIds = []"
-          class="min-h-11 rounded-lg border border-surface-300 bg-white px-5 py-2.5 text-sm font-semibold text-content-700 transition hover:bg-surface-50"
+          (buttonClick)="showWorkoutPicker = false; pendingWorkoutIds = []"
+          variant="secondary"
+          appearance="outline"
         >
           {{ 'coachProgramBuilder.cancel' | translate }}
-        </button>
+        </app-button>
 
-        <button
+        <app-button
           type="button"
           [disabled]="pendingWorkoutIds.length === 0 || occurrences.busy || occurrences.loading || assignmentBusy"
           data-testid="add-workouts-to-program"
-          (click)="addPendingWorkouts()"
-          class="min-h-11 rounded-lg bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:from-primary-800 hover:to-primary-800 disabled:cursor-not-allowed disabled:opacity-50"
+          (buttonClick)="addPendingWorkouts()"
+          variant="primary"
+          appearance="solid"
         >
           {{ 'coachProgramBuilder.addToProgram' | translate }}
-        </button>
+        </app-button>
       </div>
     </section>
 
@@ -280,15 +286,18 @@
          4. PROGRAM USER + NAVIGÁCIÓ
          ====================================================== -->
     <div class="flex flex-col gap-3 border-t border-surface-200 pt-5 lg:flex-row lg:items-center lg:justify-between">
-      <button
+      <app-button
         type="button"
         [disabled]="occurrences.busy || assignmentBusy"
-        (click)="previousStep.emit()"
-        class="w-full rounded-lg border border-surface-300 bg-white px-5 py-3 text-sm font-semibold text-content-700 shadow-sm transition hover:border-primary-300 hover:bg-primary-50 hover:text-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/10 lg:w-auto"
+        (buttonClick)="previousStep.emit()"
+        variant="secondary"
+        appearance="outline"
+        [fullWidth]="true"
+        class="block w-full"
       >
         ←
         {{ 'coachProgramBuilder.back' | translate }}
-      </button>
+      </app-button>
 
       <div class="w-full min-w-0 lg:max-w-sm">
         <app-user-multi-select
@@ -300,16 +309,19 @@
         ></app-user-multi-select>
       </div>
 
-      <button
+      <app-button
         type="button"
         data-testid="finish-program"
         [disabled]="programId === null || !selectedUserIds.length || assignmentBusy || occurrences.busy || occurrences.loading || !userSelectionReady"
-        (click)="finishProgram.emit()"
-        class="w-full rounded-lg bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20 disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto"
+        (buttonClick)="finishProgram.emit()"
+        variant="primary"
+        appearance="solid"
+        [fullWidth]="true"
+        class="block w-full"
       >
         {{ 'coachProgramBuilder.finishProgram' | translate }}
         <span class="ml-2">→</span>
-      </button>
+      </app-button>
     </div>
   </div>
 </app-card>

@@ -116,13 +116,17 @@
 
         <!-- Gomb -->
         <div class="flex min-w-0 justify-end pt-1 sm:col-span-2">
-          <button
+          <app-button
             type="submit"
             [disabled]="!workoutForm.form.valid"
-            class="w-full rounded-lg bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-200/50 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+            variant="primary"
+            appearance="solid"
+            [fullWidth]="true"
+            buttonClass="sm:w-auto"
+            class="block w-full sm:w-auto"
           >
             <app-icon name="circle-plus" sizeClass="h-5 w-5" /> {{ 'newWorkout.createWorkout' | translate }}
-          </button>
+          </app-button>
         </div>
 
       </form>

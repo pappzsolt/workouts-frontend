@@ -29,7 +29,7 @@ import { SHARED_IMPORTS } from '../shared-imports';
         label="appSearch.coachesLabel"
         placeholder="appSearch.coachesPlaceholder"
         [showClearButton]="true"
-        (searchTermChange)="searchTerm = $event"
+        (searchTermChange)="onSearchChange($event)"
         class="mb-3 block"
       ></app-search>
     <app-message *ngIf="searchTerm.trim() && !matchingOptions.length" message="appSearch.noResults" type="info" class="mb-3 block"></app-message>
@@ -73,6 +73,15 @@ export class CoachSelectComponent implements OnInit {
 
   get coachOptions(): SelectOption<number>[] {
     return this.coaches.filter(coach => coach.id === this.selectedCoachId || matchesSearch(this.searchTerm, coach.name)).map((coach) => ({ value: coach.id, label: coach.name }));
+  }
+
+  onSearchChange(term: string): void {
+    this.searchTerm = term;
+    if (!term.trim()) return;
+    const first = this.matchingOptions[0];
+    if (!first || first.id === this.selectedCoachId) return;
+    this.selectedCoachId = first.id;
+    this.onCoachChange();
   }
 
   ngOnInit(): void {

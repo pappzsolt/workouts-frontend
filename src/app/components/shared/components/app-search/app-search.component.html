@@ -18,16 +18,20 @@
       class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 disabled:opacity-60 sm:text-sm"
     />
     @if (showClearButton && searchTerm) {
-      <button
+      <app-button
         type="button"
         [disabled]="disabled"
-        [attr.aria-label]="clearLabel | translate"
+        [ariaLabel]="clearLabel | translate"
         [title]="clearLabel | translate"
-        (click)="clear()"
-        class="absolute inset-y-0 right-0 flex min-h-11 w-11 items-center justify-center rounded-r-xl text-content-500 transition hover:bg-surface-100 hover:text-content-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-600 disabled:cursor-not-allowed disabled:opacity-40"
+        (buttonClick)="clear()"
+        variant="secondary"
+        appearance="ghost"
+        [iconOnly]="true"
+        buttonClass="rounded-r-xl rounded-l-none"
+        class="absolute inset-y-0 right-0 flex items-center"
       >
         <app-icon name="x" sizeClass="h-4 w-4"></app-icon>
-      </button>
+      </app-button>
     }
   </div>
 </div>

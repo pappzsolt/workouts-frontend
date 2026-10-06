@@ -1,3 +1,4 @@
+import { AppButtonComponent } from '../shared/components/app-button/app-button.component';
 import type { MenuItem } from '../../models/common/menu-item.model';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -7,7 +8,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 @Component({
   selector: 'app-dynamic-menu',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslatePipe],
+  imports: [AppButtonComponent, CommonModule, RouterModule, TranslatePipe],
   templateUrl: './dynamic-menu.component.html',
   styleUrls: ['./dynamic-menu.component.css'],
 })

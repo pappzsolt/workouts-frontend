@@ -162,19 +162,17 @@
             *ngIf="user.roleIds?.length"
             class="mt-4 flex flex-wrap gap-2"
           >
-            <span
+            <app-button
               *ngFor="let role of user.roleIds; trackBy: trackByRole"
-              class="inline-flex cursor-pointer items-center gap-2 rounded-full border border-info-200 bg-info-50 px-3 py-1.5 text-sm font-semibold text-info-700 transition-colors duration-200 hover:border-delete-200 hover:bg-delete-50 hover:text-delete-700"
-              (click)="onRemoveRole(role)"
-            >
-              {{ role.name }}
-
-              <span
-                class="text-xs font-bold opacity-70"
-              >
-                <app-icon name="x" sizeClass="h-5 w-5" />
-              </span>
-            </span>
+              variant="delete"
+              appearance="outline"
+              size="sm"
+              [round]="true"
+              [label]="role.name"
+              lucideIcon="x"
+              [ariaLabel]="('common.remove' | translate) + ': ' + role.name"
+              (buttonClick)="onRemoveRole(role)"
+            ></app-button>
           </div>
         </div>
       </app-form-field>

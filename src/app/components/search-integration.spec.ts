@@ -189,6 +189,54 @@ describe('Shared search integration', () => {
     expect(ready).toHaveBeenCalledOnceWith(true);
   });
 
+  it('selects the first matching user and emits selection events only when it changes', () => {
+    const component = make(() => new UserSelectComponent({} as any));
+    component.users = [{ id: 1, username: 'Anna' }, { id: 2, username: 'Béla' }, { id: 3, username: 'Béla Junior' }];
+    component.selectedUserId = 1;
+    const changed = jasmine.createSpy('changed');
+    const selected = jasmine.createSpy('selected');
+    component.selectedUserIdChange.subscribe(changed);
+    component.userSelected.subscribe(selected);
+    component.onSearchChange('béla');
+    expect(component.selectedUserId).toBe(2);
+    expect(changed).toHaveBeenCalledOnceWith(2);
+    expect(selected).toHaveBeenCalledOnceWith(component.users[1]);
+    component.onSearchChange('BÉLA');
+    component.onSearchChange('missing');
+    component.onSearchChange('');
+    expect(component.selectedUserId).toBe(2);
+    expect(changed).toHaveBeenCalledTimes(1);
+  });
+
+  it('selects and emits the first matching coach', () => {
+    const component = make(() => new CoachSelectComponent({} as any));
+    component.coaches = [{ id: 1, name: 'Anna' }, { id: 2, name: 'Béla' }];
+    component.selectedCoachId = 1;
+    const changed = jasmine.createSpy('changed');
+    component.selectedCoachIdChange.subscribe(changed);
+    component.onSearchChange('béla');
+    expect(component.selectedCoachId).toBe(2);
+    expect(changed).toHaveBeenCalledOnceWith(2);
+  });
+
+  it('selects the first matching program by description and updates readiness', () => {
+    const component = make(() => new CoachProgramSelectComponent());
+    component.programs = [{ programId: 1, programName: 'Strength' }, { programId: 2, programName: 'Cardio', programDescription: 'Endurance' }];
+    component.selectedProgramId = 1;
+    const changed = jasmine.createSpy('changed');
+    const ready = jasmine.createSpy('ready');
+    component.selectedProgramIdChange.subscribe(changed);
+    component.readyChange.subscribe(ready);
+    component.onSearchChange('endurance');
+    expect(component.selectedProgramId).toBe(2);
+    expect(changed).toHaveBeenCalledOnceWith(2);
+    expect(ready).toHaveBeenCalledOnceWith(true);
+    component.onSearchChange('missing');
+    component.onSearchChange('');
+    expect(component.selectedProgramId).toBe(2);
+    expect(changed).toHaveBeenCalledTimes(1);
+  });
+
   it('filters calendar occurrences by name without changing dates, month, or the selected occurrence', () => {
     const workouts = [
       { userWorkoutId: 10, workoutName: 'Strength', scheduledAt: '2035-03-02' },

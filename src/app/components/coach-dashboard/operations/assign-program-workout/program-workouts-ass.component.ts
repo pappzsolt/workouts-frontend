@@ -1,3 +1,4 @@
+import { AppButtonComponent } from '../../../shared/components/app-button/app-button.component';
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 
@@ -23,7 +24,7 @@ import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.c
 @Component({
   selector: 'app-program-workouts-ass',
   standalone: true,
-  imports: [
+  imports: [AppButtonComponent,
     CommonModule,
     FormsModule,
     MessageComponent,

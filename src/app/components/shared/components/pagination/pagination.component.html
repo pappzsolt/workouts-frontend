@@ -12,21 +12,18 @@
 >
   <!-- Előző oldal -->
 
-  <button
+  <app-button
     type="button"
-    (click)="previousPage()"
+    (buttonClick)="previousPage()"
     [disabled]="!hasPreviousPage"
-    class="w-full rounded-lg border border-primary-200
-           bg-white px-4 py-2.5 text-sm font-semibold
-           text-primary-700 transition
-           hover:bg-primary-50 hover:text-primary-700
-           focus:outline-none focus:ring-4
-           focus:ring-primary-600/10
-           disabled:cursor-not-allowed
-           disabled:opacity-40 sm:w-auto"
+    variant="secondary"
+    appearance="outline"
+    [fullWidth]="true"
+    buttonClass="sm:w-auto"
+    class="block w-full sm:w-auto"
   >
     ◀ {{ 'common.previous' | translate }}
-  </button>
+  </app-button>
 
   <!-- Aktuális oldal -->
 
@@ -40,19 +37,16 @@
 
   <!-- Következő oldal -->
 
-  <button
+  <app-button
     type="button"
-    (click)="nextPage()"
+    (buttonClick)="nextPage()"
     [disabled]="!hasNextPage"
-    class="w-full rounded-lg border border-primary-200
-           bg-white px-4 py-2.5 text-sm font-semibold
-           text-primary-700 transition
-           hover:bg-primary-50 hover:text-primary-700
-           focus:outline-none focus:ring-4
-           focus:ring-primary-600/10
-           disabled:cursor-not-allowed
-           disabled:opacity-40 sm:w-auto"
+    variant="secondary"
+    appearance="outline"
+    [fullWidth]="true"
+    buttonClass="sm:w-auto"
+    class="block w-full sm:w-auto"
   >
     {{ 'common.next' | translate }} ▶
-  </button>
+  </app-button>
 </div>

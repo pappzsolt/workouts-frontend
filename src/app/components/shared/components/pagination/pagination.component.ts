@@ -1,3 +1,4 @@
+import { AppButtonComponent } from '../app-button/app-button.component';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -6,7 +7,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 @Component({
   standalone: true,
   selector: 'app-pagination',
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [AppButtonComponent, CommonModule, FormsModule, TranslatePipe],
   templateUrl: './pagination.component.html',
 })
 export class PaginationComponent {

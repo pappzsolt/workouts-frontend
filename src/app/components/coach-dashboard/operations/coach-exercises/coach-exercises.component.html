@@ -174,13 +174,16 @@
               <!-- SZERKESZTÉS -->
 
               <div class="mt-auto pt-4">
-                <button
+                <app-button
                   type="button"
-                  class="w-full rounded-lg border border-info-200 bg-info-50 px-4 py-2.5 text-sm font-semibold text-info-700 transition hover:border-primary-300 hover:bg-info-100 focus:outline-none focus:ring-4 focus:ring-primary-600/10"
-                  (click)="editExercise(ex.id!)"
+                  (buttonClick)="editExercise(ex.id!)"
+                  variant="edit"
+                  appearance="solid"
+                  [fullWidth]="true"
+                  class="block w-full"
                 >
                   <app-icon name="pencil" sizeClass="h-5 w-5" /> {{ 'common.edit' | translate }}
-                </button>
+                </app-button>
               </div>
 
             </div>
@@ -229,14 +232,17 @@
          ÚJ GYAKORLAT
          ====================================================== -->
 
-    <button
+    <app-button
       type="button"
-      class="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-primary-700 to-primary-800 text-2xl text-white shadow-lg transition duration-200 hover:scale-105 hover:from-primary-700 hover:to-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-600/20"
-      (click)="goToNewExercise()"
+      (buttonClick)="goToNewExercise()"
       [title]="'coachExercises.addExercise' | translate"
+      variant="add"
+      appearance="solid"
+      [iconOnly]="true"
+      [floating]="true"
     >
       <app-icon name="circle-plus" sizeClass="h-5 w-5" />
-    </button>
+    </app-button>
 
   </div>
 </div>

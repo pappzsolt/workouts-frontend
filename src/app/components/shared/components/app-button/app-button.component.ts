@@ -1,10 +1,12 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, booleanAttribute } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { AppIconComponent, AppIconName } from '../app-icon/app-icon.component';
 
 export type AppButtonVariant =
   'primary' | 'save' | 'edit' | 'search' | 'sort' | 'add' | 'delete' | 'secondary' | 'danger';
+
+export type AppButtonAppearance = 'solid' | 'outline' | 'ghost' | 'link';
 
 export type AppButtonSize = 'sm' | 'md' | 'lg';
 
@@ -25,6 +27,17 @@ export class AppButtonComponent {
   @Input() size: AppButtonSize = 'md';
   @Input() type: AppButtonType = 'button';
 
+  @Input() appearance: AppButtonAppearance = 'solid';
+  @Input({ transform: booleanAttribute }) fullWidth = false;
+  @Input({ transform: booleanAttribute }) iconOnly = false;
+  @Input({ transform: booleanAttribute }) round = false;
+  @Input({ transform: booleanAttribute }) active = false;
+  @Input({ transform: booleanAttribute }) completed = false;
+  @Input() align: 'center' | 'start' = 'center';
+  @Input() buttonClass = '';
+  @Input() ariaPressed: boolean | null = null;
+  @Input() ariaCurrent: 'page' | 'step' | null = null;
+
   // Gomb felirata
   @Input() label = '';
 
@@ -38,10 +51,10 @@ export class AppButtonComponent {
   @Input() ariaControls = '';
 
   // Állapot
-  @Input() disabled = false;
+  @Input({ transform: booleanAttribute }) disabled = false;
 
   // Lebegő, kör alakú gomb
-  @Input() floating = false;
+  @Input({ transform: booleanAttribute }) floating = false;
 
   // Kattintási esemény
   @Output() buttonClick = new EventEmitter<MouseEvent>();
@@ -51,10 +64,34 @@ export class AppButtonComponent {
    */
   onClick(event: MouseEvent): void {
     if (this.disabled) {
+      event.preventDefault();
+      event.stopPropagation();
       return;
     }
 
     this.buttonClick.emit(event);
+  }
+
+  getAppearanceClasses(): string {
+    if (this.active)
+      return 'border border-primary-700 bg-primary-700 text-white hover:bg-primary-800 focus:ring-primary-300';
+    if (this.completed)
+      return 'border border-save-200 bg-save-50 text-save-700 hover:bg-save-100 focus:ring-save-300';
+    const destructive = this.variant === 'delete' || this.variant === 'danger';
+    switch (this.appearance) {
+      case 'outline':
+        return destructive
+          ? 'border border-delete-200 bg-white text-delete-700 hover:bg-delete-50 focus:ring-delete-300'
+          : 'border border-surface-300 bg-white text-primary-700 hover:border-primary-300 hover:bg-primary-50 focus:ring-primary-300';
+      case 'ghost':
+        return destructive
+          ? 'border border-transparent bg-transparent text-delete-700 hover:bg-delete-50 focus:ring-delete-300'
+          : 'border border-transparent bg-transparent text-content-700 hover:bg-surface-100 focus:ring-primary-300';
+      case 'link':
+        return 'border border-transparent bg-transparent text-primary-700 hover:underline focus:ring-primary-300';
+      default:
+        return this.getVariantClasses();
+    }
   }
 
   /**

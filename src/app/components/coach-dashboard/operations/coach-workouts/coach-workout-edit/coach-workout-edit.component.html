@@ -428,17 +428,15 @@
                 </div>
               </div>
 
-              <button
+              <app-button
                 type="button"
-                [disabled]="
-                  !selectedExerciseId ||
-                  loadingExercises ||
-                  addingExercise ||
-                  checkingProgramAssignment ||
-                  workoutAssignedToProgram
-                "
-                (click)="addExerciseToWorkout()"
-                class="inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-5 py-2.5 text-sm font-semibold text-white shadow-md shadow-info-500/20 transition duration-150 hover:from-primary-700 hover:to-primary-700 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-primary-500/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:from-surface-300 disabled:to-surface-300 disabled:shadow-none sm:w-auto"
+                [disabled]=" !selectedExerciseId || loadingExercises || addingExercise || checkingProgramAssignment || workoutAssignedToProgram "
+                (buttonClick)="addExerciseToWorkout()"
+                variant="primary"
+                appearance="solid"
+                [fullWidth]="true"
+                buttonClass="sm:w-auto"
+                class="block w-full sm:w-auto"
               >
                 <span *ngIf="!addingExercise">
                   <app-icon name="circle-plus" sizeClass="h-5 w-5" />
@@ -451,7 +449,7 @@
                       : ('coachWorkoutEdit.addExercise' | translate)
                   }}
                 </span>
-              </button>
+              </app-button>
 
             </div>
 
@@ -584,25 +582,33 @@
 
           <!-- Mégse -->
 
-          <button
+          <app-button
             type="button"
-            (click)="cancelEdit()"
-            class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-surface-300 bg-white px-6 py-2.5 text-sm font-semibold text-content-700 shadow-sm transition duration-150 hover:border-surface-400 hover:bg-surface-50 focus:outline-none focus:ring-4 focus:ring-surface-500/10 active:scale-[0.98] sm:w-auto"
+            (buttonClick)="cancelEdit()"
+            variant="secondary"
+            appearance="outline"
+            [fullWidth]="true"
+            buttonClass="sm:w-auto"
+            class="block w-full sm:w-auto"
           >
             <span><app-icon name="circle-x" sizeClass="h-5 w-5" /></span>
             <span>{{ 'coachWorkoutEdit.cancel' | translate }}</span>
-          </button>
+          </app-button>
 
           <!-- Mentés -->
 
-          <button
+          <app-button
             type="submit"
             [disabled]="!workoutForm.form.valid"
-            class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-700 to-primary-800 px-6 py-2.5 text-sm font-semibold text-white shadow-md shadow-info-500/20 transition duration-150 hover:from-primary-700 hover:to-primary-700 hover:shadow-lg hover:shadow-info-500/25 focus:outline-none focus:ring-4 focus:ring-primary-500/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:from-surface-300 disabled:to-surface-300 disabled:shadow-none sm:w-auto"
+            variant="save"
+            appearance="solid"
+            [fullWidth]="true"
+            buttonClass="sm:w-auto"
+            class="block w-full sm:w-auto"
           >
             <span><app-icon name="save" sizeClass="h-5 w-5" /></span>
             <span>{{ 'coachWorkoutEdit.save' | translate }}</span>
-          </button>
+          </app-button>
 
         </div>
 
