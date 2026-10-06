@@ -26,8 +26,6 @@ export class ProgramExerciseDialogComponent implements OnChanges {
   @Output() readonly saveError = new EventEmitter<string>();
   exerciseDialogOpen = true;
   exerciseDialogExercises: Exercise[] = [];
-  exerciseAddDialogOpen = false;
-  exerciseAddDialogExercises: Exercise[] = [];
   loadingExercises = false;
   errorMessage = '';
 
@@ -73,53 +71,8 @@ export class ProgramExerciseDialogComponent implements OnChanges {
     this.exerciseDialogExercises = [...updatedExercises];
   }
 
-  openExerciseAddDialog(): void {
-    this.exerciseAddDialogExercises = [...this.exerciseDialogExercises];
-    this.exerciseAddDialogOpen = true;
-  }
-
-  closeExerciseAddDialog(): void {
-    this.exerciseAddDialogOpen = false;
-    this.exerciseAddDialogExercises = [];
-  }
-
-  onExerciseAddDialogChange(updatedExercises: Exercise[]): void {
-    this.exerciseAddDialogExercises = [...updatedExercises];
-  }
-
-  confirmExerciseAddDialog(): void {
-    const selectedIds = new Set(
-      this.exerciseAddDialogExercises.map((exercise) => exercise.id),
-    );
-
-    const addedExercises = this.exerciseAddDialogExercises.filter(
-      (exercise) =>
-        !this.exerciseDialogExercises.some(
-          (selected) => selected.id === exercise.id,
-        ),
-    );
-
-    const removedExercises = this.exerciseDialogExercises.filter(
-      (exercise) => !selectedIds.has(exercise.id),
-    );
-
-    // Keep the existing business rule: an existing workout is read-only.
-    if (!this.exerciseDialogIsNewWorkout) {
-      this.closeExerciseAddDialog();
-      return;
-    }
-
-    this.exerciseDialogExercises = [
-      ...this.exerciseDialogExercises.filter(
-        (exercise) => !removedExercises.some((removed) => removed.id === exercise.id),
-      ),
-      ...addedExercises,
-    ];
-
-    this.closeExerciseAddDialog();
-  }
-
   saveExerciseDialog(): void {
+    if (this.loadingExercises) return;
     if (!this.exerciseDialogWorkout || !this.exerciseDialogIsNewWorkout) {
       this.close.emit();
       return;
@@ -127,20 +80,16 @@ export class ProgramExerciseDialogComponent implements OnChanges {
 
     const workoutId = this.exerciseDialogWorkout.id;
 
-    const existingExerciseIds = new Set(
-      this.selectedWorkoutExercises
-        .map((workoutExercise) => workoutExercise.exercise?.id)
-        .filter((id): id is number => id != null),
-    );
-
     this.errorMessage = '';
     this.loadingExercises = true;
 
     this.workoutBuilderService
-      .saveExercises(workoutId, this.exerciseDialogExercises, existingExerciseIds)
+      .saveExercises(workoutId, [...this.exerciseDialogExercises])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ results, workout }) => {
+          this.exerciseDialogWorkout = workout;
+          this.selectedWorkoutExercises = workout.exercises;
           const failed = results.filter((result) => !result.success);
 
           this.loadingExercises = false;

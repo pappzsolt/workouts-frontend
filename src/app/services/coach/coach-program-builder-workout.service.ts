@@ -78,44 +78,30 @@ export class CoachProgramBuilderWorkoutService {
   saveExercises(
     workoutId: number,
     exercises: Exercise[],
-    existingExerciseIds: Set<number>,
   ): Observable<{
     results: ApiResponse<void>[];
     workout: WorkoutWithExercises;
   }> {
-    const newExercises = exercises.filter(
-      (exercise): exercise is Exercise & { id: number } =>
-        exercise.id != null && !existingExerciseIds.has(exercise.id),
-    );
-
-    if (newExercises.length === 0) {
-      return this.getWorkoutExercises(workoutId).pipe(
-        map((workout) => ({ results: [], workout })),
-      );
-    }
-
-    return from(newExercises).pipe(
-      concatMap((exercise) =>
-        this.workoutExerciseService
-          .assignExerciseToWorkout(workoutId, exercise.id)
-          .pipe(
-            catchError((error: HttpErrorResponse) =>
-              of({
-                success: false,
-                data: null,
-                message:
-                  error?.error?.message ||
-                  'coachProgramBuilder.saveExerciseError',
-              } satisfies ApiResponse<void>),
-            ),
-          ),
-      ),
-      toArray(),
-      concatMap((results: ApiResponse<void>[]) =>
-        this.getWorkoutExercises(workoutId).pipe(
-          map((workout) => ({ results, workout })),
-        ),
-      ),
+    // Read the current relationships before computing the delta, including on retry.
+    return this.getWorkoutExercises(workoutId).pipe(
+      concatMap(current => {
+        const selectedIds = new Set(exercises.map(exercise => exercise.id));
+        const currentIds = new Set(current.exercises.map(row => row.exercise.id));
+        const removed = current.exercises.filter(row => !selectedIds.has(row.exercise.id));
+        const added = exercises.filter((exercise): exercise is Exercise & { id: number } =>
+          exercise.id != null && !currentIds.has(exercise.id));
+        const operations = [
+          ...removed.map(row => () => this.workoutExerciseService.deleteExerciseFromWorkout(workoutId, row.exercise.id!)),
+          ...added.map(exercise => () => this.workoutExerciseService.assignExerciseToWorkout(workoutId, exercise.id)),
+        ];
+        return from(operations).pipe(
+          concatMap(operation => operation().pipe(catchError((error: HttpErrorResponse) => of({
+            success: false, data: null, message: error?.error?.message || 'coachProgramBuilder.saveExerciseError',
+          } satisfies ApiResponse<void>)))),
+          toArray(),
+        );
+      }),
+      concatMap(results => this.getWorkoutExercises(workoutId).pipe(map(workout => ({ results, workout })))),
     );
   }
 

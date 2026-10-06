@@ -21,6 +21,7 @@ export class ProgramWorkoutOccurrenceStore {
   private programId: number | null = null;
 
   load(programId: number | null, loaded?: () => void): void {
+    if (this.busy && this.programId === programId) return;
     this.loadRequest?.unsubscribe();
     if (this.programId !== programId) {
       this.mutationRequest?.unsubscribe();
@@ -48,8 +49,8 @@ export class ProgramWorkoutOccurrenceStore {
     });
   }
 
-  add(ids: number[], completed: () => void): void {
-    if (this.busy) return;
+  add(ids: number[], completed: (addedIds: number[]) => void): void {
+    if (this.busy || this.loading) return;
     if (this.programId === null || !ids.length) { this.fail('coachProgramBuilder.addWorkoutError'); return; }
     this.loadRequest?.unsubscribe();
     this.loading = false;
@@ -59,15 +60,17 @@ export class ProgramWorkoutOccurrenceStore {
         this.busy = false;
         const failed = results.filter(result => !result.success);
         if (failed.length) this.fail(failed.map(result => result.message || 'coachProgramBuilder.addWorkoutError').join(' '));
-        else { this.success('coachProgramBuilder.addedToProgram'); completed(); }
-        this.load(this.programId);
+        else this.success('coachProgramBuilder.addedToProgram');
+        const added = results.flatMap(result => result.success && result.data ? [result.data] : []);
+        this.state.load([...this.state.assignments, ...added], this.workouts);
+        completed(added.map(row => row.workoutId));
       },
       error: error => { this.busy = false; this.fail(error?.error?.message || 'coachProgramBuilder.addWorkoutError'); },
     });
   }
 
   remove(id: number): void {
-    if (this.busy) return;
+    if (this.busy || this.loading) return;
     if (!this.state.assignments.some(row => row.id === id)) { this.fail('coachProgramBuilder.removeWorkoutError'); return; }
     this.loadRequest?.unsubscribe();
     this.loading = false;
@@ -83,7 +86,7 @@ export class ProgramWorkoutOccurrenceStore {
   }
 
   updateDay(id: number, dayIndex: number): void {
-    if (this.busy) return;
+    if (this.busy || this.loading) return;
     if (!this.state.assignments.some(row => row.id === id)) { this.fail('coachProgramBuilder.updateWorkoutDayError'); return; }
     this.loadRequest?.unsubscribe();
     this.loading = false;

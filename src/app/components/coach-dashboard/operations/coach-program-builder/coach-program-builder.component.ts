@@ -1,10 +1,7 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { skip } from 'rxjs';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
-import { LanguageService } from '../../../../services/shared/language.service';
 import { ProgramBuilderDocumentStore } from '../../../../services/coach/program-builder/program-builder-document.store';
 import { ProgramBuilderAssignmentStore } from '../../../../services/coach/program-builder/program-builder-assignment.store';
 import { ProgramDetailsFormComponent } from './program-details-form.component';
@@ -23,8 +20,6 @@ export class CoachProgramBuilderComponent implements OnInit {
   readonly assignment = inject(ProgramBuilderAssignmentStore);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
-  private readonly language = inject(LanguageService);
-  private readonly destroyRef = inject(DestroyRef);
   currentStep = 1;
   programId: number | null = null;
   isEditMode = false;
@@ -42,7 +37,6 @@ export class CoachProgramBuilderComponent implements OnInit {
       this.currentStep = this.route.snapshot.queryParamMap.has('newWorkoutId') ? 2 : 1;
       this.loadProgram();
     }
-    this.language.language$.pipe(skip(1), takeUntilDestroyed(this.destroyRef)).subscribe(() => this.loadProgram());
   }
 
   loadProgram(): void {

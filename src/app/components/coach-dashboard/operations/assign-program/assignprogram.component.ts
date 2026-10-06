@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription, finalize, takeUntil } from 'rxjs';
 
 import { AssignProgramService } from '../../../../services/coach/assign-program/assignprogram.service';
 import { UserNameIdService } from '../../../../services/user/user-name-id.service';
@@ -33,9 +33,12 @@ export class AssignProgramComponent implements OnInit, OnDestroy {
 
   private languageService = inject(LanguageService);
 
-  userId!: number;
+  userId: number | null = null;
+  usersReady = false;
+  programReady = false;
+  private usersRequest?: Subscription;
 
-  selectedProgramId!: number;
+  selectedProgramId?: number;
 
   loading = false;
 
@@ -49,10 +52,8 @@ export class AssignProgramComponent implements OnInit, OnDestroy {
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       const programId = params['programId'];
 
-      if (programId) {
-        this.selectedProgramId = Number(programId);
-
-      }
+      const id = Number(programId);
+      this.selectedProgramId = Number.isInteger(id) && id > 0 ? id : undefined;
     });
 
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
@@ -61,9 +62,17 @@ export class AssignProgramComponent implements OnInit, OnDestroy {
   }
 
   loadUsers(): void {
-    this.userNameIdService.getAllUsers().subscribe({
+    this.usersRequest?.unsubscribe();
+    this.usersReady = false;
+    this.usersRequest = this.userNameIdService.getAllUsers().pipe(takeUntil(this.destroy$)).subscribe({
       next: (response) => {
-        this.users = response.data ?? [];
+        if (!response.success || !Array.isArray(response.data)) {
+          this.users = []; this.message = response.message || this.translate.instant('assignProgram.loadUsersError');
+          this.success = false; return;
+        }
+        this.users = response.data;
+        this.usersReady = true;
+        if (!this.users.some(user => user.id === this.userId)) this.userId = null;
       },
 
       error: () => {
@@ -77,7 +86,10 @@ export class AssignProgramComponent implements OnInit, OnDestroy {
   }
 
   assignProgram(): void {
-    if (!this.userId || !this.selectedProgramId) {
+    if (this.loading) return;
+    if (!this.usersReady || !this.programReady || !Number.isInteger(this.userId) || !this.userId || this.userId <= 0 ||
+        !Number.isInteger(this.selectedProgramId) || !this.selectedProgramId || this.selectedProgramId <= 0 ||
+        !this.users.some(user => user.id === this.userId)) {
       this.message = this.translate.instant('assignProgram.selectUserAndProgram');
 
       this.success = false;
@@ -91,13 +103,15 @@ export class AssignProgramComponent implements OnInit, OnDestroy {
 
     this.success = false;
 
-    this.assignService.assignProgramToUser(this.userId, this.selectedProgramId).subscribe({
+    this.assignService.assignProgramToUser(this.userId, this.selectedProgramId).pipe(
+      finalize(() => { this.loading = false; }), takeUntil(this.destroy$),
+    ).subscribe({
       next: (response) => {
         this.loading = false;
 
-        this.success = true;
+        this.success = response.success;
 
-        this.message = response.message || this.translate.instant('assignProgram.success');
+        this.message = response.message || this.translate.instant(response.success ? 'assignProgram.success' : 'assignProgram.error');
       },
 
       error: () => {

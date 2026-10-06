@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, inject, DestroyRef } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, Output, EventEmitter, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { CoachProgramSelectService } from '../../../services/coach/coach-program-select/coach-program-select.service';
@@ -16,7 +16,7 @@ import { SHARED_IMPORTS } from '../shared-imports';
   imports: [...SHARED_IMPORTS, AppSelectComponent],
   templateUrl: './coach-program-select.component.html',
 })
-export class CoachProgramSelectComponent implements OnInit {
+export class CoachProgramSelectComponent implements OnInit, OnChanges {
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly programService = inject(CoachProgramSelectService);
@@ -33,6 +33,14 @@ export class CoachProgramSelectComponent implements OnInit {
   @Output()
   selectedProgramIdChange = new EventEmitter<number>();
 
+  @Output() readonly readyChange = new EventEmitter<boolean>();
+
+  ngOnChanges(): void { this.reportReady(); }
+
+  private reportReady(): void {
+    this.readyChange.emit(!this.loading && this.programs.some(program => program.programId === this.selectedProgramId));
+  }
+
   get programOptions(): SelectOption<number>[] {
     return this.programs.map((program) => ({ value: program.programId, label: program.programName }));
   }
@@ -43,6 +51,7 @@ export class CoachProgramSelectComponent implements OnInit {
 
   loadPrograms(): void {
     this.loading = true;
+    this.reportReady();
 
     this.programService.getMyPrograms().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
@@ -52,6 +61,7 @@ export class CoachProgramSelectComponent implements OnInit {
           this.message = response.message ?? 'coachProgramSelect.loadError';
 
           this.loading = false;
+        this.reportReady();
 
           return;
         }
@@ -59,6 +69,7 @@ export class CoachProgramSelectComponent implements OnInit {
         this.programs = response.data ?? [];
 
         this.loading = false;
+        this.reportReady();
       },
 
       error: () => {
@@ -67,6 +78,7 @@ export class CoachProgramSelectComponent implements OnInit {
         this.message = 'coachProgramSelect.loadError';
 
         this.loading = false;
+        this.reportReady();
       },
     });
   }
@@ -76,6 +88,7 @@ export class CoachProgramSelectComponent implements OnInit {
     this.selectedProgramId = programId;
 
     this.selectedProgramIdChange.emit(programId);
+    this.reportReady();
   }
 
 

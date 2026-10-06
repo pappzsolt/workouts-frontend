@@ -1,7 +1,7 @@
 import { Component, DestroyRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { skip } from 'rxjs';
+import { filter, skip } from 'rxjs';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
 import { UserMultiSelectComponent } from '../../../shared/user/user-multi-select.component';
@@ -47,7 +47,7 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     this.initialized = true;
     this.reload();
-    this.language.language$.pipe(skip(1), takeUntilDestroyed(this.destroyRef)).subscribe(() => this.reload());
+    this.language.language$.pipe(skip(1), filter(() => !this.occurrences.busy), takeUntilDestroyed(this.destroyRef)).subscribe(() => this.reload());
   }
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['programId'] && this.initialized) {
@@ -77,7 +77,10 @@ export class CoachProgramBuilderWorkoutsComponent implements OnInit, OnChanges {
     return this.exerciseWorkoutId !== null && Number(this.route.snapshot.queryParamMap.get('newWorkoutId')) === this.exerciseWorkoutId;
   }
   addPendingWorkouts(): void {
-    this.occurrences.add(this.pendingWorkoutIds, () => { this.showWorkoutPicker = false; this.pendingWorkoutIds = []; });
+    this.occurrences.add(this.pendingWorkoutIds, addedIds => {
+      this.pendingWorkoutIds = this.pendingWorkoutIds.filter(id => !addedIds.includes(id));
+      if (!this.pendingWorkoutIds.length) this.showWorkoutPicker = false;
+    });
   }
   closeExerciseDialog(): void { this.exerciseWorkoutId = null; this.exerciseOccurrenceId = null; }
   onCopied(): void { this.occurrences.success('coachProgramBuilder.copySuccess'); this.reload(); }

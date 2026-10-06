@@ -1,10 +1,11 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { Subject, catchError, concatMap, forkJoin, from, of, takeUntil, timer, toArray } from 'rxjs';
+import { Subject, Subscription, concatMap, finalize, forkJoin, from, takeUntil, tap, toArray } from 'rxjs';
 
 import { MessageComponent } from '../../../shared/components/message/message.component';
 import { CoachProgramBoardComponent } from '../../../shared/coach/coach-program-board/coach-program-board.component';
@@ -43,7 +44,15 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
 
   selectedWorkoutIds: number[] = [];
 
-  private programWorkoutAssignments: ProgramWorkoutAssignment[] = [];
+  programWorkoutAssignments: ProgramWorkoutAssignment[] = [];
+  loadingAssignments = false;
+  assignmentsReady = false;
+  busy = false;
+  private selectionRequest?: Subscription;
+
+  get pendingWorkoutIds(): number[] {
+    return this.selectedWorkoutIds.filter(id => !this.programWorkoutAssignments.some(row => row.workoutId === id));
+  }
 
   message: string | null = null;
 
@@ -73,6 +82,9 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: ({ programs, workouts }) => {
+          if (!programs.success || !workouts.success) {
+            this.message = 'programWorkouts.loadError'; this.messageStatus = 'error'; return;
+          }
           this.programs = programs.data ?? [];
           this.workouts = workouts.data ?? [];
         },
@@ -90,13 +102,18 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
   // ==========================================================
 
   onProgramSelected(programId: number): void {
+    if (this.busy) return;
+    this.selectionRequest?.unsubscribe();
+    this.loadingAssignments = true;
+    this.assignmentsReady = false;
+    this.message = null;
     this.selectedProgramId = programId;
     this.selectedWorkoutIds = [];
     this.programWorkoutAssignments = [];
 
-    this.programWorkoutService
+    this.selectionRequest = this.programWorkoutService
       .getWorkoutsForProgram(programId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(finalize(() => { this.loadingAssignments = false; }), takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
           if (!response.success) {
@@ -106,6 +123,7 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
           }
 
           this.programWorkoutAssignments = response.data ?? [];
+          this.assignmentsReady = true;
 
           this.selectedWorkoutIds = Array.from(
             new Set(
@@ -127,6 +145,7 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
   // ==========================================================
 
   onWorkoutsChange(updatedIds: number[]): void {
+    if (this.busy || this.loadingAssignments || !this.assignmentsReady) return;
     if (!this.selectedProgramId) {
       this.message = 'programWorkouts.programNotSelected';
       this.messageStatus = 'error';
@@ -146,126 +165,71 @@ export class ProgramWorkoutsAssComponent implements OnInit, OnDestroy {
   // ==========================================================
 
   saveSelectedWorkouts(): void {
-    const selectedProgramId = this.selectedProgramId;
-
-    if (!selectedProgramId) {
-      this.message = 'programWorkouts.programNotSelected';
-      this.messageStatus = 'error';
-      return;
-    }
-
-    if (this.selectedWorkoutIds.length === 0) {
-      this.message = 'programWorkouts.noWorkoutsSelected';
-      this.messageStatus = 'error';
-      return;
-    }
-
-    const requests = this.selectedWorkoutIds.map((workoutId, index) => ({
-      workoutId,
-      dayIndex: index + 1,
-    }));
-
-    from(requests)
-      .pipe(
-        concatMap(({ workoutId, dayIndex }) =>
-          this.programWorkoutService
-            .addWorkoutToProgram(selectedProgramId, workoutId, dayIndex)
-            .pipe(
-              catchError((err) =>
-                of({
-                  success: false,
-                  data: null,
-                  message: err.error?.message || 'programWorkouts.unknownError',
-                }),
-              ),
-            ),
-        ),
-        toArray(),
-        takeUntil(this.destroy$),
-      )
-      .subscribe((results) => {
-        const failed = results.filter((result) => !result.success);
-
-        if (failed.length > 0) {
-          this.message = failed.map((result) => result.message || 'programWorkouts.unknownError').join(' ');
-          this.messageStatus = 'error';
-          return;
-        }
-
-        this.message = results[results.length - 1]?.message || 'programWorkouts.assignSuccess';
-        this.messageStatus = 'success';
-
-        timer(5000)
-          .pipe(takeUntil(this.destroy$))
-          .subscribe(() => {
-            this.message = null;
-            this.messageStatus = '';
-          });
-      });
+    if (this.busy || this.loadingAssignments || !this.assignmentsReady || !this.selectedProgramId) return;
+    const programId = this.selectedProgramId;
+    const removed = this.programWorkoutAssignments.filter(row => !this.selectedWorkoutIds.includes(row.workoutId));
+    const added = [...this.pendingWorkoutIds];
+    let nextDay = Math.max(0, ...this.programWorkoutAssignments.map(row => row.dayIndex)) + 1;
+    this.busy = true;
+    this.message = null;
+    from(removed).pipe(
+      concatMap(row => this.programWorkoutService.deleteProgramWorkout(row.id).pipe(tap(response => {
+        if (!response.success) throw new Error(response.message || 'programWorkouts.unknownError');
+        this.programWorkoutAssignments = this.programWorkoutAssignments.filter(item => item.id !== row.id);
+      }))),
+      toArray(),
+      concatMap(() => from(added).pipe(
+        concatMap(workoutId => this.programWorkoutService.addWorkoutToProgram(programId, workoutId, nextDay).pipe(tap(response => {
+          if (!response.success || !response.data) throw new Error(response.message || 'programWorkouts.unknownError');
+          this.programWorkoutAssignments = [...this.programWorkoutAssignments, response.data];
+          nextDay++;
+        }))), toArray(),
+      )),
+      finalize(() => { this.busy = false; }), takeUntil(this.destroy$),
+    ).subscribe({
+      next: () => { this.message = 'programWorkouts.assignSuccess'; this.messageStatus = 'success'; },
+      error: error => this.fail(error),
+    });
   }
 
+  removePendingWorkout(id: number): void {
+    if (this.busy || this.loadingAssignments || !this.assignmentsReady) return;
+    this.onWorkoutsChange(this.selectedWorkoutIds.filter(value => value !== id));
+  }
 
-  // ==========================================================
-  // REMOVE WORKOUT
-  // ==========================================================
+  removeWorkout(assignmentId: number): void {
+    if (this.busy || this.loadingAssignments || !this.assignmentsReady) return;
+    const row = this.programWorkoutAssignments.find(item => item.id === assignmentId);
+    if (!row) return;
+    this.busy = true;
+    this.message = null;
+    this.programWorkoutService.deleteProgramWorkout(assignmentId).pipe(
+      tap(response => {
+        if (!response.success) throw new Error(response.message || 'programWorkouts.unknownError');
+        this.programWorkoutAssignments = this.programWorkoutAssignments.filter(item => item.id !== assignmentId);
+        if (!this.programWorkoutAssignments.some(item => item.workoutId === row.workoutId)) {
+          this.onSelectionRemoved(row.workoutId);
+        }
+      }), finalize(() => { this.busy = false; }), takeUntil(this.destroy$),
+    ).subscribe({
+      next: () => { this.message = 'programWorkouts.assignSuccess'; this.messageStatus = 'success'; },
+      error: error => this.fail(error),
+    });
+  }
 
-  removeWorkout(wid: number): void {
-    if (!this.selectedProgramId) {
-      this.message = 'programWorkouts.programNotSelected';
-      this.messageStatus = 'error';
-      return;
-    }
+  workoutName(id: number): string {
+    return this.workouts.find(workout => workout.id === id)?.name ?? String(id);
+  }
 
-    const occurrences = this.programWorkoutAssignments.filter(
-      (assignment) => assignment.workoutId === wid,
-    );
+  private onSelectionRemoved(id: number): void {
+    this.selectedWorkoutIds = this.selectedWorkoutIds.filter(value => value !== id);
+    this.assignedWorkouts.emit({ programId: this.selectedProgramId!, workoutIds: [...this.selectedWorkoutIds] });
+  }
 
-    if (occurrences.length === 0) {
-      this.message = 'programWorkouts.unknownError';
-      this.messageStatus = 'error';
-      return;
-    }
-
-    from(occurrences)
-      .pipe(
-        concatMap((assignment) =>
-          this.programWorkoutService.deleteProgramWorkout(assignment.id),
-        ),
-        toArray(),
-        takeUntil(this.destroy$),
-      )
-      .subscribe({
-        next: (responses) => {
-          const failed = responses.find((response) => !response.success);
-
-          if (failed) {
-            this.message = failed.message || 'programWorkouts.unknownError';
-            this.messageStatus = 'error';
-            return;
-          }
-
-          this.programWorkoutAssignments = this.programWorkoutAssignments.filter(
-            (assignment) => assignment.workoutId !== wid,
-          );
-          this.selectedWorkoutIds = this.selectedWorkoutIds.filter((id) => id !== wid);
-          this.message = responses.at(-1)?.message ?? 'programWorkouts.assignSuccess';
-          this.messageStatus = 'success';
-
-          this.onWorkoutsChange(this.selectedWorkoutIds);
-
-          timer(5000)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => {
-              this.message = null;
-              this.messageStatus = '';
-            });
-        },
-
-        error: (err) => {
-          this.message = err.error?.message || 'programWorkouts.unknownError';
-          this.messageStatus = 'error';
-        },
-      });
+  private fail(error: unknown): void {
+    this.message = error instanceof HttpErrorResponse ? error.error?.message || 'programWorkouts.unknownError'
+      : error instanceof Error ? error.message : 'programWorkouts.unknownError';
+    this.messageStatus = 'error';
   }
 
   ngOnDestroy(): void {
