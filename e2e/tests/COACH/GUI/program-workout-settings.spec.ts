@@ -20,10 +20,10 @@ test('COACH GUI: workout exercise and added set targets persist through API, DB,
       FROM user_workout_exercises uwe
       JOIN user_workouts uw ON uw.id=uwe.user_workout_id
       JOIN users u ON u.id=uw.user_id
-      JOIN workout_translations wt ON wt.workout_id=uw.workout_id AND wt.language_code=$3
+      JOIN workout_translations wt ON wt.workout_id=uw.workout_id JOIN languages l ON l.id=wt.language_id AND l.code=$3
       JOIN workout_exercises we ON we.id=uwe.workout_exercise_id
-      JOIN exercise_translations et ON et.exercise_id=we.exercise_id AND et.language_code=$3
-      JOIN program_translations pt ON pt.program_id=uw.program_id AND pt.language_code=$3
+      JOIN exercise_translations et ON et.exercise_id=we.exercise_id AND et.language_id=l.id
+      JOIN program_translations pt ON pt.program_id=uw.program_id AND pt.language_id=l.id
       WHERE uw.program_workout_id=$1 AND uw.user_id=$2`, [occurrenceId, userId, process.env.E2E_LANGUAGE ?? 'hu']);
     expect(row).not.toBeNull();
     const original = (await db().query('SELECT * FROM user_workout_exercise_sets WHERE user_workout_exercise_id=$1 ORDER BY id', [row!.id])).rows;

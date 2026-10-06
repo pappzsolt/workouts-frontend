@@ -103,3 +103,28 @@ The suite keeps one worker and sequential execution, but independent tests do no
 use serial failure-skipping groups. A failure must not suppress later independent
 checks. The web session tests distinguish normal SPA navigation from restoring
 the session after a protected-page reload.
+
+## Business regression coverage
+
+Additional regressions follow the existing role/GUI/SETS directories and shared
+API/auth/DB helpers:
+
+- Web logout revokes the refresh cookie; back, reload and protected navigation
+  cannot restore access. Direct subpage navigation and reload preserve the exact
+  target for admin, coach and user, with one refresh per document load.
+- Program switching discards pending workout selection and writes only to the
+  active program. Coach set editing is verified through GUI, DB, reload and the
+  owner's API read. Repeated workout occurrences keep separate completion data.
+- Picker search resets pagination, and selections survive filtering, clearing
+  and page changes. Double-click submission produces one write and one occurrence.
+- GUI workout copying creates independent metadata and relationship records.
+  Historical program deletion shows the real 409 and preserves the full DB
+  snapshot. Language changes preserve entered program values through persistence.
+- Admin filtered editing updates the precise fixture ID and preserves the other
+  fixture user and roles.
+
+Fixtures are created and removed through real application APIs. The admin edit
+fixture is the exception: no member deletion API exists, so its two newly created
+users are removed by ID and unique username prefix through SQL, matching the
+existing AUTH/DB fixture lifecycle. This SQL is used only for fixture cleanup;
+the admin edit itself runs through the real GUI/API and is verified in PostgreSQL.

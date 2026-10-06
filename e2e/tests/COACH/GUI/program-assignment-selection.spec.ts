@@ -22,8 +22,6 @@ test('COACH GUI: switching programs discards pending selection and saves only to
     const surface = page.locator('app-program-workouts-ass');
     await surface.locator('#programBoardSearch').fill(prefix);
     const board = surface.locator('app-coach-workout-board');
-    await board.locator('#workoutSearch').fill(prefix);
-    await expect(board.getByRole('checkbox')).toHaveCount(3);
     const save = surface.getByRole('button', { name: /^(mentés|save|speichern)$/i });
     const selectProgram = async (index: number) => {
       const loaded = page.waitForResponse(response => response.request().method() === 'GET' &&
@@ -35,6 +33,8 @@ test('COACH GUI: switching programs discards pending selection and saves only to
       await expect(save).toBeEnabled();
     };
     await selectProgram(0);
+    await board.locator('#workoutSearch').fill(prefix);
+    await expect(board.getByRole('checkbox')).toHaveCount(3);
     await expect(board.locator(`#workout-${workouts[0]}`)).toBeChecked();
     await board.locator(`#workout-${workouts[2]}`).check();
     await selectProgram(1);
@@ -55,8 +55,8 @@ test('COACH GUI: switching programs discards pending selection and saves only to
     expect(apiB.data.map((row: any) => ({ workout_id: row.workoutId, day_index: row.dayIndex })).sort((a: any, b: any) => a.day_index - b.day_index)).toEqual(expectedB);
     await page.reload();
     await surface.locator('#programBoardSearch').fill(prefix);
-    await board.locator('#workoutSearch').fill(prefix);
     await selectProgram(1);
+    await board.locator('#workoutSearch').fill(prefix);
     await expect(board.locator(`#workout-${workouts[1]}`)).toBeChecked();
     await expect(board.locator(`#workout-${workouts[2]}`)).toBeChecked();
     await expect(board.locator(`#workout-${workouts[0]}`)).not.toBeChecked();
