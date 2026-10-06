@@ -99,6 +99,8 @@ export const API_ENDPOINTS = {
   updateUserProgram: (id: number) => `${environment.apiUrl}/user-programs/${id}`,
   programAssignedUsers: (programId: number) =>
     `${environment.apiUrl}/programs/${programId}/assigned-users`,
+  programAssignmentRevoke: (programId: number, userId: number) =>
+    `${environment.apiUrl}/programs/${programId}/assigned-users/${userId}`,
 
   // ============================================================
   // EXERCISE ENDPOINTS

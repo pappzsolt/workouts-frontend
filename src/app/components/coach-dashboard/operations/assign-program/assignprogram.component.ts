@@ -38,8 +38,11 @@ export class AssignProgramComponent implements OnInit, OnDestroy {
   usersReady = false;
   programReady = false;
   private usersRequest?: Subscription;
+  private assignmentRequest?: Subscription;
 
   selectedProgramId?: number;
+  assignedUserIds: number[] = [];
+  assignmentStateReady = false;
 
   loading = false;
 
@@ -54,12 +57,29 @@ export class AssignProgramComponent implements OnInit, OnDestroy {
     return this.users.map(user => ({ value: user.id, label: user.username }));
   }
 
+  get selectedPairValid(): boolean {
+    return this.usersReady && this.programReady && this.assignmentStateReady &&
+      Number.isInteger(this.userId) && !!this.userId && this.userId > 0 &&
+      Number.isInteger(this.selectedProgramId) && !!this.selectedProgramId && this.selectedProgramId > 0 &&
+      this.users.some(user => user.id === this.userId);
+  }
+
+  get selectedPairAssigned(): boolean {
+    return this.selectedPairValid && !!this.userId && this.assignedUserIds.includes(this.userId);
+  }
+
   ngOnInit(): void {
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       const programId = params['programId'];
 
       const id = Number(programId);
-      this.selectedProgramId = Number.isInteger(id) && id > 0 ? id : undefined;
+      if (Number.isInteger(id) && id > 0) {
+        this.onProgramSelected(id);
+      } else {
+        this.selectedProgramId = undefined;
+        this.assignedUserIds = [];
+        this.assignmentStateReady = false;
+      }
     });
 
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
@@ -97,11 +117,50 @@ export class AssignProgramComponent implements OnInit, OnDestroy {
     });
   }
 
+  onProgramSelected(programId: number): void {
+    if (!Number.isInteger(programId) || programId <= 0) {
+      this.selectedProgramId = undefined;
+      this.assignedUserIds = [];
+      this.assignmentStateReady = false;
+      return;
+    }
+
+    this.selectedProgramId = programId;
+    this.loadAssignedUsers(programId);
+  }
+
+  private loadAssignedUsers(programId: number): void {
+    this.assignmentRequest?.unsubscribe();
+    this.assignmentStateReady = false;
+    this.assignedUserIds = [];
+
+    this.assignmentRequest = this.assignService.getAssignedUserIds(programId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: response => {
+          if (!response.success || !Array.isArray(response.data) ||
+              response.data.some(id => !Number.isInteger(id) || id <= 0)) {
+            this.message = response.message || 'assignProgram.error';
+            this.success = false;
+            this.messageType = 'error';
+            return;
+          }
+
+          this.assignedUserIds = [...new Set(response.data)];
+          this.assignmentStateReady = true;
+        },
+        error: error => {
+          this.message = errorMessage(error, 'assignProgram.error');
+          this.success = false;
+          this.messageType = 'error';
+        },
+      });
+  }
+
   assignProgram(): void {
     if (this.loading) return;
-    if (!this.usersReady || !this.programReady || !Number.isInteger(this.userId) || !this.userId || this.userId <= 0 ||
-        !Number.isInteger(this.selectedProgramId) || !this.selectedProgramId || this.selectedProgramId <= 0 ||
-        !this.users.some(user => user.id === this.userId)) {
+    if (!this.selectedPairValid || this.selectedPairAssigned ||
+        this.userId === null || this.selectedProgramId === undefined) {
       this.message = 'assignProgram.selectUserAndProgram';
 
       this.success = false;
@@ -110,6 +169,9 @@ export class AssignProgramComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const userId = this.userId;
+    const programId = this.selectedProgramId;
+
     this.loading = true;
 
     this.message = '';
@@ -117,7 +179,7 @@ export class AssignProgramComponent implements OnInit, OnDestroy {
     this.success = false;
     this.messageType = 'info';
 
-    this.assignService.assignProgramToUser(this.userId, this.selectedProgramId).pipe(
+    this.assignService.assignProgramToUser(userId, programId).pipe(
       finalize(() => { this.loading = false; }), takeUntil(this.destroy$),
     ).subscribe({
       next: (response) => {
@@ -127,6 +189,10 @@ export class AssignProgramComponent implements OnInit, OnDestroy {
         this.messageType = response.success ? 'success' : 'error';
 
         this.message = response.message || (response.success ? 'assignProgram.success' : 'assignProgram.error');
+
+        if (response.success && !this.assignedUserIds.includes(userId)) {
+          this.assignedUserIds = [...this.assignedUserIds, userId];
+        }
       },
 
       error: error => {
@@ -135,6 +201,38 @@ export class AssignProgramComponent implements OnInit, OnDestroy {
         this.success = false;
       this.messageType = 'error';
 
+        this.message = errorMessage(error, 'assignProgram.error');
+      },
+    });
+  }
+
+  revokeProgram(): void {
+    if (this.loading || !this.selectedPairAssigned || !this.userId || !this.selectedProgramId) return;
+
+    const userId = this.userId;
+    const programId = this.selectedProgramId;
+
+    this.loading = true;
+    this.message = '';
+    this.success = false;
+    this.messageType = 'info';
+
+    this.assignService.revokeProgramFromUser(userId, programId).pipe(
+      finalize(() => { this.loading = false; }),
+      takeUntil(this.destroy$),
+    ).subscribe({
+      next: response => {
+        this.success = response.success;
+        this.messageType = response.success ? 'success' : 'error';
+        this.message = response.message || (response.success ? 'common.remove' : 'assignProgram.error');
+
+        if (response.success) {
+          this.assignedUserIds = this.assignedUserIds.filter(id => id !== userId);
+        }
+      },
+      error: error => {
+        this.success = false;
+        this.messageType = 'error';
         this.message = errorMessage(error, 'assignProgram.error');
       },
     });

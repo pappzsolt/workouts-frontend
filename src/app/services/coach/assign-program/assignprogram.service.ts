@@ -54,4 +54,10 @@ export class AssignProgramService {
 
     return this.http.post<ApiResponse<void>>(API_ENDPOINTS.assignProgram, body);
   }
+
+  revokeProgramFromUser(userId: number, programId: number): Observable<ApiResponse<void>> {
+    return this.http.delete<ApiResponse<void>>(
+      API_ENDPOINTS.programAssignmentRevoke(programId, userId),
+    );
+  }
 }

@@ -42,26 +42,37 @@
         <fieldset [disabled]="loading">
         <app-coach-program-select
           (readyChange)="programReady = $event"
-          [(selectedProgramId)]="selectedProgramId"
+          [selectedProgramId]="selectedProgramId"
+          (selectedProgramIdChange)="onProgramSelected($event)"
         >
         </app-coach-program-select>
         </fieldset>
       </div>
     </div>
 
-    <!-- Hozzárendelés gomb -->
-    <div class="flex justify-center">
+    <!-- Hozzárendelés / visszavonás -->
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
       <app-button
         type="button"
         (buttonClick)="assignProgram()"
-        [disabled]="loading || !usersReady || !programReady || !userId"
+        [disabled]="loading || !selectedPairValid || selectedPairAssigned"
         variant="primary"
         appearance="solid"
         [fullWidth]="true"
-        buttonClass="sm:w-auto"
-        class="block w-full sm:w-auto"
       >
         {{ 'assignProgram.assign' | translate }}
+      </app-button>
+
+      <app-button
+        type="button"
+        data-testid="revoke-program-assignment"
+        (buttonClick)="revokeProgram()"
+        [disabled]="loading || !selectedPairAssigned"
+        variant="delete"
+        appearance="solid"
+        [fullWidth]="true"
+      >
+        {{ 'common.remove' | translate }}
       </app-button>
     </div>
 

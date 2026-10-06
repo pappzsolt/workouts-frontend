@@ -11,7 +11,7 @@ describe('AssignProgramComponent response handling', () => {
   let api: jasmine.SpyObj<AssignProgramService>;
   let component: AssignProgramComponent;
   beforeEach(() => {
-    api = jasmine.createSpyObj('AssignProgramService', ['assignProgramToUser']);
+    api = jasmine.createSpyObj('AssignProgramService', ['assignProgramToUser', 'revokeProgramFromUser', 'getAssignedUserIds']);
     TestBed.configureTestingModule({ providers: [
       { provide: AssignProgramService, useValue: api },
       { provide: UserNameIdService, useValue: {} },
@@ -21,8 +21,8 @@ describe('AssignProgramComponent response handling', () => {
     ] });
     component = TestBed.runInInjectionContext(() => new AssignProgramComponent());
     component.users = [{ id: 1, username: 'User' }];
-    component.usersReady = true; component.programReady = true;
-    component.userId = 1; component.selectedProgramId = 7;
+    component.usersReady = true; component.programReady = true; component.assignmentStateReady = true;
+    component.userId = 1; component.selectedProgramId = 7; component.assignedUserIds = [];
   });
   afterEach(() => component.ngOnDestroy());
 
@@ -44,5 +44,24 @@ describe('AssignProgramComponent response handling', () => {
     component.assignProgram(); component.assignProgram();
     expect(api.assignProgramToUser).toHaveBeenCalledTimes(1);
     component.ngOnDestroy(); expect(component.loading).toBeFalse();
+  });
+
+
+  it('revokes an existing assignment and removes it from local state only after success', () => {
+    component.assignedUserIds = [1];
+    api.revokeProgramFromUser.and.returnValue(of({ success: true, data: null, message: 'revoked' }));
+
+    component.revokeProgram();
+
+    expect(api.revokeProgramFromUser).toHaveBeenCalledOnceWith(1, 7);
+    expect(component.assignedUserIds).toEqual([]);
+    expect(component.message).toBe('revoked');
+    expect(component.success).toBeTrue();
+  });
+
+  it('does not call assign for an already assigned user', () => {
+    component.assignedUserIds = [1];
+    component.assignProgram();
+    expect(api.assignProgramToUser).not.toHaveBeenCalled();
   });
 });
