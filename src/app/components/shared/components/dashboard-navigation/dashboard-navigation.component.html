@@ -1,0 +1,22 @@
+@if (items.length) {
+  <nav [attr.aria-label]="'dashboardNavigation.label' | translate"
+       class="mx-4 mt-4 flex min-w-0 flex-wrap items-center gap-3 rounded-2xl border border-surface-200 bg-white px-4 py-3 shadow-sm sm:mx-6 lg:mx-8">
+    @if (items.length > 1) {
+      <app-back-button [targetUrl]="items[items.length - 2].url"></app-back-button>
+    }
+    <ol class="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+      @for (item of items; track $index; let last = $last; let first = $first) {
+        <li class="flex min-w-0 items-center gap-2">
+          @if (!first) {
+            <span aria-hidden="true" class="text-content-400">/</span>
+          }
+          @if (last) {
+            <span aria-current="page" class="font-semibold text-content-800">{{ item.label | translate }}</span>
+          } @else {
+            <a [routerLink]="link(item.url)" class="rounded text-primary-700 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-600">{{ item.label | translate }}</a>
+          }
+        </li>
+      }
+    </ol>
+  </nav>
+}

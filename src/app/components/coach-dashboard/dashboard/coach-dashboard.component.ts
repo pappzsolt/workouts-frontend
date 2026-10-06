@@ -1,6 +1,6 @@
 import { Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { Location } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { WorkoutListComponent } from '../operations/coach-workouts/coach-workouts.component';
@@ -53,6 +53,7 @@ export class CoachDashboardComponent implements OnInit {
   programIdForWorkouts?: number;
 
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
   // =============================
@@ -127,71 +128,29 @@ export class CoachDashboardComponent implements OnInit {
   // WORKOUTS
   // =============================
 
-  toggleWorkouts(): void {
-    const shouldOpen = !this.showWorkouts;
-
-    this.closeAllPanels();
-
-    this.showWorkouts = shouldOpen;
-
-    this.exerciseNotFound = false;
+  private toggleSection(section: string, isOpen: boolean): void {
+    void this.router.navigate(['/coach/dashboard'], {
+      queryParams: { section: isOpen ? null : section },
+    });
   }
 
-  // =============================
-  // PROGRAMS
-  // =============================
+  toggleWorkouts(): void {
+    this.toggleSection('workouts', this.showWorkouts);
+  }
 
   togglePrograms(): void {
-    const shouldOpen = !this.showPrograms;
-
-    this.closeAllPanels();
-
-    this.showPrograms = shouldOpen;
-
-    this.exerciseNotFound = false;
+    this.toggleSection('programs', this.showPrograms);
   }
-
-  // =============================
-  // EXERCISES
-  // =============================
 
   toggleExercises(): void {
-    const shouldOpen = !this.showExercises;
-
-    this.closeAllPanels();
-
-    this.showExercises = shouldOpen;
-
-    // Ha manuálisan nyitjuk meg az Exercises panelt,
-    // a korábbi "nem található" üzenet ne jelenjen meg.
-    this.exerciseNotFound = false;
+    this.toggleSection('exercises', this.showExercises);
   }
-
-  // =============================
-  // WORKOUT EXERCISES
-  // =============================
 
   toggleWorkoutExercises(): void {
-    const shouldOpen = !this.showWorkoutExercises;
-
-    this.closeAllPanels();
-
-    this.showWorkoutExercises = shouldOpen;
-
-    this.exerciseNotFound = false;
+    this.toggleSection('workout-exercises', this.showWorkoutExercises);
   }
 
-  // =============================
-  // WORKOUT EXERCISE MANAGER
-  // =============================
-
   toggleWorkoutExerciseManager(): void {
-    const shouldOpen = !this.showWorkoutExerciseManager;
-
-    this.closeAllPanels();
-
-    this.showWorkoutExerciseManager = shouldOpen;
-
-    this.exerciseNotFound = false;
+    this.toggleSection('workout-exercise-manager', this.showWorkoutExerciseManager);
   }
 }

@@ -913,5 +913,12 @@
     "resetFailed": "A jelszó visszaállítása nem sikerült.",
     "success": "A jelszó sikeresen megváltozott.",
     "invalidToken": "A jelszó-visszaállítási token érvénytelen vagy lejárt."
+  },
+  "coachNavigation": {
+    "label": "Edzői navigáció",
+    "programWorkouts": "Program edzéseinek hozzárendelése"
+  },
+  "dashboardNavigation": {
+    "label": "Oldalnavigáció"
   }
 }

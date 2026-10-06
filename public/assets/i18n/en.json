@@ -913,5 +913,12 @@
     "resetFailed": "The password reset failed.",
     "success": "Your password has been changed successfully.",
     "invalidToken": "The password reset token is invalid or has expired."
+  },
+  "coachNavigation": {
+    "label": "Coach navigation",
+    "programWorkouts": "Assign program workouts"
+  },
+  "dashboardNavigation": {
+    "label": "Page navigation"
   }
 }

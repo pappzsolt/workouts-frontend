@@ -913,5 +913,12 @@
     "resetFailed": "Das Zurücksetzen des Passworts ist fehlgeschlagen.",
     "success": "Dein Passwort wurde erfolgreich geändert.",
     "invalidToken": "Das Token zum Zurücksetzen des Passworts ist ungültig oder abgelaufen."
+  },
+  "coachNavigation": {
+    "label": "Trainer-Navigation",
+    "programWorkouts": "Programm-Workouts zuweisen"
+  },
+  "dashboardNavigation": {
+    "label": "Seitennavigation"
   }
 }

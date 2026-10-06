@@ -1,3 +1,4 @@
+import { DashboardNavigationComponent } from '../../components/shared/components/dashboard-navigation/dashboard-navigation.component';
 import { Component, OnInit, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { DynamicMenuComponent } from '../../components/dynamic-menu/dynamic-menu.component';
@@ -9,7 +10,7 @@ import { APP_VERSION } from '../../config/app-version';
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [...SHARED_IMPORTS, DynamicMenuComponent, LanguageSelectorComponent],
+  imports: [...SHARED_IMPORTS, DynamicMenuComponent, LanguageSelectorComponent, DashboardNavigationComponent],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css'],
 })
