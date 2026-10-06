@@ -52,7 +52,7 @@ test.describe('User - read-only surfaces', () => {
 
     const programCard = page.locator('app-card').filter({ has: page.locator('h3') }).first();
     await expect(programCard).toBeVisible({ timeout: 15_000 });
-    await programCard.click();
+    await programCard.getByRole('link').click();
     await expect(page).toHaveURL(/\/user\/programs\/\d+\/workouts/);
 
     await assertNoDataMutation(violations);
@@ -104,14 +104,14 @@ test.describe('User - read-only surfaces', () => {
       /\/workouts\/program\/\d+/.test(response.url()),
     );
 
-    await programCard.click();
+    await programCard.getByRole('link').click();
     await expect(page).toHaveURL(/\/user\/programs\/\d+\/workouts/);
 
     const workoutsResponse = await workoutsResponsePromise;
     expect(workoutsResponse.ok()).toBeTruthy();
 
     const workoutsBody = await workoutsResponse.json() as {
-      data?: Array<{ userWorkoutId?: number; user_workout_id?: number }>;
+      data?: Array<{ userWorkoutId?: number; user_workout_id?: number; workoutId: number; workoutName: string; completed?: boolean | string }>;
     };
     const workouts = workoutsBody.data ?? [];
 
@@ -138,7 +138,16 @@ test.describe('User - read-only surfaces', () => {
       await expect(tabs.nth(0)).toHaveAttribute('aria-selected', 'true');
     }
 
-    const workoutCard = page.locator('app-workouts app-card').first();
+    const sameStatus = workouts.filter(workout => (workout.completed === true || workout.completed === 'true') === selectedCompleted);
+    const selectedIndex = sameStatus.indexOf(selected);
+    expect(selectedIndex).toBeGreaterThanOrEqual(0);
+    const workoutPagination = page.locator('app-workouts app-side-pagination');
+    for (let index = 0; index < selectedIndex; index++) {
+      await workoutPagination.getByRole('button', { name: /^(következő|next|weiter)$/i }).click();
+    }
+    const workoutCard = page.locator('app-workouts app-card').filter({
+      has: page.getByRole('heading', { name: selected.workoutName, exact: true }),
+    });
     await expect(workoutCard).toBeVisible({ timeout: 15_000 });
 
     const exercisesResponsePromise = page.waitForResponse((response) =>
@@ -149,7 +158,7 @@ test.describe('User - read-only surfaces', () => {
 
     await workoutCard.click();
 
-    await expect(page).toHaveURL(/\/user\/workouts\/\d+\/exercises/);
+    await expect(page).toHaveURL(new RegExp(`/user/workouts/${selected.workoutId}/exercises\\?.*userWorkoutId=${selectedUserWorkoutId}(?:&|$)`));
 
     const exercisesResponse = await exercisesResponsePromise;
     expect(exercisesResponse.ok()).toBeTruthy();

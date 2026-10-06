@@ -3,7 +3,7 @@ import { AppSearchComponent } from '../../components/app-search/app-search.compo
 import { Component, OnInit, OnDestroy, Input, Output, EventEmitter, inject } from '@angular/core';
 import { LoggerService } from '../../../../services/logger.service';
 
-import { Subject, skip, takeUntil } from 'rxjs';
+import { Subject, Subscription, skip, takeUntil } from 'rxjs';
 
 import { CoachProgramSelectService } from '../../../../services/coach/coach-program-select/coach-program-select.service';
 import { LanguageService } from '../../../../services/shared/language.service';
@@ -23,6 +23,7 @@ export class CoachProgramBoardComponent implements OnInit, OnDestroy {
   private readonly logger = inject(LoggerService);
 
   private readonly destroy$ = new Subject<void>();
+  private request?: Subscription;
 
   private programService = inject(CoachProgramSelectService);
 
@@ -69,21 +70,24 @@ export class CoachProgramBoardComponent implements OnInit, OnDestroy {
   // ==========================================================
 
   loadPrograms(): void {
+    this.request?.unsubscribe();
     this.loading = true;
 
     this.message = '';
 
-    this.programService.getMyPrograms().pipe(takeUntil(this.destroy$)).subscribe({
+    this.request = this.programService.getMyPrograms().pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
         this.loading = false;
 
-        this.programs = res.data ?? [];
+        this.programs = res.success ? res.data ?? [] : [];
+        this.message = res.success ? '' : res.message || 'coachProgramBoard.loadError';
 
       },
 
       error: (err) => {
         this.loading = false;
 
+        this.programs = [];
         this.message = 'coachProgramBoard.loadError';
 
         this.logger.error('❌ Programok betöltése sikertelen', err);

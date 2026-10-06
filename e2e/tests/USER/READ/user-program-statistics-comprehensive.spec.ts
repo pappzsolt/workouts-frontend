@@ -12,7 +12,6 @@ import {
 const LANGUAGE = 'hu';
 
 test.describe('User - Program Statistics endpoint matrix', () => {
-  test.describe.configure({ mode: 'serial' });
 
   test('STATISTICS: program + workout activity + exercise strength progress + response contract', async ({
     page,

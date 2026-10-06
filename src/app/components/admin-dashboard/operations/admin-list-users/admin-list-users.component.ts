@@ -70,6 +70,10 @@ export class AdminListUsersComponent {
     return this.filteredUsers.slice(start, start + this.pageSize);
   }
 
+  onPageChange(page: number): void {
+    if (Number.isInteger(page) && page >= 1 && page <= this.totalPages) this.currentPage = page;
+  }
+
   prevPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;

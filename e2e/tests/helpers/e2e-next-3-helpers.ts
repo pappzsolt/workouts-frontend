@@ -1,7 +1,7 @@
 import { API_ENDPOINTS } from './api-endpoints';
 import { expect, request, type APIRequestContext, type Page } from '@playwright/test';
 import { Pool } from 'pg';
-import { authenticateAndOpen } from './auth-session';
+import { authenticateAndOpen, getAuthenticatedAccessToken } from './auth-session';
 
 export const BASE_API_URL = process.env.E2E_API_URL ?? 'http://localhost:8080';
 export const LANGUAGE = process.env.E2E_LANGUAGE ?? 'hu';
@@ -45,7 +45,7 @@ export async function login(page: Page, role: 'coach' | 'user' | 'admin') {
 }
 
 export async function apiFor(page: Page): Promise<APIRequestContext> {
-  const token = await page.evaluate(() => localStorage.getItem('accessToken'));
+  const token = getAuthenticatedAccessToken(page);
   if (!token) throw new Error('E2E: accessToken nem található.');
   return request.newContext({
     baseURL: BASE_API_URL,

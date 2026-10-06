@@ -10,7 +10,7 @@ import {
   inject,
 } from '@angular/core';
 
-import { Subject, skip, takeUntil } from 'rxjs';
+import { Subject, Subscription, skip, takeUntil } from 'rxjs';
 import { AppSearchComponent } from '../../components/app-search/app-search.component';
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
 import { LanguageService } from '../../../../services/shared/language.service';
@@ -29,6 +29,8 @@ import { SHARED_IMPORTS } from '../../shared-imports';
 })
 export class CoachExercisesBoardComponent implements OnInit, OnChanges, OnDestroy {
   private readonly destroy$ = new Subject<void>();
+  private catalogRequest?: Subscription;
+  private initialized = false;
 
   private exerciseService = inject(ExerciseService);
 
@@ -39,7 +41,7 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges, OnDestro
   // ==========================================================
 
   @Input()
-  externalExercises: Exercise[] = [];
+  externalExercises: Exercise[] | null = null;
 
   @Input()
   externalSelectedExercises: Exercise[] = [];
@@ -100,6 +102,7 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges, OnDestro
   // ==========================================================
 
   ngOnInit(): void {
+    this.initialized = true;
     if (this.compactSelection) {
       this.pageSize = 8;
     }
@@ -137,16 +140,9 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges, OnDestro
      * Ha a szülő exercise listát ad át,
      * azt használjuk.
      */
-    if (changes['externalExercises'] && this.externalExercises) {
-      this.exercises = [...this.externalExercises];
-
-      this.exercisePage = 1;
-
-      /**
-       * A szülőnek visszaküldjük az aktuális
-       * kiválasztott exercise-eket.
-       */
-      this.exercisesChange.emit([...this.selectedExercises]);
+    if (changes['externalExercises']) {
+      this.catalogRequest?.unsubscribe();
+      if (this.externalExercises !== null || this.initialized) this.loadExercises();
     }
   }
 
@@ -155,26 +151,25 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges, OnDestro
   // ==========================================================
 
   loadExercises(): void {
+    this.catalogRequest?.unsubscribe();
+    if (this.externalExercises !== null) {
+      this.setExercises(this.externalExercises);
+      return;
+    }
     this.loading = true;
 
     this.message = '';
     this.messageType = '';
 
-    this.exerciseService.getAllExercises().pipe(takeUntil(this.destroy$)).subscribe({
+    this.catalogRequest = this.exerciseService.getAllExercises().pipe(takeUntil(this.destroy$)).subscribe({
       next: (response: ApiResponse<Exercise[]>) => {
-        this.loading = false;
-
-        this.exercises = response.data ?? [];
-
-        this.exercisePage = 1;
-
-        if (!this.exercises.length) {
-          this.message = 'coachExercisesBoard.noExercises';
-          this.messageType = 'info';
-        } else {
-          this.message = '';
-          this.messageType = '';
+        if (!response.success) {
+          this.setExercises([]);
+          this.message = response.message || 'coachExercisesBoard.loadError';
+          this.messageType = 'error';
+          return;
         }
+        this.setExercises(response.data ?? []);
       },
 
       error: () => {
@@ -186,6 +181,14 @@ export class CoachExercisesBoardComponent implements OnInit, OnChanges, OnDestro
         this.messageType = 'error';
       },
     });
+  }
+
+  private setExercises(exercises: Exercise[]): void {
+    this.exercises = [...exercises];
+    this.exercisePage = 1;
+    this.loading = false;
+    this.message = this.exercises.length ? '' : 'coachExercisesBoard.noExercises';
+    this.messageType = this.exercises.length ? '' : 'info';
   }
 
   // ==========================================================

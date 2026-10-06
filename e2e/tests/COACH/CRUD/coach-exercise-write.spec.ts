@@ -1,5 +1,6 @@
+import { expectRejected } from '../../helpers/expect-rejected';
 import { API_ENDPOINTS } from '../../helpers/api-endpoints';
-import { authenticateAndOpen } from '../../helpers/auth-session';
+import { authenticateAndOpen, getAuthenticatedAccessToken } from '../../helpers/auth-session';
 import { expect, request, test, type Page } from '@playwright/test';
 
 import {
@@ -399,7 +400,7 @@ async function deleteExerciseAsCurrentCoach(
   page: Page,
   exerciseId: number,
 ): Promise<void> {
-  const token = await page.evaluate(() => localStorage.getItem('accessToken'));
+  const token = getAuthenticatedAccessToken(page);
 
   if (!token) {
     throw new Error('Cleanup: accessToken nem található.');
@@ -509,7 +510,6 @@ async function createExerciseThroughUi(
 test.describe(
   'Coach - Exercise CREATE / UPDATE / DELETE / PostgreSQL',
   () => {
-    test.describe.configure({ mode: 'serial' });
     test.afterAll(async () => {
       await closeExerciseDatabase();
     });
@@ -862,7 +862,7 @@ test.describe(
         await expect(form.locator('button[type="submit"]')).toBeDisabled();
 
         // A backend API-t közvetlenül is ellenőrizzük, hogy ne csak UI-validációra támaszkodjunk.
-        const token = await page.evaluate(() => localStorage.getItem('accessToken'));
+        const token = getAuthenticatedAccessToken(page);
         expect(token).toBeTruthy();
 
         const api = await request.newContext({
@@ -880,8 +880,7 @@ test.describe(
             },
           });
 
-          expect(response.ok()).toBeFalsy();
-          expect(response.status()).toBeGreaterThanOrEqual(400);
+          await expectRejected(response, 'Negative CRUD response', 400);
         } finally {
           await api.dispose();
         }
@@ -893,7 +892,7 @@ test.describe(
       async ({ page }) => {
         await loginAsCoach(page);
 
-        const token = await page.evaluate(() => localStorage.getItem('accessToken'));
+        const token = getAuthenticatedAccessToken(page);
         expect(token).toBeTruthy();
 
         const api = await request.newContext({
@@ -912,8 +911,7 @@ test.describe(
             },
           });
 
-          expect(response.ok()).toBeFalsy();
-          expect(response.status()).toBeGreaterThanOrEqual(400);
+          await expectRejected(response, 'Updating a missing exercise is a bad request', 400);
         } finally {
           await api.dispose();
         }

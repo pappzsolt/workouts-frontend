@@ -72,7 +72,7 @@ test.describe('Coach - read-only surfaces', () => {
     await expect(page.locator('#exerciseSearch')).toBeVisible({ timeout: 15_000 });
 
     await page.locator('#exerciseSearch').fill(exercise!.name);
-    await page.getByRole('button', { name: /keres|search/i }).click();
+    await page.getByRole('button', { name: /^(keresés|search|suche)$/i }).click();
 
     await expect(page.locator('h3').filter({ hasText: exercise!.name }).first()).toBeVisible({
       timeout: 15_000,

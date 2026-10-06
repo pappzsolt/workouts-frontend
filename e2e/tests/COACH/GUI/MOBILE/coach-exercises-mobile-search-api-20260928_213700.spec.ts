@@ -36,7 +36,7 @@ test('COACH MOBILE GUI: exercise search sends the selected query to the API', as
     return url.searchParams.get('search') === 'bench';
   });
 
-  await page.getByRole('button', { name: /keresés|search/i }).click();
+  await page.getByRole('button', { name: /^(keresés|search|suche)$/i }).click();
   const response = await responsePromise;
   expect(response.ok()).toBeTruthy();
 

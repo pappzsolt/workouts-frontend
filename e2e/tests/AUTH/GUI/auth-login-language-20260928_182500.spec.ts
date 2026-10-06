@@ -12,7 +12,10 @@ test.describe('AUTH GUI: language selector', () => {
     await selector.selectOption('en');
     await expect(selector).toHaveValue('en');
 
-    await expect(page.locator('h2').first()).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Login', exact: true })).toBeVisible();
+    await expect(page.getByLabel('Username', { exact: true })).toBeVisible();
+    await expect(page.getByLabel('Password', { exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Login', exact: true })).toBeVisible();
     await expect(page.locator('input[formControlName="username"]')).toBeVisible();
     await expect(page.locator('input[formControlName="password"]')).toBeVisible();
   });

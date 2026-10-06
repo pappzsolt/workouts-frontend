@@ -9,12 +9,7 @@
 ></app-search>
 
 <!-- Betöltés állapot -->
-<div
-  *ngIf="loading"
-  class="flex min-h-20 items-center justify-center rounded-2xl border border-surface-200 bg-white px-4 py-5 text-sm font-medium text-content-600 shadow-sm"
->
-  {{ 'coachProgramBoard.loading' | translate }}
-</div>
+<app-message *ngIf="loading" message="coachProgramBoard.loading" type="info" class="block"></app-message>
 
 <!-- Üzenet -->
 <app-message
@@ -52,10 +47,14 @@
       >
         <!-- Radio vizuális jelzése -->
         <span
-          class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 border-surface-300 bg-white transition-colors peer-checked:border-primary-600"
+          class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 bg-white transition-colors"
+          [class.border-surface-300]="selectedProgramId !== program.programId"
+          [class.border-primary-600]="selectedProgramId === program.programId"
         >
           <span
-            class="h-3 w-3 rounded-full bg-primary-600 opacity-0 transition-opacity peer-checked:opacity-100"
+            class="h-3 w-3 rounded-full bg-primary-600 transition-opacity"
+            [class.opacity-0]="selectedProgramId !== program.programId"
+            [class.opacity-100]="selectedProgramId === program.programId"
           ></span>
         </span>
 
@@ -84,7 +83,7 @@
 
 <!-- Nincs program -->
 <app-message
-  *ngIf="!loading && !filteredPrograms.length"
+  *ngIf="!loading && !message && !filteredPrograms.length"
   [message]="searchTerm.trim() ? 'appSearch.noResults' : 'coachProgramBoard.noPrograms'"
   type="info"
   class="block"

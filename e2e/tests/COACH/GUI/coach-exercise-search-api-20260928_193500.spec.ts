@@ -30,7 +30,7 @@ test('COACH GUI: exercise search renders the backend search result and preserves
   });
 
   await search.fill(exercise!.name);
-  await page.getByRole('button', { name: /keres|search/i }).click();
+  await page.getByRole('button', { name: /^(keresés|search|suche)$/i }).click();
 
   const searchResponse = await searchResponsePromise;
   expect(searchResponse.ok()).toBeTruthy();

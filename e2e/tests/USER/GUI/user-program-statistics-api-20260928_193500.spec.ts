@@ -13,12 +13,15 @@ test('USER GUI: program statistics renders the API-backed program data', async (
 
   const response = await responsePromise;
   expect(response.ok()).toBeTruthy();
-  const body = await response.json() as { data?: unknown };
-  const data = Array.isArray((body.data as any)?.programs) ? (body.data as any).programs : [];
+  const body = await response.json();
+  expect(body.success).toBe(true);
+  expect(Array.isArray(body.data?.programs)).toBe(true);
+  const data = body.data.programs;
+  const surface = page.locator('app-user-program-statistics');
 
   if (data.length > 0) {
-    await expect(page.locator('app-card').filter({ has: page.locator('h3') }).first()).toBeVisible();
+    await expect(surface.getByTestId('statistics-program').first()).toBeVisible();
   } else {
-    await expect(page.locator('app-message')).toBeVisible();
+    await expect(surface.locator('app-message')).toBeVisible();
   }
 });

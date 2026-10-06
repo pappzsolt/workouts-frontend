@@ -300,53 +300,9 @@
     </ng-container>
 
     <!-- Lapozás -->
-    <div
-      *ngIf="totalPages > 1"
-      class="flex flex-wrap items-center justify-center gap-2"
-    >
-
-      <!-- Előző -->
-      <app-button
-        type="button"
-        (buttonClick)="prevPage()"
-        [disabled]="currentPage === 1"
-        variant="secondary"
-        appearance="outline"
-      >
-        {{ 'common.previous' | translate }}
-      </app-button>
-
-      <!-- Oldalszámok -->
-      <ng-container
-        *ngFor="
-          let page of [].constructor(totalPages); let i = index; trackBy: trackByIndex
-        "
-      >
-        <app-button
-          type="button"
-          (buttonClick)="goToPage(i + 1)"
-          variant="secondary"
-          appearance="outline"
-          size="sm"
-          [active]="currentPage === i + 1"
-          [ariaCurrent]="currentPage === i + 1 ? 'page' : null"
-        >
-          {{ i + 1 }}
-        </app-button>
-      </ng-container>
-
-      <!-- Következő -->
-      <app-button
-        type="button"
-        (buttonClick)="nextPage()"
-        [disabled]="currentPage === totalPages"
-        variant="secondary"
-        appearance="outline"
-      >
-        {{ 'common.next' | translate }}
-      </app-button>
-
-    </div>
+    <app-pagination *ngIf="totalPages > 1" [totalItems]="members.length" [pageSize]="pageSize" [currentPage]="currentPage"
+      [showPageNumbers]="true" [showPageSize]="false" [showInfo]="false"
+      (pageChange)="goToPage($event)"></app-pagination>
 
   </div>
 </div>

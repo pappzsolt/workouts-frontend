@@ -41,117 +41,73 @@ async function readJsonResponse(response: Response): Promise<any> {
     return text ? JSON.parse(text) : null;
   } catch {
     throw new Error(
-      `E2E login: /api/auth/login nem JSON választ adott. HTTP ${response.status()} body=${text}`,
+      `E2E login: /api/auth/web/login nem JSON választ adott. HTTP ${response.status()} body=${text}`,
     );
   }
 }
 
-/**
- * Valódi E2E bejelentkezés a frontend login űrlapon keresztül.
- *
- * Nincs API-loginból tokenbefecskendezés és nincs guard-megkerülés:
- *  1. a böngésző megnyitja a /login oldalt,
- *  2. kitölti és elküldi az Angular formot,
- *  3. ellenőrzi a böngésző által indított valódi POST /api/auth/login választ,
- *  4. ellenőrzi, hogy az AuthService maga mentette el a tokeneket,
- *  5. ellenőrzi a JWT szerepkört és lejáratot,
- *  6. megvárja a LoginComponent saját role-alapú redirectjét.
- */
+// Fixture API clients use the token returned by the real browser login.
+// This test-side state is never injected into the application or browser storage.
+const browserAccessTokens = new WeakMap<Page, string>();
+const observedPages = new WeakSet<Page>();
+
+export function getAuthenticatedAccessToken(page: Page): string {
+  const token = browserAccessTokens.get(page);
+  if (!token) throw new Error('E2E: complete the actual browser login before creating an API fixture client.');
+  return token;
+}
+
+function observeBrowserAuthorization(page: Page): void {
+  if (observedPages.has(page)) return;
+  observedPages.add(page);
+  page.on('request', request => {
+    const authorization = request.headers()['authorization'];
+    if (authorization?.startsWith('Bearer ')) browserAccessTokens.set(page, authorization.slice(7));
+  });
+}
+
+/** Validate the real web login, HttpOnly session, storage isolation and role redirect. */
 export async function authenticate(page: Page, role: E2ERole): Promise<void> {
   const { username, password } = credentialsFor(role);
   const dashboard = expectedDashboard(role);
-
+  observeBrowserAuthorization(page);
+  browserAccessTokens.delete(page);
+  await page.context().clearCookies({ name: 'workouts_refresh' });
   await page.goto('/login');
-  await expect(page).toHaveURL(/\/login$/, { timeout: 15_000 });
-
-  // Egy teszt mindig tiszta AUTH sessionből induljon.
-  // Csak az auth tokeneket töröljük: a nyelvi és egyéb frontend állapotot nem,
-  // mert azt a teszt külön, a valódi UI működés részeként állíthatta be.
-  await page.evaluate(() => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-  });
-
-  const usernameInput = page.locator('input[formcontrolname="username"]');
-  const passwordInput = page.locator('input[formcontrolname="password"]');
-  const submitButton = page.locator('form button[type="submit"]');
-
-  await expect(usernameInput).toBeVisible();
-  await expect(passwordInput).toBeVisible();
-  await expect(submitButton).toBeVisible();
-  await expect(submitButton).toBeEnabled();
-
+  await expect(page).toHaveURL(/\/login$/);
+  const usernameInput = page.getByLabel(/^\s*(felhasználónév|username|benutzername)\s*$/i);
+  const passwordInput = page.getByLabel(/^\s*(jelszó|password|passwort)\s*$/i);
+  const submitButton = page.getByRole('button', { name: /^(bejelentkezés|login|anmelden)$/i });
   await usernameInput.fill(username);
   await passwordInput.fill(password);
-
-  const loginResponsePromise = page.waitForResponse(
-    (response) => {
-      if (response.request().method() !== 'POST') return false;
-      try {
-        return new URL(response.url()).pathname === '/api/auth/login';
-      } catch {
-        return false;
-      }
-    },
-    { timeout: 15_000 },
+  const loginResponsePromise = page.waitForResponse(response =>
+    response.request().method() === 'POST' && new URL(response.url()).pathname === '/api/auth/web/login',
   );
-
   await submitButton.click();
-
   const loginResponse = await loginResponsePromise;
   const body = await readJsonResponse(loginResponse);
-
-  expect(
-    loginResponse.ok(),
-    `Frontend login request failed: HTTP ${loginResponse.status()} body=${JSON.stringify(body)}`,
-  ).toBeTruthy();
-  expect(
-    body?.success,
-    `Frontend login backend response success=false: ${JSON.stringify(body)}`,
-  ).toBeTruthy();
-  expect(body?.data?.accessToken, 'Frontend login response-ból hiányzik az accessToken.').toBeTruthy();
-  expect(body?.data?.refreshToken, 'Frontend login response-ból hiányzik a refreshToken.').toBeTruthy();
-
-  // Nem a response tokenjét írjuk be a storage-ba: azt ellenőrizzük, hogy
-  // a valódi AuthService tap() már elmentette-e saját maga.
-  await expect
-    .poll(
-      async () =>
-        page.evaluate(() => ({
-          accessToken: localStorage.getItem('accessToken'),
-          refreshToken: localStorage.getItem('refreshToken'),
-        })),
-      {
-        timeout: 10_000,
-        message: 'A frontend AuthService nem mentette el a login után a tokeneket.',
-      },
-    )
-    .toEqual({
-      accessToken: body.data.accessToken,
-      refreshToken: body.data.refreshToken,
-    });
-
-  const storedAccessToken = await page.evaluate(() => localStorage.getItem('accessToken'));
-  expect(storedAccessToken, 'A frontend localStorage accessToken üres login után.').toBeTruthy();
-
-  const payload = decodeJwtPayload(storedAccessToken!);
-  const roles = String(payload.roles ?? '')
-    .split(',')
-    .map((item) => item.trim())
-    .filter(Boolean);
-  const authority = expectedAuthority(role);
-
-  expect(
-    roles,
-    `A valódi login JWT-ben nincs ${authority}. sub=${String(payload.sub ?? '')}, roles=${roles.join(',') || '<empty>'}`,
-  ).toContain(authority);
-  expect(Number(payload.exp), 'A valódi login JWT exp claim hiányzik/lejárt.').toBeGreaterThan(
-    Math.floor(Date.now() / 1000),
-  );
-
-  await expect(page).toHaveURL(new RegExp(`${dashboard.replaceAll('/', '\\/')}$`), {
-    timeout: 15_000,
-  });
+  expect(loginResponse.ok(), `Web login HTTP status: ${loginResponse.status()}`).toBe(true);
+  expect(body?.success).toBe(true);
+  expect(typeof body?.data?.accessToken).toBe('string');
+  expect(body.data.accessToken.length).toBeGreaterThan(0);
+  expect(body.data.refreshToken, 'Web refresh tokens must never be exposed in JSON.').toBeUndefined();
+  browserAccessTokens.set(page, body.data.accessToken);
+  const payload = decodeJwtPayload(body.data.accessToken);
+  const roles = String(payload.roles ?? '').split(',').map(item => item.trim()).filter(Boolean);
+  expect(roles).toContain(expectedAuthority(role));
+  expect(Number(payload.exp)).toBeGreaterThan(Math.floor(Date.now() / 1000));
+  const cookies = await page.context().cookies();
+  const refresh = cookies.find(cookie => cookie.name === 'workouts_refresh');
+  expect(refresh, 'The real web login must establish its refresh cookie.').toBeDefined();
+  expect(refresh!.httpOnly).toBe(true);
+  expect(refresh!.path).toBe('/api/auth/web');
+  await expect(page).toHaveURL(new RegExp(`${dashboard}$`));
+  expect(await page.evaluate(() => ({
+    localAccess: localStorage.getItem('accessToken'),
+    localRefresh: localStorage.getItem('refreshToken'),
+    sessionAccess: sessionStorage.getItem('accessToken'),
+    sessionRefresh: sessionStorage.getItem('refreshToken'),
+  }))).toEqual({ localAccess: null, localRefresh: null, sessionAccess: null, sessionRefresh: null });
 }
 
 export async function authenticateAndOpen(

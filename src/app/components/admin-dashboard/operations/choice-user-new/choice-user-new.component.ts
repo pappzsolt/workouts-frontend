@@ -1,3 +1,4 @@
+import { DashboardActionComponent } from '../../../shared/components/dashboard-action/dashboard-action.component';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -6,7 +7,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 @Component({
   selector: 'app-chioice-user-new',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, DashboardActionComponent],
   templateUrl: './choice-user-new.component.html',
   styleUrls: ['./choice-user-new.component.css'],
 })

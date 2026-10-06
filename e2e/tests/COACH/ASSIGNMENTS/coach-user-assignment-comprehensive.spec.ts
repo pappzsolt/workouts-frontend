@@ -1,6 +1,6 @@
 import { expectRejected as rejected } from '../../helpers/expect-rejected';
 import { API_ENDPOINTS } from '../../helpers/api-endpoints';
-import { authenticateAndOpen } from '../../helpers/auth-session';
+import { authenticateAndOpen, getAuthenticatedAccessToken } from '../../helpers/auth-session';
 
 import { expect, request, test, type APIRequestContext, type Page } from '@playwright/test';
 import { Pool } from 'pg';
@@ -36,7 +36,7 @@ async function login(page:Page, role:'coach'|'user'):Promise<void>{
   await authenticateAndOpen(page, role);
 }
 async function apiFor(page:Page):Promise<APIRequestContext>{
-  const token=await page.evaluate(()=>localStorage.getItem('accessToken'));
+  const token=getAuthenticatedAccessToken(page);
   if(!token) throw new Error('E2E: accessToken nem található.');
   return request.newContext({baseURL:BASE_API_URL,extraHTTPHeaders:{Authorization:`Bearer ${token}`}});
 }
@@ -62,7 +62,6 @@ async function deleteProgram(api:APIRequestContext,id:number){ await success(awa
 async function deleteWorkout(api:APIRequestContext,id:number){ const r=await api.delete(`${API_ENDPOINTS.workouts.byId(id)}`); if(!r.ok()) console.log(`Workout cleanup HTTP ${r.status()}: ${await r.text()}`); }
 
 test.describe('Coach - Program ↔ User assignment comprehensive',()=>{
- test.describe.configure({mode:'serial'});
  test('ASSIGNMENT: create program → assign own user → assigned-users → duplicate idempotency → DB → user sees program',async({page})=>{
   await login(page,'coach'); const coachApi=await apiFor(page); const userId=await coachUserId();
   const programId=await createProgram(coachApi,`E2E USER ASSIGN ${suffix()}`);

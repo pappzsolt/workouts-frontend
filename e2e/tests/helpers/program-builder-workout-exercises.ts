@@ -151,8 +151,7 @@ export async function openProgramBuilderStep2(
   const nextButton = page
     .getByRole('button', {
       name: /program módosítása|modify program/i,
-    })
-    .first();
+    });
 
   await expect(nextButton).toBeVisible({ timeout: 15_000 });
   await nextButton.click();
@@ -197,9 +196,9 @@ export async function openFixtureWorkout(
     has: page.getByRole('heading', { name: fixture.workoutName, exact: true }),
   });
 
-  const exercisesButton = workoutRow.locator(
-    'button:has(app-icon[name="dumbbell"])',
-  );
+  const exercisesButton = workoutRow.getByRole('button', {
+    name: /^(exercise-ok|exercises|übungen)$/i,
+  });
 
   await expect(exercisesButton).toHaveCount(1);
   await expect(exercisesButton).toBeVisible({ timeout: 15_000 });
@@ -246,7 +245,7 @@ export async function assertSelectedOnlyModal(
     'A workout API response must contain the exercises collection.',
   ).toHaveLength(5);
 
-  const modal = page.locator('[role="dialog"]').first();
+  const modal = page.getByRole('dialog');
   await expect(modal).toBeVisible();
 
   await expect(
@@ -284,26 +283,42 @@ export async function addWorkoutThroughPicker(
     await builder.getByTestId('open-workout-picker').click();
   }
   const checkbox = board.locator(`#compact-workout-${workoutId}`);
-  // Start at the first page, then traverse until the target row is present.
-  const previous = board.locator('app-pagination').getByRole('button', { name: /előző|previous/i });
-  const next = board.locator('app-pagination').getByRole('button', { name: /következő|next/i });
   const pagination = board.locator('app-pagination');
-  while (await previous.isVisible() && await previous.isEnabled()) {
-    const before = await pagination.innerText();
-    await previous.click();
-    await expect(pagination).not.toHaveText(before);
+  const previous = pagination.getByRole('button', { name: /előző|previous|zurück/i });
+  const next = pagination.getByRole('button', { name: /következő|next|weiter/i });
+  // The search control exists only after the current catalog request finishes.
+  await expect(board.locator('#workoutSearch')).toBeVisible();
+  const moveToPage = async (button: typeof next, expectedPage: number) => {
+    const loaded = page.waitForResponse(response => {
+      const url = new URL(response.url());
+      return response.request().method() === 'GET' && url.pathname === API_ENDPOINTS.workouts.mySearch &&
+        Number(url.searchParams.get('page')) === expectedPage - 1;
+    });
+    await button.click();
+    const response = await loaded;
+    expect(response.ok()).toBe(true);
+    const body = await response.json();
+    expect(Array.isArray(body.content)).toBe(true);
+    expect(Number.isInteger(body.totalPages)).toBe(true);
+    await expect(board.locator('#workoutSearch')).toBeVisible();
+    await expect(board.getByRole('checkbox')).toHaveCount(body.content.length);
+    await expect(pagination).toContainText(`${expectedPage} / ${body.totalPages}`);
+  };
+  const pageNumbers = async () => {
+    const text = await pagination.innerText();
+    const match = text.match(/(\d+)\s*\/\s*(\d+)/);
+    if (!match) throw new Error(`Picker pagination does not expose its current/total page: ${text}`);
+    return { current: Number(match[1]), total: Number(match[2]) };
+  };
+  while (await previous.count() && await previous.isEnabled()) {
+    const { current } = await pageNumbers();
+    await moveToPage(previous, current - 1);
   }
-  for (let traversed = 0; ; traversed++) {
-    await expect(board.locator('input[type="checkbox"]').first()).toBeVisible({ timeout: 15000 });
-    if (await checkbox.count()) break;
-    if (traversed >= 100 || !(await next.isVisible()) || !(await next.isEnabled())) {
-      throw new Error(`Workout ${workoutId} is missing from the real picker pages.`);
-    }
-    const before = await pagination.innerText();
-    const oldIds = await board.locator('input[type="checkbox"]').evaluateAll(nodes => nodes.map(n => n.id));
-    await next.click();
-    await expect(pagination).not.toHaveText(before);
-    await expect.poll(async () => board.locator('input[type="checkbox"]').evaluateAll(nodes => nodes.map(n => n.id))).not.toEqual(oldIds);
+  while (!(await checkbox.count())) {
+    if (!(await pagination.count())) throw new Error(`Workout ${workoutId} is missing from the only actual picker page.`);
+    const { current, total } = await pageNumbers();
+    if (current >= total) throw new Error(`Workout ${workoutId} is missing from all ${total} actual picker pages.`);
+    await moveToPage(next, current + 1);
   }
   await checkbox.check();
   await expect(checkbox).toBeChecked();

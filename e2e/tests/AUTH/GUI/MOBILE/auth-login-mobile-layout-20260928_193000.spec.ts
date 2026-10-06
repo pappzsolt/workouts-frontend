@@ -6,7 +6,7 @@ test('AUTH MOBILE GUI: login form fits the mobile viewport and remains usable', 
   await page.goto('/login');
   await expect(page.locator('input[formControlName="username"]')).toBeVisible();
   await expect(page.locator('input[formControlName="password"]')).toBeVisible();
-  await expect(page.locator('app-button button, button[type="submit"]').first()).toBeVisible();
+  await expect(page.getByRole('button', { name: /^(bejelentkezés|login|anmelden)$/i })).toBeVisible();
   const viewportWidth = page.viewportSize()!.width;
   const bodyWidth = await page.locator('body').evaluate(el => el.scrollWidth);
   expect(bodyWidth).toBeLessThanOrEqual(viewportWidth + 1);

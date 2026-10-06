@@ -26,42 +26,10 @@
     >
 
       <!-- New Coach -->
-      <button
-        type="button"
-        class="group flex min-h-48 min-w-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-surface-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary-200 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-primary-500/10"
-        (click)="navigateTo('admin/coach/new')"
-      >
-        <div
-          class="flex h-16 w-16 items-center justify-center rounded-2xl bg-info-100 text-4xl transition-transform duration-200 group-hover:scale-110"
-        >
-          <app-icon name="dumbbell" sizeClass="h-5 w-5" />
-        </div>
-
-        <div
-          class="mt-5 break-words text-lg font-bold text-content-800"
-        >
-          {{ 'adminChoiceNew.newCoach' | translate }}
-        </div>
-      </button>
+      <app-dashboard-action label="adminChoiceNew.newCoach" icon="barbell" tone="add" (activated)="navigateTo('admin/coach/new')"></app-dashboard-action>
 
       <!-- New User -->
-      <button
-        type="button"
-        class="group flex min-h-48 min-w-0 cursor-pointer flex-col items-center justify-center rounded-2xl border border-surface-200 bg-white p-6 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary-200 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-primary-500/10"
-        (click)="navigateTo('admin/users/new')"
-      >
-        <div
-          class="flex h-16 w-16 items-center justify-center rounded-2xl bg-info-100 text-4xl transition-transform duration-200 group-hover:scale-110"
-        >
-          <app-icon name="circle-plus" sizeClass="h-5 w-5" />
-        </div>
-
-        <div
-          class="mt-5 break-words text-lg font-bold text-content-800"
-        >
-          {{ 'adminChoiceNew.newUser' | translate }}
-        </div>
-      </button>
+      <app-dashboard-action label="adminChoiceNew.newUser" icon="user-plus" tone="add" (activated)="navigateTo('admin/users/new')"></app-dashboard-action>
 
     </div>
 

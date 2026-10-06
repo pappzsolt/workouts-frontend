@@ -118,7 +118,7 @@
         <div class="flex min-w-0 justify-end pt-1 sm:col-span-2">
           <app-button
             type="submit"
-            [disabled]="!workoutForm.form.valid"
+            [disabled]="!workoutForm.form.valid || saving"
             variant="primary"
             appearance="solid"
             [fullWidth]="true"

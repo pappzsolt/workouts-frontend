@@ -23,9 +23,7 @@ import { API_ENDPOINTS } from '../api-endpoints';
 
 const AUTH_RETRY = new HttpContextToken<boolean>(() => false);
 
-type RefreshResult =
-  | { accessToken: string }
-  | { error: unknown };
+type RefreshResult = { accessToken: string } | { error: unknown };
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
@@ -37,10 +35,7 @@ export class AuthInterceptor implements HttpInterceptor {
     private readonly router: Router,
   ) {}
 
-  intercept(
-    req: HttpRequest<unknown>,
-    next: HttpHandler,
-  ): Observable<HttpEvent<unknown>> {
+  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // A web login/refresh/logout nem függhet access tokentől.
     if (this.isWebAuthEndpoint(req.url)) {
       return next.handle(req);
@@ -78,12 +73,7 @@ export class AuthInterceptor implements HttpInterceptor {
             return throwError(() => result.error);
           }
 
-          return next.handle(
-            req.clone({
-              context: req.context.set(AUTH_RETRY, true),
-              headers: req.headers.set('Authorization', `Bearer ${result.accessToken}`),
-            }),
-          );
+          return this.retryWithToken(req, next, result.accessToken);
         }),
       );
     }
@@ -92,26 +82,43 @@ export class AuthInterceptor implements HttpInterceptor {
     this.refreshResultSubject.next(null);
 
     return this.authService.refreshAccessToken().pipe(
-      switchMap((response: import('../models/auth-model').LoginResponse) => {
-        this.refreshResultSubject.next({ accessToken: response.accessToken });
-
-        return next.handle(
-          req.clone({
-            context: req.context.set(AUTH_RETRY, true),
-            headers: req.headers.set('Authorization', `Bearer ${response.accessToken}`),
-          }),
-        );
-      }),
+      // Only a failed refresh invalidates the session. A retried API request
+      // can fail independently (validation, permissions, server or network).
       catchError((refreshError: unknown) => {
         this.refreshResultSubject.next({ error: refreshError });
         this.clearSessionAndRedirect();
-
         return throwError(() => refreshError);
       }),
       finalize(() => {
         this.isRefreshing = false;
       }),
+      switchMap((response: import('../models/auth-model').LoginResponse) => {
+        this.refreshResultSubject.next({ accessToken: response.accessToken });
+        return this.retryWithToken(req, next, response.accessToken);
+      }),
     );
+  }
+
+  private retryWithToken(
+    req: HttpRequest<unknown>,
+    next: HttpHandler,
+    accessToken: string,
+  ): Observable<HttpEvent<unknown>> {
+    return next
+      .handle(
+        req.clone({
+          context: req.context.set(AUTH_RETRY, true),
+          headers: req.headers.set('Authorization', `Bearer ${accessToken}`),
+        }),
+      )
+      .pipe(
+        catchError((error: unknown) => {
+          if (error instanceof HttpErrorResponse && error.status === 401) {
+            this.clearSessionAndRedirect();
+          }
+          return throwError(() => error);
+        }),
+      );
   }
 
   private addAccessToken(req: HttpRequest<unknown>): HttpRequest<unknown> {
@@ -127,9 +134,11 @@ export class AuthInterceptor implements HttpInterceptor {
   }
 
   private isWebAuthEndpoint(url: string): boolean {
-    return url === API_ENDPOINTS.authWebLogin
-      || url === API_ENDPOINTS.authWebRefresh
-      || url === API_ENDPOINTS.authWebLogout;
+    return (
+      url === API_ENDPOINTS.authWebLogin ||
+      url === API_ENDPOINTS.authWebRefresh ||
+      url === API_ENDPOINTS.authWebLogout
+    );
   }
 
   private clearSessionAndRedirect(): void {

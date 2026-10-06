@@ -150,6 +150,7 @@
           variant="save"
           type="submit"
           [label]="'common.save' | translate"
+          [disabled]="loading || saving || selectedCoachId === null"
         ></app-button>
       </div>
 

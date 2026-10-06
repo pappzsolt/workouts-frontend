@@ -863,7 +863,8 @@
     "previousPage": "Vorherige Seite",
     "nextPage": "Nächste Seite",
     "lastPage": "Letzte Seite",
-    "pageSize": "Einträge pro Seite"
+    "pageSize": "Einträge pro Seite",
+    "info": "{{start}}–{{end}} von {{total}} Einträgen"
   },
   "programWorkouts": {
     "programNotSelected": "Kein Programm ausgewählt.",

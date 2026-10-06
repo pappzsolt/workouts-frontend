@@ -1,6 +1,7 @@
+import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 
-import { Subject, forkJoin, takeUntil } from 'rxjs';
+import { Subject, finalize, forkJoin, take, takeUntil } from 'rxjs';
 
 import { AuthService } from '../../../../services/auth/auth.service';
 
@@ -61,6 +62,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   messageType: 'success' | 'error' | 'info' | '' = '';
 
   coachName = '';
+  saving = false;
 
   constructor(
     private userService: UserProfilService,
@@ -70,14 +72,9 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    /*
-     * Nyelvváltás figyelése.
-     *
-     * A BehaviorSubject az aktuális nyelvet
-     * azonnal kibocsátja, ezért az első
-     * profilbetöltés is innen történik.
-     */
-    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+    // Profile data is independent of UI language; translated labels update
+    // themselves. Load once so language changes preserve unsaved edits.
+    this.languageService.language$.pipe(take(1), takeUntil(this.destroy$)).subscribe(() => {
       this.loadProfile();
     });
   }
@@ -185,7 +182,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   }
 
   onSave(): void {
-    if (!this.selectedUser) {
+    if (this.saving || !this.selectedUser.id) {
       return;
     }
 
@@ -223,17 +220,19 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       },
     };
 
+    this.saving = true;
     this.userService
       .updateUser(rawUser)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy$), finalize(() => { this.saving = false; }))
       .subscribe({
-        next: () => {
-          this.message = 'userProfile.updateSuccess';
-          this.messageType = 'success';
+        next: (response) => {
+          this.message = responseMessage([response], response.success ? 'userProfile.updateSuccess' : 'userProfile.updateError');
+          this.messageType = response.success ? 'success' : 'error';
+          if (response.success && this.selectedUser.password === rawUser.password) this.selectedUser.password = '';
         },
 
-        error: () => {
-          this.message = 'userProfile.updateError';
+        error: (error) => {
+          this.message = errorMessage(error, 'userProfile.updateError');
           this.messageType = 'error';
         },
       });

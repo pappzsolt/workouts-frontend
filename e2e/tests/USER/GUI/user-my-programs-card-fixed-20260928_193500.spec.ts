@@ -22,9 +22,13 @@ test.describe('USER GUI: my programs pagination + occurrence API', () => {
     expect(programs.length).toBeGreaterThan(0);
 
     // The component deliberately uses pageSize=1, so one visible card is correct.
-    const cards = page.locator('app-user-my-programs app-card, app-card').filter({ has: page.locator('h3') });
+    const cards = page.locator('app-user-my-programs app-card').filter({ has: page.locator('h3') });
     await expect(cards).toHaveCount(1);
     await expect(cards.first()).toBeVisible();
+    await expect(cards.getByRole('link')).toHaveCount(1);
+    const destination = new URL((await cards.getByRole('link').getAttribute('href'))!, page.url());
+    expect(destination.pathname).toBe(`/user/programs/${programs[0].id}/workouts`);
+    expect(destination.searchParams.get('programName')).toBe(String(programs[0].name));
 
     const pagination = page.locator('app-side-pagination');
     if (programs.length > 1) {

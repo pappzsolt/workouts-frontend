@@ -1,4 +1,5 @@
 import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { CoachEditService } from '../../../../services/admin/coach-edit.service';
@@ -46,6 +47,8 @@ export class CoachEditComponent implements OnInit {
   messageType: 'success' | 'error' | '' = '';
 
   loading = false;
+  saving = false;
+  private selectionVersion = 0;
 
   // =========================================================
   // Constructor
@@ -99,6 +102,7 @@ export class CoachEditComponent implements OnInit {
   // =========================================================
 
   onSelectCoach(): void {
+    this.selectionVersion++;
     const found = this.coaches.find((coach) => coach.id === this.selectedCoachId);
 
     if (found) {
@@ -121,6 +125,7 @@ export class CoachEditComponent implements OnInit {
   // =========================================================
 
   onSave(): void {
+    if (this.saving) return;
     if (this.selectedCoachId === null) {
       this.message = 'adminCoachEdit.noCoachSelected';
 
@@ -134,34 +139,26 @@ export class CoachEditComponent implements OnInit {
     this.message = '';
     this.messageType = '';
 
-    this.selectedCoach.id = this.selectedCoachId;
+    const coachId = this.selectedCoachId;
+    const version = this.selectionVersion;
+    const payload = { ...this.selectedCoach, id: coachId };
+    this.saving = true;
 
-    this.coachService.updateCoach(this.selectedCoachId, this.selectedCoach).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.coachService.updateCoach(coachId, payload).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => { this.loading = false; this.saving = false; }),
+    ).subscribe({
       next: (updatedCoach) => {
-        this.loading = false;
-
+        const index = this.coaches.findIndex((coach) => coach.id === coachId);
+        if (index !== -1) this.coaches[index] = { ...updatedCoach, password: '' };
+        if (this.selectedCoachId !== coachId || this.selectionVersion !== version) return;
+        this.selectedCoach = { ...updatedCoach, password: '' };
         this.message = 'adminCoachEdit.updateSuccess';
-
         this.messageType = 'success';
-
-        const index = this.coaches.findIndex((coach) => coach.id === this.selectedCoachId);
-
-        if (index !== -1) {
-          this.coaches[index] = {
-            ...updatedCoach,
-            password: '',
-          };
-
-          this.selectedCoach = {
-            ...updatedCoach,
-            password: '',
-          };
-        }
       },
 
       error: (err) => {
-        this.loading = false;
-
+        if (this.selectedCoachId !== coachId || this.selectionVersion !== version) return;
         this.message = err?.error?.message || err?.message || 'adminCoachEdit.saveError';
 
         this.messageType = 'error';

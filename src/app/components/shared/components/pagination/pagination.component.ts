@@ -1,16 +1,21 @@
+import { AppSelectComponent } from '../app-select/app-select.component';
+import type { SelectOption } from '../../../../models/common/select-option.model';
 import { AppButtonComponent } from '../app-button/app-button.component';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 
+let nextPaginationId = 0;
+
 @Component({
   standalone: true,
   selector: 'app-pagination',
-  imports: [AppButtonComponent, CommonModule, FormsModule, TranslatePipe],
+  imports: [AppSelectComponent, AppButtonComponent, CommonModule, FormsModule, TranslatePipe],
   templateUrl: './pagination.component.html',
 })
 export class PaginationComponent {
+  readonly pageSizeId = `pagination-page-size-${++nextPaginationId}`;
   // ============================================================
   // INPUTS – PARAMÉTEREZHETŐ BEÁLLÍTÁSOK
   // ============================================================
@@ -35,6 +40,13 @@ export class PaginationComponent {
 
   /** Rekordinformáció megjelenítése */
   @Input() showInfo = true;
+  @Input() showPageNumbers = false;
+
+  get sizeOptions(): SelectOption<number>[] {
+    return [...new Set([this.pageSize, ...this.pageSizeOptions])]
+      .filter(size => Number.isInteger(size) && size > 0)
+      .map(size => ({ value: size, label: String(size) }));
+  }
 
   // ============================================================
   // OUTPUTS – ESEMÉNYEK A SZÜLŐ KOMPONENS FELÉ
@@ -98,7 +110,7 @@ export class PaginationComponent {
 
   /** Ugrás egy adott oldalra */
   goToPage(page: number): void {
-    if (page < 1 || page > this.totalPages || page === this.currentPage) {
+    if (!Number.isInteger(page) || page < 1 || page > this.totalPages || page === this.currentPage) {
       return;
     }
 
@@ -136,7 +148,7 @@ export class PaginationComponent {
   onPageSizeChange(size: number | string): void {
     const newSize = Number(size);
 
-    if (newSize <= 0 || newSize === this.pageSize) {
+    if (!Number.isInteger(newSize) || newSize <= 0 || newSize === this.pageSize) {
       return;
     }
 

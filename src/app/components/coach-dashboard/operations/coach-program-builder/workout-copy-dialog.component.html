@@ -28,10 +28,7 @@
 
     <app-message *ngIf="errorMessage" [message]="errorMessage" type="error" class="block px-5 pt-4"></app-message>
     <div class="grid grid-cols-1 gap-5 p-5 sm:p-6">
-      <div class="min-w-0">
-        <label for="copyWorkoutName" class="mb-2 block text-sm font-semibold text-content-700">
-          {{ 'coachProgramBuilder.newWorkoutName' | translate }}
-        </label>
+      <app-form-field class="min-w-0" labelKey="coachProgramBuilder.newWorkoutName" controlId="copyWorkoutName">
         <input
           id="copyWorkoutName"
           type="text"
@@ -41,11 +38,8 @@
           [placeholder]="'coachProgramBuilder.newWorkoutNamePlaceholder' | translate"
           class="block min-h-11 w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 disabled:cursor-not-allowed disabled:bg-surface-100 sm:text-sm"
         />
-      </div>
-      <div class="min-w-0">
-        <label for="copyWorkoutDate" class="mb-2 block text-sm font-semibold text-content-700">
-          {{ 'coachProgramBuilder.newWorkoutDate' | translate }}
-        </label>
+      </app-form-field>
+      <app-form-field class="min-w-0" labelKey="coachProgramBuilder.newWorkoutDate" controlId="copyWorkoutDate">
         <input
           id="copyWorkoutDate"
           type="date"
@@ -54,11 +48,8 @@
           [disabled]="inProgress"
           class="block min-h-11 w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 disabled:cursor-not-allowed disabled:bg-surface-100 sm:text-sm"
         />
-      </div>
-      <div class="min-w-0">
-        <label for="copyWorkoutDayIndex" class="mb-2 block text-sm font-semibold text-content-700">
-          {{ 'coachProgramBuilder.workoutDay' | translate }}
-        </label>
+      </app-form-field>
+      <app-form-field class="min-w-0" labelKey="coachProgramBuilder.workoutDay" controlId="copyWorkoutDayIndex">
         <input
           id="copyWorkoutDayIndex"
           type="number"
@@ -68,7 +59,7 @@
           [disabled]="inProgress"
           class="block min-h-11 w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 disabled:cursor-not-allowed disabled:bg-surface-100 sm:text-sm"
         />
-      </div>
+      </app-form-field>
     </div>
 
     <div class="flex flex-col-reverse gap-3 border-t border-surface-100 px-5 py-4 sm:flex-row sm:justify-end sm:px-6">

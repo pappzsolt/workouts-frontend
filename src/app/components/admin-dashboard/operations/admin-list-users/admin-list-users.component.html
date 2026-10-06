@@ -35,9 +35,9 @@
       <div
         class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
       >
-        <div
+        <app-card
           *ngFor="let user of paginatedUsers; trackBy: trackByUser"
-          class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary-200 hover:shadow-md"
+          variant="outlined" class="block min-w-0"
         >
 
           <!-- Avatar -->
@@ -80,45 +80,12 @@
             </div>
 
           </div>
-        </div>
+        </app-card>
       </div>
 
-      <!-- Lapozás -->
-      <div
-        class="flex flex-col items-center justify-center gap-3 sm:flex-row"
-      >
-        <app-button
-          type="button"
-          (buttonClick)="prevPage()"
-          [disabled]="currentPage === 1"
-          variant="secondary"
-          appearance="outline"
-          [fullWidth]="true"
-          buttonClass="sm:w-auto"
-          class="block w-full sm:w-auto"
-        >
-          {{ 'common.previous' | translate }}
-        </app-button>
-
-        <span
-          class="inline-flex min-h-11 items-center justify-center rounded-xl border border-surface-200 bg-white px-5 py-2.5 text-sm font-semibold text-content-700 shadow-sm"
-        >
-          {{ currentPage }} / {{ totalPages }}
-        </span>
-
-        <app-button
-          type="button"
-          (buttonClick)="nextPage()"
-          [disabled]="currentPage === totalPages"
-          variant="secondary"
-          appearance="outline"
-          [fullWidth]="true"
-          buttonClass="sm:w-auto"
-          class="block w-full sm:w-auto"
-        >
-          {{ 'common.next' | translate }}
-        </app-button>
-      </div>
+      <app-pagination [totalItems]="filteredUsers.length" [pageSize]="pageSize"
+        [currentPage]="currentPage" [showPageSize]="false" [showInfo]="false"
+        (pageChange)="onPageChange($event)"></app-pagination>
 
     </ng-container>
 

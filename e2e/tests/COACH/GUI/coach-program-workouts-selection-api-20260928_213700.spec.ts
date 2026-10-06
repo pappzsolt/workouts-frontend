@@ -40,6 +40,7 @@ test('COACH GUI: program-workouts loads real program/workout data and selected p
   await expect(programLabel).toBeVisible({ timeout: 15000 });
   await programLabel.click();
   await expect(radio).toBeChecked();
+  await expect(programLabel.locator('span.rounded-full > span')).toHaveCSS('opacity', '1');
 
   const programWorkoutsResponse = await programWorkoutsPromise;
   expect(programWorkoutsResponse.ok()).toBeTruthy();

@@ -1,8 +1,12 @@
+import {
+  errorMessage,
+  responseMessage,
+} from '../../../../../models/backend-dto/common/api-response-message';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, finalize, takeUntil } from 'rxjs';
 
 import { CoachWorkoutsService } from '../../../../../services/coach/coach-workouts/coach-workouts.service';
 import { LanguageService } from '../../../../../services/shared/language.service';
@@ -24,6 +28,7 @@ export class NewWorkoutComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
   workouts: Workout[] = [];
+  saving = false;
 
   newWorkout = {
     name: '',
@@ -46,7 +51,6 @@ export class NewWorkoutComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.loadWorkouts();
     });
@@ -59,95 +63,67 @@ export class NewWorkoutComponent implements OnInit, OnDestroy {
   }
 
   loadWorkouts(): void {
-    this.coachWorkoutsService.getMyWorkouts().subscribe({
-      next: (res) => {
-        this.workouts = res.data || [];
-      },
+    this.coachWorkoutsService
+      .getMyWorkouts()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.workouts = res.data || [];
+        },
 
-      error: (err) => {
-        this.logger.error('Hiba a workoutok betöltésekor', err);
+        error: (err) => {
+          this.logger.error('Hiba a workoutok betöltésekor', err);
 
-        this.workouts = [];
+          this.workouts = [];
 
-        this.message = 'newWorkout.loadError';
+          this.message = 'newWorkout.loadError';
 
-        this.messageType = 'error';
-      },
-    });
+          this.messageType = 'error';
+        },
+      });
   }
 
   addWorkout(): void {
-    this.coachWorkoutsService.addWorkout(this.newWorkout).subscribe({
-      next: (res) => {
-        this.message = 'newWorkout.createSuccess';
-
-        this.messageType = 'success';
-
-        // Megnézzük, hogy a Program Builderből
-        // érkeztünk-e.
-        const fromProgramBuilder = this.route.snapshot.queryParamMap.get('fromProgramBuilder');
-
-        // Az aktuális program ID-ja.
-        const programId = this.route.snapshot.queryParamMap.get('programId');
-
-        // ==================================================
-        // PROGRAM BUILDERBŐL ÉRKEZTÜNK
-        // ==================================================
-
-        if (fromProgramBuilder === 'true' && programId) {
-          // Az ApiResponse wrapperen belül található a WorkoutResponse.
-          const workoutId = res.data?.id;
-
-          if (workoutId === undefined || workoutId === null) {
-            this.message = 'newWorkout.createIdMissing';
-
+    if (this.saving) return;
+    this.saving = true;
+    this.message = '';
+    this.messageType = '';
+    this.coachWorkoutsService
+      .addWorkout({ ...this.newWorkout })
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => {
+          this.saving = false;
+        }),
+      )
+      .subscribe({
+        next: (res) => {
+          if (!res.success) {
+            this.message = responseMessage([res], 'newWorkout.createError');
             this.messageType = 'error';
-
             return;
           }
-
-          // ==================================================
-          // NAVIGÁCIÓ AZ EXERCISE HOZZÁRENDELÉS OLDALRA
-          // ==================================================
-
+          const workoutId = res.data?.id;
+          if (workoutId == null || !Number.isInteger(workoutId) || workoutId <= 0) {
+            this.message = 'newWorkout.createIdMissing';
+            this.messageType = 'error';
+            return;
+          }
+          this.message = responseMessage([res], 'newWorkout.createSuccess');
+          this.messageType = 'success';
+          const fromProgramBuilder = this.route.snapshot.queryParamMap.get('fromProgramBuilder');
+          const programId = this.route.snapshot.queryParamMap.get('programId');
           this.router.navigate(['/coach/assign-workouts-exercises'], {
-            queryParams: {
-              workoutId: workoutId,
-              fromProgramBuilder: 'true',
-              programId: programId,
-            },
+            queryParams:
+              fromProgramBuilder === 'true' && programId
+                ? { workoutId, fromProgramBuilder: 'true', programId }
+                : { workoutId },
           });
-
-          return;
-        }
-
-        // ==================================================
-        // NORMÁL WORKOUT LÉTREHOZÁS
-        // ==================================================
-
-        const workoutId = res.data?.id;
-
-        if (workoutId === undefined || workoutId === null) {
-          this.message = 'newWorkout.createIdMissing';
-
+        },
+        error: (error) => {
+          this.message = errorMessage(error, 'newWorkout.createError');
           this.messageType = 'error';
-
-          return;
-        }
-
-        this.router.navigate(['/coach/assign-workouts-exercises'], {
-          queryParams: {
-            workoutId: workoutId,
-          },
-        });
-      },
-
-      error: () => {
-        this.message = 'newWorkout.createError';
-
-        this.messageType = 'error';
-      },
-    });
+        },
+      });
   }
-
 }

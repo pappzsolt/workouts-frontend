@@ -93,13 +93,12 @@ export class CoachEditService {
     };
 
     return this.http.post<ApiResponse<void>>(this.membersUrl, payload).pipe(
-      map(() => ({
-        ...coach,
-        id,
-      })),
-      catchError(() =>
-        throwError(() => new Error('Az edző adatainak mentése nem sikerült.')),
-      ),
+      map((response) => {
+        if (!response.success) {
+          throw new Error(response.message || 'adminCoachEdit.saveError');
+        }
+        return { ...coach, id };
+      }),
     );
   }
 

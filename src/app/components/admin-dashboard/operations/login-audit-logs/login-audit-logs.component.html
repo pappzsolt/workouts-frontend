@@ -24,16 +24,8 @@
           [labelKey]="'adminLoginAudit.filters.accountType'"
           controlId="login-audit-account-type"
         >
-          <select
-            id="login-audit-account-type"
-            name="accountType"
-            [(ngModel)]="filters.accountType"
-            class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm text-content-800 outline-none transition focus:border-primary-400 focus:ring-4 focus:ring-primary-600/10"
-          >
-            <option value="">{{ 'adminLoginAudit.filters.allAccountTypes' | translate }}</option>
-            <option value="USER">{{ 'adminLoginAudit.accountTypes.USER' | translate }}</option>
-            <option value="COACH">{{ 'adminLoginAudit.accountTypes.COACH' | translate }}</option>
-          </select>
+          <app-select id="login-audit-account-type" [value]="filters.accountType" [options]="accountTypeOptions"
+            (valueChange)="filters.accountType = $event"></app-select>
         </app-form-field>
 
         <app-form-field
@@ -231,16 +223,8 @@
         <label for="login-audit-page-size" class="font-semibold text-content-700">
           {{ 'adminLoginAudit.pageSize' | translate }}
         </label>
-        <select
-          id="login-audit-page-size"
-          [ngModel]="pageSize"
-          (ngModelChange)="onPageSizeChange($event)"
-          class="min-h-10 rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm text-content-800 outline-none transition focus:border-primary-400 focus:ring-4 focus:ring-primary-600/10"
-        >
-          <option *ngFor="let option of pageSizeOptions" [ngValue]="option">
-            {{ option }}
-          </option>
-        </select>
+        <app-select id="login-audit-page-size" [value]="pageSize" [options]="sizeOptions"
+          (valueChange)="onPageSizeChange($event)"></app-select>
       </div>
     </ng-container>
   </div>

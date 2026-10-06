@@ -257,7 +257,6 @@ async function cleanupFixture(
 }
 
 test.describe('MOBILE v1 REST API – strict E2E contract', () => {
-  test.describe.configure({ mode: 'serial' });
 
   test('SNAPSHOT: full user-scoped canonical read model + DB consistency', async ({ page }) => {
     await login(page, 'coach');

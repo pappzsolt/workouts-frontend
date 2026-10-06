@@ -17,7 +17,6 @@ import {
 } from '../../helpers/e2e-next-3-helpers';
 
 test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
-  test.describe.configure({ mode: 'serial' });
 
   async function workoutExerciseCount(
     workoutId: number,
@@ -453,7 +452,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
         'PUT order-index 1→0',
       );
 
-      first = await dbOne<{ order_index: number }>(
+      const reorderedFirst = await dbOne<{ order_index: number }>(
         `SELECT order_index FROM public.workout_exercises
           WHERE workout_id=$1 AND exercise_id=$2`,
         [workoutId, exerciseId],
@@ -463,7 +462,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
           WHERE workout_id=$1 AND exercise_id=$2`,
         [workoutId, exerciseId2],
       );
-      expect(Number(first?.order_index)).toBe(1);
+      expect(Number(reorderedFirst?.order_index)).toBe(1);
       expect(Number(moved?.order_index)).toBe(0);
 
       await rejected(

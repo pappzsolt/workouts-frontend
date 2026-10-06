@@ -863,7 +863,8 @@
     "previousPage": "Előző oldal",
     "nextPage": "Következő oldal",
     "lastPage": "Utolsó oldal",
-    "pageSize": "Elem oldalanként"
+    "pageSize": "Elemek oldalanként",
+    "info": "{{start}}–{{end}} / {{total}} elem"
   },
   "programWorkouts": {
     "programNotSelected": "Nincs kiválasztott program.",

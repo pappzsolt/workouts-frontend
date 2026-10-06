@@ -36,7 +36,7 @@ test('New program: real form → page-two checkbox → add → repeated occurren
     await page.locator('#programDescription').fill('Real form and picker regression');
     await page.locator('#startDate').fill('2035-03-15');
     await page.locator('#durationDays').fill('30');
-    await page.locator('select#difficultyLevel').selectOption('BEGINNER');
+    await page.getByRole('combobox', { name: /^(nehézségi szint|difficulty level|schwierigkeitsgrad)$/i }).selectOption('BEGINNER');
     await expect(page.locator('#endDate')).toHaveValue('2035-04-13');
     const createdPromise=page.waitForResponse(r=>r.request().method()==='POST'&&new URL(r.url()).pathname===API_ENDPOINTS.userPrograms.base);
     await page.locator('app-coach-program-builder').getByRole('button',{name:/program létrehozása|create program/i}).click();
@@ -112,6 +112,10 @@ test('Real concurrent backend conflict: GUI shows 409 message and keeps DB relat
     const error=await response.json(); expect(error.success).toBe(false); expect(error.message).toBeTruthy();
     await expect(page.locator('app-coach-program-builder-workouts > app-card app-message').first()).toContainText(error.message);
     expect((await db().query('SELECT * FROM program_workouts WHERE program_id=$1 ORDER BY id',[programId])).rows).toEqual(before);
-    await expect(page.getByTestId('selected-workout')).toHaveCount(1);
+    // A rejected addition keeps the loaded GUI state and the pending selection.
+    await expect(page.getByTestId('selected-workout')).toHaveCount(0);
+    await expect(board.locator(`#compact-workout-${workoutId}`)).toBeChecked();
+    await openExisting(page, programId);
+    await assertApiAndDb(page, programId, [1]);
   } finally {try{await deleteProgram(api,programId);}finally{try{await deleteWorkout(api,workoutId);}finally{await api.dispose();}}}
 });

@@ -31,7 +31,7 @@ test('USER GUI: my programs opens the selected workout occurrence with its userW
 
   const programsPagination = page.locator('app-user-my-programs app-side-pagination');
   for (let pageIndex = 0; pageIndex < programIndex; pageIndex += 1) {
-    const nextButton = programsPagination.locator('button').nth(1);
+    const nextButton = programsPagination.getByRole('button', { name: /^(következő|next|weiter)$/i });
     await expect(nextButton).toBeEnabled();
     await nextButton.click();
   }
@@ -45,7 +45,13 @@ test('USER GUI: my programs opens the selected workout occurrence with its userW
     return r.request().method() === 'GET' &&
       url.pathname === API_ENDPOINTS.workouts.byProgram(programId);
   });
-  await card.click();
+  const programLink = card.getByRole('link');
+  const destination = new URL((await programLink.getAttribute('href'))!, page.url());
+  expect(destination.pathname).toBe(`/user/programs/${programId}/workouts`);
+  expect(destination.searchParams.get('programName')).toBe(String(selectedProgram.name));
+  await programLink.focus();
+  await expect(programLink).toBeFocused();
+  await programLink.press('Enter');
 
   await expect(page).toHaveURL(new RegExp(`/user/programs/${programId}/workouts(?:\\?.*)?$`));
   const workoutsResponse = await workoutsPromise;
@@ -81,7 +87,7 @@ test('USER GUI: my programs opens the selected workout occurrence with its userW
 
   const workoutPagination = page.locator('app-workouts app-side-pagination');
   for (let pageIndex = 0; pageIndex < categoryIndex; pageIndex += 1) {
-    const nextButton = workoutPagination.locator('button').nth(1);
+    const nextButton = workoutPagination.getByRole('button', { name: /^(következő|next|weiter)$/i });
     await expect(nextButton).toBeEnabled();
     await nextButton.click();
   }

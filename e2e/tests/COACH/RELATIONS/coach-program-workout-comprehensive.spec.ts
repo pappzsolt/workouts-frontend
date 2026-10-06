@@ -15,7 +15,6 @@ import {
 } from '../../helpers/e2e-next-3-helpers';
 
 test.describe('Coach - ProgramWorkout endpoint matrix', () => {
-  test.describe.configure({ mode: 'serial' });
 
   test('PROGRAM-WORKOUT: add → GET → assigned → update → duplicate → second occurrence → delete by id → delete pair → DB', async ({
     page,

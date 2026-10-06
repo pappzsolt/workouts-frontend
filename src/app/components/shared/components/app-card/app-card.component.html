@@ -1,3 +1,18 @@
+<ng-template #content><ng-content></ng-content></ng-template>
+<a *ngIf="routerLink !== null; else staticCard" [routerLink]="routerLink" [queryParams]="queryParams"
+  class="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 group flex min-w-0 flex-col overflow-hidden rounded-2xl transition duration-200"
+  [ngClass]="{
+    'border border-surface-200 bg-white shadow-sm hover:-translate-y-1 hover:border-primary-300 hover:shadow-md':
+      variant === 'default',
+
+    'border border-surface-200 bg-white shadow-sm':
+      variant === 'outlined'
+  }"
+>
+  <ng-container [ngTemplateOutlet]="content"></ng-container>
+</a>
+
+<ng-template #staticCard>
 <div
   class="group flex min-w-0 flex-col overflow-hidden rounded-2xl transition duration-200"
   [ngClass]="{
@@ -8,5 +23,7 @@
       variant === 'outlined'
   }"
 >
-  <ng-content></ng-content>
+  <ng-container [ngTemplateOutlet]="content"></ng-container>
 </div>
+
+</ng-template>

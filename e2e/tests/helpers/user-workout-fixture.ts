@@ -1,3 +1,4 @@
+import { getAuthenticatedAccessToken } from './auth-session';
 import { expect, type Page } from '@playwright/test';
 import { API_ENDPOINTS } from './api-endpoints';
 
@@ -20,7 +21,7 @@ export async function findAssignedProgramWithWorkouts(
   programs: Array<Record<string, unknown>>,
   options: { requireUserWorkoutId?: boolean } = {},
 ): Promise<{ programId: number; programIndex: number; workouts: UserWorkoutApiRecord[] }> {
-  const token = await page.evaluate(() => localStorage.getItem('accessToken'));
+  const token = getAuthenticatedAccessToken(page);
   expect(token, 'A USER login után accessToken szükséges a fixture-felderítéshez.').toBeTruthy();
 
   const language = process.env.E2E_LANGUAGE ?? 'hu';

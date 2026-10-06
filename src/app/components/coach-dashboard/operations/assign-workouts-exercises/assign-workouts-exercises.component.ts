@@ -4,7 +4,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ApiResponse } from '../../../../models/backend-dto/common/api-response';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Subject, catchError, concatMap, from, of, takeUntil, toArray } from 'rxjs';
+import { Subject, Subscription, catchError, concatMap, from, of, takeUntil, toArray } from 'rxjs';
 
 import { CoachWorkoutBoardComponent } from '../../../shared/coach/coach-workouts-board/coach-workout-board.component';
 import { CoachExercisesBoardComponent } from '../../../shared/coach/coach-exercises-board/coach-exercises-board.component';
@@ -34,6 +34,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 })
 export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
+  private summaryRequest?: Subscription;
 
   workouts: Workout[] = [];
   exercises: Exercise[] = [];
@@ -92,7 +93,7 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (this.fromProgramBuilder && this.newWorkoutId !== null) {
+    if (this.newWorkoutId !== null) {
       this.selectWorkout(this.newWorkoutId);
     }
   }
@@ -119,6 +120,7 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
     if (this.selectedWorkoutIds.length) {
       this.selectWorkout(this.selectedWorkoutIds[0], false);
     } else {
+      this.summaryRequest?.unsubscribe();
       this.selectedWorkout = null;
       this.exerciseSelectorOpen = false;
     }
@@ -133,6 +135,7 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
 
     this.selectedWorkoutIds = [workoutId];
     this.clearMessage();
+    this.selectedWorkout = null;
     this.loadWorkoutSummary(workoutId);
 
     if (openExerciseSelector) {
@@ -143,10 +146,12 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
   }
 
   private loadWorkoutSummary(workoutId: number): void {
-    this.coachWorkoutsService.getWorkoutById(workoutId)
+    this.summaryRequest?.unsubscribe();
+    this.summaryRequest = this.coachWorkoutsService.getWorkoutById(workoutId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
+          if (!this.selectedWorkoutIds.includes(workoutId)) return;
           const data = response.data;
 
           if (!data) {
@@ -172,6 +177,7 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
           };
         },
         error: () => {
+          if (!this.selectedWorkoutIds.includes(workoutId)) return;
           this.selectedWorkout = {
             id: workoutId,
             name: `Workout #${workoutId}`,
@@ -183,6 +189,7 @@ export class AssignWorkoutsExercisesComponent implements OnInit, OnDestroy {
   }
 
   changeWorkout(): void {
+    this.summaryRequest?.unsubscribe();
     this.exerciseSelectorOpen = false;
     this.selectedWorkout = null;
     this.selectedWorkoutIds = [];

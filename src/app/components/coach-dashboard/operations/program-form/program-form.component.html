@@ -10,29 +10,17 @@
   ></app-message>
 
   <!-- Program Name -->
-  <div class="min-w-0 sm:col-span-2">
-    <label
-      class="mb-2 block text-sm font-semibold text-content-700"
-      for="programName"
-    >
-      {{ 'programForm.programName' | translate }}
-    </label>
+  <app-form-field class="min-w-0 sm:col-span-2" labelKey="programForm.programName" controlId="programName">
 
     <input
       id="programName"
       formControlName="programName"
       class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
     />
-  </div>
+  </app-form-field>
 
   <!-- Description -->
-  <div class="min-w-0 sm:col-span-2">
-    <label
-      class="mb-2 block text-sm font-semibold text-content-700"
-      for="programDescription"
-    >
-      {{ 'programForm.description' | translate }}
-    </label>
+  <app-form-field class="min-w-0 sm:col-span-2" labelKey="programForm.description" controlId="programDescription">
 
     <textarea
       id="programDescription"
@@ -40,16 +28,10 @@
       rows="3"
       class="block w-full resize-y rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
     ></textarea>
-  </div>
+  </app-form-field>
 
   <!-- Start Date -->
-  <div class="min-w-0">
-    <label
-      class="mb-2 block text-sm font-semibold text-content-700"
-      for="startDate"
-    >
-      {{ 'programForm.startDate' | translate }}
-    </label>
+  <app-form-field class="min-w-0" labelKey="programForm.startDate" controlId="startDate">
 
     <input
       type="date"
@@ -57,16 +39,10 @@
       formControlName="startDate"
       class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
     />
-  </div>
+  </app-form-field>
 
   <!-- Calculated End Date -->
-  <div class="min-w-0">
-    <label
-      class="mb-2 block text-sm font-semibold text-content-700"
-      for="endDate"
-    >
-      {{ 'programForm.endDate' | translate }}
-    </label>
+  <app-form-field class="min-w-0" labelKey="programForm.endDate" controlId="endDate">
 
     <input
       type="date"
@@ -75,16 +51,10 @@
       readonly
       class="block w-full rounded-lg border border-surface-300 bg-surface-100 px-3.5 py-2.5 text-base text-content-600 shadow-sm outline-none sm:text-sm"
     />
-  </div>
+  </app-form-field>
 
   <!-- Duration -->
-  <div class="min-w-0">
-    <label
-      class="mb-2 block text-sm font-semibold text-content-700"
-      for="durationDays"
-    >
-      {{ 'programForm.duration' | translate }}
-    </label>
+  <app-form-field class="min-w-0" labelKey="programForm.duration" controlId="durationDays">
 
     <input
       type="number"
@@ -92,23 +62,17 @@
       formControlName="durationDays"
       class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
     />
-  </div>
+  </app-form-field>
 
   <!-- Difficulty Level -->
-  <div class="min-w-0">
-    <label
-      class="mb-2 block text-sm font-semibold text-content-700"
-      for="difficultyLevel"
-    >
-      {{ 'programForm.difficultyLevel' | translate }}
-    </label>
+  <app-form-field class="min-w-0" labelKey="programForm.difficultyLevel" controlId="difficultyLevel">
 
     <input
       id="difficultyLevel"
       formControlName="difficultyLevel"
       class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
     />
-  </div>
+  </app-form-field>
 
   <!-- Submit Button -->
   <div

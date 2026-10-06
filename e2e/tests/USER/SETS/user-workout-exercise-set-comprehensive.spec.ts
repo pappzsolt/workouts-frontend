@@ -20,7 +20,6 @@ import {
 } from '../../helpers/e2e-next-3-helpers';
 
 test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
-  test.describe.configure({ mode: 'serial' });
 
   test('SETS: auto-created UWE → GET → CREATE → UPDATE completed/progress → ADD → DELETE → DB', async ({ page }) => {
     await login(page, 'coach');
@@ -250,10 +249,20 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
 
       await userApi.dispose();
     } finally {
+      const assignment = await dbOne<{ count: string }>('SELECT count(*)::text AS count FROM user_programs WHERE program_id=$1 AND user_id=$2', [programId, userId]);
+      if (Number(assignment?.count) > 0) {
+        await login(page, 'user');
+        const ownerCleanup = await apiFor(page);
+        try {
+          await success(await ownerCleanup.delete(API_ENDPOINTS.programs.myById(programId)), 'Owner deletes fixture execution history');
+        } finally {
+          await ownerCleanup.dispose();
+        }
+      }
       await login(page, 'coach');
       const cleanup = await apiFor(page);
 
-      // This endpoint deletes generated USER_WORKOUT / UWE / SET rows first.
+      // The owner removed execution history before deleting the coach template.
       await deleteProgram(cleanup, programId);
 
       // The exercise relation was protected while the workout belonged to

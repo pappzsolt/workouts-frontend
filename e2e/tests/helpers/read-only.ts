@@ -19,7 +19,7 @@ export function installReadOnlyGuard(page: Page): string[] {
 
     // Authentication requests are test setup, not page data mutations.
     // Business/API writes must still fail the read-only GUI tests.
-    if (request.url().includes(API_ENDPOINTS.auth.login) || request.url().includes(API_ENDPOINTS.auth.refresh)) {
+    if ([API_ENDPOINTS.auth.login, API_ENDPOINTS.auth.refresh, '/api/auth/web/login', '/api/auth/web/refresh', '/api/auth/web/logout'].includes(new URL(request.url()).pathname)) {
       return;
     }
 

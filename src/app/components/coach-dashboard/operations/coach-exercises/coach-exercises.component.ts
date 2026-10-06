@@ -5,7 +5,7 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Subject, skip, takeUntil } from 'rxjs';
+import { Subject, Subscription, skip, takeUntil } from 'rxjs';
 
 import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
@@ -30,6 +30,7 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   private readonly logger = inject(LoggerService);
 
   private readonly destroy$ = new Subject<void>();
+  private searchRequest?: Subscription;
 
   // ==========================================================
   // GYAKORLATOK
@@ -130,10 +131,11 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   // ==========================================================
 
   loadExercises(): void {
+    this.searchRequest?.unsubscribe();
     this.loading = true;
     this.clearMessage();
 
-    this.exerciseService
+    this.searchRequest = this.exerciseService
       .searchExercises(
         this.searchTerm,
         this.searchField,

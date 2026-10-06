@@ -1,6 +1,6 @@
 import { expectRejected as rejected } from '../../helpers/expect-rejected';
 import { API_ENDPOINTS } from '../../helpers/api-endpoints';
-import { authenticateAndOpen } from '../../helpers/auth-session';
+import { authenticateAndOpen, getAuthenticatedAccessToken } from '../../helpers/auth-session';
 import { expect, request, test, type APIRequestContext, type Page } from '@playwright/test';
 import { Pool } from 'pg';
 
@@ -37,7 +37,7 @@ async function loginAsCoach(page: Page): Promise<void> {
 }
 
 async function apiFor(page: Page): Promise<APIRequestContext> {
-  const token = await page.evaluate(() => localStorage.getItem('accessToken'));
+  const token = getAuthenticatedAccessToken(page);
   if (!token) throw new Error('E2E: accessToken nem található.');
   return request.newContext({
     baseURL: BASE_API_URL,
@@ -146,7 +146,6 @@ async function assertProgramDeleted(id: number): Promise<void> {
 }
 
 test.describe('Coach - COMPLETE Program endpoint matrix', () => {
-  test.describe.configure({ mode: 'serial' });
 
   test('PROGRAM CRUD + coach GET/search + translation + PostgreSQL', async ({ page }) => {
     await loginAsCoach(page);

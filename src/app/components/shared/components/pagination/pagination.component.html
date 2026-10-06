@@ -5,7 +5,7 @@
 
 <div
   *ngIf="totalPages > 0"
-  class="flex w-full flex-col items-center justify-center
+  class="flex w-full flex-wrap flex-col items-center justify-center
          gap-3 rounded-2xl border border-primary-100
          bg-white p-4 shadow-sm
          sm:flex-row sm:gap-5"
@@ -24,6 +24,13 @@
   >
     ◀ {{ 'common.previous' | translate }}
   </app-button>
+
+  <div *ngIf="showPageNumbers" class="flex flex-wrap items-center justify-center gap-2">
+    <app-button *ngFor="let page of pages" size="sm" variant="secondary" appearance="outline"
+      [label]="page.toString()" [active]="currentPage === page"
+      [ariaCurrent]="currentPage === page ? 'page' : null"
+      (buttonClick)="goToPage(page)"></app-button>
+  </div>
 
   <!-- Aktuális oldal -->
 
@@ -49,4 +56,12 @@
   >
     {{ 'common.next' | translate }} ▶
   </app-button>
+  <span *ngIf="showInfo" class="text-center text-sm text-content-600" aria-live="polite">
+    {{ 'pagination.info' | translate:{ start: startItem, end: endItem, total: totalItems } }}
+  </span>
+  <div *ngIf="showPageSize" class="flex items-center gap-3 text-sm">
+    <label [for]="pageSizeId" class="font-semibold text-content-700">{{ 'pagination.pageSize' | translate }}</label>
+    <app-select [id]="pageSizeId" [value]="pageSize" [options]="sizeOptions"
+      (valueChange)="onPageSizeChange($event)"></app-select>
+  </div>
 </div>

@@ -1,3 +1,5 @@
+import { AppSelectComponent } from '../../../shared/components/app-select/app-select.component';
+import type { SelectOption } from '../../../../models/common/select-option.model';
 import { AppSearchComponent } from '../../../shared/components/app-search/app-search.component';
 import { Component, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -17,7 +19,7 @@ interface LoginAuditFilters {
 @Component({
   selector: 'app-login-audit-logs',
   standalone: true,
-  imports: [AppSearchComponent, ...SHARED_IMPORTS],
+  imports: [AppSelectComponent, AppSearchComponent, ...SHARED_IMPORTS],
   templateUrl: './login-audit-logs.component.html',
   styleUrls: ['./login-audit-logs.component.css'],
 })
@@ -36,6 +38,15 @@ export class LoginAuditLogsComponent {
   totalPages = 0;
 
   readonly pageSizeOptions = [25, 50, 100, 200];
+
+  readonly accountTypeOptions: SelectOption<'' | LoginAuditAccountType>[] = [
+    { value: '', label: 'adminLoginAudit.filters.allAccountTypes' },
+    { value: 'USER', label: 'adminLoginAudit.accountTypes.USER' },
+    { value: 'COACH', label: 'adminLoginAudit.accountTypes.COACH' },
+  ];
+  get sizeOptions(): SelectOption<number>[] {
+    return this.pageSizeOptions.map(value => ({ value, label: String(value) }));
+  }
 
   filters: LoginAuditFilters = this.emptyFilters();
 

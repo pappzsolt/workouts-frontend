@@ -185,6 +185,7 @@
                 variant="primary"
                 type="button"
                 [label]="'userProfile.save' | translate"
+                [disabled]="saving || !selectedUser.id"
                 (buttonClick)="onSave()"
               ></app-button>
             </div>

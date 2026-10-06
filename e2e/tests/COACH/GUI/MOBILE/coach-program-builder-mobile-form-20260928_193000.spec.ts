@@ -13,10 +13,7 @@ test('COACH MOBILE GUI: program builder exposes the difficulty control and calcu
     await expect(page.locator(`#${id}`)).toBeVisible();
   }
 
-  // app-select renders the actual native <select> with the same id inside
-  // the wrapper component. Target the native control explicitly to avoid
-  // Angular's host element + inner select duplicate-id strict-mode error.
-  const difficulty = page.locator('select#difficultyLevel');
+  const difficulty = page.getByRole('combobox', { name: /^(nehézségi szint|difficulty level|schwierigkeitsgrad)$/i });
   await expect(difficulty).toHaveCount(1);
   await expect(difficulty).toBeVisible();
 

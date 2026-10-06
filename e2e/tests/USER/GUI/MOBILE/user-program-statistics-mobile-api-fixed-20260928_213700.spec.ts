@@ -16,15 +16,16 @@ test('USER MOBILE GUI: program statistics renders the API response without page 
   const response = await apiPromise;
   expect(response.ok()).toBeTruthy();
 
-  const body = await response.json() as {
-    data?: { programs?: unknown[]; totalPrograms?: number; completedPrograms?: number };
-  };
-  const programs = Array.isArray(body.data?.programs) ? body.data.programs : [];
+  const body = await response.json();
+  expect(body.success).toBe(true);
+  expect(Array.isArray(body.data?.programs)).toBe(true);
+  const programs = body.data.programs;
+  const surface = page.locator('app-user-program-statistics');
 
   if (programs.length > 0) {
-    await expect(page.locator('app-user-program-statistics app-card, app-card').first()).toBeVisible({ timeout: 15000 });
+    await expect(surface.getByTestId('statistics-program').first()).toBeVisible({ timeout: 15000 });
   } else {
-    await expect(page.locator('app-message').last()).toBeVisible({ timeout: 15000 });
+    await expect(surface.locator('app-message')).toBeVisible({ timeout: 15000 });
   }
 
   expect(await page.locator('body').evaluate(el => el.scrollWidth)).toBeLessThanOrEqual(391);

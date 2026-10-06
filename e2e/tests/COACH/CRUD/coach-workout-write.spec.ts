@@ -1,5 +1,6 @@
+import { expectRejected } from '../../helpers/expect-rejected';
 import { API_ENDPOINTS } from '../../helpers/api-endpoints';
-import { authenticateAndOpen } from '../../helpers/auth-session';
+import { authenticateAndOpen, getAuthenticatedAccessToken } from '../../helpers/auth-session';
 import { expect, request, test, type Page } from '@playwright/test';
 
 import {
@@ -144,7 +145,7 @@ async function createWorkoutThroughUi(
 }
 
 async function getAccessToken(page: Page): Promise<string> {
-  const token = await page.evaluate(() => localStorage.getItem('accessToken'));
+  const token = getAuthenticatedAccessToken(page);
 
   if (!token) {
     throw new Error('E2E: accessToken nem található.');
@@ -310,9 +311,7 @@ async function waitForAssignComponent(page: Page): Promise<void> {
     timeout: 15_000,
   });
 
-  await expect(page.locator('#workoutSearch')).toBeVisible({
-    timeout: 15_000,
-  });
+  await expect(page.locator('app-assign-workouts-exercises').getByRole('heading', { level: 2 })).toBeVisible();
 
 }
 
@@ -329,16 +328,7 @@ async function assignExerciseThroughUi(
 
   await waitForAssignComponent(page);
 
-  const workoutSearch = page.locator('#workoutSearch');
-  await workoutSearch.fill(workout.name);
-
-  const workoutCheckbox = page.locator(
-    `#compact-workout-${workoutId}`,
-  );
-
-  await expect(workoutCheckbox).toBeVisible({ timeout: 15_000 });
-  await workoutCheckbox.check();
-  await expect(page.getByRole('heading', { name: workout.name, exact: true })).toBeVisible();
+  await expect(page.locator('app-assign-workouts-exercises').getByRole('heading', { name: workout.name, exact: true })).toBeVisible();
   await page.getByRole('button', { name: '+ Gyakorlatok kezelése', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: `Gyakorlatok — ${workout.name}` });
   await expect(dialog).toBeVisible();
@@ -387,7 +377,6 @@ async function assignExerciseThroughUi(
 }
 
 test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', () => {
-  test.describe.configure({ mode: 'serial' });
 
   test.afterAll(async () => {
     await closeWorkoutDatabase();
@@ -614,8 +603,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
         },
       });
 
-      expect(response.ok()).toBeFalsy();
-      expect(response.status()).toBeGreaterThanOrEqual(400);
+      await expectRejected(response, 'Negative CRUD response', 404);
     } finally {
       await api.dispose();
     }
@@ -638,8 +626,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
     try {
       const response = await api.delete(API_ENDPOINTS.workouts.byId(2147483000));
 
-      expect(response.ok()).toBeFalsy();
-      expect(response.status()).toBeGreaterThanOrEqual(400);
+      await expectRejected(response, 'Negative CRUD response', 404);
     } finally {
       await api.dispose();
     }
@@ -668,8 +655,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
         },
       });
 
-      expect(response.ok()).toBeFalsy();
-      expect(response.status()).toBeGreaterThanOrEqual(400);
+      await expectRejected(response, 'Negative CRUD response', 403);
 
       const relation = await getWorkoutExerciseInDatabase(
         2147483000,
@@ -721,8 +707,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
           },
         });
 
-        expect(second.ok()).toBeFalsy();
-        expect(second.status()).toBeGreaterThanOrEqual(400);
+        await expectRejected(second, 'Duplicate exercise assignment', 400);
       } finally {
         await api.dispose();
       }
