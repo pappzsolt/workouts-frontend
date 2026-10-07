@@ -5,11 +5,7 @@
        ====================================================== -->
 
   @if (loading) {
-    <div
-      class="flex min-h-20 items-center justify-center rounded-2xl border border-surface-200 bg-white px-4 py-5 text-sm font-medium text-content-600 shadow-sm"
-    >
-      {{ 'coachExercisesBoard.loading' | translate }}
-    </div>
+    <app-message message="coachExercisesBoard.loading" type="info" class="block"></app-message>
   }
 
   <!-- ======================================================
@@ -63,7 +59,7 @@
 
     @if (compactSelection) {
       <!-- KOMPAKT KIVÁLASZTÁSI NÉZET -->
-      <div class="overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm">
+      <app-card variant="outlined" class="block min-w-0">
         <div class="hidden grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 border-b border-surface-100 bg-surface-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-content-500 sm:grid">
           <span class="w-8"></span>
           <span>{{ 'coachExercisesBoard.exercise' | translate }}</span>
@@ -110,7 +106,7 @@
             </label>
           }
         </div>
-      </div>
+      </app-card>
 
       @if (totalExercisePages > 1) {
         <div class="mt-4">

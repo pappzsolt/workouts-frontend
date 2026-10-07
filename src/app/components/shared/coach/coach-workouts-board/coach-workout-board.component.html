@@ -3,11 +3,7 @@
      ====================================================== -->
 
 @if (loading) {
-  <div
-    class="flex min-h-20 items-center justify-center rounded-2xl border border-surface-200 bg-white px-4 py-5 text-sm font-medium text-content-600 shadow-sm"
-  >
-    {{ 'coachWorkoutBoard.loading' | translate }}
-  </div>
+  <app-message message="coachWorkoutBoard.loading" type="info" class="block"></app-message>
 }
 
 <!-- ======================================================
@@ -66,7 +62,7 @@
 
   @if (compactSelection) {
     <!-- KOMPAKT KIVÁLASZTÁSI NÉZET -->
-    <div class="overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm">
+    <app-card variant="outlined" class="block min-w-0">
       <div class="hidden grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 border-b border-surface-100 bg-surface-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-content-500 sm:grid">
         <span class="w-8"></span>
         <span>{{ 'coachWorkoutBoard.workout' | translate }}</span>
@@ -103,7 +99,7 @@
           </label>
         }
       </div>
-    </div>
+    </app-card>
   } @else {
     <!-- ALAPÉRTELMEZETT KÁRTYÁS NÉZET -->
     <div

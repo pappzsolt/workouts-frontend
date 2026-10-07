@@ -1,4 +1,4 @@
-import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { ANIMATION_MODULE_TYPE } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideTranslateService } from '@ngx-translate/core';
 import { AppSelectComponent } from './app-select.component';
@@ -10,7 +10,7 @@ describe('AppSelect typed selection and role integration', () => {
     TestBed.configureTestingModule({
       imports: [AppSelectComponent, RoleSelectComponent],
       providers: [
-        provideNoopAnimations(),
+        { provide: ANIMATION_MODULE_TYPE, useValue: 'NoopAnimations' },
         provideTranslateService(),
         { provide: RoleService, useValue: {} },
       ],
@@ -76,7 +76,10 @@ describe('AppSelect searchable mode', () => {
   beforeEach(() =>
     TestBed.configureTestingModule({
       imports: [AppSelectComponent],
-      providers: [provideTranslateService(), provideNoopAnimations()],
+      providers: [
+        provideTranslateService(),
+        { provide: ANIMATION_MODULE_TYPE, useValue: 'NoopAnimations' },
+      ],
     }),
   );
 
@@ -131,6 +134,47 @@ describe('AppSelect searchable mode', () => {
     await fixture.whenStable();
     expect(input.value).toBe('Anna');
     expect(changed).not.toHaveBeenCalled();
+    fixture.destroy();
+  });
+
+  it('shows the selected label when options arrive later without emitting a new selection', async () => {
+    const fixture = TestBed.createComponent(AppSelectComponent<number>);
+    fixture.componentRef.setInput('searchable', true);
+    fixture.componentRef.setInput('value', 7);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const changed = jasmine.createSpy('changed');
+    fixture.componentInstance.valueChange.subscribe(changed);
+    fixture.componentRef.setInput('options', [{ value: 7, label: 'Anna' }]);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(fixture.nativeElement.querySelector('input').value).toBe('Anna');
+    expect(changed).not.toHaveBeenCalled();
+    fixture.destroy();
+  });
+
+  it('preserves an unfinished search when options refresh, including an empty query', async () => {
+    const fixture = TestBed.createComponent(AppSelectComponent<number>);
+    fixture.componentRef.setInput('searchable', true);
+    fixture.componentRef.setInput('value', 7);
+    fixture.componentRef.setInput('options', [{ value: 7, label: 'Anna' }]);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const input: HTMLInputElement = fixture.nativeElement.querySelector('input');
+    input.focus();
+    for (const query of ['other', '']) {
+      input.value = query;
+      input.dispatchEvent(new Event('input'));
+      fixture.componentRef.setInput('options', [{ value: 7, label: 'Anna updated' }]);
+      fixture.detectChanges();
+      await fixture.whenStable();
+      expect(input.value).toBe(query);
+      expect(fixture.componentInstance.value).toBe(7);
+    }
+    input.blur();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect(input.value).toBe('Anna updated');
     fixture.destroy();
   });
 });

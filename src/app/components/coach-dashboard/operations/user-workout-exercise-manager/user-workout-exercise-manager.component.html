@@ -105,13 +105,14 @@
       <!-- CURRENT WORKOUT -->
       <div class="current-workout">
         <div class="workout-info-row">
-          <div>
-            <span class="workout-info-label">
-              {{ 'userWorkoutExerciseManager.scheduledDate' | translate }}
-            </span>
+          <app-form-field
+            labelKey="userWorkoutExerciseManager.scheduledDate"
+            controlId="manager-scheduled-date"
+          >
 
             <div class="scheduled-date-inline">
               <input
+                id="manager-scheduled-date"
                 type="date"
                 [ngModel]="page.workout.scheduledAt"
                 (ngModelChange)="page.workout.scheduledAt = $event"
@@ -125,7 +126,7 @@
                 (buttonClick)="updateScheduledDate(page.workout, page.workout.scheduledAt)"
               ></app-button>
             </div>
-          </div>
+          </app-form-field>
 
           <span
             class="workout-status"
@@ -200,13 +201,19 @@
             </div>
 
             <div class="exercise-order-editor">
-              <input
-                type="number"
-                min="1"
-                [(ngModel)]="exercise.order"
-                class="number-input"
-                [attr.aria-label]="'#'"
-              />
+              <app-form-field
+                labelKey="userWorkoutExerciseManager.exerciseOrder"
+                controlId="manager-exercise-order"
+                class="min-w-0"
+              >
+                <input
+                  id="manager-exercise-order"
+                  type="number"
+                  min="1"
+                  [(ngModel)]="exercise.order"
+                  class="number-input"
+                />
+              </app-form-field>
               <app-button
                 variant="save"
                 type="button"
@@ -318,24 +325,32 @@
                     </span>
 
                     <div class="set-value-fields">
-                      <label class="set-field">
-                        <span>{{ 'userWorkoutExerciseManager.targetReps' | translate }}</span>
+                      <app-form-field
+                        class="set-field"
+                        labelKey="userWorkoutExerciseManager.targetReps"
+                        controlId="manager-set-target-reps"
+                      >
                         <input
+                          id="manager-set-target-reps"
                           type="number"
                           [(ngModel)]="set.targetRepetitions"
                           class="form-input set-number-input"
                         />
-                      </label>
+                      </app-form-field>
 
-                      <label class="set-field">
-                        <span>{{ 'userWorkoutExerciseManager.targetWeight' | translate }}</span>
+                      <app-form-field
+                        class="set-field"
+                        labelKey="userWorkoutExerciseManager.targetWeight"
+                        controlId="manager-set-target-weight"
+                      >
                         <input
+                          id="manager-set-target-weight"
                           type="number"
                           step="0.5"
                           [(ngModel)]="set.targetWeightKg"
                           class="form-input set-number-input"
                         />
-                      </label>
+                      </app-form-field>
                     </div>
                   </div>
 
@@ -345,37 +360,49 @@
                     </span>
 
                     <div class="set-value-fields">
-                      <label class="set-field">
-                        <span>{{ 'userWorkoutExerciseManager.actualReps' | translate }}</span>
+                      <app-form-field
+                        class="set-field"
+                        labelKey="userWorkoutExerciseManager.actualReps"
+                        controlId="manager-set-actual-reps"
+                      >
                         <input
+                          id="manager-set-actual-reps"
                           type="number"
                           [(ngModel)]="set.actualRepetitions"
                           class="form-input set-number-input"
                         />
-                      </label>
+                      </app-form-field>
 
-                      <label class="set-field">
-                        <span>{{ 'userWorkoutExerciseManager.actualWeight' | translate }}</span>
+                      <app-form-field
+                        class="set-field"
+                        labelKey="userWorkoutExerciseManager.actualWeight"
+                        controlId="manager-set-actual-weight"
+                      >
                         <input
+                          id="manager-set-actual-weight"
                           type="number"
                           step="0.5"
                           [(ngModel)]="set.actualWeightKg"
                           class="form-input set-number-input"
                         />
-                      </label>
+                      </app-form-field>
                     </div>
                   </div>
                 </div>
 
-                <label class="set-notes-field">
-                  <span>{{ 'userWorkoutExerciseManager.notes' | translate }}</span>
+                <app-form-field
+                  class="set-notes-field"
+                  labelKey="userWorkoutExerciseManager.notes"
+                  controlId="manager-set-notes"
+                >
                   <input
+                    id="manager-set-notes"
                     type="text"
                     [(ngModel)]="set.notes"
                     class="form-input"
                     [placeholder]="'userWorkoutExerciseManager.notes' | translate"
                   />
-                </label>
+                </app-form-field>
 
                 <div class="set-editor-actions">
                   <app-button type="button" (buttonClick)="deleteSet(set)"

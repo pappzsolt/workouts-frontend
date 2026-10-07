@@ -717,6 +717,7 @@
     "footer": "© 2025 FitApp Admin Panel – All rights reserved."
   },
   "userWorkoutExerciseManager": {
+    "exerciseOrder": "Exercise order",
     "selectionTitle": "User and program",
     "selectionHint": "Search by name, choose a result, then load the workouts.",
     "title": "Workout and Set Configuration",

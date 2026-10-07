@@ -717,6 +717,7 @@
     "footer": "© 2025 FitApp Admin Panel – Alle Rechte vorbehalten."
   },
   "userWorkoutExerciseManager": {
+    "exerciseOrder": "Reihenfolge der Übung",
     "title": "Training und Sätze konfigurieren",
     "program": "Programm",
     "loadProgramData": "Programmdaten laden",

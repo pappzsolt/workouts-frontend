@@ -255,13 +255,6 @@
   background: var(--app-white);
 }
 
-.workout-info-label {
-  display: block;
-  margin-bottom: 0.4rem;
-  color: var(--app-content-600);
-  font-size: 0.75rem;
-  font-weight: 700;
-}
 
 .scheduled-date-inline {
   display: flex;
@@ -428,7 +421,7 @@
 
 .exercise-order-editor {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 0.45rem;
 }
 
@@ -576,12 +569,6 @@
   gap: 0.3rem;
 }
 
-.set-field > span,
-.set-notes-field > span {
-  color: var(--app-content-600);
-  font-size: 0.7rem;
-  font-weight: 650;
-}
 
 .set-number-input {
   width: 100%;
@@ -715,7 +702,7 @@
     width: 100%;
   }
 
-  .exercise-order-editor .number-input {
+  .exercise-order-editor app-form-field {
     flex: 1;
   }
 

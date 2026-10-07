@@ -25,9 +25,11 @@ test('ADMIN GUI: filtered user edit updates the exact fixture ID and preserves t
     const beforeRoles = (await db().query('SELECT * FROM user_roles WHERE user_id=ANY($1::int[]) ORDER BY user_id,role_id', [ids])).rows;
     await page.goto('/admin/users/edit');
     const surface = page.locator('app-user-edit');
-    await surface.locator('#userSelectSearch').fill(`${prefix}_a`);
+    const userPicker = surface.locator('app-user-select').getByRole('combobox');
+    await userPicker.fill(`${prefix}_a`);
+    await expect(page.getByRole('option', { name: `${prefix}_b`, exact: true })).toHaveCount(0);
+    await page.getByRole('option', { name: `${prefix}_a`, exact: true }).click();
     await expect(surface.locator('#username')).toHaveValue(`${prefix}_a`);
-    await expect(surface.locator('app-user-select').getByRole('combobox').locator('option').filter({ hasText: `${prefix}_b` })).toHaveCount(0);
     await surface.locator('#age').fill('37');
     await surface.locator('#goals').fill('Changed only through admin GUI');
     const saved = page.waitForResponse(r => r.request().method() === 'POST' && new URL(r.url()).pathname === API_ENDPOINTS.members.base);
@@ -41,7 +43,8 @@ test('ADMIN GUI: filtered user edit updates the exact fixture ID and preserves t
     expect(await dbOne('SELECT * FROM users WHERE id=$1', [ids[1]])).toEqual(beforeOther);
     expect((await db().query('SELECT * FROM user_roles WHERE user_id=ANY($1::int[]) ORDER BY user_id,role_id', [ids])).rows).toEqual(beforeRoles);
     await page.reload();
-    await surface.locator('#userSelectSearch').fill(`${prefix}_a`);
+    await userPicker.fill(`${prefix}_a`);
+    await page.getByRole('option', { name: `${prefix}_a`, exact: true }).click();
     await expect(surface.locator('#age')).toHaveValue('37');
     await expect(surface.locator('#goals')).toHaveValue('Changed only through admin GUI');
     const read = await success(await api.get(`/api/members/users/${ids[0]}`), 'Read exact edited user');

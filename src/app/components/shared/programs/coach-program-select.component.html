@@ -10,10 +10,7 @@
 ></app-search>
 <app-message *ngIf="searchTerm.trim() && !matchingOptions.length && !loading" message="appSearch.noResults" type="info" class="mb-3 block"></app-message>
 }
-<div>
-  <label for="coachProgramSelect" class="mb-2 block text-sm font-semibold text-content-700">
-    {{ 'coachProgramSelect.program' | translate }}:
-  </label>
+<app-form-field labelKey="coachProgramSelect.program" controlId="coachProgramSelect" labelSuffix=":">
 
   <app-select
     id="coachProgramSelect"
@@ -27,7 +24,7 @@
     [placeholderDisabled]="true"
     (valueChange)="onProgramSelect($event)"
   ></app-select>
-</div>
+</app-form-field>
 
 <app-message *ngIf="loading" message="coachProgramSelect.loading" type="info" class="block mt-3"></app-message>
 <app-message [message]="message" type="error" class="block mt-3"></app-message>

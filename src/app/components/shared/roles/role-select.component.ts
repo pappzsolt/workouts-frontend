@@ -14,19 +14,18 @@ import { SHARED_IMPORTS } from '../shared-imports';
   imports: [...SHARED_IMPORTS, AppSelectComponent],
   template: `
     <div class="w-full">
-      <label for="roleSelect" class="mb-2 block text-sm font-semibold text-content-700">
-        {{ 'roleSelect.role' | translate }}
-      </label>
 
-      <app-select
-        #roleSelect
-        id="roleSelect"
-        [value]="selectedRole?.id"
-        [options]="roleOptions"
-        placeholder="roleSelect.select"
-        [placeholderValue]="undefined"
-        (valueChange)="onRoleChange($event)"
-      ></app-select>
+      <app-form-field labelKey="roleSelect.role" controlId="roleSelect">
+        <app-select
+          #roleSelect
+          id="roleSelect"
+          [value]="selectedRole?.id"
+          [options]="roleOptions"
+          placeholder="roleSelect.select"
+          [placeholderValue]="undefined"
+          (valueChange)="onRoleChange($event)"
+        ></app-select>
+      </app-form-field>
 
       <app-message
         *ngIf="errorMessage"

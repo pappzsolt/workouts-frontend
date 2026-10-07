@@ -19,9 +19,6 @@ import { SHARED_IMPORTS } from '../shared-imports';
   imports: [AppSearchComponent, ...SHARED_IMPORTS, AppSelectComponent],
   template: `
     <div>
-      <label for="coachSelect" class="block mb-1">
-        {{ 'coachSelect.coach' | translate }}
-      </label>
 
       <app-search
         inputId="coachSelectSearch"
@@ -33,14 +30,16 @@ import { SHARED_IMPORTS } from '../shared-imports';
         class="mb-3 block"
       ></app-search>
     <app-message *ngIf="searchTerm.trim() && !matchingOptions.length" message="appSearch.noResults" type="info" class="mb-3 block"></app-message>
-      <app-select
-        id="coachSelect"
-        [value]="selectedCoachId"
-        [options]="coachOptions"
-        placeholder="coachSelect.select"
-        [placeholderValue]="undefined"
-        (valueChange)="selectedCoachId = $event; onCoachChange()"
-      ></app-select>
+      <app-form-field labelKey="coachSelect.coach" controlId="coachSelect">
+        <app-select
+          id="coachSelect"
+          [value]="selectedCoachId"
+          [options]="coachOptions"
+          placeholder="coachSelect.select"
+          [placeholderValue]="undefined"
+          (valueChange)="selectedCoachId = $event; onCoachChange()"
+        ></app-select>
+      </app-form-field>
       <app-message [message]="message" [type]="messageType" class="block mt-3"></app-message>
     </div>
   `,

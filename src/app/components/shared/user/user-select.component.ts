@@ -39,20 +39,19 @@ import { SHARED_IMPORTS } from '../shared-imports';
         class="mb-3 block"
       ></app-message>
     }
-    <label for="userSelect" class="user-select-label">
-      {{ 'userSelect.selectUser' | translate }}
-    </label>
-    <app-select
-      id="userSelect"
-      [value]="selectedUserId"
-      [options]="searchable ? allUserOptions : userOptions"
-      [searchable]="searchable"
-      searchPlaceholder="appSearch.usersPlaceholder"
-      [disabled]="disabled"
-      placeholder="userSelect.selectUserOption"
-      [placeholderValue]="undefined"
-      (valueChange)="selectedUserId = $event; onChange($event)"
-    ></app-select>
+    <app-form-field labelKey="userSelect.selectUser" controlId="userSelect">
+      <app-select
+        id="userSelect"
+        [value]="selectedUserId"
+        [options]="searchable ? allUserOptions : userOptions"
+        [searchable]="searchable"
+        searchPlaceholder="appSearch.usersPlaceholder"
+        [disabled]="disabled"
+        placeholder="userSelect.selectUserOption"
+        [placeholderValue]="undefined"
+        (valueChange)="selectedUserId = $event; onChange($event)"
+      ></app-select>
+    </app-form-field>
     <app-message [message]="message" [type]="messageType" class="block mt-3"></app-message>
   `,
   styleUrls: ['./user-select.component.css'],

@@ -24,6 +24,7 @@
       class="rounded-2xl border border-surface-200 bg-white p-5 shadow-sm sm:p-6"
     >
       <app-user-select
+        [searchable]="true"
         [(selectedUserId)]="selectedUserId"
         [disabled]="!ready || saving"
         (userSelected)="onUserSelected($event)"

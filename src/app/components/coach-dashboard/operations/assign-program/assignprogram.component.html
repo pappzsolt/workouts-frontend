@@ -18,12 +18,7 @@
     >
 
       <!-- Felhasználó -->
-      <div class="min-w-0">
-        <label for="assignProgramUser"
-          class="mb-2 block text-sm font-semibold text-content-700"
-        >
-          {{ 'assignProgram.user' | translate }}:
-        </label>
+      <app-form-field class="min-w-0" labelKey="assignProgram.user" controlId="assignProgramUser" labelSuffix=":">
 
         <app-select
           id="assignProgramUser"
@@ -35,12 +30,13 @@
           [placeholderValue]="null"
           [disabled]="loading || !usersReady"
         ></app-select>
-      </div>
+      </app-form-field>
 
       <!-- Program -->
       <div class="min-w-0">
         <fieldset [disabled]="loading">
         <app-coach-program-select
+          [searchable]="true"
           (readyChange)="programReady = $event"
           [selectedProgramId]="selectedProgramId"
           (selectedProgramIdChange)="onProgramSelected($event)"

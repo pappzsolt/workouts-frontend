@@ -63,19 +63,9 @@
           </span>
         </div>
 
-        <div
-          *ngIf="exerciseDialogExercises.length === 0"
-          class="rounded-xl border border-dashed border-surface-300 bg-surface-50 px-5 py-8 text-center"
-        >
-          <p class="text-sm font-semibold text-content-700">
-            {{ 'coachProgramBuilder.noExercises' | translate }}
-          </p>
-        </div>
+        <app-message *ngIf="exerciseDialogExercises.length === 0" message="coachProgramBuilder.noExercises" type="info" class="block"></app-message>
 
-        <div
-          *ngIf="exerciseDialogExercises.length > 0"
-          class="overflow-hidden rounded-xl border border-surface-200 bg-white"
-        >
+        <app-card *ngIf="exerciseDialogExercises.length > 0" variant="outlined" class="block min-w-0">
           <div
             *ngFor="let exercise of exerciseDialogExercises; let i = index"
             class="flex items-center gap-3 border-b border-surface-100 px-4 py-3 last:border-b-0"
@@ -106,7 +96,7 @@
               {{ exercise.equipment }}
             </span>
           </div>
-        </div>
+        </app-card>
       </div>
 
       <!-- Új workout: a meglévő közös board marad a kiválasztáshoz. -->

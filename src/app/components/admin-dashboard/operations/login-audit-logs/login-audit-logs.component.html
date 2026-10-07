@@ -114,18 +114,10 @@
       </span>
     </div>
 
-    <div
-      *ngIf="loading"
-      class="flex min-h-32 items-center justify-center rounded-2xl border border-surface-200 bg-white px-4 py-8 text-center text-sm font-medium text-content-500 shadow-sm"
-    >
-      {{ 'adminLoginAudit.loading' | translate }}
-    </div>
+    <app-message *ngIf="loading" message="adminLoginAudit.loading" type="info" class="block"></app-message>
 
     <ng-container *ngIf="!loading">
-      <div
-        *ngIf="logs.length > 0; else noLogs"
-        class="min-w-0 overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm"
-      >
+      <app-card *ngIf="logs.length > 0; else noLogs" variant="outlined" class="block min-w-0">
         <div class="w-full overflow-x-auto">
           <table class="min-w-[1100px] w-full border-collapse text-left">
             <thead>
@@ -195,12 +187,10 @@
             </tbody>
           </table>
         </div>
-      </div>
+      </app-card>
 
       <ng-template #noLogs>
-        <div class="flex min-h-32 items-center justify-center rounded-2xl border border-surface-200 bg-white px-4 py-8 text-center text-sm font-medium text-content-500 shadow-sm">
-          {{ 'adminLoginAudit.noResults' | translate }}
-        </div>
+        <app-message message="adminLoginAudit.noResults" type="info" class="block"></app-message>
       </ng-template>
 
       <app-pagination
@@ -210,22 +200,12 @@
         [pageSize]="pageSize"
         [currentPage]="currentPage"
         [pageSizeOptions]="pageSizeOptions"
-        [showPageSize]="false"
+        [showPageSize]="true"
         [showInfo]="false"
         (pageChange)="onPageChange($event)"
         (pageSizeChange)="onPageSizeChange($event)"
       ></app-pagination>
 
-      <div
-        *ngIf="totalPages > 0"
-        class="flex items-center justify-center gap-3 text-sm text-content-600"
-      >
-        <label for="login-audit-page-size" class="font-semibold text-content-700">
-          {{ 'adminLoginAudit.pageSize' | translate }}
-        </label>
-        <app-select id="login-audit-page-size" [value]="pageSize" [options]="sizeOptions"
-          (valueChange)="onPageSizeChange($event)"></app-select>
-      </div>
     </ng-container>
   </div>
 </div>

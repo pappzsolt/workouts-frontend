@@ -252,41 +252,37 @@
 
                   <!-- ACTUAL REPETITIONS -->
 
-                  <div>
-
-                    <label
-                      class="block text-sm font-semibold text-content-700 mb-2"
-                    >
-                      {{ 'userExerciseDetail.actualRepetitions' | translate }}
-                    </label>
+                  <app-form-field
+                    labelKey="userExerciseDetail.actualRepetitions"
+                    controlId="user-set-actual-repetitions"
+                  >
 
                     <input
+                      id="user-set-actual-repetitions"
                       type="number"
                       min="0"
                       [(ngModel)]="set.actualRepetitions"
-                    (blur)="saveSetDetails(set, false)"
+                      (blur)="saveSetDetails(set, false)"
                       class="w-full rounded-xl border border-surface-300 px-4 py-3 text-content-900 focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
 
-                  </div>
+                  </app-form-field>
 
 
                   <!-- ACTUAL WEIGHT -->
 
-                  <div>
-
-                    <label
-                      class="block text-sm font-semibold text-content-700 mb-2"
-                    >
-                      {{ 'userExerciseDetail.actualWeight' | translate }}
-                    </label>
+                  <app-form-field
+                    labelKey="userExerciseDetail.actualWeight"
+                    controlId="user-set-actual-weight"
+                  >
 
                     <input
+                      id="user-set-actual-weight"
                       type="number"
                       min="0"
                       step="0.5"
                       [(ngModel)]="set.actualWeightKg"
-                    (blur)="saveSetDetails(set, false)"
+                      (blur)="saveSetDetails(set, false)"
                       class="w-full rounded-xl border border-surface-300 px-4 py-3 text-content-900 focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
 
@@ -295,8 +291,7 @@
                     >
                       kg
                     </div>
-
-                  </div>
+                  </app-form-field>
 
                 </div>
 
@@ -305,15 +300,14 @@
                      NOTES
                      ================================================= -->
 
-                <div class="mt-4">
-
-                  <label
-                    class="block text-sm font-semibold text-content-700 mb-2"
-                  >
-                    {{ 'userExerciseDetail.notes' | translate }}
-                  </label>
+                <app-form-field
+                  class="mt-4 block"
+                  labelKey="userExerciseDetail.notes"
+                  controlId="user-set-notes"
+                >
 
                   <textarea
+                    id="user-set-notes"
                     [(ngModel)]="set.notes"
                     (blur)="saveSetDetails(set, false)"
                     rows="3"
@@ -321,7 +315,7 @@
                     class="w-full rounded-xl border border-surface-300 px-4 py-3 text-content-900 resize-none focus:outline-none focus:ring-2 focus:ring-primary-500"
                   ></textarea>
 
-                </div>
+                </app-form-field>
 
 
                 <!-- =================================================

@@ -2,6 +2,7 @@ import type { SelectOption, SelectValue } from '../../../../models/common/select
 import {
   Component,
   EventEmitter,
+  ElementRef,
   Input,
   Output,
   ViewChild,
@@ -28,6 +29,9 @@ export class AppSelectComponent<T extends SelectValue = string> implements OnCha
 
   @Input() searchable = false;
   @Input() searchPlaceholder = '';
+  private searching = false;
+  @ViewChild('searchInput') private searchInput?: ElementRef<HTMLInputElement>;
+
   searchTerm = '';
   searchValue: SelectValue = undefined;
 
@@ -45,16 +49,35 @@ export class AppSelectComponent<T extends SelectValue = string> implements OnCha
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['value'] || changes['searchable']) {
       this.restoreSelection();
+    } else if (changes['options'] && !this.searching) {
+      // Options can arrive after the selected ID. Update only the displayed label,
+      // without emitting a selection or overwriting an in-progress search.
+      this.refreshSearchLabel();
     }
   }
 
   onSearchInput(term: string): void {
+    this.searching = true;
     this.searchTerm = term;
   }
 
+  beginSearch(input: HTMLInputElement): void {
+    this.searching = true;
+    this.searchTerm = '';
+    input.select();
+  }
+
   restoreSelection(): void {
+    this.searching = false;
     this.searchTerm = '';
     this.searchValue = this.value;
+    this.refreshSearchLabel();
+  }
+
+  private refreshSearchLabel(): void {
+    if (this.searchInput) {
+      this.searchInput.nativeElement.value = this.displayOption(this.value);
+    }
   }
 
   selectSearchOption(value: T): void {

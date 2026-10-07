@@ -8,21 +8,3 @@
 
   box-sizing: border-box;
 }
-
-
-/* ==========================================================
-   LABEL
-   ========================================================== */
-
-.user-select-label {
-  display: block;
-
-  margin: 0 0 0.5rem;
-
-  color: var(--app-content-700);
-
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.5;
-
-}

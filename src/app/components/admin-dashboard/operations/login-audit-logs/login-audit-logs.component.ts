@@ -44,9 +44,6 @@ export class LoginAuditLogsComponent {
     { value: 'USER', label: 'adminLoginAudit.accountTypes.USER' },
     { value: 'COACH', label: 'adminLoginAudit.accountTypes.COACH' },
   ];
-  get sizeOptions(): SelectOption<number>[] {
-    return this.pageSizeOptions.map(value => ({ value, label: String(value) }));
-  }
 
   filters: LoginAuditFilters = this.emptyFilters();
 
