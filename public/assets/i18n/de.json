@@ -859,6 +859,7 @@
     "noExercises": "Dieses Training enthält keine Übungen."
   },
   "pagination": {
+    "page": "Seite",
     "records": "Einträge",
     "firstPage": "Erste Seite",
     "previousPage": "Vorherige Seite",

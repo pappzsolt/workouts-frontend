@@ -1,6 +1,16 @@
+import { reserveSelectControlId } from '../components/app-select/select-control-id';
 import { matchesSearch } from '../components/app-search/search-match';
 import { AppSearchComponent } from '../components/app-search/app-search.component';
-import { Component, OnInit, OnChanges, Input, Output, EventEmitter, inject, DestroyRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnChanges,
+  Input,
+  Output,
+  EventEmitter,
+  inject,
+  DestroyRef,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { CoachProgramSelectService } from '../../../services/coach/coach-program-select/coach-program-select.service';
@@ -21,6 +31,8 @@ import { SHARED_IMPORTS } from '../shared-imports';
   templateUrl: './coach-program-select.component.html',
 })
 export class CoachProgramSelectComponent implements OnInit, OnChanges {
+  @Input() controlId = reserveSelectControlId('coachProgramSelect');
+
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly programService = inject(CoachProgramSelectService);
@@ -41,20 +53,27 @@ export class CoachProgramSelectComponent implements OnInit, OnChanges {
 
   @Output() readonly readyChange = new EventEmitter<boolean>();
 
-  ngOnChanges(): void { this.reportReady(); }
+  ngOnChanges(): void {
+    this.reportReady();
+  }
 
   private reportReady(): void {
-    this.readyChange.emit(!this.loading && this.programs.some(program => program.programId === this.selectedProgramId));
+    this.readyChange.emit(
+      !this.loading &&
+        this.programs.some((program) => program.programId === this.selectedProgramId),
+    );
   }
 
   searchTerm = '';
 
   get matchingOptions(): CoachProgram[] {
-    return this.programs.filter(program => matchesSearch(this.searchTerm, program.programName, program.programDescription));
+    return this.programs.filter((program) =>
+      matchesSearch(this.searchTerm, program.programName, program.programDescription),
+    );
   }
 
   get allProgramOptions(): SelectOption<number>[] {
-    return this.programs.map(program => ({
+    return this.programs.map((program) => ({
       value: program.programId,
       label: program.programName,
       searchText: program.programDescription,
@@ -62,7 +81,13 @@ export class CoachProgramSelectComponent implements OnInit, OnChanges {
   }
 
   get programOptions(): SelectOption<number>[] {
-    return this.programs.filter(program => program.programId === this.selectedProgramId || matchesSearch(this.searchTerm, program.programName, program.programDescription)).map((program) => ({ value: program.programId, label: program.programName }));
+    return this.programs
+      .filter(
+        (program) =>
+          program.programId === this.selectedProgramId ||
+          matchesSearch(this.searchTerm, program.programName, program.programDescription),
+      )
+      .map((program) => ({ value: program.programId, label: program.programName }));
   }
 
   onSearchChange(term: string): void {
@@ -81,34 +106,37 @@ export class CoachProgramSelectComponent implements OnInit, OnChanges {
     this.loading = true;
     this.reportReady();
 
-    this.programService.getMyPrograms().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (response) => {
-        if (!response.success) {
-          this.programs = [];
+    this.programService
+      .getMyPrograms()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          if (!response.success) {
+            this.programs = [];
 
-          this.message = response.message ?? 'coachProgramSelect.loadError';
+            this.message = response.message ?? 'coachProgramSelect.loadError';
+
+            this.loading = false;
+            this.reportReady();
+
+            return;
+          }
+
+          this.programs = response.data ?? [];
 
           this.loading = false;
-        this.reportReady();
+          this.reportReady();
+        },
 
-          return;
-        }
+        error: (error) => {
+          this.programs = [];
 
-        this.programs = response.data ?? [];
+          this.message = errorMessage(error, 'coachProgramSelect.loadError');
 
-        this.loading = false;
-        this.reportReady();
-      },
-
-      error: error => {
-        this.programs = [];
-
-        this.message = errorMessage(error, 'coachProgramSelect.loadError');
-
-        this.loading = false;
-        this.reportReady();
-      },
-    });
+          this.loading = false;
+          this.reportReady();
+        },
+      });
   }
 
   onProgramSelect(programId: number | undefined): void {
@@ -118,6 +146,4 @@ export class CoachProgramSelectComponent implements OnInit, OnChanges {
     this.selectedProgramIdChange.emit(programId);
     this.reportReady();
   }
-
-
 }

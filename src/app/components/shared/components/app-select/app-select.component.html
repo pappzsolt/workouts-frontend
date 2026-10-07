@@ -5,7 +5,7 @@
       type="text"
       [id]="id"
       [name]="name"
-      [disabled]="disabled"
+      [disabled]="isDisabled"
       [ngModel]="searchValue"
       (ngModelChange)="searchValue = $event"
       [ngModelOptions]="{ standalone: true }"
@@ -15,9 +15,16 @@
       #searchInput
       (input)="onSearchInput(searchInput.value)"
       (focus)="beginSearch(searchInput)"
-      (blur)="restoreSelection()"
+      (blur)="onBlur()"
     />
-    <svg class="select-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <svg
+      class="select-chevron"
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.8"
+    >
       <path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
     <mat-autocomplete
@@ -40,9 +47,10 @@
   <select
     [id]="id"
     [name]="name"
-    [disabled]="disabled"
+    [disabled]="isDisabled"
     [ngModel]="value"
     (ngModelChange)="onValueChange($event)"
+    (blur)="onBlur()"
     [ngModelOptions]="{ standalone: true }"
     [class]="className"
   >

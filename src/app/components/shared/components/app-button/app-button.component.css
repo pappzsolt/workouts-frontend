@@ -1,0 +1,28 @@
+.app-button-selection-row {
+  width: 100%;
+  min-height: 3.5rem;
+  display: grid;
+  grid-template-columns: 2.1rem minmax(0, 1fr) auto 1.25rem;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.75rem;
+  border: 0;
+  border-bottom: 1px solid var(--app-surface-200);
+  background: var(--app-white);
+  color: var(--app-content-800);
+  text-align: left;
+  cursor: pointer;
+}
+
+:host(:last-child) .app-button-selection-row {
+  border-bottom: 0;
+}
+
+.app-button-selection-row:hover {
+  background: var(--app-surface-50);
+}
+
+.app-button-selection-row.app-button-selection-row-active {
+  background: var(--app-primary-50);
+  box-shadow: inset 3px 0 0 var(--app-primary-600);
+}

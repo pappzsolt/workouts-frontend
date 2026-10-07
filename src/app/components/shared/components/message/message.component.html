@@ -1,7 +1,13 @@
 @if (message) {
   <div
-    class="whitespace-pre-line rounded-xl border px-4 py-3 text-sm font-medium"
-    [class]="messageClasses"
+    [attr.id]="messageId || null"
+    [attr.role]="role"
+    [attr.aria-live]="ariaLive"
+    [class]="
+      (compact
+        ? 'whitespace-pre-line text-sm '
+        : 'whitespace-pre-line rounded-xl border px-4 py-3 text-sm font-medium ') + messageClasses
+    "
   >
     {{ translatedMessage }}
   </div>

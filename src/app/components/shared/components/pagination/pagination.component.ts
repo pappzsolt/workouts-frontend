@@ -41,11 +41,13 @@ export class PaginationComponent {
   /** Rekordinformáció megjelenítése */
   @Input() showInfo = true;
   @Input() showPageNumbers = false;
+  @Input() pageLabel = 'pagination.page';
+  @Input() maxPageNumbers = 7;
 
   get sizeOptions(): SelectOption<number>[] {
     return [...new Set([this.pageSize, ...this.pageSizeOptions])]
-      .filter(size => Number.isInteger(size) && size > 0)
-      .map(size => ({ value: size, label: String(size) }));
+      .filter((size) => Number.isInteger(size) && size > 0)
+      .map((size) => ({ value: size, label: String(size) }));
   }
 
   // ============================================================
@@ -91,7 +93,18 @@ export class PaginationComponent {
 
   /** Lapozási gombokhoz szükséges oldalszámok */
   get pages(): number[] {
-    return Array.from({ length: this.totalPages }, (_, index) => index + 1);
+    const total = this.totalPages;
+    const limit = Math.max(
+      5,
+      Number.isFinite(this.maxPageNumbers) ? Math.floor(this.maxPageNumbers) : 7,
+    );
+    if (total <= limit) return Array.from({ length: total }, (_, index) => index + 1);
+    const start = Math.min(
+      Math.max(2, this.currentPage - Math.floor((limit - 2) / 2)),
+      total - limit + 2,
+    );
+    const end = Math.min(total - 1, start + limit - 3);
+    return [1, ...Array.from({ length: end - start + 1 }, (_, index) => start + index), total];
   }
 
   /** Van-e előző oldal */
@@ -110,7 +123,12 @@ export class PaginationComponent {
 
   /** Ugrás egy adott oldalra */
   goToPage(page: number): void {
-    if (!Number.isInteger(page) || page < 1 || page > this.totalPages || page === this.currentPage) {
+    if (
+      !Number.isInteger(page) ||
+      page < 1 ||
+      page > this.totalPages ||
+      page === this.currentPage
+    ) {
       return;
     }
 
@@ -154,5 +172,4 @@ export class PaginationComponent {
 
     this.pageSizeChange.emit(newSize);
   }
-
 }

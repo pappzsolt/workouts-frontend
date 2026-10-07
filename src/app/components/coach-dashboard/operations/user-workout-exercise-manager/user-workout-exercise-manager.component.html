@@ -12,17 +12,27 @@
 
   <div class="add-workout-section">
     <div class="selection-heading">
-      <span class="selection-icon" aria-hidden="true"><app-icon name="users" sizeClass="h-5 w-5"></app-icon></span>
+      <span class="selection-icon" aria-hidden="true"
+        ><app-icon name="users" sizeClass="h-5 w-5"></app-icon
+      ></span>
       <div>
         <h3>{{ 'userWorkoutExerciseManager.selectionTitle' | translate }}</h3>
         <p>{{ 'userWorkoutExerciseManager.selectionHint' | translate }}</p>
       </div>
     </div>
     <div class="add-workout-controls">
-      <app-user-select [searchable]="true" [selectedUserId]="selectedUserId" (selectedUserIdChange)="onUserChanged($event)"></app-user-select>
+      <app-user-select
+        [searchable]="true"
+        [selectedUserId]="selectedUserId"
+        (selectedUserIdChange)="onUserChanged($event)"
+      ></app-user-select>
 
       <div class="form-field">
-        <app-coach-program-select [searchable]="true" [selectedProgramId]="selectedProgramId" (selectedProgramIdChange)="onProgramChanged($event)"></app-coach-program-select>
+        <app-coach-program-select
+          [searchable]="true"
+          [selectedProgramId]="selectedProgramId"
+          (selectedProgramIdChange)="onProgramChanged($event)"
+        ></app-coach-program-select>
       </div>
 
       <app-button
@@ -59,7 +69,9 @@
           </div>
 
           <div class="workout-stepper-meta">
-            <span>{{ page.day.date || ('userWorkoutExerciseManager.unscheduledDay' | translate) }}</span>
+            <span>{{
+              page.day.date || ('userWorkoutExerciseManager.unscheduledDay' | translate)
+            }}</span>
             <span>•</span>
             <span>
               {{ 'userWorkoutExerciseManager.programDay' | translate }}
@@ -89,7 +101,7 @@
         <app-button
           *ngFor="let pageItem of workoutPages; let i = index"
           type="button"
-          [ariaLabel]="'userWorkoutExerciseManager.workoutNumber' | translate:{ number: i + 1 }"
+          [ariaLabel]="'userWorkoutExerciseManager.workoutNumber' | translate: { number: i + 1 }"
           (buttonClick)="selectWorkout(i)"
           variant="secondary"
           appearance="outline"
@@ -109,7 +121,6 @@
             labelKey="userWorkoutExerciseManager.scheduledDate"
             controlId="manager-scheduled-date"
           >
-
             <div class="scheduled-date-inline">
               <input
                 id="manager-scheduled-date"
@@ -145,17 +156,22 @@
           <div class="section-heading">
             <div>
               <h4>{{ 'userWorkoutExerciseManager.exercise' | translate }}</h4>
-              <span>{{ page.workout.exercises.length }} {{ 'userWorkoutExerciseManager.exercise' | translate }}</span>
+              <span
+                >{{ page.workout.exercises.length }}
+                {{ 'userWorkoutExerciseManager.exercise' | translate }}</span
+              >
             </div>
           </div>
 
           <div class="exercise-list" *ngIf="page.workout.exercises.length">
-            <button
+            <app-button
+              appearance="selection-row"
+              [active]="i === selectedExerciseIndex"
+              class="exercise-row"
+              [class.exercise-option-active]="i === selectedExerciseIndex"
               *ngFor="let ex of page.workout.exercises; let i = index; trackBy: trackByExercise"
               type="button"
-              class="exercise-option"
-              [class.exercise-option-active]="i === selectedExerciseIndex"
-              (click)="selectExercise(i)"
+              (buttonClick)="selectExercise(i)"
             >
               <span class="exercise-order">{{ ex.order ?? i + 1 }}</span>
 
@@ -175,7 +191,7 @@
               </span>
 
               <app-icon name="chevron-right" sizeClass="h-4 w-4"></app-icon>
-            </button>
+            </app-button>
           </div>
 
           <app-message
@@ -189,7 +205,9 @@
         <section class="selected-exercise" *ngIf="selectedExercise as exercise">
           <header class="selected-exercise-header">
             <div class="selected-exercise-title">
-              <span class="selected-exercise-order">{{ exercise.order ?? selectedExerciseIndex + 1 }}</span>
+              <span class="selected-exercise-order">{{
+                exercise.order ?? selectedExerciseIndex + 1
+              }}</span>
 
               <div>
                 <h4>{{ exercise.exerciseName }}</h4>
@@ -218,7 +236,14 @@
                 variant="save"
                 type="button"
                 [label]="'userWorkoutExerciseManager.save' | translate"
-                (buttonClick)="exercise.exerciseId != null && updateExerciseOrderIndex(page.workout.workoutId, exercise.exerciseId, exercise.order)"
+                (buttonClick)="
+                  exercise.exerciseId != null &&
+                    updateExerciseOrderIndex(
+                      page.workout.workoutId,
+                      exercise.exerciseId,
+                      exercise.order
+                    )
+                "
               ></app-button>
             </div>
           </header>
@@ -230,9 +255,7 @@
                 <span class="set-stepper-caption">
                   {{ 'userWorkoutExerciseManager.exerciseSets' | translate }}
                 </span>
-                <strong>
-                  {{ selectedSetIndex + 1 }} / {{ selectedSets.length }}
-                </strong>
+                <strong> {{ selectedSetIndex + 1 }} / {{ selectedSets.length }} </strong>
               </div>
 
               <app-button
@@ -263,7 +286,9 @@
                 <app-button
                   *ngFor="let set of selectedSets; let i = index; trackBy: trackBySet"
                   type="button"
-                  [ariaLabel]="'userWorkoutExerciseManager.setNumberAria' | translate:{ number: i + 1 }"
+                  [ariaLabel]="
+                    'userWorkoutExerciseManager.setNumberAria' | translate: { number: i + 1 }
+                  "
                   (buttonClick)="selectSet(i)"
                   variant="secondary"
                   appearance="outline"
@@ -302,18 +327,16 @@
                       {{ set.setNumber }}
                     </strong>
                     <span class="set-editor-subtitle">
-                      {{ set.completed
-                        ? ('userWorkoutExerciseManager.completed' | translate)
-                        : ('userWorkoutExerciseManager.notDone' | translate) }}
+                      {{
+                        set.completed
+                          ? ('userWorkoutExerciseManager.completed' | translate)
+                          : ('userWorkoutExerciseManager.notDone' | translate)
+                      }}
                     </span>
                   </div>
 
                   <label class="set-completed">
-                    <input
-                      type="checkbox"
-                      [(ngModel)]="set.completed"
-                      class="checkbox-input"
-                    />
+                    <input type="checkbox" [(ngModel)]="set.completed" class="checkbox-input" />
                     <span>{{ 'userWorkoutExerciseManager.completed' | translate }}</span>
                   </label>
                 </div>
@@ -405,13 +428,23 @@
                 </app-form-field>
 
                 <div class="set-editor-actions">
-                  <app-button type="button" (buttonClick)="deleteSet(set)"
-                    [fullWidth]="true" variant="delete" appearance="solid">
+                  <app-button
+                    type="button"
+                    (buttonClick)="deleteSet(set)"
+                    [fullWidth]="true"
+                    variant="delete"
+                    appearance="solid"
+                  >
                     {{ 'userWorkoutExerciseManager.delete' | translate }}
                   </app-button>
 
-                  <app-button type="button" (buttonClick)="updateSet(set)"
-                    [fullWidth]="true" variant="save" appearance="solid">
+                  <app-button
+                    type="button"
+                    (buttonClick)="updateSet(set)"
+                    [fullWidth]="true"
+                    variant="save"
+                    appearance="solid"
+                  >
                     {{ 'userWorkoutExerciseManager.save' | translate }}
                   </app-button>
                 </div>
@@ -445,7 +478,11 @@
 
   <app-message
     *ngIf="userProgramData && !userProgramData.length"
-    [message]="!selectedUserId || !selectedProgramId ? 'userWorkoutExerciseManager.selectUserAndProgram' : 'userWorkoutExerciseManager.noData'"
+    [message]="
+      !selectedUserId || !selectedProgramId
+        ? 'userWorkoutExerciseManager.selectUserAndProgram'
+        : 'userWorkoutExerciseManager.noData'
+    "
     type="info"
   ></app-message>
 </div>

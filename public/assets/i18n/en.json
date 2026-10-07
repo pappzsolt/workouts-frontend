@@ -861,6 +861,7 @@
     "noExercises": "There are no exercises in this workout."
   },
   "pagination": {
+    "page": "Page",
     "records": "records",
     "firstPage": "First page",
     "previousPage": "Previous page",

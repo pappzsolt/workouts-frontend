@@ -9,4 +9,12 @@
   </label>
 
   <ng-content></ng-content>
+  @if (hint) {
+    <p [id]="hintId" class="text-xs text-content-500">{{ hint | translate }}</p>
+  }
+  @if (showError && error) {
+    <p [id]="errorId" role="alert" class="form-field-error text-sm text-delete-700">
+      {{ error | translate }}
+    </p>
+  }
 </div>

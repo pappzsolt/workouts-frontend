@@ -1,4 +1,8 @@
-import { errorMessage, responseMessage } from '../../../../../models/backend-dto/common/api-response-message';
+import { ProgramDetailsFormComponent } from '../../coach-program-builder/program-details-form.component';
+import {
+  errorMessage,
+  responseMessage,
+} from '../../../../../models/backend-dto/common/api-response-message';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
 import { Router } from '@angular/router';
@@ -8,15 +12,13 @@ import { AppCardComponent } from '../../../../shared/components/app-card/app-car
 import { CoachProgramService } from '../../../../../services/coach/coach-program/coach-program.service';
 import { skip, timer } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { LanguageService } from '../../../../../services/shared/language.service';
 import { Program } from '../../../../../models/program.model';
 import type { ProgramCreationRequest } from '../../../../../models/backend-dto/programcreator/program-creation-request';
-import { AppButtonComponent } from '../../../../../components/shared/components/app-button/app-button.component';
 @Component({
   selector: 'app-coach-new-program',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppCardComponent, AppSelectComponent, AppButtonComponent],
+  imports: [ProgramDetailsFormComponent, ...SHARED_IMPORTS, AppCardComponent],
   templateUrl: './coach-new-program.component.html',
   styleUrls: ['./coach-new-program.component.css'],
 })
@@ -47,8 +49,8 @@ export class CoachNewProgramComponent implements OnInit {
     this.languageService.language$
       .pipe(skip(1), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-      this.message = '';
-    });
+        this.message = '';
+      });
   }
 
   calculateEndDate(startDate?: string, durationDays?: number): string {
@@ -99,10 +101,8 @@ export class CoachNewProgramComponent implements OnInit {
       workouts: null,
     };
 
-
     this.programService.createProgram(requestBody).subscribe({
       next: (response) => {
-
         if (response.success) {
           this.messageType = 'success';
           this.message = responseMessage([response], 'coachNewProgram.createSuccess');

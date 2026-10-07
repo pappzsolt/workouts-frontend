@@ -1,19 +1,24 @@
 @if (!searchable) {
-<app-search
-  inputId="programSelectSearch"
-  [searchTerm]="searchTerm"
-  label="appSearch.programsLabel"
-  placeholder="appSearch.programsPlaceholder"
-  [showClearButton]="true"
-  (searchTermChange)="onSearchChange($event)"
-  class="mb-3 block" [disabled]="loading"
-></app-search>
-<app-message *ngIf="searchTerm.trim() && !matchingOptions.length && !loading" message="appSearch.noResults" type="info" class="mb-3 block"></app-message>
+  <app-search
+    [inputId]="controlId === 'coachProgramSelect' ? 'programSelectSearch' : controlId + 'Search'"
+    [searchTerm]="searchTerm"
+    label="appSearch.programsLabel"
+    placeholder="appSearch.programsPlaceholder"
+    [showClearButton]="true"
+    (searchTermChange)="onSearchChange($event)"
+    class="mb-3 block"
+    [disabled]="loading"
+  ></app-search>
+  <app-message
+    *ngIf="searchTerm.trim() && !matchingOptions.length && !loading"
+    message="appSearch.noResults"
+    type="info"
+    class="mb-3 block"
+  ></app-message>
 }
-<app-form-field labelKey="coachProgramSelect.program" controlId="coachProgramSelect" labelSuffix=":">
-
+<app-form-field labelKey="coachProgramSelect.program" [controlId]="controlId" labelSuffix=":">
   <app-select
-    id="coachProgramSelect"
+    [id]="controlId"
     [value]="selectedProgramId"
     [options]="searchable ? allProgramOptions : programOptions"
     [searchable]="searchable"
@@ -26,5 +31,10 @@
   ></app-select>
 </app-form-field>
 
-<app-message *ngIf="loading" message="coachProgramSelect.loading" type="info" class="block mt-3"></app-message>
+<app-message
+  *ngIf="loading"
+  message="coachProgramSelect.loading"
+  type="info"
+  class="block mt-3"
+></app-message>
 <app-message [message]="message" type="error" class="block mt-3"></app-message>

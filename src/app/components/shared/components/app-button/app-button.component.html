@@ -1,5 +1,9 @@
 <button
   [type]="type"
+  [attr.data-testid]="testId || null"
+  [attr.role]="buttonRole"
+  [attr.aria-selected]="ariaSelected"
+  [attr.tabindex]="tabIndex"
   [disabled]="disabled"
   [attr.title]="title || null"
   [attr.aria-label]="ariaLabel || label || title || null"
@@ -8,28 +12,34 @@
   [attr.aria-pressed]="ariaPressed"
   [attr.aria-current]="ariaCurrent"
   (click)="onClick($event)"
-  [ngClass]="[
-    'inline-flex min-w-0 items-center gap-2 font-semibold transition duration-200 focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-50',
-    align === 'start' ? 'justify-start text-left' : 'justify-center text-center',
-    fullWidth ? 'w-full' : '',
-    floating
-      ? 'fixed bottom-5 right-5 z-50 h-14 w-14 rounded-full shadow-xl hover:scale-105 active:scale-95 sm:bottom-7 sm:right-7'
-      : round
-        ? 'rounded-full'
-        : 'rounded-xl',
-    !floating && iconOnly
-      ? size === 'sm'
-        ? 'h-9 w-9 shrink-0 p-0'
-        : size === 'lg'
-          ? 'h-12 w-12 shrink-0 p-0'
-          : 'h-11 w-11 shrink-0 p-0'
-      : '',
-    !floating && !iconOnly && size === 'sm' ? 'min-h-9 px-3 py-1.5 text-xs' : '',
-    !floating && !iconOnly && size === 'md' ? 'min-h-11 px-4 py-2.5 text-sm' : '',
-    !floating && !iconOnly && size === 'lg' ? 'min-h-12 px-6 py-3 text-base' : '',
-    floating ? getFloatingClasses() : getAppearanceClasses(),
-    buttonClass,
-  ]"
+  [ngClass]="
+    appearance === 'selection-row'
+      ? ['app-button-selection-row', active ? 'app-button-selection-row-active' : '', buttonClass]
+      : appearance === 'custom'
+        ? [buttonClass]
+        : [
+            'inline-flex min-w-0 items-center gap-2 font-semibold transition duration-200 focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-50',
+            align === 'start' ? 'justify-start text-left' : 'justify-center text-center',
+            fullWidth ? 'w-full' : '',
+            floating
+              ? 'fixed bottom-5 right-5 z-50 h-14 w-14 rounded-full shadow-xl hover:scale-105 active:scale-95 sm:bottom-7 sm:right-7'
+              : round
+                ? 'rounded-full'
+                : 'rounded-xl',
+            !floating && iconOnly
+              ? size === 'sm'
+                ? 'h-9 w-9 shrink-0 p-0'
+                : size === 'lg'
+                  ? 'h-12 w-12 shrink-0 p-0'
+                  : 'h-11 w-11 shrink-0 p-0'
+              : '',
+            !floating && !iconOnly && size === 'sm' ? 'min-h-9 px-3 py-1.5 text-xs' : '',
+            !floating && !iconOnly && size === 'md' ? 'min-h-11 px-4 py-2.5 text-sm' : '',
+            !floating && !iconOnly && size === 'lg' ? 'min-h-12 px-6 py-3 text-base' : '',
+            floating ? getFloatingClasses() : getAppearanceClasses(),
+            buttonClass,
+          ]
+  "
 >
   @if (lucideIcon) {
     <app-icon [name]="lucideIcon" sizeClass="h-[18px] w-[18px]" />

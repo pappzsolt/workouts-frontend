@@ -35,6 +35,11 @@ export class MessageComponent implements OnDestroy {
     return this.rawMessageParams;
   }
 
+  @Input() compact = false;
+  @Input() role: 'alert' | 'status' | null = null;
+  @Input() ariaLive: 'off' | 'polite' | 'assertive' | null = null;
+  @Input() messageId = '';
+
   @Input()
   type: 'success' | 'error' | 'info' | '' = '';
 
@@ -59,6 +64,14 @@ export class MessageComponent implements OnDestroy {
   }
 
   get messageClasses(): string {
+    if (this.compact) {
+      return {
+        success: 'text-success-700',
+        error: 'text-delete-700',
+        info: 'text-info-700',
+        '': 'text-content-700',
+      }[this.type];
+    }
     switch (this.type) {
       case 'success':
         return 'border-success-200 bg-success-50 text-success-700';

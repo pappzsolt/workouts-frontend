@@ -174,7 +174,6 @@
   grid-column: 2;
 }
 
-
 /* ============================================================
    PROGRAM / WORKOUT NAVIGATION
    ============================================================ */
@@ -196,9 +195,6 @@
   background: var(--app-surface-50);
   border-bottom: 1px solid var(--app-surface-200);
 }
-
-
-
 
 .workout-stepper-content {
   min-width: 0;
@@ -237,8 +233,6 @@
   border-bottom: 1px solid var(--app-surface-200);
 }
 
-
-
 .current-workout {
   padding: 1rem;
 }
@@ -254,7 +248,6 @@
   border-radius: 0.65rem;
   background: var(--app-white);
 }
-
 
 .scheduled-date-inline {
   display: flex;
@@ -294,35 +287,6 @@
 
 .exercise-list {
   display: grid;
-}
-
-.exercise-option {
-  width: 100%;
-  min-height: 3.5rem;
-  display: grid;
-  grid-template-columns: 2.1rem minmax(0, 1fr) auto 1.25rem;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.55rem 0.75rem;
-  border: 0;
-  border-bottom: 1px solid var(--app-surface-200);
-  background: var(--app-white);
-  color: var(--app-content-800);
-  text-align: left;
-  cursor: pointer;
-}
-
-.exercise-option:last-child {
-  border-bottom: 0;
-}
-
-.exercise-option:hover {
-  background: var(--app-surface-50);
-}
-
-.exercise-option-active {
-  background: var(--app-primary-50);
-  box-shadow: inset 3px 0 0 var(--app-primary-600);
 }
 
 .exercise-order,
@@ -472,10 +436,6 @@
   gap: 0.35rem;
 }
 
-
-
-
-
 /* ============================================================
    SET EDITOR
    ============================================================ */
@@ -569,7 +529,6 @@
   gap: 0.3rem;
 }
 
-
 .set-number-input {
   width: 100%;
   min-height: 2.4rem;
@@ -590,11 +549,6 @@
   padding-top: 0.75rem;
   border-top: 1px solid var(--app-surface-200);
 }
-
-
-
-
-
 
 .no-sets-panel {
   display: flex;
@@ -650,7 +604,6 @@
     grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
     padding: 0.7rem;
   }
-
 
   .workout-stepper-title {
     font-size: 1rem;
@@ -736,7 +689,6 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
   }
-
 }
 
 @media (max-width: 430px) {
@@ -751,7 +703,6 @@
     grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
   }
 
-
   .workout-stepper-meta {
     flex-wrap: wrap;
   }
@@ -763,8 +714,6 @@
   .set-navigation {
     grid-template-columns: 2.75rem minmax(0, 1fr) 2.75rem;
   }
-
-
 
   .set-value-fields {
     grid-template-columns: 1fr;

@@ -6,7 +6,8 @@ import { AppIconComponent, AppIconName } from '../app-icon/app-icon.component';
 export type AppButtonVariant =
   'primary' | 'save' | 'edit' | 'search' | 'sort' | 'add' | 'delete' | 'secondary' | 'danger';
 
-export type AppButtonAppearance = 'solid' | 'outline' | 'ghost' | 'link';
+export type AppButtonAppearance =
+  'solid' | 'outline' | 'ghost' | 'link' | 'custom' | 'selection-row';
 
 export type AppButtonSize = 'sm' | 'md' | 'lg';
 
@@ -16,6 +17,10 @@ export type AppButtonLucideIcon = AppIconName | '';
 
 @Component({
   selector: 'app-button',
+  host: {
+    '[style.display]':
+      "appearance === 'custom' || appearance === 'selection-row' ? 'contents' : null",
+  },
   standalone: true,
   imports: [CommonModule, AppIconComponent],
   templateUrl: './app-button.component.html',
@@ -35,6 +40,10 @@ export class AppButtonComponent {
   @Input({ transform: booleanAttribute }) completed = false;
   @Input() align: 'center' | 'start' = 'center';
   @Input() buttonClass = '';
+  @Input() testId = '';
+  @Input() buttonRole: string | null = null;
+  @Input() ariaSelected: boolean | null = null;
+  @Input() tabIndex: number | null = null;
   @Input() ariaPressed: boolean | null = null;
   @Input() ariaCurrent: 'page' | 'step' | null = null;
 
@@ -73,6 +82,7 @@ export class AppButtonComponent {
   }
 
   getAppearanceClasses(): string {
+    if (this.appearance === 'custom' || this.appearance === 'selection-row') return '';
     if (this.active)
       return 'border border-primary-700 bg-primary-700 text-white hover:bg-primary-800 focus:ring-primary-300';
     if (this.completed)

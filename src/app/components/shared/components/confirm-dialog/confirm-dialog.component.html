@@ -1,15 +1,37 @@
 <div *ngIf="open" class="confirm-backdrop" role="presentation">
-  <section class="confirm-panel" role="alertdialog" aria-modal="true"
-           aria-labelledby="confirm-title" aria-describedby="confirm-description">
-    <h2 id="confirm-title" class="confirm-title">{{ 'userWorkoutExerciseManager.deleteConfirmTitle' | translate }}</h2>
-    <div id="confirm-description">
+  <section
+    class="confirm-panel"
+    tabindex="-1"
+    cdkTrapFocus
+    [cdkTrapFocusAutoCapture]="true"
+    role="alertdialog"
+    aria-modal="true"
+    [attr.aria-labelledby]="titleId"
+    [attr.aria-describedby]="descriptionId"
+  >
+    <h2 tabindex="-1" cdkFocusInitial [id]="titleId" class="confirm-title">
+      {{ title | translate }}
+    </h2>
+    <div [id]="descriptionId">
       <app-message [message]="message" [messageParams]="messageParams" type="info"></app-message>
     </div>
     <div class="confirm-actions">
-      <app-button type="button" [disabled]="busy" (buttonClick)="cancelled.emit()" variant="secondary" appearance="outline">
+      <app-button
+        type="button"
+        [disabled]="busy"
+        (buttonClick)="cancelled.emit()"
+        variant="secondary"
+        appearance="outline"
+      >
         {{ cancelLabel | translate }}
       </app-button>
-      <app-button type="button" [disabled]="busy" (buttonClick)="confirmed.emit()" variant="delete" appearance="solid">
+      <app-button
+        type="button"
+        [disabled]="busy"
+        (buttonClick)="confirmed.emit()"
+        variant="delete"
+        appearance="solid"
+      >
         {{ confirmLabel | translate }}
       </app-button>
     </div>

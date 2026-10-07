@@ -9,8 +9,12 @@ import {
   OnChanges,
   SimpleChanges,
   inject,
+  forwardRef,
+  DestroyRef,
+  ChangeDetectorRef,
 } from '@angular/core';
-import { FormsModule, NgModel } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule, NgModel } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { matchesSearch } from '../app-search/search-match';
@@ -18,14 +22,55 @@ import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-select',
+  providers: [
+    { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => AppSelectComponent), multi: true },
+  ],
   standalone: true,
   host: { '[attr.id]': 'null', '[class.searchable]': 'searchable' },
   imports: [FormsModule, TranslatePipe, MatAutocompleteModule, MatInputModule],
   templateUrl: './app-select.component.html',
   styleUrl: './app-select.component.css',
 })
-export class AppSelectComponent<T extends SelectValue = string> implements OnChanges {
+export class AppSelectComponent<T extends SelectValue = string>
+  implements OnChanges, ControlValueAccessor
+{
   private readonly translate = inject(TranslateService);
+  private readonly cdr = inject(ChangeDetectorRef);
+  private formDisabled = false;
+  private formBound = false;
+  private propagateChange: (value: T) => void = () => {};
+  private propagateTouched: () => void = () => {};
+
+  constructor() {
+    this.translate.onLangChange.pipe(takeUntilDestroyed(inject(DestroyRef))).subscribe(() => {
+      if (!this.searching) this.refreshSearchLabel();
+      this.cdr.markForCheck();
+    });
+  }
+
+  get isDisabled(): boolean {
+    return this.disabled || this.formDisabled;
+  }
+  writeValue(value: T | undefined): void {
+    this.value = value;
+    this.restoreSelection();
+    this.cdr.markForCheck();
+  }
+  registerOnChange(fn: (value: T) => void): void {
+    this.formBound = true;
+    this.propagateChange = fn;
+  }
+  registerOnTouched(fn: () => void): void {
+    this.propagateTouched = fn;
+  }
+  setDisabledState(disabled: boolean): void {
+    this.formDisabled = disabled;
+    this.cdr.markForCheck();
+  }
+  onBlur(): void {
+    this.restoreSelection();
+    this.propagateTouched();
+  }
 
   @Input() searchable = false;
   @Input() searchPlaceholder = '';
@@ -81,6 +126,7 @@ export class AppSelectComponent<T extends SelectValue = string> implements OnCha
   }
 
   selectSearchOption(value: T): void {
+    if (this.isDisabled) return;
     this.value = value;
     this.restoreSelection();
     this.onValueChange(value);
@@ -108,10 +154,13 @@ export class AppSelectComponent<T extends SelectValue = string> implements OnCha
   reset(value?: T): void {
     this.value = value;
     this.restoreSelection();
-    this.model?.reset({ value, disabled: this.disabled });
+    this.model?.reset({ value, disabled: this.isDisabled });
   }
 
   onValueChange(value: T): void {
+    if (this.isDisabled) return;
+    if (this.formBound) this.value = value;
+    this.propagateChange(value);
     this.valueChange.emit(value);
   }
 }

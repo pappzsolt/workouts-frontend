@@ -14,5 +14,18 @@ export type AppCardVariant = 'default' | 'outlined';
 export class AppCardComponent {
   @Input() routerLink: string | any[] | null = null;
   @Input() queryParams: Params | null = null;
+  @Input() padding: 'none' | 'sm' | 'md' | 'lg' = 'none';
+  @Input() hover: boolean | null = null;
+  @Input() overflow: 'hidden' | 'visible' | 'auto' = 'hidden';
+  @Input() showHeader = false;
+  @Input() showActions = false;
+
+  get paddingClass(): string {
+    return { none: '', sm: 'p-3', md: 'p-5', lg: 'p-6' }[this.padding];
+  }
+  get interactive(): boolean {
+    return this.hover ?? this.variant === 'default';
+  }
+
   @Input() variant: AppCardVariant = 'default';
 }

@@ -861,6 +861,7 @@
     "noExercises": "Ehhez a workouthoz nincs exercise."
   },
   "pagination": {
+    "page": "Oldal",
     "records": "rekord",
     "firstPage": "Első oldal",
     "previousPage": "Előző oldal",

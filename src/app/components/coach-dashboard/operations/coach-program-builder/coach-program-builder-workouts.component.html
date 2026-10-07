@@ -1,7 +1,4 @@
-<app-card
-  *ngIf="currentStep === 2"
-  class="min-w-0 overflow-hidden"
->
+<app-card *ngIf="currentStep === 2" class="min-w-0 overflow-hidden">
   <!-- STEP FEJLÉC -->
   <div class="flex items-start gap-4 border-b border-surface-100 px-5 py-5 sm:px-6">
     <span
@@ -23,10 +20,7 @@
 
   <div class="flex min-w-0 flex-col gap-6 p-5 sm:p-6">
     <!-- ÜZENET -->
-    <app-message
-      [message]="occurrences.message"
-      [type]="occurrences.messageType"
-    ></app-message>
+    <app-message [message]="occurrences.message" [type]="occurrences.messageType"></app-message>
 
     <!-- ======================================================
          1. PROGRAM WORKOUTJAI
@@ -73,7 +67,11 @@
       >
         <div class="divide-y divide-surface-100">
           <div
-            *ngFor="let occurrence of occurrences.state.occurrences; let i = index; trackBy: trackBySelectedWorkoutOccurrence"
+            *ngFor="
+              let occurrence of occurrences.state.occurrences;
+              let i = index;
+              trackBy: trackBySelectedWorkoutOccurrence
+            "
             data-testid="selected-workout"
             [attr.data-occurrence-id]="occurrence.assignment.id"
             class="flex flex-col gap-4 px-4 py-4 transition hover:bg-surface-50 sm:flex-row sm:items-center sm:px-5"
@@ -96,12 +94,17 @@
                   *ngIf="occurrence.assignment.dayIndex"
                   class="rounded-full bg-surface-100 px-2.5 py-1 text-xs font-semibold text-content-600"
                 >
-                  {{ 'coachProgramBuilder.dayNumber' | translate:{ day: occurrence.assignment.dayIndex } }}
+                  {{
+                    'coachProgramBuilder.dayNumber'
+                      | translate: { day: occurrence.assignment.dayIndex }
+                  }}
                 </span>
               </div>
 
               <div class="mt-2 flex flex-wrap gap-2">
-                <span class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600">
+                <span
+                  class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600"
+                >
                   <app-icon name="dumbbell" sizeClass="h-4 w-4 inline-block align-middle mr-1" />
                   {{ occurrence.workout.exercises.length }}
                   {{ 'coachProgramBuilder.exercise' | translate }}
@@ -120,7 +123,10 @@
                   *ngIf="occurrence.workout.intensityLevel"
                   class="rounded-lg bg-surface-100 px-2.5 py-1.5 text-xs font-medium text-content-600"
                 >
-                  <app-icon name="chart-column-increasing" sizeClass="h-4 w-4 inline-block align-middle mr-1" />
+                  <app-icon
+                    name="chart-column-increasing"
+                    sizeClass="h-4 w-4 inline-block align-middle mr-1"
+                  />
                   {{ occurrence.workout.intensityLevel }}
                 </span>
               </div>
@@ -172,11 +178,14 @@
          2. WORKOUT MŰVELETEK
          ====================================================== -->
     <section class="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
-      <button
+      <app-button
+        appearance="custom"
         type="button"
-        data-testid="open-workout-picker"
-        (click)="showWorkoutPicker = !showWorkoutPicker"
-        class="group flex min-w-0 items-center gap-4 rounded-xl border border-surface-200 bg-surface-50 p-4 text-left transition hover:border-primary-200 hover:bg-primary-50/50 hover:shadow-sm"
+        testId="open-workout-picker"
+        (buttonClick)="showWorkoutPicker = !showWorkoutPicker"
+        [ariaExpanded]="showWorkoutPicker"
+        ariaControls="existing-workout-picker"
+        [buttonClass]="'group flex min-w-0 items-center gap-4 rounded-xl border border-surface-200 bg-surface-50 p-4 text-left transition hover:border-primary-200 hover:bg-primary-50/50 hover:shadow-sm'"
       >
         <span
           class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm"
@@ -194,16 +203,19 @@
           </small>
         </span>
 
-        <span class="shrink-0 text-lg text-content-400 transition group-hover:translate-x-1 group-hover:text-primary-600">
+        <span
+          class="shrink-0 text-lg text-content-400 transition group-hover:translate-x-1 group-hover:text-primary-600"
+        >
           {{ showWorkoutPicker ? '−' : '→' }}
         </span>
-      </button>
+      </app-button>
 
-      <button
+      <app-button
+        appearance="custom"
         type="button"
         [disabled]="occurrences.busy || occurrences.loading || assignmentBusy"
-        (click)="goToCreateWorkout.emit()"
-        class="group flex min-w-0 items-center gap-4 rounded-xl border border-surface-200 bg-surface-50 p-4 text-left transition hover:border-primary-200 hover:bg-primary-50/50 hover:shadow-sm"
+        (buttonClick)="goToCreateWorkout.emit()"
+        [buttonClass]="'group flex min-w-0 items-center gap-4 rounded-xl border border-surface-200 bg-surface-50 p-4 text-left transition hover:border-primary-200 hover:bg-primary-50/50 hover:shadow-sm'"
       >
         <span
           class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white shadow-sm"
@@ -221,10 +233,12 @@
           </small>
         </span>
 
-        <span class="shrink-0 text-lg text-content-400 transition group-hover:translate-x-1 group-hover:text-primary-600">
+        <span
+          class="shrink-0 text-lg text-content-400 transition group-hover:translate-x-1 group-hover:text-primary-600"
+        >
           →
         </span>
-      </button>
+      </app-button>
     </section>
 
     <!-- ======================================================
@@ -232,6 +246,7 @@
          ====================================================== -->
     <section
       *ngIf="showWorkoutPicker"
+      id="existing-workout-picker"
       class="min-w-0 rounded-2xl border border-primary-100 bg-primary-50/40 p-4 sm:p-5"
     >
       <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -248,7 +263,9 @@
         <span
           class="rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-content-600 shadow-sm"
         >
-          {{ 'coachProgramBuilder.selectionCount' | translate:{ count: pendingWorkoutIds.length } }}
+          {{
+            'coachProgramBuilder.selectionCount' | translate: { count: pendingWorkoutIds.length }
+          }}
         </span>
       </div>
 
@@ -259,7 +276,9 @@
         (workoutsChange)="pendingWorkoutIds = $event"
       ></app-coach-workout-board>
 
-      <div class="mt-4 flex flex-col-reverse gap-3 border-t border-primary-100 pt-4 sm:flex-row sm:justify-end">
+      <div
+        class="mt-4 flex flex-col-reverse gap-3 border-t border-primary-100 pt-4 sm:flex-row sm:justify-end"
+      >
         <app-button
           type="button"
           (buttonClick)="showWorkoutPicker = false; pendingWorkoutIds = []"
@@ -271,7 +290,12 @@
 
         <app-button
           type="button"
-          [disabled]="pendingWorkoutIds.length === 0 || occurrences.busy || occurrences.loading || assignmentBusy"
+          [disabled]="
+            pendingWorkoutIds.length === 0 ||
+            occurrences.busy ||
+            occurrences.loading ||
+            assignmentBusy
+          "
           data-testid="add-workouts-to-program"
           (buttonClick)="addPendingWorkouts()"
           variant="primary"
@@ -285,7 +309,9 @@
     <!-- ======================================================
          4. PROGRAM USER + NAVIGÁCIÓ
          ====================================================== -->
-    <div class="flex flex-col gap-3 border-t border-surface-200 pt-5 lg:flex-row lg:items-center lg:justify-between">
+    <div
+      class="flex flex-col gap-3 border-t border-surface-200 pt-5 lg:flex-row lg:items-center lg:justify-between"
+    >
       <app-button
         type="button"
         [disabled]="occurrences.busy || assignmentBusy"
@@ -312,7 +338,14 @@
       <app-button
         type="button"
         data-testid="finish-program"
-        [disabled]="programId === null || !selectedUserIds.length || assignmentBusy || occurrences.busy || occurrences.loading || !userSelectionReady"
+        [disabled]="
+          programId === null ||
+          !selectedUserIds.length ||
+          assignmentBusy ||
+          occurrences.busy ||
+          occurrences.loading ||
+          !userSelectionReady
+        "
         (buttonClick)="finishProgram.emit()"
         variant="primary"
         appearance="solid"
@@ -326,13 +359,23 @@
   </div>
 </app-card>
 
-<app-program-exercise-dialog *ngIf="exerciseWorkoutId !== null"
-  [workoutId]="exerciseWorkoutId" [exerciseDialogIsNewWorkout]="exerciseIsNewWorkout"
+<app-program-exercise-dialog
+  *ngIf="exerciseWorkoutId !== null"
+  [workoutId]="exerciseWorkoutId"
+  [exerciseDialogIsNewWorkout]="exerciseIsNewWorkout"
   [dayIndex]="occurrences.dayIndex(exerciseOccurrenceId)"
-  (close)="closeExerciseDialog()" (workoutSaved)="reload()"
-  (saveError)="occurrences.fail($event)" (saveSuccess)="occurrences.success($event)"></app-program-exercise-dialog>
+  (close)="closeExerciseDialog()"
+  (workoutSaved)="reload()"
+  (saveError)="occurrences.fail($event)"
+  (saveSuccess)="occurrences.success($event)"
+></app-program-exercise-dialog>
 
-<app-program-workout-copy *ngIf="copySourceWorkout !== null"
-  [sourceWorkout]="copySourceWorkout" [programId]="programId"
-  [nextDayIndex]="occurrences.state.nextDayIndex" (close)="copySourceWorkout = null"
-  (copied)="onCopied($event)" (failed)="occurrences.fail($event)"></app-program-workout-copy>
+<app-program-workout-copy
+  *ngIf="copySourceWorkout !== null"
+  [sourceWorkout]="copySourceWorkout"
+  [programId]="programId"
+  [nextDayIndex]="occurrences.state.nextDayIndex"
+  (close)="copySourceWorkout = null"
+  (copied)="onCopied($event)"
+  (failed)="occurrences.fail($event)"
+></app-program-workout-copy>

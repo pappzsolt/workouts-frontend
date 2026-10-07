@@ -1,3 +1,4 @@
+import { ProgramDetailsFormComponent } from '../coach-program-builder/program-details-form.component';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -15,7 +16,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 @Component({
   selector: 'app-program-form',
   standalone: true,
-  imports: [...SHARED_IMPORTS, ReactiveFormsModule],
+  imports: [...SHARED_IMPORTS, ReactiveFormsModule, ProgramDetailsFormComponent],
   templateUrl: './program-form.component.html',
   styleUrls: ['./program-form.component.css'],
 })

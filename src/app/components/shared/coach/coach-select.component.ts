@@ -1,6 +1,10 @@
+import { reserveSelectControlId } from '../components/app-select/select-control-id';
 import { matchesSearch } from '../components/app-search/search-match';
 import { AppSearchComponent } from '../components/app-search/app-search.component';
-import { errorMessage, responseMessage } from '../../../models/backend-dto/common/api-response-message';
+import {
+  errorMessage,
+  responseMessage,
+} from '../../../models/backend-dto/common/api-response-message';
 import type { CoachNameId } from '../../../models/common/coach-name-id.model';
 import { Component, EventEmitter, Output, Input, OnInit, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -19,22 +23,32 @@ import { SHARED_IMPORTS } from '../shared-imports';
   imports: [AppSearchComponent, ...SHARED_IMPORTS, AppSelectComponent],
   template: `
     <div>
-
-      <app-search
-        inputId="coachSelectSearch"
-        [searchTerm]="searchTerm"
-        label="appSearch.coachesLabel"
-        placeholder="appSearch.coachesPlaceholder"
-        [showClearButton]="true"
-        (searchTermChange)="onSearchChange($event)"
-        class="mb-3 block"
-      ></app-search>
-    <app-message *ngIf="searchTerm.trim() && !matchingOptions.length" message="appSearch.noResults" type="info" class="mb-3 block"></app-message>
-      <app-form-field labelKey="coachSelect.coach" controlId="coachSelect">
+      @if (!searchable) {
+        <app-search
+          [inputId]="controlId === 'coachSelect' ? 'coachSelectSearch' : controlId + 'Search'"
+          [searchTerm]="searchTerm"
+          label="appSearch.coachesLabel"
+          placeholder="appSearch.coachesPlaceholder"
+          [showClearButton]="true"
+          (searchTermChange)="onSearchChange($event)"
+          class="mb-3 block"
+          [disabled]="disabled"
+        ></app-search>
+        <app-message
+          *ngIf="searchTerm.trim() && !matchingOptions.length"
+          message="appSearch.noResults"
+          type="info"
+          class="mb-3 block"
+        ></app-message>
+      }
+      <app-form-field labelKey="coachSelect.coach" [controlId]="controlId">
         <app-select
-          id="coachSelect"
+          [id]="controlId"
           [value]="selectedCoachId"
-          [options]="coachOptions"
+          [options]="searchable ? allCoachOptions : coachOptions"
+          [searchable]="searchable"
+          [disabled]="disabled"
+          searchPlaceholder="appSearch.coachesPlaceholder"
           placeholder="coachSelect.select"
           [placeholderValue]="undefined"
           (valueChange)="selectedCoachId = $event; onCoachChange()"
@@ -45,6 +59,10 @@ import { SHARED_IMPORTS } from '../shared-imports';
   `,
 })
 export class CoachSelectComponent implements OnInit {
+  @Input() searchable = false;
+  @Input() disabled = false;
+  @Input() controlId = reserveSelectControlId('coachSelect');
+
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly logger = inject(LoggerService);
@@ -67,11 +85,19 @@ export class CoachSelectComponent implements OnInit {
   searchTerm = '';
 
   get matchingOptions(): CoachNameId[] {
-    return this.coaches.filter(coach => matchesSearch(this.searchTerm, coach.name));
+    return this.coaches.filter((coach) => matchesSearch(this.searchTerm, coach.name));
+  }
+
+  get allCoachOptions(): SelectOption<number>[] {
+    return this.coaches.map((coach) => ({ value: coach.id, label: coach.name }));
   }
 
   get coachOptions(): SelectOption<number>[] {
-    return this.coaches.filter(coach => coach.id === this.selectedCoachId || matchesSearch(this.searchTerm, coach.name)).map((coach) => ({ value: coach.id, label: coach.name }));
+    return this.coaches
+      .filter(
+        (coach) => coach.id === this.selectedCoachId || matchesSearch(this.searchTerm, coach.name),
+      )
+      .map((coach) => ({ value: coach.id, label: coach.name }));
   }
 
   onSearchChange(term: string): void {
@@ -84,19 +110,26 @@ export class CoachSelectComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.coachService.getAllCoaches().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: response => {
-        this.coaches = response.success ? response.data ?? [] : [];
-        this.message = responseMessage([response], response.success ? '' : 'coachSelect.loadError');
-        this.messageType = response.success ? 'info' : 'error';
-      },
+    this.coachService
+      .getAllCoaches()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.coaches = response.success ? (response.data ?? []) : [];
+          this.message = responseMessage(
+            [response],
+            response.success ? '' : 'coachSelect.loadError',
+          );
+          this.messageType = response.success ? 'info' : 'error';
+        },
 
-      error: err => {
-        this.coaches = [];
-        this.message = errorMessage(err, 'coachSelect.loadError'); this.messageType = 'error';
-        this.logger.error('Hiba a coachok lekérésénél', err);
-      },
-    });
+        error: (err) => {
+          this.coaches = [];
+          this.message = errorMessage(err, 'coachSelect.loadError');
+          this.messageType = 'error';
+          this.logger.error('Hiba a coachok lekérésénél', err);
+        },
+      });
   }
 
   onCoachChange(): void {
@@ -113,6 +146,4 @@ export class CoachSelectComponent implements OnInit {
 
     this.selectedCoachIdChange.emit(selectedCoachId);
   }
-
-
 }

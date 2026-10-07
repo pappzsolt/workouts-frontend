@@ -1,4 +1,8 @@
-import { errorMessage, responseMessage } from '../../../../../models/backend-dto/common/api-response-message';
+import { ProgramDetailsFormComponent } from '../../coach-program-builder/program-details-form.component';
+import {
+  errorMessage,
+  responseMessage,
+} from '../../../../../models/backend-dto/common/api-response-message';
 import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LoggerService } from '../../../../../services/logger.service';
@@ -8,14 +12,13 @@ import { CoachProgramService } from '../../../../../services/coach/coach-program
 import { AppCardComponent } from '../../../../shared/components/app-card/app-card.component';
 import { Program } from '../../../../../models/program.model';
 import type { ProgramCreationRequest } from '../../../../../models/backend-dto/programcreator/program-creation-request';
-import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 import { LanguageService } from '../../../../../services/shared/language.service';
 
 @Component({
   selector: 'app-coach-program-edit',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppCardComponent, AppSelectComponent],
+  imports: [ProgramDetailsFormComponent, ...SHARED_IMPORTS, AppCardComponent],
   templateUrl: './coach-program-edit.component.html',
   styleUrls: ['./coach-program-edit.component.css'],
 })
@@ -51,37 +54,40 @@ export class CoachProgramEditComponent implements OnInit {
       return;
     }
 
-    this.programService.getProgramById(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (res) => {
-        if (res?.success && res.data) {
-          const dto = res.data;
+    this.programService
+      .getProgramById(id)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          if (res?.success && res.data) {
+            const dto = res.data;
 
-          if (dto.programId == null || dto.programName == null) {
+            if (dto.programId == null || dto.programName == null) {
+              this.setMessage(responseMessage([res], 'coachProgramEdit.notFound'), 'error');
+              return;
+            }
+
+            this.setMessage(responseMessage([res], ''), 'info');
+            this.program = {
+              id: dto.programId,
+              programName: dto.programName,
+              programDescription: dto.programDescription ?? '',
+              startDate: dto.startDate ?? '',
+              endDate: dto.endDate ?? '',
+              durationDays: dto.durationDays ?? undefined,
+              difficultyLevel: dto.difficultyLevel ?? undefined,
+            };
+          } else {
             this.setMessage(responseMessage([res], 'coachProgramEdit.notFound'), 'error');
-            return;
           }
+        },
 
-          this.setMessage(responseMessage([res], ''), 'info');
-          this.program = {
-            id: dto.programId,
-            programName: dto.programName,
-            programDescription: dto.programDescription ?? '',
-            startDate: dto.startDate ?? '',
-            endDate: dto.endDate ?? '',
-            durationDays: dto.durationDays ?? undefined,
-            difficultyLevel: dto.difficultyLevel ?? undefined,
-          };
-        } else {
-          this.setMessage(responseMessage([res], 'coachProgramEdit.notFound'), 'error');
-        }
-      },
+        error: (err) => {
+          this.logger.error(err);
 
-      error: (err) => {
-        this.logger.error(err);
-
-        this.setMessage(errorMessage(err, 'coachProgramEdit.loadError'), 'error');
-      },
-    });
+          this.setMessage(errorMessage(err, 'coachProgramEdit.loadError'), 'error');
+        },
+      });
   }
 
   calculateEndDate(startDate?: string, durationDays?: number): string {
@@ -117,21 +123,24 @@ export class CoachProgramEditComponent implements OnInit {
       workouts: null,
     };
 
-    this.programService.updateProgram(this.program.id, request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (res) => {
-        if (res.success) {
-          this.setMessage(responseMessage([res], 'coachProgramEdit.saveSuccess'), 'success');
-        } else {
-          this.setMessage(res.message || 'coachProgramEdit.saveError', 'error');
-        }
-      },
+    this.programService
+      .updateProgram(this.program.id, request)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          if (res.success) {
+            this.setMessage(responseMessage([res], 'coachProgramEdit.saveSuccess'), 'success');
+          } else {
+            this.setMessage(res.message || 'coachProgramEdit.saveError', 'error');
+          }
+        },
 
-      error: (err) => {
-        this.logger.error(err);
+        error: (err) => {
+          this.logger.error(err);
 
-        this.setMessage(errorMessage(err, 'coachProgramEdit.saveError'), 'error');
-      },
-    });
+          this.setMessage(errorMessage(err, 'coachProgramEdit.saveError'), 'error');
+        },
+      });
   }
 
   private setMessage(message: string, type: 'success' | 'error' | 'info'): void {

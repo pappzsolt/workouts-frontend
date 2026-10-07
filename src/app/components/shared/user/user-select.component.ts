@@ -1,3 +1,4 @@
+import { reserveSelectControlId } from '../components/app-select/select-control-id';
 import { matchesSearch } from '../components/app-search/search-match';
 import { AppSearchComponent } from '../components/app-search/app-search.component';
 import {
@@ -23,7 +24,7 @@ import { SHARED_IMPORTS } from '../shared-imports';
   template: `
     @if (!searchable) {
       <app-search
-        inputId="userSelectSearch"
+        [inputId]="controlId === 'userSelect' ? 'userSelectSearch' : controlId + 'Search'"
         [searchTerm]="searchTerm"
         label="appSearch.usersLabel"
         placeholder="appSearch.usersPlaceholder"
@@ -39,9 +40,9 @@ import { SHARED_IMPORTS } from '../shared-imports';
         class="mb-3 block"
       ></app-message>
     }
-    <app-form-field labelKey="userSelect.selectUser" controlId="userSelect">
+    <app-form-field labelKey="userSelect.selectUser" [controlId]="controlId">
       <app-select
-        id="userSelect"
+        [id]="controlId"
         [value]="selectedUserId"
         [options]="searchable ? allUserOptions : userOptions"
         [searchable]="searchable"
@@ -57,6 +58,8 @@ import { SHARED_IMPORTS } from '../shared-imports';
   styleUrls: ['./user-select.component.css'],
 })
 export class UserSelectComponent implements OnInit {
+  @Input() controlId = reserveSelectControlId('userSelect');
+
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly logger = inject(LoggerService);

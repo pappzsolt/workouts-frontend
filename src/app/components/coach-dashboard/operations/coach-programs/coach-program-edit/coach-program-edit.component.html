@@ -4,7 +4,6 @@
 
 <div class="min-h-full bg-transparent">
   <div class="mx-auto w-full max-w-5xl px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
-
     <!-- ==================================================
          OLDAL CÍM
          ================================================== -->
@@ -20,17 +19,13 @@
          ÜZENET
          ================================================== -->
 
-    <app-message
-      [message]="message"
-      [type]="messageType"
-    ></app-message>
+    <app-message [message]="message" [type]="messageType"></app-message>
 
     <!-- ==================================================
          PROGRAM SZERKESZTÉSI KÁRTYA
          ================================================== -->
 
     <app-card>
-
       <!-- ==================================================
            FEJLÉC
            ================================================== -->
@@ -51,151 +46,14 @@
            ŰRLAP
            ================================================== -->
 
-      <form
-        (ngSubmit)="saveProgram()"
-        class="grid min-w-0 grid-cols-1 gap-5 p-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-5 sm:p-6"
-      >
-
-        <!-- ==================================================
-             PROGRAM NÉV
-             ================================================== -->
-
-        <app-form-field
-          class="col-span-full"
-          labelKey="coachProgramEdit.programName"
-          controlId="programName"
-          [required]="true"
-        >
-          <input
-            type="text"
-            id="programName"
-            name="programName"
-            [placeholder]="'coachProgramEdit.programNamePlaceholder' | translate"
-            [(ngModel)]="program.programName"
-            required
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
-          />
-        </app-form-field>
-
-        <!-- ==================================================
-             LEÍRÁS
-             ================================================== -->
-
-        <app-form-field
-          class="col-span-full"
-          labelKey="coachProgramEdit.description"
-          controlId="programDescription"
-        >
-          <textarea
-            id="programDescription"
-            name="programDescription"
-            rows="3"
-            [placeholder]="'coachProgramEdit.descriptionPlaceholder' | translate"
-            [(ngModel)]="program.programDescription"
-            class="min-h-28 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
-          ></textarea>
-        </app-form-field>
-
-        <!-- ==================================================
-             KEZDÉS DÁTUMA
-             ================================================== -->
-
-        <app-form-field
-          labelKey="coachProgramEdit.startDate"
-          controlId="startDate"
-          [required]="true"
-        >
-          <input
-            type="date"
-            id="startDate"
-            name="startDate"
-            [(ngModel)]="program.startDate"
-            required
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
-          />
-        </app-form-field>
-
-        <!-- ==================================================
-             BEFEJEZÉS DÁTUMA
-             ================================================== -->
-
-        <app-form-field
-          labelKey="coachProgramEdit.endDate"
-          controlId="endDate"
-        >
-          <input
-            type="date"
-            id="endDate"
-            name="endDate"
-            [value]="calculateEndDate(program.startDate, program.durationDays) || program.endDate || ''"
-            readonly
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-surface-100 px-3.5 py-2.5 text-base text-content-600 shadow-sm outline-none sm:text-sm"
-          />
-        </app-form-field>
-
-        <!-- ==================================================
-             IDŐTARTAM
-             ================================================== -->
-
-        <app-form-field
-          labelKey="coachProgramEdit.duration"
-          controlId="durationDays"
-        >
-          <input
-            type="number"
-            id="durationDays"
-            name="durationDays"
-            [placeholder]="'coachProgramEdit.durationPlaceholder' | translate"
-            [(ngModel)]="program.durationDays"
-            min="1"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
-          />
-        </app-form-field>
-
-        <!-- ==================================================
-             NEHÉZSÉGI SZINT
-             ================================================== -->
-
-        <app-form-field
-          labelKey="coachProgramEdit.difficultyLevel"
-          controlId="difficultyLevel"
-        >
-          <app-select
-            id="difficultyLevel"
-            name="difficultyLevel"
-            [(value)]="program.difficultyLevel"
-            [placeholder]="'coachProgramEdit.selectDifficulty'"
-            placeholderValue=""
-            [className]="'min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm'"
-            [options]="[
-      { value: 'BEGINNER', label: 'coachProgramEdit.beginner' },
-      { value: 'INTERMEDIATE', label: 'coachProgramEdit.intermediate' },
-      { value: 'ADVANCED', label: 'coachProgramEdit.advanced' }
-    ]"
-          />
-        </app-form-field>
-
-        <!-- ==================================================
-             MENTÉS
-             ================================================== -->
-
-        <div
-          class="col-span-full flex justify-end border-t border-info-100 pt-5"
-        >
-          <app-button
-            type="submit"
-            variant="save"
-            appearance="solid"
-            [fullWidth]="true"
-            buttonClass="sm:w-auto"
-            class="block w-full sm:w-auto"
-          >
-            <span><app-icon name="save" sizeClass="h-5 w-5" /></span>
-            <span>{{ 'coachProgramEdit.save' | translate }}</span>
-          </app-button>
-        </div>
-
-      </form>
+      <app-program-details-form
+        mode="edit"
+        [program]="program"
+        [endDate]="
+          calculateEndDate(program.startDate, program.durationDays) || program.endDate || ''
+        "
+        (save)="saveProgram()"
+      ></app-program-details-form>
     </app-card>
   </div>
 </div>

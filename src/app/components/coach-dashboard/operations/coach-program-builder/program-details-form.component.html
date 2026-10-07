@@ -1,157 +1,402 @@
-    <app-card class="min-w-0 overflow-hidden">
-
-      <!-- Step header -->
-      <div
-        class="flex items-start gap-4 border-b border-surface-100 px-5 py-5 sm:px-6"
+@if (mode === 'builder') {
+  <app-card class="min-w-0 overflow-hidden">
+    <!-- Step header -->
+    <div class="flex items-start gap-4 border-b border-surface-100 px-5 py-5 sm:px-6">
+      <span
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-600 text-sm font-bold text-white shadow-sm"
       >
-        <span
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-600 text-sm font-bold text-white shadow-sm"
-        >
-          1
-        </span>
+        1
+      </span>
 
-        <div class="min-w-0">
-          <h3 class="text-lg font-bold text-content-800 sm:text-xl">
-            {{
-              isEditMode
-                ? ('coachProgramBuilder.editProgram' | translate)
-                : ('coachProgramBuilder.createProgram' | translate)
-            }}
-          </h3>
+      <div class="min-w-0">
+        <h3 class="text-lg font-bold text-content-800 sm:text-xl">
+          {{
+            isEditMode
+              ? ('coachProgramBuilder.editProgram' | translate)
+              : ('coachProgramBuilder.createProgram' | translate)
+          }}
+        </h3>
 
-          <p class="mt-1 text-sm leading-6 text-content-500">
-            {{
-              isEditMode
-                ? ('coachProgramBuilder.editProgramDescription' | translate)
-                : ('coachProgramBuilder.createProgramDescription' | translate)
-            }}
-          </p>
-        </div>
+        <p class="mt-1 text-sm leading-6 text-content-500">
+          {{
+            isEditMode
+              ? ('coachProgramBuilder.editProgramDescription' | translate)
+              : ('coachProgramBuilder.createProgramDescription' | translate)
+          }}
+        </p>
       </div>
+    </div>
 
-      <!-- Form -->
-      <div class="grid min-w-0 grid-cols-1 gap-5 p-5 sm:p-6">
+    <!-- Form -->
+    <div class="grid min-w-0 grid-cols-1 gap-5 p-5 sm:p-6">
+      <!-- PROGRAM NÉV -->
+      <app-form-field
+        class="min-w-0 sm:col-span-2"
+        labelKey="coachProgramBuilder.programName"
+        controlId="programName"
+      >
+        <input
+          id="programName"
+          type="text"
+          [(ngModel)]="form.programName"
+          [placeholder]="'coachProgramBuilder.programNamePlaceholder' | translate"
+          class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
+        />
+      </app-form-field>
 
-        <!-- PROGRAM NÉV -->
-        <app-form-field class="min-w-0 sm:col-span-2" labelKey="coachProgramBuilder.programName" controlId="programName">
+      <!-- PROGRAM LEÍRÁS -->
+      <app-form-field
+        class="min-w-0 sm:col-span-2"
+        labelKey="coachProgramBuilder.programDescription"
+        controlId="programDescription"
+      >
+        <textarea
+          id="programDescription"
+          rows="5"
+          [(ngModel)]="form.programDescription"
+          [placeholder]="'coachProgramBuilder.programDescriptionPlaceholder' | translate"
+          class="block w-full resize-y rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
+        ></textarea>
+      </app-form-field>
 
+      <!-- PROGRAM KEZDÉS DÁTUMA -->
+      <app-form-field
+        class="min-w-0"
+        labelKey="coachProgramBuilder.startDate"
+        controlId="startDate"
+      >
+        <input
+          id="startDate"
+          name="startDate"
+          type="date"
+          [(ngModel)]="form.startDate"
+          class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
+        />
+      </app-form-field>
+
+      <!-- PROGRAM KALKULÁLT BEFEJEZÉS -->
+      <app-form-field class="min-w-0" labelKey="coachProgramBuilder.endDate" controlId="endDate">
+        <input
+          id="endDate"
+          name="endDate"
+          type="date"
+          [value]="form.calculatedEndDate || form.endDate"
+          readonly
+          class="block w-full rounded-lg border border-surface-300 bg-surface-100 px-3.5 py-2.5 text-base text-content-600 shadow-sm outline-none sm:text-sm"
+        />
+      </app-form-field>
+
+      <!-- PROGRAM IDŐTARTAMA -->
+      <app-form-field
+        class="min-w-0"
+        labelKey="coachProgramBuilder.programDuration"
+        controlId="durationDays"
+      >
+        <div class="relative">
           <input
-            id="programName"
-            type="text"
-            [(ngModel)]="form.programName"
-            [placeholder]="'coachProgramBuilder.programNamePlaceholder' | translate"
-            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
+            id="durationDays"
+            type="number"
+            min="1"
+            [(ngModel)]="form.durationDays"
+            [placeholder]="'coachProgramBuilder.programDurationPlaceholder' | translate"
+            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 pr-20 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
           />
-        </app-form-field>
 
-        <!-- PROGRAM LEÍRÁS -->
-        <app-form-field class="min-w-0 sm:col-span-2" labelKey="coachProgramBuilder.programDescription" controlId="programDescription">
-
-          <textarea
-            id="programDescription"
-            rows="5"
-            [(ngModel)]="form.programDescription"
-            [placeholder]="'coachProgramBuilder.programDescriptionPlaceholder' | translate"
-            class="block w-full resize-y rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
-          ></textarea>
-        </app-form-field>
-
-        <!-- PROGRAM KEZDÉS DÁTUMA -->
-        <app-form-field class="min-w-0" labelKey="coachProgramBuilder.startDate" controlId="startDate">
-
-          <input
-            id="startDate"
-            name="startDate"
-            type="date"
-            [(ngModel)]="form.startDate"
-            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
-          />
-        </app-form-field>
-
-        <!-- PROGRAM KALKULÁLT BEFEJEZÉS -->
-        <app-form-field class="min-w-0" labelKey="coachProgramBuilder.endDate" controlId="endDate">
-
-          <input
-            id="endDate"
-            name="endDate"
-            type="date"
-            [value]="form.calculatedEndDate || form.endDate"
-            readonly
-            class="block w-full rounded-lg border border-surface-300 bg-surface-100 px-3.5 py-2.5 text-base text-content-600 shadow-sm outline-none sm:text-sm"
-          />
-        </app-form-field>
-
-        <!-- PROGRAM IDŐTARTAMA -->
-        <app-form-field class="min-w-0" labelKey="coachProgramBuilder.programDuration" controlId="durationDays">
-
-          <div class="relative">
-            <input
-              id="durationDays"
-              type="number"
-              min="1"
-              [(ngModel)]="form.durationDays"
-              [placeholder]="'coachProgramBuilder.programDurationPlaceholder' | translate"
-              class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 pr-20 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
-            />
-
-            <span
-              class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm font-medium text-content-500"
-            >
-              {{ 'coachProgramBuilder.days' | translate }}
-            </span>
-          </div>
-        </app-form-field>
-
-        <!-- NEHÉZSÉGI SZINT -->
-        <app-form-field class="min-w-0" labelKey="coachProgramBuilder.difficultyLevel" controlId="difficultyLevel">
-
-          <app-select
-            id="difficultyLevel"
-            name="difficultyLevel"
-            [(value)]="form.difficultyLevel"
-            [placeholder]="'coachProgramBuilder.selectDifficulty'"
-            placeholderValue=""
-            [className]="'block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm'"
-            [options]="[
-    { value: 'BEGINNER', label: 'coachProgramBuilder.beginner' },
-    { value: 'INTERMEDIATE', label: 'coachProgramBuilder.intermediate' },
-    { value: 'ADVANCED', label: 'coachProgramBuilder.advanced' }
-  ]"
-          />
-        </app-form-field>
-
-        <!-- PROGRAM MENTÉSE / MÓDOSÍTÁSA -->
-        <div
-          class="flex justify-end pt-1 sm:col-span-2"
-        >
-          <app-button
-            type="button"
-            [disabled]=" creatingProgram || !form.programName.trim() || !form.startDate || form.durationDays === null || form.durationDays <= 0 || !form.difficultyLevel "
-            (buttonClick)="save.emit()"
-            variant="save"
-            appearance="solid"
-            [fullWidth]="true"
-            buttonClass="sm:w-auto"
-            class="block w-full sm:w-auto"
+          <span
+            class="pointer-events-none absolute inset-y-0 right-3 flex items-center text-sm font-medium text-content-500"
           >
-            <span>
-              {{
-                creatingProgram
-                  ? (isEditMode
-                    ? ('coachProgramBuilder.updatingProgram' | translate)
-                    : ('coachProgramBuilder.creatingProgram' | translate))
-                  : (isEditMode
-                    ? ('coachProgramBuilder.editProgram' | translate)
-                    : ('coachProgramBuilder.createProgram' | translate))
-              }}
-            </span>
-
-            <span *ngIf="!creatingProgram" class="ml-2">
-              →
-            </span>
-          </app-button>
+            {{ 'coachProgramBuilder.days' | translate }}
+          </span>
         </div>
+      </app-form-field>
 
+      <!-- NEHÉZSÉGI SZINT -->
+      <app-form-field
+        class="min-w-0"
+        labelKey="coachProgramBuilder.difficultyLevel"
+        controlId="difficultyLevel"
+      >
+        <app-select
+          id="difficultyLevel"
+          name="difficultyLevel"
+          [(value)]="form.difficultyLevel"
+          [placeholder]="'coachProgramBuilder.selectDifficulty'"
+          placeholderValue=""
+          [className]="'block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm'"
+          [options]="[
+            { value: 'BEGINNER', label: 'coachProgramBuilder.beginner' },
+            { value: 'INTERMEDIATE', label: 'coachProgramBuilder.intermediate' },
+            { value: 'ADVANCED', label: 'coachProgramBuilder.advanced' },
+          ]"
+        />
+      </app-form-field>
+
+      <!-- PROGRAM MENTÉSE / MÓDOSÍTÁSA -->
+      <div class="flex justify-end pt-1 sm:col-span-2">
+        <app-button
+          type="button"
+          [disabled]="
+            creatingProgram ||
+            !form.programName.trim() ||
+            !form.startDate ||
+            form.durationDays === null ||
+            form.durationDays <= 0 ||
+            !form.difficultyLevel
+          "
+          (buttonClick)="save.emit()"
+          variant="save"
+          appearance="solid"
+          [fullWidth]="true"
+          buttonClass="sm:w-auto"
+          class="block w-full sm:w-auto"
+        >
+          <span>
+            {{
+              creatingProgram
+                ? isEditMode
+                  ? ('coachProgramBuilder.updatingProgram' | translate)
+                  : ('coachProgramBuilder.creatingProgram' | translate)
+                : isEditMode
+                  ? ('coachProgramBuilder.editProgram' | translate)
+                  : ('coachProgramBuilder.createProgram' | translate)
+            }}
+          </span>
+
+          <span *ngIf="!creatingProgram" class="ml-2"> → </span>
+        </app-button>
       </div>
+    </div>
+  </app-card>
+} @else if (mode === 'reactive') {
+  @if (reactiveForm) {
+    <div [formGroup]="reactiveForm" class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2">
+      <!-- Program Name -->
+      <app-form-field
+        class="min-w-0 sm:col-span-2"
+        labelKey="programForm.programName"
+        controlId="programName"
+      >
+        <input
+          id="programName"
+          formControlName="programName"
+          class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
+        />
+      </app-form-field>
 
-    </app-card>
+      <!-- Description -->
+      <app-form-field
+        class="min-w-0 sm:col-span-2"
+        labelKey="programForm.description"
+        controlId="programDescription"
+      >
+        <textarea
+          id="programDescription"
+          formControlName="programDescription"
+          rows="3"
+          class="block w-full resize-y rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
+        ></textarea>
+      </app-form-field>
+
+      <!-- Start Date -->
+      <app-form-field class="min-w-0" labelKey="programForm.startDate" controlId="startDate">
+        <input
+          type="date"
+          id="startDate"
+          formControlName="startDate"
+          class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
+        />
+      </app-form-field>
+
+      <!-- Calculated End Date -->
+      <app-form-field class="min-w-0" labelKey="programForm.endDate" controlId="endDate">
+        <input
+          type="date"
+          id="endDate"
+          [value]="endDate"
+          readonly
+          class="block w-full rounded-lg border border-surface-300 bg-surface-100 px-3.5 py-2.5 text-base text-content-600 shadow-sm outline-none sm:text-sm"
+        />
+      </app-form-field>
+
+      <!-- Duration -->
+      <app-form-field class="min-w-0" labelKey="programForm.duration" controlId="durationDays">
+        <input
+          type="number"
+          id="durationDays"
+          formControlName="durationDays"
+          class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
+        />
+      </app-form-field>
+
+      <!-- Difficulty Level -->
+      <app-form-field
+        class="min-w-0"
+        labelKey="programForm.difficultyLevel"
+        controlId="difficultyLevel"
+      >
+        <input
+          id="difficultyLevel"
+          formControlName="difficultyLevel"
+          class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
+        />
+      </app-form-field>
+
+      <!-- Submit Button -->
+      <div class="flex min-w-0 justify-end pt-1 sm:col-span-2">
+        <app-button
+          type="button"
+          (buttonClick)="save.emit()"
+          variant="primary"
+          appearance="solid"
+          [fullWidth]="true"
+          buttonClass="sm:w-auto"
+          class="block w-full sm:w-auto"
+        >
+          {{
+            isEditMode
+              ? ('programForm.updateProgram' | translate)
+              : ('programForm.createProgram' | translate)
+          }}
+        </app-button>
+      </div>
+    </div>
+  }
+} @else {
+  <form
+    (ngSubmit)="save.emit()"
+    class="grid min-w-0 grid-cols-1 gap-5 p-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-5 sm:p-6"
+  >
+    <!-- ==================================================
+             PROGRAM NÉV
+             ================================================== -->
+
+    <app-form-field
+      class="col-span-full"
+      [labelKey]="labelPrefix + 'programName'"
+      controlId="programName"
+      [required]="true"
+    >
+      <input
+        type="text"
+        id="programName"
+        name="programName"
+        [placeholder]="labelPrefix + 'programNamePlaceholder' | translate"
+        [(ngModel)]="program.programName"
+        required
+        class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
+      />
+    </app-form-field>
+
+    <!-- ==================================================
+             LEÍRÁS
+             ================================================== -->
+
+    <app-form-field
+      class="col-span-full"
+      [labelKey]="labelPrefix + 'description'"
+      controlId="programDescription"
+    >
+      <textarea
+        id="programDescription"
+        name="programDescription"
+        rows="3"
+        [placeholder]="labelPrefix + 'descriptionPlaceholder' | translate"
+        [(ngModel)]="program.programDescription"
+        class="min-h-28 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
+      ></textarea>
+    </app-form-field>
+
+    <!-- ==================================================
+             KEZDÉS DÁTUMA
+             ================================================== -->
+
+    <app-form-field [labelKey]="labelPrefix + 'startDate'" controlId="startDate" [required]="true">
+      <input
+        type="date"
+        id="startDate"
+        name="startDate"
+        [(ngModel)]="program.startDate"
+        required
+        class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
+      />
+    </app-form-field>
+
+    <!-- ==================================================
+             VÁRHATÓ BEFEJEZÉS
+             ================================================== -->
+
+    <app-form-field [labelKey]="labelPrefix + 'endDate'" controlId="endDate">
+      <input
+        type="date"
+        id="endDate"
+        name="endDate"
+        [value]="endDate"
+        readonly
+        class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-surface-100 px-3.5 py-2.5 text-base text-content-600 shadow-sm outline-none sm:text-sm"
+      />
+    </app-form-field>
+
+    <!-- ==================================================
+             IDŐTARTAM
+             ================================================== -->
+
+    <app-form-field [labelKey]="labelPrefix + 'duration'" controlId="durationDays">
+      <input
+        type="number"
+        id="durationDays"
+        name="durationDays"
+        [placeholder]="labelPrefix + 'durationPlaceholder' | translate"
+        [(ngModel)]="program.durationDays"
+        min="1"
+        class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
+      />
+    </app-form-field>
+
+    <!-- ==================================================
+             NEHÉZSÉGI SZINT
+             ================================================== -->
+
+    <app-form-field [labelKey]="labelPrefix + 'difficultyLevel'" controlId="difficultyLevel">
+      <app-select
+        id="difficultyLevel"
+        name="difficultyLevel"
+        [(value)]="program.difficultyLevel"
+        [placeholder]="labelPrefix + 'selectDifficulty'"
+        placeholderValue=""
+        [className]="'min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm'"
+        [options]="[
+          { value: 'BEGINNER', label: labelPrefix + 'beginner' },
+          { value: 'INTERMEDIATE', label: labelPrefix + 'intermediate' },
+          { value: 'ADVANCED', label: labelPrefix + 'advanced' },
+        ]"
+      />
+    </app-form-field>
+
+    <!-- ==================================================
+             MENTÉS
+             ================================================== -->
+
+    <div class="col-span-full flex justify-end border-t border-info-100 pt-5">
+      @if (mode === 'edit') {
+        <app-button
+          type="submit"
+          variant="save"
+          appearance="solid"
+          [fullWidth]="true"
+          buttonClass="sm:w-auto"
+          class="block w-full sm:w-auto"
+        >
+          <span><app-icon name="save" sizeClass="h-5 w-5" /></span>
+          <span>{{ 'coachProgramEdit.save' | translate }}</span>
+        </app-button>
+      } @else {
+        <app-button
+          variant="save"
+          type="submit"
+          [label]="labelPrefix + 'save' | translate"
+          [lucideIcon]="'save'"
+        ></app-button>
+      }
+    </div>
+  </form>
+}

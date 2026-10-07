@@ -25,7 +25,23 @@ Az 1. kategória cseréi elkészültek:
 
 Ellenőrzés a megvalósítás után: 124 komponens-regressziós teszt sikeres valódi headless böngészőben; development build és Angular-sablonellenőrzés sikeres; a módosított admin e2e teszt típusellenőrzése sikeres; theme audit: 320 forrásfájl, 0 hiba. Élő backenddel a DB-t is használó e2e tesztet nem futtattam. A két dashboard create-teszt hiányzó Router/Translate providerét pótoltam, és a választótesztet a meglévő Material animációs tokenjével konfiguráltam új csomag nélkül.
 
-A további kategóriák nagyobb komponensbővítései nem részei ennek az átállításnak. Az alábbi darabszámok és leltár az audit eredeti állapotát rögzítik.
+## A 2. pont megvalósítása
+
+A meglévő komponensek bővítései és a kapcsolódó cserék elkészültek:
+
+- **FormField:** opcionális `hint`, `error`, `showError`; egyedi leírásazonosítók és a tényleges input/select/textarea ARIA-kapcsolatai. Meglévő külső `aria-describedby` értékeket megtart, a hibajelzés kikapcsolásakor visszaállítja az eredeti `aria-invalid` értéket. Az admin coach-létrehozó ugyanazokkal a ngModel validátorokkal és dirty/touched feltételekkel ezt használja a mezőhibákhoz.
+- **AppSelect:** `ControlValueAccessor`, így a régi `value`/`valueChange` mellett `ngModel` és `formControl` is használható. A numerikus, boolean, null/undefined értékek típusa megmarad; a form által letiltott mező sem választható. A programból érkező értékbeállítás nem küld kiválasztási eseményt. Nyelvváltáskor frissül a kiválasztott címke, de az aktív keresőkifejezés megmarad.
+- **Választó wrapperek:** konfigurálható `controlId`, ütközésmentes alapazonosítók a user/coach/role/program példányoknak. A legelső példány régi id-ja és keresőazonosítója megmarad; a foglalás a példány megszűnésekor felszabadul. A coach-választó opcionális `searchable` módja egy mezőbe foglalja a keresést és a választást. Alapértelmezésben továbbra is a korábbi külön kereső és annak korábbi eseményei működnek.
+- **AppButton:** `custom` megjelenés a műveleti kártyákhoz és eltérő összetett sorokhoz, közös `selection-row` megjelenés a sorozatszerkesztőhöz. A `testId`, `buttonRole`, `ariaSelected`, `tabIndex` a belső natív gombra kerül. A programépítő két műveleti kártyája, a workoutszerkesztő választósorai, a sorozatszerkesztő gyakorlatválasztója és a naptár eseménysorai átálltak. Az események ugyanazokat az argumentumokat adják a korábbi handlereknek; a kijelölési/befejezettségi színek és a grid/flex elrendezés megmaradtak. A `DashboardAction` alternatív bővítése ezért nem szükséges.
+- **AppCard:** opcionális `padding`, `hover`, `overflow`, `showHeader`/`showActions` és `[cardHeader]`/`[cardActions]` tartalomhelyek. Az alapértékek a régi megjelenést tartják meg; a kivetített natív form működését böngészős teszt ellenőrzi.
+- **ConfirmDialog:** állítható `title`, példányonként egyedi cím/leírás id, CDK fókuszcsapda és fókusz-visszaállítás. A nyitáskori fókusz a címre kerül, letiltott gombok esetén is. A korábbi cím maradt alapérték, a `busy` továbbra is tiltja a műveleteket és az Escape bezárást.
+- **Message:** opcionális, csak szövegszínt alkalmazó `compact` megjelenés, `role`, `ariaLive` és `messageId`; az alapértelmezett megjelenés és fordítás változatlan.
+- **Pagination:** általános `pageLabel`, legfeljebb alapértelmezetten 7 oldalszám és köztes ellipszis. Az első/utolsó oldal és az aktuális oldal környezete látható; az előző/következő, közvetlen oldalváltási és oldalméret-események változatlanok. Kis oldalszámnál minden oldalgomb megmarad.
+- **ProgramDetailsForm:** közös `builder`, `create`, `edit` és `reactive` mód. A create/edit oldalak ugyanazt a programobjektumot szerkesztik; a dátumszámítás, a mentés, a szolgáltatáshívások és az API-adatok a szülőben maradtak. A builder szigorú mentéstiltása, a create/edit saját mentési validációja és a régi ProgramForm szülőtől kapott reactive validátorai elkülönülnek. A régi ProgramForm mezői megkapták az auditban hiányzó `[formGroup]` bekötést; továbbra sem került új útvonalra.
+
+Ellenőrzés: **138 komponens-regressziós teszt sikeres** valódi headless böngészőben, ebből 14 új bővítési teszt. A development build és a spec TypeScript-ellenőrzés sikeres; theme audit: 321 forrásfájl, 0 hiba; `git diff --check` sikeres. Élő backenddel teljes e2e folyamatot nem futtattam. Az AppIcon korábbi, nem használt importjára vonatkozó buildfigyelmeztetés megmaradt.
+
+A 3. kategória új komponensei nem részei ennek az átállításnak. Az alábbi darabszámok és leltár az audit eredeti állapotát rögzítik.
 
 ## 1. Meglévő komponensekkel kiváltható, új API nélkül
 

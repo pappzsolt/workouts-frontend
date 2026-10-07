@@ -1,9 +1,7 @@
 <!-- ======================================================
      OLDAL
      ====================================================== -->
-<div
-  class="min-h-full min-w-0 bg-transparent"
->
+<div class="min-h-full min-w-0 bg-transparent">
   <div
     class="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-5 px-2.5 py-4 sm:gap-6 sm:px-6 sm:py-8 lg:px-8"
   >
@@ -46,7 +44,6 @@
           [iconOnly]="true"
           lucideIcon="chevron-left"
         >
-
         </app-button>
 
         <!-- Hónap és év -->
@@ -67,7 +64,6 @@
           [iconOnly]="true"
           lucideIcon="chevron-right"
         >
-
         </app-button>
       </div>
     </div>
@@ -149,19 +145,22 @@
 
         <!-- Workoutok -->
         <div class="flex min-w-0 flex-col gap-1">
-          <button
+          <app-button
+            appearance="custom"
             type="button"
             *ngFor="let workout of getWorkoutsForDay(day.date); trackBy: trackByWorkout"
-            class="group flex min-w-0 cursor-pointer items-center gap-1 rounded-lg border px-1 py-1.5 text-left text-[10px] font-semibold transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary-400 sm:gap-2 sm:px-2 sm:text-xs"
-            [class.border-success-200]="workout.completed"
-            [class.bg-success-50]="workout.completed"
-            [class.text-success-700]="workout.completed"
-            [class.border-primary-200]="!workout.completed"
-            [class.bg-primary-50]="!workout.completed"
-            [class.text-primary-700]="!workout.completed"
-            [class.hover:border-success-300]="workout.completed"
-            [class.hover:border-primary-300]="!workout.completed"
-            (click)="selectWorkout(workout)"
+            (buttonClick)="selectWorkout(workout)"
+            [buttonClass]="
+              'group flex min-w-0 cursor-pointer items-center gap-1 rounded-lg border px-1 py-1.5 text-left text-[10px] font-semibold transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary-400 sm:gap-2 sm:px-2 sm:text-xs' +
+              (workout.completed ? ' border-success-200' : '') +
+              (workout.completed ? ' bg-success-50' : '') +
+              (workout.completed ? ' text-success-700' : '') +
+              (!workout.completed ? ' border-primary-200' : '') +
+              (!workout.completed ? ' bg-primary-50' : '') +
+              (!workout.completed ? ' text-primary-700' : '') +
+              (workout.completed ? ' hover:border-success-300' : '') +
+              (!workout.completed ? ' hover:border-primary-300' : '')
+            "
           >
             <span class="shrink-0 text-sm sm:text-base">
               <app-icon name="dumbbell" sizeClass="h-5 w-5" />
@@ -170,7 +169,7 @@
             <span class="min-w-0 truncate">
               {{ workout.workoutName }}
             </span>
-          </button>
+          </app-button>
         </div>
       </div>
     </div>
@@ -199,28 +198,35 @@
             {{ day.date | date: 'EEEE, d MMMM' }}
           </h4>
           <div class="flex flex-col gap-2">
-            <button
+            <app-button
+              appearance="custom"
               type="button"
               *ngFor="let workout of getWorkoutsForDay(day.date); trackBy: trackByWorkout"
-              (click)="selectWorkout(workout)"
-              class="flex min-h-11 w-full items-center gap-3 rounded-lg border px-3 py-2 text-left text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-400"
-              [class.border-success-200]="workout.completed"
-              [class.bg-success-50]="workout.completed"
-              [class.text-success-700]="workout.completed"
-              [class.border-primary-200]="!workout.completed"
-              [class.bg-primary-50]="!workout.completed"
-              [class.text-primary-700]="!workout.completed"
+              (buttonClick)="selectWorkout(workout)"
+              [buttonClass]="
+                'flex min-h-11 w-full items-center gap-3 rounded-lg border px-3 py-2 text-left text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-400' +
+                (workout.completed ? ' border-success-200' : '') +
+                (workout.completed ? ' bg-success-50' : '') +
+                (workout.completed ? ' text-success-700' : '') +
+                (!workout.completed ? ' border-primary-200' : '') +
+                (!workout.completed ? ' bg-primary-50' : '') +
+                (!workout.completed ? ' text-primary-700' : '')
+              "
             >
               <span aria-hidden="true"><app-icon name="dumbbell" sizeClass="h-5 w-5" /></span>
               <span class="min-w-0 flex-1 break-words">{{ workout.workoutName }}</span>
-              <span class="sr-only" *ngIf="workout.completed">{{ 'userWorkoutsCalendar.completed' | translate }}</span>
-            </button>
+              <span class="sr-only" *ngIf="workout.completed">{{
+                'userWorkoutsCalendar.completed' | translate
+              }}</span>
+            </app-button>
           </div>
         </article>
       </ng-container>
       <app-message
         *ngIf="!hasWorkoutsInCurrentMonth()"
-        [message]="searchTerm.trim() ? 'appSearch.noResults' : 'userWorkoutsCalendar.noMonthWorkouts'"
+        [message]="
+          searchTerm.trim() ? 'appSearch.noResults' : 'userWorkoutsCalendar.noMonthWorkouts'
+        "
         type="info"
       ></app-message>
     </section>
@@ -253,10 +259,7 @@
             <app-icon name="calendar-days" sizeClass="h-5 w-5" /> {{ selectedWorkout.scheduledAt }}
           </div>
 
-          <div
-            *ngIf="!selectedWorkout.scheduledAt"
-            class="mt-2 text-sm text-warning-100"
-          >
+          <div *ngIf="!selectedWorkout.scheduledAt" class="mt-2 text-sm text-warning-100">
             <app-icon name="calendar-days" sizeClass="h-5 w-5" />
             {{ 'userWorkoutsCalendar.noScheduledDate' | translate }}
           </div>
@@ -305,9 +308,7 @@
 
             <!-- Exercise neve -->
             <div class="min-w-0 flex-1">
-              <div
-                class="break-words text-sm font-semibold text-content-800 sm:text-base"
-              >
+              <div class="break-words text-sm font-semibold text-content-800 sm:text-base">
                 {{ exercise.exercise_name }}
               </div>
             </div>
