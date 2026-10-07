@@ -4,7 +4,6 @@
 
 <div class="min-h-full bg-surface-50">
   <div class="mx-auto w-full max-w-6xl px-2.5 py-4 sm:px-6 sm:py-8 lg:px-8">
-
     <!-- ==================================================
          OLDAL CÍM
          ================================================== -->
@@ -21,31 +20,31 @@
          ================================================== -->
 
     <app-message [message]="message" [type]="messageType" class="block mb-4"></app-message>
-    <app-message *ngIf="loading" message="common.loading" type="info"></app-message>
+    <app-loading *ngIf="loading" message="common.loading"></app-loading>
     <ng-container *ngIf="loaded">
       <ng-container *ngIf="workouts.length; else noWorkouts">
-
         <!-- ==================================================
              TAB VÁLASZTÓ
              ================================================== -->
 
-        <div
-          class="mb-5 grid grid-cols-2 gap-2 rounded-2xl border border-surface-200 bg-white p-2 shadow-md shadow-surface-200/50 sm:mb-6 sm:gap-3 sm:p-3"
-          role="tablist"
-          [attr.aria-label]="'userWorkouts.groupingAria' | translate"
+        <app-tabs
+          #workoutTabs
+          [activeTab]="activeTab"
+          (activeTabChange)="setActiveTab($event === 'completed' ? 'completed' : 'pending')"
+          containerClass="mb-5 grid grid-cols-2 gap-2 rounded-2xl border border-surface-200 bg-white p-2 shadow-md shadow-surface-200/50 sm:mb-6 sm:gap-3 sm:p-3"
+          [ariaLabel]="'userWorkouts.groupingAria' | translate"
         >
-
           <!-- Elvégzendő edzések tab -->
 
           <button
             type="button"
-            role="tab"
-            [attr.aria-selected]="activeTab === 'pending'"
-            (click)="setActiveTab('pending')"
+            appTab="pending"
             class="flex min-h-[76px] min-w-0 items-center justify-center gap-2 rounded-xl border-2 px-2 py-3 text-center transition duration-200 sm:min-h-[88px] sm:gap-3 sm:px-4"
-            [ngClass]="activeTab === 'pending'
-              ? 'border-primary-600 bg-primary-50 text-primary-700 shadow-sm'
-              : 'border-transparent bg-surface-50 text-content-500 hover:border-surface-300 hover:bg-surface-100 hover:text-content-800'"
+            [ngClass]="
+              activeTab === 'pending'
+                ? 'border-primary-600 bg-primary-50 text-primary-700 shadow-sm'
+                : 'border-transparent bg-surface-50 text-content-500 hover:border-surface-300 hover:bg-surface-100 hover:text-content-800'
+            "
           >
             <span class="text-xl sm:text-2xl"><app-icon name="timer" sizeClass="h-5 w-5" /></span>
 
@@ -55,10 +54,12 @@
               </span>
 
               <span
-                class="mt-1 inline-flex min-w-7 items-center justify-center rounded-full px-2 py-0.5 text-xs font-bold"
-                [ngClass]="activeTab === 'pending'
-                  ? 'bg-primary-100 text-primary-700'
-                  : 'bg-surface-200 text-content-600'"
+                appBadge="tab"
+                [ngClass]="
+                  activeTab === 'pending'
+                    ? 'bg-primary-100 text-primary-700'
+                    : 'bg-surface-200 text-content-600'
+                "
               >
                 {{ pendingWorkouts.length }}
               </span>
@@ -69,15 +70,17 @@
 
           <button
             type="button"
-            role="tab"
-            [attr.aria-selected]="activeTab === 'completed'"
-            (click)="setActiveTab('completed')"
+            appTab="completed"
             class="flex min-h-[76px] min-w-0 items-center justify-center gap-2 rounded-xl border-2 px-2 py-3 text-center transition duration-200 sm:min-h-[88px] sm:gap-3 sm:px-4"
-            [ngClass]="activeTab === 'completed'
-              ? 'border-primary-600 bg-primary-50 text-primary-700 shadow-sm'
-              : 'border-transparent bg-surface-50 text-content-500 hover:border-surface-300 hover:bg-surface-100 hover:text-content-800'"
+            [ngClass]="
+              activeTab === 'completed'
+                ? 'border-primary-600 bg-primary-50 text-primary-700 shadow-sm'
+                : 'border-transparent bg-surface-50 text-content-500 hover:border-surface-300 hover:bg-surface-100 hover:text-content-800'
+            "
           >
-            <span class="text-xl sm:text-2xl"><app-icon name="circle-check" sizeClass="h-5 w-5" /></span>
+            <span class="text-xl sm:text-2xl"
+              ><app-icon name="circle-check" sizeClass="h-5 w-5"
+            /></span>
 
             <span class="flex min-w-0 flex-col items-start">
               <span class="text-xs font-bold leading-snug sm:text-base">
@@ -85,17 +88,18 @@
               </span>
 
               <span
-                class="mt-1 inline-flex min-w-7 items-center justify-center rounded-full px-2 py-0.5 text-xs font-bold"
-                [ngClass]="activeTab === 'completed'
-                  ? 'bg-primary-100 text-primary-700'
-                  : 'bg-surface-200 text-content-600'"
+                appBadge="tab"
+                [ngClass]="
+                  activeTab === 'completed'
+                    ? 'bg-primary-100 text-primary-700'
+                    : 'bg-surface-200 text-content-600'
+                "
               >
                 {{ completedWorkouts.length }}
               </span>
             </span>
           </button>
-
-        </div>
+        </app-tabs>
 
         <!-- ==================================================
              ELVÉGZENDŐ EDZÉSEK TAB TARTALMA
@@ -103,49 +107,45 @@
 
         <section
           *ngIf="activeTab === 'pending'"
+          [id]="workoutTabs.panelId('pending')"
+          [attr.aria-labelledby]="workoutTabs.tabId('pending')"
           role="tabpanel"
           class="rounded-2xl border border-surface-200 bg-white p-3.5 shadow-md shadow-surface-200/50 sm:p-5"
         >
-
           <!-- Szekció fejléc -->
 
-          <div
-            class="mb-4 flex flex-wrap items-center justify-between gap-2 sm:mb-5 sm:gap-3"
-          >
+          <div appSectionHeader class="mb-4 sm:mb-5 sm:gap-3">
             <h3
-              class="flex min-w-0 items-center gap-2 text-base font-bold leading-snug text-content-800 sm:text-xl"
+              appHeading="compact"
+              class="flex min-w-0 items-center gap-2 leading-snug sm:text-xl"
             >
               <span><app-icon name="timer" sizeClass="h-5 w-5" /></span>
               <span>{{ 'userWorkouts.pendingWorkouts' | translate }}</span>
             </h3>
 
-            <span
-              class="inline-flex min-w-9 items-center justify-center rounded-full bg-primary-100 px-3 py-1 text-sm font-bold text-primary-700"
-            >
+            <span appBadge="counter" class="bg-primary-100 text-primary-700">
               {{ pendingWorkouts.length }}
             </span>
           </div>
 
           <!-- Edzéskártyák + közös lapozó -->
 
-          <div
-            *ngIf="pendingWorkouts.length > 0; else noPendingWorkouts"
-            class="w-full"
-          >
-
+          <div *ngIf="pendingWorkouts.length > 0; else noPendingWorkouts" class="w-full">
             <app-side-pagination
               [currentPage]="pendingCurrentPage"
               [totalPages]="pendingWorkouts.length"
               (pageChange)="onPendingPageChange($event)"
             >
               <ng-container
-                *ngTemplateOutlet="workoutCards; context: {
-                  items: paginatedPendingWorkouts,
-                  isCompleted: false
-                }"
+                *ngTemplateOutlet="
+                  workoutCards;
+                  context: {
+                    items: paginatedPendingWorkouts,
+                    isCompleted: false,
+                  }
+                "
               ></ng-container>
             </app-side-pagination>
-
           </div>
 
           <!-- Nincs elvégzendő edzés -->
@@ -161,7 +161,6 @@
               </p>
             </div>
           </ng-template>
-
         </section>
 
         <!-- ==================================================
@@ -170,48 +169,45 @@
 
         <section
           *ngIf="activeTab === 'completed'"
+          [id]="workoutTabs.panelId('completed')"
+          [attr.aria-labelledby]="workoutTabs.tabId('completed')"
           role="tabpanel"
           class="rounded-2xl border border-surface-200 bg-white p-3.5 shadow-md shadow-surface-200/50 sm:p-5"
         >
-
           <!-- Szekció fejléc -->
 
-          <div
-            class="mb-4 flex flex-wrap items-center justify-between gap-2 sm:mb-5 sm:gap-3"
-          >
+          <div appSectionHeader class="mb-4 sm:mb-5 sm:gap-3">
             <h3
-              class="flex min-w-0 items-center gap-2 text-base font-bold leading-snug text-content-800 sm:text-xl"
+              appHeading="compact"
+              class="flex min-w-0 items-center gap-2 leading-snug sm:text-xl"
             >
               <span><app-icon name="circle-check" sizeClass="h-5 w-5" /></span>
               <span>{{ 'userWorkouts.completedWorkouts' | translate }}</span>
             </h3>
 
-            <span
-              class="inline-flex min-w-9 items-center justify-center rounded-full bg-primary-100 px-3 py-1 text-sm font-bold text-primary-700"
-            >
+            <span appBadge="counter" class="bg-primary-100 text-primary-700">
               {{ completedWorkouts.length }}
             </span>
           </div>
 
           <!-- Edzéskártyák + közös lapozó -->
 
-          <ng-container
-            *ngIf="completedWorkouts.length; else noCompletedWorkouts"
-          >
-
+          <ng-container *ngIf="completedWorkouts.length; else noCompletedWorkouts">
             <app-side-pagination
               [currentPage]="completedCurrentPage"
               [totalPages]="completedWorkouts.length"
               (pageChange)="onCompletedPageChange($event)"
             >
               <ng-container
-                *ngTemplateOutlet="workoutCards; context: {
-                  items: paginatedCompletedWorkouts,
-                  isCompleted: true
-                }"
+                *ngTemplateOutlet="
+                  workoutCards;
+                  context: {
+                    items: paginatedCompletedWorkouts,
+                    isCompleted: true,
+                  }
+                "
               ></ng-container>
             </app-side-pagination>
-
           </ng-container>
 
           <!-- Nincs elvégzett edzés -->
@@ -227,9 +223,7 @@
               </p>
             </div>
           </ng-template>
-
         </section>
-
       </ng-container>
     </ng-container>
 
@@ -237,14 +231,8 @@
          KÖZÖS EDZÉSKÁRTYA SABLON
          ================================================== -->
 
-    <ng-template
-      #workoutCards
-      let-items="items"
-      let-isCompleted="isCompleted"
-    >
-
+    <ng-template #workoutCards let-items="items" let-isCompleted="isCompleted">
       <div class="w-full">
-
         <app-card
           *ngFor="let workout of items; trackBy: trackByWorkout"
           variant="default"
@@ -254,30 +242,24 @@
             class="group flex h-full min-w-0 flex-col overflow-hidden transition duration-200 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600"
             (click)="goToExercises(workout)"
           >
-
             <!-- Edzés fejléc / ikon -->
 
             <div
               class="relative flex h-24 items-center justify-center overflow-hidden bg-surface-100 sm:h-36"
             >
-
               <span
                 class="relative flex h-14 w-14 items-center justify-center rounded-xl bg-white text-4xl shadow-sm ring-1 ring-surface-200 transition duration-200 group-hover:scale-105 sm:h-20 sm:w-20 sm:rounded-2xl sm:text-5xl"
               >
                 <app-icon name="dumbbell" sizeClass="h-5 w-5" />
               </span>
-
             </div>
 
             <!-- Edzés tartalom -->
 
             <div class="flex min-w-0 flex-1 flex-col p-3.5 sm:p-5">
-
               <!-- Edzés név -->
 
-              <h4
-                class="mb-2 break-words text-base font-bold leading-5 text-content-800 sm:text-lg sm:leading-6"
-              >
+              <h4 appHeading="compact" class="mb-2 break-words leading-5 sm:text-lg sm:leading-6">
                 {{ workout.workoutName }}
               </h4>
 
@@ -295,43 +277,33 @@
               <div
                 class="mt-auto grid grid-cols-2 gap-2 border-t border-surface-100 pt-3 sm:gap-3 sm:pt-4"
               >
-
                 <!-- Dátum -->
 
-                <div
-                  class="rounded-xl bg-surface-50 px-2.5 py-2.5 sm:px-3 sm:py-3"
-                >
+                <div class="rounded-xl bg-surface-50 px-2.5 py-2.5 sm:px-3 sm:py-3">
                   <div
                     class="mb-1 text-[10px] font-medium uppercase tracking-wide text-content-500 sm:text-xs"
                   >
                     {{ 'userWorkouts.date' | translate }}
                   </div>
 
-                  <div
-                    class="break-words text-xs font-bold text-content-800 sm:text-sm"
-                  >
+                  <div class="break-words text-xs font-bold text-content-800 sm:text-sm">
                     {{ workout.workoutDate | date: 'yyyy.MM.dd' }}
                   </div>
                 </div>
 
                 <!-- Intenzitás -->
 
-                <div
-                  class="rounded-xl bg-primary-50 px-2.5 py-2.5 sm:px-3 sm:py-3"
-                >
+                <div class="rounded-xl bg-primary-50 px-2.5 py-2.5 sm:px-3 sm:py-3">
                   <div
                     class="mb-1 text-[10px] font-medium uppercase tracking-wide text-primary-600 sm:text-xs"
                   >
                     {{ 'userWorkouts.intensity' | translate }}
                   </div>
 
-                  <div
-                    class="break-words text-xs font-bold text-primary-700 sm:text-sm"
-                  >
+                  <div class="break-words text-xs font-bold text-primary-700 sm:text-sm">
                     {{ workout.intensityLevel }}
                   </div>
                 </div>
-
               </div>
 
               <!-- Státusz: teljesített -->
@@ -340,70 +312,56 @@
                 *ngIf="isCompleted"
                 class="mt-3 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2 text-center text-xs font-semibold text-primary-700 sm:py-2.5 sm:text-sm"
               >
-                {{ 'userWorkouts.completed' | translate }} <app-icon name="circle-check" sizeClass="h-5 w-5" />
+                {{ 'userWorkouts.completed' | translate }}
+                <app-icon name="circle-check" sizeClass="h-5 w-5" />
               </div>
 
               <!-- Státusz: nincs teljesítve / függőben -->
 
               <ng-container *ngIf="!isCompleted">
-
                 <div
                   *ngIf="workout.completed === false"
                   class="mt-3 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2 text-center text-xs font-semibold text-primary-700 sm:py-2.5 sm:text-sm"
                 >
-                  {{ 'userWorkouts.notCompleted' | translate }} <app-icon name="circle-x" sizeClass="h-5 w-5" />
+                  {{ 'userWorkouts.notCompleted' | translate }}
+                  <app-icon name="circle-x" sizeClass="h-5 w-5" />
                 </div>
 
                 <div
                   *ngIf="workout.completed === null"
                   class="mt-3 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2 text-center text-xs font-semibold text-primary-700 sm:py-2.5 sm:text-sm"
                 >
-                  {{ 'userWorkouts.pending' | translate }} <app-icon name="timer" sizeClass="h-5 w-5" />
+                  {{ 'userWorkouts.pending' | translate }}
+                  <app-icon name="timer" sizeClass="h-5 w-5" />
                 </div>
-
               </ng-container>
 
               <!-- Teljesített edzés adatai -->
 
               <div
-                *ngIf="
-                  workout.actualSets ||
-                  workout.actualRepetitions ||
-                  workout.weightUsed
-                "
+                *ngIf="workout.actualSets || workout.actualRepetitions || workout.weightUsed"
                 class="mt-3 rounded-xl border border-surface-200 bg-surface-50 p-3 text-sm text-content-600"
               >
-
-                <div
-                  *ngIf="workout.actualSets"
-                  class="py-0.5"
-                >
+                <div *ngIf="workout.actualSets" class="py-0.5">
                   <span class="font-semibold text-content-700">
                     {{ 'userWorkouts.sets' | translate }}:
                   </span>
                   {{ workout.actualSets }}
                 </div>
 
-                <div
-                  *ngIf="workout.actualRepetitions"
-                  class="py-0.5"
-                >
+                <div *ngIf="workout.actualRepetitions" class="py-0.5">
                   <span class="font-semibold text-content-700">
                     {{ 'userWorkouts.reps' | translate }}:
                   </span>
                   {{ workout.actualRepetitions }}
                 </div>
 
-                <div
-                  *ngIf="workout.weightUsed"
-                  class="py-0.5"
-                >
+                <div *ngIf="workout.weightUsed" class="py-0.5">
                   <span class="font-semibold text-content-700">
                     {{ 'userWorkouts.weight' | translate }}:
                   </span>
                   {{ workout.weightUsed }} kg
                 </div>
-
               </div>
 
               <!-- Visszajelzés -->
@@ -429,13 +387,10 @@
                 </span>
                 {{ workout.notes }}
               </div>
-
             </div>
           </div>
         </app-card>
-
       </div>
-
     </ng-template>
 
     <!-- ==================================================
@@ -443,19 +398,13 @@
          ================================================== -->
 
     <ng-template #noWorkouts>
-
       <div
         class="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-surface-300 bg-white px-5 py-10 text-center shadow-md shadow-surface-200/40"
       >
         <span class="mb-3"><app-icon name="dumbbell" sizeClass="h-12 w-12" /></span>
 
-        <app-message
-          [message]="'userWorkouts.noWorkouts'"
-          type="info"
-        ></app-message>
+        <app-message [message]="'userWorkouts.noWorkouts'" type="info"></app-message>
       </div>
-
     </ng-template>
-
   </div>
 </div>

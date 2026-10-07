@@ -1,6 +1,15 @@
 import { matchesSearch } from '../components/app-search/search-match';
 import { AppSearchComponent } from '../components/app-search/app-search.component';
-import { Component, DestroyRef, EventEmitter, Input, OnChanges, OnInit, Output, inject } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  inject,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserNameIdService } from '../../../services/user/user-name-id.service';
 import type { UserNameId } from '../../../models/common/user-name-id.model';
@@ -18,17 +27,33 @@ import { SHARED_IMPORTS } from '../shared-imports';
       placeholder="appSearch.usersPlaceholder"
       [showClearButton]="true"
       (searchTermChange)="searchTerm = $event"
-      class="mb-3 block" [disabled]="disabled || !ready"
+      class="mb-3 block"
+      [disabled]="disabled || !ready"
     ></app-search>
-    <app-message *ngIf="ready && searchTerm.trim() && !filteredUsers.length" message="appSearch.noResults" type="info" class="mb-3 block"></app-message>
-    <fieldset data-testid="program-users" [disabled]="disabled || !ready"
-      class="max-h-64 overflow-y-auto rounded-lg border border-surface-300 p-3">
+    <app-message
+      *ngIf="ready && searchTerm.trim() && !filteredUsers.length"
+      message="appSearch.noResults"
+      type="info"
+      class="mb-3 block"
+    ></app-message>
+    <fieldset
+      data-testid="program-users"
+      [disabled]="disabled || !ready"
+      class="max-h-64 overflow-y-auto rounded-lg border border-surface-300 p-3"
+    >
       <legend class="px-1 text-sm font-semibold">{{ 'userSelect.selectUser' | translate }}</legend>
-      <label *ngFor="let user of filteredUsers" class="flex min-h-11 items-center gap-3 break-words">
-        <input type="checkbox" [attr.data-user-id]="user.id"
+      <label
+        *ngFor="let user of filteredUsers"
+        class="flex min-h-11 items-center gap-3 break-words"
+      >
+        <input
+          appCheckbox="plain"
+          type="checkbox"
+          [attr.data-user-id]="user.id"
           [checked]="selectedUserIds.includes(user.id)"
           [disabled]="assignedUserIds.includes(user.id)"
-          (change)="toggle(user.id, $event)" />
+          (change)="toggle(user.id, $event)"
+        />
         <span>{{ user.username }}</span>
       </label>
     </fieldset>
@@ -47,25 +72,28 @@ export class UserMultiSelectComponent implements OnInit, OnChanges {
   searchTerm = '';
 
   get filteredUsers(): UserNameId[] {
-    return this.users.filter(user => matchesSearch(this.searchTerm, user.username));
+    return this.users.filter((user) => matchesSearch(this.searchTerm, user.username));
   }
   ready = false;
   message = '';
   private loaded = false;
 
   ngOnInit(): void {
-    this.service.getAllUsers().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: response => {
-        if (!response.success || !Array.isArray(response.data)) {
-          this.fail();
-          return;
-        }
-        this.users = [...response.data];
-        this.loaded = true;
-        this.validateAvailableUsers();
-      },
-      error: () => this.fail(),
-    });
+    this.service
+      .getAllUsers()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          if (!response.success || !Array.isArray(response.data)) {
+            this.fail();
+            return;
+          }
+          this.users = [...response.data];
+          this.loaded = true;
+          this.validateAvailableUsers();
+        },
+        error: () => this.fail(),
+      });
   }
 
   ngOnChanges(): void {
@@ -73,8 +101,8 @@ export class UserMultiSelectComponent implements OnInit, OnChanges {
   }
 
   private validateAvailableUsers(): void {
-    const ids = new Set(this.users.map(user => user.id));
-    if (this.assignedUserIds.some(id => !ids.has(id))) {
+    const ids = new Set(this.users.map((user) => user.id));
+    if (this.assignedUserIds.some((id) => !ids.has(id))) {
       this.fail();
       return;
     }
@@ -90,11 +118,16 @@ export class UserMultiSelectComponent implements OnInit, OnChanges {
   }
 
   toggle(id: number, event: Event): void {
-    if (!this.ready || this.disabled || this.assignedUserIds.includes(id) ||
-        !(event.target instanceof HTMLInputElement)) return;
+    if (
+      !this.ready ||
+      this.disabled ||
+      this.assignedUserIds.includes(id) ||
+      !(event.target instanceof HTMLInputElement)
+    )
+      return;
     const selected = event.target.checked
       ? [...new Set([...this.selectedUserIds, id])]
-      : this.selectedUserIds.filter(value => value !== id);
+      : this.selectedUserIds.filter((value) => value !== id);
     this.selectedUserIdsChange.emit(selected);
   }
 }

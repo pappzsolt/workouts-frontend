@@ -1,37 +1,32 @@
-<div
-  class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8"
->
+<div class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8">
   <div class="mx-auto flex w-full max-w-5xl min-w-0 flex-col gap-6">
-
     <!-- Cím -->
     <div class="text-center">
-      <h2
-        class="break-words text-2xl font-bold tracking-tight text-content-800 sm:text-3xl"
-      >
+      <h2 appHeading="page" class="break-words">
         {{ 'adminChoiceNew.title' | translate }}
       </h2>
     </div>
 
     <!-- Üzenet -->
-    <app-message
-      *ngIf="message"
-      [message]="message"
-      [type]="messageType"
-    >
-    </app-message>
+    <app-message *ngIf="message" [message]="message" [type]="messageType"> </app-message>
 
     <!-- Választási lehetőségek -->
-    <div
-      class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2"
-    >
-
+    <div class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2">
       <!-- New Coach -->
-      <app-dashboard-action label="adminChoiceNew.newCoach" icon="barbell" tone="add" (activated)="navigateTo('admin/coach/new')"></app-dashboard-action>
+      <app-dashboard-action
+        label="adminChoiceNew.newCoach"
+        icon="barbell"
+        tone="add"
+        (activated)="navigateTo('admin/coach/new')"
+      ></app-dashboard-action>
 
       <!-- New User -->
-      <app-dashboard-action label="adminChoiceNew.newUser" icon="user-plus" tone="add" (activated)="navigateTo('admin/users/new')"></app-dashboard-action>
-
+      <app-dashboard-action
+        label="adminChoiceNew.newUser"
+        icon="user-plus"
+        tone="add"
+        (activated)="navigateTo('admin/users/new')"
+      ></app-dashboard-action>
     </div>
-
   </div>
 </div>

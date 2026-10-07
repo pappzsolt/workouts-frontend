@@ -1,106 +1,110 @@
 <!-- ==========================================================
      EXERCISE MODAL
      ========================================================== -->
-<div
+<app-dialog
+  #dialog
+  [labelledBy]="dialog.titleId"
   *ngIf="exerciseDialogOpen && exerciseDialogWorkout"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-surface-900/50 p-4 backdrop-blur-sm"
-  role="dialog"
-  aria-modal="true"
+  [ariaLabel]="exerciseDialogWorkout.name"
+  [busy]="loadingExercises"
+  backdropClass="fixed inset-0 z-50 flex items-center justify-center bg-surface-900/50 p-4 backdrop-blur-sm"
+  panelClass="flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-2xl"
 >
-  <div class="flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-2xl">
-    <div class="flex shrink-0 items-start justify-between gap-4 border-b border-surface-100 px-5 py-4 sm:px-6">
-      <div class="min-w-0">
-        <div class="flex flex-wrap items-center gap-2">
-          <span class="rounded-full bg-info-100 px-2.5 py-1 text-xs font-bold text-info-700">
-            {{ 'coachProgramBuilder.dayNumber' | translate:{ day: dayIndex } }}
-          </span>
+  <div
+    dialogHeader
+    class="flex shrink-0 items-start justify-between gap-4 border-b border-surface-100 px-5 py-4 sm:px-6"
+  >
+    <div class="min-w-0">
+      <div class="flex flex-wrap items-center gap-2">
+        <span appBadge="step" class="bg-info-100 text-info-700">
+          {{ 'coachProgramBuilder.dayNumber' | translate: { day: dayIndex } }}
+        </span>
 
-          <span class="text-sm font-semibold text-content-500">
-            {{ exerciseDialogExercises.length }}
-            {{ 'coachProgramBuilder.exercise' | translate }}
-          </span>
-        </div>
-
-        <h3 class="mt-2 break-words text-lg font-bold text-content-800 sm:text-xl">
-          {{ exerciseDialogWorkout.name }}
-        </h3>
-
-        <p class="mt-1 text-sm text-content-500">
-          {{
-            exerciseDialogIsNewWorkout
-              ? ('coachProgramBuilder.exercisesDescription' | translate)
-              : ('coachProgramBuilder.exercisesLocked' | translate)
-          }}
-        </p>
+        <span class="text-sm font-semibold text-content-500">
+          {{ exerciseDialogExercises.length }}
+          {{ 'coachProgramBuilder.exercise' | translate }}
+        </span>
       </div>
 
-      <app-button
-        type="button"
-        [disabled]="loadingExercises"
-        (buttonClick)="close.emit()"
-        variant="delete"
-        appearance="ghost"
-        [iconOnly]="true"
-        [ariaLabel]="'common.close' | translate"
-      >
-        <app-icon name="x" sizeClass="h-5 w-5" />
-      </app-button>
+      <h3 [id]="dialog.titleId" appHeading="section" class="mt-2 break-words">
+        {{ exerciseDialogWorkout.name }}
+      </h3>
+
+      <p class="mt-1 text-sm text-content-500">
+        {{
+          exerciseDialogIsNewWorkout
+            ? ('coachProgramBuilder.exercisesDescription' | translate)
+            : ('coachProgramBuilder.exercisesLocked' | translate)
+        }}
+      </p>
     </div>
 
-    <div class="min-h-0 flex-1 overflow-y-auto p-5 sm:p-6">
-      <app-message [message]="errorMessage" [type]="'error'"></app-message>
-      <!-- Meglévő workout: csak a workouthoz tartozó exercise-ek jelennek meg. -->
-      <div *ngIf="!exerciseDialogIsNewWorkout" class="space-y-3">
-        <div class="flex items-center justify-between gap-3">
-          <h4 class="text-base font-bold text-content-800">
-            {{ 'coachProgramBuilder.selectedExercises' | translate }}
-          </h4>
+    <app-button
+      type="button"
+      [disabled]="loadingExercises"
+      (buttonClick)="close.emit()"
+      variant="delete"
+      appearance="ghost"
+      [iconOnly]="true"
+      [ariaLabel]="'common.close' | translate"
+    >
+      <app-icon name="x" sizeClass="h-5 w-5" />
+    </app-button>
+  </div>
 
-          <span
-            class="rounded-full bg-info-100 px-3 py-1 text-xs font-bold text-info-700"
-          >
-            {{ exerciseDialogExercises.length }}
-          </span>
-        </div>
+  <div class="min-h-0 flex-1 overflow-y-auto p-5 sm:p-6">
+    <app-message [message]="errorMessage" [type]="'error'"></app-message>
+    <!-- Meglévő workout: csak a workouthoz tartozó exercise-ek jelennek meg. -->
+    <div *ngIf="!exerciseDialogIsNewWorkout" class="space-y-3">
+      <div class="flex items-center justify-between gap-3">
+        <h4 appHeading="compact">
+          {{ 'coachProgramBuilder.selectedExercises' | translate }}
+        </h4>
 
-        <app-message *ngIf="exerciseDialogExercises.length === 0" message="coachProgramBuilder.noExercises" type="info" class="block"></app-message>
-
-        <app-card *ngIf="exerciseDialogExercises.length > 0" variant="outlined" class="block min-w-0">
-          <div
-            *ngFor="let exercise of exerciseDialogExercises; let i = index"
-            class="flex items-center gap-3 border-b border-surface-100 px-4 py-3 last:border-b-0"
-          >
-            <span
-              class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-info-100 text-xs font-bold text-info-700"
-            >
-              {{ i + 1 }}
-            </span>
-
-            <div class="min-w-0 flex-1">
-              <div class="break-words text-sm font-semibold text-content-800">
-                {{ exercise.name }}
-              </div>
-
-              <div
-                *ngIf="exercise.difficultyLevel"
-                class="mt-0.5 text-xs text-content-500"
-              >
-                {{ exercise.difficultyLevel }}
-              </div>
-            </div>
-
-            <span
-              *ngIf="exercise.equipment"
-              class="hidden shrink-0 rounded-lg bg-surface-100 px-2.5 py-1 text-xs font-medium text-content-500 sm:inline-flex"
-            >
-              {{ exercise.equipment }}
-            </span>
-          </div>
-        </app-card>
+        <span appBadge="count" class="bg-info-100 text-info-700">
+          {{ exerciseDialogExercises.length }}
+        </span>
       </div>
 
-      <!-- Új workout: a meglévő közös board marad a kiválasztáshoz. -->
-      <fieldset [disabled]="loadingExercises">
+      <app-empty-state
+        *ngIf="exerciseDialogExercises.length === 0"
+        message="coachProgramBuilder.noExercises"
+        class="block"
+      ></app-empty-state>
+
+      <app-card *ngIf="exerciseDialogExercises.length > 0" variant="outlined" class="block min-w-0">
+        <div
+          *ngFor="let exercise of exerciseDialogExercises; let i = index"
+          class="flex items-center gap-3 border-b border-surface-100 px-4 py-3 last:border-b-0"
+        >
+          <span
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-info-100 text-xs font-bold text-info-700"
+          >
+            {{ i + 1 }}
+          </span>
+
+          <div class="min-w-0 flex-1">
+            <div class="break-words text-sm font-semibold text-content-800">
+              {{ exercise.name }}
+            </div>
+
+            <div *ngIf="exercise.difficultyLevel" class="mt-0.5 text-xs text-content-500">
+              {{ exercise.difficultyLevel }}
+            </div>
+          </div>
+
+          <span
+            *ngIf="exercise.equipment"
+            class="hidden shrink-0 rounded-lg bg-surface-100 px-2.5 py-1 text-xs font-medium text-content-500 sm:inline-flex"
+          >
+            {{ exercise.equipment }}
+          </span>
+        </div>
+      </app-card>
+    </div>
+
+    <!-- Új workout: a meglévő közös board marad a kiválasztáshoz. -->
+    <fieldset [disabled]="loadingExercises">
       <app-coach-exercises-board
         *ngIf="exerciseDialogIsNewWorkout"
         [externalExercises]="exercises"
@@ -109,39 +113,38 @@
         [compactSelection]="true"
         (exercisesChange)="onExercisesChange($event)"
       ></app-coach-exercises-board>
-      </fieldset>
-
-
-    </div>
-
-    <div class="flex shrink-0 flex-col-reverse gap-3 border-t border-surface-100 px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
-      <app-button
-        type="button"
-        [disabled]="loadingExercises"
-        (buttonClick)="close.emit()"
-        variant="secondary"
-        appearance="outline"
-        [fullWidth]="true"
-        buttonClass="sm:w-auto"
-        class="block w-full sm:w-auto"
-      >
-        {{ 'coachProgramBuilder.cancel' | translate }}
-      </app-button>
-
-      <app-button
-        *ngIf="exerciseDialogIsNewWorkout"
-        type="button"
-        [disabled]="loadingExercises"
-        (buttonClick)="saveExerciseDialog()"
-        variant="save"
-        appearance="solid"
-        [fullWidth]="true"
-        buttonClass="sm:w-auto"
-        class="block w-full sm:w-auto"
-      >
-        {{ 'coachProgramBuilder.save' | translate }}
-      </app-button>
-    </div>
+    </fieldset>
   </div>
-</div>
 
+  <div
+    dialogActions
+    class="flex shrink-0 flex-col-reverse gap-3 border-t border-surface-100 px-5 py-4 sm:flex-row sm:justify-end sm:px-6"
+  >
+    <app-button
+      type="button"
+      [disabled]="loadingExercises"
+      (buttonClick)="close.emit()"
+      variant="secondary"
+      appearance="outline"
+      [fullWidth]="true"
+      buttonClass="sm:w-auto"
+      class="block w-full sm:w-auto"
+    >
+      {{ 'coachProgramBuilder.cancel' | translate }}
+    </app-button>
+
+    <app-button
+      *ngIf="exerciseDialogIsNewWorkout"
+      type="button"
+      [disabled]="loadingExercises"
+      (buttonClick)="saveExerciseDialog()"
+      variant="save"
+      appearance="solid"
+      [fullWidth]="true"
+      buttonClass="sm:w-auto"
+      class="block w-full sm:w-auto"
+    >
+      {{ 'coachProgramBuilder.save' | translate }}
+    </app-button>
+  </div>
+</app-dialog>

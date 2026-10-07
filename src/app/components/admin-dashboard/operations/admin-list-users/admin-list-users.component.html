@@ -1,24 +1,14 @@
-<div
-  class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8"
->
+<div class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8">
   <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
-
     <!-- Cím -->
     <div class="text-center">
-      <h2
-        class="break-words text-2xl font-bold tracking-tight text-content-800 sm:text-3xl"
-      >
+      <h2 appHeading="page" class="break-words">
         {{ 'adminUsers.title' | translate }}
       </h2>
     </div>
 
     <!-- Üzenet -->
-    <app-message
-      *ngIf="message"
-      [message]="message"
-      [type]="messageType"
-    >
-    </app-message>
+    <app-message *ngIf="message" [message]="message" [type]="messageType"> </app-message>
 
     <app-search
       inputId="adminUserSearch"
@@ -31,19 +21,14 @@
 
     <!-- Felhasználók -->
     <ng-container *ngIf="paginatedUsers.length > 0; else noUsers">
-
-      <div
-        class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-      >
+      <div class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         <app-card
           *ngFor="let user of paginatedUsers; trackBy: trackByUser"
-          variant="outlined" class="block min-w-0"
+          variant="outlined"
+          class="block min-w-0"
         >
-
           <!-- Avatar -->
-          <div
-            class="flex h-40 items-center justify-center overflow-hidden bg-surface-100"
-          >
+          <div class="flex h-40 items-center justify-center overflow-hidden bg-surface-100">
             <span
               class="text-6xl opacity-75 transition-transform duration-200 group-hover:scale-110"
             >
@@ -53,18 +38,13 @@
 
           <!-- Tartalom -->
           <div class="flex flex-1 min-w-0 flex-col p-5">
-
             <!-- Username -->
-            <div
-              class="break-words text-lg font-bold text-content-800"
-            >
+            <div class="break-words text-lg font-bold text-content-800">
               {{ user.username }}
             </div>
 
             <!-- Email -->
-            <div
-              class="mt-2 break-words text-sm text-content-600"
-            >
+            <div class="mt-2 break-words text-sm text-content-600">
               {{ user.email }}
             </div>
 
@@ -78,15 +58,18 @@
 
               {{ user.roles.join(', ') }}
             </div>
-
           </div>
         </app-card>
       </div>
 
-      <app-pagination [totalItems]="filteredUsers.length" [pageSize]="pageSize"
-        [currentPage]="currentPage" [showPageSize]="false" [showInfo]="false"
-        (pageChange)="onPageChange($event)"></app-pagination>
-
+      <app-pagination
+        [totalItems]="filteredUsers.length"
+        [pageSize]="pageSize"
+        [currentPage]="currentPage"
+        [showPageSize]="false"
+        [showInfo]="false"
+        (pageChange)="onPageChange($event)"
+      ></app-pagination>
     </ng-container>
 
     <!-- Üres lista -->
@@ -97,6 +80,5 @@
         {{ (searchTerm.trim() ? 'appSearch.noResults' : 'adminUsers.noUsers') | translate }}
       </div>
     </ng-template>
-
   </div>
 </div>

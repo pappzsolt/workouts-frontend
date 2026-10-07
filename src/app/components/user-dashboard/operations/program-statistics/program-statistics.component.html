@@ -1,9 +1,19 @@
 <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-4">
-  <div class="relative isolate overflow-hidden rounded-2xl bg-gradient-to-r from-primary-700 to-primary-800 px-4 py-4 text-center sm:px-6 sm:py-5">
-    <div class="pointer-events-none absolute -right-8 -top-10 -z-10 h-32 w-32 rounded-full bg-white/10"></div>
-    <div class="pointer-events-none absolute -bottom-12 -left-6 -z-10 h-28 w-28 rounded-full bg-white/10"></div>
+  <div
+    class="relative isolate overflow-hidden rounded-2xl bg-gradient-to-r from-primary-700 to-primary-800 px-4 py-4 text-center sm:px-6 sm:py-5"
+  >
+    <div
+      class="pointer-events-none absolute -right-8 -top-10 -z-10 h-32 w-32 rounded-full bg-white/10"
+    ></div>
+    <div
+      class="pointer-events-none absolute -bottom-12 -left-6 -z-10 h-28 w-28 rounded-full bg-white/10"
+    ></div>
     <div class="relative">
-      <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm sm:h-14 sm:w-14"><app-icon name="chart-column-increasing" sizeClass="h-7 w-7 sm:h-8 sm:w-8" /></div>
+      <div
+        class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm sm:h-14 sm:w-14"
+      >
+        <app-icon name="chart-column-increasing" sizeClass="h-7 w-7 sm:h-8 sm:w-8" />
+      </div>
       <h1 class="mt-2 break-words text-xl font-bold tracking-tight text-white sm:text-2xl">
         {{ 'userProgramStatistics.title' | translate }}
       </h1>
@@ -14,15 +24,11 @@
   </div>
 
   <section class="min-w-0">
-    <h2 class="mb-3 text-lg font-bold text-content-800 sm:text-xl">
+    <h2 appHeading="section" class="mb-3">
       {{ 'userProgramStatistics.overview' | translate }}
     </h2>
 
-    <app-message
-      *ngIf="loading"
-      [message]="'userProgramStatistics.loading'"
-      type="info"
-    ></app-message>
+    <app-loading *ngIf="loading" [message]="'userProgramStatistics.loading'"></app-loading>
 
     <app-message
       *ngIf="!loading && message"
@@ -33,17 +39,27 @@
     <div *ngIf="!loading && programs.length" class="min-w-0">
       <div class="mb-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
         <div class="rounded-xl bg-surface-50 px-3 py-3">
-          <div class="text-xs text-content-600">{{ 'userProgramStatistics.totalPrograms' | translate }}</div>
+          <div class="text-xs text-content-600">
+            {{ 'userProgramStatistics.totalPrograms' | translate }}
+          </div>
           <div class="mt-1 text-xl font-bold text-content-800">{{ totalPrograms }}</div>
         </div>
         <div class="rounded-xl bg-surface-50 px-3 py-3">
-          <div class="text-xs text-content-600">{{ 'userProgramStatistics.completedPrograms' | translate }}</div>
+          <div class="text-xs text-content-600">
+            {{ 'userProgramStatistics.completedPrograms' | translate }}
+          </div>
           <div class="mt-1 text-xl font-bold text-content-800">{{ completedPrograms }}</div>
         </div>
       </div>
 
       <div class="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-        <app-card data-testid="statistics-program" [attr.data-program-id]="program.programId" *ngFor="let program of pagedPrograms; trackBy: trackByProgram" variant="outlined" class="block min-h-28 w-full min-w-0">
+        <app-card
+          data-testid="statistics-program"
+          [attr.data-program-id]="program.programId"
+          *ngFor="let program of pagedPrograms; trackBy: trackByProgram"
+          variant="outlined"
+          class="block min-h-28 w-full min-w-0"
+        >
           <div class="flex h-full flex-col gap-3 p-3">
             <div class="flex items-start justify-between gap-2">
               <h3 class="break-words text-sm font-bold leading-snug text-content-800 sm:text-base">
@@ -56,22 +72,39 @@
                 [class.bg-warning-50]="!program.completed"
                 [class.text-warning-700]="!program.completed"
               >
-                {{ (program.completed ? 'userProgramStatistics.completed' : 'userProgramStatistics.inProgress') | translate }}
+                {{
+                  (program.completed
+                    ? 'userProgramStatistics.completed'
+                    : 'userProgramStatistics.inProgress'
+                  ) | translate
+                }}
               </span>
             </div>
 
             <div class="grid grid-cols-3 gap-2 text-center">
               <div class="rounded-lg bg-surface-50 px-2 py-2">
-                <div class="text-[10px] text-content-600 sm:text-xs">{{ 'userProgramStatistics.totalWorkouts' | translate }}</div>
-                <div class="mt-1 text-sm font-bold text-content-800">{{ program.totalWorkouts }}</div>
+                <div class="text-[10px] text-content-600 sm:text-xs">
+                  {{ 'userProgramStatistics.totalWorkouts' | translate }}
+                </div>
+                <div class="mt-1 text-sm font-bold text-content-800">
+                  {{ program.totalWorkouts }}
+                </div>
               </div>
               <div class="rounded-lg bg-success-50 px-2 py-2">
-                <div class="text-[10px] text-content-600 sm:text-xs">{{ 'userProgramStatistics.completedWorkouts' | translate }}</div>
-                <div class="mt-1 text-sm font-bold text-success-700">{{ program.completedWorkouts }}</div>
+                <div class="text-[10px] text-content-600 sm:text-xs">
+                  {{ 'userProgramStatistics.completedWorkouts' | translate }}
+                </div>
+                <div class="mt-1 text-sm font-bold text-success-700">
+                  {{ program.completedWorkouts }}
+                </div>
               </div>
               <div class="rounded-lg bg-warning-50 px-2 py-2">
-                <div class="text-[10px] text-content-600 sm:text-xs">{{ 'userProgramStatistics.incompleteWorkouts' | translate }}</div>
-                <div class="mt-1 text-sm font-bold text-warning-700">{{ program.incompleteWorkouts }}</div>
+                <div class="text-[10px] text-content-600 sm:text-xs">
+                  {{ 'userProgramStatistics.incompleteWorkouts' | translate }}
+                </div>
+                <div class="mt-1 text-sm font-bold text-warning-700">
+                  {{ program.incompleteWorkouts }}
+                </div>
               </div>
             </div>
           </div>

@@ -11,11 +11,7 @@
      ====================================================== -->
 
 @if (message && !loading) {
-  <app-message
-    [message]="message"
-    [type]="messageType"
-    class="mb-5 block"
-  ></app-message>
+  <app-message [message]="message" [type]="messageType" class="mb-5 block"></app-message>
 }
 
 <!-- ======================================================
@@ -44,11 +40,7 @@
       variant="sort"
       type="button"
       [label]="'coachWorkoutBoard.sortByName' | translate"
-      [lucideIcon]="
-    sortDirection === 'asc'
-      ? 'arrow-up-narrow-wide'
-      : 'arrow-down-wide-narrow'
-  "
+      [lucideIcon]="sortDirection === 'asc' ? 'arrow-up-narrow-wide' : 'arrow-down-wide-narrow'"
       (buttonClick)="toggleSort()"
     ></app-button>
   </div>
@@ -59,11 +51,12 @@
      ====================================================== -->
 
 @if (!loading && workouts.length) {
-
   @if (compactSelection) {
     <!-- KOMPAKT KIVÁLASZTÁSI NÉZET -->
     <app-card variant="outlined" class="block min-w-0">
-      <div class="hidden grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 border-b border-surface-100 bg-surface-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-content-500 sm:grid">
+      <div
+        class="hidden grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 border-b border-surface-100 bg-surface-50 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-content-500 sm:grid"
+      >
         <span class="w-8"></span>
         <span>{{ 'coachWorkoutBoard.workout' | translate }}</span>
         <span>{{ 'coachWorkoutBoard.id' | translate }}</span>
@@ -77,11 +70,12 @@
             [class.bg-primary-50]="workout.id != null && selectedWorkoutIds.includes(workout.id)"
           >
             <input
+              appCheckbox="selection"
               type="checkbox"
               [checked]="workout.id != null && selectedWorkoutIds.includes(workout.id)"
               (change)="onWorkoutCheckboxChange($event, workout.id)"
               [id]="'compact-workout-' + workout.id"
-              class="h-5 w-5 cursor-pointer rounded border-surface-300 accent-primary-600 focus:ring-2 focus:ring-primary-500/20"
+              class=""
             />
 
             <span class="min-w-0">
@@ -93,7 +87,9 @@
               </span>
             </span>
 
-            <span class="hidden shrink-0 rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1 text-xs font-medium text-content-500 sm:inline-flex">
+            <span
+              class="hidden shrink-0 rounded-lg border border-surface-200 bg-surface-50 px-2.5 py-1 text-xs font-medium text-content-500 sm:inline-flex"
+            >
               #{{ workout.id }}
             </span>
           </label>
@@ -102,9 +98,7 @@
     </app-card>
   } @else {
     <!-- ALAPÉRTELMEZETT KÁRTYÁS NÉZET -->
-    <div
-      class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
-    >
+    <div class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
       @for (workout of workouts; track workout.id) {
         <app-card class="block min-w-0">
           <div
@@ -116,26 +110,22 @@
             </span>
           </div>
 
-          <div
-            content
-            class="flex min-w-0 flex-1 flex-col p-5"
-          >
+          <div content class="flex min-w-0 flex-1 flex-col p-5">
             <div class="mb-4 flex items-center justify-between gap-3">
               <label
                 [for]="'workout-' + workout.id"
                 class="flex min-w-0 cursor-pointer items-center"
               >
                 <input
+                  appCheckbox="selection"
                   type="checkbox"
                   [checked]="workout.id != null && selectedWorkoutIds.includes(workout.id)"
                   (change)="onWorkoutCheckboxChange($event, workout.id)"
                   [id]="'workout-' + workout.id"
-                  class="h-5 w-5 shrink-0 cursor-pointer rounded border-surface-300 text-primary-600 accent-primary-600 focus:ring-2 focus:ring-primary-500/20"
+                  class="shrink-0 text-primary-600"
                 />
 
-                <span
-                  class="ml-2 truncate text-sm font-medium text-content-600"
-                >
+                <span class="ml-2 truncate text-sm font-medium text-content-600">
                   {{ 'coachWorkoutBoard.select' | translate }}
                 </span>
               </label>
@@ -148,16 +138,9 @@
               </span>
             </div>
 
-            <div
-              class="flex min-h-20 flex-1 items-center justify-center text-center"
-            >
-              <p
-                class="line-clamp-3 break-words text-lg font-bold leading-snug text-content-800"
-              >
-                {{
-                  workout.name ||
-                  ('coachWorkoutBoard.noName' | translate)
-                }}
+            <div class="flex min-h-20 flex-1 items-center justify-center text-center">
+              <p class="line-clamp-3 break-words text-lg font-bold leading-snug text-content-800">
+                {{ workout.name || ('coachWorkoutBoard.noName' | translate) }}
               </p>
             </div>
 
@@ -179,15 +162,9 @@
 
 @if (!loading && !workouts.length) {
   @if (searchTerm) {
-    <app-message
-      [message]="'coachWorkoutBoard.noSearchResults'"
-      type="info"
-    ></app-message>
+    <app-message [message]="'coachWorkoutBoard.noSearchResults'" type="info"></app-message>
   } @else {
-    <app-message
-      [message]="'coachWorkoutBoard.noWorkouts'"
-      type="info"
-    ></app-message>
+    <app-message [message]="'coachWorkoutBoard.noWorkouts'" type="info"></app-message>
   }
 }
 

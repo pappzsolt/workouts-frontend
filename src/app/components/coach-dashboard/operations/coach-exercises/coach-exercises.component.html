@@ -1,16 +1,10 @@
-
-<div
-  class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8"
->
+<div class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8">
   <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
-
     <!-- ======================================================
          OLDAL CÍM
          ====================================================== -->
 
-    <h2
-      class="text-center text-2xl font-bold tracking-tight text-content-800 sm:text-3xl"
-    >
+    <h2 appHeading="page" class="text-center">
       {{ 'coachExercises.title' | translate }}
     </h2>
 
@@ -18,20 +12,15 @@
          ÜZENET
          ====================================================== -->
 
-    <app-message
-      [message]="message"
-      [type]="messageType"
-    >
-    </app-message>
+    <app-message [message]="message" [type]="messageType"> </app-message>
 
     <!-- ======================================================
          BETÖLTÉS
          ====================================================== -->
 
-    <app-message *ngIf="loading" message="common.loading" type="info" class="block mb-4"></app-message>
+    <app-loading *ngIf="loading" message="common.loading" class="block mb-4"></app-loading>
 
     <ng-container *ngIf="!loading">
-
       <!-- ====================================================
            KERESÉS ÉS RENDEZÉS
            ==================================================== -->
@@ -39,15 +28,12 @@
       <div
         class="flex flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5 lg:flex-row lg:items-end"
       >
-
         <!-- KERESÉS -->
 
         <div class="flex min-w-0 flex-1 flex-col gap-2">
-
           <div
             class="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_180px_auto] sm:items-end"
           >
-
             <!-- KERESÉSI SZÖVEG -->
 
             <app-search
@@ -62,10 +48,7 @@
 
             <!-- KERESÉSI MEZŐ -->
 
-            <app-exercise-search-field
-              [(value)]="searchField"
-              [options]="searchFieldOptions"
-            >
+            <app-exercise-search-field [(value)]="searchField" [options]="searchFieldOptions">
             </app-exercise-search-field>
 
             <!-- KERESÉS GOMB -->
@@ -76,9 +59,7 @@
               [label]="'common.search' | translate"
               (buttonClick)="search()"
             ></app-button>
-
           </div>
-
         </div>
 
         <!-- RENDEZÉS -->
@@ -89,21 +70,14 @@
           [lucideIcon]="sortDirection === 'asc' ? 'arrow-up-narrow-wide' : 'arrow-down-wide-narrow'"
           (buttonClick)="toggleSort()"
         ></app-button>
-
       </div>
 
       <!-- ======================================================
            GYAKORLATOK
            ====================================================== -->
 
-      <ng-container
-        *ngIf="filteredExercises.length > 0; else noExercises"
-      >
-
-        <div
-          class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"
-        >
-
+      <ng-container *ngIf="filteredExercises.length > 0; else noExercises">
+        <div class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <!-- ==================================================
                EXERCISE KÁRTYA
                ================================================== -->
@@ -112,7 +86,6 @@
             *ngFor="let ex of pagedExercises; trackBy: trackByExercise"
             class="group flex min-w-0 flex-col overflow-hidden"
           >
-
             <!-- PIROS FEJLÉC -->
 
             <div
@@ -130,9 +103,7 @@
             <div
               class="flex h-[180px] items-center justify-center overflow-hidden border-b border-surface-100 bg-surface-50"
             >
-              <ng-container
-                *ngIf="getExerciseImages(ex).length > 0; else noImage"
-              >
+              <ng-container *ngIf="getExerciseImages(ex).length > 0; else noImage">
                 <img
                   *ngFor="let image of getExerciseImages(ex); trackBy: trackByImage"
                   [src]="'/assets/images/flat/' + image"
@@ -153,21 +124,15 @@
             <!-- KÁRTYA TARTALOM -->
 
             <div class="flex min-w-0 flex-1 flex-col p-5">
-
               <!-- EXERCISE NÉV -->
 
-              <h3
-                class="mb-2 break-words text-lg font-bold text-content-800"
-              >
+              <h3 class="mb-2 break-words text-lg font-bold text-content-800">
                 {{ ex.name }}
               </h3>
 
               <!-- LEÍRÁS -->
 
-              <p
-                *ngIf="ex.description"
-                class="mb-4 break-words text-sm leading-6 text-content-600"
-              >
+              <p *ngIf="ex.description" class="mb-4 break-words text-sm leading-6 text-content-600">
                 {{ ex.description }}
               </p>
 
@@ -185,11 +150,8 @@
                   <app-icon name="pencil" sizeClass="h-5 w-5" /> {{ 'common.edit' | translate }}
                 </app-button>
               </div>
-
             </div>
-
           </app-card>
-
         </div>
 
         <!-- ======================================================
@@ -206,9 +168,7 @@
           (pageChange)="onPageChange($event)"
         >
         </app-pagination>
-
       </ng-container>
-
     </ng-container>
 
     <!-- ======================================================
@@ -216,16 +176,12 @@
          ====================================================== -->
 
     <ng-template #noExercises>
-
-      <app-message *ngIf="messageType !== 'error'"
-        [message]="
-          (searchTerm
-            ? 'coachExercises.noSearchResults'
-            : 'coachExercises.noExercises')"
+      <app-message
+        *ngIf="messageType !== 'error'"
+        [message]="searchTerm ? 'coachExercises.noSearchResults' : 'coachExercises.noExercises'"
         type="info"
       >
       </app-message>
-
     </ng-template>
 
     <!-- ======================================================
@@ -243,6 +199,5 @@
     >
       <app-icon name="circle-plus" sizeClass="h-5 w-5" />
     </app-button>
-
   </div>
 </div>

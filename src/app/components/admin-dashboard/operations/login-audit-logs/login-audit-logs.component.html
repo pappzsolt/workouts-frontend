@@ -1,7 +1,7 @@
 <div class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8">
   <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
     <div class="text-center">
-      <h2 class="break-words text-2xl font-bold tracking-tight text-content-800 sm:text-3xl">
+      <h2 appHeading="page" class="break-words">
         {{ 'adminLoginAudit.title' | translate }}
       </h2>
       <p class="mx-auto mt-2 max-w-3xl text-sm text-content-500">
@@ -9,11 +9,7 @@
       </p>
     </div>
 
-    <app-message
-      *ngIf="message"
-      [message]="message"
-      [type]="messageType"
-    ></app-message>
+    <app-message *ngIf="message" [message]="message" [type]="messageType"></app-message>
 
     <form
       class="rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5"
@@ -24,8 +20,12 @@
           [labelKey]="'adminLoginAudit.filters.accountType'"
           controlId="login-audit-account-type"
         >
-          <app-select id="login-audit-account-type" [value]="filters.accountType" [options]="accountTypeOptions"
-            (valueChange)="filters.accountType = $event"></app-select>
+          <app-select
+            id="login-audit-account-type"
+            [value]="filters.accountType"
+            [options]="accountTypeOptions"
+            (valueChange)="filters.accountType = $event"
+          ></app-select>
         </app-form-field>
 
         <app-form-field
@@ -33,6 +33,7 @@
           controlId="login-audit-account-id"
         >
           <input
+            appInput="filter"
             id="login-audit-account-id"
             name="accountId"
             type="number"
@@ -40,7 +41,7 @@
             step="1"
             [(ngModel)]="filters.accountId"
             [placeholder]="'adminLoginAudit.filters.accountIdPlaceholder' | translate"
-            class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm text-content-800 outline-none transition placeholder:text-content-400 focus:border-primary-400 focus:ring-4 focus:ring-primary-600/10"
+            class="placeholder:text-content-400"
           />
         </app-form-field>
 
@@ -54,29 +55,23 @@
           [debounceMs]="0"
         ></app-search>
 
-        <app-form-field
-          [labelKey]="'adminLoginAudit.filters.from'"
-          controlId="login-audit-from"
-        >
+        <app-form-field [labelKey]="'adminLoginAudit.filters.from'" controlId="login-audit-from">
           <input
+            appInput="filter"
             id="login-audit-from"
             name="from"
             type="datetime-local"
             [(ngModel)]="filters.from"
-            class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm text-content-800 outline-none transition focus:border-primary-400 focus:ring-4 focus:ring-primary-600/10"
           />
         </app-form-field>
 
-        <app-form-field
-          [labelKey]="'adminLoginAudit.filters.to'"
-          controlId="login-audit-to"
-        >
+        <app-form-field [labelKey]="'adminLoginAudit.filters.to'" controlId="login-audit-to">
           <input
+            appInput="filter"
             id="login-audit-to"
             name="to"
             type="datetime-local"
             [(ngModel)]="filters.to"
-            class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm text-content-800 outline-none transition focus:border-primary-400 focus:ring-4 focus:ring-primary-600/10"
           />
         </app-form-field>
       </div>
@@ -94,7 +89,10 @@
           variant="search"
           lucideIcon="search"
           [disabled]="loading"
-          [label]="(loading ? 'adminLoginAudit.actions.loading' : 'adminLoginAudit.actions.filter') | translate"
+          [label]="
+            (loading ? 'adminLoginAudit.actions.loading' : 'adminLoginAudit.actions.filter')
+              | translate
+          "
         ></app-button>
       </div>
     </form>
@@ -114,30 +112,30 @@
       </span>
     </div>
 
-    <app-message *ngIf="loading" message="adminLoginAudit.loading" type="info" class="block"></app-message>
+    <app-loading *ngIf="loading" message="adminLoginAudit.loading" class="block"></app-loading>
 
     <ng-container *ngIf="!loading">
       <app-card *ngIf="logs.length > 0; else noLogs" variant="outlined" class="block min-w-0">
         <div class="w-full overflow-x-auto">
-          <table class="min-w-[1100px] w-full border-collapse text-left">
+          <table appTable class="min-w-[1100px]">
             <thead>
               <tr class="border-b border-surface-200 bg-surface-50">
-                <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-content-600">
+                <th appTableHeader class="">
                   {{ 'adminLoginAudit.columns.loggedInAt' | translate }}
                 </th>
-                <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-content-600">
+                <th appTableHeader class="">
                   {{ 'adminLoginAudit.columns.accountType' | translate }}
                 </th>
-                <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-content-600">
+                <th appTableHeader class="">
                   {{ 'adminLoginAudit.columns.accountId' | translate }}
                 </th>
-                <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-content-600">
+                <th appTableHeader class="">
                   {{ 'adminLoginAudit.columns.username' | translate }}
                 </th>
-                <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-content-600">
+                <th appTableHeader class="">
                   {{ 'adminLoginAudit.columns.ipAddress' | translate }}
                 </th>
-                <th class="px-4 py-4 text-xs font-bold uppercase tracking-wider text-content-600">
+                <th appTableHeader class="">
                   {{ 'adminLoginAudit.columns.userAgent' | translate }}
                 </th>
               </tr>
@@ -148,38 +146,38 @@
                 *ngFor="let log of logs; trackBy: trackByLog"
                 class="border-b border-surface-100 transition-colors last:border-b-0 hover:bg-surface-50"
               >
-                <td class="whitespace-nowrap px-4 py-4 align-top text-sm font-medium text-content-700">
-                  {{ log.loggedInAt | date:'yyyy.MM.dd. HH:mm:ss' }}
+                <td appTableCell class="whitespace-nowrap font-medium text-content-700">
+                  {{ log.loggedInAt | date: 'yyyy.MM.dd. HH:mm:ss' }}
                 </td>
 
-                <td class="px-4 py-4 align-top text-sm text-content-600">
+                <td appTableCell class="text-content-600">
                   <span
-                    class="inline-flex rounded-full border px-3 py-1 text-xs font-semibold"
-                    [ngClass]="log.accountType === 'COACH'
-                      ? 'border-info-200 bg-info-50 text-info-700'
-                      : 'border-primary-200 bg-primary-50 text-primary-700'"
+                    appBadge
+                    class=""
+                    [ngClass]="
+                      log.accountType === 'COACH'
+                        ? 'border-info-200 bg-info-50 text-info-700'
+                        : 'border-primary-200 bg-primary-50 text-primary-700'
+                    "
                   >
-                    {{ ('adminLoginAudit.accountTypes.' + log.accountType) | translate }}
+                    {{ 'adminLoginAudit.accountTypes.' + log.accountType | translate }}
                   </span>
                 </td>
 
-                <td class="px-4 py-4 align-top text-sm text-content-600">
+                <td appTableCell class="text-content-600">
                   {{ log.accountId }}
                 </td>
 
-                <td class="px-4 py-4 align-top text-sm font-semibold text-content-800">
+                <td appTableCell class="font-semibold text-content-800">
                   <div class="max-w-52 break-words">{{ log.username }}</div>
                 </td>
 
-                <td class="px-4 py-4 align-top text-sm text-content-600">
+                <td appTableCell class="text-content-600">
                   <span class="font-mono text-xs">{{ log.ipAddress || '—' }}</span>
                 </td>
 
-                <td class="px-4 py-4 align-top text-sm text-content-500">
-                  <div
-                    class="max-w-xl break-words"
-                    [attr.title]="log.userAgent || null"
-                  >
+                <td appTableCell class="text-content-500">
+                  <div class="max-w-xl break-words" [attr.title]="log.userAgent || null">
                     {{ log.userAgent || '—' }}
                   </div>
                 </td>
@@ -205,7 +203,6 @@
         (pageChange)="onPageChange($event)"
         (pageSizeChange)="onPageSizeChange($event)"
       ></app-pagination>
-
     </ng-container>
   </div>
 </div>

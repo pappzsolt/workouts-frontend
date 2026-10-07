@@ -31,10 +31,5 @@
   ></app-select>
 </app-form-field>
 
-<app-message
-  *ngIf="loading"
-  message="coachProgramSelect.loading"
-  type="info"
-  class="block mt-3"
-></app-message>
+<app-loading *ngIf="loading" message="coachProgramSelect.loading" class="block mt-3"></app-loading>
 <app-message [message]="message" type="error" class="block mt-3"></app-message>

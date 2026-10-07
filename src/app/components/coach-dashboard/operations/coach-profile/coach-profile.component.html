@@ -4,14 +4,11 @@
 
 <div class="min-h-full bg-transparent">
   <div class="mx-auto w-full max-w-5xl px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
-
     <!-- ==================================================
          OLDAL CÍM
          ================================================== -->
 
-    <h2
-      class="mb-6 flex items-center justify-center gap-2 text-center text-2xl font-bold tracking-tight text-content-800 sm:mb-8 sm:text-3xl"
-    >
+    <h2 appHeading="page" class="mb-6 flex items-center justify-center gap-2 text-center sm:mb-8">
       <span><app-icon name="user-round" sizeClass="h-5 w-5" /></span>
       <span>{{ 'coachProfile.title' | translate }}</span>
     </h2>
@@ -20,19 +17,13 @@
          ÜZENET
          ================================================== -->
 
-    <app-message
-      [message]="message"
-      [type]="messageType"
-    ></app-message>
+    <app-message [message]="message" [type]="messageType"></app-message>
 
     <!-- ==================================================
          PROFIL ŰRLAP
          ================================================== -->
 
-    <app-card
-      class="mx-auto w-full overflow-hidden"
-    >
-
+    <app-card class="mx-auto w-full overflow-hidden">
       <!-- ==================================================
            FEJLÉC
            ================================================== -->
@@ -53,22 +44,20 @@
            ŰRLAP
            ================================================== -->
 
-      <form
-        class="grid min-w-0 grid-cols-1 gap-5 p-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-5 sm:p-6"
-      >
-
+      <form appProfileFields class="p-4 sm:gap-x-6 sm:gap-y-5 sm:p-6">
         <!-- ==================================================
              NÉV
              ================================================== -->
 
         <app-form-field labelKey="common.name" controlId="name">
           <input
+            appInput="editor"
             id="name"
             name="name"
             type="text"
             [placeholder]="'common.name' | translate"
             [(ngModel)]="profile.name"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
+            class="placeholder:text-content-400"
           />
         </app-form-field>
 
@@ -78,12 +67,13 @@
 
         <app-form-field labelKey="common.email" controlId="email">
           <input
+            appInput="editor"
             id="email"
             name="email"
             type="email"
             [placeholder]="'common.email' | translate"
             [(ngModel)]="profile.email"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
+            class="placeholder:text-content-400"
           />
         </app-form-field>
 
@@ -93,12 +83,13 @@
 
         <app-form-field labelKey="common.password" controlId="password_hash">
           <input
+            appInput="editor"
             id="password_hash"
             name="password_hash"
             type="password"
             [placeholder]="'common.password' | translate"
             [(ngModel)]="profile.password_hash"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
+            class="placeholder:text-content-400"
           />
         </app-form-field>
 
@@ -108,12 +99,13 @@
 
         <app-form-field labelKey="common.phone" controlId="phone">
           <input
+            appInput="editor"
             id="phone"
             name="phone"
             type="text"
             [placeholder]="'common.phone' | translate"
             [(ngModel)]="profile.phone"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
+            class="placeholder:text-content-400"
           />
         </app-form-field>
 
@@ -127,12 +119,13 @@
           controlId="specialization"
         >
           <textarea
+            appTextarea="editor"
             id="specialization"
             name="specialization"
             rows="3"
             [placeholder]="'common.specialization' | translate"
             [(ngModel)]="profile.specialization"
-            class="min-h-28 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
+            class="min-h-28 leading-6 placeholder:text-content-400"
           ></textarea>
         </app-form-field>
 
@@ -140,18 +133,15 @@
              AVATAR URL
              ================================================== -->
 
-        <app-form-field
-          class="col-span-full"
-          labelKey="common.avatarUrl"
-          controlId="avatar_url"
-        >
+        <app-form-field class="col-span-full" labelKey="common.avatarUrl" controlId="avatar_url">
           <input
+            appInput="editor"
             id="avatar_url"
             name="avatar_url"
             type="text"
             [placeholder]="'common.avatarImageUrl' | translate"
             [(ngModel)]="profile.avatar_url"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm"
+            class="placeholder:text-content-400"
           />
         </app-form-field>
 
@@ -159,9 +149,7 @@
              MENTÉS
              ================================================== -->
 
-        <div
-          class="col-span-full flex justify-end border-t border-info-100 pt-5"
-        >
+        <div class="col-span-full flex justify-end border-t border-info-100 pt-5">
           <app-button
             type="button"
             (buttonClick)="saveProfile()"
@@ -175,10 +163,7 @@
             <span>{{ 'common.save' | translate }}</span>
           </app-button>
         </div>
-
       </form>
-
     </app-card>
-
   </div>
 </div>

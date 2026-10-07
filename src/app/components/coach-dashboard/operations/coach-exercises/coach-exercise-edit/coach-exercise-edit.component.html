@@ -1,27 +1,20 @@
 <!-- Oldal -->
 <div class="min-h-full bg-transparent">
   <div class="mx-auto w-full max-w-6xl px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
-
     <!-- Oldal címe -->
-    <h2
-      class="mb-6 flex items-center justify-center gap-2 text-center text-2xl font-bold tracking-tight text-content-800 sm:mb-8 sm:text-3xl"
-    >
+    <h2 appHeading="page" class="mb-6 flex items-center justify-center gap-2 text-center sm:mb-8">
       <span><app-icon name="pencil" sizeClass="h-5 w-5" /></span>
       <span>{{ 'coachExerciseEdit.title' | translate }}</span>
     </h2>
 
     <!-- Közös üzenet -->
-    <app-message
-      [message]="message"
-      [type]="messageType"
-    ></app-message>
+    <app-message [message]="message" [type]="messageType"></app-message>
 
     <!-- Gyakorlat szerkesztési űrlap -->
     <div
       *ngIf="exerciseFound"
       class="mx-auto w-full overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-lg shadow-surface-200/60"
     >
-
       <!-- Fejléc -->
       <div
         class="border-b border-info-100 bg-gradient-to-r from-primary-700 to-primary-800 px-4 py-6 sm:px-6 sm:py-7"
@@ -40,7 +33,6 @@
         #exerciseForm="ngForm"
         class="grid min-w-0 grid-cols-1 gap-5 p-4 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-5 sm:p-6"
       >
-
         <!-- ======================================================
              FORDÍTOTT ADATOK
              ====================================================== -->
@@ -51,14 +43,14 @@
           labelKey="coachExerciseEdit.name"
           controlId="name"
         >
-
           <input
+            appInput="editor"
             id="name"
             name="name"
             type="text"
             [(ngModel)]="exercise.name"
             required
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           />
         </app-form-field>
 
@@ -68,45 +60,37 @@
           labelKey="coachExerciseEdit.description"
           controlId="description"
         >
-
           <textarea
+            appTextarea="editor"
             id="description"
             name="description"
             rows="3"
             [(ngModel)]="exercise.description"
-            class="min-h-24 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="min-h-24 leading-6 placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           ></textarea>
         </app-form-field>
 
         <!-- Testrész -->
-        <app-form-field
-          class="min-w-0"
-          labelKey="coachExerciseEdit.bodyPart"
-          controlId="bodyPart"
-        >
-
+        <app-form-field class="min-w-0" labelKey="coachExerciseEdit.bodyPart" controlId="bodyPart">
           <input
+            appInput="editor"
             id="bodyPart"
             name="bodyPart"
             type="text"
             [(ngModel)]="exercise.bodyPart"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           />
         </app-form-field>
 
         <!-- Szinonimák -->
-        <app-form-field
-          class="min-w-0"
-          labelKey="coachExerciseEdit.synonyms"
-          controlId="synonyms"
-        >
-
+        <app-form-field class="min-w-0" labelKey="coachExerciseEdit.synonyms" controlId="synonyms">
           <input
+            appInput="editor"
             id="synonyms"
             name="synonyms"
             type="text"
             [(ngModel)]="exercise.synonyms"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           />
         </app-form-field>
 
@@ -116,13 +100,13 @@
           labelKey="coachExerciseEdit.instructions"
           controlId="instructions"
         >
-
           <textarea
+            appTextarea="editor"
             id="instructions"
             name="instructions"
             rows="5"
             [(ngModel)]="exercise.instructions"
-            class="min-h-36 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="min-h-36 leading-6 placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           ></textarea>
         </app-form-field>
 
@@ -132,13 +116,13 @@
           labelKey="coachExerciseEdit.tips"
           controlId="tips"
         >
-
           <textarea
+            appTextarea="editor"
             id="tips"
             name="tips"
             rows="4"
             [(ngModel)]="exercise.tips"
-            class="min-h-28 w-full min-w-0 resize-y rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base leading-6 text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="min-h-28 leading-6 placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           ></textarea>
         </app-form-field>
 
@@ -148,13 +132,13 @@
           labelKey="coachExerciseEdit.primaryMuscles"
           controlId="primaryMuscles"
         >
-
           <input
+            appInput="editor"
             id="primaryMuscles"
             name="primaryMuscles"
             type="text"
             [(ngModel)]="exercise.primaryMuscles"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           />
         </app-form-field>
 
@@ -164,13 +148,13 @@
           labelKey="coachExerciseEdit.secondaryMuscles"
           controlId="secondaryMuscles"
         >
-
           <input
+            appInput="editor"
             id="secondaryMuscles"
             name="secondaryMuscles"
             type="text"
             [(ngModel)]="exercise.secondaryMuscles"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           />
         </app-form-field>
 
@@ -179,34 +163,26 @@
              ====================================================== -->
 
         <!-- Kép URL -->
-        <app-form-field
-          class="min-w-0"
-          labelKey="coachExerciseEdit.imageUrl"
-          controlId="imageUrl"
-        >
-
+        <app-form-field class="min-w-0" labelKey="coachExerciseEdit.imageUrl" controlId="imageUrl">
           <input
+            appInput="editor"
             id="imageUrl"
             name="imageUrl"
             type="text"
             [(ngModel)]="exercise.imageUrl"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           />
         </app-form-field>
 
         <!-- Videó URL -->
-        <app-form-field
-          class="min-w-0"
-          labelKey="coachExerciseEdit.videoUrl"
-          controlId="videoUrl"
-        >
-
+        <app-form-field class="min-w-0" labelKey="coachExerciseEdit.videoUrl" controlId="videoUrl">
           <input
+            appInput="editor"
             id="videoUrl"
             name="videoUrl"
             type="text"
             [(ngModel)]="exercise.videoUrl"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           />
         </app-form-field>
 
@@ -216,13 +192,13 @@
           labelKey="coachExerciseEdit.muscleGroup"
           controlId="muscleGroup"
         >
-
           <input
+            appInput="editor"
             id="muscleGroup"
             name="muscleGroup"
             type="text"
             [(ngModel)]="exercise.muscleGroup"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           />
         </app-form-field>
 
@@ -232,13 +208,13 @@
           labelKey="coachExerciseEdit.equipment"
           controlId="equipment"
         >
-
           <input
+            appInput="editor"
             id="equipment"
             name="equipment"
             type="text"
             [(ngModel)]="exercise.equipment"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           />
         </app-form-field>
 
@@ -248,29 +224,25 @@
           labelKey="coachExerciseEdit.difficultyLevel"
           controlId="difficultyLevel"
         >
-
           <input
+            appInput="editor"
             id="difficultyLevel"
             name="difficultyLevel"
             type="text"
             [(ngModel)]="exercise.difficultyLevel"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           />
         </app-form-field>
 
         <!-- Kategória -->
-        <app-form-field
-          class="min-w-0"
-          labelKey="coachExerciseEdit.category"
-          controlId="category"
-        >
-
+        <app-form-field class="min-w-0" labelKey="coachExerciseEdit.category" controlId="category">
           <input
+            appInput="editor"
             id="category"
             name="category"
             type="text"
             [(ngModel)]="exercise.category"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           />
         </app-form-field>
 
@@ -280,14 +252,14 @@
           labelKey="coachExerciseEdit.caloriesPerMinute"
           controlId="caloriesBurnedPerMinute"
         >
-
           <input
+            appInput="editor"
             id="caloriesBurnedPerMinute"
             name="caloriesBurnedPerMinute"
             type="number"
             step="0.01"
             [(ngModel)]="exercise.caloriesBurnedPerMinute"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           />
         </app-form-field>
 
@@ -297,13 +269,13 @@
           labelKey="coachExerciseEdit.durationSeconds"
           controlId="durationSeconds"
         >
-
           <input
+            appInput="editor"
             id="durationSeconds"
             name="durationSeconds"
             type="number"
             [(ngModel)]="exercise.durationSeconds"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           />
         </app-form-field>
 
@@ -313,29 +285,25 @@
           labelKey="coachExerciseEdit.forceType"
           controlId="forceType"
         >
-
           <input
+            appInput="editor"
             id="forceType"
             name="forceType"
             type="text"
             [(ngModel)]="exercise.forceType"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           />
         </app-form-field>
 
         <!-- Mechanika -->
-        <app-form-field
-          class="min-w-0"
-          labelKey="coachExerciseEdit.mechanic"
-          controlId="mechanic"
-        >
-
+        <app-form-field class="min-w-0" labelKey="coachExerciseEdit.mechanic" controlId="mechanic">
           <input
+            appInput="editor"
             id="mechanic"
             name="mechanic"
             type="text"
             [(ngModel)]="exercise.mechanic"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           />
         </app-form-field>
 
@@ -345,13 +313,13 @@
           labelKey="coachExerciseEdit.variationGroup"
           controlId="variationGroup"
         >
-
           <input
+            appInput="editor"
             id="variationGroup"
             name="variationGroup"
             type="text"
             [(ngModel)]="exercise.variationGroup"
-            class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 sm:text-sm"
+            class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           />
         </app-form-field>
 
@@ -361,7 +329,6 @@
           labelKey="coachExerciseEdit.isUnilateral"
           controlId="isUnilateral"
         >
-
           <app-select
             id="isUnilateral"
             name="isUnilateral"
@@ -376,7 +343,6 @@
           labelKey="coachExerciseEdit.isBodyweight"
           controlId="isBodyweight"
         >
-
           <app-select
             id="isBodyweight"
             name="isBodyweight"
@@ -389,9 +355,7 @@
              MENTÉS
              ====================================================== -->
 
-        <div
-          class="col-span-full flex justify-end border-t border-info-100 pt-5"
-        >
+        <div class="col-span-full flex justify-end border-t border-info-100 pt-5">
           <app-button
             type="submit"
             [disabled]="!exerciseForm.form.valid || saving"
@@ -405,7 +369,6 @@
             <span>{{ 'coachExerciseEdit.save' | translate }}</span>
           </app-button>
         </div>
-
       </form>
     </div>
   </div>

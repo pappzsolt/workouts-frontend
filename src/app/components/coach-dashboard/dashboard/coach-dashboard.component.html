@@ -1,11 +1,8 @@
-<div
-  class="min-h-full bg-surface-50 px-4 py-6 sm:px-6 lg:px-8"
->
+<div class="min-h-full bg-surface-50 px-4 py-6 sm:px-6 lg:px-8">
   <div class="mx-auto flex w-full max-w-7xl flex-col gap-6">
-
     <!-- Oldal címe -->
-    <div class="text-center">
-      <h2 class="text-2xl font-bold tracking-tight text-content-800 sm:text-3xl">
+    <div appPageHeader>
+      <h2 appHeading="page">
         {{ 'coachDashboard.title' | translate }}
       </h2>
     </div>
@@ -14,7 +11,6 @@
 
     <!-- Dashboard kártyák -->
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-
       <app-dashboard-action
         icon="barbell"
         tone="primary"
@@ -56,7 +52,6 @@
         [label]="'coachDashboard.workoutExerciseManager' | translate"
         (activated)="toggleWorkoutExerciseManager()"
       ></app-dashboard-action>
-
     </div>
 
     <!-- Dinamikus tartalom -->
@@ -96,10 +91,7 @@
       class="min-w-0 overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm"
     >
       <div class="min-w-0 p-4 sm:p-6">
-        <app-coach-workouts
-          [programId]="programIdForWorkouts"
-        >
-        </app-coach-workouts>
+        <app-coach-workouts [programId]="programIdForWorkouts"> </app-coach-workouts>
       </div>
     </div>
 
@@ -109,7 +101,6 @@
       class="min-w-0 overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm"
     >
       <div class="min-w-0 p-4 sm:p-6">
-
         <app-message
           *ngIf="exerciseNotFound"
           [message]="'coachDashboard.exerciseNotFound'"
@@ -127,8 +118,7 @@
       class="min-w-0 overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm"
     >
       <div class="min-w-0 p-4 sm:p-6">
-        <app-assign-workouts-exercises>
-        </app-assign-workouts-exercises>
+        <app-assign-workouts-exercises> </app-assign-workouts-exercises>
       </div>
     </div>
 
@@ -138,10 +128,8 @@
       class="min-w-0 overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm"
     >
       <div class="min-w-0 p-4 sm:p-6">
-        <app-user-workout-exercise-manager>
-        </app-user-workout-exercise-manager>
+        <app-user-workout-exercise-manager> </app-user-workout-exercise-manager>
       </div>
     </div>
-
   </div>
 </div>

@@ -41,7 +41,28 @@ A meglévő komponensek bővítései és a kapcsolódó cserék elkészültek:
 
 Ellenőrzés: **138 komponens-regressziós teszt sikeres** valódi headless böngészőben, ebből 14 új bővítési teszt. A development build és a spec TypeScript-ellenőrzés sikeres; theme audit: 321 forrásfájl, 0 hiba; `git diff --check` sikeres. Élő backenddel teljes e2e folyamatot nem futtattam. Az AppIcon korábbi, nem használt importjára vonatkozó buildfigyelmeztetés megmaradt.
 
-A 3. kategória új komponensei nem részei ennek az átállításnak. Az alábbi darabszámok és leltár az audit eredeti állapotát rögzítik.
+## A 3. pont megvalósítása
+
+Az új közös megjelenési elemek elkészültek, és az érintett sablonok átálltak rájuk. A szolgáltatások, DTO-k, route-ok és a képernyők üzleti eseménykezelői változatlanok maradtak.
+
+| Tétel | Megvalósítás és átállított terület | Megőrzött működés |
+| --- | --- | --- |
+| Input és textarea | `form-controls/AppInputDirective`, `AppTextareaDirective`, közös `control-styles.ts`; 100 input és 16 textarea a login/jelszó, admin, profil, program/workout/exercise, builder és sorozat felületeken | A natív elem, inputtípus, id/name, required/email/min/max/minlength/pattern/step, rows, ngModel/formControlName, readonly/disabled és blur/submit események megmaradtak. A megjelenési variánsok a korábbi CSS-osztályokat tartalmazzák; az egyedi helyi CSS-t használó mezők `plain` módot kaptak. |
+| Checkbox és radio | `AppCheckboxDirective`, `AppRadioDirective`; a shared selection boardok, user multi-select, workout/gyakorlat/sorozat checkboxai és a program-board rádiója | Natív input maradt, így a label-kattintás, numerikus rádióérték, boolean checkboxérték, peer-stílus, zárolás és a korábbi `Event.target.checked` handler is működik. Opcionális indeterminate támogatás. |
+| Általános modal | `AppDialogComponent`; workout-copy, program-exercise és assign-workouts-exercises modal | Közös backdrop/panel és kivetített fejléc/tartalom/műveletek; a méretek, görgetés, címek, gombok, inProgress/loading feltételek és események megmaradtak. Az Escape/backdrop bezárás és a fókuszcsapda opcionális, alapból kikapcsolt: az átállított három ablak továbbra is a saját korábbi bezárási szabályait használja. Opt-in fókuszcsapdánál a fókusz visszaállítása is tesztelt. |
+| Badge | `AppBadgeComponent`, natív `span[appBadge]` használattal; audit/member típus, statisztikai státusz, builder számláló/nap és workout darabszám | A státusz szövege, darabszám és a feltételes ngClass-színek a szülőben maradtak. A natív span és a korábbi méret/szín megmaradt. |
+| Oldal- és szekciófejléc | `AppPageHeaderComponent`, `AppSectionHeaderComponent`, `AppHeadingDirective`; mindhárom dashboard, admin, coach és user oldalak közös címsorai | A h1/h2/h3/h4 elem, cím, ikon, alcím és műveleti gomb kivetített eredeti tartalom. Csak az ismétlődő elrendezés és tipográfia közös. |
+| Tabs | `AppTabsComponent`, `AppTabDirective`; user workouts pending/completed nézete | A szülő `setActiveTab` handlerét hívja; ugyanazok a listák, lapozási állapotok és route-paraméterek maradtak. Nyílbillentyű/Home/End csak fókuszt mozgat, az aktiválás továbbra is explicit. Letiltott tab átugrása, egyedi id és tab/panel ARIA-kapcsolat. |
+| Loading / empty state | `AppLoadingComponent`, `AppEmptyStateComponent`; audit, workout gyakorlatbetöltési spinner, program-exercise üres lista és több listanézet | A korábbi feltételek, üzenetek és spinner megmaradtak; a szöveges mód a meglévő Message megjelenését használja. |
+| Selection row | A 2. pontban elkészült AppButton `custom`/`selection-row` mód maradt a közös megoldás | Az auditban szereplő új SelectionRow ennek alternatívája volt; ugyanarra nem készült párhuzamos második komponens. |
+| Táblázat | `AppTableDirective`, `AppTableHeaderDirective`, `AppTableCellDirective`; member-search és login-audit-logs | A natív table/thead/tbody/tr/th/td, soradatok, trackBy, fordítás, akciók és vízszintes görgetés megmaradtak. A két korábbi cellapadding külön variáns. |
+| Profil/adatmező-blokk | `ProfileFieldsComponent`; admin user/coach new/edit és user/coach profil közös mezőelrendezése | Kizárólag layout és tartalomkivetítés közös. A különböző user/coach DTO-k, mezők, validációk, mentés és reset az eredeti oldalaknál maradtak. |
+
+Ellenőrzés: **184 frontend teszt sikeres** valódi headless böngészőben, az összes komponens-, modell-, szolgáltatás- és guardteszttel; ebből 14 új teszt az átállításra. A tesztek ellenőrzik a natív űrlap-regisztrációt, validációt, típusokat, focus/blur/submit/reset működést; a valódi shared exercise/program board kiválasztását; a copy modal tiltásait; a gyakorlatmodal mentési API-paramétereit és dupla mentés elleni védelmét; a hozzárendelési modal kijelöléseinek megtartását; és a workout tabok/lapozás/navigáció változatlanságát.
+
+A 180 átállított natív mező/cím/badge CSS-osztályainak összevetése a megelőző git-változattal: 0 eltérés. Development build és spec TypeScript-ellenőrzés sikeres; theme audit: 332 forrásfájl, 0 hiba; `git diff --check` sikeres. Az AppIcon korábbi unused-import buildfigyelmeztetése megmaradt. Élő backenddel és adatbázissal teljes e2e tesztet nem futtattam; az új üzleti integrációs tesztek mockolt szolgáltatásokkal, valódi Angular-sablonokban és böngészőben futottak.
+
+Az alábbi darabszámok és leltár az audit eredeti állapotát rögzítik.
 
 ## 1. Meglévő komponensekkel kiváltható, új API nélkül
 

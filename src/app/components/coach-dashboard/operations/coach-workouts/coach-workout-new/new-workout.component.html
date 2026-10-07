@@ -1,34 +1,24 @@
-<div
-  class="min-h-full bg-transparent px-4 py-6 sm:px-6 lg:px-8"
->
+<div class="min-h-full bg-transparent px-4 py-6 sm:px-6 lg:px-8">
   <div class="mx-auto flex w-full max-w-5xl min-w-0 flex-col gap-6">
-
     <!-- Cím -->
-    <h2
-      class="text-center text-2xl font-bold text-content-800 sm:text-3xl"
-    >
+    <h2 class="text-center text-2xl font-bold text-content-800 sm:text-3xl">
       <app-icon name="circle-plus" sizeClass="h-5 w-5" /> {{ 'newWorkout.title' | translate }}
     </h2>
 
     <!-- Üzenet -->
-    <app-message
-      *ngIf="message"
-      [message]="message"
-      [type]="messageType"
-    ></app-message>
+    <app-message *ngIf="message" [message]="message" [type]="messageType"></app-message>
 
     <!-- Workout form kártya -->
     <app-card class="min-w-0 overflow-hidden">
-
       <!-- Fejléc -->
       <div
         class="flex items-center justify-center bg-gradient-to-r from-primary-700 to-primary-800 px-4 py-5"
       >
-    <span
-      class="flex h-12 w-12 items-center justify-center rounded-full bg-white text-2xl shadow-md"
-    >
-      <app-icon name="dumbbell" sizeClass="h-5 w-5" />
-    </span>
+        <span
+          class="flex h-12 w-12 items-center justify-center rounded-full bg-white text-2xl shadow-md"
+        >
+          <app-icon name="dumbbell" sizeClass="h-5 w-5" />
+        </span>
       </div>
 
       <!-- Form -->
@@ -37,7 +27,6 @@
         #workoutForm="ngForm"
         class="grid grid-cols-1 gap-5 p-5 sm:grid-cols-2 sm:p-6"
       >
-
         <!-- Workout név -->
         <app-form-field
           class="min-w-0 sm:col-span-2"
@@ -46,12 +35,13 @@
           [required]="true"
         >
           <input
+            appInput="builder"
             type="text"
             id="workoutName"
             name="name"
             [(ngModel)]="newWorkout.name"
             required
-            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
+            class="placeholder:text-content-400"
           />
         </app-form-field>
 
@@ -62,34 +52,35 @@
           controlId="description"
         >
           <textarea
+            appTextarea="builder"
             id="description"
             name="description"
             rows="3"
             [(ngModel)]="newWorkout.description"
-            class="block w-full resize-y rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
+            class="placeholder:text-content-400"
           ></textarea>
         </app-form-field>
 
         <!-- Dátum -->
         <app-form-field labelKey="newWorkout.date" controlId="workoutDate">
           <input
+            appInput="builder"
             type="date"
             id="workoutDate"
             name="workoutDate"
             [(ngModel)]="newWorkout.workoutDate"
             required
-            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
           />
         </app-form-field>
 
         <!-- Időtartam -->
         <app-form-field labelKey="newWorkout.duration" controlId="durationMinutes">
           <input
+            appInput="builder"
             type="number"
             id="durationMinutes"
             name="durationMinutes"
             [(ngModel)]="newWorkout.durationMinutes"
-            class="block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm"
           />
         </app-form-field>
 
@@ -107,10 +98,10 @@
             placeholderValue=""
             [className]="'block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm'"
             [options]="[
-          { value: 'Low', label: 'newWorkout.low' },
-          { value: 'Medium', label: 'newWorkout.medium' },
-          { value: 'High', label: 'newWorkout.high' }
-        ]"
+              { value: 'Low', label: 'newWorkout.low' },
+              { value: 'Medium', label: 'newWorkout.medium' },
+              { value: 'High', label: 'newWorkout.high' },
+            ]"
           />
         </app-form-field>
 
@@ -125,10 +116,10 @@
             buttonClass="sm:w-auto"
             class="block w-full sm:w-auto"
           >
-            <app-icon name="circle-plus" sizeClass="h-5 w-5" /> {{ 'newWorkout.createWorkout' | translate }}
+            <app-icon name="circle-plus" sizeClass="h-5 w-5" />
+            {{ 'newWorkout.createWorkout' | translate }}
           </app-button>
         </div>
-
       </form>
     </app-card>
   </div>

@@ -123,6 +123,7 @@
           >
             <div class="scheduled-date-inline">
               <input
+                appInput="plain"
                 id="manager-scheduled-date"
                 type="date"
                 [ngModel]="page.workout.scheduledAt"
@@ -225,6 +226,7 @@
                 class="min-w-0"
               >
                 <input
+                  appInput="plain"
                   id="manager-exercise-order"
                   type="number"
                   min="1"
@@ -336,7 +338,12 @@
                   </div>
 
                   <label class="set-completed">
-                    <input type="checkbox" [(ngModel)]="set.completed" class="checkbox-input" />
+                    <input
+                      appCheckbox="plain"
+                      type="checkbox"
+                      [(ngModel)]="set.completed"
+                      class="checkbox-input"
+                    />
                     <span>{{ 'userWorkoutExerciseManager.completed' | translate }}</span>
                   </label>
                 </div>
@@ -354,6 +361,7 @@
                         controlId="manager-set-target-reps"
                       >
                         <input
+                          appInput="plain"
                           id="manager-set-target-reps"
                           type="number"
                           [(ngModel)]="set.targetRepetitions"
@@ -367,6 +375,7 @@
                         controlId="manager-set-target-weight"
                       >
                         <input
+                          appInput="plain"
                           id="manager-set-target-weight"
                           type="number"
                           step="0.5"
@@ -389,6 +398,7 @@
                         controlId="manager-set-actual-reps"
                       >
                         <input
+                          appInput="plain"
                           id="manager-set-actual-reps"
                           type="number"
                           [(ngModel)]="set.actualRepetitions"
@@ -402,6 +412,7 @@
                         controlId="manager-set-actual-weight"
                       >
                         <input
+                          appInput="plain"
                           id="manager-set-actual-weight"
                           type="number"
                           step="0.5"
@@ -419,6 +430,7 @@
                   controlId="manager-set-notes"
                 >
                   <input
+                    appInput="plain"
                     id="manager-set-notes"
                     type="text"
                     [(ngModel)]="set.notes"

@@ -2,15 +2,8 @@
      OLDAL
      ====================================================== -->
 
-<div
-  class="min-h-full min-w-0"
->
-
-  <div
-    class="mx-auto w-full max-w-6xl min-w-0 px-3 py-4 sm:px-6 sm:py-8 lg:px-8"
-  >
-
-
+<div class="min-h-full min-w-0">
+  <div class="mx-auto w-full max-w-6xl min-w-0 px-3 py-4 sm:px-6 sm:py-8 lg:px-8">
     <!-- ==================================================
          OLDAL CÍM
          ================================================== -->
@@ -18,28 +11,22 @@
     <h2
       class="mb-5 flex items-center justify-center gap-2 break-words text-center text-xl font-bold leading-tight tracking-tight text-content-800 sm:mb-8 sm:text-3xl"
     >
-
       <span><app-icon name="dumbbell" sizeClass="h-5 w-5" /></span>
 
       <span>
         {{ workoutName }} –
         {{ 'userExercises.exercises' | translate }}
       </span>
-
     </h2>
 
     <app-message [message]="message" [type]="messageType" class="block mb-4"></app-message>
-    <app-message *ngIf="loading" message="common.loading" type="info"></app-message>
-
+    <app-loading *ngIf="loading" message="common.loading"></app-loading>
 
     <!-- ==================================================
          GYAKORLATOK
          ================================================== -->
 
-    <ng-container
-      *ngIf="totalItems > 0; else noExercises"
-    >
-
+    <ng-container *ngIf="totalItems > 0; else noExercises">
       <!-- ==================================================
            LAPOZÓ + AKTUÁLIS GYAKORLATKÁRTYA
            ================================================== -->
@@ -49,7 +36,6 @@
         [totalPages]="totalPages"
         (pageChange)="onExercisePageChange($event)"
       >
-
         <!-- =================================================
              AKTUÁLIS GYAKORLATKÁRTYA
              ================================================= -->
@@ -59,12 +45,10 @@
           variant="default"
           class="block w-full min-w-0"
         >
-
           <div
             class="group flex h-full min-w-0 cursor-pointer flex-col active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
             (click)="goToExercise(exercise.exercise.id!)"
           >
-
             <!-- ==========================================
                  KÁRTYA FEJLÉC / GYAKORLAT KÉPE
                  ========================================== -->
@@ -72,98 +56,65 @@
             <div
               class="relative flex h-24 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-700 to-primary-800 sm:h-36"
             >
-
               <!-- Dekoratív körök -->
 
-              <div
-                class="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/10"
-              ></div>
+              <div class="absolute -right-8 -top-8 h-28 w-28 rounded-full bg-white/10"></div>
 
-              <div
-                class="absolute -bottom-12 -left-8 h-32 w-32 rounded-full bg-white/10"
-              ></div>
-
+              <div class="absolute -bottom-12 -left-8 h-32 w-32 rounded-full bg-white/10"></div>
 
               <!-- ==========================================
                    GYAKORLAT KÉPEI
                    ========================================== -->
 
-              <ng-container
-                *ngIf="
-                  getExerciseImages(exercise.exercise).length > 0;
-                  else noImage
-                "
-              >
-
+              <ng-container *ngIf="getExerciseImages(exercise.exercise).length > 0; else noImage">
                 <div
                   class="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl bg-white/95 shadow-lg ring-1 ring-white/30 transition duration-200 group-hover:scale-105 sm:h-20 sm:w-20 sm:rounded-2xl"
                 >
-
-                  <div
-                    class="flex h-full w-full overflow-x-auto"
-                  >
-
+                  <div class="flex h-full w-full overflow-x-auto">
                     <img
                       *ngFor="
-                        let image of getExerciseImages(exercise.exercise); trackBy: trackByImage
+                        let image of getExerciseImages(exercise.exercise);
+                        trackBy: trackByImage
                       "
                       [src]="'/assets/images/flat/' + image"
                       [alt]="exercise.exercise.name"
                       class="h-full w-full shrink-0 object-contain p-1"
                     />
-
                   </div>
-
                 </div>
-
               </ng-container>
-
 
               <!-- ==========================================
                    NINCS KÉP
                    ========================================== -->
 
               <ng-template #noImage>
-
                 <span
                   class="relative flex h-14 w-14 items-center justify-center rounded-xl bg-white/95 text-4xl shadow-lg ring-1 ring-white/30 transition duration-200 group-hover:scale-105 sm:h-20 sm:w-20 sm:rounded-2xl sm:text-5xl"
                 >
                   <app-icon name="dumbbell" sizeClass="h-5 w-5" />
                 </span>
-
               </ng-template>
-
             </div>
-
 
             <!-- ==========================================
                  KÁRTYA TARTALOM
                  ========================================== -->
 
-            <div
-              class="flex min-w-0 flex-1 flex-col p-3.5 sm:p-5"
-            >
-
+            <div class="flex min-w-0 flex-1 flex-col p-3.5 sm:p-5">
               <!-- GYAKORLAT NEVE -->
 
-              <h3
-                class="mb-2 break-words text-base font-bold leading-5 text-content-800 sm:text-lg sm:leading-6"
-              >
+              <h3 appHeading="compact" class="mb-2 break-words leading-5 sm:text-lg sm:leading-6">
                 {{ exercise.exercise.name }}
               </h3>
-
 
               <!-- GYAKORLAT LEÍRÁSA -->
 
               <p
                 class="mb-3 min-w-0 break-words text-sm leading-5 text-content-600 sm:mb-4 sm:leading-6"
               >
-                {{
-                  exercise.exercise.description ||
-                  ('userExercises.noDescription' | translate)
-                }}
+                {{ exercise.exercise.description || ('userExercises.noDescription' | translate) }}
               </p>
-
 
               <!-- ========================================
                    META ADATOK
@@ -172,17 +123,10 @@
               <div
                 class="mt-auto flex flex-col gap-2 border-t border-surface-100 pt-3 sm:gap-3 sm:pt-4"
               >
-
                 <!-- SOROZAT / ISMÉTLÉS -->
 
-                <div
-                  class="rounded-xl bg-surface-50 px-2.5 py-2.5 sm:px-3 sm:py-3"
-                >
-
-                  <div
-                    class="break-words text-xs text-content-600 sm:text-sm"
-                  >
-
+                <div class="rounded-xl bg-surface-50 px-2.5 py-2.5 sm:px-3 sm:py-3">
+                  <div class="break-words text-xs text-content-600 sm:text-sm">
                     <span class="font-semibold text-content-700">
                       {{ 'userExercises.sets' | translate }}:
                     </span>
@@ -194,22 +138,13 @@
                     </span>
 
                     {{ exercise.repetitions }}
-
                   </div>
-
                 </div>
-
 
                 <!-- PIHENŐ -->
 
-                <div
-                  class="rounded-xl bg-surface-50 px-2.5 py-2.5 sm:px-3 sm:py-3"
-                >
-
-                  <div
-                    class="break-words text-xs text-content-600 sm:text-sm"
-                  >
-
+                <div class="rounded-xl bg-surface-50 px-2.5 py-2.5 sm:px-3 sm:py-3">
+                  <div class="break-words text-xs text-content-600 sm:text-sm">
                     <span class="font-semibold text-content-700">
                       {{ 'userExercises.rest' | translate }}:
                     </span>
@@ -217,13 +152,9 @@
                     {{ exercise.restSeconds }}
 
                     {{ 'userExercises.seconds' | translate }}
-
                   </div>
-
                 </div>
-
               </div>
-
 
               <!-- ========================================
                    TELJESÍTÉSI STÁTUSZ
@@ -238,7 +169,6 @@
                 [class.bg-warning-50]="!exercise.done"
                 [class.text-warning-700]="!exercise.done"
               >
-
                 {{
                   exercise.done
                     ? ('userExercises.completed' | translate)
@@ -246,19 +176,12 @@
                 }}
 
                 <app-icon [name]="exercise.done ? 'circle-check' : 'timer'" sizeClass="h-5 w-5" />
-
               </div>
-
             </div>
-
           </div>
-
         </app-card>
-
       </app-side-pagination>
-
     </ng-container>
-
 
     <!-- ======================================================
          NINCS GYAKORLAT
@@ -266,25 +189,16 @@
 
     <ng-template #noExercises>
       <ng-container *ngIf="!loading && !loadFailed">
+        <div
+          class="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-surface-300 bg-white px-5 py-10 text-center shadow-md shadow-surface-200/40"
+        >
+          <span class="mb-3 text-5xl">
+            <app-icon name="dumbbell" sizeClass="h-5 w-5" />
+          </span>
 
-      <div
-        class="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-surface-300 bg-white px-5 py-10 text-center shadow-md shadow-surface-200/40"
-      >
-
-        <span class="mb-3 text-5xl">
-          <app-icon name="dumbbell" sizeClass="h-5 w-5" />
-        </span>
-
-        <app-message
-          [message]="'userExercises.noExercises'"
-          type="info"
-        ></app-message>
-
-      </div>
-
+          <app-message [message]="'userExercises.noExercises'" type="info"></app-message>
+        </div>
       </ng-container>
     </ng-template>
-
   </div>
-
 </div>

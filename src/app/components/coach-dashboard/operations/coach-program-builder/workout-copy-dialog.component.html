@@ -1,90 +1,122 @@
-<div
-  class="fixed inset-0 z-50 flex items-center justify-center bg-surface-900/50 p-4 backdrop-blur-sm"
-  role="dialog"
-  aria-modal="true"
-  [attr.aria-label]="'coachProgramBuilder.copyWorkout' | translate"
+<app-dialog
+  #dialog
+  [labelledBy]="dialog.titleId"
+  [ariaLabel]="'coachProgramBuilder.copyWorkout' | translate"
+  [busy]="inProgress"
+  backdropClass="fixed inset-0 z-50 flex items-center justify-center bg-surface-900/50 p-4 backdrop-blur-sm"
+  panelClass="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-surface-200 bg-white shadow-2xl"
 >
-  <div class="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl border border-surface-200 bg-white shadow-2xl">
-    <div class="flex items-start justify-between gap-4 border-b border-surface-100 px-5 py-4 sm:px-6">
-      <div class="min-w-0">
-        <h3 class="text-lg font-bold text-content-800 sm:text-xl">
-          {{ 'coachProgramBuilder.copyWorkout' | translate }}
-        </h3>
-        <p *ngIf="sourceWorkout" class="mt-1 break-words text-sm text-content-500">
-          {{ 'coachProgramBuilder.originalWorkout' | translate }}
-          <strong class="font-semibold text-content-700">{{ sourceWorkout.name }}</strong>
-        </p>
-      </div>
-      <app-button
-        type="button"
-        [ariaLabel]="'coachProgramBuilder.close' | translate"
-        [disabled]="inProgress"
-        (buttonClick)="cancel.emit()"
-        variant="delete"
-        appearance="ghost"
-        [iconOnly]="true"
-      ><app-icon name="x" sizeClass="h-5 w-5" /></app-button>
+  <div
+    dialogHeader
+    class="flex items-start justify-between gap-4 border-b border-surface-100 px-5 py-4 sm:px-6"
+  >
+    <div class="min-w-0">
+      <h3 [id]="dialog.titleId" appHeading="section">
+        {{ 'coachProgramBuilder.copyWorkout' | translate }}
+      </h3>
+      <p *ngIf="sourceWorkout" class="mt-1 break-words text-sm text-content-500">
+        {{ 'coachProgramBuilder.originalWorkout' | translate }}
+        <strong class="font-semibold text-content-700">{{ sourceWorkout.name }}</strong>
+      </p>
     </div>
-
-    <app-message *ngIf="errorMessage" [message]="errorMessage" type="error" class="block px-5 pt-4"></app-message>
-    <div class="grid grid-cols-1 gap-5 p-5 sm:p-6">
-      <app-form-field class="min-w-0" labelKey="coachProgramBuilder.newWorkoutName" controlId="copyWorkoutName">
-        <input
-          id="copyWorkoutName"
-          type="text"
-          [ngModel]="workoutName"
-          (ngModelChange)="workoutNameChange.emit($event)"
-          [disabled]="inProgress"
-          [placeholder]="'coachProgramBuilder.newWorkoutNamePlaceholder' | translate"
-          class="block min-h-11 w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition placeholder:text-content-400 hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 disabled:cursor-not-allowed disabled:bg-surface-100 sm:text-sm"
-        />
-      </app-form-field>
-      <app-form-field class="min-w-0" labelKey="coachProgramBuilder.newWorkoutDate" controlId="copyWorkoutDate">
-        <input
-          id="copyWorkoutDate"
-          type="date"
-          [ngModel]="workoutDate"
-          (ngModelChange)="workoutDateChange.emit($event)"
-          [disabled]="inProgress"
-          class="block min-h-11 w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 disabled:cursor-not-allowed disabled:bg-surface-100 sm:text-sm"
-        />
-      </app-form-field>
-      <app-form-field class="min-w-0" labelKey="coachProgramBuilder.workoutDay" controlId="copyWorkoutDayIndex">
-        <input
-          id="copyWorkoutDayIndex"
-          type="number"
-          min="0"
-          [ngModel]="dayIndex"
-          (ngModelChange)="dayIndexChange.emit($event)"
-          [disabled]="inProgress"
-          class="block min-h-11 w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 disabled:cursor-not-allowed disabled:bg-surface-100 sm:text-sm"
-        />
-      </app-form-field>
-    </div>
-
-    <div class="flex flex-col-reverse gap-3 border-t border-surface-100 px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
-      <app-button
-        type="button"
-        [disabled]="inProgress"
-        (buttonClick)="cancel.emit()"
-        variant="secondary"
-        appearance="outline"
-        [fullWidth]="true"
-        buttonClass="sm:w-auto"
-        class="block w-full sm:w-auto"
-      >{{ 'coachProgramBuilder.cancel' | translate }}</app-button>
-      <app-button
-        type="button"
-        [disabled]="inProgress || !workoutName.trim() || !workoutDate || dayIndex < 1"
-        (buttonClick)="confirm.emit()"
-        variant="primary"
-        appearance="solid"
-        [fullWidth]="true"
-        buttonClass="sm:w-auto"
-        class="block w-full sm:w-auto"
-      >
-        {{ inProgress ? ('coachProgramBuilder.copying' | translate) : ('coachProgramBuilder.copyWorkout' | translate) }}
-      </app-button>
-    </div>
+    <app-button
+      type="button"
+      [ariaLabel]="'coachProgramBuilder.close' | translate"
+      [disabled]="inProgress"
+      (buttonClick)="cancel.emit()"
+      variant="delete"
+      appearance="ghost"
+      [iconOnly]="true"
+      ><app-icon name="x" sizeClass="h-5 w-5"
+    /></app-button>
   </div>
-</div>
+
+  <app-message
+    *ngIf="errorMessage"
+    [message]="errorMessage"
+    type="error"
+    class="block px-5 pt-4"
+  ></app-message>
+  <div class="grid grid-cols-1 gap-5 p-5 sm:p-6">
+    <app-form-field
+      class="min-w-0"
+      labelKey="coachProgramBuilder.newWorkoutName"
+      controlId="copyWorkoutName"
+    >
+      <input
+        appInput="builder"
+        id="copyWorkoutName"
+        type="text"
+        [ngModel]="workoutName"
+        (ngModelChange)="workoutNameChange.emit($event)"
+        [disabled]="inProgress"
+        [placeholder]="'coachProgramBuilder.newWorkoutNamePlaceholder' | translate"
+        class="min-h-11 placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100"
+      />
+    </app-form-field>
+    <app-form-field
+      class="min-w-0"
+      labelKey="coachProgramBuilder.newWorkoutDate"
+      controlId="copyWorkoutDate"
+    >
+      <input
+        appInput="builder"
+        id="copyWorkoutDate"
+        type="date"
+        [ngModel]="workoutDate"
+        (ngModelChange)="workoutDateChange.emit($event)"
+        [disabled]="inProgress"
+        class="min-h-11 disabled:cursor-not-allowed disabled:bg-surface-100"
+      />
+    </app-form-field>
+    <app-form-field
+      class="min-w-0"
+      labelKey="coachProgramBuilder.workoutDay"
+      controlId="copyWorkoutDayIndex"
+    >
+      <input
+        appInput="builder"
+        id="copyWorkoutDayIndex"
+        type="number"
+        min="0"
+        [ngModel]="dayIndex"
+        (ngModelChange)="dayIndexChange.emit($event)"
+        [disabled]="inProgress"
+        class="min-h-11 disabled:cursor-not-allowed disabled:bg-surface-100"
+      />
+    </app-form-field>
+  </div>
+
+  <div
+    dialogActions
+    class="flex flex-col-reverse gap-3 border-t border-surface-100 px-5 py-4 sm:flex-row sm:justify-end sm:px-6"
+  >
+    <app-button
+      type="button"
+      [disabled]="inProgress"
+      (buttonClick)="cancel.emit()"
+      variant="secondary"
+      appearance="outline"
+      [fullWidth]="true"
+      buttonClass="sm:w-auto"
+      class="block w-full sm:w-auto"
+      >{{ 'coachProgramBuilder.cancel' | translate }}</app-button
+    >
+    <app-button
+      type="button"
+      [disabled]="inProgress || !workoutName.trim() || !workoutDate || dayIndex < 1"
+      (buttonClick)="confirm.emit()"
+      variant="primary"
+      appearance="solid"
+      [fullWidth]="true"
+      buttonClass="sm:w-auto"
+      class="block w-full sm:w-auto"
+    >
+      {{
+        inProgress
+          ? ('coachProgramBuilder.copying' | translate)
+          : ('coachProgramBuilder.copyWorkout' | translate)
+      }}
+    </app-button>
+  </div>
+</app-dialog>

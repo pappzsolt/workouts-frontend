@@ -9,7 +9,7 @@
 ></app-search>
 
 <!-- Betöltés állapot -->
-<app-message *ngIf="loading" message="coachProgramBoard.loading" type="info" class="block"></app-message>
+<app-loading *ngIf="loading" message="coachProgramBoard.loading" class="block"></app-loading>
 
 <!-- Üzenet -->
 <app-message
@@ -24,21 +24,17 @@
   *ngIf="!loading && filteredPrograms.length"
   class="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
 >
-  <div
-    *ngFor="let program of filteredPrograms; trackBy: trackByProgram"
-    class="min-w-0"
-  >
+  <div *ngFor="let program of filteredPrograms; trackBy: trackByProgram" class="min-w-0">
     <!-- Program kiválasztása rádiógombbal -->
     <div class="relative h-full">
-
       <input
+        appRadio="card"
         type="radio"
         name="selectedProgram"
         [value]="program.programId"
         [(ngModel)]="selectedProgramId"
         (change)="onSelectProgram(program.programId)"
         id="program-{{ program.programId }}"
-        class="peer sr-only"
       />
 
       <label
@@ -70,13 +66,12 @@
             *ngIf="program.startDate || program.endDate"
             class="mt-1 block text-xs text-content-500"
           >
-            {{ program.startDate | date:'yyyy.MM.dd' }}
+            {{ program.startDate | date: 'yyyy.MM.dd' }}
             –
-            {{ program.endDate | date:'yyyy.MM.dd' }}
+            {{ program.endDate | date: 'yyyy.MM.dd' }}
           </span>
         </div>
       </label>
-
     </div>
   </div>
 </div>
