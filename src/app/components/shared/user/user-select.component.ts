@@ -1,6 +1,9 @@
 import { matchesSearch } from '../components/app-search/search-match';
 import { AppSearchComponent } from '../components/app-search/app-search.component';
-import { errorMessage, responseMessage } from '../../../models/backend-dto/common/api-response-message';
+import {
+  errorMessage,
+  responseMessage,
+} from '../../../models/backend-dto/common/api-response-message';
 import type { UserNameId } from '../../../models/common/user-name-id.model';
 import { Component, OnInit, Input, Output, EventEmitter, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -18,23 +21,33 @@ import { SHARED_IMPORTS } from '../shared-imports';
   standalone: true,
   imports: [AppSearchComponent, ...SHARED_IMPORTS, AppSelectComponent],
   template: `
-    <app-search
-      inputId="userSelectSearch"
-      [searchTerm]="searchTerm"
-      label="appSearch.usersLabel"
-      placeholder="appSearch.usersPlaceholder"
-      [showClearButton]="true"
-      (searchTermChange)="onSearchChange($event)"
-      class="mb-3 block" [disabled]="disabled"
-    ></app-search>
-    <app-message *ngIf="searchTerm.trim() && !matchingOptions.length" message="appSearch.noResults" type="info" class="mb-3 block"></app-message>
+    @if (!searchable) {
+      <app-search
+        inputId="userSelectSearch"
+        [searchTerm]="searchTerm"
+        label="appSearch.usersLabel"
+        placeholder="appSearch.usersPlaceholder"
+        [showClearButton]="true"
+        (searchTermChange)="onSearchChange($event)"
+        class="mb-3 block"
+        [disabled]="disabled"
+      ></app-search>
+      <app-message
+        *ngIf="searchTerm.trim() && !matchingOptions.length"
+        message="appSearch.noResults"
+        type="info"
+        class="mb-3 block"
+      ></app-message>
+    }
     <label for="userSelect" class="user-select-label">
       {{ 'userSelect.selectUser' | translate }}
     </label>
     <app-select
       id="userSelect"
       [value]="selectedUserId"
-      [options]="userOptions"
+      [options]="searchable ? allUserOptions : userOptions"
+      [searchable]="searchable"
+      searchPlaceholder="appSearch.usersPlaceholder"
       [disabled]="disabled"
       placeholder="userSelect.selectUserOption"
       [placeholderValue]="undefined"
@@ -59,6 +72,8 @@ export class UserSelectComponent implements OnInit {
   @Input()
   disabled = false;
 
+  @Input() searchable = false;
+
   @Output()
   selectedUserIdChange = new EventEmitter<number>();
 
@@ -70,11 +85,19 @@ export class UserSelectComponent implements OnInit {
   searchTerm = '';
 
   get matchingOptions(): UserNameId[] {
-    return this.users.filter(user => matchesSearch(this.searchTerm, user.username));
+    return this.users.filter((user) => matchesSearch(this.searchTerm, user.username));
+  }
+
+  get allUserOptions(): SelectOption<number>[] {
+    return this.users.map((user) => ({ value: user.id, label: user.username }));
   }
 
   get userOptions(): SelectOption<number>[] {
-    return this.users.filter(user => user.id === this.selectedUserId || matchesSearch(this.searchTerm, user.username)).map((user) => ({ value: user.id, label: user.username }));
+    return this.users
+      .filter(
+        (user) => user.id === this.selectedUserId || matchesSearch(this.searchTerm, user.username),
+      )
+      .map((user) => ({ value: user.id, label: user.username }));
   }
 
   onSearchChange(term: string): void {
@@ -87,19 +110,26 @@ export class UserSelectComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.userService.getAllUsers().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (response) => {
-        this.users = response.success ? response.data ?? [] : [];
-        this.message = responseMessage([response], response.success ? '' : 'userSelect.loadError');
-        this.messageType = response.success ? 'info' : 'error';
-      },
+    this.userService
+      .getAllUsers()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.users = response.success ? (response.data ?? []) : [];
+          this.message = responseMessage(
+            [response],
+            response.success ? '' : 'userSelect.loadError',
+          );
+          this.messageType = response.success ? 'info' : 'error';
+        },
 
-      error: (err) => {
-        this.message = errorMessage(err, 'userSelect.loadError'); this.messageType = 'error';
-        this.logger.error('Hiba a felhasználók lekérésekor:', err);
-        this.users = [];
-      },
-    });
+        error: (err) => {
+          this.message = errorMessage(err, 'userSelect.loadError');
+          this.messageType = 'error';
+          this.logger.error('Hiba a felhasználók lekérésekor:', err);
+          this.users = [];
+        },
+      });
   }
 
   onChange(id?: number): void {
@@ -111,6 +141,4 @@ export class UserSelectComponent implements OnInit {
       this.userSelected.emit(user);
     }
   }
-
-
 }

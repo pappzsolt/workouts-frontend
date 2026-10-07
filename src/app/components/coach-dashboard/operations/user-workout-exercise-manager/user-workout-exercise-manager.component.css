@@ -16,7 +16,7 @@
 .page-title {
   font-size: 1.5rem;
   font-weight: 700;
-  text-align: center;
+  text-align: left;
   color: var(--app-content-800);
   margin: 0 0 1.75rem;
 }
@@ -43,16 +43,13 @@
 
 .add-workout-controls {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 220px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
   gap: 1rem;
   align-items: end;
 }
 
-/*
- * A user kiválasztó külön teljes sort kap.
- */
 .add-workout-controls > app-user-select {
-  grid-column: 1 / -1;
+  min-width: 0;
 }
 
 /* ============================================================
@@ -788,5 +785,69 @@
 
   .set-editor-actions {
     grid-template-columns: 1fr;
+  }
+}
+
+.selection-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.selection-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  background: var(--app-primary-50);
+  color: var(--app-primary-700);
+}
+
+.selection-heading h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--app-content-800);
+}
+
+.selection-heading p {
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--app-content-500);
+}
+
+.add-workout-controls > app-button {
+  align-self: end;
+  padding-bottom: 0.05rem;
+}
+
+@media (max-width: 1024px) {
+  .add-workout-controls {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .add-workout-controls > app-button {
+    grid-column: 1 / -1;
+    justify-self: end;
+  }
+}
+
+@media (max-width: 768px) {
+  .add-workout-section {
+    padding: 1rem;
+  }
+
+  .add-workout-controls {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .add-workout-controls > app-button {
+    width: 100%;
+    justify-self: stretch;
   }
 }

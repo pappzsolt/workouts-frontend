@@ -1,3 +1,4 @@
+@if (!searchable) {
 <app-search
   inputId="programSelectSearch"
   [searchTerm]="searchTerm"
@@ -8,6 +9,7 @@
   class="mb-3 block" [disabled]="loading"
 ></app-search>
 <app-message *ngIf="searchTerm.trim() && !matchingOptions.length && !loading" message="appSearch.noResults" type="info" class="mb-3 block"></app-message>
+}
 <div>
   <label for="coachProgramSelect" class="mb-2 block text-sm font-semibold text-content-700">
     {{ 'coachProgramSelect.program' | translate }}:
@@ -16,7 +18,10 @@
   <app-select
     id="coachProgramSelect"
     [value]="selectedProgramId"
-    [options]="programOptions"
+    [options]="searchable ? allProgramOptions : programOptions"
+    [searchable]="searchable"
+    [disabled]="loading"
+    searchPlaceholder="appSearch.programsPlaceholder"
     placeholder="coachProgramSelect.selectProgram"
     [placeholderValue]="undefined"
     [placeholderDisabled]="true"

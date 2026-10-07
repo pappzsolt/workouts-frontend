@@ -1,17 +1,68 @@
 import type { SelectOption, SelectValue } from '../../../../models/common/select-option.model';
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  ViewChild,
+  OnChanges,
+  SimpleChanges,
+  inject,
+} from '@angular/core';
 import { FormsModule, NgModel } from '@angular/forms';
-import { TranslatePipe } from '@ngx-translate/core';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+import { matchesSearch } from '../app-search/search-match';
+import { TranslateService, TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-select',
   standalone: true,
-  host: { '[attr.id]': 'null' },
-  imports: [FormsModule, TranslatePipe],
+  host: { '[attr.id]': 'null', '[class.searchable]': 'searchable' },
+  imports: [FormsModule, TranslatePipe, MatAutocompleteModule, MatInputModule],
   templateUrl: './app-select.component.html',
   styleUrl: './app-select.component.css',
 })
-export class AppSelectComponent<T extends SelectValue = string> {
+export class AppSelectComponent<T extends SelectValue = string> implements OnChanges {
+  private readonly translate = inject(TranslateService);
+
+  @Input() searchable = false;
+  @Input() searchPlaceholder = '';
+  searchTerm = '';
+  searchValue: SelectValue = undefined;
+
+  readonly displayOption = (value: SelectValue): string => {
+    const option = this.options.find((option) => option.value === value);
+    return option ? this.translate.instant(option.label) : '';
+  };
+
+  get filteredOptions(): SelectOption<T>[] {
+    return this.options.filter((option) =>
+      matchesSearch(this.searchTerm, this.translate.instant(option.label), option.searchText),
+    );
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['value'] || changes['searchable']) {
+      this.restoreSelection();
+    }
+  }
+
+  onSearchInput(term: string): void {
+    this.searchTerm = term;
+  }
+
+  restoreSelection(): void {
+    this.searchTerm = '';
+    this.searchValue = this.value;
+  }
+
+  selectSearchOption(value: T): void {
+    this.value = value;
+    this.restoreSelection();
+    this.onValueChange(value);
+  }
+
   @Input() id = '';
   @Input() name = '';
 
@@ -33,6 +84,7 @@ export class AppSelectComponent<T extends SelectValue = string> {
 
   reset(value?: T): void {
     this.value = value;
+    this.restoreSelection();
     this.model?.reset({ value, disabled: this.disabled });
   }
 

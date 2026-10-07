@@ -11,11 +11,18 @@
   ></app-message>
 
   <div class="add-workout-section">
+    <div class="selection-heading">
+      <span class="selection-icon" aria-hidden="true"><app-icon name="users" sizeClass="h-5 w-5"></app-icon></span>
+      <div>
+        <h3>{{ 'userWorkoutExerciseManager.selectionTitle' | translate }}</h3>
+        <p>{{ 'userWorkoutExerciseManager.selectionHint' | translate }}</p>
+      </div>
+    </div>
     <div class="add-workout-controls">
-      <app-user-select [selectedUserId]="selectedUserId" (selectedUserIdChange)="onUserChanged($event)"></app-user-select>
+      <app-user-select [searchable]="true" [selectedUserId]="selectedUserId" (selectedUserIdChange)="onUserChanged($event)"></app-user-select>
 
       <div class="form-field">
-        <app-coach-program-select [selectedProgramId]="selectedProgramId" (selectedProgramIdChange)="onProgramChanged($event)"></app-coach-program-select>
+        <app-coach-program-select [searchable]="true" [selectedProgramId]="selectedProgramId" (selectedProgramIdChange)="onProgramChanged($event)"></app-coach-program-select>
       </div>
 
       <app-button
@@ -411,7 +418,7 @@
 
   <app-message
     *ngIf="userProgramData && !userProgramData.length"
-    [message]="'userWorkoutExerciseManager.noData'"
+    [message]="!selectedUserId || !selectedProgramId ? 'userWorkoutExerciseManager.selectUserAndProgram' : 'userWorkoutExerciseManager.noData'"
     type="info"
   ></app-message>
 </div>

@@ -717,6 +717,8 @@
     "footer": "© 2025 FitApp Admin Panel – Minden jog fenntartva."
   },
   "userWorkoutExerciseManager": {
+    "selectionTitle": "Felhasználó és program",
+    "selectionHint": "Keress név alapján, válassz a találatok közül, majd töltsd be az edzéseket.",
     "title": "Edzés és sorozatok beállítása",
     "program": "Program",
     "loadProgramData": "Program adatok betöltése",
@@ -746,7 +748,7 @@
     "emptyValue": "-",
     "delete": "Törlés",
     "noSets": "Nincs set ehhez az exercise-hoz.",
-    "noData": "Nincs elérhető adat ehhez a userhez/programhoz.",
+    "noData": "Ehhez a felhasználóhoz és programhoz még nincs elérhető edzés.",
     "noExerciseSelected": "Nincs kiválasztva user workout exercise.",
     "addSetError": "Hiba történt az új set hozzáadásakor.",
     "setIdMissing": "A set azonosítója hiányzik.",
@@ -755,7 +757,7 @@
     "deleteSetConfirm": "Biztosan törölni szeretnéd a {{setNumber}}. set-et?",
     "deleteSetError": "Hiba történt a set törlésekor.",
     "missingUserOrProgram": "Hiányzó adatok: userId vagy programId!",
-    "selectUserAndProgram": "Előbb válassz usert és programot!",
+    "selectUserAndProgram": "Az edzések megtekintéséhez válassz felhasználót és programot.",
     "userWorkoutIdMissing": "A user workout azonosítója hiányzik.",
     "scheduledDateRequired": "A scheduled date megadása kötelező.",
     "scheduledDateUpdateError": "Hiba történt a scheduled date módosításakor.",

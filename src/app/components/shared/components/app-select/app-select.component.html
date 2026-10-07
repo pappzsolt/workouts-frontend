@@ -1,29 +1,68 @@
-<select
-  [id]="id"
-  [name]="name"
-  [disabled]="disabled"
-  [ngModel]="value"
-  (ngModelChange)="onValueChange($event)"
-  [ngModelOptions]="{ standalone: true }"
-  [class]="className"
->
-  @if (placeholder) {
-    @if (typeof placeholderValue === 'string') {
-      <option [value]="placeholderValue" [disabled]="placeholderDisabled">
-        {{ placeholder | translate }}
-      </option>
-    } @else {
-      <option [ngValue]="placeholderValue" [disabled]="placeholderDisabled">
-        {{ placeholder | translate }}
-      </option>
+@if (searchable) {
+  <div class="searchable-select">
+    <input
+      matInput
+      type="text"
+      [id]="id"
+      [name]="name"
+      [disabled]="disabled"
+      [ngModel]="searchValue"
+      (ngModelChange)="searchValue = $event"
+      [ngModelOptions]="{ standalone: true }"
+      [class]="className + ' searchable-select-input'"
+      [placeholder]="searchPlaceholder || placeholder | translate"
+      [matAutocomplete]="autocomplete"
+      #searchInput
+      (input)="onSearchInput(searchInput.value)"
+      (focus)="searchTerm = ''; searchInput.select()"
+      (blur)="restoreSelection()"
+    />
+    <svg class="select-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    <mat-autocomplete
+      #autocomplete="matAutocomplete"
+      [displayWith]="displayOption"
+      (optionSelected)="selectSearchOption($event.option.value)"
+    >
+      @if (placeholder && !placeholderDisabled && !searchTerm.trim()) {
+        <mat-option [value]="placeholderValue">{{ placeholder | translate }}</mat-option>
+      }
+      @for (option of filteredOptions; track option.value) {
+        <mat-option [value]="option.value">{{ option.label | translate }}</mat-option>
+      } @empty {
+        <mat-option disabled>{{ 'appSearch.noResults' | translate }}</mat-option>
+      }
+    </mat-autocomplete>
+  </div>
+} @else {
+  <select
+    [id]="id"
+    [name]="name"
+    [disabled]="disabled"
+    [ngModel]="value"
+    (ngModelChange)="onValueChange($event)"
+    [ngModelOptions]="{ standalone: true }"
+    [class]="className"
+  >
+    @if (placeholder) {
+      @if (typeof placeholderValue === 'string') {
+        <option [value]="placeholderValue" [disabled]="placeholderDisabled">
+          {{ placeholder | translate }}
+        </option>
+      } @else {
+        <option [ngValue]="placeholderValue" [disabled]="placeholderDisabled">
+          {{ placeholder | translate }}
+        </option>
+      }
     }
-  }
 
-  @for (option of options; track option.value) {
-    @if (typeof option.value === 'string') {
-      <option [value]="option.value">{{ option.label | translate }}</option>
-    } @else {
-      <option [ngValue]="option.value">{{ option.label | translate }}</option>
+    @for (option of options; track option.value) {
+      @if (typeof option.value === 'string') {
+        <option [value]="option.value">{{ option.label | translate }}</option>
+      } @else {
+        <option [ngValue]="option.value">{{ option.label | translate }}</option>
+      }
     }
-  }
-</select>
+  </select>
+}

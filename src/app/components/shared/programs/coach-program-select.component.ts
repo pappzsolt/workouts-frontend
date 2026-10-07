@@ -34,6 +34,8 @@ export class CoachProgramSelectComponent implements OnInit, OnChanges {
   @Input()
   selectedProgramId?: number;
 
+  @Input() searchable = false;
+
   @Output()
   selectedProgramIdChange = new EventEmitter<number>();
 
@@ -49,6 +51,14 @@ export class CoachProgramSelectComponent implements OnInit, OnChanges {
 
   get matchingOptions(): CoachProgram[] {
     return this.programs.filter(program => matchesSearch(this.searchTerm, program.programName, program.programDescription));
+  }
+
+  get allProgramOptions(): SelectOption<number>[] {
+    return this.programs.map(program => ({
+      value: program.programId,
+      label: program.programName,
+      searchText: program.programDescription,
+    }));
   }
 
   get programOptions(): SelectOption<number>[] {

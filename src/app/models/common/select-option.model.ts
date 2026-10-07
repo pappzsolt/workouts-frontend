@@ -5,4 +5,5 @@ export type SelectValue = string | number | boolean | null | undefined;
 export interface SelectOption<T extends SelectValue = string> {
   value: T;
   label: string;
+  searchText?: string;
 }

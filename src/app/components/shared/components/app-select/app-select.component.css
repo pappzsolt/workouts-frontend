@@ -1,0 +1,23 @@
+:host(.searchable) {
+  display: block;
+  min-width: 0;
+}
+
+.searchable-select {
+  position: relative;
+}
+
+.searchable-select-input {
+  padding-right: 2.5rem;
+}
+
+.select-chevron {
+  width: 1rem;
+  height: 1rem;
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--app-content-500);
+  pointer-events: none;
+}
