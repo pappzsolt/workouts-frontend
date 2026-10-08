@@ -9,9 +9,9 @@
          ================================================== -->
 
     <h2
-      class="mb-5 flex items-center justify-center gap-2 break-words text-center text-xl font-bold leading-tight tracking-tight text-content-800 sm:mb-8 sm:text-3xl"
+      class="mb-5 flex items-center justify-center gap-2 break-words text-center text-2xl font-bold leading-tight tracking-tight text-content-800 sm:mb-8 sm:text-3xl"
     >
-      <span><app-icon name="dumbbell" sizeClass="h-5 w-5" /></span>
+      <span><app-icon name="dumbbell" sizeClass="h-8 w-8" /></span>
 
       <span>
         {{ workoutName }} –
@@ -32,6 +32,9 @@
            ================================================== -->
 
       <app-side-pagination
+        [fullWidth]="true"
+        [navigationBelow]="true"
+        class="mx-auto block w-full min-w-0"
         [currentPage]="currentPage"
         [totalPages]="totalPages"
         (pageChange)="onExercisePageChange($event)"
@@ -54,7 +57,7 @@
                  ========================================== -->
 
             <div
-              class="relative flex h-24 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-700 to-primary-800 sm:h-36"
+              class="relative flex h-32 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-700 to-primary-800 sm:h-44"
             >
               <!-- Dekoratív körök -->
 
@@ -92,7 +95,7 @@
                 <span
                   class="relative flex h-14 w-14 items-center justify-center rounded-xl bg-white/95 text-4xl shadow-lg ring-1 ring-white/30 transition duration-200 group-hover:scale-105 sm:h-20 sm:w-20 sm:rounded-2xl sm:text-5xl"
                 >
-                  <app-icon name="dumbbell" sizeClass="h-5 w-5" />
+                  <app-icon name="dumbbell" sizeClass="h-8 w-8" />
                 </span>
               </ng-template>
             </div>
@@ -101,17 +104,17 @@
                  KÁRTYA TARTALOM
                  ========================================== -->
 
-            <div class="flex min-w-0 flex-1 flex-col p-3.5 sm:p-5">
+            <div class="flex min-w-0 flex-1 flex-col p-4 sm:p-7">
               <!-- GYAKORLAT NEVE -->
 
-              <h3 appHeading="compact" class="mb-2 break-words leading-5 sm:text-lg sm:leading-6">
+              <h3 class="mb-3 break-words text-content-800 text-xl font-bold leading-tight sm:text-2xl">
                 {{ exercise.exercise.name }}
               </h3>
 
               <!-- GYAKORLAT LEÍRÁSA -->
 
               <p
-                class="mb-3 min-w-0 break-words text-sm leading-5 text-content-600 sm:mb-4 sm:leading-6"
+                class="mb-3 min-w-0 break-words text-base leading-relaxed text-content-600 sm:mb-5 sm:text-lg"
               >
                 {{ exercise.exercise.description || ('userExercises.noDescription' | translate) }}
               </p>
@@ -126,7 +129,7 @@
                 <!-- SOROZAT / ISMÉTLÉS -->
 
                 <div class="rounded-xl bg-surface-50 px-2.5 py-2.5 sm:px-3 sm:py-3">
-                  <div class="break-words text-xs text-content-600 sm:text-sm">
+                  <div class="break-words text-base text-content-600 sm:text-lg">
                     <span class="font-semibold text-content-700">
                       {{ 'userExercises.sets' | translate }}:
                     </span>
@@ -144,7 +147,7 @@
                 <!-- PIHENŐ -->
 
                 <div class="rounded-xl bg-surface-50 px-2.5 py-2.5 sm:px-3 sm:py-3">
-                  <div class="break-words text-xs text-content-600 sm:text-sm">
+                  <div class="break-words text-base text-content-600 sm:text-lg">
                     <span class="font-semibold text-content-700">
                       {{ 'userExercises.rest' | translate }}:
                     </span>
@@ -161,7 +164,7 @@
                    ======================================== -->
 
               <div
-                class="mt-3 rounded-xl border px-3 py-2 text-center text-xs font-semibold sm:py-2.5 sm:text-sm"
+                class="mt-3 rounded-xl border px-3 py-2 text-center text-sm font-semibold sm:py-3 sm:text-base"
                 [class.border-success-200]="exercise.done"
                 [class.bg-success-50]="exercise.done"
                 [class.text-success-700]="exercise.done"
@@ -175,7 +178,7 @@
                     : ('userExercises.pending' | translate)
                 }}
 
-                <app-icon [name]="exercise.done ? 'circle-check' : 'timer'" sizeClass="h-5 w-5" />
+                <app-icon [name]="exercise.done ? 'circle-check' : 'timer'" sizeClass="h-6 w-6" />
               </div>
             </div>
           </div>
@@ -193,7 +196,7 @@
           class="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-surface-300 bg-white px-5 py-10 text-center shadow-md shadow-surface-200/40"
         >
           <span class="mb-3 text-5xl">
-            <app-icon name="dumbbell" sizeClass="h-5 w-5" />
+            <app-icon name="dumbbell" sizeClass="h-8 w-8" />
           </span>
 
           <app-message [message]="'userExercises.noExercises'" type="info"></app-message>

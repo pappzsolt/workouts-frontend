@@ -27,39 +27,41 @@
          ELŐZŐ
          ================================================== -->
 
-    <app-button
-      *ngIf="totalPages > 1"
-      type="button"
-      [ariaLabel]="'common.previous' | translate"
-      [disabled]="currentPage <= 1"
-      (buttonClick)="onPreviousPage()"
-      variant="secondary"
-      appearance="outline"
-      [iconOnly]="true"
-      [round]="true"
-      class="absolute top-1/2 z-10 -translate-y-1/2 -left-3 sm:-left-5"
-    >
-      <app-icon name="chevron-left" sizeClass="h-5 w-5" />
-    </app-button>
+    <div *ngIf="totalPages > 1" [ngClass]="navigationBelow ? 'mt-4 flex items-center justify-between gap-3' : 'contents'">
+      <app-button
+        *ngIf="totalPages > 1"
+        type="button"
+        [ariaLabel]="'common.previous' | translate"
+        [disabled]="currentPage <= 1"
+        (buttonClick)="onPreviousPage()"
+        variant="secondary"
+        appearance="outline"
+        [iconOnly]="true"
+        [round]="true"
+        [ngClass]="navigationBelow ? '' : 'absolute top-1/2 z-10 -translate-y-1/2 -left-3 sm:-left-5'"
+      >
+        <app-icon name="chevron-left" sizeClass="h-5 w-5" />
+      </app-button>
 
-    <!-- ==================================================
-         KÖVETKEZŐ
-         ================================================== -->
+      <!-- ==================================================
+           KÖVETKEZŐ
+           ================================================== -->
 
-    <app-button
-      *ngIf="totalPages > 1"
-      type="button"
-      [ariaLabel]="'common.next' | translate"
-      [disabled]="currentPage >= totalPages"
-      (buttonClick)="onNextPage()"
-      variant="secondary"
-      appearance="outline"
-      [iconOnly]="true"
-      [round]="true"
-      class="absolute top-1/2 z-10 -translate-y-1/2 -right-3 sm:-right-5"
-    >
-      <app-icon name="chevron-right" sizeClass="h-5 w-5" />
-    </app-button>
+      <app-button
+        *ngIf="totalPages > 1"
+        type="button"
+        [ariaLabel]="'common.next' | translate"
+        [disabled]="currentPage >= totalPages"
+        (buttonClick)="onNextPage()"
+        variant="secondary"
+        appearance="outline"
+        [iconOnly]="true"
+        [round]="true"
+        [ngClass]="navigationBelow ? '' : 'absolute top-1/2 z-10 -translate-y-1/2 -right-3 sm:-right-5'"
+      >
+        <app-icon name="chevron-right" sizeClass="h-5 w-5" />
+      </app-button>
+    </div>
 
   </div>
 

@@ -12,12 +12,12 @@
      OLDAL
 ====================================================== -->
 
-<div *ngIf="workoutExercise" class="min-h-full min-w-0">
+<div *ngIf="workoutExercise" class="mx-auto min-h-full w-full max-w-6xl min-w-0 px-3 sm:px-6 lg:px-8">
   <!-- ======================================================
        FEJLÉC
        ====================================================== -->
 
-  <div class="px-4 sm:px-6 py-4 sm:py-5">
+  <div class="py-4 sm:py-5">
     <!-- GYAKORLAT FEJLÉC -->
 
     <div class="text-center">
@@ -29,12 +29,23 @@
         {{ workoutExercise.exercise.name || 'N/A' }}
       </h2>
 
-      <div class="mt-2 text-sm text-content-500">
-        {{ workoutExercise.sets }}
-        {{ 'userExerciseDetail.sets' | translate }}
-        ·
-        {{ workoutExercise.repetitions }}
-        {{ 'userExerciseDetail.reps' | translate }}
+      <div class="mx-auto mt-4 grid w-full max-w-md grid-cols-2 gap-3 text-primary-800">
+        <div class="rounded-2xl border border-primary-200 bg-primary-50 px-3 py-4 shadow-sm">
+          <div class="text-3xl font-extrabold leading-tight sm:text-4xl">
+            {{ prescribedSetCount }}
+          </div>
+          <div class="mt-1 text-sm font-bold uppercase tracking-wide">
+            {{ 'userExerciseDetail.sets' | translate }}
+          </div>
+        </div>
+        <div class="min-w-0 rounded-2xl border border-primary-200 bg-primary-50 px-3 py-4 shadow-sm">
+          <div class="break-words text-3xl font-extrabold leading-tight sm:text-4xl">
+            {{ prescribedRepetitions }}
+          </div>
+          <div class="mt-1 text-sm font-bold uppercase tracking-wide">
+            {{ 'userExerciseDetail.reps' | translate }}
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -43,7 +54,7 @@
        TARTALOM
        ====================================================== -->
 
-  <div class="px-2 sm:px-6 py-5 sm:py-6">
+  <div class="py-5 sm:py-6">
     <!-- ====================================================
          SOROZATOK
          ==================================================== -->
@@ -55,6 +66,8 @@
 
       <div *ngIf="workoutExercise.userWorkoutExerciseSets.length; else noSets" class="w-full">
         <app-side-pagination
+          [fullWidth]="true"
+          [navigationBelow]="true"
           [currentPage]="currentSetIndex + 1"
           [totalPages]="workoutExercise.userWorkoutExerciseSets.length"
           (pageChange)="goToSet($event - 1)"
@@ -95,7 +108,7 @@
                    CARD CONTENT
                    ================================================= -->
 
-              <div class="p-4 sm:p-5">
+              <div class="p-4 sm:p-7">
                 <!-- =================================================
                      TOP ROW
                      ================================================= -->

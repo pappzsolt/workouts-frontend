@@ -27,6 +27,9 @@ export class SidePaginationComponent {
    */
   @Input() fullWidthMobile = false;
 
+  /** Keep navigation inside the page when cards use the full content width. */
+  @Input() navigationBelow = false;
+
   @Output() pageChange = new EventEmitter<number>();
 
   onPreviousPage(): void {

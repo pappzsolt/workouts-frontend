@@ -9,9 +9,9 @@
          ================================================== -->
 
     <h2
-      class="mb-5 flex items-center justify-center gap-2 break-words text-center text-xl font-bold leading-tight tracking-tight text-content-800 sm:mb-8 sm:text-3xl"
+      class="mb-5 flex items-center justify-center gap-2 break-words text-center text-2xl font-bold leading-tight tracking-tight text-content-800 sm:mb-8 sm:text-3xl"
     >
-      <span><app-icon name="dumbbell" sizeClass="h-5 w-5" /></span>
+      <span><app-icon name="dumbbell" sizeClass="h-8 w-8" /></span>
       <span>{{ 'userWorkouts.program' | translate }}: {{ programName }}</span>
     </h2>
 
@@ -46,10 +46,10 @@
                 : 'border-transparent bg-surface-50 text-content-500 hover:border-surface-300 hover:bg-surface-100 hover:text-content-800'
             "
           >
-            <span class="text-xl sm:text-2xl"><app-icon name="timer" sizeClass="h-5 w-5" /></span>
+            <span class="text-xl sm:text-2xl"><app-icon name="timer" sizeClass="h-6 w-6" /></span>
 
             <span class="flex min-w-0 flex-col items-start">
-              <span class="text-xs font-bold leading-snug sm:text-base">
+              <span class="break-words text-sm font-bold leading-snug sm:text-lg">
                 {{ 'userWorkouts.pendingWorkouts' | translate }}
               </span>
 
@@ -79,11 +79,11 @@
             "
           >
             <span class="text-xl sm:text-2xl"
-              ><app-icon name="circle-check" sizeClass="h-5 w-5"
+              ><app-icon name="circle-check" sizeClass="h-6 w-6"
             /></span>
 
             <span class="flex min-w-0 flex-col items-start">
-              <span class="text-xs font-bold leading-snug sm:text-base">
+              <span class="break-words text-sm font-bold leading-snug sm:text-lg">
                 {{ 'userWorkouts.completedWorkouts' | translate }}
               </span>
 
@@ -119,7 +119,7 @@
               appHeading="compact"
               class="flex min-w-0 items-center gap-2 leading-snug sm:text-xl"
             >
-              <span><app-icon name="timer" sizeClass="h-5 w-5" /></span>
+              <span><app-icon name="timer" sizeClass="h-6 w-6" /></span>
               <span>{{ 'userWorkouts.pendingWorkouts' | translate }}</span>
             </h3>
 
@@ -132,6 +132,9 @@
 
           <div *ngIf="pendingWorkouts.length > 0; else noPendingWorkouts" class="w-full">
             <app-side-pagination
+              [fullWidth]="true"
+              [navigationBelow]="true"
+              class="mx-auto block w-full min-w-0"
               [currentPage]="pendingCurrentPage"
               [totalPages]="pendingWorkouts.length"
               (pageChange)="onPendingPageChange($event)"
@@ -181,7 +184,7 @@
               appHeading="compact"
               class="flex min-w-0 items-center gap-2 leading-snug sm:text-xl"
             >
-              <span><app-icon name="circle-check" sizeClass="h-5 w-5" /></span>
+              <span><app-icon name="circle-check" sizeClass="h-6 w-6" /></span>
               <span>{{ 'userWorkouts.completedWorkouts' | translate }}</span>
             </h3>
 
@@ -194,6 +197,9 @@
 
           <ng-container *ngIf="completedWorkouts.length; else noCompletedWorkouts">
             <app-side-pagination
+              [fullWidth]="true"
+              [navigationBelow]="true"
+              class="mx-auto block w-full min-w-0"
               [currentPage]="completedCurrentPage"
               [totalPages]="completedWorkouts.length"
               (pageChange)="onCompletedPageChange($event)"
@@ -245,21 +251,21 @@
             <!-- Edzés fejléc / ikon -->
 
             <div
-              class="relative flex h-24 items-center justify-center overflow-hidden bg-surface-100 sm:h-36"
+              class="relative flex h-32 items-center justify-center overflow-hidden bg-surface-100 sm:h-44"
             >
               <span
                 class="relative flex h-14 w-14 items-center justify-center rounded-xl bg-white text-4xl shadow-sm ring-1 ring-surface-200 transition duration-200 group-hover:scale-105 sm:h-20 sm:w-20 sm:rounded-2xl sm:text-5xl"
               >
-                <app-icon name="dumbbell" sizeClass="h-5 w-5" />
+                <app-icon name="dumbbell" sizeClass="h-8 w-8" />
               </span>
             </div>
 
             <!-- Edzés tartalom -->
 
-            <div class="flex min-w-0 flex-1 flex-col p-3.5 sm:p-5">
+            <div class="flex min-w-0 flex-1 flex-col p-4 sm:p-7">
               <!-- Edzés név -->
 
-              <h4 appHeading="compact" class="mb-2 break-words leading-5 sm:text-lg sm:leading-6">
+              <h4 class="mb-3 break-words text-content-800 text-xl font-bold leading-tight sm:text-2xl">
                 {{ workout.workoutName }}
               </h4>
 
@@ -267,7 +273,7 @@
 
               <p
                 *ngIf="workout.workoutDescription"
-                class="mb-3 min-w-0 break-words text-sm leading-5 text-content-600 sm:mb-4 sm:leading-6"
+                class="mb-3 min-w-0 break-words text-base leading-relaxed text-content-600 sm:mb-5 sm:text-lg"
               >
                 {{ workout.workoutDescription }}
               </p>
@@ -275,18 +281,18 @@
               <!-- Meta adatok -->
 
               <div
-                class="mt-auto grid grid-cols-2 gap-2 border-t border-surface-100 pt-3 sm:gap-3 sm:pt-4"
+                class="mt-auto grid grid-cols-1 min-[360px]:grid-cols-2 gap-2 border-t border-surface-100 pt-3 sm:gap-3 sm:pt-4"
               >
                 <!-- Dátum -->
 
                 <div class="rounded-xl bg-surface-50 px-2.5 py-2.5 sm:px-3 sm:py-3">
                   <div
-                    class="mb-1 text-[10px] font-medium uppercase tracking-wide text-content-500 sm:text-xs"
+                    class="mb-1 text-xs font-medium uppercase tracking-wide text-content-500 sm:text-sm"
                   >
                     {{ 'userWorkouts.date' | translate }}
                   </div>
 
-                  <div class="break-words text-xs font-bold text-content-800 sm:text-sm">
+                  <div class="break-words text-base font-bold text-content-800 sm:text-lg">
                     {{ workout.workoutDate | date: 'yyyy.MM.dd' }}
                   </div>
                 </div>
@@ -295,12 +301,12 @@
 
                 <div class="rounded-xl bg-primary-50 px-2.5 py-2.5 sm:px-3 sm:py-3">
                   <div
-                    class="mb-1 text-[10px] font-medium uppercase tracking-wide text-primary-600 sm:text-xs"
+                    class="mb-1 text-xs font-medium uppercase tracking-wide text-primary-600 sm:text-sm"
                   >
                     {{ 'userWorkouts.intensity' | translate }}
                   </div>
 
-                  <div class="break-words text-xs font-bold text-primary-700 sm:text-sm">
+                  <div class="break-words text-base font-bold text-primary-700 sm:text-lg">
                     {{ workout.intensityLevel }}
                   </div>
                 </div>
@@ -310,10 +316,10 @@
 
               <div
                 *ngIf="isCompleted"
-                class="mt-3 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2 text-center text-xs font-semibold text-primary-700 sm:py-2.5 sm:text-sm"
+                class="mt-3 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2 text-center text-sm font-semibold text-primary-700 sm:py-3 sm:text-base"
               >
                 {{ 'userWorkouts.completed' | translate }}
-                <app-icon name="circle-check" sizeClass="h-5 w-5" />
+                <app-icon name="circle-check" sizeClass="h-6 w-6" />
               </div>
 
               <!-- Státusz: nincs teljesítve / függőben -->
@@ -321,18 +327,18 @@
               <ng-container *ngIf="!isCompleted">
                 <div
                   *ngIf="workout.completed === false"
-                  class="mt-3 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2 text-center text-xs font-semibold text-primary-700 sm:py-2.5 sm:text-sm"
+                  class="mt-3 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2 text-center text-sm font-semibold text-primary-700 sm:py-3 sm:text-base"
                 >
                   {{ 'userWorkouts.notCompleted' | translate }}
-                  <app-icon name="circle-x" sizeClass="h-5 w-5" />
+                  <app-icon name="circle-x" sizeClass="h-6 w-6" />
                 </div>
 
                 <div
                   *ngIf="workout.completed === null"
-                  class="mt-3 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2 text-center text-xs font-semibold text-primary-700 sm:py-2.5 sm:text-sm"
+                  class="mt-3 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2 text-center text-sm font-semibold text-primary-700 sm:py-3 sm:text-base"
                 >
                   {{ 'userWorkouts.pending' | translate }}
-                  <app-icon name="timer" sizeClass="h-5 w-5" />
+                  <app-icon name="timer" sizeClass="h-6 w-6" />
                 </div>
               </ng-container>
 

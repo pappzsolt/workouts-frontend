@@ -116,6 +116,19 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     return this.workoutExercise?.userWorkoutExerciseSets?.[this.currentSetIndex];
   }
 
+  get prescribedSetCount(): number {
+    return this.workoutExercise?.userWorkoutExerciseSets?.length ?? 0;
+  }
+
+  get prescribedRepetitions(): string {
+    const repetitions = this.workoutExercise?.userWorkoutExerciseSets
+      ?.map(set => set.targetRepetitions ?? '-');
+    if (!repetitions?.length) return '-';
+    return repetitions.every(value => value === repetitions[0])
+      ? String(repetitions[0])
+      : repetitions.join(' / ');
+  }
+
   get hasPreviousSet(): boolean {
     return this.currentSetIndex > 0;
   }
