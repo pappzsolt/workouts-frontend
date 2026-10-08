@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../../../shared/components/form-controls/app-input.directive';
 import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 
@@ -26,6 +27,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   styleUrl: './user-profile.component.css',
 })
 export class UserProfileComponent implements OnInit, OnDestroy {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly destroy$ = new Subject<void>();
 
   users: RawUser[] = [];
@@ -182,6 +184,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   }
 
   onSave(): void {
+    if (!this.validateInputs()) return;
     if (this.saving || !this.selectedUser.id) {
       return;
     }

@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../../../../shared/components/form-controls/app-input.directive';
 import { ProgramDetailsFormComponent } from '../../coach-program-builder/program-details-form.component';
 import {
   errorMessage,
@@ -23,6 +24,7 @@ import { LanguageService } from '../../../../../services/shared/language.service
   styleUrls: ['./coach-program-edit.component.css'],
 })
 export class CoachProgramEditComponent implements OnInit {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly logger = inject(LoggerService);
@@ -106,6 +108,7 @@ export class CoachProgramEditComponent implements OnInit {
   }
 
   saveProgram(): void {
+    if (!this.validateInputs()) return;
     if (!this.program.id) {
       this.setMessage('coachProgramEdit.idNotFound', 'error');
 

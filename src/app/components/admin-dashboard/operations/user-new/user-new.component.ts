@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../../../shared/components/form-controls/app-input.directive';
 import type { CoachNameId } from '../../../../models/common/coach-name-id.model';
 import { Component, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -27,6 +28,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   styleUrls: ['./user-new.component.css'],
 })
 export class UserNewComponent {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly destroyRef = inject(DestroyRef);
 
   user: {
@@ -106,6 +108,7 @@ export class UserNewComponent {
   // =============================
 
   onSubmit(form: NgForm): void {
+    if (!this.validateInputs()) return;
     this.clearMessage();
 
     if (!form.valid || this.user.roleIds.length === 0) {

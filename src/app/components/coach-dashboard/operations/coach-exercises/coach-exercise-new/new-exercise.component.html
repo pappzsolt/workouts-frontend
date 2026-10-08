@@ -146,6 +146,7 @@
       <input
         appInput="default"
         type="number"
+        min="0"
         id="caloriesBurnedPerMinute"
         name="caloriesBurnedPerMinute"
         [(ngModel)]="newExercise.caloriesBurnedPerMinute"
@@ -158,6 +159,8 @@
       <input
         appInput="default"
         type="number"
+        min="0"
+        step="1"
         id="durationSeconds"
         name="durationSeconds"
         [(ngModel)]="newExercise.durationSeconds"

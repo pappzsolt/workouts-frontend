@@ -99,6 +99,7 @@
             appInput="builder"
             id="durationDays"
             type="number"
+            step="1"
             min="1"
             [(ngModel)]="form.durationDays"
             [placeholder]="'coachProgramBuilder.programDurationPlaceholder' | translate"
@@ -214,7 +215,7 @@
 
       <!-- Duration -->
       <app-form-field class="min-w-0" labelKey="programForm.duration" controlId="durationDays">
-        <input appInput="builder" type="number" id="durationDays" formControlName="durationDays" />
+        <input appInput="builder" type="number" min="1" step="1" id="durationDays" formControlName="durationDays" />
       </app-form-field>
 
       <!-- Difficulty Level -->
@@ -337,6 +338,7 @@
       <input
         appInput="editor"
         type="number"
+        step="1"
         id="durationDays"
         name="durationDays"
         [placeholder]="labelPrefix + 'durationPlaceholder' | translate"

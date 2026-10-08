@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../../../shared/components/form-controls/app-input.directive';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -16,6 +17,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   styleUrls: ['./coach-new.component.css'],
 })
 export class CoachNewComponent {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly destroyRef = inject(DestroyRef);
 
   coach: CreateCoachRequest = this.createEmptyCoach();
@@ -32,6 +34,7 @@ export class CoachNewComponent {
    * Új edző létrehozása.
    */
   onSubmit(form: NgForm): void {
+    if (!this.validateInputs()) return;
     if (!form.valid) {
       this.showError('adminCoachNew.validationError');
 

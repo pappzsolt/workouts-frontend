@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../../../shared/components/form-controls/app-input.directive';
 import { Component, DestroyRef, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { errorMessage } from '../../../../models/backend-dto/common/api-response-message';
@@ -17,6 +18,7 @@ import type { WorkoutWithExercises } from '../../../../models/exercise.model';
   `,
 })
 export class ProgramWorkoutCopyComponent implements OnInit {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly api = inject(CoachProgramBuilderWorkoutService);
   private readonly destroyRef = inject(DestroyRef);
   @Input() programId: number | null = null;
@@ -38,6 +40,7 @@ export class ProgramWorkoutCopyComponent implements OnInit {
   }
 
   confirm(): void {
+    if (!this.validateInputs()) return;
     if (this.busy) return;
     if (!this.programId || !this.sourceWorkout) { this.fail('coachProgramBuilder.copyError'); return; }
     if (!this.name.trim()) { this.fail('coachProgramBuilder.copyNameRequired'); return; }

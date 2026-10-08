@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../../../shared/components/form-controls/app-input.directive';
 import { ProgramDetailsFormComponent } from '../coach-program-builder/program-details-form.component';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 
@@ -21,6 +22,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   styleUrls: ['./program-form.component.css'],
 })
 export class ProgramFormComponent implements OnInit, OnDestroy {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly destroy$ = new Subject<void>();
 
   @Input()
@@ -127,6 +129,7 @@ export class ProgramFormComponent implements OnInit, OnDestroy {
   // ==========================================================
 
   submit(): void {
+    if (!this.validateInputs()) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
 

@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../../../shared/components/form-controls/app-input.directive';
 import { finalize, forkJoin } from 'rxjs';
 import type { UserNameId } from '../../../../models/common/user-name-id.model';
 import { Component, OnInit, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
@@ -37,6 +38,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   templateUrl: './user-edit.component.html',
 })
 export class UserEditComponent implements OnInit {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly destroyRef = inject(DestroyRef);
 
   // =============================
@@ -204,6 +206,7 @@ export class UserEditComponent implements OnInit {
   // =============================
 
   onSave(): void {
+    if (!this.validateInputs()) return;
     if (!this.ready || this.saving || !this.selectedUser.id) return;
     this.clearMessage();
 

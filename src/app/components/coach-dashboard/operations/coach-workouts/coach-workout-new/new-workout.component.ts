@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../../../../shared/components/form-controls/app-input.directive';
 import {
   errorMessage,
   responseMessage,
@@ -23,6 +24,7 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   imports: [...SHARED_IMPORTS, AppCardComponent, AppSelectComponent],
 })
 export class NewWorkoutComponent implements OnInit, OnDestroy {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly logger = inject(LoggerService);
 
   private readonly destroy$ = new Subject<void>();
@@ -84,6 +86,7 @@ export class NewWorkoutComponent implements OnInit, OnDestroy {
   }
 
   addWorkout(): void {
+    if (!this.validateInputs()) return;
     if (this.saving) return;
     this.saving = true;
     this.message = '';

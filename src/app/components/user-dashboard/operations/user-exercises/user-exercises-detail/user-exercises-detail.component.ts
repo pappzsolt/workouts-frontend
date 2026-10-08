@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../../../../shared/components/form-controls/app-input.directive';
 import { errorMessage, responseMessage } from '../../../../../models/backend-dto/common/api-response-message';
 import type { ApiResponse } from '../../../../../models/backend-dto/common/api-response';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -26,6 +27,7 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   styleUrls: ['./user-exercises-detail.component.css'],
 })
 export class UserExerciseDetailComponent implements OnInit, OnDestroy {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly logger = inject(LoggerService);
 
   private readonly destroy$ = new Subject<void>();
@@ -257,6 +259,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     showSuccessMessage = true,
     completed?: boolean,
   ): Observable<void> {
+    if (!this.validateInputs(`input[data-validation-set="${set.id}"]`)) return EMPTY;
     const exercise = this.workoutExercise;
     const exerciseId = exercise?.exercise.id;
     if (!exercise || exerciseId == null || set.id == null) {

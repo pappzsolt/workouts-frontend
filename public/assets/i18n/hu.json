@@ -963,5 +963,12 @@
     "programsLabel": "Programok keresése",
     "programsPlaceholder": "Program neve vagy leírása…",
     "noResults": "Nincs a keresésnek megfelelő találat."
+  },
+  "inputValidation": {
+    "number": "Ebben a mezőben csak szám adható meg.",
+    "integer": "Ebben a mezőben csak egész szám adható meg.",
+    "email": "Adj meg érvényes email-címet.",
+    "min": "Az érték legalább {{min}} legyen.",
+    "max": "Az érték legfeljebb {{max}} lehet."
   }
 }

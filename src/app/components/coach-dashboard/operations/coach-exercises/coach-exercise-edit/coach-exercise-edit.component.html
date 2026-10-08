@@ -257,6 +257,7 @@
             id="caloriesBurnedPerMinute"
             name="caloriesBurnedPerMinute"
             type="number"
+            min="0"
             step="0.01"
             [(ngModel)]="exercise.caloriesBurnedPerMinute"
             class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
@@ -274,6 +275,8 @@
             id="durationSeconds"
             name="durationSeconds"
             type="number"
+            min="0"
+            step="1"
             [(ngModel)]="exercise.durationSeconds"
             class="placeholder:text-content-400 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400"
           />

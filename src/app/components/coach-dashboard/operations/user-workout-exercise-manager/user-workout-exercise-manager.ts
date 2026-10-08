@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../../../shared/components/form-controls/app-input.directive';
 import type { UserProgramDay } from '../../../../models/user-program/user-program-day.model';
 import type { UserProgramExercise } from '../../../../models/user-program/user-program-exercise.model';
 import type { UserProgramExerciseRow } from '../../../../models/user-program/user-program-exercise-row.model';
@@ -29,6 +30,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   styleUrls: ['./user-workout-exercise-manager.component.css'],
 })
 export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly destroy$ = new Subject<void>();
   private programRequest?: Subscription;
   private setsRequest?: Subscription;
@@ -273,6 +275,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
   // ============================
 
   updateSet(set: UserWorkoutExerciseSetModel): void {
+    if (!this.validateInputs('input[id^="manager-set-"]')) return;
     if (set.id == null) {
       this.showMessage('userWorkoutExerciseManager.setIdMissing', 'error');
       return;
@@ -621,6 +624,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
   // ============================
 
   updateExerciseOrderIndex(workoutId: number, exerciseId: number, orderIndex: number | undefined): void {
+    if (!this.validateInputs('#manager-exercise-order')) return;
     if (!workoutId) {
       this.showMessage('userWorkoutExerciseManager.workoutIdMissing', 'error');
       return;

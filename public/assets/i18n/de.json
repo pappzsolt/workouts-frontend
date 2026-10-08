@@ -961,5 +961,12 @@
     "programsLabel": "Programme suchen",
     "programsPlaceholder": "Programmname oder Beschreibung…",
     "noResults": "Keine Ergebnisse für diese Suche."
+  },
+  "inputValidation": {
+    "number": "In diesem Feld sind nur Zahlen erlaubt.",
+    "integer": "In diesem Feld sind nur ganze Zahlen erlaubt.",
+    "email": "Gib eine gültige E-Mail-Adresse ein.",
+    "min": "Der Wert muss mindestens {{min}} sein.",
+    "max": "Der Wert darf höchstens {{max}} sein."
   }
 }

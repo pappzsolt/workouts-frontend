@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../../../shared/components/form-controls/app-input.directive';
 import { AppSelectComponent } from '../../../shared/components/app-select/app-select.component';
 import type { SelectOption } from '../../../../models/common/select-option.model';
 import { AppSearchComponent } from '../../../shared/components/app-search/app-search.component';
@@ -24,6 +25,7 @@ interface LoginAuditFilters {
   styleUrls: ['./login-audit-logs.component.css'],
 })
 export class LoginAuditLogsComponent {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly destroyRef = inject(DestroyRef);
 
   logs: LoginAuditLogDto[] = [];
@@ -52,6 +54,7 @@ export class LoginAuditLogsComponent {
   }
 
   applyFilters(): void {
+    if (!this.validateInputs()) return;
     if (!this.validateFilters()) {
       return;
     }

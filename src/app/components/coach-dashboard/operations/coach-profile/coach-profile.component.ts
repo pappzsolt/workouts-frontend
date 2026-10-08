@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../../../shared/components/form-controls/app-input.directive';
 import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -20,6 +21,7 @@ import type { CoachProfile } from '../../../../models/coach-profile.model';
   styleUrls: ['./coach-profile.component.css'],
 })
 export class CoachProfileComponent implements OnInit {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly logger = inject(LoggerService);
@@ -106,6 +108,7 @@ export class CoachProfileComponent implements OnInit {
   // ==========================================================
 
   saveProfile(): void {
+    if (!this.validateInputs()) return;
     this.clearMessage();
 
     if (!this.profile.id) {

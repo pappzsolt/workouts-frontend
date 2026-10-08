@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../../../../shared/components/form-controls/app-input.directive';
 import { ProgramDetailsFormComponent } from '../../coach-program-builder/program-details-form.component';
 import {
   errorMessage,
@@ -23,6 +24,7 @@ import type { ProgramCreationRequest } from '../../../../../models/backend-dto/p
   styleUrls: ['./coach-new-program.component.css'],
 })
 export class CoachNewProgramComponent implements OnInit {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly logger = inject(LoggerService);
 
   private readonly destroyRef = inject(DestroyRef);
@@ -69,6 +71,7 @@ export class CoachNewProgramComponent implements OnInit {
   }
 
   saveProgram(): void {
+    if (!this.validateInputs()) return;
     this.message = '';
 
     if (!this.program.startDate) {

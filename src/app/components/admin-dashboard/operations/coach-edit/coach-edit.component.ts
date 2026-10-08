@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../../../shared/components/form-controls/app-input.directive';
 import { Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -19,6 +20,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   providers: [CoachEditService],
 })
 export class CoachEditComponent implements OnInit {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly destroyRef = inject(DestroyRef);
 
   selectedCoachId: number | null = null;
@@ -125,6 +127,7 @@ export class CoachEditComponent implements OnInit {
   // =========================================================
 
   onSave(): void {
+    if (!this.validateInputs()) return;
     if (this.saving) return;
     if (this.selectedCoachId === null) {
       this.message = 'adminCoachEdit.noCoachSelected';

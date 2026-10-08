@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../../../../shared/components/form-controls/app-input.directive';
 import { errorMessage, responseMessage } from '../../../../../models/backend-dto/common/api-response-message';
 import { Component, DestroyRef, Input, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
@@ -18,6 +19,7 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   styleUrls: ['./new-exercise.component.css'],
 })
 export class NewExerciseComponent implements OnInit {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly logger = inject(LoggerService);
 
   private readonly destroyRef = inject(DestroyRef);
@@ -53,6 +55,7 @@ export class NewExerciseComponent implements OnInit {
   // =============================
 
   addExercise(): void {
+    if (!this.validateInputs()) return;
     this.clearMessage();
 
     this.saving = true;

@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../../../../shared/components/form-controls/app-input.directive';
 import { AppSearchComponent } from '../../../../shared/components/app-search/app-search.component';
 import type { WorkoutExerciseView } from '../../../../../models/workout/workout-exercise-view.model';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
@@ -34,6 +35,7 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   styleUrls: ['./coach-workout-edit.component.css'],
 })
 export class CoachWorkoutEditComponent implements OnInit {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly logger = inject(LoggerService);
 
   private readonly destroyRef = inject(DestroyRef);
@@ -606,6 +608,7 @@ export class CoachWorkoutEditComponent implements OnInit {
   // ==========================================================
 
   saveWorkout(): void {
+    if (!this.validateInputs()) return;
     if (!this.workoutId) {
       return;
     }

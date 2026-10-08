@@ -963,5 +963,12 @@
     "programsLabel": "Search programs",
     "programsPlaceholder": "Program name or description…",
     "noResults": "No results match your search."
+  },
+  "inputValidation": {
+    "number": "Only numbers are allowed in this field.",
+    "integer": "Only whole numbers are allowed in this field.",
+    "email": "Enter a valid email address.",
+    "min": "The value must be at least {{min}}.",
+    "max": "The value must be at most {{max}}."
   }
 }

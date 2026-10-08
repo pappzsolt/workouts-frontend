@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../../../shared/components/form-controls/app-input.directive';
 import { Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
@@ -16,6 +17,7 @@ import { CoachProgramBuilderWorkoutsComponent } from './coach-program-builder-wo
   styleUrl: './coach-program-builder.component.css',
 })
 export class CoachProgramBuilderComponent implements OnInit {
+  private readonly validateInputs = createInputValidationGuard();
   readonly document = inject(ProgramBuilderDocumentStore);
   readonly assignment = inject(ProgramBuilderAssignmentStore);
   private readonly route = inject(ActivatedRoute);
@@ -53,6 +55,7 @@ export class CoachProgramBuilderComponent implements OnInit {
   }
 
   saveProgram(): void {
+    if (!this.validateInputs()) return;
     if (this.document.busy) return;
     this.message = '';
     try {
