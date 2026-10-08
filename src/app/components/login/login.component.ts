@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../shared/components/form-controls/app-input.directive';
 import type { LoginResponse } from '../../models/auth-model';
 
 import { Component, inject, DestroyRef } from '@angular/core';
@@ -21,6 +22,7 @@ import { LanguageSelectorComponent } from '../shared/language/language-selector.
   styleUrls: ['./login.component.css'],
 })
 export class LoginComponent {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly logger = inject(LoggerService);
@@ -41,6 +43,7 @@ export class LoginComponent {
   }
 
   onSubmit(event?: Event) {
+    if (!this.validateInputs()) return;
     if (event) event.preventDefault();
 
     if (this.loginForm.invalid) {

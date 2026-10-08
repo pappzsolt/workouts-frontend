@@ -969,6 +969,15 @@
     "integer": "Only whole numbers are allowed in this field.",
     "email": "Enter a valid email address.",
     "min": "The value must be at least {{min}}.",
-    "max": "The value must be at most {{max}}."
+    "max": "The value must be at most {{max}}.",
+    "required": "This field is required.",
+    "date": "Enter a valid, complete date and time where applicable.",
+    "phone": "The phone number must contain +36 followed by 9 digits.",
+    "minLength": "Enter at least {{min}} characters.",
+    "maxLength": "Enter at most {{max}} characters.",
+    "pattern": "The value has an invalid format.",
+    "passwordMismatch": "The passwords do not match.",
+    "decimalSeparator": "Use a dot as the decimal separator.",
+    "step": "Use a value matching the {{step}} increment."
   }
 }

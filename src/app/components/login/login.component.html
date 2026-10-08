@@ -17,8 +17,9 @@
     <!-- Login form -->
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit($event)" class="flex flex-col gap-5">
       <!-- Username -->
-      <app-form-field labelKey="login.username" controlId="login-username">
+      <app-form-field labelKey="login.username" controlId="login-username" [required]="true">
         <input
+          required
           appInput="admin"
           id="login-username"
           formControlName="username"
@@ -29,8 +30,9 @@
       </app-form-field>
 
       <!-- Password -->
-      <app-form-field labelKey="login.password" controlId="login-password">
+      <app-form-field labelKey="login.password" controlId="login-password" [required]="true">
         <input
+          required
           appInput="admin"
           id="login-password"
           formControlName="password"

@@ -1,3 +1,5 @@
+import { PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH } from '../shared/components/form-controls/field-validation';
+import { createInputValidationGuard } from '../shared/components/form-controls/app-input.directive';
 import { Component, DestroyRef, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -17,11 +19,12 @@ import { LanguageSelectorComponent } from '../shared/language/language-selector.
   templateUrl: './reset-password.component.html',
 })
 export class ResetPasswordComponent {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
 
   readonly form = inject(FormBuilder).nonNullable.group({
-    newPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(72)]],
+    newPassword: ['', [Validators.required, Validators.minLength(PASSWORD_MIN_LENGTH), Validators.maxLength(PASSWORD_MAX_LENGTH)]],
     confirmPassword: ['', [Validators.required]],
   });
 
@@ -43,6 +46,7 @@ export class ResetPasswordComponent {
   }
 
   submit(): void {
+    if (!this.validateInputs()) return;
     this.errorMessage = '';
     this.successMessage = '';
 

@@ -1,3 +1,4 @@
+import { createInputValidationGuard } from '../shared/components/form-controls/app-input.directive';
 import { Component, DestroyRef, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -17,6 +18,7 @@ import { LanguageSelectorComponent } from '../shared/language/language-selector.
   templateUrl: './forgot-password.component.html',
 })
 export class ForgotPasswordComponent {
+  private readonly validateInputs = createInputValidationGuard();
   private readonly destroyRef = inject(DestroyRef);
 
   readonly form = inject(FormBuilder).nonNullable.group({
@@ -33,6 +35,7 @@ export class ForgotPasswordComponent {
   ) {}
 
   submit(): void {
+    if (!this.validateInputs()) return;
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       this.errorMessage = 'forgotPassword.invalidEmail';

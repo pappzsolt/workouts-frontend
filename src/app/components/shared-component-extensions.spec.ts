@@ -394,9 +394,10 @@ describe('Shared component extensions preserve consumer contracts', () => {
       const save = jasmine.createSpy();
       fixture.componentInstance.save.subscribe(save);
       expect(form.checkValidity()).toBeFalse();
-      // Angular's NgForm sets novalidate; the parent save handler owns the validation, as before.
+      // Invalid required fields must be rejected before the parent's save event.
       form.requestSubmit();
-      expect(save).toHaveBeenCalledTimes(1);
+      expect(save).toHaveBeenCalledTimes(0);
+      expect(fixture.nativeElement.querySelector('app-message').textContent).toContain('inputValidation.required');
       save.calls.reset();
       const change = (id: string, value: string) => {
         const input: HTMLInputElement = form.querySelector('#' + id)!;

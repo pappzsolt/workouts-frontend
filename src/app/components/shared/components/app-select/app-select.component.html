@@ -6,6 +6,9 @@
       [id]="id"
       [name]="name"
       [disabled]="isDisabled"
+      [required]="required"
+      [attr.aria-invalid]="validationMessage ? 'true' : null"
+      [attr.aria-describedby]="validationMessage ? validationId : null"
       [ngModel]="searchValue"
       (ngModelChange)="searchValue = $event"
       [ngModelOptions]="{ standalone: true }"
@@ -48,6 +51,9 @@
     [id]="id"
     [name]="name"
     [disabled]="isDisabled"
+      [required]="required"
+      [attr.aria-invalid]="validationMessage ? 'true' : null"
+      [attr.aria-describedby]="validationMessage ? validationId : null"
     [ngModel]="value"
     (ngModelChange)="onValueChange($event)"
     (blur)="onBlur()"
@@ -74,4 +80,9 @@
       }
     }
   </select>
+}
+
+@if (validationMessage) {
+  <app-message [message]="validationMessage" type="error" [compact]="true" role="alert"
+    [messageId]="validationId"></app-message>
 }

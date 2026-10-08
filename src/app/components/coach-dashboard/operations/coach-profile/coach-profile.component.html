@@ -49,8 +49,9 @@
              NÉV
              ================================================== -->
 
-        <app-form-field labelKey="common.name" controlId="name">
+        <app-form-field labelKey="common.name" controlId="name" [required]="true">
           <input
+            required
             appInput="editor"
             id="name"
             name="name"
@@ -65,8 +66,9 @@
              EMAIL
              ================================================== -->
 
-        <app-form-field labelKey="common.email" controlId="email">
+        <app-form-field labelKey="common.email" controlId="email" [required]="true">
           <input
+            required
             appInput="editor"
             id="email"
             name="email"
@@ -87,6 +89,7 @@
             id="password_hash"
             name="password_hash"
             type="password"
+            appValidation="password"
             [placeholder]="'common.password' | translate"
             [(ngModel)]="profile.password_hash"
             class="placeholder:text-content-400"
@@ -103,6 +106,8 @@
             id="phone"
             name="phone"
             type="text"
+            appValidation="phone"
+            inputmode="tel"
             [placeholder]="'common.phone' | translate"
             [(ngModel)]="profile.phone"
             class="placeholder:text-content-400"

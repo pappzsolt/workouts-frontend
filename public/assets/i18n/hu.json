@@ -969,6 +969,15 @@
     "integer": "Ebben a mezőben csak egész szám adható meg.",
     "email": "Adj meg érvényes email-címet.",
     "min": "Az érték legalább {{min}} legyen.",
-    "max": "Az érték legfeljebb {{max}} lehet."
+    "max": "Az érték legfeljebb {{max}} lehet.",
+    "required": "Ezt a mezőt kötelező kitölteni.",
+    "date": "Adj meg érvényes, teljes dátumot és szükség esetén időpontot.",
+    "phone": "A telefonszám +36 előtagból és 9 számjegyből álljon.",
+    "minLength": "Legalább {{min}} karaktert adj meg.",
+    "maxLength": "Legfeljebb {{max}} karaktert adj meg.",
+    "pattern": "Az érték formátuma nem megfelelő.",
+    "passwordMismatch": "A két jelszó nem egyezik.",
+    "decimalSeparator": "A tizedes elválasztóhoz használj pontot.",
+    "step": "Az érték {{step}} lépésköznek megfelelő legyen."
   }
 }

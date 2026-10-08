@@ -34,8 +34,10 @@
         class="min-w-0 sm:col-span-2"
         labelKey="coachProgramBuilder.programName"
         controlId="programName"
+        [required]="true"
       >
         <input
+          required
           appInput="builder"
           id="programName"
           type="text"
@@ -66,8 +68,10 @@
         class="min-w-0"
         labelKey="coachProgramBuilder.startDate"
         controlId="startDate"
+        [required]="true"
       >
         <input
+          required
           appInput="builder"
           id="startDate"
           name="startDate"
@@ -93,9 +97,11 @@
         class="min-w-0"
         labelKey="coachProgramBuilder.programDuration"
         controlId="durationDays"
+        [required]="true"
       >
         <div class="relative">
           <input
+            required
             appInput="builder"
             id="durationDays"
             type="number"
@@ -119,11 +125,13 @@
         class="min-w-0"
         labelKey="coachProgramBuilder.difficultyLevel"
         controlId="difficultyLevel"
+        [required]="true"
       >
         <app-select
           id="difficultyLevel"
           name="difficultyLevel"
           [(value)]="form.difficultyLevel"
+          required
           [placeholder]="'coachProgramBuilder.selectDifficulty'"
           placeholderValue=""
           [className]="'block w-full rounded-lg border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-800 shadow-sm outline-none transition hover:border-surface-400 focus:border-primary-600 focus:ring-4 focus:ring-primary-600/10 sm:text-sm'"
@@ -179,8 +187,10 @@
         class="min-w-0 sm:col-span-2"
         labelKey="programForm.programName"
         controlId="programName"
+        [required]="true"
       >
         <input
+          required
           appInput="builder"
           id="programName"
           formControlName="programName"
@@ -204,8 +214,8 @@
       </app-form-field>
 
       <!-- Start Date -->
-      <app-form-field class="min-w-0" labelKey="programForm.startDate" controlId="startDate">
-        <input appInput="builder" type="date" id="startDate" formControlName="startDate" />
+      <app-form-field class="min-w-0" labelKey="programForm.startDate" controlId="startDate" [required]="true">
+        <input required appInput="builder" type="date" id="startDate" formControlName="startDate" />
       </app-form-field>
 
       <!-- Calculated End Date -->

@@ -50,8 +50,9 @@
       (ngSubmit)="onSave()"
     >
       <!-- Név -->
-      <app-form-field class="min-w-0" labelKey="common.name" controlId="name">
+      <app-form-field class="min-w-0" labelKey="common.name" controlId="name" [required]="true">
         <input
+          required
           appInput="admin"
           id="name"
           name="name"
@@ -63,8 +64,9 @@
       </app-form-field>
 
       <!-- Email -->
-      <app-form-field class="min-w-0" labelKey="common.email" controlId="email">
+      <app-form-field class="min-w-0" labelKey="common.email" controlId="email" [required]="true">
         <input
+          required
           appInput="admin"
           id="email"
           name="email"
@@ -82,6 +84,7 @@
           id="password"
           name="password"
           type="password"
+          appValidation="password"
           [placeholder]="'adminCoachEdit.passwordPlaceholder' | translate"
           [(ngModel)]="selectedCoach.password"
           class="min-w-0 placeholder:text-content-400"
@@ -95,6 +98,8 @@
           id="phone"
           name="phone"
           type="text"
+          appValidation="phone"
+          inputmode="tel"
           [placeholder]="'common.phone' | translate"
           [(ngModel)]="selectedCoach.phone"
           class="min-w-0 placeholder:text-content-400"

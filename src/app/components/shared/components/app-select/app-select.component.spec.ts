@@ -17,6 +17,21 @@ describe('AppSelect typed selection and role integration', () => {
     }),
   );
 
+
+  it('shows a MessageComponent for a required placeholder and clears it after a valid selection', async () => {
+    const fixture = TestBed.createComponent(AppSelectComponent<number>);
+    fixture.componentRef.setInput('required', true);
+    fixture.componentRef.setInput('options', [{ value: 7, label: 'User' }]);
+    fixture.detectChanges(); await fixture.whenStable();
+    expect(fixture.componentInstance.checkInput()).toBeFalse();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('app-message').textContent).toContain('inputValidation.required');
+    fixture.componentRef.setInput('value', 7);
+    fixture.detectChanges(); await fixture.whenStable();
+    expect(fixture.componentInstance.checkInput()).toBeTrue();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('app-message')).toBeNull();
+  });
   it('emits boolean false rather than the string false', async () => {
     const fixture = TestBed.createComponent(AppSelectComponent<boolean>);
     fixture.componentRef.setInput('options', [

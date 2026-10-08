@@ -47,8 +47,9 @@
                ================================================== -->
           <div appProfileFields="compact" class="p-3.5 sm:gap-x-5 sm:gap-y-4 sm:p-5">
             <!-- Username -->
-            <app-form-field labelKey="userProfile.username" controlId="username">
+            <app-form-field labelKey="userProfile.username" controlId="username" [required]="true">
               <input
+                required
                 appInput="compact"
                 id="username"
                 name="username"
@@ -60,8 +61,9 @@
             </app-form-field>
 
             <!-- Email -->
-            <app-form-field labelKey="userProfile.email" controlId="email">
+            <app-form-field labelKey="userProfile.email" controlId="email" [required]="true">
               <input
+                required
                 appInput="compact"
                 id="email"
                 name="email"
@@ -79,6 +81,7 @@
                 id="password_hash"
                 name="password_hash"
                 type="password"
+                appValidation="password"
                 [placeholder]="'userProfile.passwordPlaceholder' | translate"
                 [(ngModel)]="selectedUser.password"
                 class="placeholder:text-content-400"

@@ -967,6 +967,15 @@
     "integer": "In diesem Feld sind nur ganze Zahlen erlaubt.",
     "email": "Gib eine gültige E-Mail-Adresse ein.",
     "min": "Der Wert muss mindestens {{min}} sein.",
-    "max": "Der Wert darf höchstens {{max}} sein."
+    "max": "Der Wert darf höchstens {{max}} sein.",
+    "required": "Dieses Feld ist erforderlich.",
+    "date": "Gib ein gültiges, vollständiges Datum und gegebenenfalls eine Uhrzeit ein.",
+    "phone": "Die Telefonnummer muss aus +36 und 9 Ziffern bestehen.",
+    "minLength": "Gib mindestens {{min}} Zeichen ein.",
+    "maxLength": "Gib höchstens {{max}} Zeichen ein.",
+    "pattern": "Das Format des Wertes ist ungültig.",
+    "passwordMismatch": "Die Passwörter stimmen nicht überein.",
+    "decimalSeparator": "Verwende einen Punkt als Dezimaltrennzeichen.",
+    "step": "Verwende einen Wert entsprechend der Schrittweite {{step}}."
   }
 }

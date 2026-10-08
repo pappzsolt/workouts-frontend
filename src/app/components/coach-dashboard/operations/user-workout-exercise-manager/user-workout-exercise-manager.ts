@@ -568,6 +568,7 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
   // ============================
 
   updateScheduledDate(workout: UserProgramWorkout, scheduledAt: string | null): void {
+    if (!this.validateInputs('#manager-scheduled-date')) return;
     if (!workout.userWorkoutId) {
       this.showMessage('userWorkoutExerciseManager.userWorkoutIdMissing', 'error');
       return;

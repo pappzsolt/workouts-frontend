@@ -29,8 +29,9 @@
         class="rounded-2xl border border-surface-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8"
       >
         <!-- Felhasználónév -->
-        <app-form-field class="min-w-0" labelKey="common.username" controlId="username">
+        <app-form-field class="min-w-0" labelKey="common.username" controlId="username" [required]="true">
           <input
+            required
             appInput="admin"
             id="username"
             type="text"
@@ -41,8 +42,9 @@
         </app-form-field>
 
         <!-- Email -->
-        <app-form-field class="min-w-0" labelKey="common.email" controlId="email">
+        <app-form-field class="min-w-0" labelKey="common.email" controlId="email" [required]="true">
           <input
+            required
             appInput="admin"
             id="email"
             type="email"
@@ -58,6 +60,7 @@
             appInput="admin"
             id="password"
             type="password"
+            appValidation="password"
             [(ngModel)]="selectedUser.password"
             name="password"
             [placeholder]="'adminUserEdit.newPassword' | translate"

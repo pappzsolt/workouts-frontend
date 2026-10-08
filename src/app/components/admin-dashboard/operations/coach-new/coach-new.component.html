@@ -30,8 +30,6 @@
         labelKey="common.name"
         controlId="name"
         [required]="true"
-        error="adminCoachNew.nameRequired"
-        [showError]="!!(nameModel.invalid && (nameModel.dirty || nameModel.touched))"
       >
         <input
           appInput="admin"
@@ -50,8 +48,6 @@
         labelKey="common.email"
         controlId="email"
         [required]="true"
-        error="adminCoachNew.validEmailRequired"
-        [showError]="!!(emailModel.invalid && (emailModel.dirty || emailModel.touched))"
       >
         <input
           appInput="admin"
@@ -71,17 +67,15 @@
         labelKey="common.password"
         controlId="passwordHash"
         [required]="true"
-        error="adminCoachNew.minimumSixCharacters"
-        [showError]="!!(passwordModel.invalid && (passwordModel.dirty || passwordModel.touched))"
       >
         <input
           appInput="admin"
           id="passwordHash"
           name="passwordHash"
           type="password"
+          appValidation="password"
           [(ngModel)]="coach.passwordHash"
           required
-          minlength="6"
           #passwordModel="ngModel"
           class="min-w-0 placeholder:text-content-400"
         />
@@ -92,14 +86,14 @@
         labelKey="common.phone"
         controlId="phone"
         [required]="true"
-        error="adminCoachNew.validHungarianPhoneRequired"
-        [showError]="!!(phoneModel.invalid && (phoneModel.dirty || phoneModel.touched))"
       >
         <input
           appInput="admin"
           id="phone"
           name="phone"
           type="text"
+          appValidation="phone"
+          inputmode="tel"
           [(ngModel)]="coach.phone"
           required
           pattern="^\+36\d{9}$"

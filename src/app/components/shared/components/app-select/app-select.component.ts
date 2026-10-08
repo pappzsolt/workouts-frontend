@@ -1,3 +1,5 @@
+import { registerValidationField } from '../form-controls/field-validation';
+import { MessageComponent } from '../message/message.component';
 import type { SelectOption, SelectValue } from '../../../../models/common/select-option.model';
 import {
   Component,
@@ -8,13 +10,25 @@ import {
   ViewChild,
   OnChanges,
   SimpleChanges,
+  OnDestroy,
+  booleanAttribute,
   inject,
   forwardRef,
   DestroyRef,
   ChangeDetectorRef,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule, NgModel } from '@angular/forms';
+import {
+  ControlValueAccessor,
+  NG_VALUE_ACCESSOR,
+  NG_VALIDATORS,
+  AbstractControl,
+  ValidationErrors,
+  Validator,
+  Validators,
+  FormsModule,
+  NgModel,
+} from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { matchesSearch } from '../app-search/search-match';
@@ -24,16 +38,58 @@ import { TranslateService, TranslatePipe } from '@ngx-translate/core';
   selector: 'app-select',
   providers: [
     { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => AppSelectComponent), multi: true },
+    { provide: NG_VALIDATORS, useExisting: forwardRef(() => AppSelectComponent), multi: true },
   ],
   standalone: true,
   host: { '[attr.id]': 'null', '[class.searchable]': 'searchable' },
-  imports: [FormsModule, TranslatePipe, MatAutocompleteModule, MatInputModule],
+  imports: [FormsModule, TranslatePipe, MatAutocompleteModule, MatInputModule, MessageComponent],
   templateUrl: './app-select.component.html',
   styleUrl: './app-select.component.css',
 })
 export class AppSelectComponent<T extends SelectValue = string>
-  implements OnChanges, ControlValueAccessor
+  implements OnChanges, OnDestroy, ControlValueAccessor, Validator
 {
+  @Input({ transform: booleanAttribute }) required = false;
+  validationMessage = '';
+  private interacted = false;
+  private control?: AbstractControl;
+  private validatorChanged = () => {};
+  private static nextValidationId = 0;
+  readonly validationId = `select-validation-${AppSelectComponent.nextValidationId++}`;
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef, {
+    optional: true,
+    self: true,
+  });
+  private readonly unregister = this.host
+    ? registerValidationField(this.host.nativeElement, this)
+    : () => {};
+
+  validate(control: AbstractControl): ValidationErrors | null {
+    this.control = control;
+    return this.isMissing(control.value) ? { required: true } : null;
+  }
+  registerOnValidatorChange(fn: () => void): void {
+    this.validatorChanged = fn;
+  }
+  private isMissing(value: unknown): boolean {
+    return (
+      !this.isDisabled &&
+      (this.required || !!this.control?.hasValidator(Validators.required)) &&
+      (value == null || value === '' || value === this.placeholderValue)
+    );
+  }
+  checkInput(): boolean {
+    this.interacted = true;
+    this.validationMessage = this.isMissing(this.control ? this.control.value : this.value)
+      ? 'inputValidation.required'
+      : '';
+    this.cdr.markForCheck();
+    return !this.validationMessage;
+  }
+  ngOnDestroy(): void {
+    this.unregister();
+  }
+
   private readonly translate = inject(TranslateService);
   private readonly cdr = inject(ChangeDetectorRef);
   private formDisabled = false;
@@ -70,6 +126,7 @@ export class AppSelectComponent<T extends SelectValue = string>
   onBlur(): void {
     this.restoreSelection();
     this.propagateTouched();
+    this.checkInput();
   }
 
   @Input() searchable = false;
@@ -92,6 +149,8 @@ export class AppSelectComponent<T extends SelectValue = string>
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.validatorChanged();
+    if (this.interacted) this.checkInput();
     if (changes['value'] || changes['searchable']) {
       this.restoreSelection();
     } else if (changes['options'] && !this.searching) {
@@ -162,5 +221,7 @@ export class AppSelectComponent<T extends SelectValue = string>
     if (this.formBound) this.value = value;
     this.propagateChange(value);
     this.valueChange.emit(value);
+    this.interacted = true;
+    this.validationMessage = this.isMissing(value) ? 'inputValidation.required' : '';
   }
 }

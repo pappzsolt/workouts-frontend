@@ -120,9 +120,11 @@
           <app-form-field
             labelKey="userWorkoutExerciseManager.scheduledDate"
             controlId="manager-scheduled-date"
+            [required]="true"
           >
             <div class="scheduled-date-inline">
               <input
+                required
                 appInput="plain"
                 id="manager-scheduled-date"
                 type="date"

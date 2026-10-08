@@ -1,3 +1,4 @@
+import { AppFormValidationDirective } from './components/form-controls/app-form-validation.directive';
 import { AppInputDirective } from './components/form-controls/app-input.directive';
 import { AppTextareaDirective } from './components/form-controls/app-textarea.directive';
 import {
@@ -37,6 +38,7 @@ import { FormFieldComponent } from './components/form-field/form-field.component
 import { AppIconComponent } from './components/app-icon/app-icon.component';
 
 export const SHARED_IMPORTS = [
+  AppFormValidationDirective,
   AppInputDirective,
   AppTextareaDirective,
   AppCheckboxDirective,
