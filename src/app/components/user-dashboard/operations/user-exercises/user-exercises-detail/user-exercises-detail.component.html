@@ -50,7 +50,8 @@
     </div>
   </div>
 
-  <app-set-rest-timer [setId]="restTimerSetId" [revision]="restTimerRevision"></app-set-rest-timer>
+  <app-set-rest-timer [setId]="restTimerSetId" [revision]="restTimerRevision"
+    (restFinished)="onRestFinished($event)"></app-set-rest-timer>
 
   <!-- ======================================================
        TARTALOM

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription, interval, startWith } from 'rxjs';
 import { UserExerciseDetailService, WebSetRestTimerStatus } from '../../../../../services/user/user-exercises-detail/user-exercises-detail.service';
@@ -29,6 +29,7 @@ import { UserExerciseDetailService, WebSetRestTimerStatus } from '../../../../..
 export class SetRestTimerComponent implements OnChanges, OnDestroy {
   @Input() setId: number | null = null;
   @Input() revision = 0;
+  @Output() restFinished = new EventEmitter<number>();
 
   timer: WebSetRestTimerStatus | null = null;
   remainingSeconds = 0;
@@ -37,6 +38,7 @@ export class SetRestTimerComponent implements OnChanges, OnDestroy {
   private ticker?: Subscription;
   private receivedAt = 0;
   private initialRemaining = 0;
+  private finishReported = false;
 
   constructor(private service: UserExerciseDetailService, private cdr: ChangeDetectorRef) {}
 
@@ -47,6 +49,7 @@ export class SetRestTimerComponent implements OnChanges, OnDestroy {
     this.timer = null;
     this.remainingSeconds = 0;
     this.error = '';
+    this.finishReported = false;
     if (this.setId == null) return;
     const requestedId = this.setId;
     this.request = this.service.getRestTimer(requestedId).subscribe({
@@ -65,7 +68,13 @@ export class SetRestTimerComponent implements OnChanges, OnDestroy {
         this.ticker = interval(250).pipe(startWith(0)).subscribe(() => {
           const elapsed = Math.floor((Date.now() - this.receivedAt) / 1000);
           this.remainingSeconds = Math.max(0, this.initialRemaining - Math.max(0, elapsed));
-          if (this.remainingSeconds === 0) this.ticker?.unsubscribe();
+          if (this.remainingSeconds === 0) {
+            this.ticker?.unsubscribe();
+            if (!this.finishReported) {
+              this.finishReported = true;
+              this.restFinished.emit(requestedId);
+            }
+          }
           this.cdr.markForCheck();
         });
         this.cdr.markForCheck();

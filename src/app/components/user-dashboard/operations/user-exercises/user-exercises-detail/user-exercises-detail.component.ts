@@ -196,6 +196,12 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     this.selectLastCompletedTimer();
   }
 
+  onRestFinished(setId: number): void {
+    if (this.restTimerSetId !== setId) return;
+    if (this.currentSet?.id !== setId || this.currentSet.completed !== true) return;
+    if (this.hasNextSet) this.goToSet(this.currentSetIndex + 1);
+  }
+
   private selectLastCompletedTimer(): void {
     const sets = this.workoutExercise?.userWorkoutExerciseSets ?? [];
     const last = [...sets].reverse().find(set => set.completed === true && set.id != null);
