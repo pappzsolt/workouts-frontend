@@ -362,7 +362,8 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
           if (this.workoutExercise === exercise && this.userWorkoutId === userWorkoutId) this.currentSetIndex = index;
         },
         error: () => {
-          if (this.workoutExercise === exercise && this.userWorkoutId === userWorkoutId) this.currentSetIndex = index;
+          // Sikertelen mentéskor az aktuális seten maradunk;
+          // a mentési folyamat már megjelenítette a hibaüzenetet.
         },
       });
   }

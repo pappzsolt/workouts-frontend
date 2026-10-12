@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../services/logger.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, Subscription, takeUntil } from 'rxjs';
 
 import type { ApiResponse } from '../../../../models/backend-dto/common/api-response';
 import {
@@ -25,6 +25,7 @@ export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
   private readonly statisticsService = inject(UserProgramStatisticsService);
   private readonly languageService = inject(LanguageService);
   private readonly destroy$ = new Subject<void>();
+  private statisticsRequest?: Subscription;
 
   programs: ProgramStatisticsProgram[] = [];
   totalPrograms = 0;
@@ -63,11 +64,12 @@ export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
   }
 
   loadStatistics(language: string): void {
+    this.statisticsRequest?.unsubscribe();
     this.loading = true;
     this.message = '';
     this.messageType = '';
 
-    this.statisticsService.getProgramStatistics(language).pipe(takeUntil(this.destroy$)).subscribe({
+    this.statisticsRequest = this.statisticsService.getProgramStatistics(language).pipe(takeUntil(this.destroy$)).subscribe({
       next: (response: ApiResponse<ProgramStatistics>) => {
         this.loading = false;
 

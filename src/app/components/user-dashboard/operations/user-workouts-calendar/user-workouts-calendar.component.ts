@@ -5,7 +5,7 @@ import type { ScheduledWorkout } from '../../../../models/scheduled-workout/sche
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../services/logger.service';
 
-import { BehaviorSubject, Subject, combineLatest, distinctUntilChanged, of, switchMap, takeUntil } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription, catchError, combineLatest, of, switchMap, takeUntil } from 'rxjs';
 
 import { WorkoutExercisesManagerService } from '../../../../services/coach/workout-exercises-manager.service';
 import { UserWorkoutExerciseDto } from '../../../../models/user-workout-exercise.dto';
@@ -28,6 +28,7 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
   private readonly selectedWorkoutId$ = new BehaviorSubject<number | null>(null);
+  private scheduledWorkoutsRequest?: Subscription;
 
   // =========================================================
   // Workout adatok
@@ -102,24 +103,21 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
       this.languageService.language$,
     ])
       .pipe(
-        distinctUntilChanged(
-          ([previousWorkoutId, previousLanguage], [currentWorkoutId, currentLanguage]) =>
-            previousWorkoutId === currentWorkoutId && previousLanguage === currentLanguage,
-        ),
         switchMap(([userWorkoutId]) =>
           userWorkoutId == null
             ? of([])
-            : this.workoutService.getExercisesForUserWorkout(userWorkoutId),
+            : this.workoutService.getExercisesForUserWorkout(userWorkoutId).pipe(
+                catchError((err) => {
+                  this.logger.error('Hiba a workout exercise-ok lekérésekor:', err);
+                  return of([]);
+                }),
+              ),
         ),
         takeUntil(this.destroy$),
       )
       .subscribe({
         next: (exercises) => {
           this.selectedExercises = exercises ?? [];
-        },
-        error: (err) => {
-          this.logger.error('Hiba a workout exercise-ok lekérésekor:', err);
-          this.selectedExercises = [];
         },
       });
   }
@@ -138,7 +136,8 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   // =========================================================
 
   private loadScheduledWorkouts(): void {
-    this.workoutService
+    this.scheduledWorkoutsRequest?.unsubscribe();
+    this.scheduledWorkoutsRequest = this.workoutService
       .getScheduledWorkouts()
       .pipe(takeUntil(this.destroy$))
       .subscribe({

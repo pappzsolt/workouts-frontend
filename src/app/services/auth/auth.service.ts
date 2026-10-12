@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { LoggerService } from '../logger.service';
 import { HttpClient, HttpBackend, HttpParams } from '@angular/common/http';
-import { Observable, finalize, map, shareReplay, tap } from 'rxjs';
+import { Observable, Subject, defer, finalize, map, shareReplay, takeUntil, tap, throwError } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
@@ -24,6 +24,8 @@ export class AuthService {
   private accessToken: string | null = null;
 
   private refreshInFlight$: Observable<LoginResponse> | null = null;
+  private readonly refreshCancelled$ = new Subject<void>();
+  private sessionVersion = 0;
 
   constructor(
     private readonly http: HttpClient,
@@ -142,17 +144,26 @@ export class AuthService {
       return this.refreshInFlight$;
     }
 
-    const request$ = this.rawHttp
-      .post<ApiResponse<LoginResponse>>(
-        API_ENDPOINTS.authWebRefresh,
-        {},
-        {
-          params: this.languageParams(),
-          withCredentials: true,
-        },
-      )
+    const sessionVersion = this.sessionVersion;
+    const request$: Observable<LoginResponse> = defer(() => {
+      if (sessionVersion !== this.sessionVersion) {
+        return throwError(() => new Error('A munkamenet kijelentkezés miatt megszűnt.'));
+      }
+      return this.rawHttp.post<ApiResponse<LoginResponse>>(
+          API_ENDPOINTS.authWebRefresh,
+          {},
+          {
+            params: this.languageParams(),
+            withCredentials: true,
+          },
+        );
+    })
       .pipe(
+        takeUntil(this.refreshCancelled$),
         map((response) => {
+          if (sessionVersion !== this.sessionVersion) {
+            throw new Error('A munkamenet kijelentkezés miatt megszűnt.');
+          }
           if (!response.success || !response.data) {
             throw new Error(response.message ?? 'A token frissítése sikertelen.');
           }
@@ -163,7 +174,9 @@ export class AuthService {
           this.accessToken = response.accessToken;
         }),
         finalize(() => {
-          this.refreshInFlight$ = null;
+          if (this.refreshInFlight$ === request$) {
+            this.refreshInFlight$ = null;
+          }
         }),
         shareReplay({ bufferSize: 1, refCount: false }),
       );
@@ -178,7 +191,10 @@ export class AuthService {
    * visszavonja a HttpOnly refresh tokent és törli a cookie-t.
    */
   logout(): void {
+    this.sessionVersion++;
     this.accessToken = null;
+    this.refreshCancelled$.next();
+    this.refreshInFlight$ = null;
 
     // Régi deploymentből esetleg visszamaradt storage tokeneket is töröljük.
     localStorage.removeItem('accessToken');
