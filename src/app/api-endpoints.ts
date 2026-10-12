@@ -76,6 +76,7 @@ export const API_ENDPOINTS = {
   // ============================================================
 
   userWorkoutExerciseSets: `${environment.apiUrl}/user-workout-exercise-sets`,
+  webSetRestTimer: (setId: number) => `${environment.apiUrl}/web/set-rest-timers/${setId}`,
 
   // ============================================================
   // MEMBER ENDPOINTS

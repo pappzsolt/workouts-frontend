@@ -17,12 +17,14 @@ import {
   UserWorkoutExerciseSetDto,
 } from '../../../../../models/user-workout-exercise-detail.dto';
 
+import { SetRestTimerComponent } from './set-rest-timer.component';
+
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
 
 @Component({
   selector: 'app-user-exercise-detail',
   standalone: true,
-  imports: [...SHARED_IMPORTS, SidePaginationComponent],
+  imports: [...SHARED_IMPORTS, SidePaginationComponent, SetRestTimerComponent],
   templateUrl: './user-exercises-detail.component.html',
   styleUrls: ['./user-exercises-detail.component.css'],
 })
@@ -42,6 +44,8 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   programWorkoutId?: number;
   private currentExerciseId!: number;
   currentSetIndex = 0;
+  restTimerSetId: number | null = null;
+  restTimerRevision = 0;
   imageLoaded = false;
   message = '';
   messageType: 'success' | 'error' | 'info' | '' = '';
@@ -83,6 +87,8 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
             ? context.programWorkoutId : undefined;
           this.currentExerciseId = context.exerciseId;
           this.currentSetIndex = 0;
+          this.restTimerSetId = null;
+          this.restTimerRevision++;
           this.workout = undefined;
           this.workoutExercise = undefined;
           this.message = '';
@@ -187,6 +193,14 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     const setCount = found.userWorkoutExerciseSets?.length || 0;
     this.currentSetIndex = setCount > 0 ? Math.min(this.currentSetIndex, setCount - 1) : 0;
     this.updateExerciseDone();
+    this.selectLastCompletedTimer();
+  }
+
+  private selectLastCompletedTimer(): void {
+    const sets = this.workoutExercise?.userWorkoutExerciseSets ?? [];
+    const last = [...sets].reverse().find(set => set.completed === true && set.id != null);
+    this.restTimerSetId = last?.id ?? null;
+    this.restTimerRevision++;
   }
 
   /**
@@ -304,6 +318,9 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       map(response => {
         if (!response.success) throw new Error(responseMessage([response], 'userExerciseDetail.saveError'));
         confirmed.completed = args[5];
+        if (isCurrent() && completed !== undefined) {
+          this.selectLastCompletedTimer();
+        }
         if (isCurrent()) {
           this.updateExerciseDone();
           if (showSuccessMessage || response.message) {

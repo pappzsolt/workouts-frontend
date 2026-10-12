@@ -40,6 +40,10 @@ export class UserExerciseDetailService {
     );
   }
 
+  getRestTimer(setId: number): Observable<ApiResponse<WebSetRestTimerStatus>> {
+    return this.http.get<ApiResponse<WebSetRestTimerStatus>>(API_ENDPOINTS.webSetRestTimer(setId));
+  }
+
   /**
    * Egy konkrét set adatainak mentése.
    *
@@ -72,4 +76,14 @@ export class UserExerciseDetailService {
       notes,
     });
   }
+}
+
+/** Read-only server-persisted rest timer. Existing workout and mobile APIs are unchanged. */
+export interface WebSetRestTimerStatus {
+  exists: boolean;
+  restDurationSeconds: number | null;
+  restStartedAt: string | null;
+  restEndsAt: string | null;
+  remainingSeconds: number;
+  expired: boolean;
 }
