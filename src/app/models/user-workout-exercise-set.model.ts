@@ -16,6 +16,9 @@ export interface UserWorkoutExerciseSetModel {
   startedAt?: string | null;
   completedAt?: string | null;
 
+  restSeconds?: number | null;
+  clearRestSeconds?: boolean;
+
   completed: boolean;
 
   notes?: string | null;

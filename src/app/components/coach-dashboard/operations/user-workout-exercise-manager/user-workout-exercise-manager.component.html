@@ -433,6 +433,20 @@
                   </div>
                 </div>
 
+                <div class="set-rest-field">
+                  <label for="manager-set-rest-seconds">Pihenőidő (másodperc)</label>
+                  <input
+                    appInput="plain"
+                    id="manager-set-rest-seconds"
+                    type="number"
+                    min="0"
+                    step="1"
+                    [(ngModel)]="set.restSeconds"
+                    class="form-input set-number-input"
+                  />
+                  <small>Üresen hagyva az edzői alapérték érvényes. A 0 kikapcsolja a pihenőt.</small>
+                </div>
+
                 <app-form-field
                   class="set-notes-field"
                   labelKey="userWorkoutExerciseManager.notes"

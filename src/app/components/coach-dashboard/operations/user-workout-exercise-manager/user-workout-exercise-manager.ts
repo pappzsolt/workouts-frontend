@@ -288,6 +288,8 @@ export class UserWorkoutExerciseManagerComponent implements OnInit, OnDestroy {
       actualRepetitions: set.actualRepetitions,
       actualWeightKg: set.actualWeightKg,
       completed: set.completed,
+      restSeconds: set.restSeconds,
+      clearRestSeconds: set.restSeconds == null,
       notes: set.notes,
     };
 

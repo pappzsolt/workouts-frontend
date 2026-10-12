@@ -787,3 +787,8 @@
     justify-self: stretch;
   }
 }
+
+.set-rest-field { display: flex; flex-direction: column; align-items: flex-start; gap: .45rem; min-width: 0; padding: .9rem; border: 1px solid var(--border-color, #d8e0e8); border-radius: .65rem; }
+.set-rest-field .set-number-input { width: 100%; max-width: 240px; }
+.set-rest-field small { font-size: .8rem; line-height: 1.45; opacity: .8; }
+@media (max-width: 600px) { .set-rest-field .set-number-input { max-width: none; } }
