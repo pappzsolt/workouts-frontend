@@ -47,6 +47,11 @@ export class UserProgramStatisticsService {
                   completedWorkouts: program.completedWorkouts ?? 0,
                   incompleteWorkouts: program.incompleteWorkouts ?? 0,
                   completed: program.completed ?? false,
+                  weeklyVolumes: (program.weeklyVolumes ?? []).map(week => ({
+                    week: week.week,
+                    volumeKg: Number(week.volumeKg),
+                    changePercent: week.changePercent == null ? null : Number(week.changePercent),
+                  })),
                 })),
             }
           : null,

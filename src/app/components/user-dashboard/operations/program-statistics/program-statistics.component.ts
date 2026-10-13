@@ -104,6 +104,14 @@ export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
     this.programPage = 1;
   }
 
+  maxVolume(program: ProgramStatisticsProgram): number {
+    return Math.max(0, ...program.weeklyVolumes.map(week => week.volumeKg));
+  }
+
+  weeklyBarWidth(volume: number, maximum: number): number {
+    return maximum > 0 ? (volume / maximum) * 100 : 0;
+  }
+
   trackByProgram(index: number, program: ProgramStatisticsProgram): number {
     return program.programId;
   }

@@ -6,4 +6,11 @@ export interface ProgramStatisticsDto {
   completedWorkouts: number | null;
   incompleteWorkouts: number | null;
   completed: boolean | null;
+  weeklyVolumes: ProgramWeeklyVolumeDto[] | null;
+}
+
+export interface ProgramWeeklyVolumeDto {
+  week: number;
+  volumeKg: number;
+  changePercent: number | null;
 }
