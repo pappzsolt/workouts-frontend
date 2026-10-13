@@ -621,7 +621,7 @@ export class CoachWorkoutEditComponent implements OnInit {
 
     this.coachWorkoutsService.updateWorkout(this.workoutId, payload).subscribe({
       next: (res) => {
-        if (res.data?.done === true) {
+        if (res.success && res.data?.status === 'ok') {
           this.setMessage('coachWorkoutEdit.updateSuccess', 'success');
 
           timer(1500)
