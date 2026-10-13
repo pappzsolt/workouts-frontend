@@ -13,6 +13,12 @@ export class WorkoutExerciseService {
 
   private readonly baseUrl = API_ENDPOINTS.workoutExercises;
 
+  /** Reconcile membership in one backend transaction. */
+  replaceWorkoutExercises(workoutId: number, exerciseIds: number[]): Observable<ApiResponse<void>> {
+    const params = new HttpParams().set('workoutId', workoutId);
+    return this.http.put<ApiResponse<void>>(`${this.baseUrl}/membership`, exerciseIds, { params });
+  }
+
   // ==========================================================
   // EXERCISE HOZZÁRENDELÉSE WORKOUT-HOZ
   // ==========================================================

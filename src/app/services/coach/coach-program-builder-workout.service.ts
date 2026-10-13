@@ -85,26 +85,30 @@ export class CoachProgramBuilderWorkoutService {
     results: ApiResponse<void>[];
     workout: WorkoutWithExercises;
   }> {
-    // Read the current relationships before computing the delta, including on retry.
-    return this.getWorkoutExercises(workoutId).pipe(
-      concatMap(current => {
-        const selectedIds = new Set(exercises.map(exercise => exercise.id));
-        const currentIds = new Set(current.exercises.map(row => row.exercise.id));
-        const removed = current.exercises.filter(row => !selectedIds.has(row.exercise.id));
-        const added = exercises.filter((exercise): exercise is Exercise & { id: number } =>
-          exercise.id != null && !currentIds.has(exercise.id));
-        const operations = [
-          ...removed.map(row => () => this.workoutExerciseService.deleteExerciseFromWorkout(workoutId, row.exercise.id!)),
-          ...added.map(exercise => () => this.workoutExerciseService.assignExerciseToWorkout(workoutId, exercise.id)),
-        ];
-        return from(operations).pipe(
-          concatMap(operation => operation().pipe(catchError((error: HttpErrorResponse) => of({
-            success: false, data: null, message: errorMessage(error, 'coachProgramBuilder.saveExerciseError'),
-          } satisfies ApiResponse<void>)))),
-          toArray(),
+    const ids = exercises.map(exercise => exercise.id);
+
+    if (ids.some(id => id == null)) {
+      throw new Error('Invalid exercise id.');
+    }
+
+    return this.workoutExerciseService.replaceWorkoutExercises(
+      workoutId,
+      ids as number[],
+    ).pipe(
+      concatMap(response => {
+        if (!response.success) {
+          throw new Error(
+            response.message || 'Failed to save workout exercises.',
+          );
+        }
+
+        return this.getWorkoutExercises(workoutId).pipe(
+          map(workout => ({
+            results: [response],
+            workout,
+          })),
         );
       }),
-      concatMap(results => this.getWorkoutExercises(workoutId).pipe(map(workout => ({ results, workout })))),
     );
   }
 

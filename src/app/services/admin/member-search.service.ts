@@ -65,8 +65,13 @@ export class MemberSearchService {
             this.http
               .get<ApiResponse<CoachLookupDto>>(API_ENDPOINTS.coachById(coachId))
               .pipe(
-                map((response) => this.mapCoach(response.data)),
-                catchError(() => of(undefined)),
+                map((coachResponse) => {
+                  const coach = coachResponse.success ? this.mapCoach(coachResponse.data) : undefined;
+                  if (!coach) {
+                    throw new Error(coachResponse.message || 'memberSearch.errors.server');
+                  }
+                  return coach;
+                }),
               ),
           );
 

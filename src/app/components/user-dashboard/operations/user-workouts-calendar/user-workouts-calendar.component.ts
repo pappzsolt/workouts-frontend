@@ -35,6 +35,7 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   // =========================================================
 
   scheduledWorkouts: ScheduledWorkout[] = [];
+  scheduledWorkoutsError = false;
   searchTerm = '';
 
   onSearchChange(term: string): void {
@@ -143,7 +144,12 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (response) => {
 
-          this.scheduledWorkouts = response.success ? (response.data ?? []) : [];
+          if (!response.success) {
+            this.scheduledWorkoutsError = true;
+            return;
+          }
+          this.scheduledWorkoutsError = false;
+          this.scheduledWorkouts = response.data ?? [];
           this.rebuildWorkoutDateIndex();
           this.generateCalendar();
         },
@@ -151,9 +157,8 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
         error: (err) => {
           this.logger.error('Hiba az ütemezett workoutok lekérésekor:', err);
 
-          this.scheduledWorkouts = [];
-          this.rebuildWorkoutDateIndex();
-          this.generateCalendar();
+          this.scheduledWorkoutsError = true;
+          // Preserve the last successfully loaded workouts on network failure.
         },
       });
   }
