@@ -161,7 +161,9 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
           this.loaded = response.success;
           this.message = responseMessage([response], response.success ? '' : 'userWorkouts.loadError');
           this.messageType = response.success ? 'info' : 'error';
-          this.workouts = response.success ? response.data ?? [] : [];
+          this.workouts = response.success
+            ? [...(response.data ?? [])].sort((a, b) => a.workoutDate.localeCompare(b.workoutDate))
+            : [];
           this.pendingWorkouts = this.workouts.filter(workout => workout.completed !== true);
           this.completedWorkouts = this.workouts.filter(workout => workout.completed === true);
           this.pendingCurrentPage = 1; this.completedCurrentPage = 1;
