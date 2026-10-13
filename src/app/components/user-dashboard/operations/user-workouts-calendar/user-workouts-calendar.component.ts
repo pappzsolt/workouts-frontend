@@ -320,6 +320,15 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
     return `${year}-${month}-${day}`;
   }
 
+  /** Naptári nap alapján hasonlítunk, nem időbélyeg alapján. A mai nap semleges. */
+  isPastWorkoutDay(date: Date): boolean {
+    return this.toDateKey(date) < this.toDateKey(new Date());
+  }
+
+  isFutureWorkoutDay(date: Date): boolean {
+    return this.toDateKey(date) > this.toDateKey(new Date());
+  }
+
   // =========================================================
   // WORKOUT KIVÁLASZTÁSA
   // =========================================================

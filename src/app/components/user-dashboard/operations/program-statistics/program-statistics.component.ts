@@ -36,7 +36,7 @@ export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
   messageType: 'success' | 'error' | '' = '';
 
   programPage = 1;
-  programPageSize = 6;
+  readonly programPageSize = 1;
 
   ngOnInit(): void {
     this.languageService.language$
@@ -55,13 +55,11 @@ export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
   }
 
   onPageChange(page: number): void {
-    this.programPage = page;
+    if (page >= 1 && page <= this.programs.length) {
+      this.programPage = page;
+    }
   }
 
-  onPageSizeChange(pageSize: number): void {
-    this.programPageSize = pageSize;
-    this.programPage = 1;
-  }
 
   loadStatistics(language: string): void {
     this.statisticsRequest?.unsubscribe();
