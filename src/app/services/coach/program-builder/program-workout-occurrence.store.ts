@@ -66,7 +66,8 @@ export class ProgramWorkoutOccurrenceStore {
         else this.success(responseMessage(results, 'coachProgramBuilder.addedToProgram'));
         const added = results.flatMap(result => result.success && result.data ? [result.data] : []);
         this.state.load([...this.state.assignments, ...added], this.workouts);
-        completed(added.map(row => row.workoutId));
+        // Notify the picker only about persisted IDs; failed IDs stay selected for retry.
+        if (added.length) completed(added.map(row => row.workoutId));
       },
       error: error => { this.busy = false; this.fail(errorMessage(error, 'coachProgramBuilder.addWorkoutError')); },
     });
@@ -101,8 +102,14 @@ export class ProgramWorkoutOccurrenceStore {
       next: response => {
         this.busy = false;
         if (!response.success || !response.data) { this.fail(response.message || 'coachProgramBuilder.updateWorkoutDayError'); return; }
-        try { this.state.update(response.data); this.success(responseMessage([response], 'coachProgramBuilder.updateWorkoutDaySuccess')); }
-        catch { this.fail('coachProgramBuilder.updateWorkoutDayError'); }
+        try {
+          this.state.update(response.data);
+          this.success(responseMessage([response], 'coachProgramBuilder.updateWorkoutDaySuccess'));
+        } catch {
+          // The API already committed; reload authoritative data instead of claiming save failure.
+          this.success(responseMessage([response], 'coachProgramBuilder.updateWorkoutDaySuccess'));
+          this.load(this.programId);
+        }
       },
       error: error => { this.busy = false; this.fail(errorMessage(error, 'coachProgramBuilder.updateWorkoutDayError')); },
     });
