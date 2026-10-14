@@ -7,6 +7,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { UserSelectComponent } from '../../../../components/shared/user/user-select.component';
 import { CoachSelectComponent } from '../../../shared/coach/coach-select.component';
 import { MessageComponent } from '../../../shared/components/message/message.component';
+import { AppSelectComponent } from '../../../shared/components/app-select/app-select.component';
 
 import { RoleService } from '../../../../services/roles/role.service';
 
@@ -21,6 +22,12 @@ import { Role } from '../../../../models/role.model';
 import { UserEditService } from '../../../../services/admin/user-edit.service';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import type { SelectOption } from '../../../../models/common/select-option.model';
+import {
+  GENDER_NOT_SPECIFIED_LABEL,
+  GENDER_OPTIONS,
+  normalizeGender,
+} from '../../../../constants/gender';
 
 @Component({
   selector: 'app-user-edit',
@@ -30,6 +37,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
     UserSelectComponent,
     CoachSelectComponent,
     MessageComponent,
+    AppSelectComponent,
     MatFormFieldModule,
     MatSelectModule,
     MatInputModule,
@@ -40,6 +48,9 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 export class UserEditComponent implements OnInit {
   private readonly validateInputs = createInputValidationGuard();
   private readonly destroyRef = inject(DestroyRef);
+
+  readonly genderOptions: SelectOption[] = GENDER_OPTIONS;
+  readonly genderNotSpecifiedLabel = GENDER_NOT_SPECIFIED_LABEL;
 
   // =============================
   // ADATOK
@@ -161,7 +172,7 @@ export class UserEditComponent implements OnInit {
       age: raw.extraFields?.age,
       weight: raw.extraFields?.weight,
       height: raw.extraFields?.height,
-      gender: raw.extraFields?.gender,
+      gender: normalizeGender(raw.extraFields?.gender),
       goals: raw.extraFields?.goals,
       coachId: raw.extraFields?.coach_id,
       roleName: undefined,

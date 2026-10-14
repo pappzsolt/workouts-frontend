@@ -112,14 +112,14 @@
 
         <!-- Nem -->
         <app-form-field class="min-w-0" labelKey="common.gender" controlId="gender">
-          <input
-            appInput="admin"
+          <app-select
             id="gender"
-            type="text"
-            [(ngModel)]="selectedUser.gender"
             name="gender"
-            class="min-w-0"
-          />
+            [(value)]="selectedUser.gender"
+            [options]="genderOptions"
+            [placeholder]="genderNotSpecifiedLabel"
+            placeholderValue=""
+          ></app-select>
         </app-form-field>
 
         <!-- Célok -->

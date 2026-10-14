@@ -57,6 +57,7 @@
     "unknownError": "Unbekannter Fehler",
     "male": "Männlich",
     "female": "Weiblich",
+    "genderNotSpecified": "Nicht angegeben",
     "yes": "Ja",
     "no": "No",
     "avatarUrl": "Avatar-URL",

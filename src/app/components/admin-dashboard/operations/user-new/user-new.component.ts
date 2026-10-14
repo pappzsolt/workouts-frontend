@@ -17,6 +17,7 @@ import type { ApiResponse } from '../../../../models/backend-dto/common/api-resp
 
 import { AppSelectComponent } from '../../../shared/components/app-select/app-select.component';
 import type { SelectOption } from '../../../../models/common/select-option.model';
+import { GENDER_NOT_SPECIFIED_LABEL, GENDER_OPTIONS } from '../../../../constants/gender';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
@@ -58,10 +59,8 @@ export class UserNewComponent {
     roleIds: [],
   };
 
-  readonly genderOptions: SelectOption[] = [
-    { value: 'male', label: 'common.male' },
-    { value: 'female', label: 'common.female' },
-  ];
+  readonly genderOptions: SelectOption[] = GENDER_OPTIONS;
+  readonly genderNotSpecifiedLabel = GENDER_NOT_SPECIFIED_LABEL;
 
   roles: Role[] = [];
 

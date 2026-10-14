@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
+import { normalizeGender } from '../../constants/gender';
 
 import { ApiResponse } from '../../models/backend-dto/common/api-response';
 import type { MemberResponse } from '../../models/backend-dto/members/member-response';
@@ -79,7 +80,7 @@ export class UserEditService {
       age: user.extraFields?.age,
       weight: user.extraFields?.weight,
       height: user.extraFields?.height,
-      gender: user.extraFields?.gender,
+      gender: normalizeGender(user.extraFields?.gender) || undefined,
       goals: user.extraFields?.goals,
       coachId: user.extraFields?.coach_id,
       roleIds: roleIds || [],

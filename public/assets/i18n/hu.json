@@ -57,6 +57,7 @@
     "unknownError": "Ismeretlen hiba",
     "male": "Férfi",
     "female": "Nő",
+    "genderNotSpecified": "Nincs megadva",
     "yes": "Igen",
     "no": "Nem",
     "avatarUrl": "Avatar URL",

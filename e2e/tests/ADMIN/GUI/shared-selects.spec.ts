@@ -64,7 +64,7 @@ test('ADMIN GUI: gender select preserves its string values inside the shared for
   await page.goto('/admin/users/new');
   const gender = page.getByRole('combobox', { name: /^(nem|gender|geschlecht)$/i });
   await expect(gender).toHaveCount(1);
-  for (const value of ['female', 'male']) {
+  for (const value of ['FEMALE', 'MALE']) {
     await gender.selectOption(value);
     await expect(gender).toHaveValue(value);
   }

@@ -8,6 +8,7 @@ import type { MemberResponse } from '../../../models/backend-dto/members/member-
 import type { CoachDto } from '../../../models/backend-dto/coach/coach-dto';
 import type { MemberRequest } from '../../../models/backend-dto/members/member-request';
 import { API_ENDPOINTS } from '../../../api-endpoints';
+import { normalizeGender } from '../../../constants/gender';
 import { ApiResponse } from '../../../models/backend-dto/common/api-response';
 
 @Injectable({
@@ -56,7 +57,7 @@ export class UserProfilService {
       age: user.extraFields?.age ?? null,
       weight: user.extraFields?.weight ?? null,
       height: user.extraFields?.height ?? null,
-      gender: user.extraFields?.gender ?? null,
+      gender: normalizeGender(user.extraFields?.gender) || null,
       goals: user.extraFields?.goals ?? null,
       avatarUrl: user.avatarUrl ?? null,
       // Saját profilból a coach-hozzárendelés nem módosítható.
