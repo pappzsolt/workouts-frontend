@@ -113,6 +113,29 @@ export interface CoachExerciseSearchItem {
   name: string;
   muscleGroup: string | null;
   equipment: string | null;
+  bodyPart?: string | null;
+  primaryMuscles?: string | null;
+  description?: string | null;
+  imageUrl?: string | null;
+}
+
+export interface CoachExerciseQuery {
+  search: string;
+  bodyPart: string;
+  equipment: string;
+  page: number;
+  size: number;
+}
+
+export interface CoachExercisePage {
+  items: CoachExerciseSearchItem[];
+  totalElements: number;
+  totalPages: number;
+}
+
+export interface CoachExerciseFilterOptions {
+  bodyParts: string[];
+  equipment: string[];
 }
 
 // ------------------------------------------------------------

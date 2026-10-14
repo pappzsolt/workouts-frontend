@@ -19,7 +19,8 @@
     "logout": "Abmelden",
     "settings": "Einstellungen",
     "security": "Sicherheit",
-    "loginAuditLogs": "Anmeldeprotokoll"
+    "loginAuditLogs": "Anmeldeprotokoll",
+    "coachWorkouts": "Trainingsbibliothek"
   },
   "header": {
     "user": "Benutzer",
@@ -452,7 +453,13 @@
     "assignedToProgram": "Dieses Training ist einem Programm zugewiesen.",
     "exercise": "Übung",
     "cancel": "Abbrechen",
-    "workoutIdMissing": "Die Trainings-ID fehlt."
+    "workoutIdMissing": "Die Trainings-ID fehlt.",
+    "exerciseRemoved": "Übung entfernt.",
+    "moveUp": "Nach oben",
+    "moveDown": "Nach unten",
+    "removeExercise": "Übung entfernen",
+    "removeExerciseError": "Übung konnte nicht entfernt werden.",
+    "reorderError": "Reihenfolge konnte nicht geändert werden."
   },
   "newWorkout": {
     "loadError": "Trainings konnten nicht geladen werden.",
@@ -1104,7 +1111,9 @@
       "deleteError": "Programm konnte nicht gelöscht werden.",
       "deleteConfirm": "Dieses Programm löschen?",
       "open": "Öffnen",
-      "empty": "Du hast noch keine Programme."
+      "empty": "Du hast noch keine Programme.",
+      "sortByName": "Sortierung: Name",
+      "sortByDate": "Sortierung: Datum"
     },
     "editor": {
       "title": "Programm bearbeiten",
@@ -1137,7 +1146,7 @@
       "removeConfirm": "Dieses Training aus dem Programm entfernen?",
       "removed": "Training entfernt.",
       "actionError": "Die Aktion ist fehlgeschlagen.",
-      "emptyDayHint": "An diesem Tag gibt es kein Training. Erstelle ein neues oder kopiere ein vorhandenes hierher.",
+      "emptyDayHint": "An diesem Tag gibt es kein Training. Erstelle ein neues oder wähle eines aus der Trainingsbibliothek.",
       "newWorkout": "Neues Training",
       "copyWorkout": "Vorhandenes kopieren",
       "workoutName": "Name des Trainings",
@@ -1161,7 +1170,75 @@
       "assignMore": "Weiteren Kunden zuweisen",
       "noMoreClients": "Alle deine Kunden haben dieses Programm bereits.",
       "assignSelected": "Zuweisen ({{count}})",
-      "assigned": "Programm zugewiesen."
+      "assigned": "Programm zugewiesen.",
+      "moreDays": "An anderen Tagen wiederholen",
+      "repeatWeekly": "Wöchentlich wiederholen",
+      "repeatConfirm": "Dieses Training wird an {{count}} weiteren Tagen hinzugefügt: Tage {{days}}.",
+      "repeatSkipped": "{{count}} Tage werden übersprungen, da dort schon ein Training ist.",
+      "repeatNothing": "Kein späterer freier Tag am selben Wochentag.",
+      "repeated": "Das Training wiederholt sich jetzt wöchentlich.",
+      "alsoOnDay": "Auch an Tag",
+      "addToThatDay": "Hinzufügen",
+      "addedToDay": "Das Training wurde auch diesem Tag hinzugefügt.",
+      "dayTaken": "An diesem Tag gibt es bereits ein Training.",
+      "sharedHint": "Dieses Training wird an {{count}} Tagen verwendet; Änderungen gelten für alle.",
+      "fromLibrary": "Aus der Bibliothek",
+      "libraryFilter": "Nach Name filtern",
+      "inThisProgram": "In diesem Programm",
+      "linkToDay": "Diesem Tag hinzufügen",
+      "linkHint": "Dasselbe Training wird verwendet; seine Übungsliste ist danach fest.",
+      "copyName": "Name der Kopie",
+      "copyHint": "Es wird eine eigene Kopie erstellt; das Original bleibt unverändert.",
+      "workoutLinked": "Training dem Tag hinzugefügt.",
+      "libraryHint": "Trainings kannst du auch unabhängig von Programmen hier anlegen und bearbeiten:",
+      "browseExercises": "Übungen durchsuchen"
+    },
+    "picker": {
+      "search": "Suche (Name, Muskel, Synonym, Beschreibung)",
+      "searchPlaceholder": "z. B. Kniebeuge, Brust, squat",
+      "bodyPart": "Körperteil",
+      "equipment": "Gerät",
+      "all": "Alle",
+      "clear": "Filter zurücksetzen",
+      "resultCount": "{{count}} Übungen",
+      "empty": "Keine Treffer.",
+      "added": "Hinzugefügt",
+      "muscles": "Muskeln",
+      "noDetails": "Keine ausführliche Beschreibung.",
+      "previous": "Vorherige Seite",
+      "next": "Nächste Seite",
+      "page": "{{page}} / {{total}}"
+    },
+    "bodyPart": {
+      "back": "Rücken",
+      "chest": "Brust",
+      "core": "Rumpf",
+      "full_body": "Ganzkörper",
+      "lower_arms": "Unterarme",
+      "lower_legs": "Waden",
+      "shoulders": "Schultern",
+      "upper_arms": "Arme",
+      "upper_legs": "Beine & Gesäß"
+    },
+    "equipment": {
+      "barbell": "Langhantel",
+      "dumbbell": "Kurzhantel",
+      "kettlebell": "Kettlebell",
+      "cable": "Kabelzug",
+      "pull_up_bar": "Klimmzugstange",
+      "ez_bar": "SZ-Stange",
+      "smith_machine": "Multipresse",
+      "loop_band": "Miniband",
+      "resistance_band": "Widerstandsband",
+      "suspension_trainer": "Schlingentrainer",
+      "flat_bench": "Bank",
+      "stability_ball": "Gymnastikball",
+      "rings": "Ringe",
+      "leg_press": "Beinpresse",
+      "plates": "Hantelscheiben",
+      "dip_station": "Dipstation",
+      "jump_rope": "Springseil",
+      "treadmill": "Laufband"
     }
   }
 }

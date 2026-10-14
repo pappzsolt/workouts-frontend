@@ -27,11 +27,20 @@ export class CoachProgramsComponent implements OnInit {
   deleteId: number | null = null;
   deleting = false;
 
+  sortBy: 'date' | 'name' = 'date';
+
   get filtered(): CoachProgram[] {
     const term = this.search.trim().toLowerCase();
-    return term
+    const list = term
       ? this.programs.filter((program) => program.programName.toLowerCase().includes(term))
-      : this.programs;
+      : [...this.programs];
+    return this.sortBy === 'name'
+      ? list.sort((a, b) => a.programName.localeCompare(b.programName))
+      : list.sort((a, b) => (b.startDate ?? '').localeCompare(a.startDate ?? ''));
+  }
+
+  toggleSort(): void {
+    this.sortBy = this.sortBy === 'date' ? 'name' : 'date';
   }
 
   ngOnInit(): void {

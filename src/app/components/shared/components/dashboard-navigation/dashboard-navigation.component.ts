@@ -57,6 +57,10 @@ export class DashboardNavigationComponent {
       this.items.push({ label: 'coachWorkspace.programs.title', url: '/coach/programs' });
       if (segments[2] === 'new') label = 'coachWorkspace.editor.newTitle';
       else if (segments[2]) label = 'coachWorkspace.editor.title';
+    } else if (page === 'workouts') {
+      this.items.push({ label: 'menu.coachWorkouts', url: '/coach/workouts' });
+      if (segments[2] === 'new') label = 'newWorkout.title';
+      else if (segments[3] === 'edit') label = 'coachWorkoutEdit.title';
     } else if (page === 'exercises') {
       this.items.push({ label: 'coachDashboard.exercises', url: '/coach/exercises' });
       if (segments[2] === 'new') label = 'newExercise.title';

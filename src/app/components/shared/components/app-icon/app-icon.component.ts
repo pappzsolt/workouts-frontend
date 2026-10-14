@@ -7,8 +7,10 @@ import {
   LucideBookOpen,
   LucideCalendarDays,
   LucideChartColumnIncreasing,
+  LucideChevronDown,
   LucideChevronLeft,
   LucideChevronRight,
+  LucideChevronUp,
   LucideCircle,
   LucideCircleCheck,
   LucideCirclePlus,
@@ -21,6 +23,7 @@ import {
   LucideMenu,
   LucidePencil,
   LucidePlus,
+  LucideRepeat,
   LucideSave,
   LucideSearch,
   LucideTimer,
@@ -33,9 +36,9 @@ import {
 
 export type AppIconName =
   | 'activity' | 'arrow-down-wide-narrow' | 'arrow-up-narrow-wide' | 'book-open'
-  | 'calendar-days' | 'chart-column-increasing' | 'chevron-left' | 'chevron-right'
+  | 'calendar-days' | 'chart-column-increasing' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up'
   | 'circle' | 'circle-check' | 'circle-plus' | 'circle-x' | 'clipboard-list'
-  | 'dumbbell' | 'file-text' | 'flame' | 'link' | 'menu' | 'pencil' | 'plus'
+  | 'dumbbell' | 'file-text' | 'flame' | 'link' | 'menu' | 'pencil' | 'plus' | 'repeat'
   | 'save' | 'search' | 'timer' | 'trash-2' | 'user-plus' | 'user-round' | 'users' | 'x';
 
 @Component({
@@ -49,8 +52,10 @@ export type AppIconName =
     LucideBookOpen,
     LucideCalendarDays,
     LucideChartColumnIncreasing,
+    LucideChevronDown,
     LucideChevronLeft,
     LucideChevronRight,
+    LucideChevronUp,
     LucideCircle,
     LucideCircleCheck,
     LucideCirclePlus,
@@ -63,6 +68,7 @@ export type AppIconName =
     LucideMenu,
     LucidePencil,
     LucidePlus,
+    LucideRepeat,
     LucideSave,
     LucideSearch,
     LucideTimer,

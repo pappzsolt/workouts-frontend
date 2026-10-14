@@ -1,0 +1,107 @@
+<div class="flex flex-col gap-3">
+  <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
+    <label class="flex flex-col gap-1 text-xs font-semibold text-content-700 sm:col-span-3">
+      {{ 'coachWorkspace.picker.search' | translate }}
+      <input appInput="compact" type="search" name="pickerSearch" [ngModel]="query.search"
+             (ngModelChange)="onSearch($event)" class="font-normal"
+             [placeholder]="'coachWorkspace.picker.searchPlaceholder' | translate" />
+    </label>
+    <label class="flex flex-col gap-1 text-xs font-semibold text-content-700">
+      {{ 'coachWorkspace.picker.bodyPart' | translate }}
+      <select name="pickerBodyPart" [(ngModel)]="query.bodyPart" (ngModelChange)="onFilterChange()"
+              class="min-h-10 w-full rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm font-normal text-content-800 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/10">
+        <option value="">{{ 'coachWorkspace.picker.all' | translate }}</option>
+        @for (code of bodyParts; track code) {
+          <option [value]="code">{{ bodyPartLabel(code) }}</option>
+        }
+      </select>
+    </label>
+    <label class="flex flex-col gap-1 text-xs font-semibold text-content-700">
+      {{ 'coachWorkspace.picker.equipment' | translate }}
+      <select name="pickerEquipment" [(ngModel)]="query.equipment" (ngModelChange)="onFilterChange()"
+              class="min-h-10 w-full rounded-xl border border-surface-300 bg-white px-3 py-2 text-sm font-normal text-content-800 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/10">
+        <option value="">{{ 'coachWorkspace.picker.all' | translate }}</option>
+        @for (code of equipment; track code) {
+          <option [value]="code">{{ equipmentLabel(code) }}</option>
+        }
+      </select>
+    </label>
+    <div class="flex items-end">
+      <button type="button" (click)="clearFilters()" [disabled]="!hasFilters"
+              class="min-h-10 w-full rounded-xl border border-surface-300 px-3 text-sm font-semibold text-content-700 hover:bg-surface-50 disabled:opacity-40">
+        {{ 'coachWorkspace.picker.clear' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <p class="text-xs text-content-600" aria-live="polite">
+    @if (loading) {
+      {{ 'coachWorkspace.loading' | translate }}
+    } @else if (failed) {
+      {{ 'coachWorkspace.loadError' | translate }}
+    } @else {
+      {{ 'coachWorkspace.picker.resultCount' | translate: { count: page.totalElements } }}
+    }
+  </p>
+
+  <ul class="flex flex-col divide-y divide-surface-100 rounded-xl border border-surface-200">
+    @for (exercise of page.items; track exercise.id) {
+      <li class="px-3 py-2 text-sm">
+        <div class="flex items-center justify-between gap-2">
+          <button type="button" (click)="toggleDetails(exercise.id)" [attr.aria-expanded]="expandedId === exercise.id"
+                  class="min-h-11 min-w-0 flex-1 text-left">
+            <span class="block font-semibold text-content-900">{{ exercise.name }}</span>
+            <span class="block text-xs text-content-600">
+              {{ bodyPartLabel(exercise.bodyPart) }}
+              @if (exercise.bodyPart && exercise.equipment) { · }
+              {{ equipmentLabel(exercise.equipment) }}
+            </span>
+          </button>
+          <button type="button" (click)="picked.emit(exercise)" [disabled]="isChosen(exercise.id)"
+                  [attr.aria-label]="('coachWorkspace.editor.addExercise' | translate) + ': ' + exercise.name"
+                  class="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-xl px-3 text-sm font-semibold text-primary-700 hover:bg-primary-50 disabled:opacity-40">
+            @if (isChosen(exercise.id)) {
+              {{ 'coachWorkspace.picker.added' | translate }}
+            } @else {
+              <app-icon name="plus" sizeClass="h-4 w-4" />
+              {{ 'coachWorkspace.editor.addExercise' | translate }}
+            }
+          </button>
+        </div>
+        @if (expandedId === exercise.id) {
+          <div class="mt-1 flex flex-col gap-1 rounded-lg bg-surface-50 p-2 text-xs text-content-700">
+            @if (exercise.primaryMuscles) {
+              <p><span class="font-semibold">{{ 'coachWorkspace.picker.muscles' | translate }}:</span> {{ exercise.primaryMuscles }}</p>
+            }
+            @if (exercise.description) {
+              <p class="line-clamp-4">{{ exercise.description }}</p>
+            }
+            @if (!exercise.primaryMuscles && !exercise.description) {
+              <p>{{ 'coachWorkspace.picker.noDetails' | translate }}</p>
+            }
+          </div>
+        }
+      </li>
+    } @empty {
+      @if (!loading) {
+        <li class="px-3 py-6 text-center text-sm text-content-600">{{ 'coachWorkspace.picker.empty' | translate }}</li>
+      }
+    }
+  </ul>
+
+  @if (page.totalPages > 1) {
+    <div class="flex items-center justify-between gap-2 text-sm">
+      <button type="button" (click)="goToPage(query.page - 1)" [disabled]="query.page === 0 || loading"
+              [attr.aria-label]="'coachWorkspace.picker.previous' | translate"
+              class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-surface-300 text-content-700 hover:bg-surface-50 disabled:opacity-40">
+        <app-icon name="chevron-left" sizeClass="h-4 w-4" />
+      </button>
+      <span class="text-content-700">{{ 'coachWorkspace.picker.page' | translate: { page: query.page + 1, total: page.totalPages } }}</span>
+      <button type="button" (click)="goToPage(query.page + 1)" [disabled]="query.page + 1 >= page.totalPages || loading"
+              [attr.aria-label]="'coachWorkspace.picker.next' | translate"
+              class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-surface-300 text-content-700 hover:bg-surface-50 disabled:opacity-40">
+        <app-icon name="chevron-right" sizeClass="h-4 w-4" />
+      </button>
+    </div>
+  }
+</div>

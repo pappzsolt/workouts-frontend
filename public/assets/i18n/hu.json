@@ -19,7 +19,8 @@
     "logout": "Kijelentkezés",
     "settings": "Beállítások",
     "security": "Biztonság",
-    "loginAuditLogs": "Bejelentkezési napló"
+    "loginAuditLogs": "Bejelentkezési napló",
+    "coachWorkouts": "Edzéstár"
   },
   "header": {
     "user": "Felhasználó",
@@ -452,7 +453,13 @@
     "assignedToProgram": "Ez a workout hozzá van rendelve egy programhoz.",
     "exercise": "Exercise",
     "cancel": "Mégse",
-    "workoutIdMissing": "Hiányzik a workout azonosító."
+    "workoutIdMissing": "Hiányzik a workout azonosító.",
+    "exerciseRemoved": "A gyakorlat eltávolítva.",
+    "moveUp": "Feljebb",
+    "moveDown": "Lejjebb",
+    "removeExercise": "Gyakorlat eltávolítása",
+    "removeExerciseError": "A gyakorlat eltávolítása nem sikerült.",
+    "reorderError": "A sorrend módosítása nem sikerült."
   },
   "newWorkout": {
     "loadError": "Nem sikerült betölteni a workoutokat.",
@@ -1106,7 +1113,9 @@
       "deleteError": "A program törlése nem sikerült.",
       "deleteConfirm": "Biztosan törlöd a programot?",
       "open": "Megnyitás",
-      "empty": "Még nincs programod."
+      "empty": "Még nincs programod.",
+      "sortByName": "Rendezés: név",
+      "sortByDate": "Rendezés: dátum"
     },
     "editor": {
       "title": "Program szerkesztése",
@@ -1139,7 +1148,7 @@
       "removeConfirm": "Biztosan eltávolítod ezt az edzést a programból?",
       "removed": "Az edzés eltávolítva.",
       "actionError": "A művelet nem sikerült.",
-      "emptyDayHint": "Ezen a napon nincs edzés. Hozz létre újat, vagy másold ide egy meglévő edzésedet.",
+      "emptyDayHint": "Ezen a napon nincs edzés. Hozz létre újat, vagy válassz az edzéstárból.",
       "newWorkout": "Új edzés",
       "copyWorkout": "Meglévő másolása",
       "workoutName": "Edzés neve",
@@ -1163,7 +1172,75 @@
       "assignMore": "Kiosztás további ügyfeleknek",
       "noMoreClients": "Minden ügyfeled megkapta ezt a programot.",
       "assignSelected": "Kiosztás ({{count}})",
-      "assigned": "A program kiosztva."
+      "assigned": "A program kiosztva.",
+      "moreDays": "Ismétlés más napokon",
+      "repeatWeekly": "Ismétlés hetente",
+      "repeatConfirm": "Ez az edzés {{count}} további napra kerül: {{days}}. napok.",
+      "repeatSkipped": "{{count}} nap kimarad, mert ott már van edzés.",
+      "repeatNothing": "Nincs későbbi üres nap ugyanezen a hétnapon.",
+      "repeated": "Az edzés hetente ismétlődik.",
+      "alsoOnDay": "Ugyanez erre a napra is",
+      "addToThatDay": "Hozzáadás",
+      "addedToDay": "Az edzés a megadott napra is felkerült.",
+      "dayTaken": "Azon a napon már van edzés.",
+      "sharedHint": "Ez az edzés {{count}} napon szerepel; az értékek módosítása mindegyikre érvényes.",
+      "fromLibrary": "Edzéstárból",
+      "libraryFilter": "Szűrés név szerint",
+      "inThisProgram": "Ebben a programban",
+      "linkToDay": "Hozzáadás erre a napra",
+      "linkHint": "Ugyanaz az edzés kerül a napra; a gyakorlatlistája ezután nem módosítható.",
+      "copyName": "A másolat neve",
+      "copyHint": "Önálló másolat készül, az eredeti edzés nem változik.",
+      "workoutLinked": "Az edzés a naphoz került.",
+      "libraryHint": "Edzéseket programtól függetlenül itt is létrehozhatsz és szerkeszthetsz:",
+      "browseExercises": "Gyakorlatok böngészése"
+    },
+    "picker": {
+      "search": "Keresés (név, izom, szinonima, leírás)",
+      "searchPlaceholder": "Pl. guggolás, mell, squat",
+      "bodyPart": "Testrész",
+      "equipment": "Eszköz",
+      "all": "Mind",
+      "clear": "Szűrők törlése",
+      "resultCount": "{{count}} gyakorlat",
+      "empty": "Nincs találat.",
+      "added": "Hozzáadva",
+      "muscles": "Izmok",
+      "noDetails": "Nincs részletes leírás.",
+      "previous": "Előző oldal",
+      "next": "Következő oldal",
+      "page": "{{page}} / {{total}}"
+    },
+    "bodyPart": {
+      "back": "Hát",
+      "chest": "Mell",
+      "core": "Törzs",
+      "full_body": "Teljes test",
+      "lower_arms": "Alkar",
+      "lower_legs": "Vádli",
+      "shoulders": "Váll",
+      "upper_arms": "Kar",
+      "upper_legs": "Comb, far"
+    },
+    "equipment": {
+      "barbell": "Rúd",
+      "dumbbell": "Kézisúlyzó",
+      "kettlebell": "Kettlebell",
+      "cable": "Kábelgép",
+      "pull_up_bar": "Húzódzkodó rúd",
+      "ez_bar": "EZ rúd",
+      "smith_machine": "Smith-gép",
+      "loop_band": "Minigumi",
+      "resistance_band": "Gumiszalag",
+      "suspension_trainer": "TRX",
+      "flat_bench": "Pad",
+      "stability_ball": "Fitlabda",
+      "rings": "Gyűrű",
+      "leg_press": "Lábtoló gép",
+      "plates": "Súlytárcsa",
+      "dip_station": "Tolódzkodó állvány",
+      "jump_rope": "Ugrókötél",
+      "treadmill": "Futópad"
     }
   }
 }

@@ -19,7 +19,8 @@
     "logout": "Logout",
     "settings": "Settings",
     "security": "Security",
-    "loginAuditLogs": "Login Audit Log"
+    "loginAuditLogs": "Login Audit Log",
+    "coachWorkouts": "Workout library"
   },
   "header": {
     "user": "User",
@@ -452,7 +453,13 @@
     "assignedToProgram": "This workout is assigned to a program.",
     "exercise": "Exercise",
     "cancel": "Cancel",
-    "workoutIdMissing": "Workout ID is missing."
+    "workoutIdMissing": "Workout ID is missing.",
+    "exerciseRemoved": "Exercise removed.",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "removeExercise": "Remove exercise",
+    "removeExerciseError": "Could not remove the exercise.",
+    "reorderError": "Could not change the order."
   },
   "newWorkout": {
     "loadError": "Failed to load workouts.",
@@ -1106,7 +1113,9 @@
       "deleteError": "Could not delete the program.",
       "deleteConfirm": "Delete this program?",
       "open": "Open",
-      "empty": "You have no programs yet."
+      "empty": "You have no programs yet.",
+      "sortByName": "Sort: name",
+      "sortByDate": "Sort: date"
     },
     "editor": {
       "title": "Edit program",
@@ -1139,7 +1148,7 @@
       "removeConfirm": "Remove this workout from the program?",
       "removed": "Workout removed.",
       "actionError": "The action failed.",
-      "emptyDayHint": "No workout on this day. Create a new one or copy one of your existing workouts here.",
+      "emptyDayHint": "No workout on this day. Create a new one or pick one from the workout library.",
       "newWorkout": "New workout",
       "copyWorkout": "Copy existing",
       "workoutName": "Workout name",
@@ -1163,7 +1172,75 @@
       "assignMore": "Assign to more clients",
       "noMoreClients": "All your clients already have this program.",
       "assignSelected": "Assign ({{count}})",
-      "assigned": "Program assigned."
+      "assigned": "Program assigned.",
+      "moreDays": "Repeat on other days",
+      "repeatWeekly": "Repeat weekly",
+      "repeatConfirm": "This workout will be added to {{count}} more days: days {{days}}.",
+      "repeatSkipped": "{{count}} days are skipped because they already have a workout.",
+      "repeatNothing": "There is no later empty day on the same weekday.",
+      "repeated": "The workout now repeats weekly.",
+      "alsoOnDay": "Also on day",
+      "addToThatDay": "Add",
+      "addedToDay": "The workout was added to that day too.",
+      "dayTaken": "That day already has a workout.",
+      "sharedHint": "This workout is used on {{count}} days; changing its values affects all of them.",
+      "fromLibrary": "From library",
+      "libraryFilter": "Filter by name",
+      "inThisProgram": "In this program",
+      "linkToDay": "Add to this day",
+      "linkHint": "The same workout is used; its exercise list can no longer be changed afterwards.",
+      "copyName": "Name of the copy",
+      "copyHint": "A separate copy is created; the original workout stays unchanged.",
+      "workoutLinked": "Workout added to the day.",
+      "libraryHint": "You can also create and edit workouts independently of programs here:",
+      "browseExercises": "Browse exercises"
+    },
+    "picker": {
+      "search": "Search (name, muscle, synonym, description)",
+      "searchPlaceholder": "e.g. squat, chest",
+      "bodyPart": "Body part",
+      "equipment": "Equipment",
+      "all": "All",
+      "clear": "Clear filters",
+      "resultCount": "{{count}} exercises",
+      "empty": "No results.",
+      "added": "Added",
+      "muscles": "Muscles",
+      "noDetails": "No detailed description.",
+      "previous": "Previous page",
+      "next": "Next page",
+      "page": "{{page}} / {{total}}"
+    },
+    "bodyPart": {
+      "back": "Back",
+      "chest": "Chest",
+      "core": "Core",
+      "full_body": "Full body",
+      "lower_arms": "Forearms",
+      "lower_legs": "Calves",
+      "shoulders": "Shoulders",
+      "upper_arms": "Arms",
+      "upper_legs": "Legs & glutes"
+    },
+    "equipment": {
+      "barbell": "Barbell",
+      "dumbbell": "Dumbbell",
+      "kettlebell": "Kettlebell",
+      "cable": "Cable",
+      "pull_up_bar": "Pull-up bar",
+      "ez_bar": "EZ bar",
+      "smith_machine": "Smith machine",
+      "loop_band": "Loop band",
+      "resistance_band": "Resistance band",
+      "suspension_trainer": "Suspension trainer",
+      "flat_bench": "Bench",
+      "stability_ball": "Stability ball",
+      "rings": "Rings",
+      "leg_press": "Leg press",
+      "plates": "Plates",
+      "dip_station": "Dip station",
+      "jump_rope": "Jump rope",
+      "treadmill": "Treadmill"
     }
   }
 }

@@ -23,6 +23,8 @@ import { CoachProgramsComponent } from './components/coach/coach-programs/coach-
 import { CoachProgramEditorComponent } from './components/coach/coach-program-editor/coach-program-editor.component';
 import { CoachProfileComponent } from './components/coach-dashboard/operations/coach-profile/coach-profile.component';
 import { ExerciseControllerComponent } from './components/coach-dashboard/operations/coach-exercises/coach-exercises.component';
+import { WorkoutListComponent } from './components/coach-dashboard/operations/coach-workouts/coach-workouts.component';
+import { CoachWorkoutEditComponent } from './components/coach-dashboard/operations/coach-workouts/coach-workout-edit/coach-workout-edit.component';
 import { CoachExerciseEditComponent } from './components/coach-dashboard/operations/coach-exercises/coach-exercise-edit/coach-exercise-edit.component';
 
 import { UserDashboardComponent } from './components/user-dashboard/dashboard/user-dashboard.component';
@@ -177,6 +179,24 @@ export const routes: Routes = [
       {
         path: 'programs/:id',
         component: CoachProgramEditorComponent,
+      },
+
+      {
+        path: 'workouts',
+        component: WorkoutListComponent,
+      },
+
+      {
+        path: 'workouts/new',
+        loadComponent: () =>
+          import('./components/coach-dashboard/operations/coach-workouts/coach-workout-new/new-workout.component').then(
+            (m) => m.NewWorkoutComponent,
+          ),
+      },
+
+      {
+        path: 'workouts/:id/edit',
+        component: CoachWorkoutEditComponent,
       },
 
       {

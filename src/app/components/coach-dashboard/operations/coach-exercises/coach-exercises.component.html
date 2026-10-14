@@ -63,6 +63,29 @@
               (buttonClick)="search()"
             ></app-button>
           </div>
+
+          <!-- SZŰRŐK: testrész és eszköz -->
+
+          <div class="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
+            <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+              {{ 'coachWorkspace.picker.bodyPart' | translate }}
+              <select name="libraryBodyPart" [(ngModel)]="bodyPartFilter" (ngModelChange)="onFilterChange()" class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm text-content-800 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/10 font-normal">
+                <option value="">{{ 'coachWorkspace.picker.all' | translate }}</option>
+                @for (code of bodyPartOptions; track code) {
+                  <option [value]="code">{{ bodyPartLabel(code) }}</option>
+                }
+              </select>
+            </label>
+            <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+              {{ 'coachWorkspace.picker.equipment' | translate }}
+              <select name="libraryEquipment" [(ngModel)]="equipmentFilter" (ngModelChange)="onFilterChange()" class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm text-content-800 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/10 font-normal">
+                <option value="">{{ 'coachWorkspace.picker.all' | translate }}</option>
+                @for (code of equipmentOptions; track code) {
+                  <option [value]="code">{{ equipmentLabel(code) }}</option>
+                }
+              </select>
+            </label>
+          </div>
         </div>
 
         <!-- RENDEZÉS -->

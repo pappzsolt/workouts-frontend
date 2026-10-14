@@ -11,6 +11,11 @@
           {{ 'coachWorkspace.programs.search' | translate }}
           <input appInput="default" type="search" name="programSearch" [(ngModel)]="search" class="font-normal" />
         </label>
+        <button type="button" (click)="toggleSort()"
+                class="inline-flex min-h-11 items-center gap-2 rounded-xl border border-surface-300 bg-white px-4 text-sm font-semibold text-content-700 hover:bg-surface-50">
+          <app-icon [name]="sortBy === 'name' ? 'arrow-up-narrow-wide' : 'calendar-days'" sizeClass="h-4 w-4" />
+          {{ (sortBy === 'name' ? 'coachWorkspace.programs.sortByName' : 'coachWorkspace.programs.sortByDate') | translate }}
+        </button>
         <a routerLink="/coach/programs/new"
            class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary-700 px-4 text-sm font-semibold text-white hover:bg-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-600">
           <app-icon name="plus" sizeClass="h-4 w-4" />

@@ -240,6 +240,8 @@ export class ExerciseService {
     programId?: number,
     workoutId?: number,
     sortDirection: 'asc' | 'desc' = 'asc',
+    bodyPart?: string,
+    equipment?: string,
   ): Observable<ApiResponse<PageResponse<Exercise>>> {
     let params = new HttpParams()
       .set('language', this.languageService.getCurrentLanguage())
@@ -255,6 +257,14 @@ export class ExerciseService {
 
     if (workoutId !== undefined) {
       params = params.set('workoutId', workoutId);
+    }
+
+    if (bodyPart) {
+      params = params.set('bodyPart', bodyPart);
+    }
+
+    if (equipment) {
+      params = params.set('equipment', equipment);
     }
 
     return this.http

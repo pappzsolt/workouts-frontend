@@ -56,3 +56,22 @@ export function errorText(error: unknown, fallbackKey: string): string {
 export function percent(done: number, total: number): number {
   return total > 0 ? Math.round((done / total) * 100) : 0;
 }
+
+/** Kód (pl. upper_legs) olvasható alakja, ha nincs rá fordítás. */
+export function humanizeCode(code: string | null | undefined): string {
+  if (!code) return '';
+  const text = code.replace(/_/g, ' ').trim();
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
+/** Fordított címke egy kódhoz (pl. coachWorkspace.bodyPart.chest), különben a kód olvasható alakja. */
+export function codeLabel(
+  translate: { instant(key: string): string },
+  prefix: string,
+  code: string | null | undefined,
+): string {
+  if (!code) return '';
+  const key = `${prefix}.${code}`;
+  const text = translate.instant(key);
+  return text && text !== key ? text : humanizeCode(code);
+}

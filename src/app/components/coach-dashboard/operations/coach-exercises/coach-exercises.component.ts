@@ -16,6 +16,9 @@ import { ExerciseService } from '../../../../services/coach/coach-exercises/coac
 import { LanguageService } from '../../../../services/shared/language.service';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { TranslateService } from '@ngx-translate/core';
+import { CoachWorkspaceService } from '../../../../services/coach/coach-workspace.service';
+import { codeLabel, humanizeCode } from '../../../coach/coach-ui';
 
 import { ExerciseSearchFieldComponent } from '../../../shared/components/exercise-search-field/exercise-search-field.component';
 
@@ -37,6 +40,43 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   // ==========================================================
 
   exercises: Exercise[] = [];
+
+  // ==========================================================
+  // SZŰRŐK (testrész, eszköz)
+  // ==========================================================
+
+  private readonly workspace = inject(CoachWorkspaceService, { optional: true });
+  private readonly translate = inject(TranslateService, { optional: true });
+  bodyPartFilter = '';
+  equipmentFilter = '';
+  bodyPartOptions: string[] = [];
+  equipmentOptions: string[] = [];
+
+  onFilterChange(): void {
+    this.currentPage = 0;
+    this.loadExercises();
+  }
+
+  bodyPartLabel(code: string): string {
+    return this.translate ? codeLabel(this.translate, 'coachWorkspace.bodyPart', code) : humanizeCode(code);
+  }
+
+  equipmentLabel(code: string): string {
+    return this.translate ? codeLabel(this.translate, 'coachWorkspace.equipment', code) : humanizeCode(code);
+  }
+
+  private loadFilterOptions(): void {
+    this.workspace
+      ?.getExerciseFilterOptions()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (options) => {
+          this.bodyPartOptions = options.bodyParts;
+          this.equipmentOptions = options.equipment;
+        },
+        error: () => undefined,
+      });
+  }
 
   // ==========================================================
   // BETÖLTÉS
@@ -115,7 +155,8 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   // ==========================================================
 
   ngOnInit(): void {
-    this.exerciseNotFound = this.route.snapshot.queryParamMap.get('exerciseNotFound') === 'true';
+    this.exerciseNotFound = this.route?.snapshot?.queryParamMap.get('exerciseNotFound') === 'true';
+    this.loadFilterOptions();
     this.loadExercises();
 
     // ==========================================================
@@ -146,6 +187,8 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
         undefined,
         undefined,
         this.sortDirection,
+        this.bodyPartFilter || undefined,
+        this.equipmentFilter || undefined,
       )
       .pipe(takeUntil(this.destroy$))
       .subscribe({

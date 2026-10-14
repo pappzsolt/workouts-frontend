@@ -8,6 +8,9 @@ import type {
   ClientWorkoutExerciseRow,
   ClientWorkoutSet,
   CoachClientWorkout,
+  CoachExerciseFilterOptions,
+  CoachExercisePage,
+  CoachExerciseQuery,
   CoachExerciseSearchItem,
   CoachOverview,
   CoachProgram,
@@ -288,19 +291,60 @@ export class CoachWorkspaceService {
       .pipe(map(unwrap));
   }
 
-  searchExercises(search: string, size = 8): Observable<CoachExerciseSearchItem[]> {
-    const params = new HttpParams()
+  /** Lapozható, szűrhető gyakorlatlista; üres keresésnél a teljes katalógus. */
+  browseExercises(query: CoachExerciseQuery): Observable<CoachExercisePage> {
+    let params = new HttpParams()
       .set('language', this.language())
-      .set('search', search)
-      .set('page', 0)
-      .set('size', size);
+      .set('search', query.search.trim())
+      .set('page', query.page)
+      .set('size', query.size)
+      .set('sortDirection', 'asc');
+    if (query.bodyPart) params = params.set('bodyPart', query.bodyPart);
+    if (query.equipment) params = params.set('equipment', query.equipment);
     return this.http
-      .get<ApiResponse<{ content: CoachExerciseSearchItem[] }>>(API_ENDPOINTS.exerciseSearch, { params })
-      .pipe(map((response) => (unwrap(response)?.content ?? []).map((e) => ({
-        id: e.id,
-        name: e.name,
-        muscleGroup: e.muscleGroup || null,
-        equipment: e.equipment || null,
-      }))));
+      .get<ApiResponse<{ content: RawExercise[]; totalElements: number; totalPages: number }>>(
+        API_ENDPOINTS.exerciseSearch,
+        { params },
+      )
+      .pipe(
+        map((response) => {
+          const data = unwrap(response);
+          return {
+            items: (data?.content ?? []).map(toSearchItem),
+            totalElements: data?.totalElements ?? 0,
+            totalPages: Math.max(1, data?.totalPages ?? 1),
+          };
+        }),
+      );
   }
+
+  getExerciseFilterOptions(): Observable<CoachExerciseFilterOptions> {
+    return this.http
+      .get<ApiResponse<CoachExerciseFilterOptions>>(API_ENDPOINTS.exerciseFilterOptions)
+      .pipe(map((response) => unwrap(response) ?? { bodyParts: [], equipment: [] }));
+  }
+}
+
+interface RawExercise {
+  id: number;
+  name: string;
+  description?: string | null;
+  bodyPart?: string | null;
+  primaryMuscles?: string | null;
+  equipment?: string | null;
+  muscleGroup?: string | null;
+  imageUrl?: string | null;
+}
+
+function toSearchItem(e: RawExercise): CoachExerciseSearchItem {
+  return {
+    id: e.id,
+    name: e.name,
+    muscleGroup: e.muscleGroup || null,
+    equipment: e.equipment || null,
+    bodyPart: e.bodyPart || null,
+    primaryMuscles: e.primaryMuscles || null,
+    description: e.description || null,
+    imageUrl: e.imageUrl || null,
+  };
 }
