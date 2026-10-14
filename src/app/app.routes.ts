@@ -16,16 +16,14 @@ import { UserNewComponent } from './components/admin-dashboard/operations/user-n
 import { CoachEditComponent } from './components/admin-dashboard/operations/coach-edit/coach-edit.component';
 import { UserEditComponent } from './components/admin-dashboard/operations/user-edit/user-edit.component';
 import { LoginAuditLogsComponent } from './components/admin-dashboard/operations/login-audit-logs/login-audit-logs.component';
-import { AssignWorkoutsExercisesComponent } from './components/coach-dashboard/operations/assign-workouts-exercises/assign-workouts-exercises.component';
-import { CoachDashboardComponent } from './components/coach-dashboard/dashboard/coach-dashboard.component';
+import { CoachHomeComponent } from './components/coach/coach-home/coach-home.component';
+import { CoachClientsComponent } from './components/coach/coach-clients/coach-clients.component';
+import { CoachClientDetailComponent } from './components/coach/coach-client-detail/coach-client-detail.component';
+import { CoachProgramsComponent } from './components/coach/coach-programs/coach-programs.component';
+import { CoachProgramEditorComponent } from './components/coach/coach-program-editor/coach-program-editor.component';
 import { CoachProfileComponent } from './components/coach-dashboard/operations/coach-profile/coach-profile.component';
 import { ExerciseControllerComponent } from './components/coach-dashboard/operations/coach-exercises/coach-exercises.component';
 import { CoachExerciseEditComponent } from './components/coach-dashboard/operations/coach-exercises/coach-exercise-edit/coach-exercise-edit.component';
-import { CoachNewProgramComponent } from './components/coach-dashboard/operations/coach-programs/coach-new-program/coach-new-program.component';
-import { CoachProgramComponent } from './components/coach-dashboard/operations/coach-programs/coach-program/coach-program.component';
-import { CoachProgramEditComponent } from './components/coach-dashboard/operations/coach-programs/coach-program-edit/coach-program-edit.component';
-import { CoachWorkoutEditComponent } from './components/coach-dashboard/operations/coach-workouts/coach-workout-edit/coach-workout-edit.component';
-import { CoachProgramBuilderComponent } from './components/coach-dashboard/operations/coach-program-builder/coach-program-builder.component';
 
 import { UserDashboardComponent } from './components/user-dashboard/dashboard/user-dashboard.component';
 import { UserProfileComponent } from './components/user-dashboard/operations/user-profile/user-profile.component';
@@ -153,64 +151,37 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        component: CoachDashboardComponent,
+        component: CoachHomeComponent,
       },
 
       {
-        path: 'profile',
-        component: CoachProfileComponent,
+        path: 'clients',
+        component: CoachClientsComponent,
+      },
+
+      {
+        path: 'clients/:userId',
+        component: CoachClientDetailComponent,
+      },
+
+      {
+        path: 'programs',
+        component: CoachProgramsComponent,
+      },
+
+      {
+        path: 'programs/new',
+        component: CoachProgramEditorComponent,
+      },
+
+      {
+        path: 'programs/:id',
+        component: CoachProgramEditorComponent,
       },
 
       {
         path: 'exercises',
         component: ExerciseControllerComponent,
-      },
-
-      // ÚJ PROGRAM BUILDER
-      {
-        path: 'program-builder',
-        component: CoachProgramBuilderComponent,
-      },
-
-      {
-        path: 'programs',
-        component: CoachProgramComponent,
-      },
-
-      {
-        path: 'programs/:id/workouts',
-        component: AssignWorkoutsExercisesComponent,
-      },
-
-      {
-        path: 'programs/new',
-        component: CoachNewProgramComponent,
-      },
-
-      {
-        path: 'programs/:id/edit',
-        component: CoachProgramEditComponent,
-      },
-
-      {
-        path: 'exercises/:id/edit',
-        component: CoachExerciseEditComponent,
-      },
-
-      {
-        path: 'workouts/:id/edit',
-        component: CoachWorkoutEditComponent,
-      },
-      {
-        path: 'assign-workouts-exercises',
-        component: AssignWorkoutsExercisesComponent,
-      },
-      {
-        path: 'workouts/new',
-        loadComponent: () =>
-          import('./components/coach-dashboard/operations/coach-workouts/coach-workout-new/new-workout.component').then(
-            (m) => m.NewWorkoutComponent,
-          ),
       },
 
       {
@@ -219,6 +190,16 @@ export const routes: Routes = [
           import('./components/coach-dashboard/operations/coach-exercises/coach-exercise-new/new-exercise.component').then(
             (m) => m.NewExerciseComponent,
           ),
+      },
+
+      {
+        path: 'exercises/:id/edit',
+        component: CoachExerciseEditComponent,
+      },
+
+      {
+        path: 'profile',
+        component: CoachProfileComponent,
       },
 
       {

@@ -10,15 +10,6 @@ interface NavigationItem {
 }
 
 const dashboard = '/coach/dashboard';
-const sections: Record<string, string> = {
-  programs: 'coachDashboard.programs',
-  workouts: 'coachDashboard.workouts',
-  exercises: 'coachDashboard.exercises',
-  assignments: 'assignProgram.title',
-  'program-workouts': 'coachNavigation.programWorkouts',
-  'workout-exercises': 'coachDashboard.assignWorkoutExercises',
-  'workout-exercise-manager': 'coachDashboard.workoutExerciseManager',
-};
 
 @Component({
   selector: 'app-dashboard-navigation',
@@ -56,41 +47,22 @@ export class DashboardNavigationComponent {
     }
     if (segments[0] !== 'coach') return;
 
-    this.items = [{ label: 'coachDashboard.title', url: dashboard }];
+    this.items = [{ label: 'coachWorkspace.home.title', url: dashboard }];
     const page = segments[1];
-    const section = tree.queryParams['section'];
-    const addSection = (name: string): void => {
-      this.items.push({ label: sections[name], url: `${dashboard}?section=${name}` });
-    };
-    if (page === 'dashboard') {
-      if (sections[section]) {
-        if (section === 'program-workouts') addSection('programs');
-        addSection(section);
-      }
-      return;
-    }
-
     let label: string | undefined;
-    if (page === 'programs' || page === 'workouts' || page === 'exercises') {
-      addSection(page);
-      if (segments.length === 2) {
-        this.items[this.items.length - 1].url = this.router.url;
-        return;
-      }
-      if (segments[2] === 'new') {
-        label = { programs: 'coachNewProgram.title', workouts: 'newWorkout.title', exercises: 'newExercise.title' }[page];
-      } else if (segments[3] === 'edit') {
-        label = { programs: 'coachProgramEdit.title', workouts: 'coachWorkoutEdit.title', exercises: 'coachExerciseEdit.title' }[page];
-      } else if (segments[3] === 'workouts') {
-        label = 'assignWorkoutExercises.title';
-      }
+    if (page === 'clients') {
+      this.items.push({ label: 'coachWorkspace.clients.title', url: '/coach/clients' });
+      if (segments[2]) label = 'coachWorkspace.client.title';
+    } else if (page === 'programs') {
+      this.items.push({ label: 'coachWorkspace.programs.title', url: '/coach/programs' });
+      if (segments[2] === 'new') label = 'coachWorkspace.editor.newTitle';
+      else if (segments[2]) label = 'coachWorkspace.editor.title';
+    } else if (page === 'exercises') {
+      this.items.push({ label: 'coachDashboard.exercises', url: '/coach/exercises' });
+      if (segments[2] === 'new') label = 'newExercise.title';
+      else if (segments[3] === 'edit') label = 'coachExerciseEdit.title';
     } else if (page === 'profile') {
       label = 'coachProfile.title';
-    } else if (page === 'program-builder') {
-      addSection('programs');
-      label = 'coachProgramBuilder.title';
-    } else if (page === 'assign-workouts-exercises') {
-      label = 'assignWorkoutExercises.title';
     }
     if (label) this.items.push({ label, url: this.router.url });
   }

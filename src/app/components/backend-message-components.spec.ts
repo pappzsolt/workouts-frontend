@@ -6,7 +6,6 @@ import { AuthService } from '../services/auth/auth.service';
 import { CoachProfileService } from '../services/coach/coach-profile.service';
 import { LoggerService } from '../services/logger.service';
 import { CoachProfileComponent } from './coach-dashboard/operations/coach-profile/coach-profile.component';
-import { CoachProgramComponent } from './coach-dashboard/operations/coach-programs/coach-program/coach-program.component';
 import { NewExerciseComponent } from './coach-dashboard/operations/coach-exercises/coach-exercise-new/new-exercise.component';
 import { UserExerciseDetailComponent } from './user-dashboard/operations/user-exercises/user-exercises-detail/user-exercises-detail.component';
 import { WorkoutsComponent } from './user-dashboard/operations/user-workouts/workouts.component';
@@ -40,23 +39,6 @@ describe('Backend messages presented by coach and user components', () => {
     profileApi.saveCoachProfile.and.returnValue(of(response(true, 'Profile saved')));
     component.saveProfile();
     expect(component.message).toBe('Profile saved'); expect(component.messageType).toBe('success');
-  });
-
-  it('keeps the program deletion message after refreshing the list', () => {
-    const api = { deleteCoachProgram: () => of(response(true, 'Program deleted')),
-      searchProgramsForCoach: () => of({ content: [], totalElements: 0, totalPages: 0 }) };
-    const component = TestBed.runInInjectionContext(() => new CoachProgramComponent({} as any, api as any, language as any));
-    component.pendingDeleteProgramId = 7; component.confirmDeleteProgram();
-    expect(component.message).toBe('Program deleted'); expect(component.messageType).toBe('success');
-  });
-
-  it('keeps the program and confirmation state when deletion was rejected', () => {
-    const refresh = jasmine.createSpy('refresh');
-    const api = { deleteCoachProgram: () => of(response(false, 'Deletion denied')), searchProgramsForCoach: refresh };
-    const component = TestBed.runInInjectionContext(() => new CoachProgramComponent({} as any, api as any, language as any));
-    component.pendingDeleteProgramId = 7; component.confirmDeleteProgram();
-    expect(component.message).toBe('Deletion denied'); expect(component.messageType).toBe('error');
-    expect(component.pendingDeleteProgramId).toBe(7); expect(refresh).not.toHaveBeenCalled();
   });
 
   it('does not reset the new exercise form on success:false', () => {

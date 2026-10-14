@@ -15,9 +15,7 @@ import { AdminListUsersComponent } from './admin-dashboard/operations/admin-list
 import { MemberSearchComponent } from './admin-dashboard/operations/user-search/member-search.component';
 import { LoginAuditLogsComponent } from './admin-dashboard/operations/login-audit-logs/login-audit-logs.component';
 import { ExerciseControllerComponent } from './coach-dashboard/operations/coach-exercises/coach-exercises.component';
-import { CoachWorkoutEditComponent } from './coach-dashboard/operations/coach-workouts/coach-workout-edit/coach-workout-edit.component';
 import { UserMyProgramsComponent } from './user-dashboard/operations/user-my-programs/user-my-programs.component';
-import { CoachProgramBoardComponent } from './shared/coach/coach-program-board/coach-program-board.component';
 import { UserMultiSelectComponent } from './shared/user/user-multi-select.component';
 import { UserSelectComponent } from './shared/user/user-select.component';
 import { CoachSelectComponent } from './shared/coach/coach-select.component';
@@ -105,24 +103,6 @@ describe('Shared search integration', () => {
     expect(component.totalItems).toBe(0);
     component.onSearchChange('');
     expect(component.totalItems).toBe(3);
-    component.ngOnDestroy();
-  });
-
-  it('retains the program board selection when filtering hides its card', () => {
-    const component = make(() => new CoachProgramBoardComponent());
-    component.programs = [
-      { programId: 1, programName: 'Strength' },
-      { programId: 2, programName: 'Cardio', programDescription: 'Endurance' },
-    ];
-    component.onSelectProgram(1);
-    const selected = jasmine.createSpy('selected');
-    component.programSelected.subscribe(selected);
-    component.searchTerm = 'endurance';
-    expect(component.filteredPrograms.map((program) => program.programId)).toEqual([2]);
-    expect(component.selectedProgramId).toBe(1);
-    expect(selected).not.toHaveBeenCalled();
-    component.searchTerm = '';
-    expect(component.filteredPrograms.length).toBe(2);
     component.ngOnDestroy();
   });
 
@@ -298,37 +278,6 @@ describe('Shared search integration', () => {
     component.search();
     expect(search.calls.mostRecent().args.slice(0, 3)).toEqual(['Latest exercise', 'name', 0]);
     component.ngOnDestroy();
-  });
-
-  it('keeps assigned exercise exclusions while filtering workout additions and resets selection on clear', () => {
-    const component = make(
-      () =>
-        new CoachWorkoutEditComponent(
-          {} as any,
-          {} as any,
-          {} as any,
-          {} as any,
-          {} as any,
-          {} as any,
-          language as any,
-        ),
-    );
-    component.exercises = [
-      { id: 1, name: 'Squat' },
-      { id: 2, name: 'Bench' },
-    ] as any;
-    const field = make(() => new AppSearchComponent());
-    field.debounceMs = 0;
-    field.searchTermChange.subscribe((term) => component.onExerciseSearchChange(term));
-    field.onSearchChange('squat');
-    expect(component.availableExercises.map((exercise) => exercise.id)).toEqual([1]);
-    component.selectedExerciseId = 1;
-    field.clear();
-    expect(component.selectedExerciseId).toBeNull();
-    expect(component.availableExercises.length).toBe(2);
-    component.workoutAssignedToProgram = true;
-    field.onSearchChange('bench');
-    expect(component.availableExercises).toEqual([]);
   });
 
   it('passes the just-typed member query to manual search without waiting for a debounce', () => {

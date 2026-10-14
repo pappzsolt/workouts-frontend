@@ -12,6 +12,9 @@
          ÜZENET
          ====================================================== -->
 
+    @if (exerciseNotFound) {
+      <app-message [message]="'coachDashboard.exerciseNotFound'" type="error"></app-message>
+    }
     <app-message [message]="message" [type]="messageType"> </app-message>
 
     <!-- ======================================================

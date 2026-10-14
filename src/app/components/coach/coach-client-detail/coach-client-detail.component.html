@@ -1,0 +1,284 @@
+<div class="min-h-full min-w-0 px-4 py-6 sm:px-6 lg:px-8">
+  <div class="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-6">
+
+    <app-message [message]="message" [messageParams]="{ program: assignedProgramName }" [type]="messageType" role="status"></app-message>
+
+    @if (loading && !client) {
+      <app-loading message="coachWorkspace.loading"></app-loading>
+    } @else if (client) {
+
+      <!-- Ügyfél fejléc -->
+      <section class="flex flex-wrap items-center gap-5 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
+        <span aria-hidden="true" class="flex h-16 w-16 flex-none items-center justify-center rounded-full bg-primary-50 text-2xl font-bold text-primary-700">
+          {{ initial(client.username) }}
+        </span>
+        <div class="flex min-w-0 flex-[1_1_240px] flex-col gap-1">
+          <h1 class="truncate text-2xl font-bold text-content-900">{{ client.username }}</h1>
+          <p class="text-sm text-content-600">
+            @if (client.age) { {{ 'coachWorkspace.client.age' | translate: { value: client.age } }} · }
+            @if (client.weight) { {{ client.weight }} kg · }
+            @if (client.height) { {{ client.height }} cm · }
+            {{ genderKey(client.gender) | translate }}
+          </p>
+          @if (client.goals) {
+            <p class="text-sm text-content-800">
+              <span class="text-content-600">{{ 'coachWorkspace.client.goals' | translate }}:</span> {{ client.goals }}
+            </p>
+          }
+        </div>
+        <button type="button" (click)="openAssign()"
+                class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary-700 px-4 text-sm font-semibold text-white hover:bg-primary-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-600">
+          <app-icon name="plus" sizeClass="h-4 w-4" />
+          {{ 'coachWorkspace.client.assignProgram' | translate }}
+        </button>
+      </section>
+
+      <!-- Programok -->
+      <section [attr.aria-label]="'coachWorkspace.client.programs' | translate" class="grid grid-cols-1 gap-4 md:grid-cols-2">
+        @for (program of client.programs; track program.programId) {
+          <div class="flex flex-col gap-3 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
+            <div class="flex items-start justify-between gap-3">
+              <a [routerLink]="['/coach/programs', program.programId]" class="font-bold text-content-900 hover:text-primary-700 hover:underline">
+                {{ program.name }}
+              </a>
+              @if (program.endDate && program.endDate < todayIso) {
+                <span class="rounded-full bg-surface-100 px-3 py-1 text-xs font-semibold text-content-700">{{ 'coachWorkspace.client.finished' | translate }}</span>
+              } @else if (program.startDate && program.startDate > todayIso) {
+                <span class="rounded-full bg-surface-100 px-3 py-1 text-xs font-semibold text-content-700">{{ 'coachWorkspace.client.upcoming' | translate }}</span>
+              } @else {
+                <span class="rounded-full bg-info-100 px-3 py-1 text-xs font-semibold text-info-800">{{ 'coachWorkspace.client.active' | translate }}</span>
+              }
+            </div>
+            <p class="text-sm text-content-600">
+              {{ program.startDate | date: 'yyyy.MM.dd' }} – {{ program.endDate | date: 'yyyy.MM.dd' }} ·
+              {{ 'coachWorkspace.client.progress' | translate: { done: program.completedWorkouts, total: program.totalWorkouts } }}
+            </p>
+            <div class="h-2 overflow-hidden rounded-full bg-surface-200" role="progressbar"
+                 [attr.aria-valuenow]="percent(program.completedWorkouts, program.totalWorkouts)" aria-valuemin="0" aria-valuemax="100"
+                 [attr.aria-label]="program.name">
+              <div class="h-full rounded-full bg-primary-600" [style.width.%]="percent(program.completedWorkouts, program.totalWorkouts)"></div>
+            </div>
+            @if (revokeProgramId === program.programId) {
+              <div class="flex flex-wrap items-center gap-3 rounded-xl bg-delete-50 p-3 text-sm text-delete-700">
+                <span class="flex-1">{{ 'coachWorkspace.client.revokeConfirm' | translate }}</span>
+                <button type="button" (click)="cancelRevoke()" class="min-h-11 rounded-xl border border-surface-300 bg-white px-3 font-semibold text-content-700">
+                  {{ 'coachWorkspace.cancel' | translate }}
+                </button>
+                <button type="button" (click)="confirmRevoke()" class="min-h-11 rounded-xl bg-delete-600 px-3 font-semibold text-white hover:bg-delete-700">
+                  {{ 'coachWorkspace.client.revoke' | translate }}
+                </button>
+              </div>
+            } @else {
+              <div class="flex justify-end">
+                <button type="button" (click)="askRevoke(program.programId)" class="min-h-11 rounded-xl px-3 text-sm font-semibold text-delete-700 hover:bg-delete-50">
+                  {{ 'coachWorkspace.client.revoke' | translate }}
+                </button>
+              </div>
+            }
+          </div>
+        } @empty {
+          <div class="rounded-2xl border border-dashed border-surface-300 bg-white p-5 text-sm text-content-600 md:col-span-2">
+            {{ 'coachWorkspace.client.noPrograms' | translate }}
+          </div>
+        }
+      </section>
+
+      <div class="flex flex-wrap items-start gap-6">
+
+        <!-- Heti naptár -->
+        <section [attr.aria-label]="'coachWorkspace.client.calendar' | translate"
+                 class="flex min-w-0 flex-[2_1_320px] flex-col gap-3 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h2 class="text-lg font-bold text-content-900">
+              {{ weekStart | date: 'yyyy.MM.dd' }} – {{ weekEnd | date: 'MM.dd' }}
+            </h2>
+            <div class="flex gap-2">
+              <button type="button" (click)="previousWeek()" [attr.aria-label]="'coachWorkspace.client.previousWeek' | translate"
+                      class="flex h-11 w-11 items-center justify-center rounded-xl border border-surface-300 bg-white text-content-700 hover:bg-surface-50">
+                <app-icon name="chevron-left" sizeClass="h-5 w-5" />
+              </button>
+              <button type="button" (click)="thisWeek()"
+                      class="min-h-11 rounded-xl border border-surface-300 bg-white px-3 text-sm font-semibold text-content-700 hover:bg-surface-50">
+                {{ 'coachWorkspace.client.thisWeek' | translate }}
+              </button>
+              <button type="button" (click)="nextWeek()" [attr.aria-label]="'coachWorkspace.client.nextWeek' | translate"
+                      class="flex h-11 w-11 items-center justify-center rounded-xl border border-surface-300 bg-white text-content-700 hover:bg-surface-50">
+                <app-icon name="chevron-right" sizeClass="h-5 w-5" />
+              </button>
+            </div>
+          </div>
+
+          @for (day of days; track day.iso) {
+            <div class="flex items-start gap-3 rounded-xl border p-2"
+                 [class.border-primary-600]="day.isToday" [class.border-surface-200]="!day.isToday">
+              <div class="flex w-12 flex-none flex-col items-center pt-1">
+                <span class="text-xs text-content-600">{{ day.weekdayKey | translate }}</span>
+                <span class="text-lg font-bold text-content-900">{{ day.date | date: 'd' }}</span>
+              </div>
+              <div class="flex min-w-0 flex-1 flex-col gap-2">
+                @for (entry of day.workouts; track entry.workout.userWorkoutId) {
+                  <button type="button" (click)="select(entry.workout)" [attr.aria-pressed]="isSelected(entry.workout)"
+                          class="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2 text-left"
+                          [class.bg-primary-50]="isSelected(entry.workout)" [class.ring-2]="isSelected(entry.workout)"
+                          [class.ring-primary-600]="isSelected(entry.workout)" [class.bg-surface-50]="!isSelected(entry.workout)">
+                    <span class="min-w-0 flex-1 text-sm font-semibold text-content-900">
+                      <span class="block truncate">{{ entry.workout.workoutName }}</span>
+                      <span class="block truncate text-xs font-normal text-content-600">{{ entry.workout.programName }}</span>
+                    </span>
+                    <span class="whitespace-nowrap rounded-full px-2 py-1 text-xs font-semibold" [class]="statusBadge[entry.status]">
+                      {{ statusLabel[entry.status] | translate }}
+                    </span>
+                  </button>
+                } @empty {
+                  <span class="py-2 text-sm text-content-500">{{ 'coachWorkspace.client.restDay' | translate }}</span>
+                }
+              </div>
+            </div>
+          }
+        </section>
+
+        <!-- Kiválasztott edzés -->
+        <section [attr.aria-label]="'coachWorkspace.client.selectedWorkout' | translate"
+                 class="flex min-w-0 flex-[3_1_440px] flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
+          @if (!selected) {
+            <p class="py-8 text-center text-sm text-content-600">{{ 'coachWorkspace.client.selectHint' | translate }}</p>
+          } @else {
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="text-sm text-content-600">{{ selected.scheduledAt | date: 'yyyy.MM.dd' }} · {{ selected.programName }}</p>
+                <h2 class="text-xl font-bold text-content-900">{{ selected.workoutName }}</h2>
+              </div>
+              <span class="rounded-full px-3 py-1 text-xs font-semibold" [class]="statusBadge[selectedStatus]">
+                {{ statusLabel[selectedStatus] | translate }}
+              </span>
+            </div>
+
+            @if (editable) {
+              <p class="rounded-xl bg-surface-50 px-4 py-3 text-sm text-content-700">{{ 'coachWorkspace.client.personalizeHint' | translate }}</p>
+            } @else {
+              <p class="rounded-xl bg-primary-50 px-4 py-3 text-sm text-primary-800">{{ 'coachWorkspace.client.doneHint' | translate }}</p>
+            }
+
+            @if (planLoading) {
+              <app-loading message="coachWorkspace.loading"></app-loading>
+            } @else {
+              <div class="overflow-x-auto">
+                <table class="w-full min-w-[560px] border-collapse text-sm">
+                  <thead>
+                    <tr class="text-left text-content-600">
+                      <th scope="col" class="px-2 py-2 font-semibold">{{ 'coachWorkspace.exercise' | translate }}</th>
+                      <th scope="col" class="w-20 px-2 py-2 font-semibold">{{ 'coachWorkspace.sets' | translate }}</th>
+                      <th scope="col" class="w-20 px-2 py-2 font-semibold">{{ 'coachWorkspace.reps' | translate }}</th>
+                      <th scope="col" class="w-24 px-2 py-2 font-semibold">{{ 'coachWorkspace.weightKg' | translate }}</th>
+                      <th scope="col" class="w-24 px-2 py-2 font-semibold">{{ 'coachWorkspace.restSeconds' | translate }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (plan of plans; track plan.userWorkoutExerciseId; let i = $index) {
+                      <tr class="border-t border-surface-100">
+                        <td class="px-2 py-2 font-semibold text-content-900">
+                          {{ plan.name }}
+                          @if (completedSetCount(plan) > 0) {
+                            <span class="block text-xs font-normal text-content-600">
+                              {{ 'coachWorkspace.client.completedSets' | translate: { done: completedSetCount(plan), total: plan.sets.length } }}
+                            </span>
+                          }
+                        </td>
+                        <td class="px-2 py-1">
+                          <input appInput="compact" type="number" min="1" max="20" [name]="'sets' + i" [(ngModel)]="plan.setCount"
+                                 [disabled]="!editable" [attr.aria-label]="('coachWorkspace.sets' | translate) + ' – ' + plan.name" />
+                        </td>
+                        <td class="px-2 py-1">
+                          <input appInput="compact" type="number" min="1" [name]="'reps' + i" [(ngModel)]="plan.repetitions"
+                                 [disabled]="!editable" [attr.aria-label]="('coachWorkspace.reps' | translate) + ' – ' + plan.name" />
+                        </td>
+                        <td class="px-2 py-1">
+                          <input appInput="compact" type="number" min="0" step="0.5" [name]="'kg' + i" [(ngModel)]="plan.weightKg"
+                                 [disabled]="!editable" [attr.aria-label]="('coachWorkspace.weightKg' | translate) + ' – ' + plan.name" />
+                        </td>
+                        <td class="px-2 py-1">
+                          <input appInput="compact" type="number" min="0" [name]="'rest' + i" [(ngModel)]="plan.restSeconds"
+                                 [disabled]="!editable" [attr.aria-label]="('coachWorkspace.restSeconds' | translate) + ' – ' + plan.name" />
+                        </td>
+                      </tr>
+                    } @empty {
+                      <tr><td colspan="5" class="px-2 py-6 text-center text-content-600">{{ 'coachWorkspace.client.noExercises' | translate }}</td></tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+
+              @if (editable) {
+                <div class="flex flex-wrap items-end justify-between gap-3">
+                  <div class="flex flex-wrap items-end gap-2">
+                    <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+                      {{ 'coachWorkspace.client.moveTo' | translate }}
+                      <input appInput="compact" type="date" name="rescheduleDate" [(ngModel)]="rescheduleDate" />
+                    </label>
+                    <button type="button" (click)="reschedule()" [disabled]="!rescheduleDate || rescheduleDate === selected.scheduledAt"
+                            class="min-h-11 rounded-xl border border-surface-300 bg-white px-4 text-sm font-semibold text-content-700 hover:bg-surface-50 disabled:opacity-50">
+                      {{ 'coachWorkspace.client.move' | translate }}
+                    </button>
+                  </div>
+                  <button type="button" (click)="savePlans()" [disabled]="saving || plans.length === 0"
+                          class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary-700 px-5 text-sm font-semibold text-white hover:bg-primary-800 disabled:opacity-50">
+                    <app-icon name="save" sizeClass="h-4 w-4" />
+                    {{ (saving ? 'coachWorkspace.saving' : 'coachWorkspace.save') | translate }}
+                  </button>
+                </div>
+              }
+            }
+          }
+        </section>
+      </div>
+    } @else {
+      <app-empty-state message="coachWorkspace.client.notFound"></app-empty-state>
+    }
+  </div>
+</div>
+
+<!-- Program hozzárendelése -->
+@if (assignOpen) {
+  <app-dialog [ariaLabel]="'coachWorkspace.client.assignProgram' | translate" [trapFocus]="true" [closeOnEscape]="true"
+              [closeOnBackdrop]="true" [busy]="assigning" (dismissed)="closeAssign()">
+    <div class="flex flex-col gap-4 p-6">
+      <h2 class="text-xl font-bold text-content-900">
+        {{ 'coachWorkspace.client.assignTitle' | translate: { name: client?.username } }}
+      </h2>
+      @if (assignLoading) {
+        <app-loading message="coachWorkspace.loading"></app-loading>
+      } @else if (assignablePrograms.length === 0) {
+        <p class="text-sm text-content-600">{{ 'coachWorkspace.client.noAssignablePrograms' | translate }}</p>
+      } @else {
+        <fieldset class="flex max-h-80 flex-col gap-2 overflow-y-auto">
+          <legend class="mb-2 text-sm font-semibold text-content-800">{{ 'coachWorkspace.client.chooseProgram' | translate }}</legend>
+          @for (program of assignablePrograms; track program.programId) {
+            <label class="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border p-3"
+                   [class.border-primary-600]="assignProgramId === program.programId"
+                   [class.border-surface-200]="assignProgramId !== program.programId">
+              <input appRadio="plain" type="radio" name="assignProgram" [value]="program.programId" [(ngModel)]="assignProgramId" />
+              <span class="flex min-w-0 flex-1 flex-col">
+                <span class="font-semibold text-content-900">{{ program.programName }}</span>
+                <span class="text-xs text-content-600">
+                  {{ program.startDate | date: 'yyyy.MM.dd' }} – {{ program.endDate | date: 'yyyy.MM.dd' }} ·
+                  {{ 'coachWorkspace.workoutCount' | translate: { count: program.workouts.length } }}
+                </span>
+              </span>
+            </label>
+          }
+        </fieldset>
+        <p class="rounded-xl bg-surface-50 px-4 py-3 text-sm text-content-700">{{ 'coachWorkspace.client.assignHint' | translate }}</p>
+      }
+      <div class="flex justify-end gap-3">
+        <button type="button" (click)="closeAssign()" [disabled]="assigning"
+                class="min-h-11 rounded-xl border border-surface-300 bg-white px-4 text-sm font-semibold text-content-700 hover:bg-surface-50">
+          {{ 'coachWorkspace.cancel' | translate }}
+        </button>
+        <button type="button" (click)="confirmAssign()" [disabled]="assigning || assignProgramId === null"
+                class="min-h-11 rounded-xl bg-primary-700 px-4 text-sm font-semibold text-white hover:bg-primary-800 disabled:opacity-50">
+          {{ (assigning ? 'coachWorkspace.saving' : 'coachWorkspace.client.assign') | translate }}
+        </button>
+      </div>
+    </div>
+  </app-dialog>
+}

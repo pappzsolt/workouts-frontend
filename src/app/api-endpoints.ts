@@ -36,6 +36,8 @@ export const API_ENDPOINTS = {
   allPrograms: `${environment.apiUrl}/programs`,
   assignedPrograms: `${environment.apiUrl}/programs/my/assigned`,
   coachPrograms: `${environment.apiUrl}/programs/my/coach`,
+  coachProgramsWithWorkouts: `${environment.apiUrl}/programs/coach`,
+  coachOverview: `${environment.apiUrl}/coach/overview`,
   createProgram: `${environment.apiUrl}/user-programs`,
   assignProgram: `${environment.apiUrl}/programs/assign`,
 
@@ -154,6 +156,7 @@ export const API_ENDPOINTS = {
   workoutExerciseAssign: `${environment.apiUrl}/workout-exercises`,
   workoutExerciseDelete: `${environment.apiUrl}/workout-exercises`,
   workoutExerciseOrderIndex: `${environment.apiUrl}/workout-exercises/order`,
+  workoutExercisePrescription: `${environment.apiUrl}/workout-exercises/prescription`,
 
   // ============================================================
   // USER WORKOUT EXERCISE ENDPOINTS

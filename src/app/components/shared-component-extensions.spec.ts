@@ -1,13 +1,7 @@
 import { ANIMATION_MODULE_TYPE, Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import {
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { provideTranslateService, TranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { AppSelectComponent } from './shared/components/app-select/app-select.component';
@@ -22,7 +16,6 @@ import { CoachSelectComponent } from './shared/coach/coach-select.component';
 import { RoleService } from '../services/roles/role.service';
 import { CoachNameIdService } from '../services/coach/coach-name-id.service';
 import { LoggerService } from '../services/logger.service';
-import { ProgramDetailsFormComponent } from './coach-dashboard/operations/coach-program-builder/program-details-form.component';
 
 @Component({
   standalone: true,
@@ -91,7 +84,6 @@ describe('Shared component extensions preserve consumer contracts', () => {
         FieldHost,
         CardHost,
         RolesHost,
-        ProgramDetailsFormComponent,
         ConfirmDialogComponent,
         AppButtonComponent,
         PaginationComponent,
@@ -374,105 +366,5 @@ describe('Shared component extensions preserve consumer contracts', () => {
     expect(selected).not.toHaveBeenCalled();
     component.selectSearchOption(7);
     expect(selected).toHaveBeenCalledOnceWith(7);
-  });
-
-  for (const mode of ['create', 'edit'] as const) {
-    it(`preserves ${mode} program model updates, numeric input, native validation and submit`, async () => {
-      const fixture = TestBed.createComponent(ProgramDetailsFormComponent);
-      const program = {
-        programName: '',
-        startDate: '',
-        durationDays: undefined as number | undefined,
-        difficultyLevel: '',
-      };
-      fixture.componentRef.setInput('mode', mode);
-      fixture.componentRef.setInput('program', program);
-      fixture.componentRef.setInput('endDate', '2026-10-20');
-      fixture.detectChanges();
-      await fixture.whenStable();
-      const form: HTMLFormElement = fixture.nativeElement.querySelector('form');
-      const save = jasmine.createSpy();
-      fixture.componentInstance.save.subscribe(save);
-      expect(form.checkValidity()).toBeFalse();
-      // Invalid required fields must be rejected before the parent's save event.
-      form.requestSubmit();
-      expect(save).toHaveBeenCalledTimes(0);
-      expect(fixture.nativeElement.querySelector('app-message').textContent).toContain('inputValidation.required');
-      save.calls.reset();
-      const change = (id: string, value: string) => {
-        const input: HTMLInputElement = form.querySelector('#' + id)!;
-        input.value = value;
-        input.dispatchEvent(new Event('input'));
-      };
-      change('programName', 'Test');
-      change('startDate', '2026-10-07');
-      change('durationDays', '14');
-      const select: HTMLSelectElement = form.querySelector('select')!;
-      select.selectedIndex = 2;
-      select.dispatchEvent(new Event('change'));
-      fixture.detectChanges();
-      await fixture.whenStable();
-      expect(program.programName).toBe('Test');
-      expect(program.startDate).toBe('2026-10-07');
-      expect(program.durationDays).toBe(14);
-      expect(program.difficultyLevel).toBe('INTERMEDIATE');
-      expect((form.querySelector('#endDate') as HTMLInputElement).readOnly).toBeTrue();
-      expect((form.querySelector('#endDate') as HTMLInputElement).value).toBe('2026-10-20');
-      form.requestSubmit();
-      expect(save).toHaveBeenCalledTimes(1);
-      change('durationDays', '');
-      fixture.detectChanges();
-      await fixture.whenStable();
-      expect(program.durationDays as unknown).toBeNull();
-      form.requestSubmit();
-      expect(save).toHaveBeenCalledTimes(2);
-    });
-  }
-
-  it('keeps the builder save gate and the supplied reactive form validators distinct', async () => {
-    const fixture = TestBed.createComponent(ProgramDetailsFormComponent);
-    fixture.detectChanges();
-    await fixture.whenStable();
-    const save = jasmine.createSpy();
-    fixture.componentInstance.save.subscribe(save);
-    let button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
-    button.click();
-    expect(save).not.toHaveBeenCalled();
-    Object.assign(fixture.componentInstance.form, {
-      programName: 'Program',
-      startDate: '2026-10-07',
-      durationDays: 10,
-      difficultyLevel: 'BEGINNER',
-    });
-    fixture.detectChanges();
-    await fixture.whenStable();
-    button.click();
-    expect(save).toHaveBeenCalledTimes(1);
-    fixture.componentRef.setInput('creatingProgram', true);
-    fixture.detectChanges();
-    button.click();
-    expect(save).toHaveBeenCalledTimes(1);
-    const form = new FormGroup({
-      programName: new FormControl('', Validators.required),
-      programDescription: new FormControl(''),
-      startDate: new FormControl('', Validators.required),
-      durationDays: new FormControl<number | null>(null),
-      difficultyLevel: new FormControl(''),
-    });
-    fixture.componentRef.setInput('mode', 'reactive');
-    fixture.componentRef.setInput('reactiveForm', form);
-    fixture.detectChanges();
-    expect(form.invalid).toBeTrue();
-    const input: HTMLInputElement = fixture.nativeElement.querySelector('#programName');
-    input.value = 'Reactive';
-    input.dispatchEvent(new Event('input'));
-    input.dispatchEvent(new Event('blur'));
-    expect(form.controls.programName.value).toBe('Reactive');
-    expect(form.controls.programName.dirty).toBeTrue();
-    expect(form.controls.programName.touched).toBeTrue();
-    button = fixture.nativeElement.querySelector('button');
-    button.click();
-    expect(save).toHaveBeenCalledTimes(2);
-    expect(form.controls.startDate.hasError('required')).toBeTrue();
   });
 });

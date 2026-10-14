@@ -1,20 +1,11 @@
-import { CoachProgramBoardComponent } from './shared/coach/coach-program-board/coach-program-board.component';
-import { CoachProgramSelectService } from '../services/coach/coach-program-select/coach-program-select.service';
-import { AssignWorkoutsExercisesComponent } from './coach-dashboard/operations/assign-workouts-exercises/assign-workouts-exercises.component';
-import { WorkoutExerciseService } from '../services/coach/workout-exercises.service';
-import { CoachWorkoutsService } from '../services/coach/coach-workouts/coach-workouts.service';
 import { ANIMATION_MODULE_TYPE, Component, ViewChild } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
-import { BehaviorSubject, of, Subject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { SHARED_IMPORTS } from './shared/shared-imports';
-import { WorkoutCopyDialogComponent } from './coach-dashboard/operations/coach-program-builder/workout-copy-dialog.component';
-import { ProgramExerciseDialogComponent } from './coach-dashboard/operations/coach-program-builder/program-exercise-dialog.component';
 import { WorkoutsComponent } from './user-dashboard/operations/user-workouts/workouts.component';
-import { CoachExercisesBoardComponent } from './shared/coach/coach-exercises-board/coach-exercises-board.component';
-import { CoachProgramBuilderWorkoutService } from '../services/coach/coach-program-builder-workout.service';
 import { UserWorkoutsService } from '../services/user/user-workouts/user-workouts.service';
 import { ExerciseService } from '../services/coach/coach-exercises/coach-exercises.service';
 import { LanguageService } from '../services/shared/language.service';
@@ -221,7 +212,6 @@ describe('New shared presentation components preserve native contracts', () => {
         DialogHost,
         TabsHost,
         PresentationHost,
-        WorkoutCopyDialogComponent,
       ],
       providers,
     }),
@@ -436,41 +426,6 @@ describe('New shared presentation components preserve native contracts', () => {
     table.querySelector('button')!.click();
     expect(fixture.componentInstance.clicks).toBe(1);
   });
-
-  it('keeps copy-dialog field outputs and its existing confirmation and cancellation gates', async () => {
-    const fixture = TestBed.createComponent(WorkoutCopyDialogComponent);
-    fixture.detectChanges();
-    await fixture.whenStable();
-    const day = jasmine.createSpy();
-    const confirmed = jasmine.createSpy();
-    const cancelled = jasmine.createSpy();
-    fixture.componentInstance.dayIndexChange.subscribe(day);
-    fixture.componentInstance.confirm.subscribe(confirmed);
-    fixture.componentInstance.cancel.subscribe(cancelled);
-    input(fixture.nativeElement.querySelector('#copyWorkoutDayIndex'), '3');
-    fixture.detectChanges();
-    await fixture.whenStable();
-    expect(day).toHaveBeenCalledOnceWith(3);
-    const buttons: HTMLButtonElement[] = [...fixture.nativeElement.querySelectorAll('button')];
-    buttons.at(-1)!.click();
-    expect(confirmed).not.toHaveBeenCalled();
-    fixture.componentRef.setInput('workoutName', 'Copy');
-    fixture.componentRef.setInput('workoutDate', '2026-10-07');
-    fixture.componentRef.setInput('dayIndex', 3);
-    fixture.detectChanges();
-    await fixture.whenStable();
-    buttons.at(-1)!.click();
-    expect(confirmed).toHaveBeenCalledTimes(1);
-    fixture.componentRef.setInput('inProgress', true);
-    fixture.detectChanges();
-    await fixture.whenStable();
-    buttons.forEach((button) => button.click());
-    expect(cancelled).not.toHaveBeenCalled();
-    expect(confirmed).toHaveBeenCalledTimes(1);
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-    fixture.nativeElement.querySelector('[role=dialog]').click();
-    expect(cancelled).not.toHaveBeenCalled();
-  });
 });
 
 describe('Migrated business screens use the same parent actions', () => {
@@ -478,11 +433,7 @@ describe('Migrated business screens use the same parent actions', () => {
   beforeEach(() =>
     TestBed.configureTestingModule({
       imports: [
-        ProgramExerciseDialogComponent,
-        CoachExercisesBoardComponent,
         WorkoutsComponent,
-        CoachProgramBoardComponent,
-        AssignWorkoutsExercisesComponent,
       ],
       providers: [
         ...providers,
@@ -494,114 +445,6 @@ describe('Migrated business screens use the same parent actions', () => {
       ],
     }),
   );
-
-  it('retains checkbox identity and locked selection in the real exercise board', async () => {
-    const fixture = TestBed.createComponent(CoachExercisesBoardComponent);
-    fixture.componentRef.setInput('externalExercises', [exercise]);
-    fixture.componentRef.setInput('compactSelection', true);
-    fixture.detectChanges();
-    await fixture.whenStable();
-    const selected = jasmine.createSpy();
-    fixture.componentInstance.exercisesChange.subscribe(selected);
-    const checkbox: HTMLInputElement = fixture.nativeElement.querySelector('input[type=checkbox]');
-    checkbox.click();
-    fixture.detectChanges();
-    await fixture.whenStable();
-    expect(selected).toHaveBeenCalledOnceWith([exercise]);
-    fixture.componentRef.setInput('lockSelectedExercises', true);
-    fixture.detectChanges();
-    checkbox.click();
-    expect(selected).toHaveBeenCalledTimes(1);
-    expect(checkbox.disabled).toBeTrue();
-  });
-
-  it('keeps numeric radio selection and label activation in the real program board', async () => {
-    TestBed.overrideProvider(CoachProgramSelectService, { useValue: {} });
-    const fixture = TestBed.createComponent(CoachProgramBoardComponent);
-    fixture.componentRef.setInput('programs', [{ programId: 19, programName: 'Program' }]);
-    fixture.detectChanges();
-    await fixture.whenStable();
-    const selected = jasmine.createSpy();
-    fixture.componentInstance.programSelected.subscribe(selected);
-    fixture.nativeElement.querySelector('label[for=program-19]').click();
-    fixture.detectChanges();
-    await fixture.whenStable();
-    expect(selected).toHaveBeenCalledOnceWith(19);
-    expect(fixture.componentInstance.selectedProgramId).toBe(19);
-    expect(fixture.nativeElement.querySelector('input[type=radio]').checked).toBeTrue();
-  });
-
-  it('keeps assignment modal selections on close and does not save on Escape or backdrop clicks', async () => {
-    const save = jasmine.createSpy();
-    TestBed.overrideProvider(WorkoutExerciseService, {
-      useValue: { assignExerciseToWorkout: save },
-    });
-    TestBed.overrideProvider(CoachWorkoutsService, { useValue: {} });
-    TestBed.overrideProvider(ActivatedRoute, {
-      useValue: {
-        snapshot: { paramMap: convertToParamMap({}), queryParamMap: convertToParamMap({}) },
-      },
-    });
-    const fixture = TestBed.createComponent(AssignWorkoutsExercisesComponent);
-    fixture.componentInstance.selectedWorkout = { id: 12, name: 'Workout', exercises: [] };
-    fixture.componentInstance.selectedWorkoutIds = [12];
-    fixture.componentInstance.selectedExercises = [exercise];
-    fixture.componentInstance.exerciseSelectorOpen = true;
-    fixture.detectChanges();
-    await fixture.whenStable();
-    const dialog: HTMLElement = fixture.nativeElement.querySelector('[role=dialog]');
-    expect(dialog.getAttribute('aria-labelledby')).toBe('exercise-selector-title');
-    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-    dialog.click();
-    expect(fixture.componentInstance.exerciseSelectorOpen).toBeTrue();
-    expect(save).not.toHaveBeenCalled();
-    const close = spyOn(fixture.componentInstance, 'closeExerciseSelector').and.callThrough();
-    const buttons: HTMLButtonElement[] = [...dialog.querySelectorAll('button')];
-    buttons.at(-1)!.click();
-    fixture.detectChanges();
-    expect(close).toHaveBeenCalledTimes(1);
-    expect(fixture.nativeElement.querySelector('[role=dialog]')).toBeNull();
-    expect(fixture.componentInstance.selectedExercises).toEqual([exercise]);
-    expect(fixture.componentInstance.selectedWorkoutIds).toEqual([12]);
-    expect(save).not.toHaveBeenCalled();
-  });
-
-  it('submits the same exercise IDs exactly once through the migrated modal save button', async () => {
-    const pending = new Subject<any>();
-    const workout = { id: 12, name: 'Workout', exercises: [] };
-    const service = {
-      getWorkoutExercises: jasmine.createSpy().and.returnValue(of(workout)),
-      loadExercises: jasmine.createSpy().and.returnValue(of({ success: true, data: [exercise] })),
-      saveExercises: jasmine.createSpy().and.returnValue(pending),
-    };
-    TestBed.overrideProvider(CoachProgramBuilderWorkoutService, { useValue: service });
-    const fixture = TestBed.createComponent(ProgramExerciseDialogComponent);
-    fixture.componentRef.setInput('workoutId', 12);
-    fixture.componentRef.setInput('exerciseDialogIsNewWorkout', true);
-    fixture.detectChanges();
-    await fixture.whenStable();
-    expect(service.getWorkoutExercises).toHaveBeenCalledOnceWith(12);
-    expect(service.loadExercises).toHaveBeenCalledTimes(1);
-    const checkbox: HTMLInputElement = fixture.nativeElement.querySelector('input[type=checkbox]');
-    checkbox.click();
-    fixture.detectChanges();
-    const buttons: HTMLButtonElement[] = [
-      ...fixture.nativeElement.querySelectorAll('[role=dialog] > div > [dialogActions] button'),
-    ];
-    const saved = jasmine.createSpy();
-    const closed = jasmine.createSpy();
-    fixture.componentInstance.workoutSaved.subscribe(saved);
-    fixture.componentInstance.close.subscribe(closed);
-    buttons.at(-1)!.click();
-    fixture.detectChanges();
-    buttons.at(-1)!.click();
-    expect(service.saveExercises).toHaveBeenCalledOnceWith(12, [exercise]);
-    expect(fixture.componentInstance.loadingExercises).toBeTrue();
-    pending.next({ results: [{ success: true }], workout });
-    fixture.detectChanges();
-    expect(saved).toHaveBeenCalledOnceWith(workout);
-    expect(closed).toHaveBeenCalledTimes(1);
-  });
 
   it('switches real workout tabs without new API requests or pagination resets and preserves occurrence navigation', async () => {
     const pending = {

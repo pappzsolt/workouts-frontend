@@ -1,13 +1,10 @@
 import { DestroyRef, EnvironmentInjector, createEnvironmentInjector, runInInjectionContext } from '@angular/core';
-import { convertToParamMap, ActivatedRoute, Router } from '@angular/router';
-import { Location } from '@angular/common';
+import { convertToParamMap } from '@angular/router';
 import { BehaviorSubject, Subject, of, throwError } from 'rxjs';
 import { LoggerService } from '../services/logger.service';
-import { UserWorkoutExerciseManagerComponent } from './coach-dashboard/operations/user-workout-exercise-manager/user-workout-exercise-manager';
 import { UserExercisesComponent } from './user-dashboard/operations/user-exercises/user-exercises.component';
 import { UserExerciseDetailComponent } from './user-dashboard/operations/user-exercises/user-exercises-detail/user-exercises-detail.component';
 import { UserEditComponent } from './admin-dashboard/operations/user-edit/user-edit.component';
-import { CoachDashboardComponent } from './coach-dashboard/dashboard/coach-dashboard.component';
 
 const ok = (data: any = null) => ({ success: true, data, message: null });
 const params = (values: Record<string, string>) => convertToParamMap(values);
@@ -31,74 +28,6 @@ describe('Business flow regressions', () => {
     injector.destroy();
   });
   const make = <T>(factory: () => T): T => runInInjectionContext(injector, factory);
-
-  it('ignores delayed sets from a previously selected exercise', () => {
-    const old = new Subject<any>();
-    const current = new Subject<any>();
-    const api = { getSetsByUserWorkoutExerciseId: (id: number) => id === 10 ? old : current };
-    const component = new UserWorkoutExerciseManagerComponent({} as any, api as any, {} as any);
-    component.loadSets(10);
-    component.loadSets(20);
-    current.next(ok([{ id: 200 }]));
-    old.next(ok([{ id: 100 }]));
-    expect(component.selectedUserWorkoutExerciseId).toBe(20);
-    expect(component.selectedSets.map(set => set.id)).toEqual([200]);
-    component.ngOnDestroy();
-  });
-
-  it('ignores an older user program response and clears editing when user changes', () => {
-    const old = new Subject<any>();
-    const current = new Subject<any>();
-    const api = { getUserProgramWithExercises: (user: number) => user === 1 ? old : current };
-    const component = new UserWorkoutExerciseManagerComponent(api as any,
-      { getSetsByUserWorkoutExerciseId: () => of(ok([])) } as any, {} as any);
-    const row = (user: number) => ({ scheduled_date: '2035-01-01', program_day_index: 1,
-      user_workout_id: user * 100, program_workout_id: user * 10, workout_id: 5,
-      user_workout_exercise_id: user * 1000, exercise_id: 6 });
-    component.selectedProgramId = 7;
-    component.onUserChanged(1);
-    component.loadUserProgramWithExercises();
-    component.onUserChanged(2);
-    component.loadUserProgramWithExercises();
-    current.next(ok([row(2)]));
-    old.next(ok([row(1)]));
-    expect(component.selectedWorkout?.userWorkoutId).toBe(200);
-    component.onUserChanged(3);
-    expect(component.workoutPages).toEqual([]);
-    expect(component.selectedUserWorkoutExerciseId).toBeUndefined();
-    component.ngOnDestroy();
-  });
-
-  it('cancels pending sets when switching to a workout with no exercises', () => {
-    const delayed = new Subject<any>();
-    const component = new UserWorkoutExerciseManagerComponent({} as any,
-      { getSetsByUserWorkoutExerciseId: () => delayed } as any, {} as any);
-    component.workoutPages = [{ day: {}, workout: { exercises: [] } }] as any;
-    component.loadSets(10);
-    component.selectWorkout(0);
-    delayed.next(ok([{ id: 100 }]));
-    expect(component.selectedSets).toEqual([]);
-    expect(component.selectedUserWorkoutExerciseId).toBeUndefined();
-    component.ngOnDestroy();
-  });
-
-  it('does not change the newly selected exercise after an older deletion finishes', () => {
-    const deletion = new Subject<any>();
-    const component = new UserWorkoutExerciseManagerComponent({} as any,
-      { deleteSet: () => deletion, getSetsByUserWorkoutExerciseId: () => of(ok([])) } as any, {} as any);
-    component.selectedUserWorkoutExerciseId = 10;
-    component.deleteSet({ id: 100, setNumber: 1 } as any);
-    component.confirmSetDeletion();
-    component.loadSets(20);
-    component.selectedSets = [{ id: 200 }, { id: 201 }] as any;
-    component.selectedSetIndex = 1;
-    deletion.next(ok()); deletion.complete();
-    expect(component.selectedUserWorkoutExerciseId).toBe(20);
-    expect(component.selectedSets.map(set => set.id)).toEqual([200, 201]);
-    expect(component.selectedSetIndex).toBe(1);
-    expect(component.deletingSet).toBeFalse();
-    component.ngOnDestroy();
-  });
 
   function exerciseRoute(detail = false) {
     return {
@@ -287,18 +216,4 @@ describe('Business flow regressions', () => {
     expect(update).not.toHaveBeenCalled();
   });
 
-  it('opens the assignments section when returning from the builder', () => {
-    const route = { queryParams: new BehaviorSubject({ section: 'assignments', programId: '7' }) };
-    const child = createEnvironmentInjector([
-      { provide: ActivatedRoute, useValue: route },
-      { provide: Router, useValue: {} },
-      { provide: Location, useValue: { getState: () => ({ programBuilderMessage: 'Assigned' }) } },
-    ], injector);
-    const component = runInInjectionContext(child, () => new CoachDashboardComponent());
-    component.ngOnInit();
-    expect(component.showAssignments).toBeTrue();
-    expect(component.showPrograms).toBeFalse();
-    expect(component.programBuilderMessage).toBe('Assigned');
-    child.destroy();
-  });
 });

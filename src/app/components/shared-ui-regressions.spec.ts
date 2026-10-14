@@ -1,8 +1,6 @@
-import { EnvironmentInjector, Injector, SimpleChange, createEnvironmentInjector, runInInjectionContext } from '@angular/core';
+import { EnvironmentInjector, Injector, createEnvironmentInjector, runInInjectionContext } from '@angular/core';
 import { BehaviorSubject, Subject, of } from 'rxjs';
 import { ExerciseControllerComponent } from './coach-dashboard/operations/coach-exercises/coach-exercises.component';
-import { CoachExercisesBoardComponent } from './shared/coach/coach-exercises-board/coach-exercises-board.component';
-import { CoachProgramBoardComponent } from './shared/coach/coach-program-board/coach-program-board.component';
 import { PaginationComponent } from './shared/components/pagination/pagination.component';
 import { ExerciseService } from '../services/coach/coach-exercises/coach-exercises.service';
 import { CoachProgramSelectService } from '../services/coach/coach-program-select/coach-program-select.service';
@@ -53,64 +51,6 @@ describe('Shared UI regressions', () => {
     page.loadExercises(); page.ngOnDestroy();
     pending.next({ success: true, data: { content: [exercise(1)] } });
     expect(page.exercises).toEqual([]);
-  });
-
-  it('preserves an external catalog and locked selection across language changes', () => {
-    const board = make(() => new CoachExercisesBoardComponent());
-    board.externalExercises = [exercise(1)];
-    board.externalSelectedExercises = [exercise(2)];
-    board.lockSelectedExercises = true;
-    board.ngOnChanges({ externalSelectedExercises: new SimpleChange([], board.externalSelectedExercises, true) });
-    const emitted = jasmine.createSpy(); board.exercisesChange.subscribe(emitted);
-    board.ngOnInit(); language.next('en'); board.toggleExerciseSelection(exercise(1), true);
-    expect(catalog).not.toHaveBeenCalled();
-    expect(board.exercises.map(value => value.id)).toEqual([1]);
-    expect(board.selectedExercises.map(value => value.id)).toEqual([2]);
-    expect(emitted).not.toHaveBeenCalled(); board.ngOnDestroy();
-  });
-
-  it('treats an explicitly empty external catalog as authoritative', () => {
-    const board = make(() => new CoachExercisesBoardComponent());
-    board.externalExercises = []; board.ngOnInit(); language.next('de');
-    expect(catalog).not.toHaveBeenCalled(); expect(board.exercises).toEqual([]);
-    expect(board.loading).toBeFalse(); board.ngOnDestroy();
-  });
-
-  it('cancels internal loading when an external catalog arrives and supports returning to internal loading', () => {
-    const pending = new Subject<any>(); catalog.and.returnValue(pending);
-    const board = make(() => new CoachExercisesBoardComponent()); board.ngOnInit();
-    board.externalExercises = [exercise(2)];
-    board.ngOnChanges({ externalExercises: new SimpleChange(null, board.externalExercises, false) });
-    pending.next({ success: true, data: [exercise(1)] });
-    expect(board.exercises.map(value => value.id)).toEqual([2]);
-    catalog.and.returnValue(of({ success: true, data: [exercise(3)] }));
-    board.externalExercises = null;
-    board.ngOnChanges({ externalExercises: new SimpleChange([], null, false) });
-    expect(board.exercises.map(value => value.id)).toEqual([3]); board.ngOnDestroy();
-  });
-
-  it('keeps normal selection emissions and prevents duplicates', () => {
-    const board = make(() => new CoachExercisesBoardComponent());
-    const selected = exercise(1); const events: any[] = [];
-    board.exercisesChange.subscribe(value => events.push(value));
-    board.toggleExerciseSelection(selected, true); board.toggleExerciseSelection(selected, true);
-    expect(board.selectedExercises).toEqual([selected]);
-    board.toggleExerciseSelection(selected, false);
-    expect(events[0]).toEqual([selected]); expect(events[2]).toEqual([]); board.ngOnDestroy();
-  });
-
-  it('shows backend program rejection without retaining stale programs', () => {
-    programs.and.returnValue(of({ success: false, message: 'Rejected', data: [{ programId: 1 }] }));
-    const board = make(() => new CoachProgramBoardComponent()); board.loadPrograms();
-    expect(board.programs).toEqual([]); expect(board.message).toBe('Rejected');
-    expect(board.loading).toBeFalse(); board.ngOnDestroy();
-  });
-
-  it('does not overwrite newer program data with a stale language request', () => {
-    const old = new Subject<any>(); const latest = new Subject<any>(); programs.and.returnValues(old, latest);
-    const board = make(() => new CoachProgramBoardComponent()); board.ngOnInit(); language.next('en');
-    latest.next({ success: true, data: [{ programId: 2 }] }); old.error(new Error('old'));
-    expect(board.programs.map(value => value.programId)).toEqual([2]); expect(board.message).toBe(''); board.ngOnDestroy();
   });
 
   it('emits valid one-based pages while honoring backend page count overrides', () => {

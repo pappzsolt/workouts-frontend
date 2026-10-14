@@ -1,0 +1,338 @@
+<div class="min-h-full min-w-0 px-4 py-6 sm:px-6 lg:px-8">
+  <div class="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-6">
+
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <a routerLink="/coach/programs"
+         class="inline-flex min-h-11 items-center gap-2 rounded-xl px-2 text-sm font-semibold text-primary-700 hover:bg-primary-50">
+        <app-icon name="chevron-left" sizeClass="h-4 w-4" />
+        {{ 'coachWorkspace.editor.back' | translate }}
+      </a>
+    </div>
+
+    <h1 class="text-2xl font-bold text-content-900 sm:text-3xl">
+      {{ (programId === null ? 'coachWorkspace.editor.newTitle' : 'coachWorkspace.editor.title') | translate }}
+    </h1>
+
+    <app-message [message]="message" [type]="messageType" role="status"></app-message>
+
+    <!-- Program adatai -->
+    <section class="rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
+      <h2 class="mb-4 text-lg font-bold text-content-900">{{ 'coachWorkspace.editor.details' | translate }}</h2>
+      <form class="grid grid-cols-1 gap-4 md:grid-cols-2" (ngSubmit)="saveDetails()">
+        <label class="flex flex-col gap-1 text-sm font-semibold text-content-800 md:col-span-2">
+          {{ 'coachWorkspace.editor.name' | translate }}
+          <input appInput="default" type="text" name="programName" required maxlength="255"
+                 [(ngModel)]="form.programName" class="font-normal" />
+        </label>
+        <label class="flex flex-col gap-1 text-sm font-semibold text-content-800 md:col-span-2">
+          {{ 'coachWorkspace.editor.description' | translate }}
+          <textarea appTextarea="default" name="programDescription" rows="2"
+                    [(ngModel)]="form.programDescription" class="font-normal"></textarea>
+        </label>
+        <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+          {{ 'coachWorkspace.editor.startDate' | translate }}
+          <input appInput="default" type="date" name="startDate" required [(ngModel)]="form.startDate" class="font-normal" />
+        </label>
+        <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+          {{ 'coachWorkspace.editor.durationDays' | translate }}
+          <input appInput="default" type="number" name="durationDays" min="1" max="365" required
+                 [(ngModel)]="form.durationDays" class="font-normal" />
+        </label>
+        <fieldset class="flex flex-col gap-2 md:col-span-2">
+          <legend class="mb-1 text-sm font-semibold text-content-800">{{ 'coachWorkspace.editor.difficulty' | translate }}</legend>
+          <div class="flex flex-wrap gap-4">
+            @for (option of difficultyOptions; track option.value) {
+              <label class="inline-flex min-h-11 items-center gap-2 text-sm text-content-800">
+                <input appRadio="plain" type="radio" name="difficultyLevel" [value]="option.value" [(ngModel)]="form.difficultyLevel" />
+                {{ option.label | translate }}
+              </label>
+            }
+          </div>
+        </fieldset>
+        <div class="flex flex-wrap items-center justify-end gap-3 md:col-span-2">
+          @if (programId !== null) {
+            <p class="mr-auto text-xs text-content-600">{{ 'coachWorkspace.editor.datesHint' | translate }}</p>
+          }
+          <button type="submit" [disabled]="savingDetails"
+                  class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary-700 px-4 text-sm font-semibold text-white hover:bg-primary-800 disabled:opacity-60">
+            <app-icon name="save" sizeClass="h-4 w-4" />
+            {{ (savingDetails ? 'coachWorkspace.saving' : (programId === null ? 'coachWorkspace.editor.create' : 'coachWorkspace.save')) | translate }}
+          </button>
+        </div>
+      </form>
+    </section>
+
+    @if (programId === null) {
+      <p class="rounded-2xl bg-info-50 p-4 text-sm text-info-800">{{ 'coachWorkspace.editor.createFirst' | translate }}</p>
+    } @else if (loading && !program) {
+      <app-loading message="coachWorkspace.loading"></app-loading>
+    } @else {
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
+
+        <!-- Napok rácsa -->
+        <section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm lg:col-span-3"
+                 [attr.aria-label]="'coachWorkspace.editor.days' | translate">
+          <h2 class="mb-4 text-lg font-bold text-content-900">{{ 'coachWorkspace.editor.days' | translate }}</h2>
+          <div class="grid grid-cols-7 gap-1 sm:gap-2">
+            @for (key of weekdayKeys; track key) {
+              <div class="pb-1 text-center text-xs font-semibold uppercase text-content-600">{{ key | translate }}</div>
+            }
+            @for (blank of leadingBlanks; track blank) {
+              <div></div>
+            }
+            @for (cell of cells; track cell.day) {
+              <button type="button" (click)="selectDay(cell.day)"
+                      [attr.aria-pressed]="cell.day === selectedDay"
+                      [attr.aria-label]="dayAriaLabel(cell)"
+                      class="flex min-h-16 min-w-0 flex-col items-start gap-1 rounded-xl border p-1 text-left text-xs sm:p-2"
+                      [class.border-primary-700]="cell.day === selectedDay"
+                      [class.ring-2]="cell.day === selectedDay"
+                      [class.ring-primary-200]="cell.day === selectedDay"
+                      [class.border-surface-200]="cell.day !== selectedDay"
+                      [class.bg-primary-50]="!!cell.workout"
+                      [class.bg-white]="!cell.workout">
+                <span class="font-semibold text-content-700">{{ cell.day }}.
+                  @if (cell.date) {
+                    <span class="hidden font-normal text-content-500 sm:inline">{{ cell.date | date: 'MM.dd' }}</span>
+                  }
+                </span>
+                @if (cell.workout) {
+                  <span class="line-clamp-2 w-full break-words font-semibold text-primary-800">{{ cell.workout.name }}</span>
+                }
+              </button>
+            }
+          </div>
+        </section>
+
+        <!-- Kiválasztott nap -->
+        <section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm lg:col-span-2"
+                 [attr.aria-label]="'coachWorkspace.editor.selectedDay' | translate">
+          @if (selectedCell; as cell) {
+            <p class="text-sm text-content-600">
+              {{ 'coachWorkspace.editor.dayLabel' | translate: { day: cell.day } }}
+              @if (cell.date) { · {{ cell.date | date: 'yyyy.MM.dd' }} }
+            </p>
+
+            @if (cell.workout; as workout) {
+              <h2 class="mb-1 text-xl font-bold text-content-900">{{ workout.name }}</h2>
+              <p class="mb-4 text-xs text-content-600">{{ 'coachWorkspace.editor.lockedHint' | translate }}</p>
+
+              @if (rows.length === 0) {
+                <p class="text-sm text-content-600">{{ 'coachWorkspace.client.noExercises' | translate }}</p>
+              } @else {
+                <div class="flex flex-col gap-3">
+                  @for (row of rows; track row.id; let i = $index) {
+                    <div class="rounded-xl border p-3"
+                         [class.border-warning-300]="isChanged(row)"
+                         [class.border-surface-200]="!isChanged(row)">
+                      <p class="mb-2 font-semibold text-content-900">{{ row.name }}</p>
+                      <div class="grid grid-cols-3 gap-2">
+                        <label class="flex flex-col gap-1 text-xs font-semibold text-content-700">
+                          {{ 'coachWorkspace.sets' | translate }}
+                          <input appInput="compact" type="number" min="1" max="20" [name]="'psets' + i" [(ngModel)]="row.sets" />
+                        </label>
+                        <label class="flex flex-col gap-1 text-xs font-semibold text-content-700">
+                          {{ 'coachWorkspace.reps' | translate }}
+                          <input appInput="compact" type="number" min="1" max="200" [name]="'preps' + i" [(ngModel)]="row.repetitions" />
+                        </label>
+                        <label class="flex flex-col gap-1 text-xs font-semibold text-content-700">
+                          {{ 'coachWorkspace.restSeconds' | translate }}
+                          <input appInput="compact" type="number" min="0" max="3600" [name]="'prest' + i" [(ngModel)]="row.restSeconds" />
+                        </label>
+                      </div>
+                    </div>
+                  }
+                </div>
+                <div class="mt-3 flex justify-end">
+                  <button type="button" (click)="savePrescriptions()" [disabled]="busy || changedCount === 0"
+                          class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary-700 px-4 text-sm font-semibold text-white hover:bg-primary-800 disabled:opacity-60">
+                    <app-icon name="save" sizeClass="h-4 w-4" />
+                    {{ 'coachWorkspace.editor.savePrescriptions' | translate: { count: changedCount } }}
+                  </button>
+                </div>
+              }
+
+              <div class="mt-6 flex flex-col gap-3 border-t border-surface-200 pt-4">
+                <div class="flex flex-wrap items-end gap-2">
+                  <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+                    {{ 'coachWorkspace.editor.moveToDay' | translate }}
+                    <input appInput="compact" type="number" min="1" [max]="cells.length" name="moveTarget" [(ngModel)]="moveTarget" class="w-24" />
+                  </label>
+                  <button type="button" (click)="moveWorkout()" [disabled]="busy || moveTarget === cell.day"
+                          class="min-h-11 rounded-xl border border-primary-700 px-4 text-sm font-semibold text-primary-700 hover:bg-primary-50 disabled:opacity-60">
+                    {{ 'coachWorkspace.client.move' | translate }}
+                  </button>
+                </div>
+                @if (confirmRemove) {
+                  <div class="flex flex-wrap items-center gap-3 rounded-xl bg-delete-50 p-3 text-sm text-delete-700">
+                    <span class="flex-1">{{ 'coachWorkspace.editor.removeConfirm' | translate }}</span>
+                    <button type="button" (click)="confirmRemove = false" class="min-h-11 rounded-xl border border-surface-300 bg-white px-3 font-semibold text-content-700">
+                      {{ 'coachWorkspace.cancel' | translate }}
+                    </button>
+                    <button type="button" (click)="removeWorkout()" [disabled]="busy" class="min-h-11 rounded-xl bg-delete-600 px-3 font-semibold text-white hover:bg-delete-700">
+                      {{ 'coachWorkspace.editor.remove' | translate }}
+                    </button>
+                  </div>
+                } @else {
+                  <button type="button" (click)="confirmRemove = true"
+                          class="inline-flex min-h-11 items-center gap-2 self-start rounded-xl px-3 text-sm font-semibold text-delete-700 hover:bg-delete-50">
+                    <app-icon name="trash-2" sizeClass="h-4 w-4" />
+                    {{ 'coachWorkspace.editor.remove' | translate }}
+                  </button>
+                }
+              </div>
+            } @else {
+              <h2 class="mb-3 text-xl font-bold text-content-900">{{ 'coachWorkspace.client.restDay' | translate }}</h2>
+              <p class="mb-4 text-sm text-content-600">{{ 'coachWorkspace.editor.emptyDayHint' | translate }}</p>
+
+              <div class="mb-4 flex gap-2" role="tablist">
+                <button type="button" role="tab" [attr.aria-selected]="emptyMode === 'new'" (click)="emptyMode = 'new'"
+                        class="min-h-11 flex-1 rounded-xl px-3 text-sm font-semibold"
+                        [class.bg-primary-700]="emptyMode === 'new'" [class.text-white]="emptyMode === 'new'"
+                        [class.bg-surface-100]="emptyMode !== 'new'" [class.text-content-700]="emptyMode !== 'new'">
+                  {{ 'coachWorkspace.editor.newWorkout' | translate }}
+                </button>
+                <button type="button" role="tab" [attr.aria-selected]="emptyMode === 'copy'" (click)="emptyMode = 'copy'"
+                        class="min-h-11 flex-1 rounded-xl px-3 text-sm font-semibold"
+                        [class.bg-primary-700]="emptyMode === 'copy'" [class.text-white]="emptyMode === 'copy'"
+                        [class.bg-surface-100]="emptyMode !== 'copy'" [class.text-content-700]="emptyMode !== 'copy'">
+                  {{ 'coachWorkspace.editor.copyWorkout' | translate }}
+                </button>
+              </div>
+
+              <label class="mb-3 flex flex-col gap-1 text-sm font-semibold text-content-800">
+                {{ 'coachWorkspace.editor.workoutName' | translate }}
+                <input appInput="default" type="text" name="workoutName" maxlength="255" [(ngModel)]="workoutName" class="font-normal" />
+              </label>
+
+              @if (emptyMode === 'new') {
+                <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+                  {{ 'coachWorkspace.editor.exerciseSearch' | translate }}
+                  <input appInput="default" type="search" name="exerciseSearch" [ngModel]="exerciseSearch"
+                         (ngModelChange)="onSearchChange($event)" class="font-normal"
+                         [placeholder]="'coachWorkspace.editor.exerciseSearchPlaceholder' | translate" />
+                </label>
+                @if (exerciseResults.length > 0) {
+                  <ul class="mt-2 flex flex-col divide-y divide-surface-100 rounded-xl border border-surface-200">
+                    @for (exercise of exerciseResults; track exercise.id) {
+                      <li class="flex items-center justify-between gap-2 px-3 py-2 text-sm">
+                        <span class="min-w-0">
+                          <span class="font-semibold text-content-900">{{ exercise.name }}</span>
+                          @if (exercise.muscleGroup) {
+                            <span class="text-content-600"> · {{ exercise.muscleGroup }}</span>
+                          }
+                        </span>
+                        <button type="button" (click)="addPending(exercise)" [disabled]="isPending(exercise.id)"
+                                [attr.aria-label]="('coachWorkspace.editor.addExercise' | translate) + ': ' + exercise.name"
+                                class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-primary-700 hover:bg-primary-50 disabled:opacity-40">
+                          <app-icon name="plus" sizeClass="h-4 w-4" />
+                        </button>
+                      </li>
+                    }
+                  </ul>
+                }
+                <h3 class="mb-2 mt-4 text-sm font-semibold text-content-800">
+                  {{ 'coachWorkspace.editor.chosenExercises' | translate: { count: pendingExercises.length } }}
+                </h3>
+                @if (pendingExercises.length === 0) {
+                  <p class="text-sm text-content-600">{{ 'coachWorkspace.editor.noChosenExercises' | translate }}</p>
+                } @else {
+                  <ol class="flex flex-col gap-1">
+                    @for (exercise of pendingExercises; track exercise.id; let i = $index) {
+                      <li class="flex items-center justify-between gap-2 rounded-xl bg-surface-50 px-3 text-sm">
+                        <span>{{ i + 1 }}. {{ exercise.name }}</span>
+                        <button type="button" (click)="removePending(exercise.id)"
+                                [attr.aria-label]="('coachWorkspace.delete' | translate) + ': ' + exercise.name"
+                                class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-delete-700 hover:bg-delete-50">
+                          <app-icon name="trash-2" sizeClass="h-4 w-4" />
+                        </button>
+                      </li>
+                    }
+                  </ol>
+                  <p class="mt-2 text-xs text-content-600">{{ 'coachWorkspace.editor.defaultPrescriptionHint' | translate }}</p>
+                }
+                <div class="mt-4 flex justify-end">
+                  <button type="button" (click)="createWorkoutForDay()" [disabled]="busy || !workoutName.trim() || pendingExercises.length === 0"
+                          class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary-700 px-4 text-sm font-semibold text-white hover:bg-primary-800 disabled:opacity-60">
+                    <app-icon name="plus" sizeClass="h-4 w-4" />
+                    {{ 'coachWorkspace.editor.addToDay' | translate }}
+                  </button>
+                </div>
+              } @else {
+                @if (myWorkouts.length === 0) {
+                  <p class="text-sm text-content-600">{{ 'coachWorkspace.editor.noWorkoutsToCopy' | translate }}</p>
+                } @else {
+                  <fieldset class="max-h-72 overflow-y-auto rounded-xl border border-surface-200 p-2">
+                    <legend class="sr-only">{{ 'coachWorkspace.editor.copySource' | translate }}</legend>
+                    @for (workout of myWorkouts; track workout.id) {
+                      <label class="flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm text-content-800 hover:bg-surface-50">
+                        <input appRadio="plain" type="radio" name="copySource" [value]="workout.id"
+                               [ngModel]="copySourceId" (ngModelChange)="onCopySourceChange($event)" />
+                        {{ workout.name }}
+                      </label>
+                    }
+                  </fieldset>
+                }
+                <div class="mt-4 flex justify-end">
+                  <button type="button" (click)="copyWorkoutToDay()" [disabled]="busy || copySourceId === null || !workoutName.trim()"
+                          class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary-700 px-4 text-sm font-semibold text-white hover:bg-primary-800 disabled:opacity-60">
+                    <app-icon name="plus" sizeClass="h-4 w-4" />
+                    {{ 'coachWorkspace.editor.copyToDay' | translate }}
+                  </button>
+                </div>
+              }
+            }
+          }
+        </section>
+      </div>
+
+      <!-- Ügyfelek -->
+      <section class="rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
+        <h2 class="mb-1 text-lg font-bold text-content-900">{{ 'coachWorkspace.editor.clients' | translate }}</h2>
+        <p class="mb-4 text-sm text-content-600">{{ 'coachWorkspace.client.assignHint' | translate }}</p>
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div>
+            <h3 class="mb-2 text-sm font-semibold text-content-800">{{ 'coachWorkspace.editor.assignedClients' | translate }}</h3>
+            @if (assignedClients.length === 0) {
+              <p class="text-sm text-content-600">{{ 'coachWorkspace.editor.noAssignedClients' | translate }}</p>
+            } @else {
+              <ul class="flex flex-col gap-1">
+                @for (client of assignedClients; track client.userId) {
+                  <li>
+                    <a [routerLink]="['/coach/clients', client.userId]"
+                       class="flex min-h-11 items-center rounded-lg px-2 text-sm font-semibold text-primary-700 hover:bg-primary-50">
+                      {{ client.username }}
+                    </a>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+          <div>
+            <h3 class="mb-2 text-sm font-semibold text-content-800">{{ 'coachWorkspace.editor.assignMore' | translate }}</h3>
+            @if (unassignedClients.length === 0) {
+              <p class="text-sm text-content-600">{{ 'coachWorkspace.editor.noMoreClients' | translate }}</p>
+            } @else {
+              <div class="flex flex-col gap-1">
+                @for (client of unassignedClients; track client.userId) {
+                  <label class="flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm text-content-800 hover:bg-surface-50">
+                    <input appCheckbox="plain" type="checkbox" [checked]="toAssign.has(client.userId)"
+                           (change)="toggleAssign(client.userId, $any($event.target).checked)" />
+                    {{ client.username }}
+                  </label>
+                }
+              </div>
+              <div class="mt-3 flex justify-end">
+                <button type="button" (click)="assignSelected()" [disabled]="busy || toAssign.size === 0"
+                        class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary-700 px-4 text-sm font-semibold text-white hover:bg-primary-800 disabled:opacity-60">
+                  <app-icon name="user-plus" sizeClass="h-4 w-4" />
+                  {{ 'coachWorkspace.editor.assignSelected' | translate: { count: toAssign.size } }}
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      </section>
+    }
+  </div>
+</div>

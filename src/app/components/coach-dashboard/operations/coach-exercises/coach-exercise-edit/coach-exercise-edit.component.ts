@@ -157,9 +157,8 @@ export class CoachExerciseEditComponent implements OnInit {
         } else {
           this.exerciseFound = false;
 
-          this.router.navigate(['/coach/dashboard'], {
+          this.router.navigate(['/coach/exercises'], {
             queryParams: {
-              section: 'exercises',
               exerciseNotFound: 'true',
             },
           });

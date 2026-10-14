@@ -1,0 +1,67 @@
+<div class="min-h-full min-w-0 px-4 py-6 sm:px-6 lg:px-8">
+  <div class="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-6">
+
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="min-w-0">
+        <h1 class="text-2xl font-bold text-content-900 sm:text-3xl">{{ 'coachWorkspace.clients.title' | translate }}</h1>
+        <p class="mt-1 text-sm text-content-600">{{ 'coachWorkspace.clients.subtitle' | translate }}</p>
+      </div>
+      <label class="flex w-full max-w-xs flex-col gap-1 text-sm font-semibold text-content-800">
+        {{ 'coachWorkspace.clients.search' | translate }}
+        <input appInput="default" type="search" [(ngModel)]="search" name="clientSearch"
+               [placeholder]="'coachWorkspace.clients.searchPlaceholder' | translate"
+               class="min-h-11 font-normal" />
+      </label>
+    </div>
+
+    <app-message [message]="errorMessage" type="error" role="alert"></app-message>
+
+    @if (loading) {
+      <app-loading message="coachWorkspace.loading"></app-loading>
+    } @else if (!errorMessage) {
+      <section class="overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm">
+        @for (row of filteredRows; track row.client.userId) {
+          <a [routerLink]="['/coach/clients', row.client.userId]"
+             class="flex flex-wrap items-center gap-4 border-b border-surface-100 px-5 py-4 last:border-b-0 hover:bg-surface-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-600">
+            <span aria-hidden="true" class="flex h-11 w-11 flex-none items-center justify-center rounded-full bg-primary-50 text-lg font-bold text-primary-700">
+              {{ initial(row.client.username) }}
+            </span>
+            <span class="flex min-w-0 flex-[2_1_220px] flex-col">
+              <span class="truncate font-semibold text-content-900">{{ row.client.username }}</span>
+              <span class="truncate text-sm text-content-600">
+                {{ row.programNames || ('coachWorkspace.clients.noProgram' | translate) }}
+              </span>
+            </span>
+            <span class="flex min-w-0 flex-[1_1_160px] flex-col gap-1">
+              <span class="text-xs text-content-600">
+                {{ 'coachWorkspace.clients.thisWeek' | translate: { done: row.weekDone, total: row.weekTotal } }}
+              </span>
+              <span class="h-2 overflow-hidden rounded-full bg-surface-200" role="progressbar"
+                    [attr.aria-valuenow]="row.weekPercent" aria-valuemin="0" aria-valuemax="100"
+                    [attr.aria-label]="'coachWorkspace.clients.thisWeekProgress' | translate">
+                <span class="block h-full rounded-full bg-primary-600" [style.width.%]="row.weekPercent"></span>
+              </span>
+            </span>
+            <span class="flex flex-none flex-col items-end gap-1 text-right">
+              @if (row.missed > 0) {
+                <span class="rounded-full bg-warning-100 px-3 py-1 text-xs font-semibold text-warning-800">
+                  {{ 'coachWorkspace.clients.missed' | translate: { count: row.missed } }}
+                </span>
+              } @else if (!row.programNames) {
+                <span class="rounded-full bg-warning-100 px-3 py-1 text-xs font-semibold text-warning-800">
+                  {{ 'coachWorkspace.clients.noProgram' | translate }}
+                </span>
+              }
+              <span class="text-xs text-content-600">
+                {{ 'coachWorkspace.clients.lastWorkout' | translate }}:
+                {{ row.lastCompleted ? (row.lastCompleted | date: 'yyyy.MM.dd') : '—' }}
+              </span>
+            </span>
+          </a>
+        } @empty {
+          <app-empty-state message="coachWorkspace.clients.empty"></app-empty-state>
+        }
+      </section>
+    }
+  </div>
+</div>

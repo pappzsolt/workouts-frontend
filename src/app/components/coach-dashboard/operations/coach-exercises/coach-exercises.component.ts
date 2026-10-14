@@ -49,6 +49,7 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   // ==========================================================
 
   message = '';
+  exerciseNotFound = false;
 
   messageType: 'success' | 'error' | 'info' | '' = '';
 
@@ -114,6 +115,7 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   // ==========================================================
 
   ngOnInit(): void {
+    this.exerciseNotFound = this.route.snapshot.queryParamMap.get('exerciseNotFound') === 'true';
     this.loadExercises();
 
     // ==========================================================
