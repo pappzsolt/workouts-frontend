@@ -66,6 +66,16 @@ function observeBrowserAuthorization(page: Page): void {
   });
 }
 
+/** Stable controls from the actual login template, independent of translations and required markers. */
+export function loginControls(page: Page) {
+  const form = page.locator('app-login form');
+  return {
+    usernameInput: form.locator('#login-username'),
+    passwordInput: form.locator('#login-password'),
+    submitButton: form.locator('button[type="submit"]'),
+  };
+}
+
 /** Validate the real web login, HttpOnly session, storage isolation and role redirect. */
 export async function authenticate(page: Page, role: E2ERole): Promise<void> {
   const { username, password } = credentialsFor(role);
@@ -75,9 +85,9 @@ export async function authenticate(page: Page, role: E2ERole): Promise<void> {
   await page.context().clearCookies({ name: 'workouts_refresh' });
   await page.goto('/login');
   await expect(page).toHaveURL(/\/login$/);
-  const usernameInput = page.getByLabel(/^\s*(felhasználónév|username|benutzername)\s*$/i);
-  const passwordInput = page.getByLabel(/^\s*(jelszó|password|passwort)\s*$/i);
-  const submitButton = page.getByRole('button', { name: /^(bejelentkezés|login|anmelden)$/i });
+  const { usernameInput, passwordInput, submitButton } = loginControls(page);
+  await expect(usernameInput, 'The login form username control must be rendered.').toBeVisible();
+  await expect(passwordInput, 'The login form password control must be rendered.').toBeVisible();
   await usernameInput.fill(username);
   await passwordInput.fill(password);
   const loginResponsePromise = page.waitForResponse(response =>

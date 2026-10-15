@@ -23,7 +23,7 @@ export async function cleanupProgramPickerFixture(api: APIRequestContext, f: Pro
   if (errors.length) throw new AggregateError(errors, 'Picker fixture cleanup');
 }
 export async function openProgramBuilder(page: Page, programId: number): Promise<void> {
-  await page.goto(`/coach/program-builder?programId=${programId}`);
+  await page.goto(`/coach/regi/program-builder?programId=${programId}`);
   await page.locator('app-coach-program-builder').getByRole('button', { name: /^(program módosítása|modify program|programm ändern)\s*→?$/i }).click();
   await expect(page.locator('app-coach-program-builder-workouts')).toBeVisible();
 }

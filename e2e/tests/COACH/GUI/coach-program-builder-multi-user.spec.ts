@@ -17,7 +17,7 @@ test('Builder: two GUI-selected users persist; reload retains both without repea
       const first = await coachUserId();
       const second = await anotherCoachClientUserId(first);
       const open = async () => {
-        await page.goto(`/coach/program-builder?programId=${programId}`);
+        await page.goto(`/coach/regi/program-builder?programId=${programId}`);
         await expect(page.locator('#programName')).toBeVisible();
         await page.locator('app-coach-program-builder').getByRole('button', { name: /program módosítása|modify program/i }).click();
         await expect(page.getByTestId('program-users')).toBeVisible();
@@ -75,7 +75,7 @@ test('Existing Builder: adding a second user preserves the first assignment and 
       await success(await api.post(API_ENDPOINTS.programs.assign, { data: { programId, userId: first } }), 'Prepare existing assignment');
       const original = (await db().query('SELECT id,user_id,status,assigned_at::text FROM user_programs WHERE program_id=$1 AND user_id=$2', [programId, first])).rows;
       expect(original).toHaveLength(1);
-      await page.goto(`/coach/program-builder?programId=${programId}`);
+      await page.goto(`/coach/regi/program-builder?programId=${programId}`);
       await page.locator('app-coach-program-builder').getByRole('button', { name: /program módosítása|modify program/i }).click();
       const users = page.getByTestId('program-users');
       const existing = users.locator(`[data-user-id="${first}"]`);

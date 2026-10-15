@@ -7,7 +7,7 @@ test.describe.configure({ timeout: 120_000 });
 test.afterAll(closeDb);
 
 async function openExisting(page: Page, programId: number): Promise<void> {
-  await page.goto(`/coach/program-builder?programId=${programId}`);
+  await page.goto(`/coach/regi/program-builder?programId=${programId}`);
   await expect(page.locator('#programName')).toBeVisible();
   await page.locator('app-coach-program-builder').locator('button').filter({ hasText: /program módosítása|modify program/i }).click();
   await expect(page.locator('app-coach-program-builder-workouts')).toBeVisible();
@@ -31,7 +31,7 @@ test('New program: real form → page-two checkbox → add → repeated occurren
   let programId:number|undefined;
   try {
     for(let i=0;i<10;i++) { const name=`${prefix} ${String(i).padStart(2,'0')}`; workouts.push({id:await createWorkout(api,name),name}); }
-    await page.goto('/coach/program-builder');
+    await page.goto('/coach/regi/program-builder');
     await page.locator('#programName').fill(`E2E GUI Program ${suffix()}`);
     await page.locator('#programDescription').fill('Real form and picker regression');
     await page.locator('#startDate').fill('2035-03-15');

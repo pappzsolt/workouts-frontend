@@ -15,7 +15,7 @@ test.describe('COACH GUI: program builder form', () => {
       page,
       process.env.E2E_COACH_USERNAME,
       process.env.E2E_COACH_PASSWORD,
-      '/coach/program-builder',
+      '/coach/regi/program-builder',
     );
 
     for (const id of ['programName', 'programDescription', 'startDate', 'endDate', 'durationDays']) {

@@ -137,7 +137,7 @@ async function createWorkoutThroughUi(
   expect(requestBody.intensityLevel).toBe(workout.intensityLevel);
 
   await expect(page).toHaveURL(
-    new RegExp(`/coach/assign-workouts-exercises\\?.*workoutId=${id}`),
+    new RegExp(`/coach/workouts/${id}/edit$`),
     { timeout: 15_000 },
   );
 
@@ -323,7 +323,7 @@ async function assignExerciseThroughUi(
   exerciseName: string,
 ): Promise<void> {
   await page.goto(
-    `/coach/assign-workouts-exercises?workoutId=${workoutId}`,
+    `/coach/regi/assign-workouts-exercises?workoutId=${workoutId}`,
   );
 
   await waitForAssignComponent(page);

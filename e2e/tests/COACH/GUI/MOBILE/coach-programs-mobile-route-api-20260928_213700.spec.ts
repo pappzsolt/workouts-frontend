@@ -13,7 +13,7 @@ test('COACH MOBILE GUI: fixture list matches real API and PostgreSQL; no empty-s
     const f=await createProgramListFixture(api,2);
     try {
       const initial=page.waitForResponse(r=>r.request().method()==='GET' && new URL(r.url()).pathname===API_ENDPOINTS.programs.coachSearch);
-      await navigateSpa(page,'/coach/programs');
+      await navigateSpa(page,'/coach/regi?section=programs');
       expect((await initial).status()).toBe(200);
       const pending=page.waitForResponse(r=>r.request().method()==='GET' && new URL(r.url()).pathname===API_ENDPOINTS.programs.coachSearch && new URL(r.url()).searchParams.get('search')===f.prefix);
       await page.locator('#programSearch').fill(f.prefix);

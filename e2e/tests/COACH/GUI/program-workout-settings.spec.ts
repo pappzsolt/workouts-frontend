@@ -30,7 +30,7 @@ test('COACH GUI: workout exercise and added set targets persist through API, DB,
     expect(original.length).toBeGreaterThan(0);
     const surface = page.locator('app-user-workout-exercise-manager');
     const openManager = async () => {
-      await page.goto('/coach/dashboard?section=workout-exercise-manager');
+      await page.goto('/coach/regi?section=workout-exercise-manager');
       await surface.locator('app-user-select').getByRole('combobox').selectOption({ label: row!.username });
       await surface.locator('app-coach-program-select').getByRole('combobox').selectOption({ label: row!.program_name });
       const loaded = page.waitForResponse(response => response.request().method() === 'GET' &&

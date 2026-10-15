@@ -5,7 +5,7 @@ test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true
 
 test('COACH MOBILE GUI: dashboard action cards form a usable one-column layout', async ({ page }) => {
   await setTestLanguage(page);
-  await loginAs(page, process.env.E2E_COACH_USERNAME, process.env.E2E_COACH_PASSWORD, '/coach/dashboard');
+  await loginAs(page, process.env.E2E_COACH_USERNAME, process.env.E2E_COACH_PASSWORD, '/coach/regi');
   const actions = page.locator('app-dashboard-action');
   await expect(actions).toHaveCount(6);
   const boxes = await actions.evaluateAll(els => els.map(e => { const r=e.getBoundingClientRect(); return {y:r.y,w:r.width}; }));

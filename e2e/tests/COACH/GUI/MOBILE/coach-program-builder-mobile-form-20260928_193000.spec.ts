@@ -7,7 +7,7 @@ test('COACH MOBILE GUI: program builder exposes the difficulty control and calcu
   await setTestLanguage(page);
   const violations = installReadOnlyGuard(page);
 
-  await loginAs(page, process.env.E2E_COACH_USERNAME, process.env.E2E_COACH_PASSWORD, '/coach/program-builder');
+  await loginAs(page, process.env.E2E_COACH_USERNAME, process.env.E2E_COACH_PASSWORD, '/coach/regi/program-builder');
 
   for (const id of ['programName', 'programDescription', 'startDate', 'endDate', 'durationDays']) {
     await expect(page.locator(`#${id}`)).toBeVisible();

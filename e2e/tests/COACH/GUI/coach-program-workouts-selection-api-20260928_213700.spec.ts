@@ -15,7 +15,7 @@ test('COACH GUI: program-workouts loads real program/workout data and selected p
     response.url().includes(API_ENDPOINTS.workouts.my),
   );
 
-  await navigateSpa(page, '/coach/dashboard?section=program-workouts');
+  await navigateSpa(page, '/coach/regi?section=program-workouts');
 
   const programsResponse = await programsPromise;
   const workoutsResponse = await workoutsPromise;

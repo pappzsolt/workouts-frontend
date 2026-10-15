@@ -6,7 +6,14 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["playwright.config.ts", "tests/**/*.ts"]
+  "include": [
+    "playwright.config.ts",
+    "tests/**/*.ts",
+    "playwright.contract.config.ts",
+    "ui-contract/**/*.ts"
+  ]
 }

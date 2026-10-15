@@ -8,7 +8,7 @@ test('COACH MOBILE GUI: program search sends the entered query and keeps the res
   await setTestLanguage(page);
   await loginAs(page, process.env.E2E_COACH_USERNAME, process.env.E2E_COACH_PASSWORD, '/coach/dashboard');
   const initial = page.waitForResponse(r => r.request().method() === 'GET' && r.url().includes(API_ENDPOINTS.programs.coachSearch));
-  await navigateSpa(page, '/coach/programs');
+  await navigateSpa(page, '/coach/regi?section=programs');
   expect((await initial).ok()).toBeTruthy();
   const search = page.locator('#programSearch');
   await expect(search).toBeVisible();

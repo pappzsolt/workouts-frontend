@@ -9,7 +9,7 @@ test('COACH GUI: program search triggers the coach-search API and renders its pa
   const responsePromise = page.waitForResponse((r) =>
     r.request().method() === 'GET' && r.url().includes(API_ENDPOINTS.programs.coachSearch),
   );
-  await navigateSpa(page, '/coach/programs');
+  await navigateSpa(page, '/coach/regi?section=programs');
   const response = await responsePromise;
   expect(response.ok()).toBeTruthy();
 
@@ -27,5 +27,5 @@ test('COACH GUI: program search triggers the coach-search API and renders its pa
 
   const searchResponse = await searchResponsePromise;
   expect(searchResponse.ok()).toBeTruthy();
-  await expect(page).toHaveURL(/\/coach\/programs$/);
+  await expect(page).toHaveURL(/\/coach\/regi\?section=programs$/);
 });

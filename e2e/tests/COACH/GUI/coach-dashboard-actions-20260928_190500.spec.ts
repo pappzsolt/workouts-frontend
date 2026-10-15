@@ -8,7 +8,7 @@ test.describe('COACH GUI: dashboard actions', () => {
       page,
       process.env.E2E_COACH_USERNAME,
       process.env.E2E_COACH_PASSWORD,
-      '/coach/dashboard',
+      '/coach/regi',
     );
 
     const actions = page.locator('app-dashboard-action');

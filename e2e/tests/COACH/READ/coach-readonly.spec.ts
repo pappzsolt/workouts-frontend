@@ -17,7 +17,7 @@ test.describe('Coach - read-only surfaces', () => {
       '/coach/dashboard',
     );
 
-    await expect(page.locator('h2').first()).toBeVisible();
+    await expect(page.locator('app-coach-home h1')).toBeVisible();
 
     await assertNoDataMutation(violations);
   });
@@ -47,7 +47,7 @@ test.describe('Coach - read-only surfaces', () => {
       '/coach/programs',
     );
 
-    await expect(page.locator('#programSearch')).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('input[name=programSearch]')).toBeVisible({ timeout: 15_000 });
 
     await assertNoDataMutation(violations);
   });

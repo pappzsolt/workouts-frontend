@@ -139,7 +139,7 @@ export async function openProgramBuilderStep2(
   page: Page,
   fixture: ProgramBuilderFixture,
 ): Promise<void> {
-  await page.goto(`/coach/program-builder?programId=${fixture.programId}`);
+  await page.goto(`/coach/regi/program-builder?programId=${fixture.programId}`);
 
   await expect(page.locator('app-coach-program-builder')).toBeVisible({
     timeout: 15_000,

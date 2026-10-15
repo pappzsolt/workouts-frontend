@@ -16,7 +16,7 @@ test('COACH GUI: historical program deletion shows the real 409 and preserves al
     await login(page, 'user'); owner = await apiFor(page);
     await success(await owner.put(API_ENDPOINTS.userWorkoutExerciseSets.byId(set!.id), { data: { completed: true, actualRepetitions: 8, actualWeightKg: 20 } }), 'Create fixture execution history');
     const before = await snapshotProgram(f.programId);
-    await login(page, 'coach'); await page.goto('/coach/programs');
+    await login(page, 'coach'); await page.goto('/coach/regi?section=programs');
     const name = await dbOne<{ name: string }>('SELECT name FROM program_translations WHERE program_id=$1 ORDER BY language_id LIMIT 1', [f.programId]);
     await page.locator('#programSearch').fill(name!.name);
     const card = page.locator(`[data-testid="coach-program"][data-program-id="${f.programId}"]`);

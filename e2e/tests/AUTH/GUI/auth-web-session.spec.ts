@@ -89,11 +89,11 @@ for (const role of ['coach', 'user', 'admin'] as const) {
       }
       if (role !== 'coach') await authenticateAndOpen(page, role);
       const target = role === 'coach'
-        ? `/coach/assign-workouts-exercises?workoutId=${fixture!.workoutId}`
+        ? `/coach/workouts/${fixture!.workoutId}/edit`
         : role === 'user'
           ? `/user/programs/${fixture!.programId}/workouts?programName=${encodeURIComponent(programName)}`
           : '/admin/users';
-      const surface = role === 'coach' ? 'app-assign-workouts-exercises'
+      const surface = role === 'coach' ? 'app-coach-workout-edit'
         : role === 'user' ? 'app-workouts' : 'app-admin-list-users';
       let refreshRequests = 0;
       page.on('request', req => {
@@ -107,7 +107,7 @@ for (const role of ['coach', 'user', 'admin'] as const) {
         await expect(page).toHaveURL(new URL(target, process.env.E2E_BASE_URL ?? 'http://localhost:4200').href);
         await expect(page.locator(surface)).toBeVisible();
         expect(refreshRequests).toBe(reload ? 2 : 1);
-        if (role === 'coach') await expect(page.locator(surface).getByRole('heading', { level: 2 })).toContainText('E2E Workout');
+        if (role === 'coach') await expect(page.locator(surface).locator('input[name=name]')).toHaveValue(/E2E Workout/);
         if (role === 'user') await expect(page.locator(surface)).toContainText(programName);
       }
     } finally {

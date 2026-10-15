@@ -19,3 +19,13 @@ test.describe('INTEGRITY GUI: role route protection', () => {
     await expect(page.locator('app-dashboard-action')).toHaveCount(3);
   });
 });
+
+for (const target of ['/coach/clients', '/coach/clients/1', '/coach/programs', '/coach/programs/new', '/coach/programs/1', '/coach/workouts', '/coach/exercises', '/coach/regi']) {
+  test(`USER cannot open new/legacy coach route ${target}`, async ({ page }) => {
+    await setTestLanguage(page);
+    await loginAs(page, process.env.E2E_USER_USERNAME, process.env.E2E_USER_PASSWORD, '/user/dashboard');
+    await page.goto(target);
+    await expect(page).toHaveURL(/\/user\/dashboard$/);
+    await expect(page.locator('app-coach-clients, app-coach-client-detail, app-coach-programs, app-coach-program-editor, app-coach-dashboard')).toHaveCount(0);
+  });
+}

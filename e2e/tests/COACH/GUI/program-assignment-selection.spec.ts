@@ -18,7 +18,7 @@ test('COACH GUI: switching programs discards pending selection and saves only to
       data: { programId: programs[i], workoutId: workouts[i], dayIndex: i + 1 },
     }), 'Baseline program assignment');
     const initialA = (await db().query('SELECT * FROM program_workouts WHERE program_id=$1 ORDER BY id', [programs[0]])).rows;
-    await page.goto('/coach/dashboard?section=program-workouts');
+    await page.goto('/coach/regi?section=program-workouts');
     const surface = page.locator('app-program-workouts-ass');
     await surface.locator('#programBoardSearch').fill(prefix);
     const board = surface.locator('app-coach-workout-board');

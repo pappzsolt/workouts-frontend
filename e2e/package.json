@@ -7,12 +7,16 @@
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
     "report": "playwright show-report",
-    "typecheck": "../node_modules/.bin/tsc -p tsconfig.json"
+    "typecheck": "tsc -p tsconfig.json",
+    "test:contract": "playwright test -c playwright.contract.config.ts",
+    "test:coach": "playwright test tests/COACH"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
+    "@types/node": "^22.20.5",
     "@types/pg": "^8.23.1",
     "dotenv": "^17.2.2",
-    "pg": "^8.23.0"
+    "pg": "^8.23.0",
+    "typescript": "~5.7.2"
   }
 }
