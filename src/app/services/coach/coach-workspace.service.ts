@@ -5,9 +5,13 @@ import { Observable, map } from 'rxjs';
 import { API_ENDPOINTS } from '../../api-endpoints';
 import type { ApiResponse } from '../../models/backend-dto/common/api-response';
 import type {
+  ClientProgramRow,
+  ClientSetValues,
   ClientWorkoutExerciseRow,
   ClientWorkoutSet,
+  CoachApplyTemplateResult,
   CoachClientWorkout,
+  CoachProgramUsage,
   CoachExerciseFilterOptions,
   CoachExercisePage,
   CoachExerciseQuery,
@@ -164,6 +168,35 @@ export class CoachWorkspaceService {
       .pipe(map(unwrap));
   }
 
+  /** Az ügyfél egy programjának összes edzése a gyakorlatokkal (soronként egy gyakorlat). */
+  getClientProgramRows(userId: number, programId: number): Observable<ClientProgramRow[]> {
+    const params = new HttpParams().set('language', this.language());
+    return this.http
+      .get<ApiResponse<ClientProgramRow[]>>(API_ENDPOINTS.userWorkoutExercisesByUserProgram(userId, programId), { params })
+      .pipe(map((response) => unwrap(response) ?? []));
+  }
+
+  /** Egy sorozat minden mezőjének mentése; az üres mezőket a clear jelzők törlik. */
+  saveClientSet(setId: number, values: ClientSetValues): Observable<void> {
+    const body = {
+      targetRepetitions: values.targetRepetitions,
+      targetWeightKg: values.targetWeightKg,
+      clearTargetWeightKg: values.targetWeightKg === null,
+      actualRepetitions: values.actualRepetitions,
+      clearActualRepetitions: values.actualRepetitions === null,
+      actualWeightKg: values.actualWeightKg,
+      clearActualWeightKg: values.actualWeightKg === null,
+      restSeconds: values.restSeconds,
+      clearRestSeconds: values.restSeconds === null,
+      notes: values.notes,
+      clearNotes: values.notes === null,
+      completed: values.completed,
+    };
+    return this.http
+      .put<ApiResponse<void>>(API_ENDPOINTS.userWorkoutExerciseSetById(setId), body)
+      .pipe(map(unwrap));
+  }
+
   // ----------------------------------------------------------
   // Programok
   // ----------------------------------------------------------
@@ -288,6 +321,51 @@ export class CoachWorkspaceService {
     const params = new HttpParams().set('workoutId', workoutId).set('exerciseId', exerciseId);
     return this.http
       .put<ApiResponse<void>>(API_ENDPOINTS.workoutExercisePrescription, values, { params })
+      .pipe(map(unwrap));
+  }
+
+  // ----------------------------------------------------------
+  // Programszerkesztő segédműveletek
+  // ----------------------------------------------------------
+
+  copyProgram(programId: number, name: string, startDate: string, userId: number | null): Observable<number> {
+    const params = new HttpParams().set('language', this.language());
+    return this.http
+      .post<ApiResponse<number>>(API_ENDPOINTS.coachProgramCopy(programId), { name, startDate, userId }, { params })
+      .pipe(map(unwrap));
+  }
+
+  copyWorkout(workoutId: number, name: string): Observable<number> {
+    const params = new HttpParams().set('language', this.language());
+    return this.http
+      .post<ApiResponse<number>>(API_ENDPOINTS.coachWorkoutCopy(workoutId), { name }, { params })
+      .pipe(map(unwrap));
+  }
+
+  applyTemplate(workoutId: number): Observable<CoachApplyTemplateResult> {
+    return this.http
+      .post<ApiResponse<CoachApplyTemplateResult>>(API_ENDPOINTS.coachWorkoutApplyTemplate(workoutId), {})
+      .pipe(map(unwrap));
+  }
+
+  programsUsingWorkout(workoutId: number): Observable<CoachProgramUsage[]> {
+    const params = new HttpParams().set('language', this.language());
+    return this.http
+      .get<ApiResponse<CoachProgramUsage[]>>(API_ENDPOINTS.coachWorkoutPrograms(workoutId), { params })
+      .pipe(map((response) => unwrap(response) ?? []));
+  }
+
+  assignmentCounts(): Observable<Record<number, number>> {
+    return this.http
+      .get<ApiResponse<Record<number, number>>>(API_ENDPOINTS.coachProgramAssignmentCounts)
+      .pipe(map((response) => unwrap(response) ?? {}));
+  }
+
+  /** Sablon szintű sorrend: a gyakorlat új helye (a többi a backendben tolódik). */
+  moveTemplateExercise(workoutId: number, exerciseId: number, orderIndex: number): Observable<void> {
+    const params = new HttpParams().set('workoutId', workoutId).set('exerciseId', exerciseId).set('orderIndex', orderIndex);
+    return this.http
+      .put<ApiResponse<void>>(API_ENDPOINTS.workoutExerciseOrderIndex, null, { params })
       .pipe(map(unwrap));
   }
 

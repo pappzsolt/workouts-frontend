@@ -1,0 +1,110 @@
+<div
+  class="min-h-full bg-transparent px-4 py-6 sm:px-6 lg:px-8"
+>
+  <!-- Üzenet -->
+  @if (message) {
+    <div class="mb-6">
+      <app-message
+        [message]="message"
+        [type]="messageStatus"
+      ></app-message>
+    </div>
+  }
+
+  <!-- Program lista -->
+  <div class="mb-8 min-w-0">
+    <h2 class="mb-4 text-xl font-bold tracking-tight text-content-800 sm:text-2xl">
+      {{ 'programWorkouts.programs' | translate }}
+    </h2>
+
+    <fieldset [disabled]="busy">
+    <app-coach-program-board
+      [programs]="programs"
+      (programSelected)="onProgramSelected($event)"
+    >
+    </app-coach-program-board>
+    </fieldset>
+  </div>
+
+  <!-- Workout lista -->
+  <div class="mb-8 min-w-0">
+    <h2 class="mb-4 text-xl font-bold tracking-tight text-content-800 sm:text-2xl">
+      {{ 'programWorkouts.availableWorkouts' | translate }}
+    </h2>
+
+    <fieldset [disabled]="busy || loadingAssignments || !assignmentsReady || !selectedProgramId">
+    <app-coach-workout-board
+      [externalWorkouts]="workouts"
+      [selectedWorkoutIds]="selectedWorkoutIds"
+      (workoutsChange)="onWorkoutsChange($event)"
+    >
+    </app-coach-workout-board>
+    </fieldset>
+  </div>
+
+  <!-- Kiválasztott workoutok -->
+  @if (selectedProgramId) {
+    <div
+      class="min-w-0 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm sm:p-6"
+    >
+      <h2
+        class="mb-4 text-xl font-bold tracking-tight text-content-800 sm:text-2xl"
+      >
+        {{ 'programWorkouts.selectedWorkouts' | translate }}
+      </h2>
+
+      <div class="space-y-3">
+        @for (row of programWorkoutAssignments; track row.id) {
+          <div
+            class="flex items-center justify-between rounded-xl border border-surface-200 bg-surface-50 px-4 py-3"
+          >
+            <span class="font-medium text-content-700">
+              {{ workoutName(row.workoutId) }} — {{ row.dayIndex }}
+            </span>
+
+            <app-button
+              type="button"
+              [disabled]="busy || loadingAssignments || !assignmentsReady"
+              (buttonClick)="removeWorkout(row.id)"
+              [title]="'common.remove' | translate"
+              variant="delete"
+              appearance="ghost"
+              [iconOnly]="true"
+            >
+              <app-icon name="x" sizeClass="h-5 w-5" />
+            </app-button>
+          </div>
+        }
+      </div>
+
+      @for (wid of pendingWorkoutIds; track wid) {
+        <div class="flex items-center justify-between py-3">
+          <span>{{ workoutName(wid) }}</span>
+          <app-button
+            type="button"
+            [disabled]="busy || loadingAssignments || !assignmentsReady"
+            (buttonClick)="removePendingWorkout(wid)"
+            variant="delete"
+            appearance="ghost"
+            [iconOnly]="true"
+            [ariaLabel]="'common.remove' | translate"
+          >
+            <app-icon name="x" sizeClass="h-5 w-5" />
+          </app-button>
+        </div>
+      }
+      <!-- Mentés -->
+      <div class="mt-6 flex justify-end">
+        <app-button
+          type="button"
+          [disabled]="busy || loadingAssignments || !assignmentsReady"
+          (buttonClick)="saveSelectedWorkouts()"
+          variant="save"
+          appearance="solid"
+        >
+          {{ 'programWorkouts.save' | translate }}
+        </app-button>
+      </div>
+    </div>
+  }
+</div>

@@ -20,7 +20,8 @@
     "settings": "Einstellungen",
     "security": "Sicherheit",
     "loginAuditLogs": "Anmeldeprotokoll",
-    "coachWorkouts": "Trainingsbibliothek"
+    "coachWorkouts": "Trainingsbibliothek",
+    "coachLegacy": "Alte Oberfläche"
   },
   "header": {
     "user": "Benutzer",
@@ -459,7 +460,10 @@
     "moveDown": "Nach unten",
     "removeExercise": "Übung entfernen",
     "removeExerciseError": "Übung konnte nicht entfernt werden.",
-    "reorderError": "Reihenfolge konnte nicht geändert werden."
+    "reorderError": "Reihenfolge konnte nicht geändert werden.",
+    "copyError": "Die Kopie konnte nicht erstellt werden.",
+    "copyForEditing": "Bearbeitbare Kopie erstellen",
+    "usedIn": "Verwendet in diesen Programmen:"
   },
   "newWorkout": {
     "loadError": "Trainings konnten nicht geladen werden.",
@@ -1039,12 +1043,16 @@
       "activePrograms": "Aktive Programme",
       "allPrograms": "Alle Programme",
       "clientCount": "{{count}} Kunden",
-      "noActivePrograms": "Keine aktiven Programme."
+      "noActivePrograms": "Keine aktiven Programme.",
+      "endedOn": "Beendet: {{date}}",
+      "noRecentlyFinished": "In den letzten 30 Tagen endete kein Programm.",
+      "recentlyFinished": "Kürzlich beendete Programme"
     },
     "attention": {
       "noProgram": "Kein Programm zugewiesen",
       "missed": "{{count}} verpasste Trainings",
-      "inactive": "Letztes Training: {{date}}"
+      "inactive": "Letztes Training: {{date}}",
+      "programEnded": "Programm beendet ({{date}}), kein neues"
     },
     "clients": {
       "title": "Kunden",
@@ -1101,7 +1109,49 @@
       "chooseProgram": "Programm wählen",
       "assignHint": "Die Trainingsdaten ergeben sich aus dem Startdatum des Programms und den Tagesnummern.",
       "assign": "Zuweisen",
-      "notFound": "Kunde nicht gefunden."
+      "notFound": "Kunde nicht gefunden.",
+      "fillDown": "Ersten Satz für alle übernehmen",
+      "addSet": "Satz hinzufügen",
+      "removeSet": "Satz löschen",
+      "actual": "erledigt",
+      "saveChanges": "Speichern ({{count}})",
+      "actualReps": "Ist-Wdh.",
+      "actualWeight": "Ist-Gewicht (kg)",
+      "addSetError": "Satz konnte nicht hinzugefügt werden.",
+      "assignedNamed": "Programm „{{program}}“ zugewiesen.",
+      "deleteSetConfirm": "Satz {{n}} löschen?",
+      "deleteSetError": "Satz konnte nicht gelöscht werden.",
+      "discard": "Verwerfen",
+      "discardAndGo": "Verwerfen und weiter",
+      "done": "Erledigt",
+      "feedback": "Rückmeldung",
+      "invalidSetValues": "Prüfe die roten Zeilen: Soll-Wiederholungen sind Pflicht (mindestens 1), Gewicht und Pause dürfen nicht negativ sein, Ist-Wiederholungen mindestens 1.",
+      "newProgramFor": "Neues Programm für den Kunden",
+      "nextWorkout": "Nächstes Training",
+      "noSets": "Keine Sätze.",
+      "noWorkoutsInProgram": "Dieses Programm hat für den Kunden noch keine Trainings.",
+      "notes": "Notiz",
+      "openPlan": "Trainingsplan",
+      "openProgram": "Programm öffnen",
+      "planCounts": "{{total}} Trainings · {{done}} erledigt · {{missed}} verpasst",
+      "previousWorkout": "Vorheriges Training",
+      "program": "Programm",
+      "restHint": "Ein leeres Pausenfeld verwendet den Wert der Trainingsvorlage (grau); 0 schaltet die Pause ab.",
+      "revokeConfirmCounts": "Das Zurückziehen löscht {{total}} Trainings des Kunden in diesem Programm, davon {{done}} erledigt, samt Sätzen. Zurückziehen?",
+      "saveAndGo": "Speichern und weiter",
+      "saveDate": "Datum speichern",
+      "scheduledDate": "Geplantes Datum",
+      "setDeleted": "Satz gelöscht.",
+      "setsShort": "{{done}}/{{total}} Sätze",
+      "stay": "Bleiben",
+      "tabPlan": "Plan und Sätze",
+      "tabPrograms": "Programme ({{count}})",
+      "targetReps": "Soll-Wdh.",
+      "targetWeight": "Soll-Gewicht (kg)",
+      "unsavedCount": "Ungespeichert: {{count}} Sätze",
+      "unsavedPrompt": "Änderungen an {{count}} Sätzen sind nicht gespeichert.",
+      "weekLabel": "Woche {{n}}",
+      "workoutList": "Trainings des Programms"
     },
     "programs": {
       "title": "Programme",
@@ -1113,7 +1163,19 @@
       "open": "Öffnen",
       "empty": "Du hast noch keine Programme.",
       "sortByName": "Sortierung: Name",
-      "sortByDate": "Sortierung: Datum"
+      "sortByDate": "Sortierung: Datum",
+      "sort": "Sortierung",
+      "sortDateAsc": "Start, älteste zuerst",
+      "sortDateDesc": "Start, neueste zuerst",
+      "sortNameAsc": "Name A–Z",
+      "sortNameDesc": "Name Z–A",
+      "statusFilter": "Statusfilter",
+      "filter": {
+        "all": "Alle",
+        "active": "Aktiv",
+        "upcoming": "Demnächst",
+        "finished": "Beendet"
+      }
     },
     "editor": {
       "title": "Programm bearbeiten",
@@ -1191,7 +1253,31 @@
       "copyHint": "Es wird eine eigene Kopie erstellt; das Original bleibt unverändert.",
       "workoutLinked": "Training dem Tag hinzugefügt.",
       "libraryHint": "Trainings kannst du auch unabhängig von Programmen hier anlegen und bearbeiten:",
-      "browseExercises": "Übungen durchsuchen"
+      "browseExercises": "Übungen durchsuchen",
+      "perClientHint": "Gewichte und einzelne Sätze werden pro Kunde eingestellt:",
+      "editClientSets": "Sätze und Gewichte von {{name}}",
+      "applyTemplate": "Auf noch nicht begonnene Kundentrainings anwenden",
+      "copyConfirm": "Kopieren",
+      "copyForClient": "Kunde (optional)",
+      "copyNoClient": "– keiner, nur das Programm –",
+      "copyProgram": "Programm kopieren",
+      "copyProgramHint": "Tage und Trainings erhalten eigene Kopien, Änderungen am neuen Programm betreffen das Original nicht.",
+      "copyProgramInvalid": "Gib einen Namen und ein Startdatum an.",
+      "copyToLibrary": "Bearbeitbare Kopie in der Bibliothek",
+      "createdForClient": "Programm erstellt und {{name}} zugewiesen.",
+      "multiAdd": "Mehrere Trainings aus der Bibliothek",
+      "multiAdded": "Trainings den Tagen hinzugefügt.",
+      "multiConfirm": "Hinzufügen ({{count}})",
+      "multiHint": "Die ausgewählten Trainings kommen ab Tag {{day}} auf die nächsten freien Tage, in der Reihenfolge der Auswahl.",
+      "multiTarget": "Tage: {{days}}",
+      "newForClientHint": "Dieses Programm ist für {{name}}: es wird nach dem Speichern sofort zugewiesen.",
+      "notEnoughFreeDays": "Nicht genug freie Tage bis zum Programmende.",
+      "openInLibrary": "In der Bibliothek öffnen",
+      "programCopied": "Programmkopie erstellt.",
+      "reordered": "Reihenfolge geändert (für alle Kunden).",
+      "saveBeforeApply": "Speichere zuerst die Änderungen.",
+      "saveBeforeReorder": "Speichere zuerst die Änderungen.",
+      "templateApplied": "Übernommen: {{userWorkouts}} Kundentrainings, {{setsUpdated}} Sätze aktualisiert, {{setsAdded}} hinzugefügt, {{setsRemoved}} entfernt."
     },
     "picker": {
       "search": "Suche (Name, Muskel, Synonym, Beschreibung)",

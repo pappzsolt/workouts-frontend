@@ -219,8 +219,22 @@
           >
             <span class="text-lg">🔒</span>
 
-            <span>
-              {{ 'coachWorkoutEdit.workoutAssigned' | translate }}
+            <span class="flex min-w-0 flex-1 flex-col gap-2">
+              <span>{{ 'coachWorkoutEdit.workoutAssigned' | translate }}</span>
+              @if (usedInPrograms.length > 0) {
+                <span class="font-normal">
+                  {{ 'coachWorkoutEdit.usedIn' | translate }}
+                  @for (program of usedInPrograms; track program.programId; let last = $last) {
+                    <a [routerLink]="['/coach/programs', program.programId]" class="font-semibold underline">{{ program.name }}</a>@if (!last) {, }
+                  }
+                </span>
+              }
+              <span>
+                <button type="button" (click)="copyForEditing()" [disabled]="copying"
+                        class="min-h-11 rounded-xl border border-warning-300 bg-white px-4 font-semibold text-warning-800 hover:bg-warning-100 disabled:opacity-50">
+                  {{ 'coachWorkoutEdit.copyForEditing' | translate }}
+                </button>
+              </span>
             </span>
           </div>
 

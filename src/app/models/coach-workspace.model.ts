@@ -172,17 +172,51 @@ export interface ClientWorkoutSet {
   restSeconds: number | null;
 }
 
-/** Egy gyakorlat ügyfélre szabott, szerkeszthető összesítése. */
-export interface ClientExercisePlan {
-  userWorkoutExerciseId: number;
-  name: string;
-  /** a sablon szerinti pihenő, ha a sorozatok nem írják felül */
-  templateRestSeconds: number;
-  sets: ClientWorkoutSet[];
+/** GET /user-workout-exercises/user-programs/{userId}/{programId} egy sora (snake_case). */
+export interface ClientProgramRow {
+  scheduled_date: string | null;
+  program_day_index: number | null;
+  user_workout_id: number;
+  program_workout_id: number | null;
+  workout_id: number;
+  workout_name: string | null;
+  workout_exercise_id: number;
+  exercise_id: number;
+  exercise_name: string | null;
+  exercise_order: number;
+  workout_completed: boolean | null;
+  user_workout_exercise_id: number;
+  exercise_completed: boolean | null;
+  sets_done: number | null;
+  sets_completed?: number | null;
+  workout_started_at?: string | null;
+  workout_feedback?: string | null;
+  exercise_feedback?: string | null;
+  template_sets?: number | null;
+  template_repetitions?: number | null;
+  template_rest_seconds?: number | null;
+}
+
+export interface ClientSetValues {
+  targetRepetitions: number;
+  targetWeightKg: number | null;
+  actualRepetitions: number | null;
+  actualWeightKg: number | null;
+  restSeconds: number | null;
+  notes: string | null;
   completed: boolean;
-  /** szerkesztett értékek */
-  setCount: number;
-  repetitions: number;
-  weightKg: number | null;
-  restSeconds: number;
+}
+
+export interface CoachApplyTemplateResult {
+  userWorkouts: number;
+  setsUpdated: number;
+  setsAdded: number;
+  setsRemoved: number;
+}
+
+export interface CoachProgramUsage {
+  programId: number;
+  name: string | null;
+  startDate: string | null;
+  endDate: string | null;
 }

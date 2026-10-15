@@ -10,6 +10,8 @@ import type { ApiResponse } from '../../../../../models/backend-dto/common/api-r
 import type { UserWorkoutDto } from '../../../../../models/backend-dto/workout/user-workout-dto';
 import type { WorkoutWithExercises as WorkoutUiDto } from '../../../../../models/exercise.model';
 import { WorkoutExerciseService } from '../../../../../services/coach/workout-exercises.service';
+import { CoachWorkspaceService } from '../../../../../services/coach/coach-workspace.service';
+import type { CoachProgramUsage } from '../../../../../models/coach-workspace.model';
 
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 
@@ -175,6 +177,7 @@ export class CoachWorkoutEditComponent implements OnInit {
 
     // Ellenőrizzük, hogy a workout programban van-e
     this.checkProgramAssignment();
+    this.loadUsage();
   }
 
   // ==========================================================
@@ -650,6 +653,45 @@ export class CoachWorkoutEditComponent implements OnInit {
   // ==========================================================
 
   structureBusy = false;
+
+  // ==========================================================
+  // PROGRAMOK, AMELYEK HASZNÁLJÁK; MÁSOLAT SZERKESZTÉSHEZ
+  // ==========================================================
+
+  private readonly workspace = inject(CoachWorkspaceService);
+  usedInPrograms: CoachProgramUsage[] = [];
+  copying = false;
+
+  private loadUsage(): void {
+    if (!this.workoutId) return;
+    this.workspace.programsUsingWorkout(this.workoutId).subscribe({
+      next: (programs) => (this.usedInPrograms = programs),
+      error: () => (this.usedInPrograms = []),
+    });
+  }
+
+  /** A programban lévő edzés zárolt; a másolat szabadon szerkeszthető, és napra tehető. */
+  copyForEditing(): void {
+    if (!this.workoutId || this.copying) return;
+    this.copying = true;
+    const name = `${this.workout?.name ?? ''} (2)`.trim();
+    this.workspace.copyWorkout(this.workoutId, name).subscribe({
+      next: (id) => {
+        this.copying = false;
+        void this.router.navigate(['/coach/workouts', id, 'edit']).then(() => {
+          this.workoutId = id;
+          this.loadWorkout();
+          this.loadWorkoutExercises();
+          this.checkProgramAssignment();
+          this.loadUsage();
+        });
+      },
+      error: (error: HttpErrorResponse) => {
+        this.copying = false;
+        this.setMessage(error?.error?.message || error?.message || 'coachWorkoutEdit.copyError', 'error');
+      },
+    });
+  }
 
   removeExercise(view: WorkoutExerciseView): void {
     const exerciseId = view.exerciseId ?? view.exercise?.id;

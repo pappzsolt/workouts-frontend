@@ -1,0 +1,57 @@
+<!-- ======================================================
+     OLDAL
+     ====================================================== -->
+
+<div class="min-h-full bg-transparent">
+  <div class="mx-auto w-full max-w-5xl px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
+    <!-- ==================================================
+         OLDAL CÍM
+         ================================================== -->
+
+    <h2 appHeading="page" class="mb-6 flex items-center justify-center gap-2 text-center sm:mb-8">
+      <span><app-icon name="pencil" sizeClass="h-5 w-5" /></span>
+      <span>{{ 'coachProgramEdit.title' | translate }}</span>
+    </h2>
+
+    <!-- ==================================================
+         ÜZENET
+         ================================================== -->
+
+    <app-message [message]="message" [type]="messageType"></app-message>
+
+    <!-- ==================================================
+         PROGRAM SZERKESZTÉSI KÁRTYA
+         ================================================== -->
+
+    <app-card>
+      <!-- ==================================================
+           FEJLÉC
+           ================================================== -->
+
+      <div
+        class="border-b border-info-100 bg-gradient-to-r from-primary-700 to-primary-800 px-4 py-6 sm:px-6 sm:py-7"
+      >
+        <div class="flex items-center justify-center">
+          <span
+            class="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/95 text-4xl shadow-lg ring-1 ring-white/30"
+          >
+            🛠️
+          </span>
+        </div>
+      </div>
+
+      <!-- ==================================================
+           ŰRLAP
+           ================================================== -->
+
+      <app-program-details-form
+        mode="edit"
+        [program]="program"
+        [endDate]="
+          calculateEndDate(program.startDate, program.durationDays) || program.endDate || ''
+        "
+        (save)="saveProgram()"
+      ></app-program-details-form>
+    </app-card>
+  </div>
+</div>

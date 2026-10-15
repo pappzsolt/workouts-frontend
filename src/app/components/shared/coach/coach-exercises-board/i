@@ -1,0 +1,30 @@
+        <div
+          class="col-span-1 mt-1 flex flex-col items-center justify-center gap-3 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:col-span-2 sm:flex-row sm:gap-5 lg:col-span-3"
+        >
+
+          <button
+            type="button"
+            (click)="prevExercisePage()"
+            [disabled]="exercisePage === 1"
+            class="w-full rounded-lg border border-pagination-200 bg-white px-4 py-2.5 text-sm font-semibold text-pagination-700 transition hover:bg-pagination-50 hover:text-pagination-700 focus:outline-none focus:ring-4 focus:ring-pagination-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+          >
+            ◀ {{ 'common.previous' | translate }}
+          </button>
+
+          <span
+            class="min-w-20 text-center text-sm font-semibold text-content-700"
+          >
+            {{ 'coachExercisesBoard.page' | translate }}
+            {{ exercisePage }} / {{ totalExercisePages }}
+          </span>
+
+          <button
+            type="button"
+            (click)="nextExercisePage()"
+            [disabled]="exercisePage === totalExercisePages"
+            class="w-full rounded-lg border border-pagination-200 bg-white px-4 py-2.5 text-sm font-semibold text-pagination-700 transition hover:bg-pagination-50 hover:text-pagination-700 focus:outline-none focus:ring-4 focus:ring-pagination-600/10 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
+          >
+            {{ 'common.next' | translate }} ▶
+          </button>
+
+        </div>

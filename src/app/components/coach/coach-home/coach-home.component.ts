@@ -27,6 +27,15 @@ interface AttentionRow {
   params: Record<string, unknown>;
 }
 
+interface FinishedRow {
+  client: CoachClientOverview;
+  programId: number;
+  name: string;
+  endDate: string;
+  done: number;
+  total: number;
+}
+
 interface ProgramRow {
   programId: number;
   name: string;
@@ -55,6 +64,7 @@ export class CoachHomeComponent implements OnInit {
   todayRows: TodayRow[] = [];
   attention: AttentionRow[] = [];
   programs: ProgramRow[] = [];
+  recentlyFinished: FinishedRow[] = [];
   clientCount = 0;
   doneToday = 0;
 
@@ -103,6 +113,12 @@ export class CoachHomeComponent implements OnInit {
         this.attention.push({ client, reasonKey: 'coachWorkspace.attention.noProgram', params: {} });
         continue;
       }
+      const running = client.programs.some((program) => !program.endDate || program.endDate >= this.today);
+      if (!running) {
+        const lastEnd = client.programs.map((program) => program.endDate ?? '').sort().at(-1) ?? '';
+        this.attention.push({ client, reasonKey: 'coachWorkspace.attention.programEnded', params: { date: lastEnd } });
+        continue;
+      }
       const missed = client.workouts.filter(
         (workout) => workoutStatus(workout, this.today) === 'missed',
       ).length;
@@ -136,5 +152,22 @@ export class CoachHomeComponent implements OnInit {
       }
     }
     this.programs = [...byProgram.values()].sort((a, b) => a.name.localeCompare(b.name));
+
+    // Az elmúlt 30 napban lezárult programok ügyfelenként, teljesítéssel.
+    const monthAgo = toIsoDate(addDays(new Date(), -30));
+    this.recentlyFinished = clients
+      .flatMap((client) =>
+        client.programs
+          .filter((program) => !!program.endDate && program.endDate < this.today && program.endDate >= monthAgo)
+          .map((program) => ({
+            client,
+            programId: program.programId,
+            name: program.name,
+            endDate: program.endDate as string,
+            done: program.completedWorkouts,
+            total: program.totalWorkouts,
+          })),
+      )
+      .sort((a, b) => b.endDate.localeCompare(a.endDate));
   }
 }

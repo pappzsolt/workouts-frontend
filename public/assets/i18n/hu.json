@@ -20,7 +20,8 @@
     "settings": "Beállítások",
     "security": "Biztonság",
     "loginAuditLogs": "Bejelentkezési napló",
-    "coachWorkouts": "Edzéstár"
+    "coachWorkouts": "Edzéstár",
+    "coachLegacy": "Régi felület"
   },
   "header": {
     "user": "Felhasználó",
@@ -459,7 +460,10 @@
     "moveDown": "Lejjebb",
     "removeExercise": "Gyakorlat eltávolítása",
     "removeExerciseError": "A gyakorlat eltávolítása nem sikerült.",
-    "reorderError": "A sorrend módosítása nem sikerült."
+    "reorderError": "A sorrend módosítása nem sikerült.",
+    "copyError": "A másolat nem készült el.",
+    "copyForEditing": "Szerkeszthető másolat készítése",
+    "usedIn": "Ezek a programok használják:"
   },
   "newWorkout": {
     "loadError": "Nem sikerült betölteni a workoutokat.",
@@ -1041,12 +1045,16 @@
       "activePrograms": "Aktív programok",
       "allPrograms": "Összes program",
       "clientCount": "{{count}} ügyfél",
-      "noActivePrograms": "Nincs aktív program."
+      "noActivePrograms": "Nincs aktív program.",
+      "endedOn": "Lezárult: {{date}}",
+      "noRecentlyFinished": "Az elmúlt 30 napban nem zárult le program.",
+      "recentlyFinished": "Nemrég lezárult programok"
     },
     "attention": {
       "noProgram": "Nincs kiosztott programja",
       "missed": "{{count}} kimaradt edzés",
-      "inactive": "Utolsó edzés: {{date}}"
+      "inactive": "Utolsó edzés: {{date}}",
+      "programEnded": "Lejárt a programja ({{date}}), nincs új"
     },
     "clients": {
       "title": "Ügyfelek",
@@ -1103,7 +1111,49 @@
       "chooseProgram": "Válassz programot",
       "assignHint": "Az edzések dátumát a program kezdőnapja és a napok sorszáma adja.",
       "assign": "Kiosztás",
-      "notFound": "Az ügyfél nem található."
+      "notFound": "Az ügyfél nem található.",
+      "fillDown": "Első sorozat értékei mindre",
+      "addSet": "Sorozat hozzáadása",
+      "removeSet": "Sorozat törlése",
+      "actual": "teljesített",
+      "saveChanges": "Mentés ({{count}})",
+      "actualReps": "Tény. ism.",
+      "actualWeight": "Tény. súly (kg)",
+      "addSetError": "A sorozat hozzáadása nem sikerült.",
+      "assignedNamed": "A(z) „{{program}}” program kiosztva.",
+      "deleteSetConfirm": "Biztosan törlöd a(z) {{n}}. sorozatot?",
+      "deleteSetError": "A sorozat törlése nem sikerült.",
+      "discard": "Elvetés",
+      "discardAndGo": "Elvetés és tovább",
+      "done": "Kész",
+      "feedback": "Visszajelzés",
+      "invalidSetValues": "Ellenőrizd a piros sorokat: a cél ismétlés kötelező (legalább 1), a súly és a pihenő nem lehet negatív, a tényleges ismétlés legalább 1.",
+      "newProgramFor": "Új program neki",
+      "nextWorkout": "Következő edzés",
+      "noSets": "Nincs sorozat.",
+      "noWorkoutsInProgram": "Ebben a programban még nincs edzés az ügyfélnek.",
+      "notes": "Megjegyzés",
+      "openPlan": "Edzésterv",
+      "openProgram": "Program megnyitása",
+      "planCounts": "{{total}} edzés · {{done}} kész · {{missed}} kimaradt",
+      "previousWorkout": "Előző edzés",
+      "program": "Program",
+      "restHint": "Az üres pihenő mező az edzés sablonjának értékét használja (szürkén látszik), a 0 kikapcsolja a pihenőt.",
+      "revokeConfirmCounts": "A visszavonás törli az ügyfél {{total}} edzését ebben a programban, köztük {{done}} teljesítettet, a sorozatokkal együtt. Biztosan visszavonod?",
+      "saveAndGo": "Mentés és tovább",
+      "saveDate": "Dátum mentése",
+      "scheduledDate": "Ütemezett dátum",
+      "setDeleted": "A sorozat törölve.",
+      "setsShort": "{{done}}/{{total}} sorozat",
+      "stay": "Maradok",
+      "tabPlan": "Edzésterv és sorozatok",
+      "tabPrograms": "Programok ({{count}})",
+      "targetReps": "Cél ism.",
+      "targetWeight": "Cél súly (kg)",
+      "unsavedCount": "Mentetlen változás: {{count}} sorozat",
+      "unsavedPrompt": "{{count}} sorozat módosítása nincs mentve.",
+      "weekLabel": "{{n}}. hét",
+      "workoutList": "A program edzései"
     },
     "programs": {
       "title": "Programok",
@@ -1115,7 +1165,19 @@
       "open": "Megnyitás",
       "empty": "Még nincs programod.",
       "sortByName": "Rendezés: név",
-      "sortByDate": "Rendezés: dátum"
+      "sortByDate": "Rendezés: dátum",
+      "sort": "Rendezés",
+      "sortDateAsc": "Kezdés, legrégebbi elöl",
+      "sortDateDesc": "Kezdés, legújabb elöl",
+      "sortNameAsc": "Név A–Z",
+      "sortNameDesc": "Név Z–A",
+      "statusFilter": "Állapot szűrő",
+      "filter": {
+        "all": "Összes",
+        "active": "Aktív",
+        "upcoming": "Hamarosan",
+        "finished": "Befejezett"
+      }
     },
     "editor": {
       "title": "Program szerkesztése",
@@ -1193,7 +1255,31 @@
       "copyHint": "Önálló másolat készül, az eredeti edzés nem változik.",
       "workoutLinked": "Az edzés a naphoz került.",
       "libraryHint": "Edzéseket programtól függetlenül itt is létrehozhatsz és szerkeszthetsz:",
-      "browseExercises": "Gyakorlatok böngészése"
+      "browseExercises": "Gyakorlatok böngészése",
+      "perClientHint": "A súlyokat és az egyes sorozatokat ügyfelenként állíthatod be:",
+      "editClientSets": "{{name}} sorozatai és súlyai",
+      "applyTemplate": "Alkalmazás a még el nem kezdett ügyfél-edzésekre",
+      "copyConfirm": "Másolás",
+      "copyForClient": "Ügyfél (opcionális)",
+      "copyNoClient": "– nincs, csak a program –",
+      "copyProgram": "Program másolása",
+      "copyProgramHint": "A napok és az edzések saját másolatot kapnak, így az új program módosítása nem érinti az eredetit.",
+      "copyProgramInvalid": "Add meg a nevet és a kezdőnapot.",
+      "copyToLibrary": "Szerkeszthető másolat az Edzéstárban",
+      "createdForClient": "A program létrejött, és {{name}} megkapta.",
+      "multiAdd": "Több edzés az Edzéstárból",
+      "multiAdded": "Az edzések a napokra kerültek.",
+      "multiConfirm": "Hozzáadás ({{count}})",
+      "multiHint": "A kijelölt edzések a(z) {{day}}. naptól kezdve a következő szabad napokra kerülnek, a kijelölés sorrendjében.",
+      "multiTarget": "Napok: {{days}}",
+      "newForClientHint": "Ez a program {{name}} számára készül: mentés után rögtön az övé lesz.",
+      "notEnoughFreeDays": "Nincs elég szabad nap a kiválasztott naptól a program végéig.",
+      "openInLibrary": "Megnyitás az Edzéstárban",
+      "programCopied": "A program másolata elkészült.",
+      "reordered": "A sorrend módosult (minden ügyfélnél).",
+      "saveBeforeApply": "Előbb mentsd a módosított értékeket.",
+      "saveBeforeReorder": "Előbb mentsd a módosított értékeket.",
+      "templateApplied": "Átvezetve: {{userWorkouts}} ügyfél-edzés, {{setsUpdated}} sorozat frissítve, {{setsAdded}} hozzáadva, {{setsRemoved}} törölve."
     },
     "picker": {
       "search": "Keresés (név, izom, szinonima, leírás)",

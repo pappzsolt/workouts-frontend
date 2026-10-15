@@ -1,0 +1,77 @@
+<div class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8">
+  <div class="mx-auto flex w-full max-w-5xl min-w-0 flex-col gap-6">
+    <!-- Cím -->
+    <h3 class="text-center text-2xl font-bold text-content-800 sm:text-3xl">
+      {{ 'assignProgram.title' | translate }}
+    </h3>
+
+    <!-- Felhasználó és program kiválasztás -->
+    <div
+      class="grid min-w-0 grid-cols-1 gap-5 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm sm:p-6 lg:grid-cols-2"
+    >
+      <!-- Felhasználó -->
+      <app-form-field
+        class="min-w-0"
+        labelKey="assignProgram.user"
+        controlId="assignProgramUser"
+        labelSuffix=":"
+      >
+        <app-select
+          id="assignProgramUser"
+          name="userId"
+          [value]="userId"
+          (valueChange)="userId = $event ?? null"
+          [options]="userOptions"
+          placeholder="assignProgram.selectUser"
+          [placeholderValue]="null"
+          [disabled]="loading || !usersReady"
+        ></app-select>
+      </app-form-field>
+
+      <!-- Program -->
+      <div class="min-w-0">
+        <fieldset [disabled]="loading">
+          <app-coach-program-select
+            [searchable]="true"
+            (readyChange)="programReady = $event"
+            [selectedProgramId]="selectedProgramId"
+            (selectedProgramIdChange)="onProgramSelected($event)"
+          >
+          </app-coach-program-select>
+        </fieldset>
+      </div>
+    </div>
+
+    <!-- Hozzárendelés / visszavonás -->
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <app-button
+        type="button"
+        (buttonClick)="assignProgram()"
+        [disabled]="loading || !selectedPairValid || selectedPairAssigned"
+        variant="primary"
+        appearance="solid"
+        [fullWidth]="true"
+      >
+        {{ 'assignProgram.assign' | translate }}
+      </app-button>
+
+      <app-button
+        type="button"
+        data-testid="revoke-program-assignment"
+        (buttonClick)="revokeProgram()"
+        [disabled]="loading || !selectedPairAssigned"
+        variant="delete"
+        appearance="solid"
+        [fullWidth]="true"
+      >
+        {{ 'common.remove' | translate }}
+      </app-button>
+    </div>
+
+    <!-- Loading -->
+    <app-loading *ngIf="loading" message="assignProgram.loading"></app-loading>
+
+    <!-- Üzenet -->
+    <app-message *ngIf="message" [message]="message" [type]="messageType"></app-message>
+  </div>
+</div>

@@ -65,6 +65,21 @@ export class CoachProgramEditorComponent implements OnInit {
   busy = false;
   message = '';
   messageType: 'success' | 'error' | 'info' = 'info';
+  messageParams: Record<string, unknown> = {};
+
+  /** Az ügyfél oldalról indított új program: létrehozás után rögtön az ügyfélé. */
+  newForUserId: number | null = null;
+
+  // Több edzés egyszerre az Edzéstárból
+  multiOpen = false;
+  multiFilter = '';
+  multiSelected: number[] = [];
+
+  // Program másolása
+  copyOpen = false;
+  copyName = '';
+  copyStart = '';
+  copyUserId: number | null = null;
 
   form: CoachProgramDetailsInput = {
     programName: '',
@@ -107,6 +122,9 @@ export class CoachProgramEditorComponent implements OnInit {
       if (raw === null || raw === 'new') {
         this.programId = null;
         this.program = null;
+        const forUser = Number(this.route.snapshot.queryParamMap.get('userId'));
+        this.newForUserId = Number.isInteger(forUser) && forUser > 0 ? forUser : null;
+        if (this.newForUserId !== null) this.loadClientsOnly();
         this.buildCells();
         return;
       }
@@ -117,7 +135,6 @@ export class CoachProgramEditorComponent implements OnInit {
       }
       this.programId = id;
       this.loadProgram(null);
-      this.loadAssignment();
     });
   }
 
@@ -144,6 +161,7 @@ export class CoachProgramEditorComponent implements OnInit {
             startDate: program.startDate ?? toIsoDate(new Date()),
           };
           this.buildCells(links);
+          this.loadAssignment();
           const firstWorkoutDay = this.cells.find((cell) => cell.workout)?.day ?? 1;
           this.selectDay(selectDay ?? (this.cells.some((c) => c.day === this.selectedDay) ? this.selectedDay : firstWorkoutDay));
           this.loading = false;
@@ -167,6 +185,7 @@ export class CoachProgramEditorComponent implements OnInit {
 
     const duration = Math.max(1, Number(this.form.durationDays) || 1);
     const start = this.form.startDate ? fromIsoDate(this.form.startDate) : null;
+    const prefix = commonPrefix((this.program?.workouts ?? []).map((workout) => workout.name));
     this.cells = Array.from({ length: duration }, (_, index) => {
       const day = index + 1;
       const link = byDay.get(day) ?? null;
@@ -178,7 +197,7 @@ export class CoachProgramEditorComponent implements OnInit {
         date: start ? addDays(start, index) : null,
         workout,
         link,
-        label: workout?.name ?? '',
+        label: workout ? shortName(workout.name, prefix) : '',
       };
     });
     // A rács hétfővel kezdődik: a kezdőnap előtti üres helyek.
@@ -233,9 +252,29 @@ export class CoachProgramEditorComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (id) => {
-            this.savingDetails = false;
-            this.showMessage('coachWorkspace.editor.created', 'success');
-            void this.router.navigate(['/coach/programs', id], { replaceUrl: true });
+            const userId = this.newForUserId;
+            if (userId === null) {
+              this.savingDetails = false;
+              this.showMessage('coachWorkspace.editor.created', 'success');
+              void this.router.navigate(['/coach/programs', id], { replaceUrl: true });
+              return;
+            }
+            // Ügyfélnek készülő program: azonnal az ügyfélé lesz.
+            this.workspace
+              .assignProgram(userId, id)
+              .pipe(takeUntilDestroyed(this.destroyRef))
+              .subscribe({
+                next: () => {
+                  this.savingDetails = false;
+                  this.showMessage('coachWorkspace.editor.createdForClient', 'success', { name: this.newForUserName });
+                  void this.router.navigate(['/coach/programs', id], { replaceUrl: true });
+                },
+                error: (error) => {
+                  this.savingDetails = false;
+                  this.showError(error, 'coachWorkspace.client.assignError');
+                  void this.router.navigate(['/coach/programs', id], { replaceUrl: true });
+                },
+              });
           },
           error: (error) => {
             this.savingDetails = false;
@@ -522,6 +561,174 @@ export class CoachProgramEditorComponent implements OnInit {
     );
   }
 
+  /** A kiosztott ügyfelek a kiválasztott napon (link a sorozataikhoz, súlyaikhoz). */
+  get selectedDayClients(): { client: CoachClientOverview; date: string }[] {
+    if (!this.form.startDate) return [];
+    const date = this.dateForDay(this.selectedDay);
+    return this.assignedClients.map((client) => ({ client, date }));
+  }
+
+  get newForUserName(): string {
+    return this.clients.find((client) => client.userId === this.newForUserId)?.username ?? '';
+  }
+
+  private loadClientsOnly(): void {
+    const today = toIsoDate(new Date());
+    this.workspace
+      .getOverview(today, today)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({ next: (overview) => (this.clients = overview.clients), error: () => (this.clients = []) });
+  }
+
+  // ----------------------------------------------------------
+  // Sablon: sorrend, átvezetés, másolat
+  // ----------------------------------------------------------
+
+  /** Sablon szintű sorrend: minden ügyfél az új sorrendet látja. */
+  moveRow(index: number, direction: -1 | 1): void {
+    const workout = this.selectedCell?.workout;
+    const row = this.rows[index];
+    const target = index + direction;
+    if (!workout || !row || target < 0 || target >= this.rows.length || this.busy) return;
+    if (this.changedCount > 0) {
+      this.showMessage('coachWorkspace.editor.saveBeforeReorder', 'error');
+      return;
+    }
+    this.run(
+      this.workspace.moveTemplateExercise(workout.workoutId, row.id, target),
+      'coachWorkspace.editor.reordered',
+      this.selectedDay,
+    );
+  }
+
+  /** A sablon átvezetése a még el nem kezdett ügyfél-edzésekre (a súlyok maradnak). */
+  applyTemplateToClients(): void {
+    const workout = this.selectedCell?.workout;
+    if (!workout || this.busy) return;
+    if (this.changedCount > 0) {
+      this.showMessage('coachWorkspace.editor.saveBeforeApply', 'error');
+      return;
+    }
+    this.busy = true;
+    this.workspace
+      .applyTemplate(workout.workoutId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (result) => {
+          this.busy = false;
+          this.showMessage('coachWorkspace.editor.templateApplied', 'success', { ...result });
+        },
+        error: (error) => {
+          this.busy = false;
+          this.showError(error, 'coachWorkspace.editor.actionError');
+        },
+      });
+  }
+
+  /** Szerkeszthető másolat az Edzéstárban (a programban lévő edzés gyakorlatlistája zárolt). */
+  copyToLibrary(): void {
+    const workout = this.selectedCell?.workout;
+    if (!workout || this.busy) return;
+    this.busy = true;
+    this.workspace
+      .copyWorkout(workout.workoutId, `${workout.name} (2)`)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (id) => {
+          this.busy = false;
+          void this.router.navigate(['/coach/workouts', id, 'edit']);
+        },
+        error: (error) => {
+          this.busy = false;
+          this.showError(error, 'coachWorkspace.editor.actionError');
+        },
+      });
+  }
+
+  // ----------------------------------------------------------
+  // Több edzés egyszerre
+  // ----------------------------------------------------------
+
+  openMulti(): void {
+    this.multiOpen = true;
+    this.multiSelected = [];
+    this.multiFilter = '';
+    if (this.myWorkouts.length === 0) this.loadMyWorkouts();
+  }
+
+  toggleMulti(workoutId: number, checked: boolean): void {
+    this.multiSelected = checked
+      ? [...this.multiSelected, workoutId]
+      : this.multiSelected.filter((id) => id !== workoutId);
+  }
+
+  get multiWorkouts(): CoachWorkoutSummary[] {
+    const term = this.multiFilter.trim().toLowerCase();
+    return this.myWorkouts.filter((workout) => !term || workout.name.toLowerCase().includes(term));
+  }
+
+  /** A kiválasztott naptól kezdve a következő szabad napok, a kijelölés sorrendjében. */
+  get multiTargetDays(): number[] {
+    const days: number[] = [];
+    for (const cell of this.cells) {
+      if (days.length === this.multiSelected.length) break;
+      if (cell.day >= this.selectedDay && !cell.link) days.push(cell.day);
+    }
+    return days;
+  }
+
+  addMultiple(): void {
+    if (this.programId === null || this.busy || this.multiSelected.length === 0) return;
+    const days = this.multiTargetDays;
+    if (days.length < this.multiSelected.length) {
+      this.showMessage('coachWorkspace.editor.notEnoughFreeDays', 'error');
+      return;
+    }
+    const programId = this.programId;
+    const pairs = this.multiSelected.map((workoutId, i) => ({ workoutId, day: days[i] }));
+    this.multiOpen = false;
+    this.run(
+      concat(...pairs.map((pair) => this.workspace.addWorkoutToDay(programId, pair.workoutId, pair.day))).pipe(toArray()),
+      'coachWorkspace.editor.multiAdded',
+      pairs[0].day,
+    );
+  }
+
+  // ----------------------------------------------------------
+  // Program másolása
+  // ----------------------------------------------------------
+
+  openCopy(): void {
+    this.copyOpen = true;
+    this.copyName = `${this.form.programName} (2)`;
+    this.copyStart = toIsoDate(new Date());
+    this.copyUserId = null;
+  }
+
+  confirmCopy(): void {
+    if (this.programId === null || this.busy) return;
+    if (!this.copyName.trim() || !this.copyStart) {
+      this.showMessage('coachWorkspace.editor.copyProgramInvalid', 'error');
+      return;
+    }
+    this.busy = true;
+    this.workspace
+      .copyProgram(this.programId, this.copyName.trim(), this.copyStart, this.copyUserId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (id) => {
+          this.busy = false;
+          this.copyOpen = false;
+          this.showMessage('coachWorkspace.editor.programCopied', 'success');
+          void this.router.navigate(['/coach/programs', id]);
+        },
+        error: (error) => {
+          this.busy = false;
+          this.showError(error, 'coachWorkspace.editor.actionError');
+        },
+      });
+  }
+
   /** Hány napon szerepel a kiválasztott edzés (a közös előírások miatt). */
   get selectedWorkoutDayCount(): number {
     const workoutId = this.selectedCell?.workout?.workoutId;
@@ -590,12 +797,31 @@ export class CoachProgramEditorComponent implements OnInit {
     });
   }
 
-  private showMessage(key: string, type: 'success' | 'error' | 'info'): void {
+  private showMessage(key: string, type: 'success' | 'error' | 'info', params: Record<string, unknown> = {}): void {
     this.message = key;
     this.messageType = type;
+    this.messageParams = params;
   }
 
   private showError(error: unknown, fallbackKey: string): void {
     this.showMessage(errorText(error, fallbackKey), 'error');
   }
+}
+
+/** Az edzésnevek közös eleje (szóhatárig), pl. "workouts-Workout-". */
+function commonPrefix(names: string[]): string {
+  const unique = [...new Set(names.filter(Boolean))];
+  if (unique.length < 2) return '';
+  let prefix = unique[0];
+  for (const name of unique.slice(1)) {
+    while (prefix && !name.startsWith(prefix)) prefix = prefix.slice(0, -1);
+  }
+  const cut = Math.max(prefix.lastIndexOf(' '), prefix.lastIndexOf('-'), prefix.lastIndexOf('_'));
+  return cut >= 0 ? prefix.slice(0, cut + 1) : '';
+}
+
+/** A rácsban a név közös előtag nélküli része, hogy a lényeg látsszon. */
+function shortName(name: string, prefix: string): string {
+  const rest = prefix && name.startsWith(prefix) ? name.slice(prefix.length).trim() : name;
+  return rest || name;
 }

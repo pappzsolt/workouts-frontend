@@ -9,11 +9,24 @@
       </a>
     </div>
 
-    <h1 class="text-2xl font-bold text-content-900 sm:text-3xl">
-      {{ (programId === null ? 'coachWorkspace.editor.newTitle' : 'coachWorkspace.editor.title') | translate }}
-    </h1>
+    <div class="flex flex-wrap items-center gap-3">
+      <h1 class="flex-1 text-2xl font-bold text-content-900 sm:text-3xl">
+        {{ (programId === null ? 'coachWorkspace.editor.newTitle' : 'coachWorkspace.editor.title') | translate }}
+      </h1>
+      @if (programId !== null) {
+        <button type="button" (click)="openCopy()" [disabled]="busy"
+                class="inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary-700 bg-white px-4 text-sm font-semibold text-primary-700 hover:bg-primary-50">
+          {{ 'coachWorkspace.editor.copyProgram' | translate }}
+        </button>
+      }
+    </div>
+    @if (programId === null && newForUserId !== null) {
+      <p class="rounded-xl bg-info-50 px-4 py-3 text-sm text-info-800">
+        {{ 'coachWorkspace.editor.newForClientHint' | translate: { name: newForUserName } }}
+      </p>
+    }
 
-    <app-message [message]="message" [type]="messageType" role="status"></app-message>
+    <app-message [message]="message" [messageParams]="messageParams" [type]="messageType" role="status"></app-message>
 
     <!-- Program adatai -->
     <section class="rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
@@ -72,7 +85,14 @@
         <!-- Napok rácsa -->
         <section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm lg:col-span-3"
                  [attr.aria-label]="'coachWorkspace.editor.days' | translate">
-          <h2 class="mb-4 text-lg font-bold text-content-900">{{ 'coachWorkspace.editor.days' | translate }}</h2>
+          <div class="mb-4 flex flex-wrap items-center gap-2">
+            <h2 class="flex-1 text-lg font-bold text-content-900">{{ 'coachWorkspace.editor.days' | translate }}</h2>
+            <button type="button" (click)="openMulti()" [disabled]="busy"
+                    class="inline-flex min-h-11 items-center gap-2 rounded-xl border border-surface-300 bg-white px-4 text-sm font-semibold text-content-700 hover:bg-surface-50">
+              <app-icon name="plus" sizeClass="h-4 w-4" />
+              {{ 'coachWorkspace.editor.multiAdd' | translate }}
+            </button>
+          </div>
           <div class="grid grid-cols-7 gap-1 sm:gap-2">
             @for (key of weekdayKeys; track key) {
               <div class="pb-1 text-center text-xs font-semibold uppercase text-content-600">{{ key | translate }}</div>
@@ -97,7 +117,7 @@
                   }
                 </span>
                 @if (cell.workout) {
-                  <span class="line-clamp-2 w-full break-words font-semibold text-primary-800">{{ cell.workout.name }}</span>
+                  <span class="line-clamp-3 w-full break-words font-semibold text-primary-800" [title]="cell.workout.name">{{ cell.label }}</span>
                 }
               </button>
             }
@@ -124,6 +144,24 @@
                 <div class="mb-3"></div>
               }
 
+              @if (selectedDayClients.length > 0) {
+                <div class="mb-4 rounded-xl border border-info-100 bg-info-50 p-3 text-sm text-info-800">
+                  <p class="mb-2">{{ 'coachWorkspace.editor.perClientHint' | translate }}</p>
+                  <ul class="flex flex-col gap-1">
+                    @for (entry of selectedDayClients; track entry.client.userId) {
+                      <li>
+                        <a [routerLink]="['/coach/clients', entry.client.userId]"
+                           [queryParams]="{ program: programId, date: entry.date }"
+                           class="inline-flex min-h-11 items-center gap-2 font-semibold text-primary-700 underline hover:text-primary-800">
+                          <app-icon name="user-round" sizeClass="h-4 w-4" />
+                          {{ 'coachWorkspace.editor.editClientSets' | translate: { name: entry.client.username } }}
+                          <span class="font-normal text-content-600">({{ entry.date | date: 'yyyy.MM.dd' }})</span>
+                        </a>
+                      </li>
+                    }
+                  </ul>
+                </div>
+              }
               @if (rows.length === 0) {
                 <p class="text-sm text-content-600">{{ 'coachWorkspace.client.noExercises' | translate }}</p>
               } @else {
@@ -132,7 +170,19 @@
                     <div class="rounded-xl border p-3"
                          [class.border-warning-300]="isChanged(row)"
                          [class.border-surface-200]="!isChanged(row)">
-                      <p class="mb-2 font-semibold text-content-900">{{ row.name }}</p>
+                      <div class="mb-2 flex items-center gap-1">
+                        <p class="flex-1 font-semibold text-content-900">{{ i + 1 }}. {{ row.name }}</p>
+                        <button type="button" (click)="moveRow(i, -1)" [disabled]="busy || i === 0"
+                                [attr.aria-label]="('coachWorkoutEdit.moveUp' | translate) + ': ' + row.name"
+                                class="inline-flex h-11 w-11 items-center justify-center rounded-lg text-content-700 hover:bg-surface-100 disabled:opacity-30">
+                          <app-icon name="chevron-up" sizeClass="h-4 w-4" />
+                        </button>
+                        <button type="button" (click)="moveRow(i, 1)" [disabled]="busy || i === rows.length - 1"
+                                [attr.aria-label]="('coachWorkoutEdit.moveDown' | translate) + ': ' + row.name"
+                                class="inline-flex h-11 w-11 items-center justify-center rounded-lg text-content-700 hover:bg-surface-100 disabled:opacity-30">
+                          <app-icon name="chevron-down" sizeClass="h-4 w-4" />
+                        </button>
+                      </div>
                       <div class="grid grid-cols-3 gap-2">
                         <label class="flex flex-col gap-1 text-xs font-semibold text-content-700">
                           {{ 'coachWorkspace.sets' | translate }}
@@ -150,7 +200,11 @@
                     </div>
                   }
                 </div>
-                <div class="mt-3 flex justify-end">
+                <div class="mt-3 flex flex-wrap justify-end gap-2">
+                  <button type="button" (click)="applyTemplateToClients()" [disabled]="busy || changedCount > 0"
+                          class="inline-flex min-h-11 items-center gap-2 rounded-xl border border-surface-300 bg-white px-4 text-sm font-semibold text-content-700 hover:bg-surface-50 disabled:opacity-60">
+                    {{ 'coachWorkspace.editor.applyTemplate' | translate }}
+                  </button>
                   <button type="button" (click)="savePrescriptions()" [disabled]="busy || changedCount === 0"
                           class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary-700 px-4 text-sm font-semibold text-white hover:bg-primary-800 disabled:opacity-60">
                     <app-icon name="save" sizeClass="h-4 w-4" />
@@ -160,6 +214,16 @@
               }
 
               <div class="mt-6 flex flex-col gap-3 border-t border-surface-200 pt-4">
+                <div class="flex flex-wrap gap-2">
+                  <a [routerLink]="['/coach/workouts', workout.workoutId, 'edit']"
+                     class="inline-flex min-h-11 items-center rounded-xl border border-surface-300 bg-white px-4 text-sm font-semibold text-content-700 hover:bg-surface-50">
+                    {{ 'coachWorkspace.editor.openInLibrary' | translate }}
+                  </a>
+                  <button type="button" (click)="copyToLibrary()" [disabled]="busy"
+                          class="inline-flex min-h-11 items-center rounded-xl border border-surface-300 bg-white px-4 text-sm font-semibold text-content-700 hover:bg-surface-50 disabled:opacity-60">
+                    {{ 'coachWorkspace.editor.copyToLibrary' | translate }}
+                  </button>
+                </div>
                 <h3 class="text-sm font-semibold text-content-800">{{ 'coachWorkspace.editor.moreDays' | translate }}</h3>
                 @if (confirmRepeat) {
                   <div class="flex flex-col gap-2 rounded-xl bg-primary-50 p-3 text-sm text-primary-800">
@@ -384,3 +448,85 @@
     }
   </div>
 </div>
+
+<!-- Több edzés egyszerre az Edzéstárból -->
+@if (multiOpen) {
+  <app-dialog [ariaLabel]="'coachWorkspace.editor.multiAdd' | translate" [trapFocus]="true" [closeOnEscape]="true"
+              [closeOnBackdrop]="true" [busy]="busy" (dismissed)="multiOpen = false">
+    <div class="flex flex-col gap-4 p-6">
+      <h2 class="text-xl font-bold text-content-900">{{ 'coachWorkspace.editor.multiAdd' | translate }}</h2>
+      <p class="text-sm text-content-700">{{ 'coachWorkspace.editor.multiHint' | translate: { day: selectedDay } }}</p>
+      <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+        {{ 'coachWorkspace.editor.libraryFilter' | translate }}
+        <input appInput="compact" type="search" name="multiFilter" [(ngModel)]="multiFilter" class="font-normal" />
+      </label>
+      <fieldset class="flex max-h-80 flex-col gap-1 overflow-y-auto rounded-xl border border-surface-200 p-2">
+        <legend class="sr-only">{{ 'coachWorkspace.editor.multiAdd' | translate }}</legend>
+        @for (workout of multiWorkouts; track workout.id) {
+          <label class="flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm text-content-800 hover:bg-surface-50">
+            <input appCheckbox="plain" type="checkbox" [checked]="multiSelected.includes(workout.id)"
+                   (change)="toggleMulti(workout.id, $any($event.target).checked)" />
+            <span class="flex-1">{{ workout.name }}</span>
+            @if (multiSelected.includes(workout.id)) {
+              <span class="text-xs font-semibold text-primary-700">#{{ multiSelected.indexOf(workout.id) + 1 }}</span>
+            }
+          </label>
+        } @empty {
+          <p class="px-2 py-4 text-center text-sm text-content-600">{{ 'coachWorkspace.picker.empty' | translate }}</p>
+        }
+      </fieldset>
+      @if (multiSelected.length > 0) {
+        <p class="text-sm text-content-700">
+          {{ 'coachWorkspace.editor.multiTarget' | translate: { days: multiTargetDays.join(', ') } }}
+        </p>
+      }
+      <div class="flex justify-end gap-3">
+        <button type="button" (click)="multiOpen = false" class="min-h-11 rounded-xl border border-surface-300 bg-white px-4 text-sm font-semibold text-content-700">
+          {{ 'coachWorkspace.cancel' | translate }}
+        </button>
+        <button type="button" (click)="addMultiple()" [disabled]="busy || multiSelected.length === 0"
+                class="min-h-11 rounded-xl bg-primary-700 px-4 text-sm font-semibold text-white disabled:opacity-50">
+          {{ 'coachWorkspace.editor.multiConfirm' | translate: { count: multiSelected.length } }}
+        </button>
+      </div>
+    </div>
+  </app-dialog>
+}
+
+<!-- Program másolása -->
+@if (copyOpen) {
+  <app-dialog [ariaLabel]="'coachWorkspace.editor.copyProgram' | translate" [trapFocus]="true" [closeOnEscape]="true"
+              [closeOnBackdrop]="true" [busy]="busy" (dismissed)="copyOpen = false">
+    <form class="flex flex-col gap-4 p-6" (ngSubmit)="confirmCopy()">
+      <h2 class="text-xl font-bold text-content-900">{{ 'coachWorkspace.editor.copyProgram' | translate }}</h2>
+      <p class="text-sm text-content-700">{{ 'coachWorkspace.editor.copyProgramHint' | translate }}</p>
+      <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+        {{ 'coachWorkspace.editor.name' | translate }}
+        <input appInput="default" type="text" name="copyName" required maxlength="255" [(ngModel)]="copyName" class="font-normal" />
+      </label>
+      <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+        {{ 'coachWorkspace.editor.startDate' | translate }}
+        <input appInput="default" type="date" name="copyStart" required [(ngModel)]="copyStart" class="font-normal" />
+      </label>
+      <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+        {{ 'coachWorkspace.editor.copyForClient' | translate }}
+        <select name="copyUser" [(ngModel)]="copyUserId"
+                class="min-h-11 rounded-xl border border-surface-300 bg-white px-3 text-sm font-normal text-content-800 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/10">
+          <option [ngValue]="null">{{ 'coachWorkspace.editor.copyNoClient' | translate }}</option>
+          @for (client of clients; track client.userId) {
+            <option [ngValue]="client.userId">{{ client.username }}</option>
+          }
+        </select>
+      </label>
+      <div class="flex justify-end gap-3">
+        <button type="button" (click)="copyOpen = false" class="min-h-11 rounded-xl border border-surface-300 bg-white px-4 text-sm font-semibold text-content-700">
+          {{ 'coachWorkspace.cancel' | translate }}
+        </button>
+        <button type="submit" [disabled]="busy || !copyName.trim() || !copyStart"
+                class="min-h-11 rounded-xl bg-primary-700 px-4 text-sm font-semibold text-white disabled:opacity-50">
+          {{ 'coachWorkspace.editor.copyConfirm' | translate }}
+        </button>
+      </div>
+    </form>
+  </app-dialog>
+}

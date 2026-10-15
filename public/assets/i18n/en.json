@@ -20,7 +20,8 @@
     "settings": "Settings",
     "security": "Security",
     "loginAuditLogs": "Login Audit Log",
-    "coachWorkouts": "Workout library"
+    "coachWorkouts": "Workout library",
+    "coachLegacy": "Old interface"
   },
   "header": {
     "user": "User",
@@ -459,7 +460,10 @@
     "moveDown": "Move down",
     "removeExercise": "Remove exercise",
     "removeExerciseError": "Could not remove the exercise.",
-    "reorderError": "Could not change the order."
+    "reorderError": "Could not change the order.",
+    "copyError": "The copy could not be created.",
+    "copyForEditing": "Create an editable copy",
+    "usedIn": "Used by these programs:"
   },
   "newWorkout": {
     "loadError": "Failed to load workouts.",
@@ -1041,12 +1045,16 @@
       "activePrograms": "Active programs",
       "allPrograms": "All programs",
       "clientCount": "{{count}} clients",
-      "noActivePrograms": "No active programs."
+      "noActivePrograms": "No active programs.",
+      "endedOn": "Ended: {{date}}",
+      "noRecentlyFinished": "No program ended in the last 30 days.",
+      "recentlyFinished": "Recently finished programs"
     },
     "attention": {
       "noProgram": "No program assigned",
       "missed": "{{count}} missed workouts",
-      "inactive": "Last workout: {{date}}"
+      "inactive": "Last workout: {{date}}",
+      "programEnded": "Program ended ({{date}}), no new one"
     },
     "clients": {
       "title": "Clients",
@@ -1103,7 +1111,49 @@
       "chooseProgram": "Choose a program",
       "assignHint": "Workout dates come from the program's start date and day numbers.",
       "assign": "Assign",
-      "notFound": "Client not found."
+      "notFound": "Client not found.",
+      "fillDown": "Copy first set to all",
+      "addSet": "Add set",
+      "removeSet": "Remove set",
+      "actual": "done",
+      "saveChanges": "Save ({{count}})",
+      "actualReps": "Actual reps",
+      "actualWeight": "Actual weight (kg)",
+      "addSetError": "Could not add the set.",
+      "assignedNamed": "Program “{{program}}” assigned.",
+      "deleteSetConfirm": "Delete set {{n}}?",
+      "deleteSetError": "Could not delete the set.",
+      "discard": "Discard",
+      "discardAndGo": "Discard and continue",
+      "done": "Done",
+      "feedback": "Feedback",
+      "invalidSetValues": "Check the red rows: target reps are required (at least 1), weight and rest cannot be negative, actual reps at least 1.",
+      "newProgramFor": "New program for them",
+      "nextWorkout": "Next workout",
+      "noSets": "No sets.",
+      "noWorkoutsInProgram": "This program has no workouts for the client yet.",
+      "notes": "Notes",
+      "openPlan": "Workout plan",
+      "openProgram": "Open program",
+      "planCounts": "{{total}} workouts · {{done}} done · {{missed}} missed",
+      "previousWorkout": "Previous workout",
+      "program": "Program",
+      "restHint": "An empty rest field uses the workout template value (shown in grey); 0 turns rest off.",
+      "revokeConfirmCounts": "Revoking deletes the client’s {{total}} workouts in this program, including {{done}} completed, with their sets. Revoke?",
+      "saveAndGo": "Save and continue",
+      "saveDate": "Save date",
+      "scheduledDate": "Scheduled date",
+      "setDeleted": "Set deleted.",
+      "setsShort": "{{done}}/{{total}} sets",
+      "stay": "Stay",
+      "tabPlan": "Plan and sets",
+      "tabPrograms": "Programs ({{count}})",
+      "targetReps": "Target reps",
+      "targetWeight": "Target weight (kg)",
+      "unsavedCount": "Unsaved changes: {{count}} sets",
+      "unsavedPrompt": "Changes to {{count}} sets are not saved.",
+      "weekLabel": "Week {{n}}",
+      "workoutList": "Workouts of the program"
     },
     "programs": {
       "title": "Programs",
@@ -1115,7 +1165,19 @@
       "open": "Open",
       "empty": "You have no programs yet.",
       "sortByName": "Sort: name",
-      "sortByDate": "Sort: date"
+      "sortByDate": "Sort: date",
+      "sort": "Sort",
+      "sortDateAsc": "Start, oldest first",
+      "sortDateDesc": "Start, newest first",
+      "sortNameAsc": "Name A–Z",
+      "sortNameDesc": "Name Z–A",
+      "statusFilter": "Status filter",
+      "filter": {
+        "all": "All",
+        "active": "Active",
+        "upcoming": "Upcoming",
+        "finished": "Finished"
+      }
     },
     "editor": {
       "title": "Edit program",
@@ -1193,7 +1255,31 @@
       "copyHint": "A separate copy is created; the original workout stays unchanged.",
       "workoutLinked": "Workout added to the day.",
       "libraryHint": "You can also create and edit workouts independently of programs here:",
-      "browseExercises": "Browse exercises"
+      "browseExercises": "Browse exercises",
+      "perClientHint": "Weights and individual sets are set per client:",
+      "editClientSets": "Sets and weights of {{name}}",
+      "applyTemplate": "Apply to client workouts not yet started",
+      "copyConfirm": "Copy",
+      "copyForClient": "Client (optional)",
+      "copyNoClient": "– none, program only –",
+      "copyProgram": "Copy program",
+      "copyProgramHint": "Days and workouts get their own copies, so changing the new program does not affect the original.",
+      "copyProgramInvalid": "Enter a name and a start date.",
+      "copyToLibrary": "Editable copy in the library",
+      "createdForClient": "Program created and assigned to {{name}}.",
+      "multiAdd": "Several workouts from the library",
+      "multiAdded": "Workouts added to the days.",
+      "multiConfirm": "Add ({{count}})",
+      "multiHint": "Selected workouts go to the next free days from day {{day}}, in the order you select them.",
+      "multiTarget": "Days: {{days}}",
+      "newForClientHint": "This program is for {{name}}: it is assigned to them as soon as it is saved.",
+      "notEnoughFreeDays": "Not enough free days from the selected day to the end of the program.",
+      "openInLibrary": "Open in library",
+      "programCopied": "Program copy created.",
+      "reordered": "Order changed (for every client).",
+      "saveBeforeApply": "Save your changes first.",
+      "saveBeforeReorder": "Save your changes first.",
+      "templateApplied": "Applied: {{userWorkouts}} client workouts, {{setsUpdated}} sets updated, {{setsAdded}} added, {{setsRemoved}} removed."
     },
     "picker": {
       "search": "Search (name, muscle, synonym, description)",

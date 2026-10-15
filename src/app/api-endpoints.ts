@@ -38,6 +38,11 @@ export const API_ENDPOINTS = {
   coachPrograms: `${environment.apiUrl}/programs/my/coach`,
   coachProgramsWithWorkouts: `${environment.apiUrl}/programs/coach`,
   coachOverview: `${environment.apiUrl}/coach/overview`,
+  coachProgramCopy: (programId: number) => `${environment.apiUrl}/coach/programs/${programId}/copy`,
+  coachWorkoutCopy: (workoutId: number) => `${environment.apiUrl}/coach/workouts/${workoutId}/copy`,
+  coachWorkoutApplyTemplate: (workoutId: number) => `${environment.apiUrl}/coach/workouts/${workoutId}/apply-template`,
+  coachWorkoutPrograms: (workoutId: number) => `${environment.apiUrl}/coach/workouts/${workoutId}/programs`,
+  coachProgramAssignmentCounts: `${environment.apiUrl}/coach/programs/assignment-counts`,
   createProgram: `${environment.apiUrl}/user-programs`,
   assignProgram: `${environment.apiUrl}/programs/assign`,
 
