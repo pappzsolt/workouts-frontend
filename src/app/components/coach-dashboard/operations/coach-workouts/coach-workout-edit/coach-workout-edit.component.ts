@@ -53,7 +53,7 @@ export class CoachWorkoutEditComponent implements OnInit {
     workoutName: '',
     description: '',
     workoutDescription: '',
-    durationMinutes: 0,
+    durationMinutes: undefined,
     difficultyLevel: '',
     programId: undefined,
 
@@ -238,7 +238,7 @@ export class CoachWorkoutEditComponent implements OnInit {
           workoutName: w.workoutName ?? '',
           description: w.workoutDescription ?? '',
           workoutDescription: w.workoutDescription ?? '',
-          durationMinutes: w.durationMinutes ?? 0,
+          durationMinutes: w.durationMinutes ?? undefined,
           workoutDate: workoutDateFormatted,
           intensityLevel: w.intensityLevel ?? undefined,
           done: w.done ?? undefined,

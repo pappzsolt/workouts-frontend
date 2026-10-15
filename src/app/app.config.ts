@@ -1,5 +1,6 @@
 import { ApplicationConfig } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withNavigationErrorHandler } from '@angular/router';
+import { reloadOnChunkLoadError } from './config/chunk-load-recovery';
 import { routes } from './app.routes';
 import {
   HTTP_INTERCEPTORS,
@@ -15,7 +16,7 @@ import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideRouter(routes),
+    provideRouter(routes, withNavigationErrorHandler(reloadOnChunkLoadError)),
 
     provideHttpClient(withInterceptorsFromDi()),
 

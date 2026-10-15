@@ -14,6 +14,11 @@ import { LanguageService } from '../../shared/language.service';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
 
+/** Az időtartam csak pozitív érték lehet; üres vagy 0 = nincs megadva (null). */
+function positiveOrNull(value: number | null | undefined): number | null {
+  return value != null && value > 0 ? value : null;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -176,7 +181,7 @@ export class CoachWorkoutsService {
       name: workout.name ?? workout.workoutName ?? null,
       description: workout.description ?? workout.workoutDescription ?? null,
       workoutDate: workout.workoutDate ?? null,
-      durationMinutes: workout.durationMinutes ?? null,
+      durationMinutes: positiveOrNull(workout.durationMinutes),
       intensityLevel: workout.intensityLevel ?? null,
       dayIndex: workout.dayIndex ?? null,
       done: workout.done ?? null,
@@ -218,7 +223,7 @@ export class CoachWorkoutsService {
       name: workout.name ?? workout.workoutName ?? null,
       description: workout.description ?? workout.workoutDescription ?? null,
       workoutDate: workout.workoutDate ?? null,
-      durationMinutes: workout.durationMinutes ?? null,
+      durationMinutes: positiveOrNull(workout.durationMinutes),
       intensityLevel: workout.intensityLevel ?? null,
       dayIndex: workout.dayIndex ?? null,
       done: workout.done ?? null,

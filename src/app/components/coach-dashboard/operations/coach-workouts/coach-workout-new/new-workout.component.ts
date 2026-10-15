@@ -36,7 +36,7 @@ export class NewWorkoutComponent implements OnInit, OnDestroy {
     name: '',
     description: '',
     workoutDate: '',
-    durationMinutes: 0,
+    durationMinutes: undefined,
     intensityLevel: '',
     done: false,
   };
