@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { authenticateAndOpen } from '../../helpers/auth-session';
 import { assertNoDataMutation, installReadOnlyGuard, setTestLanguage } from '../../helpers/read-only';
+import { chooseSearchableOption, clearSearchableOption } from '../../helpers/searchable-select';
 
 test.beforeEach(async ({ page }) => {
   await setTestLanguage(page);
@@ -25,11 +26,11 @@ test('ADMIN GUI: numeric coach selection populates the form and clearing resets 
   const selector = page.getByRole('combobox', { name: /^(válassz edzőt|select coach|coach auswählen)$/i });
   await expect(selector).toHaveCount(1);
   await expect(selector).toBeEnabled();
-  await selector.selectOption({ label: `${coach.usernameOrName} (${coach.email})` });
+  await chooseSearchableOption(selector, `${coach.usernameOrName} (${coach.email})`);
   await expect(page.locator('input#name')).toHaveValue(coach.usernameOrName);
   await expect(page.locator('input#email')).toHaveValue(coach.email);
-  // Select the actual empty option, without depending on Angular's ngValue encoding.
-  await selector.selectOption({ index: 0 });
+  // A helykitöltő (üres) opció törli a kiválasztást.
+  await clearSearchableOption(selector, /^(válassz edzőt|select coach|coach auswählen)$/i);
   await expect(page.locator('input#name')).toHaveValue('');
   await expect(page.locator('input#email')).toHaveValue('');
   await assertNoDataMutation(mutations);
@@ -52,7 +53,7 @@ test('ADMIN GUI: numeric user selection populates the matching user fields', asy
   expect(user, 'The configured E2E user must appear in the admin member list.').toBeDefined();
   const selector = page.locator('app-user-select').getByRole('combobox');
   await expect(selector).toBeEnabled();
-  await selector.selectOption({ label: user.usernameOrName });
+  await chooseSearchableOption(selector, user.usernameOrName);
   await expect(page.locator('input#username')).toHaveValue(user.usernameOrName);
   await expect(page.locator('input#email')).toHaveValue(user.email);
   await expect(page.getByRole('button', { name: /^(mentés|save|speichern)$/i })).toBeEnabled();

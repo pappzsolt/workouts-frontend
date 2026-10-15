@@ -258,18 +258,24 @@ async function cleanupFixture(
 
 test.describe('MOBILE v1 REST API – strict E2E contract', () => {
 
-  test('SNAPSHOT: full user-scoped canonical read model + DB consistency', async ({ page }) => {
+  // A mobil szerződés (docs/mobile-api-offline-cache.md a backend repóban):
+  //  - snapshot: programs → workouts → userWorkouts (áttekintés, sorozatok nélkül)
+  //  - detail: userWorkoutId, detailVersion, userWorkout, workout, workoutExercises, userWorkoutSets;
+  //    nincs külön exercises tömb, a gyakorlat azonosítója az exerciseKey
+  //    (exercises.mobile_exercise_key, vagy ha nincs: server-{exerciseId} + fallbackExercise).
+
+  test('SNAPSHOT: programs → workouts → userWorkouts read model matches the DB and is user-scoped', async ({ page }) => {
     await login(page, 'coach');
     const coachApi = await apiFor(page);
     const userId = await currentUserId();
     const fixture = await createAssignedFixture(coachApi, userId, 'MOBILE SNAPSHOT', 2, 1);
 
     try {
-        await coachApi.dispose();
-        await login(page, 'user');
-        const api = await apiFor(page);
-  
-        const assigned = await dbOne<{ ids: number[] }>(
+      await coachApi.dispose();
+      await login(page, 'user');
+      const api = await apiFor(page);
+
+      const assigned = await dbOne<{ ids: number[] }>(
         `SELECT COALESCE(array_agg(program_id ORDER BY program_id), ARRAY[]::int[]) AS ids
            FROM public.user_programs
           WHERE user_id = $1
@@ -277,140 +283,62 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
         [userId],
       );
       const expectedProgramIds = (assigned?.ids ?? []).map(Number);
-  
+      for (const programId of fixture.programs) expect(expectedProgramIds).toContain(programId);
+
       const body = await mobileSuccess(
         await api.get(API_ENDPOINTS.mobile.snapshot, { params: { language: LANGUAGE } }),
         'GET /api/mobile/v1/snapshot',
       );
-  
-      const data = body.data;
-      expect(data).toBeTruthy();
-      expect(Date.parse(data.generatedAt)).not.toBeNaN();
-  
-      const programs = Array.isArray(data.programs) ? data.programs : [];
-      const workouts = Array.isArray(data.workouts) ? data.workouts : [];
-      const workoutExercises = Array.isArray(data.workoutExercises) ? data.workoutExercises : [];
-      const userWorkouts = Array.isArray(data.userWorkouts) ? data.userWorkouts : [];
-      const userWorkoutSets = Array.isArray(data.userWorkoutSets) ? data.userWorkoutSets : [];
-      const exercises = Array.isArray(data.exercises) ? data.exercises : [];
-  
-      expect(programs.map((x: any) => Number(x.programId)).sort((a: number, b: number) => a - b))
-        .toEqual(expectedProgramIds);
-  
-      if (expectedProgramIds.length === 0) {
-        expect(programs).toEqual([]);
-        expect(workouts).toEqual([]);
-        expect(workoutExercises).toEqual([]);
-        expect(userWorkouts).toEqual([]);
-        expect(userWorkoutSets).toEqual([]);
-        expect(exercises).toEqual([]);
-        return;
-      }
-  
-      const programIdSet = new Set(expectedProgramIds);
+      const programs = body.data.programs as any[];
+      expect(Array.isArray(programs)).toBeTruthy();
+      expect(programs.map(x => Number(x.programId)).sort((a, b) => a - b)).toEqual(expectedProgramIds);
+
       for (const program of programs) {
-        expect(programIdSet.has(Number(program.programId))).toBeTruthy();
         expect(typeof program.name).toBe('string');
         expect(typeof program.durationDays).toBe('number');
-        expect(typeof program.progressPercent).toBe('number');
-        expect(program.progressPercent).toBeGreaterThanOrEqual(0);
-        expect(program.progressPercent).toBeLessThanOrEqual(100);
+        expect(Array.isArray(program.workouts)).toBeTruthy();
+
+        const dbProgramWorkouts = (await db().query<{ id: number; workout_id: number; day_index: number }>(
+          'SELECT id, workout_id, day_index FROM public.program_workouts WHERE program_id = $1 ORDER BY id',
+          [program.programId],
+        )).rows;
+        expect(program.workouts.map((w: any) => Number(w.programWorkoutId)).sort((a: number, b: number) => a - b))
+          .toEqual(dbProgramWorkouts.map(r => Number(r.id)).sort((a, b) => a - b));
+
+        for (const workout of program.workouts) {
+          const row = dbProgramWorkouts.find(r => Number(r.id) === Number(workout.programWorkoutId))!;
+          expect(Number(workout.workoutId)).toBe(Number(row.workout_id));
+          expect(Number(workout.dayIndex)).toBe(Number(row.day_index));
+          expect(Array.isArray(workout.userWorkouts)).toBeTruthy();
+
+          const dbUserWorkouts = (await db().query<{ id: number; scheduled_at: string }>(
+            `SELECT id, scheduled_at::text AS scheduled_at FROM public.user_workouts
+              WHERE user_id = $1 AND program_workout_id = $2 ORDER BY id`,
+            [userId, workout.programWorkoutId],
+          )).rows;
+          expect(workout.userWorkouts.map((u: any) => Number(u.userWorkoutId)).sort((a: number, b: number) => a - b))
+            .toEqual(dbUserWorkouts.map(r => Number(r.id)));
+          for (const uw of workout.userWorkouts) {
+            expect(['SCHEDULED', 'IN_PROGRESS', 'COMPLETED']).toContain(uw.status);
+            expect(Number(uw.detailVersion)).toBeGreaterThan(0);
+            expect(uw.scheduledDate).toBe(dbUserWorkouts.find(r => Number(r.id) === Number(uw.userWorkoutId))!.scheduled_at.slice(0, 10));
+          }
+        }
       }
-  
-      const programWorkoutIds = new Set<number>();
-      for (const workout of workouts) {
-        const programId = Number(workout.programId);
-        expect(programIdSet.has(programId)).toBeTruthy();
-        expect(Number(workout.programWorkoutId)).toBeGreaterThan(0);
-        expect(programWorkoutIds.has(Number(workout.programWorkoutId))).toBeFalsy();
-        programWorkoutIds.add(Number(workout.programWorkoutId));
-        expect(Number(workout.workoutId)).toBeGreaterThan(0);
-        expect(Number(workout.dayIndex)).toBeGreaterThanOrEqual(0);
-        expect(Number(workout.orderIndex)).toBeGreaterThanOrEqual(1);
-      }
-  
-      const userWorkoutIds = new Set<number>();
-      for (const uw of userWorkouts) {
-        expect(programIdSet.has(Number(uw.programId))).toBeTruthy();
-        expect(Number(uw.userWorkoutId)).toBeGreaterThan(0);
-        userWorkoutIds.add(Number(uw.userWorkoutId));
-        expect(programWorkoutIds.has(Number(uw.programWorkoutId))).toBeTruthy();
-        expect(typeof uw.status).toBe('string');
-        expect(['SCHEDULED', 'IN_PROGRESS', 'COMPLETED']).toContain(uw.status);
-        expect(uw.userWorkoutId).toBeTruthy();
-      }
-  
-      for (const set of userWorkoutSets) {
-        expect(userWorkoutIds.has(Number(set.userWorkoutId))).toBeTruthy();
-        expect(Number(set.userWorkoutSetId)).toBeGreaterThan(0);
-        expect(Number(set.userWorkoutExerciseId)).toBeGreaterThan(0);
-        expect(Number(set.setNumber)).toBeGreaterThan(0);
-        expect(typeof set.isRequired).toBe('boolean');
-        expect(typeof set.exerciseKey).toBe('string');
-        expect(set.exerciseKey).toMatch(/^exercise-\d+$/);
-      }
-  
-      const exerciseIds = new Set<number>();
-      for (const exercise of exercises) {
-        const id = Number(exercise.exerciseId);
-        expect(id).toBeGreaterThan(0);
-        expect(exerciseIds.has(id)).toBeFalsy();
-        exerciseIds.add(id);
-        expect(exercise.exerciseKey).toBe(`exercise-${id}`);
-        expect(Array.isArray(exercise.imageFiles)).toBeTruthy();
-        expect(exercise.imageFiles.every((x: unknown) => typeof x === 'string')).toBeTruthy();
-      }
-  
-      for (const we of workoutExercises) {
-        expect(programWorkoutIds.size).toBeGreaterThan(0);
-        expect(Number(we.workoutExerciseId)).toBeGreaterThan(0);
-        expect(Number(we.workoutId)).toBeGreaterThan(0);
-        expect(exerciseIds.has(Number(we.exerciseId))).toBeTruthy();
-        expect(we.exerciseKey).toBe(`exercise-${Number(we.exerciseId)}`);
-        expect(Number(we.orderIndex)).toBeGreaterThanOrEqual(0);
-        expect(Number(we.targetSets)).toBeGreaterThan(0);
-        expect(Number(we.targetReps)).toBeGreaterThan(0);
-      }
-  
-      const dbUserWorkoutCount = await dbCount(
-        `SELECT COUNT(*)::text AS count
-           FROM public.user_workouts
-          WHERE user_id = $1
-            AND program_id = ANY($2::int[])`,
+
+      // Csak a saját kiosztott programok jelennek meg.
+      const foreignPrograms = await dbCount(
+        `SELECT COUNT(*)::text AS count FROM public.user_programs WHERE user_id <> $1 AND program_id <> ALL($2::int[])`,
         [userId, expectedProgramIds],
       );
-      expect(userWorkouts).toHaveLength(dbUserWorkoutCount);
-  
-      const dbSetCount = await dbCount(
-        `SELECT COUNT(*)::text AS count
-           FROM public.user_workout_exercise_sets s
-           JOIN public.user_workout_exercises uwe ON uwe.id = s.user_workout_exercise_id
-           JOIN public.user_workouts uw ON uw.id = uwe.user_workout_id
-          WHERE uw.user_id = $1
-            AND uw.program_id = ANY($2::int[])`,
-        [userId, expectedProgramIds],
-      );
-      expect(userWorkoutSets).toHaveLength(dbSetCount);
-  
-      // Same workout template may occur in multiple programs; programWorkoutId
-      // is the canonical discriminator and must keep the two assignments separate.
-      const duplicateTemplate = await dbOne<{ workout_id: number; count: string }>(
-        `SELECT workout_id, COUNT(*)::text AS count
-           FROM public.program_workouts
-          WHERE program_id = ANY($1::int[])
-          GROUP BY workout_id
-         HAVING COUNT(*) > 1
-          ORDER BY COUNT(*) DESC
-          LIMIT 1`,
-        [expectedProgramIds],
-      );
-  
-      if (duplicateTemplate) {
-        const responseRows = workouts.filter((x: any) => Number(x.workoutId) === Number(duplicateTemplate.workout_id));
-        expect(new Set(responseRows.map((x: any) => Number(x.programWorkoutId))).size)
-          .toBe(responseRows.length);
+      if (foreignPrograms > 0) {
+        const foreignIds = (await db().query<{ program_id: number }>(
+          'SELECT DISTINCT program_id FROM public.user_programs WHERE user_id <> $1 AND program_id <> ALL($2::int[])',
+          [userId, expectedProgramIds],
+        )).rows.map(r => Number(r.program_id));
+        for (const program of programs) expect(foreignIds).not.toContain(Number(program.programId));
       }
-  
+
       await api.dispose();
     } finally {
       await login(page, 'coach');
@@ -419,53 +347,59 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
       await cleanupApi.dispose();
     }
   });
-  
-  test('SNAPSHOT: generated exerciseKey and DB-backed exercise deduplication are mandatory', async ({ page }) => {
-    await login(page, 'user');
+
+  test('DETAIL: exerciseKey is the stored mobile key or server-{id} with fallbackExercise', async ({ page }) => {
+    await login(page, 'coach');
+    const coachApi = await apiFor(page);
     const userId = await currentUserId();
-    const api = await apiFor(page);
+    const fixture = await createAssignedFixture(coachApi, userId, 'MOBILE EXERCISE KEY', 1, 2);
 
-    const body = await mobileSuccess(
-      await api.get(API_ENDPOINTS.mobile.snapshot, { params: { language: LANGUAGE } }),
-      'snapshot exercise contract',
-    );
+    try {
+      await coachApi.dispose();
+      await login(page, 'user');
+      const api = await apiFor(page);
+      const candidate = await dbOne<{ id: number }>(
+        `SELECT id FROM public.user_workouts WHERE user_id = $1 AND program_id = $2 ORDER BY id DESC LIMIT 1`,
+        [userId, fixture.programs[0]],
+      );
+      expect(candidate).not.toBeNull();
 
-    const exercises = body.data.exercises as any[];
-    const dbRows = await dbOne<{ missing: string }>(
-      `SELECT COUNT(*)::text AS missing
-         FROM public.exercises e
-         JOIN public.workout_exercises we ON we.exercise_id = e.id
-         JOIN public.program_workouts pw ON pw.workout_id = we.workout_id
-         JOIN public.user_programs up ON up.program_id = pw.program_id
-        WHERE up.user_id = $1
-          AND up.status = 'assigned'
-          AND e.id IS NULL`,
-      [userId],
-    );
-    expect(Number(dbRows?.missing ?? 0)).toBe(0);
+      const body = await mobileSuccess(
+        await api.get(API_ENDPOINTS.mobile.userWorkout(candidate!.id), { params: { language: LANGUAGE } }),
+        'detail exercise key contract',
+      );
+      expect(body.data.exercises).toBeUndefined();
+      const prescriptions = body.data.workoutExercises as any[];
+      expect(prescriptions).toHaveLength(2);
+      for (const we of prescriptions) {
+        const row = await dbOne<{ mobile_exercise_key: string | null }>(
+          'SELECT mobile_exercise_key FROM public.exercises WHERE id = $1', [we.exerciseId]);
+        if (row?.mobile_exercise_key) {
+          expect(we.exerciseKey).toBe(row.mobile_exercise_key);
+          expect(we.fallbackExercise).toBeUndefined();
+        } else {
+          expect(we.exerciseKey).toBe(`server-${Number(we.exerciseId)}`);
+          expect(typeof we.fallbackExercise.name).toBe('string');
+          expect(Array.isArray(we.fallbackExercise.imageFiles)).toBeTruthy();
+        }
+      }
+      const ids = prescriptions.map(x => Number(x.workoutExerciseId));
+      expect(new Set(ids).size).toBe(ids.length);
 
-    for (const exercise of exercises) {
-      expect(exercise.exerciseKey).toBe(`exercise-${Number(exercise.exerciseId)}`);
-      expect(Array.isArray(exercise.imageFiles)).toBeTruthy();
+      await api.dispose();
+    } finally {
+      await login(page, 'coach');
+      const cleanupApi = await apiFor(page);
+      await cleanupFixture(cleanupApi, fixture);
+      await cleanupApi.dispose();
     }
-
-    const ids = exercises.map((x) => Number(x.exerciseId));
-    expect(new Set(ids).size).toBe(ids.length);
-
-    await api.dispose();
   });
 
   test('DETAIL: six exercises / sixteen concrete sets acceptance fixture is exact', async ({ page }) => {
     await login(page, 'coach');
     const coachApi = await apiFor(page);
     const userId = await currentUserId();
-    const fixture = await createAssignedFixture(
-      coachApi,
-      userId,
-      'MOBILE DETAIL 6X16',
-      1,
-      6,
-    );
+    const fixture = await createAssignedFixture(coachApi, userId, 'MOBILE DETAIL 6X16', 1, 6);
 
     let userApi: APIRequestContext | undefined;
 
@@ -480,81 +414,49 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
           LIMIT 1`,
         [userId, fixture.programs[0], fixture.workoutId],
       );
-
       expect(candidate, 'A létrehozott 6-exercise fixture user_workout rekordja hiányzik.').not.toBeNull();
 
-      const initialExerciseCount = await dbCount(
-        `SELECT COUNT(*)::text AS count
-           FROM public.user_workout_exercises
-          WHERE user_workout_id = $1`,
-        [candidate!.id],
-      );
-      expect(initialExerciseCount).toBe(6);
-
-      const initialSetCount = await dbCount(
+      const setCount = () => dbCount(
         `SELECT COUNT(*)::text AS count
            FROM public.user_workout_exercise_sets s
-           JOIN public.user_workout_exercises uwe
-             ON uwe.id = s.user_workout_exercise_id
+           JOIN public.user_workout_exercises uwe ON uwe.id = s.user_workout_exercise_id
           WHERE uwe.user_workout_id = $1`,
         [candidate!.id],
       );
-      expect(initialSetCount).toBe(18);
+      expect(await dbCount('SELECT COUNT(*)::text AS count FROM public.user_workout_exercises WHERE user_workout_id = $1', [candidate!.id])).toBe(6);
+      expect(await setCount()).toBe(18);
 
       await coachApi.dispose();
       await login(page, 'user');
       userApi = await apiFor(page);
 
-      const removableSetsResult = await db().query<{ id: number }>(
+      const removableSets = (await db().query<{ id: number }>(
         `SELECT s.id
            FROM public.user_workout_exercise_sets s
-           JOIN public.user_workout_exercises uwe
-             ON uwe.id = s.user_workout_exercise_id
+           JOIN public.user_workout_exercises uwe ON uwe.id = s.user_workout_exercise_id
           WHERE uwe.user_workout_id = $1
           ORDER BY s.id DESC
           LIMIT 2`,
         [candidate!.id],
-      );
-      const removableSets = removableSetsResult.rows;
+      )).rows;
       expect(removableSets).toHaveLength(2);
-
       for (const set of removableSets) {
-        await success(
-          await userApi.delete(API_ENDPOINTS.userWorkoutExerciseSets.byId(set.id)),
-          `DELETE acceptance set ${set.id}`,
-        );
+        await success(await userApi.delete(API_ENDPOINTS.userWorkoutExerciseSets.byId(set.id)), `DELETE acceptance set ${set.id}`);
       }
-
-      const exactExerciseCount = await dbCount(
-        `SELECT COUNT(*)::text AS count
-           FROM public.user_workout_exercises
-          WHERE user_workout_id = $1`,
-        [candidate!.id],
-      );
-      expect(exactExerciseCount).toBe(6);
-
-      const exactSetCount = await dbCount(
-        `SELECT COUNT(*)::text AS count
-           FROM public.user_workout_exercise_sets s
-           JOIN public.user_workout_exercises uwe
-             ON uwe.id = s.user_workout_exercise_id
-          WHERE uwe.user_workout_id = $1`,
-        [candidate!.id],
-      );
-      expect(exactSetCount).toBe(16);
+      expect(await setCount()).toBe(16);
 
       const body = await mobileSuccess(
-        await userApi.get(API_ENDPOINTS.mobile.userWorkout(candidate!.id), {
-          params: { language: LANGUAGE },
-        }),
+        await userApi.get(API_ENDPOINTS.mobile.userWorkout(candidate!.id), { params: { language: LANGUAGE } }),
         'GET exact 6/16 acceptance fixture',
       );
-
+      expect(Number(body.data.userWorkoutId)).toBe(Number(candidate!.id));
       expect(body.data.workoutExercises).toHaveLength(6);
       expect(body.data.userWorkoutSets).toHaveLength(16);
-
-      const exerciseIds = body.data.exercises.map((x: any) => Number(x.exerciseId));
-      expect(new Set(exerciseIds).size).toBe(exerciseIds.length);
+      const prescriptionIds = new Set((body.data.workoutExercises as any[]).map(x => Number(x.workoutExerciseId)));
+      expect(prescriptionIds.size).toBe(6);
+      for (const set of body.data.userWorkoutSets as any[]) {
+        expect(prescriptionIds.has(Number(set.workoutExerciseId))).toBeTruthy();
+      }
     } finally {
       await userApi?.dispose();
       await login(page, 'coach');
@@ -566,45 +468,43 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
 
   test('DETAIL: canonical single-workout response matches DB and is user-scoped', async ({ page }) => {
     // Create both sides of the ownership boundary through the real coach API.
-    // The test must never depend on a pre-existing foreign user_workout in the dump.
     await login(page, 'coach');
     const coachApi = await apiFor(page);
     const userId = await currentUserId();
     const foreignUserId = await anotherCoachClientUserId(userId);
 
     const ownFixture = await createAssignedFixture(coachApi, userId, 'MOBILE DETAIL OWN', 1, 1);
-    const foreignFixture = await createAssignedFixture(
-      coachApi,
-      foreignUserId,
-      'MOBILE DETAIL FOREIGN',
-      1,
-      1,
-    );
+    const foreignFixture = await createAssignedFixture(coachApi, foreignUserId, 'MOBILE DETAIL FOREIGN', 1, 1);
 
     try {
       await coachApi.dispose();
       await login(page, 'user');
       const api = await apiFor(page);
 
-      const fixture = await findOwnedUserWorkout(userId, true);
+      const fixture = await dbOne<{ id: number; program_id: number; program_workout_id: number; workout_id: number; scheduled_at: string; detail_version: string }>(
+        `SELECT id, program_id, program_workout_id, workout_id, scheduled_at::text AS scheduled_at, detail_version::text AS detail_version
+           FROM public.user_workouts
+          WHERE user_id = $1 AND program_id = $2
+          ORDER BY id DESC LIMIT 1`,
+        [userId, ownFixture.programs[0]],
+      );
       expect(fixture, 'Szigorú detail teszthez létrehozott saját user_workout hiányzik.').not.toBeNull();
-      expect(ownFixture.programs).toContain(Number(fixture!.program_id));
 
       const body = await mobileSuccess(
-        await api.get(`/api/mobile/v1/user-workouts/${fixture!.id}`, {
-          params: { language: LANGUAGE },
-        }),
+        await api.get(API_ENDPOINTS.mobile.userWorkout(fixture!.id), { params: { language: LANGUAGE } }),
         'GET user-workout detail',
       );
-
       const data = body.data;
-      expect(Number(data.userWorkout.userWorkoutId)).toBe(Number(fixture!.id));
-      expect(Number(data.userWorkout.programId)).toBe(Number(fixture!.program_id));
-      expect(Number(data.userWorkout.programWorkoutId)).toBe(Number(fixture!.program_workout_id));
-      expect(Number(data.userWorkout.workoutId)).toBe(Number(fixture!.workout_id));
+      expect(Number(data.userWorkoutId)).toBe(Number(fixture!.id));
+      expect(Number(data.detailVersion)).toBe(Number(fixture!.detail_version));
       expect(data.userWorkout.scheduledDate).toBe(fixture!.scheduled_at.slice(0, 10));
+      expect(['SCHEDULED', 'IN_PROGRESS', 'COMPLETED']).toContain(data.userWorkout.status);
+      // a szülő azonosítók a userWorkout-ban nem szerepelnek, a workout-ban igen
+      expect(data.userWorkout.userWorkoutId).toBeUndefined();
+      expect(Number(data.workout.programWorkoutId)).toBe(Number(fixture!.program_workout_id));
+      expect(Number(data.workout.programId)).toBe(Number(fixture!.program_id));
+      expect(Number(data.workout.workoutId)).toBe(Number(fixture!.workout_id));
 
-      const sets = data.userWorkoutSets as any[];
       const setDbCount = await dbCount(
         `SELECT COUNT(*)::text AS count
            FROM public.user_workout_exercise_sets s
@@ -612,50 +512,29 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
           WHERE uwe.user_workout_id = $1`,
         [fixture!.id],
       );
-      expect(sets).toHaveLength(setDbCount);
+      expect(data.userWorkoutSets).toHaveLength(setDbCount);
 
-      const workoutExerciseIds = (data.workoutExercises as any[]).map((x) => Number(x.workoutExerciseId));
-      const dbWorkoutExercises = await dbCount(
-        `SELECT COUNT(*)::text AS count FROM public.workout_exercises WHERE workout_id = $1`,
-        [fixture!.workout_id],
-      );
-      expect(workoutExerciseIds.length).toBe(dbWorkoutExercises);
+      const workoutExerciseIds = (data.workoutExercises as any[]).map(x => Number(x.workoutExerciseId));
+      expect(workoutExerciseIds.length).toBe(
+        await dbCount('SELECT COUNT(*)::text AS count FROM public.workout_exercises WHERE workout_id = $1', [fixture!.workout_id]));
       expect(new Set(workoutExerciseIds).size).toBe(workoutExerciseIds.length);
-
       for (const we of data.workoutExercises as any[]) {
-        expect(we.exerciseKey).toBe(`exercise-${Number(we.exerciseId)}`);
-        expect(Number(we.workoutId)).toBe(Number(fixture!.workout_id));
+        expect(typeof we.exerciseKey).toBe('string');
         expect(Number(we.targetSets)).toBeGreaterThan(0);
         expect(Number(we.targetReps)).toBeGreaterThan(0);
       }
 
-      const exerciseIds = (data.exercises as any[]).map((x) => Number(x.exerciseId));
-      expect(new Set(exerciseIds).size).toBe(exerciseIds.length);
-      for (const exercise of data.exercises as any[]) {
-        expect(exercise.exerciseKey).toBe(`exercise-${Number(exercise.exerciseId)}`);
-        expect(Array.isArray(exercise.imageFiles)).toBeTruthy();
-      }
-
-      const foreign = await dbOne<{ id: number; user_id: number }>(
-        `SELECT id, user_id
-           FROM public.user_workouts
-          WHERE user_id = $1
-          ORDER BY id DESC
-          LIMIT 1`,
+      const foreign = await dbOne<{ id: number }>(
+        'SELECT id FROM public.user_workouts WHERE user_id = $1 ORDER BY id DESC LIMIT 1',
         [foreignUserId],
       );
       expect(foreign, 'A foreign ownership fixture user_workout rekordja hiányzik.').not.toBeNull();
-
-      const foreignResponse = await api.get(`/api/mobile/v1/user-workouts/${foreign!.id}`, {
-        params: { language: LANGUAGE },
-      });
+      const foreignResponse = await api.get(API_ENDPOINTS.mobile.userWorkout(foreign!.id), { params: { language: LANGUAGE } });
       const foreignBody = await mobileRejected(foreignResponse, 'foreign user-workout detail');
       expect([401, 403, 404]).toContain(foreignResponse.status());
       expect(foreignBody.data).toBeNull();
 
-      const missingResponse = await api.get(API_ENDPOINTS.mobile.userWorkout(2147483647), {
-        params: { language: LANGUAGE },
-      });
+      const missingResponse = await api.get(API_ENDPOINTS.mobile.userWorkout(2147483647), { params: { language: LANGUAGE } });
       const missingBody = await mobileRejected(missingResponse, 'missing user-workout detail');
       expect([400, 404]).toContain(missingResponse.status());
       expect(missingBody.data).toBeNull();
@@ -669,7 +548,6 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
       await cleanupApi.dispose();
     }
   });
-
   test('AUTH: all three mobile endpoints reject missing credentials', async () => {
     const api = await unauthenticatedApi();
     try {
@@ -753,7 +631,7 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
 
       const requestBody = {
         status: 'IN_PROGRESS',
-        startedAt: '2035-06-01T10:00:00Z',
+        startedAt: '2025-06-01T10:00:00Z',
         completedAt: null,
         userNote: 'mobile strict E2E state',
         sets: [
@@ -775,7 +653,7 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
       );
 
       expect(first.data.userWorkout.status).toBe('IN_PROGRESS');
-      expect(first.data.userWorkout.startedAt).toBe('2035-06-01T10:00:00Z');
+      expect(first.data.userWorkout.startedAt).toBe('2025-06-01T10:00:00Z');
       expect(first.data.userWorkout.completedAt).toBeNull();
 
       const afterFirst = await dbOne<any>(
@@ -875,8 +753,8 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
       await login(page, 'user');
       const userApi = await apiFor(page);
 
-      const startedAt = '2035-07-01T10:00:00Z';
-      const completedAt = '2035-07-01T11:00:00Z';
+      const startedAt = '2025-07-01T10:00:00Z';
+      const completedAt = '2025-07-01T11:00:00Z';
 
       await mobileSuccess(
         await userApi.put(`/api/mobile/v1/user-workouts/${row!.id}/state`, {
@@ -919,13 +797,13 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
       expect(response.data.programProgress.progressPercent).toBeLessThanOrEqual(100);
 
       const workoutDb = await dbOne<any>(
-        `SELECT completed, performed_at::text AS performed_at, notes
+        `SELECT completed, to_char(performed_at AT TIME ZONE 'UTC', 'YYYY-MM-DD HH24:MI:SS') AS performed_at, notes
            FROM public.user_workouts
           WHERE id = $1`,
         [row!.id],
       );
       expect(workoutDb?.completed).toBe(true);
-      expect(workoutDb?.performed_at).toContain('2035-07-01 11:00:00');
+      expect(workoutDb?.performed_at).toContain('2025-07-01 11:00:00');
       expect(workoutDb?.notes).toBe('strict completion E2E');
 
       const persistedSets = await db().query<any>(
@@ -1044,7 +922,7 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
         {
           data: {
             status: 'IN_PROGRESS',
-            startedAt: '2035-08-01T10:00:00Z',
+            startedAt: '2025-08-01T10:00:00Z',
             completedAt: null,
             userNote: 'must rollback',
             sets: [
@@ -1138,7 +1016,7 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
       const duplicate = await userApi.put(`/api/mobile/v1/user-workouts/${row!.id}/state`, {
         data: {
           status: 'IN_PROGRESS',
-          startedAt: '2035-09-01T10:00:00Z',
+          startedAt: '2025-09-01T10:00:00Z',
           completedAt: null,
           userNote: null,
           sets: [
@@ -1153,7 +1031,7 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
       const negative = await userApi.put(`/api/mobile/v1/user-workouts/${row!.id}/state`, {
         data: {
           status: 'IN_PROGRESS',
-          startedAt: '2035-09-01T10:00:00Z',
+          startedAt: '2025-09-01T10:00:00Z',
           completedAt: null,
           userNote: null,
           sets: [
@@ -1211,7 +1089,7 @@ test.describe('MOBILE v1 REST API – strict E2E contract', () => {
       const update = await api.put(`/api/mobile/v1/user-workouts/${foreign!.id}/state`, {
         data: {
           status: 'IN_PROGRESS',
-          startedAt: '2035-10-01T10:00:00Z',
+          startedAt: '2025-10-01T10:00:00Z',
           completedAt: null,
           userNote: 'must not leak',
           sets: [],

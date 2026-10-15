@@ -7,6 +7,8 @@ const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:4200';
 
 export default defineConfig({
   testDir: './tests',
+  // Alapadatok a tesztekhez (idempotens; E2E_SKIP_BASELINE=1 kihagyja).
+  globalSetup: './global-setup.ts',
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: 0,

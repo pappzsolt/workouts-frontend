@@ -3,6 +3,7 @@ import { API_ENDPOINTS } from '../../helpers/api-endpoints';
 import { apiFor, closeDb, currentUserId, db, dbOne, login, success } from '../../helpers/e2e-next-3-helpers';
 import { assign, attach, cleanupAuditFixture, createAuditFixture } from '../../helpers/audit-fixture';
 import { setTestLanguage } from '../../helpers/read-only';
+import { chooseSearchableOption } from '../../helpers/searchable-select';
 
 test.afterAll(closeDb);
 test('COACH GUI: workout exercise and added set targets persist through API, DB, reload and owner read', async ({ page }) => {
@@ -31,13 +32,13 @@ test('COACH GUI: workout exercise and added set targets persist through API, DB,
     const surface = page.locator('app-user-workout-exercise-manager');
     const openManager = async () => {
       await page.goto('/coach/regi?section=workout-exercise-manager');
-      await surface.locator('app-user-select').getByRole('combobox').selectOption({ label: row!.username });
-      await surface.locator('app-coach-program-select').getByRole('combobox').selectOption({ label: row!.program_name });
+      await chooseSearchableOption(surface.locator('app-user-select').getByRole('combobox'), row!.username);
+      await chooseSearchableOption(surface.locator('app-coach-program-select').getByRole('combobox'), row!.program_name);
       const loaded = page.waitForResponse(response => response.request().method() === 'GET' &&
         new URL(response.url()).pathname === API_ENDPOINTS.userWorkoutExercises.byUserProgram(userId, fixture.programId));
       await surface.getByRole('button', { name: /^(program adatok betöltése|load program data|programmdaten laden)$/i }).click();
       expect((await loaded).ok()).toBe(true);
-      await expect(surface.getByRole('heading', { level: 3 })).toHaveText(row!.workout_name);
+      await expect(surface.getByRole('heading', { level: 3, name: row!.workout_name, exact: true })).toBeVisible();
       await expect(surface.locator('.selected-exercise').getByRole('heading', { level: 4 })).toHaveText(row!.exercise_name);
       await expect(surface.getByRole('spinbutton', { name: /^Cél ismétlés$/ })).toBeVisible();
     };

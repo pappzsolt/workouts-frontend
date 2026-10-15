@@ -8,7 +8,7 @@ test('USER READ: own member and public coach list; protected coach/admin endpoin
   const api = await apiFor(page);
   const userId = await currentUserId();
 
-  const member = await success(await api.get(`/api/members/${userId}`), 'GET own member');
+  const member = await success(await api.get(`/api/members/users/${userId}`), 'GET own member');
   expect(Number(member.data?.id)).toBe(userId);
 
   const dbUser = await dbOne<{ id:number; username:string }>(

@@ -36,7 +36,7 @@ test('Builder: two GUI-selected users persist; reload retains both without repea
         if (response.request().method() === 'POST' && new URL(response.url()).pathname === API_ENDPOINTS.programs.assign) responses.push(response);
       });
       await page.getByTestId('finish-program').click();
-      await expect(page).toHaveURL(/\/coach\/dashboard\?/);
+      await expect(page).toHaveURL(/\/coach\/regi\?/);
       expect(responses).toHaveLength(2);
       expect(responses.map(response => response.request().postDataJSON().userId)).toEqual([first, second]);
       for (const response of responses) {
@@ -55,7 +55,7 @@ test('Builder: two GUI-selected users persist; reload retains both without repea
       await expect(secondCheckbox).toBeDisabled();
       await expect(page.getByTestId('finish-program')).toBeEnabled();
       await page.getByTestId('finish-program').click();
-      await expect(page).toHaveURL(/\/coach\/dashboard\?/);
+      await expect(page).toHaveURL(/\/coach\/regi\?/);
       expect(responses).toHaveLength(2);
       expect((await db().query('SELECT id,user_id,status,assigned_at::text FROM user_programs WHERE program_id=$1 ORDER BY user_id', [programId])).rows).toEqual(snapshot);
     } finally { await cleanupProgramListFixture(api, f); }
@@ -94,7 +94,7 @@ test('Existing Builder: adding a second user preserves the first assignment and 
       const response = await pending;
       expect(response.status()).toBe(200);
       expect((await response.json()).success).toBe(true);
-      await expect(page).toHaveURL(/\/coach\/dashboard\?/);
+      await expect(page).toHaveURL(/\/coach\/regi\?/);
       expect(requests).toEqual([second]);
       expect((await db().query('SELECT id,user_id,status,assigned_at::text FROM user_programs WHERE program_id=$1 AND user_id=$2', [programId, first])).rows).toEqual(original);
       const assigned = await success(await api.get(API_ENDPOINTS.programs.assignedUsers(programId)), 'Verify all assigned users');

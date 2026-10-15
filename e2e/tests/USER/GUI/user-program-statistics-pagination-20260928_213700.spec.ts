@@ -28,43 +28,30 @@ test('USER GUI: statistics pages match API/DB, next and previous preserve exact 
       const dbIds=(await db().query("SELECT program_id FROM user_programs WHERE user_id=$1 AND status='assigned' ORDER BY program_id",[userId])).rows.map(r=>r.program_id);
       expect([...ids].sort((a,b)=>a-b)).toEqual(dbIds);
       for(const id of f.ids) expect(ids).toContain(id);
+      // Oldalanként egy program (heti volumen és haladás részletesen), előre-hátra lapozással.
       const surface=page.locator('app-user-program-statistics');
       const cards=surface.getByTestId('statistics-program');
-      const pager=surface.locator('app-pagination');
-      const previous=pager.getByRole('button', { name: /^(◀\s*)?(előző|previous|zurück)$/i });
-      const next=pager.getByRole('button', { name: /^(következő|next|weiter)(\s*▶)?$/i });
-      let pageSize = 6;
+      const pager=surface.getByRole('navigation', { name: /^(program statisztikák lapozása|program statistics pages|programmstatistik blättern)$/i });
+      const previous=pager.getByRole('button', { name: /^(előző program|previous program|vorheriges programm)$/i });
+      const next=pager.getByRole('button', { name: /^(következő program|next program|nächstes programm)$/i });
       const assertPage=async(number:number)=>{
-        const expected=programs.slice((number-1)*pageSize,number*pageSize);
-        await expect(cards).toHaveCount(expected.length);
-        await expect.poll(()=>cards.evaluateAll(els=>els.map(el=>Number(el.getAttribute('data-program-id'))))).toEqual(expected.map(p=>p.programId));
-        await expect(cards.locator('h3')).toHaveText(expected.map(p=>p.programName));
-        await expect(pager).toContainText(`${number} / ${Math.ceil(programs.length/pageSize)}`);
+        await expect(cards).toHaveCount(1);
+        await expect(cards).toHaveAttribute('data-program-id', String(programs[number-1].programId));
+        await expect(cards.locator('h3')).toHaveText(programs[number-1].programName);
+        await expect(pager).toContainText(`${number} / ${programs.length}`);
       };
       await assertPage(1);
       await expect(previous).toBeDisabled();
       await next.click(); await assertPage(2);
       await previous.click(); await assertPage(1);
       const rendered:number[]=[];
-      for(let number=1;number<=Math.ceil(programs.length/6);number++){
+      for(let number=1;number<=programs.length;number++){
         if(number>1) await next.click();
         await assertPage(number);
-        rendered.push(...await cards.evaluateAll(els=>els.map(el=>Number(el.getAttribute('data-program-id')))));
+        rendered.push(Number(await cards.getAttribute('data-program-id')));
       }
       expect(rendered).toEqual(ids);
       await expect(next).toBeDisabled();
-      const sizeSelector = pager.getByRole('combobox', { name: /^(elemek oldalanként|items per page|einträge pro seite)$/i });
-      await expect(sizeSelector.locator('option:checked')).toHaveText('6');
-      await sizeSelector.selectOption({ label: '12' });
-      pageSize = 12;
-      await assertPage(1);
-      await expect(previous).toBeDisabled();
-      await next.click();
-      await assertPage(2);
-      await expect(pager.locator('[aria-live="polite"]')).toContainText(String(programs.length));
-      await sizeSelector.selectOption({ label: '6' });
-      pageSize = 6;
-      await assertPage(1);
       await assertNoDataMutation(mutations);
       expect((await db().query("SELECT program_id FROM user_programs WHERE user_id=$1 AND status='assigned' ORDER BY program_id",[userId])).rows.map(r=>r.program_id)).toEqual(dbIds);
     } finally { await cleanupProgramListFixture(coachApi,f); }

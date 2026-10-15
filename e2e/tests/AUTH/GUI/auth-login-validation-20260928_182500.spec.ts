@@ -23,8 +23,13 @@ test.describe('AUTH GUI: login validation', () => {
 
     await expect(username).toHaveClass(/ng-invalid/);
     await expect(password).toHaveClass(/ng-invalid/);
-    await expect(page.locator('form app-message')).toBeVisible();
-    await expect(page.locator('form app-message')).toContainText(/\S/);
+    // mindkét kötelező mező alatt saját hibaüzenet jelenik meg
+    const messages = page.locator('form app-message');
+    await expect(messages).toHaveCount(2);
+    for (const message of await messages.all()) {
+      await expect(message).toBeVisible();
+      await expect(message).toContainText(/\S/);
+    }
     expect(loginRequests).toEqual([]);
 
   });

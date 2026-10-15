@@ -874,7 +874,10 @@
     "noPrograms": "Nincsenek hozzárendelt programok.",
     "days": "nap",
     "page": "Oldal",
-    "noExercises": "Ehhez a workouthoz nincs exercise."
+    "noExercises": "Ehhez a workouthoz nincs exercise.",
+    "pagerLabel": "Program statisztikák lapozása",
+    "previousProgram": "Előző program",
+    "nextProgram": "Következő program"
   },
   "pagination": {
     "page": "Oldal",

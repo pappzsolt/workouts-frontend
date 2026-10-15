@@ -12,6 +12,7 @@
   },
   "include": [
     "playwright.config.ts",
+    "global-setup.ts",
     "tests/**/*.ts",
     "playwright.contract.config.ts",
     "ui-contract/**/*.ts"

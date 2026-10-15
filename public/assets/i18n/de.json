@@ -872,7 +872,10 @@
     "noPrograms": "Keine zugewiesenen Programme.",
     "days": "Tage",
     "page": "Seite",
-    "noExercises": "Dieses Training enthält keine Übungen."
+    "noExercises": "Dieses Training enthält keine Übungen.",
+    "pagerLabel": "Programmstatistik blättern",
+    "previousProgram": "Vorheriges Programm",
+    "nextProgram": "Nächstes Programm"
   },
   "pagination": {
     "page": "Seite",

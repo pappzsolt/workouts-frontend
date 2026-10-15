@@ -9,7 +9,7 @@ test('COACH MOBILE GUI: workout search and clearing preserve the loaded cards wi
   await loginAs(page, process.env.E2E_COACH_USERNAME, process.env.E2E_COACH_PASSWORD, '/coach/dashboard');
   await assertWorkoutListSearch(page, async () => {
     await page.goto('/coach/regi?section=workouts');
-    await expect(page).toHaveURL(/\/coach\/dashboard\?section=workouts$/);
+    await expect(page).toHaveURL(/\/coach\/regi\?section=workouts$/);
   });
   expect(await page.locator('body').evaluate(el => el.scrollWidth)).toBeLessThanOrEqual(391);
 });

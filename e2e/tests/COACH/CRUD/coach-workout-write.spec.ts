@@ -303,7 +303,7 @@ async function updateWorkoutThroughUi(
 }
 
 async function waitForAssignComponent(page: Page): Promise<void> {
-  await expect(page).toHaveURL(/\/coach\/assign-workouts-exercises\?.*/, {
+  await expect(page).toHaveURL(/\/coach\/regi\/assign-workouts-exercises\?.*/, {
     timeout: 15_000,
   });
 

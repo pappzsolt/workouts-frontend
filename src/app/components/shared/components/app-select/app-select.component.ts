@@ -29,7 +29,7 @@ import {
   FormsModule,
   NgModel,
 } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatAutocompleteModule, MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { matchesSearch } from '../app-search/search-match';
 import { TranslateService, TranslatePipe } from '@ngx-translate/core';
@@ -124,7 +124,10 @@ export class AppSelectComponent<T extends SelectValue = string>
     this.cdr.markForCheck();
   }
   onBlur(): void {
-    this.restoreSelection();
+    // Egérrel választásnál a mező már a lenyomáskor elveszíti a fókuszt. Ha ilyenkor
+    // visszaállnánk, a lista azonnal a teljes listára váltana, és a felengedés már egy
+    // másik opcióra esne. Nyitott listánál a (closed) esemény állítja vissza a kijelölést.
+    if (!this.searchable || !this.autocompleteTrigger?.panelOpen) this.restoreSelection();
     this.propagateTouched();
     this.checkInput();
   }
@@ -133,6 +136,7 @@ export class AppSelectComponent<T extends SelectValue = string>
   @Input() searchPlaceholder = '';
   private searching = false;
   @ViewChild('searchInput') private searchInput?: ElementRef<HTMLInputElement>;
+  @ViewChild(MatAutocompleteTrigger) private autocompleteTrigger?: MatAutocompleteTrigger;
 
   searchTerm = '';
   searchValue: SelectValue = undefined;

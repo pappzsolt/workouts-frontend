@@ -634,7 +634,8 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
             orderIndex: 0,
           },
         }),
-        'PUT order-index invalid IDs', 403,
+        // nem létező workout: a sorrend-végpont 404-et ad („A workout nem található.”)
+        'PUT order-index invalid IDs', 404,
       );
     } finally {
       await api.dispose();

@@ -108,7 +108,8 @@ test('ADMIN GUI: shared audit selects send their string and numeric values and c
   const filteredPage = await expectAuditPage(await filtered, page);
   expect(filteredPage.content.length, 'The actual admin login must appear in the login audit.').toBeGreaterThan(0);
   expect(filteredPage.content.every((log: any) => log.accountType === 'USER')).toBe(true);
-  const size = surface.getByRole('combobox', { name: /^(sorok oldalanként|rows per page|zeilen pro seite)$/i });
+  // Az oldalméret-választó a lapozó része („Elemek oldalanként”).
+  const size = surface.locator('app-pagination').getByRole('combobox', { name: /^(elemek oldalanként|items per page|einträge pro seite)$/i });
   const resized = page.waitForResponse(response => {
     const url = new URL(response.url());
     return response.request().method() === 'GET' && url.pathname === auditPath &&
@@ -118,7 +119,7 @@ test('ADMIN GUI: shared audit selects send their string and numeric values and c
   const resizedPage = await expectAuditPage(await resized, page);
   expect(resizedPage.size).toBe(25);
   await expect(size.locator('option:checked')).toHaveText('25');
-  await expect(surface.locator('app-pagination').getByRole('combobox')).toHaveCount(0);
+  await expect(surface.locator('app-pagination').getByRole('combobox')).toHaveCount(1);
   const cleared = page.waitForResponse(response => {
     const url = new URL(response.url());
     return response.request().method() === 'GET' && url.pathname === auditPath &&

@@ -12,6 +12,19 @@ cp .env.example .env
 
 Fill in the existing test-user credentials and PostgreSQL read-only connection values in `.env`.
 
+## Alapadatok (global-setup.ts)
+
+A tesztek futás előtt (globalSetup) ellenőrzik, hogy az adatbázisban megvan-e a szükséges alapadat,
+és ami hiányzik, azt a valódi API-n keresztül létrehozzák (idempotens, meglévő adatot nem módosít):
+
+- az `E2E_USER` legyen az `E2E_COACH` ügyfele (ezt nem hozza létre, csak ellenőrzi),
+- a coachnak legyen még egy ügyfele: `e2e-alap-ugyfel2`,
+- a coachnak legyen programja edzésekkel (`E2E alap program`), kiosztva az E2E usernek,
+- legyen egy másik coach (`e2e-alap-masik-coach`) saját ügyféllel és programmal (jogosultsági tesztekhez).
+
+Így a tesztek egy Liquibase-reset után (`./mvnw liquibase:update -Preset ...`) is futtathatók.
+Kihagyás: `E2E_SKIP_BASELINE=1 npx playwright test`.
+
 ## Run
 
 Coach:

@@ -874,7 +874,10 @@
     "noPrograms": "No assigned programs.",
     "days": "days",
     "page": "Page",
-    "noExercises": "There are no exercises in this workout."
+    "noExercises": "There are no exercises in this workout.",
+    "pagerLabel": "Program statistics pages",
+    "previousProgram": "Previous program",
+    "nextProgram": "Next program"
   },
   "pagination": {
     "page": "Page",
