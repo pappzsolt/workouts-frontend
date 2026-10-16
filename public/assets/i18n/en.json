@@ -78,7 +78,8 @@
     "exercises": "Exercises",
     "back": "Back",
     "close": "Close",
-    "done": "Done"
+    "done": "Done",
+    "days": "days"
   },
   "adminChoiceEdit": {
     "title": "Edit Entries",
@@ -1180,7 +1181,8 @@
         "active": "Active",
         "upcoming": "Upcoming",
         "finished": "Finished"
-      }
+      },
+      "workouts": "Workouts"
     },
     "editor": {
       "title": "Edit program",

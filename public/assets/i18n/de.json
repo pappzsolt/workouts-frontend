@@ -78,7 +78,8 @@
     "exercises": "Übungen",
     "back": "Zurück",
     "close": "Schließen",
-    "done": "Fertig"
+    "done": "Fertig",
+    "days": "Tage"
   },
   "adminChoiceEdit": {
     "title": "Einträge bearbeiten",
@@ -1178,7 +1179,8 @@
         "active": "Aktiv",
         "upcoming": "Demnächst",
         "finished": "Beendet"
-      }
+      },
+      "workouts": "Trainings"
     },
     "editor": {
       "title": "Programm bearbeiten",

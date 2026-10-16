@@ -78,7 +78,8 @@
     "exercises": "Gyakorlatok",
     "back": "Vissza",
     "close": "Bezárás",
-    "done": "Kész"
+    "done": "Kész",
+    "days": "nap"
   },
   "adminChoiceEdit": {
     "title": "Bejegyzések módosítása",
@@ -1180,7 +1181,8 @@
         "active": "Aktív",
         "upcoming": "Hamarosan",
         "finished": "Befejezett"
-      }
+      },
+      "workouts": "Edzések"
     },
     "editor": {
       "title": "Program szerkesztése",

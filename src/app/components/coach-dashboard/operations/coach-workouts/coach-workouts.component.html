@@ -75,15 +75,7 @@
                FEJLÉC
                ================================================== -->
 
-          <div
-            class="flex h-28 items-center justify-center bg-gradient-to-r from-primary-700 to-primary-800"
-          >
-            <span
-              class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-3xl shadow-md transition duration-200 group-hover:scale-105"
-            >
-              <app-icon name="flame" sizeClass="h-5 w-5" />
-            </span>
-          </div>
+          <app-card-banner icon="flame" />
 
           <!-- ==================================================
                TARTALOM
@@ -109,30 +101,16 @@
                  ================================================== -->
 
             <div class="mt-auto grid grid-cols-2 gap-3 border-t border-surface-100 pt-4">
-              <!-- IDŐTARTAM -->
+              <app-card-stat
+                [label]="'coachWorkouts.duration' | translate"
+                [value]="w.durationMinutes"
+                [unit]="'common.minutes' | translate"
+              />
 
-              <div class="rounded-lg bg-surface-50 px-3 py-2.5">
-                <span class="block text-xs font-medium text-content-500">
-                  {{ 'coachWorkouts.duration' | translate }}
-                </span>
-
-                <span class="mt-1 block text-sm font-semibold text-content-800">
-                  {{ w.durationMinutes }}
-                  {{ 'common.minutes' | translate }}
-                </span>
-              </div>
-
-              <!-- GYAKORLATOK -->
-
-              <div class="rounded-lg bg-surface-50 px-3 py-2.5">
-                <span class="block text-xs font-medium text-content-500">
-                  {{ 'coachWorkouts.exercises' | translate }}
-                </span>
-
-                <span class="mt-1 block text-sm font-semibold text-content-800">
-                  {{ w.exercises?.length || 0 }}
-                </span>
-              </div>
+              <app-card-stat
+                [label]="'coachWorkouts.exercises' | translate"
+                [value]="w.exercises?.length || 0"
+              />
             </div>
 
             <!-- ==================================================

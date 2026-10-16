@@ -36,6 +36,8 @@ import { AppButtonComponent } from '../../components/shared/components/app-butto
 import { AppCardComponent } from '../../components/shared/components/app-card/app-card.component';
 import { FormFieldComponent } from './components/form-field/form-field.component';
 import { AppIconComponent } from './components/app-icon/app-icon.component';
+import { AppCardBannerComponent } from './components/app-card-banner/app-card-banner.component';
+import { AppCardStatComponent } from './components/app-card-stat/app-card-stat.component';
 
 export const SHARED_IMPORTS = [
   AppFormValidationDirective,
@@ -68,4 +70,6 @@ export const SHARED_IMPORTS = [
   AppCardComponent,
   FormFieldComponent,
   AppIconComponent,
+  AppCardBannerComponent,
+  AppCardStatComponent,
 ];
