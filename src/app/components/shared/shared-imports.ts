@@ -31,7 +31,6 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { MessageComponent } from './components/message/message.component';
 import { PaginationComponent } from '../../components/shared/components/pagination/pagination.component';
-import { BackButtonComponent } from '../shared/components/back-button/back-button.component';
 import { AppButtonComponent } from '../../components/shared/components/app-button/app-button.component';
 import { AppCardComponent } from '../../components/shared/components/app-card/app-card.component';
 import { FormFieldComponent } from './components/form-field/form-field.component';
@@ -64,7 +63,6 @@ export const SHARED_IMPORTS = [
   TranslatePipe,
   MessageComponent,
   ConfirmDialogComponent,
-  BackButtonComponent,
   PaginationComponent,
   AppButtonComponent,
   AppCardComponent,
