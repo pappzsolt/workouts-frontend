@@ -36,13 +36,15 @@
       (optionSelected)="selectSearchOption($event.option.value)"
       (closed)="restoreSelection()"
     >
+      <!-- Az opciókon a lenyomás nem veszi el a fókuszt a keresőmezőtől: így egérrel
+           választáskor nem fut le a blur, és a lista nem vált át a felengedés előtt. -->
       @if (placeholder && !placeholderDisabled && !searchTerm.trim()) {
-        <mat-option [value]="placeholderValue">{{ placeholder | translate }}</mat-option>
+        <mat-option [value]="placeholderValue" (mousedown)="$event.preventDefault()">{{ placeholder | translate }}</mat-option>
       }
       @for (option of filteredOptions; track option.value) {
-        <mat-option [value]="option.value">{{ option.label | translate }}</mat-option>
+        <mat-option [value]="option.value" (mousedown)="$event.preventDefault()">{{ option.label | translate }}</mat-option>
       } @empty {
-        <mat-option disabled>{{ 'appSearch.noResults' | translate }}</mat-option>
+        <mat-option disabled (mousedown)="$event.preventDefault()">{{ 'appSearch.noResults' | translate }}</mat-option>
       }
     </mat-autocomplete>
   </div>
