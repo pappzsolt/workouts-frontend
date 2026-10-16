@@ -197,14 +197,27 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   }
 
   onRestFinished(setId: number): void {
+    // Never override a manual navigation. Only advance if the user is still
+    // viewing the completed set whose timer has just expired.
     if (this.restTimerSetId !== setId) return;
-    if (this.currentSet?.id !== setId || this.currentSet.completed !== true) return;
+    const current = this.currentSet;
+    if (!current || current.id !== setId || current.completed !== true) return;
     if (this.hasNextSet) this.goToSet(this.currentSetIndex + 1);
   }
 
-  private selectLastCompletedTimer(): void {
+  private selectLastCompletedTimer(preferredSetId?: number): void {
     const sets = this.workoutExercise?.userWorkoutExerciseSets ?? [];
-    const last = [...sets].reverse().find(set => set.completed === true && set.id != null);
+    // Immediately after a successful save, the edited set is authoritative.
+    // On page reload use the persisted completion timestamp, NOT set order.
+    const preferred = preferredSetId == null ? undefined
+      : sets.find(set => set.id === preferredSetId && set.completed === true);
+    const completed = sets.filter(set => set.completed === true && set.id != null);
+    const last = preferred ?? completed.reduce<UserWorkoutExerciseSetDto | undefined>((latest, set) => {
+      const timestamp = set.completedAt ? Date.parse(set.completedAt) : NaN;
+      const previous = latest?.completedAt ? Date.parse(latest.completedAt) : NaN;
+      if (!Number.isFinite(timestamp)) return latest;
+      return !Number.isFinite(previous) || timestamp > previous ? set : latest;
+    }, undefined);
     this.restTimerSetId = last?.id ?? null;
     this.restTimerRevision++;
   }
@@ -324,12 +337,18 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       map(response => {
         if (!response.success) throw new Error(responseMessage([response], 'userExerciseDetail.saveError'));
         confirmed.completed = args[5];
-        if (isCurrent() && completed !== undefined) {
-          this.selectLastCompletedTimer();
+        // An older queued response must not replace newer pending UI state.
+        const isLatestSave = this.pendingSetSaves.get(key) === entry;
+        if (isCurrent() && isLatestSave && completed !== undefined) {
+          if (completed) {
+            this.selectLastCompletedTimer(set.id ?? undefined);
+          } else {
+            this.selectLastCompletedTimer();
+          }
         }
         if (isCurrent()) {
           this.updateExerciseDone();
-          if (showSuccessMessage || response.message) {
+          if (isLatestSave && (showSuccessMessage || response.message)) {
             this.message = responseMessage([response], completed === undefined
               ? 'userExerciseDetail.saveSuccess' : 'userExerciseDetail.setUpdated');
             this.messageParams = completed !== undefined && !response.message ? { setNumber: set.setNumber } : {};
