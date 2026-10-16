@@ -67,12 +67,6 @@ export class DashboardNavigationComponent {
       else if (segments[3] === 'edit') label = 'coachExerciseEdit.title';
     } else if (page === 'profile') {
       label = 'coachProfile.title';
-    } else if (page === 'regi') {
-      this.items.push({ label: 'menu.coachLegacy', url: '/coach/regi' });
-      if (segments[2] === 'program-builder') label = 'coachProgramBuilder.title';
-      else if (segments[2] === 'assign-workouts-exercises' || segments[4] === 'workouts') label = 'assignWorkoutExercises.title';
-      else if (segments[3] === 'new') label = 'coachNewProgram.title';
-      else if (segments[4] === 'edit') label = 'coachProgramEdit.title';
     }
     if (label) this.items.push({ label, url: this.router.url });
   }

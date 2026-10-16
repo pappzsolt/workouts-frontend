@@ -302,19 +302,6 @@ async function updateWorkoutThroughUi(
   expect(requestBody.intensityLevel).toBe(expectedAfter.intensityLevel);
 }
 
-async function waitForAssignComponent(page: Page): Promise<void> {
-  await expect(page).toHaveURL(/\/coach\/regi\/assign-workouts-exercises\?.*/, {
-    timeout: 15_000,
-  });
-
-  await expect(page.locator('app-assign-workouts-exercises')).toBeAttached({
-    timeout: 15_000,
-  });
-
-  await expect(page.locator('app-assign-workouts-exercises').getByRole('heading', { level: 2 })).toBeVisible();
-
-}
-
 async function assignExerciseThroughUi(
   page: Page,
   workout: WorkoutData,
@@ -322,35 +309,22 @@ async function assignExerciseThroughUi(
   exerciseId: number,
   exerciseName: string,
 ): Promise<void> {
-  await page.goto(
-    `/coach/regi/assign-workouts-exercises?workoutId=${workoutId}`,
-  );
+  // Az új felületen a gyakorlat hozzárendelése az edzés szerkesztőoldalán történik.
+  await page.goto(`/coach/workouts/${workoutId}/edit`);
+  await expect(page).toHaveURL(new RegExp(`/coach/workouts/${workoutId}/edit$`));
+  await expect(page.locator('#workoutName')).toHaveValue(workout.name, { timeout: 15_000 });
 
-  await waitForAssignComponent(page);
-
-  await expect(page.locator('app-assign-workouts-exercises').getByRole('heading', { name: workout.name, exact: true })).toBeVisible();
-  await page.getByRole('button', { name: '+ Gyakorlatok kezelése', exact: true }).click();
-  const dialog = page.getByRole('dialog', { name: `Gyakorlatok — ${workout.name}` });
-  await expect(dialog).toBeVisible();
-
-  const exerciseSearch = dialog.locator('#exerciseSearch');
+  const exerciseSearch = page.locator('#exerciseSearch');
   await exerciseSearch.fill(exerciseName);
 
-  const exerciseCheckbox = dialog.locator(
-    `#compact-exercise-${exerciseId}`,
-  );
+  const exerciseOption = page
+    .getByRole('button')
+    .filter({ hasText: new RegExp(`^\\s*${escapeRegExp(exerciseName)}\\s*\\+\\s*$`) });
+  await expect(exerciseOption).toHaveCount(1, { timeout: 15_000 });
+  await exerciseOption.click();
 
-  await expect(exerciseCheckbox).toBeVisible({ timeout: 15_000 });
-  await exerciseCheckbox.check();
-  await expect(exerciseCheckbox).toBeChecked();
-  await dialog.getByRole('button', { name: 'Kész', exact: true }).click();
-  await expect(dialog).not.toBeVisible();
-
-  const saveButton = page.locator(
-    'app-assign-workouts-exercises button[type="button"]',
-  ).filter({ hasText: /mentés|save/i }).last();
-
-  await expect(saveButton).toBeEnabled();
+  const addButton = page.getByRole('button', { name: 'Exercise hozzáadása', exact: true });
+  await expect(addButton).toBeEnabled();
 
   const responsePromise = page.waitForResponse((response) => {
     const url = new URL(response.url());
@@ -363,7 +337,7 @@ async function assignExerciseThroughUi(
     );
   });
 
-  await saveButton.click();
+  await addButton.click();
 
   const response = await responsePromise;
   const body = await response.json();
@@ -374,6 +348,10 @@ async function assignExerciseThroughUi(
   ).toBeTruthy();
 
   expect(body.success).toBeTruthy();
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', () => {

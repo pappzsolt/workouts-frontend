@@ -20,7 +20,7 @@ test.describe('INTEGRITY GUI: role route protection', () => {
   });
 });
 
-for (const target of ['/coach/clients', '/coach/clients/1', '/coach/programs', '/coach/programs/new', '/coach/programs/1', '/coach/workouts', '/coach/exercises', '/coach/regi']) {
+for (const target of ['/coach/clients', '/coach/clients/1', '/coach/programs', '/coach/programs/new', '/coach/programs/1', '/coach/workouts', '/coach/exercises']) {
   test(`USER cannot open new/legacy coach route ${target}`, async ({ page }) => {
     await setTestLanguage(page);
     await loginAs(page, process.env.E2E_USER_USERNAME, process.env.E2E_USER_PASSWORD, '/user/dashboard');

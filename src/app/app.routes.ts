@@ -25,11 +25,6 @@ import { CoachProfileComponent } from './components/coach-dashboard/operations/c
 import { ExerciseControllerComponent } from './components/coach-dashboard/operations/coach-exercises/coach-exercises.component';
 import { WorkoutListComponent } from './components/coach-dashboard/operations/coach-workouts/coach-workouts.component';
 import { CoachWorkoutEditComponent } from './components/coach-dashboard/operations/coach-workouts/coach-workout-edit/coach-workout-edit.component';
-import { CoachDashboardComponent } from './components/coach-dashboard/dashboard/coach-dashboard.component';
-import { CoachProgramBuilderComponent } from './components/coach-dashboard/operations/coach-program-builder/coach-program-builder.component';
-import { CoachNewProgramComponent } from './components/coach-dashboard/operations/coach-programs/coach-new-program/coach-new-program.component';
-import { CoachProgramEditComponent } from './components/coach-dashboard/operations/coach-programs/coach-program-edit/coach-program-edit.component';
-import { AssignWorkoutsExercisesComponent } from './components/coach-dashboard/operations/assign-workouts-exercises/assign-workouts-exercises.component';
 import { CoachExerciseEditComponent } from './components/coach-dashboard/operations/coach-exercises/coach-exercise-edit/coach-exercise-edit.component';
 
 import { UserDashboardComponent } from './components/user-dashboard/dashboard/user-dashboard.component';
@@ -225,37 +220,6 @@ export const routes: Routes = [
       {
         path: 'profile',
         component: CoachProfileComponent,
-      },
-
-      // Régi felület: az új oldalak teljes kipróbálásáig elérhető marad.
-      {
-        path: 'regi',
-        component: CoachDashboardComponent,
-      },
-
-      {
-        path: 'regi/program-builder',
-        component: CoachProgramBuilderComponent,
-      },
-
-      {
-        path: 'regi/programs/new',
-        component: CoachNewProgramComponent,
-      },
-
-      {
-        path: 'regi/programs/:id/edit',
-        component: CoachProgramEditComponent,
-      },
-
-      {
-        path: 'regi/programs/:id/workouts',
-        component: AssignWorkoutsExercisesComponent,
-      },
-
-      {
-        path: 'regi/assign-workouts-exercises',
-        component: AssignWorkoutsExercisesComponent,
       },
 
       {

@@ -7,7 +7,6 @@ import {
 import { BehaviorSubject, of } from 'rxjs';
 import { LoggerService } from '../services/logger.service';
 import { LanguageService } from '../services/shared/language.service';
-import { CoachProgramSelectService } from '../services/coach/coach-program-select/coach-program-select.service';
 import { UserNameIdService } from '../services/user/user-name-id.service';
 import { AppSearchComponent } from './shared/components/app-search/app-search.component';
 import { matchesSearch } from './shared/components/app-search/search-match';
@@ -16,10 +15,8 @@ import { MemberSearchComponent } from './admin-dashboard/operations/user-search/
 import { LoginAuditLogsComponent } from './admin-dashboard/operations/login-audit-logs/login-audit-logs.component';
 import { ExerciseControllerComponent } from './coach-dashboard/operations/coach-exercises/coach-exercises.component';
 import { UserMyProgramsComponent } from './user-dashboard/operations/user-my-programs/user-my-programs.component';
-import { UserMultiSelectComponent } from './shared/user/user-multi-select.component';
 import { UserSelectComponent } from './shared/user/user-select.component';
 import { CoachSelectComponent } from './shared/coach/coach-select.component';
-import { CoachProgramSelectComponent } from './shared/programs/coach-program-select.component';
 import { UserWorkoutsCalendarComponent } from './user-dashboard/operations/user-workouts-calendar/user-workouts-calendar.component';
 
 const ok = (data: any = []) => ({ success: true, data, message: null });
@@ -32,7 +29,6 @@ describe('Shared search integration', () => {
       [
         { provide: LoggerService, useValue: { error() {}, warn() {} } },
         { provide: LanguageService, useValue: language },
-        { provide: CoachProgramSelectService, useValue: { getMyPrograms: () => of(ok([])) } },
         {
           provide: UserNameIdService,
           useValue: {
@@ -106,24 +102,6 @@ describe('Shared search integration', () => {
     component.ngOnDestroy();
   });
 
-  it('keeps hidden and assigned multi-select users selected and validates the full user collection', () => {
-    const component = make(() => new UserMultiSelectComponent());
-    component.selectedUserIds = [1, 2];
-    component.assignedUserIds = [1];
-    component.ngOnInit();
-    const changed = jasmine.createSpy('changed');
-    component.selectedUserIdsChange.subscribe(changed);
-    component.searchTerm = 'béla';
-    component.ngOnChanges();
-    expect(component.filteredUsers.map((user) => user.id)).toEqual([2]);
-    expect(component.ready).toBeTrue();
-    expect(component.selectedUserIds).toEqual([1, 2]);
-    expect(component.assignedUserIds).toEqual([1]);
-    expect(changed).not.toHaveBeenCalled();
-    component.searchTerm = '';
-    expect(component.filteredUsers.length).toBe(2);
-  });
-
   it('preserves the selected user option while searching another name', () => {
     const component = make(() => new UserSelectComponent({} as any));
     component.users = [
@@ -151,22 +129,6 @@ describe('Shared search integration', () => {
     expect(component.matchingOptions.map((coach) => coach.id)).toEqual([2]);
     expect(component.coachOptions.map((option) => option.value)).toEqual([1, 2]);
     expect(component.selectedCoachId).toBe(1);
-  });
-
-  it('keeps a selected program ready when filtering hides it from the matching results', () => {
-    const component = make(() => new CoachProgramSelectComponent());
-    component.programs = [
-      { programId: 1, programName: 'Strength' },
-      { programId: 2, programName: 'Cardio', programDescription: 'Endurance' },
-    ];
-    component.selectedProgramId = 1;
-    component.searchTerm = 'endurance';
-    const ready = jasmine.createSpy('ready');
-    component.readyChange.subscribe(ready);
-    component.ngOnChanges();
-    expect(component.matchingOptions.map((program) => program.programId)).toEqual([2]);
-    expect(component.programOptions.map((option) => option.value)).toEqual([1, 2]);
-    expect(ready).toHaveBeenCalledOnceWith(true);
   });
 
   it('selects the first matching user and emits selection events only when it changes', () => {
@@ -197,24 +159,6 @@ describe('Shared search integration', () => {
     component.onSearchChange('béla');
     expect(component.selectedCoachId).toBe(2);
     expect(changed).toHaveBeenCalledOnceWith(2);
-  });
-
-  it('selects the first matching program by description and updates readiness', () => {
-    const component = make(() => new CoachProgramSelectComponent());
-    component.programs = [{ programId: 1, programName: 'Strength' }, { programId: 2, programName: 'Cardio', programDescription: 'Endurance' }];
-    component.selectedProgramId = 1;
-    const changed = jasmine.createSpy('changed');
-    const ready = jasmine.createSpy('ready');
-    component.selectedProgramIdChange.subscribe(changed);
-    component.readyChange.subscribe(ready);
-    component.onSearchChange('endurance');
-    expect(component.selectedProgramId).toBe(2);
-    expect(changed).toHaveBeenCalledOnceWith(2);
-    expect(ready).toHaveBeenCalledOnceWith(true);
-    component.onSearchChange('missing');
-    component.onSearchChange('');
-    expect(component.selectedProgramId).toBe(2);
-    expect(changed).toHaveBeenCalledTimes(1);
   });
 
   it('filters calendar occurrences by name without changing dates, month, or the selected occurrence', () => {

@@ -5,11 +5,9 @@ import { provideRouter } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import { of, Subject } from 'rxjs';
 import { UserSelectComponent } from './shared/user/user-select.component';
-import { CoachProgramSelectComponent } from './shared/programs/coach-program-select.component';
 import { FormFieldComponent } from './shared/components/form-field/form-field.component';
 import { AppCardComponent } from './shared/components/app-card/app-card.component';
 import { UserNameIdService } from '../services/user/user-name-id.service';
-import { CoachProgramSelectService } from '../services/coach/coach-program-select/coach-program-select.service';
 import { LoggerService } from '../services/logger.service';
 import { LoginAuditLogsComponent } from './admin-dashboard/operations/login-audit-logs/login-audit-logs.component';
 import { LoginAuditLogsService } from '../services/admin/login-audit-logs.service';
@@ -115,46 +113,6 @@ describe('Existing shared component migration', () => {
     expect(changed).toHaveBeenCalledOnceWith(8);
     expect(selected).toHaveBeenCalledOnceWith(users[1]);
     expect(input.value).toBe('Béla');
-    fixture.destroy();
-  });
-
-  it('searches program descriptions without losing the readiness and numeric selection events', async () => {
-    const programs = [
-      { programId: 7, programName: 'Strength', programDescription: 'Barbell' },
-      { programId: 8, programName: 'Recovery', programDescription: 'Mobility' },
-    ];
-    TestBed.configureTestingModule({
-      imports: [CoachProgramSelectComponent],
-      providers: [
-        ...providers,
-        {
-          provide: CoachProgramSelectService,
-          useValue: { getMyPrograms: () => of({ success: true, data: programs }) },
-        },
-      ],
-    });
-    const fixture = TestBed.createComponent(CoachProgramSelectComponent);
-    fixture.componentRef.setInput('searchable', true);
-    const changed = jasmine.createSpy('changed');
-    const ready = jasmine.createSpy('ready');
-    fixture.componentInstance.selectedProgramIdChange.subscribe(changed);
-    fixture.componentInstance.readyChange.subscribe(ready);
-    fixture.detectChanges();
-    await fixture.whenStable();
-    const input: HTMLInputElement = fixture.nativeElement.querySelector('input');
-    input.focus();
-    input.value = 'mobility';
-    input.dispatchEvent(new Event('input'));
-    fixture.detectChanges();
-    await fixture.whenStable();
-    expect(changed).not.toHaveBeenCalled();
-    const option = document.querySelector<HTMLElement>('mat-option')!;
-    expect(option.textContent).toContain('Recovery');
-    option.click();
-    fixture.detectChanges();
-    await fixture.whenStable();
-    expect(changed).toHaveBeenCalledOnceWith(8);
-    expect(ready.calls.mostRecent().args).toEqual([true]);
     fixture.destroy();
   });
 

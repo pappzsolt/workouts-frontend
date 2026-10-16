@@ -3,7 +3,6 @@ import { BehaviorSubject, Subject, of } from 'rxjs';
 import { ExerciseControllerComponent } from './coach-dashboard/operations/coach-exercises/coach-exercises.component';
 import { PaginationComponent } from './shared/components/pagination/pagination.component';
 import { ExerciseService } from '../services/coach/coach-exercises/coach-exercises.service';
-import { CoachProgramSelectService } from '../services/coach/coach-program-select/coach-program-select.service';
 import { LanguageService } from '../services/shared/language.service';
 import { LoggerService } from '../services/logger.service';
 
@@ -11,14 +10,11 @@ describe('Shared UI regressions', () => {
   let injector: EnvironmentInjector;
   let language: BehaviorSubject<string>;
   let catalog: jasmine.Spy;
-  let programs: jasmine.Spy;
   beforeEach(() => {
     language = new BehaviorSubject('hu');
     catalog = jasmine.createSpy().and.returnValue(of({ success: true, data: [] }));
-    programs = jasmine.createSpy().and.returnValue(of({ success: true, data: [] }));
     injector = createEnvironmentInjector([
       { provide: ExerciseService, useValue: { getAllExercises: catalog } },
-      { provide: CoachProgramSelectService, useValue: { getMyPrograms: programs } },
       { provide: LanguageService, useValue: { language$: language } },
       { provide: LoggerService, useValue: { error() {} } },
     ], Injector.NULL as EnvironmentInjector);

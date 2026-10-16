@@ -37,7 +37,6 @@ export class LayoutComponent implements OnInit {
     { label: 'menu.coachWorkouts', path: '/coach/workouts' },
     { label: 'menu.coachExercises', path: '/coach/exercises' },
     { label: 'menu.profile', path: '/coach/profile' },
-    { label: 'menu.coachLegacy', path: '/coach/regi' },
     { label: 'menu.logout', action: 'logout' },
   ];
 
