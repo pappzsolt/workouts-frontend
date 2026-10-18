@@ -8,7 +8,7 @@ import { EMPTY, Subject, catchError, combineLatest, distinctUntilChanged, map, s
 import { UserExerciseService } from '../../../../services/user/user-exercise/user-exercise.service';
 import { LanguageService } from '../../../../services/shared/language.service';
 
-import { WorkoutExercise, Exercise } from '../../../../models/exercise.model';
+import { UserWorkoutExerciseDetailDto, ExerciseDetailDto } from '../../../../models/user-workout-exercise-detail.dto';
 import { SidePaginationComponent } from '../../../../components/shared/components/side-pagination/side-pagination.component';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
@@ -38,7 +38,21 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
   // EXERCISE ADATOK
   // ============================================================
 
-  private allExercises: WorkoutExercise[] = [];
+  private allExercises: UserWorkoutExerciseDetailDto[] = [];
+
+  /** A ténylegesen létrehozott user sorozatok az irányadók, nem a workout sablon. */
+  getSetCount(exercise: UserWorkoutExerciseDetailDto): number {
+    return exercise.userWorkoutExerciseSets?.length ?? 0;
+  }
+
+  getTargetRepetitions(exercise: UserWorkoutExerciseDetailDto): string {
+    const repetitions = exercise.userWorkoutExerciseSets
+      ?.map(set => set.targetRepetitions ?? '-');
+    if (!repetitions?.length) return '-';
+    return repetitions.every(value => value === repetitions[0])
+      ? String(repetitions[0])
+      : repetitions.join(' / ');
+  }
 
   // ============================================================
   // PAGINATION
@@ -47,7 +61,7 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
   currentPage = 1;
   pageSize = 1;
 
-  paginatedExercises: WorkoutExercise[] = [];
+  paginatedExercises: UserWorkoutExerciseDetailDto[] = [];
 
   totalItems = 0;
 
@@ -196,7 +210,7 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
   // EXERCISE KÉPEK
   // ============================================================
 
-  getExerciseImages(exercise: Exercise): string[] {
+  getExerciseImages(exercise: ExerciseDetailDto): string[] {
     if (!exercise.imageUrl) {
       return [];
     }
@@ -212,7 +226,7 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
     }
   }
 
-  trackByExercise(index: number, exercise: WorkoutExercise): number {
+  trackByExercise(index: number, exercise: UserWorkoutExerciseDetailDto): number {
     return exercise.id;
   }
 

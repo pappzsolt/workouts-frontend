@@ -134,13 +134,13 @@
                       {{ 'userExercises.sets' | translate }}:
                     </span>
 
-                    {{ exercise.sets }},
+                    {{ getSetCount(exercise) }},
 
                     <span class="font-semibold text-content-700">
                       {{ 'userExercises.reps' | translate }}:
                     </span>
 
-                    {{ exercise.repetitions }}
+                    {{ getTargetRepetitions(exercise) }}
                   </div>
                 </div>
 

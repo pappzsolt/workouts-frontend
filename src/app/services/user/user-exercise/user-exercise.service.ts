@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LanguageService } from '../../shared/language.service';
 import { API_ENDPOINTS } from '../../../api-endpoints';
-import { WorkoutWithExercises } from '../../../models/exercise.model';
+import { UserWorkoutDetailDto } from '../../../models/user-workout-exercise-detail.dto';
 import { ApiResponse } from '../../../models/backend-dto/common/api-response';
 
 @Injectable({
@@ -22,8 +22,8 @@ export class UserExerciseService {
   getWorkoutExercises(
     userWorkoutId: number,
     language: string,
-  ): Observable<ApiResponse<WorkoutWithExercises>> {
-    return this.http.get<ApiResponse<WorkoutWithExercises>>(
+  ): Observable<ApiResponse<UserWorkoutDetailDto>> {
+    return this.http.get<ApiResponse<UserWorkoutDetailDto>>(
       API_ENDPOINTS.userWorkoutExercisesByWorkout(userWorkoutId),
       {
         params: { language },
