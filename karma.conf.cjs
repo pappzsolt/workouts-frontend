@@ -11,5 +11,10 @@ module.exports = function (config) {
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     browsers: ['FirefoxHeadless'],
     singleRun: true,
+    // CI containers are slower than a laptop: do not drop the browser after 30 s of silence.
+    browserNoActivityTimeout: 120000,
+    browserDisconnectTimeout: 30000,
+    browserDisconnectTolerance: 1,
+    captureTimeout: 120000,
   });
 };
