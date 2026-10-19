@@ -1,10 +1,18 @@
+# PRODUCTION Workouts frontend.
+# Host 80/443 are owned by the central reverse proxy (reverse-proxy repo,
+# container: central-reverse-proxy). This container is reachable ONLY on
+# workouts-network: central proxy --HTTPS--> workouts-frontend-runtime:443.
 services:
   workouts-frontend-runtime:
     image: ${WORKOUTS_FRONTEND_IMAGE}
     container_name: workouts-frontend-runtime
+    expose:
+      - "80"
+      - "443"
     ports:
-      - "80:80"
-      - "443:443"
+      # Loopback-only diagnostics from the server itself (never public).
+      - "127.0.0.1:18080:80"
+      - "127.0.0.1:18444:443"
     volumes:
       - ./nginx.runtime.conf:/etc/nginx/conf.d/default.conf:ro
       - ./certs:/etc/nginx/certs:ro

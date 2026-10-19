@@ -200,8 +200,17 @@ frontend-deploy-test:
 # Manual. Uses PROD scoped variables and the existing PROD certs.
 # It does NOT copy, delete, or modify the cert directory.
 #
-# Existing PROD nginx.runtime.conf is kept unchanged and expects:
+# Existing PROD nginx.runtime.conf expects:
 # /usr/share/nginx/html/browser
+#
+# Host 80/443 are owned by the CENTRAL REVERSE PROXY (reverse-proxy repo,
+# container central-reverse-proxy). This container is only reachable on
+# workouts-network (central proxy --HTTPS--> workouts-frontend-runtime:443).
+#
+# Precondition: the reverse-proxy "deploy-production" job has staged its
+# files in $REVERSE_PROXY_PATH. The first run of this job IS the cutover:
+# the new compose frees host 80/443, then the central proxy is started.
+# The previous compose/nginx files are kept as *.bak-<commit> for rollback.
 # ------------------------------------------------------------
 frontend-deploy-production:
   stage: deploy
@@ -211,6 +220,8 @@ frontend-deploy-production:
       artifacts: false
   variables:
     DEPLOY_ENVIRONMENT: "production"
+    REVERSE_PROXY_PATH: "/home/pappzsol/reverse-proxy"
+    REVERSE_PROXY_COMPOSE: "docker compose -p central-reverse-proxy-production -f docker-compose.production.yml"
   environment:
     name: production
   when: manual
@@ -246,6 +257,14 @@ frontend-deploy-production:
     - 'ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER" "test -d \"$DEPLOY_PATH/certs\""'
     - 'ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER" "test -f \"$DEPLOY_PATH/certs/workouts.hevexora.com.pem\""'
     - 'ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER" "test -f \"$DEPLOY_PATH/certs/workouts.hevexora.com.key\""'
+    - 'echo "Checking that the central reverse proxy is staged on the server"'
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "set -eu; test -f '$REVERSE_PROXY_PATH/docker-compose.production.yml'; test -f '$REVERSE_PROXY_PATH/nginx/nginx.production.conf'; test -f '$REVERSE_PROXY_PATH/certs/cloudflare-origin-ca.pem'; cd '$REVERSE_PROXY_PATH' && $REVERSE_PROXY_COMPOSE config -q && echo CENTRAL_PROXY_STAGED_OK"
+    - 'echo "Backing up current PROD compose/nginx files for rollback"'
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "set -eu; cd '$DEPLOY_PATH'; for f in docker-compose.yml nginx.runtime.conf .env; do if [ -f \"\$f\" ]; then cp -p \"\$f\" \"\$f.bak-$CI_COMMIT_SHORT_SHA\"; fi; done; ls -1 *.bak-* | tail -n 6"
     - 'scp -i ~/.ssh/id_ed25519 docker-compose.production.yml "$DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/docker-compose.yml"'
     - 'scp -i ~/.ssh/id_ed25519 nginx.runtime.conf "$DEPLOY_USER@$DEPLOY_SERVER:$DEPLOY_PATH/nginx.runtime.conf"'
     - 'printf "%s\n" "WORKOUTS_FRONTEND_IMAGE=$FRONTEND_IMAGE_NAME" > deploy.env'
@@ -298,6 +317,25 @@ frontend-deploy-production:
     - >
       ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
       "docker exec workouts-frontend-runtime nginx -t"
+    - 'echo "Ensuring the central reverse proxy owns host 80/443"'
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "set -eu; cd '$REVERSE_PROXY_PATH' && $REVERSE_PROXY_COMPOSE up -d && docker exec central-reverse-proxy nginx -t && $REVERSE_PROXY_COMPOSE ps"
+    - 'echo "Smoke tests through the central reverse proxy"'
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "set -eu; CA='$REVERSE_PROXY_PATH/certs/cloudflare-origin-ca.pem';
+      W='--resolve workouts.hevexora.com:443:127.0.0.1 --cacert '\$CA;
+      P='--resolve pigapp.hevexora.com:443:127.0.0.1 --cacert '\$CA;
+      i=0; code=000; while [ \$i -lt 10 ]; do code=\$(curl -s -o /dev/null -w '%{http_code}' \$W https://workouts.hevexora.com/login || true); [ \"\$code\" = 200 ] && break; i=\$((i+1)); sleep 3; done;
+      [ \"\$code\" = 200 ] || { echo \"FAIL workouts /login via proxy: \$code\"; exit 1; }; echo WORKOUTS_HTTPS_OK;
+      curl -sSI \$W https://workouts.hevexora.com/ > /tmp/workouts-headers.txt || { echo 'FAIL workouts headers'; exit 1; };
+      grep -qi '^strict-transport-security:' /tmp/workouts-headers.txt || { echo 'FAIL workouts HSTS missing'; exit 1; };
+      grep -qi '^content-security-policy:' /tmp/workouts-headers.txt || { echo 'FAIL workouts CSP missing'; exit 1; }; echo WORKOUTS_HEADERS_OK;
+      code=\$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: workouts.hevexora.com' http://127.0.0.1/ || true);
+      [ \"\$code\" = 301 ] || { echo \"FAIL workouts HTTP redirect: \$code\"; exit 1; }; echo WORKOUTS_HTTP_REDIRECT_OK;
+      code=\$(curl -s -o /dev/null -w '%{http_code}' \$P https://pigapp.hevexora.com/ || true);
+      [ \"\$code\" = 200 ] || { echo \"FAIL pigapp via proxy: \$code\"; exit 1; }; echo PIGAPP_HTTPS_OK"
     - >
       ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
       "docker logs --tail=100 workouts-frontend-runtime"
