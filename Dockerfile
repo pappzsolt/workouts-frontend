@@ -1,4 +1,5 @@
-FROM nginx:alpine
+# Pinned like the central proxy and PigApp (no surprise upgrades).
+FROM nginx:1.27-alpine
 
 # TEST keeps using /usr/share/nginx/html.
 COPY dist/workouts-frontend/browser/ /usr/share/nginx/html/

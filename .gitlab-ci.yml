@@ -24,15 +24,13 @@ frontend-test:
   stage: test
   image: node:22-alpine
   script:
-    - 'echo "Checking frontend project"'
-    - 'test -f package.json'
-    - 'test -f angular.json'
-    - 'test -f Dockerfile'
-    - 'test -f docker-compose.yml'
-    - 'test -f nginx.conf'
-    - 'test -n "$(node --version)"'
-    - 'test -n "$(npm --version)"'
-    - 'echo "Frontend project validation OK"'
+    - 'test -f package.json && test -f package-lock.json && test -f angular.json'
+    - 'test -f Dockerfile && test -f docker-compose.yml && test -f nginx.conf'
+    # karma.conf.cjs uses FirefoxHeadless.
+    - 'apk add --no-cache firefox ttf-dejavu'
+    - 'export FIREFOX_BIN="$(command -v firefox)"'
+    - 'npm ci --no-audit --no-fund'
+    - 'npx ng test --watch=false --no-progress --browsers=FirefoxHeadless'
   environment:
     name: test
 
@@ -48,7 +46,7 @@ frontend-build:
       artifacts: false
   script:
     - 'echo "Building Angular frontend exactly once"'
-    - 'npm install'
+    - 'npm ci --no-audit --no-fund'
     - 'npm run build'
     - 'test -d dist/workouts-frontend'
     - 'test -f dist/workouts-frontend/browser/index.html'
@@ -72,6 +70,8 @@ frontend-build:
 # PROD configuration remains unchanged.
 # ------------------------------------------------------------
 frontend-docker-build:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
   stage: docker
   image: docker:29-cli
   before_script:
@@ -111,6 +111,8 @@ frontend-docker-build:
 # The existing TEST directory is /home/pappzs.
 # ------------------------------------------------------------
 frontend-deploy-test:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
   stage: deploy
   image: alpine:3.22
   needs:
@@ -130,12 +132,17 @@ frontend-deploy-test:
     - 'chmod 600 ~/.ssh/id_ed25519'
     - 'test -s ~/.ssh/id_ed25519'
     - 'ssh-keygen -y -f ~/.ssh/id_ed25519 > /tmp/deploy_public_key'
+    # Server host keys come from the SSH_KNOWN_HOSTS File variable (never trust on first use).
+    - 'test -s "$SSH_KNOWN_HOSTS"'
+    - 'cp "$SSH_KNOWN_HOSTS" ~/.ssh/known_hosts'
+    - 'chmod 600 ~/.ssh/known_hosts'
     - |
       cat > ~/.ssh/config <<EOF
       Host *
-        StrictHostKeyChecking no
-        UserKnownHostsFile /dev/null
+        StrictHostKeyChecking yes
+        UserKnownHostsFile ~/.ssh/known_hosts
         IdentitiesOnly yes
+        BatchMode yes
       EOF
     - 'chmod 600 ~/.ssh/config'
   script:
@@ -194,6 +201,10 @@ frontend-deploy-test:
     - >
       ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
       "docker logs --tail=100 workouts-frontend"
+    - 'echo "Removing old images (keeping the 3 newest; images in use are never removed)"'
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "docker image ls '$CI_REGISTRY_IMAGE' --format '{{.Tag}}' | tail -n +4 | while read -r t; do if docker rmi '$CI_REGISTRY_IMAGE':\$t >/dev/null 2>&1; then echo removed \$t; else echo kept \$t; fi; done; docker image prune -f >/dev/null; echo IMAGE_CLEANUP_OK"
 
 # ------------------------------------------------------------
 # PROD deploy.
@@ -213,6 +224,10 @@ frontend-deploy-test:
 # The previous compose/nginx files are kept as *.bak-<commit> for rollback.
 # ------------------------------------------------------------
 frontend-deploy-production:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: manual
+      allow_failure: false
   stage: deploy
   image: alpine:3.22
   needs:
@@ -224,8 +239,6 @@ frontend-deploy-production:
     REVERSE_PROXY_COMPOSE: "docker compose -p central-reverse-proxy-production -f docker-compose.production.yml"
   environment:
     name: production
-  when: manual
-  allow_failure: false
   before_script:
     - 'apk add --no-cache openssh-client curl'
     - 'mkdir -p ~/.ssh'
@@ -236,12 +249,17 @@ frontend-deploy-production:
     - 'chmod 600 ~/.ssh/id_ed25519'
     - 'test -s ~/.ssh/id_ed25519'
     - 'ssh-keygen -y -f ~/.ssh/id_ed25519 > /tmp/deploy_public_key'
+    # Server host keys come from the SSH_KNOWN_HOSTS File variable (never trust on first use).
+    - 'test -s "$SSH_KNOWN_HOSTS"'
+    - 'cp "$SSH_KNOWN_HOSTS" ~/.ssh/known_hosts'
+    - 'chmod 600 ~/.ssh/known_hosts'
     - |
       cat > ~/.ssh/config <<EOF
       Host *
-        StrictHostKeyChecking no
-        UserKnownHostsFile /dev/null
+        StrictHostKeyChecking yes
+        UserKnownHostsFile ~/.ssh/known_hosts
         IdentitiesOnly yes
+        BatchMode yes
       EOF
     - 'chmod 600 ~/.ssh/config'
   script:
@@ -307,6 +325,9 @@ frontend-deploy-production:
       "cd '$DEPLOY_PATH' && docker compose up -d --pull never"
     - >
       ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "i=0; while [ \$i -lt 20 ]; do s=\$(docker inspect -f '{{.State.Health.Status}}' workouts-frontend-runtime); [ \"\$s\" = healthy ] && { echo WORKOUTS_FRONTEND_RUNTIME_HEALTHY; exit 0; }; [ \"\$s\" = unhealthy ] && break; i=\$((i+1)); sleep 3; done; docker logs --tail=80 workouts-frontend-runtime; echo 'workouts-frontend-runtime did not become healthy' >&2; exit 1"
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
       "cd '$DEPLOY_PATH' && docker compose ps"
     - >
       ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
@@ -339,3 +360,7 @@ frontend-deploy-production:
     - >
       ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
       "docker logs --tail=100 workouts-frontend-runtime"
+    - 'echo "Removing old images (keeping the 3 newest; images in use are never removed)"'
+    - >
+      ssh -i ~/.ssh/id_ed25519 "$DEPLOY_USER@$DEPLOY_SERVER"
+      "docker image ls '$CI_REGISTRY_IMAGE' --format '{{.Tag}}' | tail -n +4 | while read -r t; do if docker rmi '$CI_REGISTRY_IMAGE':\$t >/dev/null 2>&1; then echo removed \$t; else echo kept \$t; fi; done; docker image prune -f >/dev/null; echo IMAGE_CLEANUP_OK"
