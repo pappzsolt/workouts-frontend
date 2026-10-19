@@ -162,7 +162,7 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
           this.message = responseMessage([response], response.success ? '' : 'userWorkouts.loadError');
           this.messageType = response.success ? 'info' : 'error';
           this.workouts = response.success
-            ? [...(response.data ?? [])].sort((a, b) => a.workoutDate.localeCompare(b.workoutDate))
+            ? [...(response.data ?? [])].sort(compareByWorkoutDate)
             : [];
           this.pendingWorkouts = this.workouts.filter(workout => workout.completed !== true);
           this.completedWorkouts = this.workouts.filter(workout => workout.completed === true);
@@ -216,4 +216,18 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
     return workout.userWorkoutId ?? workout.programWorkoutId ?? `${workout.workoutId}-${workout.workoutDate}`;
   }
 
+}
+
+/**
+ * Ascending by workoutDate (ISO yyyy-MM-dd strings sort correctly as text).
+ * The backend DTO allows a null date: such occurrences go to the end instead of
+ * crashing the whole list with "can't access property localeCompare".
+ */
+function compareByWorkoutDate(
+  a: { workoutDate?: string | null },
+  b: { workoutDate?: string | null },
+): number {
+  if (!a.workoutDate) return b.workoutDate ? 1 : 0;
+  if (!b.workoutDate) return -1;
+  return a.workoutDate.localeCompare(b.workoutDate);
 }

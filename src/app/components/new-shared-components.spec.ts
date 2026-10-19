@@ -450,6 +450,7 @@ describe('Migrated business screens use the same parent actions', () => {
     const pending = {
       workoutId: 11,
       workoutName: 'Pending',
+      workoutDate: '2026-10-01',
       userWorkoutId: 41,
       programWorkoutId: 31,
       completed: false,
@@ -457,6 +458,7 @@ describe('Migrated business screens use the same parent actions', () => {
     const completed = {
       workoutId: 12,
       workoutName: 'Completed',
+      workoutDate: '2026-10-02',
       userWorkoutId: 42,
       programWorkoutId: 32,
       completed: true,
