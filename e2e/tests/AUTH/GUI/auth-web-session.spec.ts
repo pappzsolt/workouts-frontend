@@ -52,9 +52,14 @@ test('WEB AUTH: logout revokes the cookie and back, reload and protected navigat
   expect((await page.context().cookies()).filter(item => item.name === 'workouts_refresh')).toEqual([]);
 
   // Replay only in an isolated API client, never inject the revoked cookie into the browser.
+  // The Origin header is required: without it the origin filter rejects the request (403)
+  // before the cookie is even checked, and the test would not prove the revocation.
   const revokedSession = await request.newContext({
     baseURL: BASE_API_URL,
-    extraHTTPHeaders: { Cookie: `${cookie!.name}=${cookie!.value}` },
+    extraHTTPHeaders: {
+      Cookie: `${cookie!.name}=${cookie!.value}`,
+      Origin: new URL(process.env.E2E_BASE_URL ?? 'http://localhost:4200').origin,
+    },
   });
   try {
     await rejected(await revokedSession.post('/api/auth/web/refresh'), 'Revoked web refresh cookie', 401);

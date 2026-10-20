@@ -9,13 +9,28 @@ export async function getExerciseInDatabase(
        e.id,
        COALESCE(et.name, '') AS name,
        COALESCE(et.description, '') AS description,
+       et.description AS raw_description,
+       et.body_part,
+       et.synonyms,
+       et.instructions,
+       et.tips,
+       et.primary_muscles,
+       et.secondary_muscles,
        l.code AS language_code,
+       e.image_url,
+       e.video_url,
        e.muscle_group,
        e.equipment,
        e.difficulty_level,
        e.category,
        e.calories_burned_per_minute,
-       e.duration_seconds
+       e.duration_seconds,
+       e.done,
+       e.force_type,
+       e.mechanic,
+       e.is_unilateral,
+       e.is_bodyweight,
+       e.variation_group
      FROM public.exercises e
      LEFT JOIN public.exercise_translations et
        ON et.exercise_id = e.id
@@ -123,7 +138,7 @@ export function assertExerciseUnchangedExceptDescription(
   }
 
   for (const key of Object.keys(before ?? {})) {
-    if (key === 'description') {
+    if (key === 'description' || key === 'raw_description') {
       continue;
     }
 
@@ -139,3 +154,24 @@ export function assertExerciseUnchangedExceptDescription(
 }
 
 export async function closeExerciseDatabase(): Promise<void> {}
+
+/**
+ * Egy gyakorlat leírásának visszaállítása közvetlenül az adatbázisban.
+ * Biztonsági háló a módosító tesztekhez: ha a teszt félúton elbukik,
+ * a teszt-adatbázisban ne maradjon bent a tesztszöveg.
+ */
+export async function restoreExerciseDescriptionInDatabase(
+  id: number,
+  description: string | null,
+  language = 'hu',
+): Promise<void> {
+  await dbOne(
+    `UPDATE public.exercise_translations et
+        SET description = $2
+      WHERE et.exercise_id = $1
+        AND et.language_id = (SELECT id FROM public.languages WHERE code = $3 LIMIT 1)
+        AND et.description IS DISTINCT FROM $2
+      RETURNING et.id`,
+    [id, description, language],
+  );
+}

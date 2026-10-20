@@ -304,8 +304,7 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
       await assignExercise(coachApi, workoutId, exerciseId);
 
       // A program-workout kapcsolatot előbb hozzuk létre, majd az admin
-      // accountot rendeljük hozzá. Így a foreign USER_WORKOUT kizárólag
-      // a valódi user-workout API-n keresztül készül.
+      // accountot rendeljük hozzá. A foreign USER_WORKOUT-ot a kiosztás hozza létre.
       const pw = await success(
         await coachApi.post(API_ENDPOINTS.programWorkouts.base, {
           data: { programId, workoutId, dayIndex: 1 },
@@ -328,21 +327,17 @@ test.describe('UserWorkoutExerciseSet endpoint matrix', () => {
         'admin assigns program to foreign users record',
       );
 
-      const created = await success(
-        await adminApi.post(API_ENDPOINTS.userWorkoutExercises.base, {
-          data: {
-            userId: foreignUserId,
-            programId,
-            scheduledAt: '2035-05-03',
-          },
-        }),
-        'admin creates foreign user workout',
+      // A program kiosztása maga hozza létre az ügyfél edzését (gyakorlatokkal és sorozatokkal).
+      const created = await dbOne<{ id: number }>(
+        `SELECT id
+           FROM public.user_workouts
+          WHERE user_id=$1 AND program_id=$2
+          ORDER BY id`,
+        [foreignUserId, programId],
       );
 
-      expect(Array.isArray(created.data)).toBeTruthy();
-      expect(created.data).toHaveLength(1);
-
-      const foreignUserWorkoutId = Number(created.data[0]);
+      expect(created, 'A kiosztás nem hozta létre az ügyfél edzését').not.toBeNull();
+      const foreignUserWorkoutId = Number(created!.id);
       expect(foreignUserWorkoutId).toBeGreaterThan(0);
 
       const uwe = await dbOne<{ id: number }>(

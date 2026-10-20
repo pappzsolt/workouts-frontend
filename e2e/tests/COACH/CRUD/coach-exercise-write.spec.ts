@@ -10,6 +10,7 @@ import {
   closeExerciseDatabase,
   getExerciseInDatabase,
   resolveExistingExerciseId,
+  restoreExerciseDescriptionInDatabase,
 } from '../../helpers/exercise-db';
 
 const BASE_API_URL =
@@ -510,6 +511,15 @@ async function createExerciseThroughUi(
 test.describe(
   'Coach - Exercise CREATE / UPDATE / DELETE / PostgreSQL',
   () => {
+    // A módosító tesztek ide teszik a visszaállítást; akkor is lefut, ha a teszt elbukik.
+    const pendingRestores: Array<() => Promise<void>> = [];
+
+    test.afterEach(async () => {
+      while (pendingRestores.length) {
+        await pendingRestores.pop()!();
+      }
+    });
+
     test.afterAll(async () => {
       await closeExerciseDatabase();
     });
@@ -600,6 +610,10 @@ test.describe(
           dbBefore,
           `Exercise ${exerciseId} nem található a teszt DB-ben.`,
         ).not.toBeNull();
+
+        pendingRestores.push(() =>
+          restoreExerciseDescriptionInDatabase(exerciseId, dbBefore.raw_description, LANGUAGE),
+        );
 
         const uiBefore =
           await readExerciseFromUi(

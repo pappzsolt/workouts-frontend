@@ -297,7 +297,7 @@ test.describe('Coach - COMPLETE Program endpoint matrix', () => {
         languageCode: LANGUAGE,
         workouts: null,
       },
-    }), 'PUT missing program', 400);
+    }), 'PUT missing program', 403);
 
     await rejected(await api.post(API_ENDPOINTS.programs.assign, { data: { userId: 2147483000, programId: missingId } }), 'POST assign invalid IDs', 403);
     await api.dispose();
