@@ -205,7 +205,8 @@
     "addWorkout": "Új edzés hozzáadása",
     "loadError": "Nem sikerült betölteni a workoutokat.",
     "addError": "Hiba történt a workout hozzáadásakor.",
-    "addSuccess": "Az edzés sikeresen hozzáadva."
+    "addSuccess": "Az edzés sikeresen hozzáadva.",
+    "sortNewest": "Legújabb elöl"
   },
   "coachProfile": {
     "title": "Coach profil"

@@ -205,7 +205,8 @@
     "addWorkout": "Add new workout",
     "loadError": "Failed to load workouts.",
     "addError": "Error adding workout.",
-    "addSuccess": "Workout added successfully."
+    "addSuccess": "Workout added successfully.",
+    "sortNewest": "Newest first"
   },
   "coachProfile": {
     "title": "Coach Profile"

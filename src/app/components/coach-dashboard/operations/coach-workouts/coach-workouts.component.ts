@@ -3,9 +3,13 @@ import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, inject }
 import { LoggerService } from '../../../../services/logger.service';
 import { Router } from '@angular/router';
 
-import { Subject, takeUntil, timer } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, takeUntil, timer } from 'rxjs';
 
-import { CoachWorkoutsService } from '../../../../services/coach/coach-workouts/coach-workouts.service';
+import {
+  CoachWorkoutsService,
+  WorkoutLibraryPage,
+  WorkoutLibrarySort,
+} from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { LanguageService } from '../../../../services/shared/language.service';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 import { Workout } from '../../../../models/workout.model';
@@ -94,6 +98,17 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
 
   totalPages: number = 1;
 
+  /** A szűrésnek megfelelő összes edzés száma (a backend adja). */
+  totalItems: number = 0;
+
+  loading = false;
+
+  /** Lekérések sora: mindig csak a legutolsó kérés válasza számít. */
+  private readonly pageRequests$ = new Subject<void>();
+
+  /** Gépelés közben nem kérünk minden leütésre. */
+  private readonly searchChanges$ = new Subject<string>();
+
   // ==========================================================
   // KERESÉS
   // ==========================================================
@@ -104,7 +119,8 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
   // RENDEZÉS
   // ==========================================================
 
-  sortDirection: 'asc' | 'desc' = 'asc';
+  /** Alapból a legújabb elöl (a backend sorrendje); a gomb név szerinti rendezésre vált. */
+  sortMode: WorkoutLibrarySort = 'newest';
 
   constructor(
     private coachWorkoutsService: CoachWorkoutsService,
@@ -117,6 +133,37 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
   // ==========================================================
 
   ngOnInit(): void {
+    this.pageRequests$
+      .pipe(
+        switchMap(() =>
+          this.coachWorkoutsService.getWorkoutLibraryPage(
+            this.currentPage,
+            this.itemsPerPage,
+            this.searchTerm,
+            this.sortMode,
+          ),
+        ),
+        takeUntil(this.destroy$),
+      )
+      .subscribe({
+        next: (page) => this.applyPage(page),
+        error: (error) => {
+          this.loading = false;
+          this.logger.error('[CoachWorkouts] workout betöltési hiba:', error);
+          this.workouts = [];
+          this.totalItems = 0;
+          this.totalPages = 1;
+          this.setMessage('coachWorkouts.loadError', 'error');
+        },
+      });
+
+    this.searchChanges$
+      .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.currentPage = 1;
+        this.loadWorkouts();
+      });
+
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.loadWorkouts();
     });
@@ -146,94 +193,25 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
   // WORKOUTOK BETÖLTÉSE
   // ==========================================================
 
+  /** Az aktuális oldal lekérése a backendtől (lapozás, keresés, rendezés ott történik). */
   loadWorkouts(): void {
-
-    this.coachWorkoutsService.getUniqueWorkoutsWithExercises().pipe(takeUntil(this.destroy$)).subscribe({
-      next: (response) => {
-
-        const res = response.data;
-
-        this.workouts = (res ?? []).map((w: WorkoutWithExercises): Workout => ({
-          id: w.id,
-
-          programNames: w.programNames ?? [],
-
-          workoutName: w.name ?? '',
-
-          description: w.description ?? '',
-
-          durationMinutes: w.durationMinutes,
-
-          difficultyLevel: undefined,
-
-          exercises: w.exercises ?? [],
-        }));
-
-        // Mindig az első oldalról indulunk.
-        this.currentPage = 1;
-
-        this.updatePagination();
-
-      },
-
-      error: (error) => {
-        this.logger.error('[CoachWorkouts] workout betöltési hiba:', error);
-
-        this.workouts = [];
-
-        this.currentPage = 1;
-
-        this.totalPages = 1;
-
-        this.setMessage('coachWorkouts.loadError', 'error');
-      },
-    });
+    this.loading = true;
+    this.pageRequests$.next();
   }
 
-  // ==========================================================
-  // SZŰRT ÉS RENDEZETT WORKOUTOK
-  // ==========================================================
+  private applyPage(page: WorkoutLibraryPage): void {
+    this.loading = false;
+    this.totalItems = page.totalElements;
+    this.totalPages = Math.max(1, page.totalPages);
 
-  get filteredWorkouts(): Workout[] {
-    const search = this.searchTerm.trim().toLowerCase();
-
-    const result = this.workouts.filter((workout: Workout): boolean => {
-      const workoutName = workout.workoutName?.toLowerCase() ?? '';
-
-      return workoutName.includes(search);
-    });
-
-    // ========================================================
-    // RENDEZÉS WORKOUT NÉV SZERINT
-    // ========================================================
-
-    result.sort((a: Workout, b: Workout): number => {
-      const nameA = a.workoutName?.trim().toLowerCase() ?? '';
-
-      const nameB = b.workoutName?.trim().toLowerCase() ?? '';
-
-      const comparison = nameA.localeCompare(nameB, this.languageService.getCurrentLanguage(), {
-        sensitivity: 'base',
-      });
-
-      return this.sortDirection === 'asc' ? comparison : -comparison;
-    });
-
-    return result;
-  }
-
-  // ==========================================================
-  // LAPOZÁS FRISSÍTÉSE
-  // ==========================================================
-
-  private updatePagination(): void {
-    const workoutCount = this.filteredWorkouts.length;
-
-    this.totalPages = Math.max(1, Math.ceil(workoutCount / this.itemsPerPage));
-
-    if (this.currentPage > this.totalPages) {
+    // Ha az oldal közben kiürült (pl. törlés után az utolsó oldalon), visszalépünk.
+    if (page.items.length === 0 && this.currentPage > this.totalPages) {
       this.currentPage = this.totalPages;
+      this.loadWorkouts();
+      return;
     }
+
+    this.workouts = page.items.map(toLibraryWorkout);
   }
 
   // ==========================================================
@@ -241,9 +219,7 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
   // ==========================================================
 
   onSearchChange(): void {
-    this.currentPage = 1;
-
-    this.updatePagination();
+    this.searchChanges$.next(this.searchTerm.trim());
   }
 
   // ==========================================================
@@ -251,44 +227,22 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
   // ==========================================================
 
   toggleSort(): void {
-    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
-
+    // Legújabb elöl → név A–Z → név Z–A → legújabb elöl
+    this.sortMode = this.sortMode === 'newest' ? 'nameAsc' : this.sortMode === 'nameAsc' ? 'nameDesc' : 'newest';
     this.currentPage = 1;
-
-    this.updatePagination();
+    this.loadWorkouts();
   }
 
   // ==========================================================
-  // AKTUÁLIS OLDAL WORKOUTJAI
+  // LAPOZÁS
   // ==========================================================
 
-  get pagedWorkouts(): Workout[] {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-
-    return this.filteredWorkouts.slice(startIndex, startIndex + this.itemsPerPage);
-  }
-
-  // ==========================================================
-  // KÖVETKEZŐ OLDAL
-  // ==========================================================
-
-  nextPage(): void {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-    }
-  }
-
-  // ==========================================================
-  // ELŐZŐ OLDAL
-  // ==========================================================
-
-  prevPage(): void {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-    }
-  }
   onPageChange(page: number): void {
+    if (page === this.currentPage) {
+      return;
+    }
     this.currentPage = page;
+    this.loadWorkouts();
   }
 
   // ==========================================================
@@ -402,10 +356,9 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
 
           // Lokálisan is kivesszük, így nincs villanás a frissítés előtt.
           this.workouts = this.workouts.filter((workout) => workout.id !== workoutId);
-          this.updatePagination();
 
           this.setMessage(savedMessage, 'success');
-          this.loadWorkoutsKeepingMessage(savedMessage);
+          this.loadWorkouts();
         },
         error: (error) => {
           this.deletingWorkout = false;
@@ -420,36 +373,6 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
     return name
       ? `Biztosan törlöd ezt a workoutot: ${name}? A művelet nem vonható vissza.`
       : 'Biztosan törlöd ezt a workoutot? A művelet nem vonható vissza.';
-  }
-
-  /**
-   * Törlés után a backendről újratöltjük a listát, de a sikerüzenetet
-   * megtartjuk.
-   */
-  private loadWorkoutsKeepingMessage(savedMessage: string): void {
-    this.coachWorkoutsService
-      .getUniqueWorkoutsWithExercises()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (response) => {
-          this.workouts = (response.data ?? []).map((w: WorkoutWithExercises): Workout => ({
-            id: w.id,
-            workoutName: w.name ?? '',
-            description: w.description ?? '',
-            durationMinutes: w.durationMinutes,
-            difficultyLevel: undefined,
-            exercises: w.exercises ?? [],
-          }));
-
-          this.updatePagination();
-          this.message = savedMessage;
-          this.messageType = 'success';
-        },
-        error: (error) => {
-          this.logger.error('[CoachWorkouts] törlés utáni újratöltési hiba:', error);
-          this.setMessage(savedMessage, 'success');
-        },
-      });
   }
 
   // ==========================================================
@@ -489,4 +412,17 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
     return workout.id ?? workout.programWorkoutId ?? index;
   }
 
+}
+
+/** Backend edzés → edzéstár kártya. */
+function toLibraryWorkout(w: WorkoutWithExercises): Workout {
+  return {
+    id: w.id,
+    programNames: w.programNames ?? [],
+    workoutName: w.name ?? '',
+    description: w.description ?? '',
+    durationMinutes: w.durationMinutes,
+    difficultyLevel: undefined,
+    exercises: w.exercises ?? [],
+  };
 }

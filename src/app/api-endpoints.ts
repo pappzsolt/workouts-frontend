@@ -123,6 +123,7 @@ export const API_ENDPOINTS = {
   exerciseSearch: `${environment.apiUrl}/exercises/search`,
   exerciseFilterOptions: `${environment.apiUrl}/exercises/filter-options`,
   uniqueWorkoutsWithExercises: `${environment.apiUrl}/exercises/workouts/unique`,
+  workoutLibraryPage: `${environment.apiUrl}/exercises/workouts/page`,
   userWorkoutExercisesByWorkout: (userWorkoutId: number) =>
     `${environment.apiUrl}/exercises/user-workouts/${userWorkoutId}`,
   exerciseSetCompleted: `${environment.apiUrl}/exercises/user-workouts/sets/completed`,

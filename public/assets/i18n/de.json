@@ -205,7 +205,8 @@
     "addWorkout": "Neues Training hinzufügen",
     "loadError": "Trainings konnten nicht geladen werden.",
     "addError": "Fehler beim Hinzufügen des Trainings",
-    "addSuccess": "Training erfolgreich hinzugefügt."
+    "addSuccess": "Training erfolgreich hinzugefügt.",
+    "sortNewest": "Neueste zuerst"
   },
   "coachProfile": {
     "title": "Coach-Profil"

@@ -174,6 +174,39 @@ export class CoachWorkoutsService {
   }
 
   /**
+   * Az edzéstár egy oldala: a backend lapoz, keres (név) és rendez.
+   * A page itt 1-től indul, a backend felé 0-tól.
+   *
+   * GET /api/exercises/workouts/page
+   */
+  getWorkoutLibraryPage(
+    page: number,
+    size: number,
+    search: string,
+    sort: WorkoutLibrarySort,
+  ): Observable<WorkoutLibraryPage> {
+    const params = new HttpParams()
+      .set('language', this.languageService.getCurrentLanguage())
+      .set('page', Math.max(0, page - 1))
+      .set('size', size)
+      .set('search', search.trim())
+      .set('sort', sort);
+
+    return this.http
+      .get<ApiResponse<PageResponse<BackendWorkoutDto>>>(API_ENDPOINTS.workoutLibraryPage, { params })
+      .pipe(
+        map((response) => {
+          const data = response.data;
+          return {
+            items: (data?.content ?? []).map((workout) => this.toWorkoutUiDto(workout)),
+            totalElements: data?.totalElements ?? 0,
+            totalPages: data?.totalPages ?? 1,
+          };
+        }),
+      );
+  }
+
+  /**
    * Új workout létrehozása.
    */
   addWorkout(workout: Workout): Observable<ApiResponse<WorkoutResponse>> {
@@ -270,4 +303,12 @@ export class CoachWorkoutsService {
 
     return this.http.get<PageResponse<Workout>>(API_ENDPOINTS.myWorkoutsSearch, { params });
   }
+}
+
+export type WorkoutLibrarySort = 'newest' | 'nameAsc' | 'nameDesc';
+
+export interface WorkoutLibraryPage {
+  items: WorkoutUiDto[];
+  totalElements: number;
+  totalPages: number;
 }
