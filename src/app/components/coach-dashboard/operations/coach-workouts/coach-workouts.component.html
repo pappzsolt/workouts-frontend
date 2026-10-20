@@ -88,6 +88,13 @@
               {{ w.workoutName }}
             </h3>
 
+            @if (w.programNames?.length) {
+              <div class="mb-3 text-sm text-content-600">
+                <span class="font-semibold">Program:</span>
+                <span class="ml-1 break-words">{{ w.programNames?.join(', ') }}</span>
+              </div>
+            }
+
             <!-- LEÍRÁS -->
 
             @if (w.description) {

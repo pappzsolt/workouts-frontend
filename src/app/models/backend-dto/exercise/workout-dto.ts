@@ -9,5 +9,6 @@ export interface WorkoutDto {
   durationMinutes: number | null;
   intensityLevel: string | null;
   done: boolean | null;
+  programNames: string[] | null;
   exercises: Array<WorkoutExerciseDto> | null;
 }

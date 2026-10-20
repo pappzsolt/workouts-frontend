@@ -59,6 +59,7 @@ export interface WorkoutExercise {
 
 export interface WorkoutWithExercises {
   id: number;
+  programNames?: string[];
   name: string;
   description: string;
   workoutDate?: string;

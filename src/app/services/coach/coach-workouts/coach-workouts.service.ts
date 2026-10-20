@@ -28,6 +28,7 @@ export class CoachWorkoutsService {
 
   private readonly toWorkoutUiDto = (workout: BackendWorkoutDto): WorkoutUiDto => ({
     id: workout.id ?? 0,
+    programNames: workout.programNames ?? [],
     name: workout.name ?? '',
     description: workout.description ?? '',
     workoutDate: workout.workoutDate ?? undefined,

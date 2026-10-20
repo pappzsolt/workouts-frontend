@@ -156,6 +156,8 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
         this.workouts = (res ?? []).map((w: WorkoutWithExercises): Workout => ({
           id: w.id,
 
+          programNames: w.programNames ?? [],
+
           workoutName: w.name ?? '',
 
           description: w.description ?? '',
