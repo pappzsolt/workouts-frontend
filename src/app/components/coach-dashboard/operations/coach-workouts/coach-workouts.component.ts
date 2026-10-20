@@ -94,7 +94,7 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
 
   currentPage: number = 1;
 
-  itemsPerPage: number = 4;
+  itemsPerPage: number = 6;
 
   totalPages: number = 1;
 
