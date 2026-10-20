@@ -425,37 +425,28 @@
       </div>
 
       <!-- =================================================
-           KÉP ELLENŐRZÉS
+           KÉPEK
+           A hiányzó képfájlok kimaradnak, így nincs törött kép.
            ================================================= -->
 
-      <img
-        *ngIf="workoutExercise.exercise.imageUrl"
-        [src]="workoutExercise.exercise.imageUrl"
-        [alt]="workoutExercise.exercise.name"
-        class="hidden"
-        (load)="imageLoaded = true"
-        (error)="imageLoaded = false"
-      />
+      @if (exerciseImages.length) {
+        <div class="bg-white rounded-2xl shadow-md border border-white/80 p-4 sm:p-5 mt-5">
+          <div class="text-sm font-semibold text-content-700 mb-3">
+            {{ 'userExerciseDetail.exerciseImage' | translate }}
+          </div>
 
-      <!-- =================================================
-           IMAGE
-           CSAK HA A KÉP TÉNYLEG BETÖLTŐDÖTT
-           ================================================= -->
-
-      <div
-        *ngIf="workoutExercise.exercise.imageUrl && imageLoaded"
-        class="bg-white rounded-2xl shadow-md border border-white/80 p-4 sm:p-5 mt-5"
-      >
-        <div class="text-sm font-semibold text-content-700 mb-3">
-          {{ 'userExerciseDetail.exerciseImage' | translate }}
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            @for (image of exerciseImages; track image) {
+              <img
+                [src]="image"
+                [alt]="workoutExercise.exercise.name"
+                class="w-full rounded-xl bg-surface-50 object-contain"
+                (error)="onExerciseImageError(image)"
+              />
+            }
+          </div>
         </div>
-
-        <img
-          [src]="workoutExercise.exercise.imageUrl"
-          [alt]="workoutExercise.exercise.name"
-          class="w-full rounded-xl object-cover"
-        />
-      </div>
+      }
 
       <!-- =================================================
            VIDEO

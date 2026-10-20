@@ -20,6 +20,7 @@ import {
 import { SetRestTimerComponent } from './set-rest-timer.component';
 
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
+import { exerciseImageSources, markExerciseImageBroken } from '../../../../../constants/exercise-images';
 
 @Component({
   selector: 'app-user-exercise-detail',
@@ -46,7 +47,6 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   currentSetIndex = 0;
   restTimerSetId: number | null = null;
   restTimerRevision = 0;
-  imageLoaded = false;
   message = '';
   messageType: 'success' | 'error' | 'info' | '' = '';
   messageParams: Record<string, unknown> = {};
@@ -408,6 +408,14 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
           // a mentési folyamat már megjelenítette a hibaüzenetet.
         },
       });
+  }
+
+  get exerciseImages(): string[] {
+    return exerciseImageSources(this.workoutExercise?.exercise?.imageUrl);
+  }
+
+  onExerciseImageError(source: string): void {
+    markExerciseImageBroken(source);
   }
 
 }

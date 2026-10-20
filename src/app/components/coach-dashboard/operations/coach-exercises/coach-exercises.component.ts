@@ -21,6 +21,7 @@ import { CoachWorkspaceService } from '../../../../services/coach/coach-workspac
 import { codeLabel, humanizeCode } from '../../../coach/coach-ui';
 
 import { ExerciseSearchFieldComponent } from '../../../shared/components/exercise-search-field/exercise-search-field.component';
+import { exerciseImageSources, markExerciseImageBroken } from '../../../../constants/exercise-images';
 
 @Component({
   selector: 'app-exercise-controller',
@@ -319,20 +320,13 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   // ==========================================================
 
   getExerciseImages(exercise: Exercise): string[] {
-    if (!exercise.imageUrl) {
-      return [];
-    }
-
-    try {
-      const images = JSON.parse(exercise.imageUrl);
-
-      return Array.isArray(images) ? images : [];
-    } catch (error) {
-      this.logger.error('[CoachExercises] Hibás imageUrl JSON:', exercise.imageUrl, error);
-
-      return [];
-    }
+    return exerciseImageSources(exercise.imageUrl);
   }
+
+  onExerciseImageError(source: string): void {
+    markExerciseImageBroken(source);
+  }
+
   trackByExercise(index: number, exercise: Exercise): number {
     return exercise.id ?? index;
   }

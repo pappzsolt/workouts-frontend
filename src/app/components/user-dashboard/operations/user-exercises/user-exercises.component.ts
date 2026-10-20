@@ -11,6 +11,7 @@ import { LanguageService } from '../../../../services/shared/language.service';
 import { UserWorkoutExerciseDetailDto, ExerciseDetailDto } from '../../../../models/user-workout-exercise-detail.dto';
 import { SidePaginationComponent } from '../../../../components/shared/components/side-pagination/side-pagination.component';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { exerciseImageSources, markExerciseImageBroken } from '../../../../constants/exercise-images';
 
 @Component({
   standalone: true,
@@ -211,20 +212,13 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
   // ============================================================
 
   getExerciseImages(exercise: ExerciseDetailDto): string[] {
-    if (!exercise.imageUrl) {
-      return [];
-    }
-
-    try {
-      const images = JSON.parse(exercise.imageUrl);
-
-      return Array.isArray(images) ? images : [];
-    } catch (error) {
-      this.logger.error('[UserWorkouts] Hibás imageUrl JSON:', exercise.imageUrl, error);
-
-      return [];
-    }
+    return exerciseImageSources(exercise.imageUrl);
   }
+
+  onExerciseImageError(source: string): void {
+    markExerciseImageBroken(source);
+  }
+
 
   trackByExercise(index: number, exercise: UserWorkoutExerciseDetailDto): number {
     return exercise.id;

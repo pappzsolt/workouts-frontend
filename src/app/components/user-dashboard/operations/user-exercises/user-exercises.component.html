@@ -79,7 +79,8 @@
                         let image of getExerciseImages(exercise.exercise);
                         trackBy: trackByImage
                       "
-                      [src]="'/assets/images/flat/' + image"
+                      [src]="image"
+                  (error)="onExerciseImageError(image)"
                       [alt]="exercise.exercise.name"
                       class="h-full w-full shrink-0 object-contain p-1"
                     />
