@@ -319,7 +319,7 @@ async function assignExerciseThroughUi(
 
   const exerciseOption = page
     .getByRole('button')
-    .filter({ hasText: new RegExp(`^\\s*${escapeRegExp(exerciseName)}\\s*\\+\\s*$`) });
+    .filter({ hasText: new RegExp(`^\\s*${escapeRegExp(exerciseName)}\\s*$`) });
   await expect(exerciseOption).toHaveCount(1, { timeout: 15_000 });
   await exerciseOption.click();
 

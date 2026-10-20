@@ -28,7 +28,7 @@
     </label>
     <div class="flex items-end">
       <button type="button" (click)="clearFilters()" [disabled]="!hasFilters"
-              class="min-h-10 w-full rounded-xl border border-surface-300 px-3 text-sm font-semibold text-content-700 hover:bg-surface-50 disabled:opacity-40">
+              class="btn btn-neutral min-h-10 w-full px-3">
         {{ 'coachWorkspace.picker.clear' | translate }}
       </button>
     </div>
@@ -59,7 +59,7 @@
           </button>
           <button type="button" (click)="picked.emit(exercise)" [disabled]="isChosen(exercise.id)"
                   [attr.aria-label]="('coachWorkspace.editor.addExercise' | translate) + ': ' + exercise.name"
-                  class="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-xl px-3 text-sm font-semibold text-primary-700 hover:bg-primary-50 disabled:opacity-40">
+                  class="btn btn-ghost-primary shrink-0 gap-1 px-3">
             @if (isChosen(exercise.id)) {
               {{ 'coachWorkspace.picker.added' | translate }}
             } @else {
@@ -93,7 +93,7 @@
     <div class="flex items-center justify-between gap-2 text-sm">
       <button type="button" (click)="goToPage(query.page - 1)" [disabled]="query.page === 0 || loading"
               [attr.aria-label]="'coachWorkspace.picker.previous' | translate"
-              class="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-surface-300 text-content-700 hover:bg-surface-50 disabled:opacity-40">
+              class="btn btn-neutral btn-icon">
         <app-icon name="chevron-left" sizeClass="h-4 w-4" />
       </button>
       <span class="text-content-700">{{ 'coachWorkspace.picker.page' | translate: { page: query.page + 1, total: page.totalPages } }}</span>

@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { AppIconComponent, AppIconName } from '../app-icon/app-icon.component';
 
 export type AppButtonVariant =
-  'primary' | 'save' | 'edit' | 'search' | 'sort' | 'add' | 'delete' | 'secondary' | 'danger';
+  'primary' | 'save' | 'edit' | 'search' | 'sort' | 'add' | 'delete' | 'secondary' | 'danger' | 'inverse';
 
 export type AppButtonAppearance =
   'solid' | 'outline' | 'ghost' | 'link' | 'custom' | 'selection-row';
@@ -83,22 +83,16 @@ export class AppButtonComponent {
 
   getAppearanceClasses(): string {
     if (this.appearance === 'custom' || this.appearance === 'selection-row') return '';
-    if (this.active)
-      return 'border border-primary-700 bg-primary-700 text-white hover:bg-primary-800 focus:ring-primary-300';
-    if (this.completed)
-      return 'border border-save-200 bg-save-50 text-save-700 hover:bg-save-100 focus:ring-save-300';
+    if (this.active) return 'btn-primary';
+    if (this.completed) return 'btn-tonal';
     const destructive = this.variant === 'delete' || this.variant === 'danger';
     switch (this.appearance) {
       case 'outline':
-        return destructive
-          ? 'border border-delete-200 bg-white text-delete-700 hover:bg-delete-50 focus:ring-delete-300'
-          : 'border border-surface-300 bg-white text-primary-700 hover:border-primary-300 hover:bg-primary-50 focus:ring-primary-300';
+        return destructive ? 'btn-delete' : 'btn-outline';
       case 'ghost':
-        return destructive
-          ? 'border border-transparent bg-transparent text-delete-700 hover:bg-delete-50 focus:ring-delete-300'
-          : 'border border-transparent bg-transparent text-content-700 hover:bg-surface-100 focus:ring-primary-300';
+        return destructive ? 'btn-ghost-delete' : 'btn-ghost';
       case 'link':
-        return 'border border-transparent bg-transparent text-primary-700 hover:underline focus:ring-primary-300';
+        return 'btn-link';
       default:
         return this.getVariantClasses();
     }
@@ -108,45 +102,35 @@ export class AppButtonComponent {
    * Normál gomb színosztályai
    */
   getVariantClasses(): string {
-    const variants: Record<AppButtonVariant, string> = {
-      primary: 'bg-primary-700 text-white hover:bg-primary-800 focus:ring-primary-300',
-
-      save: 'bg-save-700 text-white hover:bg-save-800 focus:ring-save-300',
-
-      edit: 'bg-edit-600 text-white hover:bg-edit-700 focus:ring-edit-300',
-
-      search: 'bg-search-700 text-white hover:bg-search-800 focus:ring-search-200',
-
-      sort: 'bg-sort-600 text-white hover:bg-sort-700 focus:ring-sort-300',
-
-      add: 'bg-add-600 text-content-900 hover:bg-add-700 hover:text-white focus:ring-add-200',
-
-      delete: 'bg-delete-600 text-white hover:bg-delete-700 focus:ring-delete-300',
-
-      secondary: 'bg-surface-200 text-content-800 hover:bg-surface-300 focus:ring-surface-300',
-
-      danger: 'bg-delete-600 text-white hover:bg-delete-700 focus:ring-delete-300',
-    };
-
-    return variants[this.variant];
+    return VARIANT_CLASSES[this.variant];
   }
 
   /**
    * Lebegő gomb színosztályai
    */
   getFloatingClasses(): string {
-    const variants: Record<AppButtonVariant, string> = {
-      primary: 'bg-primary-700 text-white hover:bg-primary-800 focus:ring-primary-300',
-      save: 'bg-save-700 text-white hover:bg-save-800 focus:ring-save-300',
-      edit: 'bg-edit-600 text-white hover:bg-edit-700 focus:ring-edit-300',
-      search: 'bg-search-700 text-white hover:bg-search-800 focus:ring-search-200',
-      sort: 'bg-sort-600 text-white hover:bg-sort-700 focus:ring-sort-300',
-      add: 'bg-add-600 text-content-900 hover:bg-add-700 hover:text-white focus:ring-add-200',
-      delete: 'bg-delete-600 text-white hover:bg-delete-700 focus:ring-delete-300',
-      secondary: 'bg-surface-400 text-content-900 hover:bg-surface-300 focus:ring-surface-300',
-      danger: 'bg-delete-600 text-white hover:bg-delete-700 focus:ring-delete-300',
-    };
-
-    return variants[this.variant];
+    return VARIANT_CLASSES[this.variant];
   }
 }
+
+/**
+ * Egységes gombhierarchia; a stílusok a src/styles.css .btn-* osztályaiban vannak.
+ * - fő művelet (primary, save, add, search): btn-primary
+ * - szerkesztés (edit): btn-tonal
+ * - másodlagos (secondary, sort): btn-neutral
+ * - törlés (delete): btn-delete
+ * - végleges, megerősített törlés (danger): btn-danger
+ * - gomb a márkaszínű fejlécen (inverse): btn-inverse
+ */
+const VARIANT_CLASSES: Record<AppButtonVariant, string> = {
+  primary: 'btn-primary',
+  save: 'btn-primary',
+  add: 'btn-primary',
+  search: 'btn-primary',
+  edit: 'btn-tonal',
+  secondary: 'btn-neutral',
+  sort: 'btn-neutral',
+  delete: 'btn-delete',
+  danger: 'btn-danger',
+  inverse: 'btn-inverse',
+};

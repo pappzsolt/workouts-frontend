@@ -33,17 +33,19 @@
       <!-- Username -->
       <span
         *ngIf="username"
-        class="hidden max-w-48 truncate rounded-full bg-white px-3 py-1.5 text-sm font-medium text-info-600 shadow-sm sm:inline-block"
+        class="header-chip hidden max-w-56 sm:inline-flex"
       >
-        {{ 'header.user' | translate }}: {{ username }}
+        <app-icon name="user-round" sizeClass="h-4 w-4 shrink-0" />
+        <span class="truncate">{{ 'header.user' | translate }}: {{ username }}</span>
       </span>
 
       <!-- Role -->
       <span
         *ngIf="role"
-        class="hidden max-w-40 truncate rounded-full bg-white px-3 py-1.5 text-sm font-medium text-info-600 shadow-sm sm:inline-block"
+        class="header-chip hidden max-w-56 sm:inline-flex"
       >
-        {{ 'header.role' | translate }}: {{ role }}
+        <app-icon name="user-check" sizeClass="h-4 w-4 shrink-0" />
+        <span class="truncate">{{ 'header.role' | translate }}: {{ role }}</span>
       </span>
 
       <!-- Nyelvválasztó -->
@@ -53,8 +55,9 @@
 
       <!-- Logout -->
       <app-button
-        variant="danger"
+        variant="inverse"
         type="button"
+        lucideIcon="log-out"
         [label]="'menu.logout' | translate"
         (buttonClick)="onLogout()"
       ></app-button>

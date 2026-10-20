@@ -10,39 +10,31 @@
           [routerLinkActiveOptions]="{ exact: true }"
           ariaCurrentWhenActive="page"
           (click)="menuNavigate.emit()"
-          class="flex w-full items-center rounded-xl px-4 py-3 text-sm font-medium text-content-700 transition-all duration-200 hover:bg-surface-100 hover:text-content-900 focus:outline-none focus:ring-2 focus:ring-surface-400/30"
+          class="menu-item"
         >
+          @if (item.icon) {
+            <app-icon [name]="item.icon" sizeClass="h-[18px] w-[18px]" />
+          }
           {{ item.label | translate }}
         </a>
 
         <!-- Action (logout) -->
-        <app-button
-          type="button"
-          *ngIf="item.action"
-          (buttonClick)="onAction(item)"
-          variant="secondary"
-          appearance="ghost"
-          [fullWidth]="true"
-          align="start"
-          class="block w-full"
-        >
+        <button *ngIf="item.action" type="button" class="menu-item" (click)="onAction(item)">
+          @if (item.icon) {
+            <app-icon [name]="item.icon" sizeClass="h-[18px] w-[18px]" />
+          }
           {{ item.label | translate }}
-        </app-button>
+        </button>
 
         <!-- Dropdown -->
         <ng-container *ngIf="item.children">
-          <app-button
-            type="button"
-            [ariaExpanded]="isOpen(item)"
-            (buttonClick)="toggle(item)"
-            variant="secondary"
-            appearance="ghost"
-            [fullWidth]="true"
-            align="start"
-            class="block w-full"
-          >
-            {{ item.label | translate }}
-          </app-button>
+          <button type="button" class="menu-item" [attr.aria-expanded]="isOpen(item)" (click)="toggle(item)">
+            @if (item.icon) {
+              <app-icon [name]="item.icon" sizeClass="h-[18px] w-[18px]" />
+            }
+            <span class="flex-1">{{ item.label | translate }}</span>
+            <app-icon [name]="isOpen(item) ? 'chevron-up' : 'chevron-down'" sizeClass="h-4 w-4" />
+          </button>
 
           <!-- Dropdown submenu -->
           <ul
@@ -56,7 +48,7 @@
                 [routerLinkActiveOptions]="{ exact: true }"
                 ariaCurrentWhenActive="page"
                 (click)="menuNavigate.emit()"
-                class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm text-content-600 transition-all duration-200 hover:bg-surface-100 hover:text-content-900"
+                class="menu-item menu-item-child"
               >
                 {{ child.label | translate }}
               </a>

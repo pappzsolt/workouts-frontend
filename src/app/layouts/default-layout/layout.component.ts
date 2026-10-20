@@ -6,6 +6,7 @@ import { LanguageSelectorComponent } from '../../components/shared/language/lang
 import { AuthService } from '../../services/auth/auth.service';
 import { SHARED_IMPORTS } from '../../components/shared/shared-imports';
 import { APP_VERSION } from '../../config/app-version';
+import type { MenuItem } from '../../models/common/menu-item.model';
 
 @Component({
   selector: 'app-layout',
@@ -23,27 +24,27 @@ export class LayoutComponent implements OnInit {
 
   menuOpen = false; // <-- hamburger menü állapota
 
-  adminMenuItems = [
-    { label: 'menu.adminDashboard', path: '/admin/dashboard' },
-    { label: 'menu.users', path: '/admin/users' },
-    { label: 'menu.loginAuditLogs', path: '/admin/login-audit-logs' },
-    { label: 'menu.logout', action: 'logout' },
+  adminMenuItems: MenuItem[] = [
+    { label: 'menu.adminDashboard', icon: 'house', path: '/admin/dashboard' },
+    { label: 'menu.users', icon: 'users', path: '/admin/users' },
+    { label: 'menu.loginAuditLogs', icon: 'list-checks', path: '/admin/login-audit-logs' },
+    { label: 'menu.logout', icon: 'log-out', action: 'logout' },
   ];
 
-  coachMenuItems = [
-    { label: 'menu.coachOverview', path: '/coach/dashboard' },
-    { label: 'menu.coachClients', path: '/coach/clients' },
-    { label: 'menu.coachPrograms', path: '/coach/programs' },
-    { label: 'menu.coachWorkouts', path: '/coach/workouts' },
-    { label: 'menu.coachExercises', path: '/coach/exercises' },
-    { label: 'menu.profile', path: '/coach/profile' },
-    { label: 'menu.logout', action: 'logout' },
+  coachMenuItems: MenuItem[] = [
+    { label: 'menu.coachOverview', icon: 'house', path: '/coach/dashboard' },
+    { label: 'menu.coachClients', icon: 'users', path: '/coach/clients' },
+    { label: 'menu.coachPrograms', icon: 'clipboard-list', path: '/coach/programs' },
+    { label: 'menu.coachWorkouts', icon: 'flame', path: '/coach/workouts' },
+    { label: 'menu.coachExercises', icon: 'dumbbell', path: '/coach/exercises' },
+    { label: 'menu.profile', icon: 'user-round', path: '/coach/profile' },
+    { label: 'menu.logout', icon: 'log-out', action: 'logout' },
   ];
 
-  userMenuItems = [
-    { label: 'menu.dashboard', path: '/user/dashboard' },
-    { label: 'menu.profile', path: '/user/profile' },
-    { label: 'menu.logout', action: 'logout' },
+  userMenuItems: MenuItem[] = [
+    { label: 'menu.dashboard', icon: 'house', path: '/user/dashboard' },
+    { label: 'menu.profile', icon: 'user-round', path: '/user/profile' },
+    { label: 'menu.logout', icon: 'log-out', action: 'logout' },
   ];
 
   constructor(

@@ -1,32 +1,62 @@
+<span class="app-icon-box" [ngClass]="sizeClass">
 @switch (name) {
-  @case ('activity') { <svg lucideActivity [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('arrow-down-wide-narrow') { <svg lucideArrowDownWideNarrow [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('arrow-up-narrow-wide') { <svg lucideArrowUpNarrowWide [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('book-open') { <svg lucideBookOpen [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('calendar-days') { <svg lucideCalendarDays [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('chart-column-increasing') { <svg lucideChartColumnIncreasing [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('chevron-down') { <svg lucideChevronDown [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('chevron-left') { <svg lucideChevronLeft [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('chevron-right') { <svg lucideChevronRight [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('chevron-up') { <svg lucideChevronUp [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('circle') { <svg lucideCircle [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('circle-check') { <svg lucideCircleCheck [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('circle-plus') { <svg lucideCirclePlus [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('circle-x') { <svg lucideCircleX [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('clipboard-list') { <svg lucideClipboardList [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('dumbbell') { <svg lucideDumbbell [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('file-text') { <svg lucideFileText [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('flame') { <svg lucideFlame [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('link') { <svg lucideLink [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('menu') { <svg lucideMenu [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('pencil') { <svg lucidePencil [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('plus') { <svg lucidePlus [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('repeat') { <svg lucideRepeat [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('save') { <svg lucideSave [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('search') { <svg lucideSearch [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('timer') { <svg lucideTimer [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('user-plus') { <svg lucideUserPlus [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('user-round') { <svg lucideUserRound [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('users') { <svg lucideUsers [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
-  @case ('x') { <svg lucideX [ngClass]="sizeClass" [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('activity') { <svg lucideActivity [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('archive') { <svg lucideArchive [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('arrow-down') { <svg lucideArrowDown [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('arrow-down-wide-narrow') { <svg lucideArrowDownWideNarrow [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('arrow-left') { <svg lucideArrowLeft [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('arrow-right') { <svg lucideArrowRight [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('arrow-up') { <svg lucideArrowUp [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('arrow-up-narrow-wide') { <svg lucideArrowUpNarrowWide [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('book-open') { <svg lucideBookOpen [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('calendar-check') { <svg lucideCalendarCheck [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('calendar-clock') { <svg lucideCalendarClock [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('calendar-days') { <svg lucideCalendarDays [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('chart-column-increasing') { <svg lucideChartColumnIncreasing [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('check') { <svg lucideCheck [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('chevron-down') { <svg lucideChevronDown [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('chevron-left') { <svg lucideChevronLeft [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('chevron-right') { <svg lucideChevronRight [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('chevron-up') { <svg lucideChevronUp [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('circle') { <svg lucideCircle [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('circle-alert') { <svg lucideCircleAlert [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('circle-check') { <svg lucideCircleCheck [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('circle-play') { <svg lucideCirclePlay [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('circle-plus') { <svg lucideCirclePlus [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('circle-x') { <svg lucideCircleX [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('clipboard-check') { <svg lucideClipboardCheck [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('clipboard-list') { <svg lucideClipboardList [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('clock') { <svg lucideClock [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('copy') { <svg lucideCopy [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('dumbbell') { <svg lucideDumbbell [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('eye') { <svg lucideEye [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('file-text') { <svg lucideFileText [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('filter') { <svg lucideFilter [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('flag') { <svg lucideFlag [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('flame') { <svg lucideFlame [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('folder-open') { <svg lucideFolderOpen [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('house') { <svg lucideHouse [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('info') { <svg lucideInfo [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('link') { <svg lucideLink [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('list-checks') { <svg lucideListChecks [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('log-out') { <svg lucideLogOut [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('menu') { <svg lucideMenu [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('pencil') { <svg lucidePencil [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('plus') { <svg lucidePlus [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('repeat') { <svg lucideRepeat [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('rotate-ccw') { <svg lucideRotateCcw [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('save') { <svg lucideSave [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('search') { <svg lucideSearch [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('settings') { <svg lucideSettings [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('square-pen') { <svg lucideSquarePen [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('timer') { <svg lucideTimer [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('trash-2') { <svg lucideTrash2 [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('triangle-alert') { <svg lucideTriangleAlert [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('user-check') { <svg lucideUserCheck [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('user-minus') { <svg lucideUserMinus [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('user-plus') { <svg lucideUserPlus [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('user-round') { <svg lucideUserRound [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('users') { <svg lucideUsers [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
+  @case ('x') { <svg lucideX [strokeWidth]="strokeWidth" aria-hidden="true"></svg> }
 }
+</span>

@@ -26,23 +26,6 @@ const blue = {
   900: '#1E3A8A',
 };
 
-const search = {
-  50: '#F0FDF4',
-  100: '#DCFCE7',
-  200: '#BBF7D0',
-  600: '#16A34A',
-  700: '#15803D',
-  800: '#166534',
-};
-
-const add = {
-  50: '#FEFCE8',
-  100: '#FEF9C3',
-  200: '#FEF08A',
-  600: '#CA8A04',
-  700: '#A16207',
-};
-
 const neutral = {
   50: '#F8FAFC',
   100: '#F1F5F9',
@@ -54,17 +37,6 @@ const neutral = {
   700: '#334155',
   800: '#1E293B',
   900: '#0F172A',
-};
-
-const indigo = {
-  50: '#EEF2FF',
-  100: '#E0E7FF',
-  200: '#C7D2FE',
-  300: '#A5B4FC',
-  400: '#818CF8',
-  500: '#6366F1',
-  600: '#4F46E5',
-  700: '#4338CA',
 };
 
 const warning = {
@@ -101,17 +73,21 @@ module.exports = {
         // Modal backdrops and shadows can be adjusted independently.
         overlay: neutral[900],
         shadow: neutral[900],
+        // Egységes paletta: egy márkaszín (zöld) + semleges szürkék.
+        // Kék csak tájékoztató üzenetekhez (info), sárga a figyelmeztetéshez,
+        // piros a törléshez/hibához. A régi szerep-nevek (edit, add, search,
+        // sort, pagination) megmaradnak, de a márkaszínre / semlegesre mutatnak.
         primary,
         success: primary,
-        edit: blue,
+        edit: primary,
         info: blue,
-        search,
-        add,
+        search: primary,
+        add: primary,
         save: primary,
         surface: neutral,
         content: neutral,
-        sort: indigo,
-        pagination: indigo,
+        sort: neutral,
+        pagination: primary,
         warning,
         delete: danger,
       },

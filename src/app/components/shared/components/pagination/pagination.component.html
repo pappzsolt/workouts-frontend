@@ -18,7 +18,8 @@
     buttonClass="sm:w-auto"
     class="block w-full sm:w-auto"
   >
-    ◀ {{ 'common.previous' | translate }}
+    <app-icon name="chevron-left" sizeClass="h-4 w-4" />
+    {{ 'common.previous' | translate }}
   </app-button>
 
   <div *ngIf="showPageNumbers" class="flex flex-wrap items-center justify-center gap-2">
@@ -57,7 +58,8 @@
     buttonClass="sm:w-auto"
     class="block w-full sm:w-auto"
   >
-    {{ 'common.next' | translate }} ▶
+    {{ 'common.next' | translate }}
+    <app-icon name="chevron-right" sizeClass="h-4 w-4" />
   </app-button>
   <span *ngIf="showInfo" class="text-center text-sm text-content-600" aria-live="polite">
     {{ 'pagination.info' | translate: { start: startItem, end: endItem, total: totalItems } }}

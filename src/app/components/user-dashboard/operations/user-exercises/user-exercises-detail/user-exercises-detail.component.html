@@ -264,7 +264,9 @@
                       : ('userExerciseDetail.tapDone' | translate)
                   }}
 
-                  {{ set.completed ? '✓' : '' }}
+                  @if (set.completed) {
+                    <app-icon name="check" sizeClass="h-4 w-4" />
+                  }
                 </div>
 
                 <!-- =================================================

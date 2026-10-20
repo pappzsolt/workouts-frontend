@@ -1,3 +1,4 @@
+import { AppIconComponent } from '../app-icon/app-icon.component';
 import { AppSelectComponent } from '../app-select/app-select.component';
 import type { SelectOption } from '../../../../models/common/select-option.model';
 import { AppButtonComponent } from '../app-button/app-button.component';
@@ -11,7 +12,7 @@ let nextPaginationId = 0;
 @Component({
   standalone: true,
   selector: 'app-pagination',
-  imports: [AppSelectComponent, AppButtonComponent, CommonModule, FormsModule, TranslatePipe],
+  imports: [AppSelectComponent, AppButtonComponent, AppIconComponent, CommonModule, FormsModule, TranslatePipe],
   templateUrl: './pagination.component.html',
 })
 export class PaginationComponent {

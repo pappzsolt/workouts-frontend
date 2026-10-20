@@ -20,7 +20,7 @@ import type {
   CoachProgram,
   CoachWorkoutStatus,
 } from '../../../models/coach-workspace.model';
-import { STATUS_BADGE, STATUS_LABEL, errorText, initial, percent } from '../coach-ui';
+import { errorText, initial, percent } from '../coach-ui';
 
 /** Az ügyfél egy edzése a programban (a sorokból összerakva). */
 export interface ClientWorkoutEntry {
@@ -103,8 +103,6 @@ export class CoachClientDetailComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
-  readonly statusLabel = STATUS_LABEL;
-  readonly statusBadge = STATUS_BADGE;
   readonly initial = initial;
   readonly percent = percent;
   readonly todayIso = toIsoDate(new Date());

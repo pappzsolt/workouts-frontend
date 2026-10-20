@@ -109,7 +109,7 @@ test('COACH: új program + meglévő workout + új workout 3 gyakorlattal → Po
       await expect(search).toBeVisible();
       await search.fill(name);
       const option = page.getByRole('button')
-        .filter({ hasText: new RegExp(`^\\s*${name}\\s*\\+\\s*$`) });
+        .filter({ hasText: new RegExp(`^\\s*${name}\\s*$`) });
       await expect(option).toHaveCount(1);
       await option.click();
       const add = page.getByRole('button', { name: 'Exercise hozzáadása', exact: true });

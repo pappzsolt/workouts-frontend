@@ -21,6 +21,113 @@ body {
   .form-field-error {
     @apply rounded-lg border border-delete-200 bg-delete-50 px-3 py-2 text-sm font-medium text-delete-700;
   }
+
+  /*
+   * Egységes gombstílusok. Az <app-button> ezeket használja, és ugyanígy
+   * használhatók linkekre is (pl. <a class="btn btn-primary">), hogy egy
+   * navigációs gomb se kapjon saját, helyben összerakott színeket.
+   *
+   * - btn-primary: a fő művelet (tömör márkaszín)
+   * - btn-tonal:   szerkesztés / másodlagos kiemelt művelet (halvány márkaszín)
+   * - btn-neutral: egyéb másodlagos művelet (fehér, semleges keret)
+   * - btn-delete:  törlés (fehér, piros szöveg)
+   * - btn-danger:  végleges, megerősített törlés (tömör piros)
+   * - btn-inverse: gomb a márkaszínű fejlécen (pl. kijelentkezés)
+   */
+  .btn {
+    @apply inline-flex min-h-11 min-w-0 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition duration-200 focus-visible:outline-none focus-visible:ring-4 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply border border-primary-700 bg-primary-700 text-white hover:border-primary-800 hover:bg-primary-800 focus-visible:ring-primary-300;
+  }
+
+  .btn-tonal {
+    @apply border border-primary-200 bg-primary-50 text-primary-800 hover:border-primary-300 hover:bg-primary-100 focus-visible:ring-primary-300;
+  }
+
+  .btn-neutral {
+    @apply border border-surface-300 bg-white text-content-700 hover:border-surface-400 hover:bg-surface-50 focus-visible:ring-primary-300;
+  }
+
+  .btn-delete {
+    @apply border border-delete-200 bg-white text-delete-700 hover:border-delete-300 hover:bg-delete-50 focus-visible:ring-delete-300;
+  }
+
+  .btn-danger {
+    @apply border border-delete-600 bg-delete-600 text-white hover:border-delete-700 hover:bg-delete-700 focus-visible:ring-delete-300;
+  }
+
+  /* Keretes (outline) megjelenés: fehér háttér, márkaszínű szöveg. */
+  .btn-outline {
+    @apply border border-surface-300 bg-white text-primary-700 hover:border-primary-300 hover:bg-primary-50 focus-visible:ring-primary-300;
+  }
+
+  /* Keret és háttér nélküli gomb (menü, eszköztár). */
+  .btn-ghost {
+    @apply border border-transparent bg-transparent text-content-700 hover:bg-surface-100 focus-visible:ring-primary-300;
+  }
+
+  .btn-ghost-delete {
+    @apply border border-transparent bg-transparent text-delete-700 hover:bg-delete-50 focus-visible:ring-delete-300;
+  }
+
+  .btn-ghost-primary {
+    @apply border border-transparent bg-transparent text-primary-700 hover:bg-primary-50 focus-visible:ring-primary-300;
+  }
+
+  /* Csak ikont tartalmazó, négyzetes gomb (44×44 px érintési felület). */
+  .btn-icon {
+    @apply h-11 w-11 shrink-0 p-0;
+  }
+
+  .btn-link {
+    @apply border border-transparent bg-transparent text-primary-700 hover:underline focus-visible:ring-primary-300;
+  }
+
+  /* Gomb a márkaszínű (zöld) fejlécen: áttetsző fehér, fehér szöveg. */
+  .btn-inverse {
+    @apply border border-white/60 bg-white/10 text-white hover:border-white hover:bg-white/20 focus-visible:ring-white/40;
+  }
+
+  /* Információs chip a márkaszínű fejlécen (felhasználó, szerepkör). */
+  .header-chip {
+    @apply inline-flex min-w-0 items-center gap-1.5 rounded-full border border-white/30 bg-white/15 px-3 py-1.5 text-sm font-medium text-white;
+  }
+
+  /* Oldalmenü elemei (link, művelet, lenyíló) egyforma megjelenéssel. */
+  .menu-item {
+    @apply flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left text-sm font-medium text-content-700 transition-colors duration-200 hover:bg-surface-100 hover:text-content-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-300;
+  }
+
+  .menu-item-child {
+    @apply rounded-lg px-3 py-2.5 font-normal text-content-600;
+  }
+
+  /* Egységes jelvények (állapot, darabszám). A szöveg mindig ki van írva, nem csak a szín jelez. */
+  .badge {
+    @apply inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2.5 py-1 text-xs font-semibold;
+  }
+
+  .badge-success {
+    @apply border-primary-200 bg-primary-50 text-primary-800;
+  }
+
+  .badge-info {
+    @apply border-info-200 bg-info-50 text-info-800;
+  }
+
+  .badge-warning {
+    @apply border-warning-200 bg-warning-50 text-warning-800;
+  }
+
+  .badge-neutral {
+    @apply border-surface-200 bg-surface-50 text-content-700;
+  }
+
+  .badge-danger {
+    @apply border-delete-200 bg-delete-50 text-delete-700;
+  }
 }
 
 @layer base {

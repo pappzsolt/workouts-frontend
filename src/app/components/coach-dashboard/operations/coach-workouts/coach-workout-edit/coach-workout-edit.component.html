@@ -31,7 +31,7 @@
            ================================================== -->
 
       <div
-        class="border-b border-info-100 bg-gradient-to-r from-primary-700 to-primary-800 px-4 py-6 sm:px-6 sm:py-7"
+        class="border-b border-primary-800 bg-gradient-to-r from-primary-700 to-primary-800 px-4 py-6 sm:px-6 sm:py-7"
       >
         <div class="flex items-center justify-center">
           <span
@@ -169,7 +169,7 @@
             name="done"
             id="done"
             [(ngModel)]="workout.done"
-            class="h-5 w-5 cursor-pointer rounded border-surface-300 text-info-600 accent-primary-600 focus:ring-4 focus:ring-primary-500/10"
+            class="h-5 w-5 cursor-pointer rounded border-surface-300 accent-primary-600 focus:ring-4 focus:ring-primary-500/10"
           />
 
           <label for="done" class="cursor-pointer text-sm font-semibold text-content-700">
@@ -232,7 +232,7 @@
               }
               <span>
                 <button type="button" (click)="copyForEditing()" [disabled]="copying"
-                        class="min-h-11 rounded-xl border border-warning-300 bg-white px-4 font-semibold text-warning-800 hover:bg-warning-100 disabled:opacity-50">
+                        class="btn btn-neutral">
                   {{ 'coachWorkoutEdit.copyForEditing' | translate }}
                 </button>
               </span>
@@ -245,13 +245,13 @@
 
           <div
             *ngIf="!checkingProgramAssignment && !workoutAssignedToProgram"
-            class="m-4 rounded-2xl border border-info-100 bg-white p-4 shadow-sm sm:m-5 sm:p-5"
+            class="m-4 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:m-5 sm:p-5"
           >
             <!-- HEADER -->
 
             <div class="mb-5 flex items-start gap-3">
               <span
-                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-info-50 text-xl text-info-600"
+                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-xl text-primary-700"
               >
                 <app-icon name="circle-plus" sizeClass="h-5 w-5" />
               </span>
@@ -297,7 +297,7 @@
                   {{ 'coachWorkoutEdit.exercises' | translate }}
                 </span>
 
-                <span appBadge="step" class="bg-info-100 text-info-700">
+                <span appBadge="step" class="bg-primary-100 text-primary-800">
                   {{ availableExercises.length }}
                 </span>
               </div>
@@ -317,9 +317,9 @@
                   (buttonClick)="selectExercise(exercise.id)"
                   [buttonClass]="
                     'group flex min-w-0 items-center gap-3 rounded-xl border border-transparent bg-white px-3 py-3 text-left shadow-sm transition duration-150 hover:border-primary-200 hover:bg-primary-50' +
-                    (selectedExerciseId === exercise.id ? ' bg-info-50' : '') +
-                    (selectedExerciseId === exercise.id ? ' border-info-300' : '') +
-                    (selectedExerciseId === exercise.id ? ' text-info-800' : '')
+                    (selectedExerciseId === exercise.id ? ' bg-primary-50' : '') +
+                    (selectedExerciseId === exercise.id ? ' border-primary-300' : '') +
+                    (selectedExerciseId === exercise.id ? ' text-primary-800' : '')
                   "
                 >
                   <span
@@ -333,9 +333,9 @@
                   </span>
 
                   <span
-                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-info-50 text-lg font-bold text-info-600"
+                    class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-50 text-primary-700"
                   >
-                    {{ selectedExerciseId === exercise.id ? '✓' : '+' }}
+                    <app-icon [name]="selectedExerciseId === exercise.id ? 'check' : 'plus'" sizeClass="h-4 w-4" />
                   </span>
                 </app-button>
               </div>
@@ -395,17 +395,17 @@
 
             <div
               *ngIf="selectedExerciseId !== null"
-              class="mt-5 flex min-w-0 flex-col gap-4 rounded-xl border border-info-200 bg-info-50/60 p-4 sm:flex-row sm:items-center sm:justify-between"
+              class="mt-5 flex min-w-0 flex-col gap-4 rounded-xl border border-primary-200 bg-primary-50/60 p-4 sm:flex-row sm:items-center sm:justify-between"
             >
               <div class="flex min-w-0 items-center gap-3">
                 <span
-                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-lg font-bold text-info-600 shadow-sm"
+                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-primary-700 shadow-sm"
                 >
-                  ✓
+                  <app-icon name="check" sizeClass="h-5 w-5" />
                 </span>
 
                 <div class="min-w-0">
-                  <small class="block text-xs font-semibold uppercase tracking-wide text-info-600">
+                  <small class="block text-xs font-semibold uppercase tracking-wide text-primary-700">
                     {{ 'coachWorkoutEdit.selectedExercise' | translate }}
                   </small>
 
@@ -467,7 +467,7 @@
               </div>
 
               <span
-                class="flex h-9 min-w-9 shrink-0 items-center justify-center rounded-full bg-info-100 px-3 text-sm font-bold text-info-700"
+                class="flex h-9 min-w-9 shrink-0 items-center justify-center rounded-full bg-primary-100 px-3 text-sm font-bold text-primary-800"
               >
                 {{ workoutExercises.length }}
               </span>
@@ -532,25 +532,25 @@
                   <div class="flex shrink-0 items-center gap-1">
                     <button type="button" (click)="moveExercise(i, -1)" [disabled]="i === 0 || structureBusy"
                             [attr.aria-label]="'coachWorkoutEdit.moveUp' | translate"
-                            class="inline-flex h-11 w-11 items-center justify-center rounded-lg text-content-700 hover:bg-surface-100 disabled:opacity-30">
+                            class="btn btn-ghost btn-icon">
                       <app-icon name="chevron-up" sizeClass="h-4 w-4" />
                     </button>
                     <button type="button" (click)="moveExercise(i, 1)" [disabled]="i === workoutExercises.length - 1 || structureBusy"
                             [attr.aria-label]="'coachWorkoutEdit.moveDown' | translate"
-                            class="inline-flex h-11 w-11 items-center justify-center rounded-lg text-content-700 hover:bg-surface-100 disabled:opacity-30">
+                            class="btn btn-ghost btn-icon">
                       <app-icon name="chevron-down" sizeClass="h-4 w-4" />
                     </button>
                     <button type="button" (click)="removeExercise(workoutExercise)" [disabled]="structureBusy"
                             [attr.aria-label]="'coachWorkoutEdit.removeExercise' | translate"
-                            class="inline-flex h-11 w-11 items-center justify-center rounded-lg text-delete-700 hover:bg-delete-50 disabled:opacity-30">
+                            class="btn btn-ghost-delete btn-icon">
                       <app-icon name="trash-2" sizeClass="h-4 w-4" />
                     </button>
                   </div>
                 } @else {
                   <div
-                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-success-100 text-sm font-bold text-success-700"
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-700"
                   >
-                    ✓
+                    <app-icon name="check" sizeClass="h-4 w-4" />
                   </div>
                 }
               </div>
@@ -563,7 +563,7 @@
              ================================================== -->
 
         <div
-          class="col-span-full flex flex-col-reverse gap-3 border-t border-info-100 pt-5 sm:flex-row sm:justify-end"
+          class="col-span-full flex flex-col-reverse gap-3 border-t border-surface-200 pt-5 sm:flex-row sm:justify-end"
         >
           <!-- Mégse -->
 

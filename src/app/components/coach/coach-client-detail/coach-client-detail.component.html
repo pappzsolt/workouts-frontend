@@ -29,7 +29,7 @@
             {{ 'coachWorkspace.client.newProgramFor' | translate }}
           </a>
           <button type="button" (click)="openAssign()"
-                  class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary-700 px-4 text-sm font-semibold text-white hover:bg-primary-800">
+                  class="btn btn-primary">
             <app-icon name="user-plus" sizeClass="h-4 w-4" />
             {{ 'coachWorkspace.client.assignProgram' | translate }}
           </button>
@@ -56,13 +56,13 @@
       @if (pendingNav) {
         <div role="alertdialog" aria-live="assertive" class="flex flex-wrap items-center gap-3 rounded-2xl border border-warning-300 bg-warning-50 p-4 text-sm text-warning-800">
           <span class="flex-[1_1_240px] font-semibold">{{ 'coachWorkspace.client.unsavedPrompt' | translate: { count: changedRows.length } }}</span>
-          <button type="button" (click)="resolvePending('cancel')" class="min-h-11 rounded-xl border border-surface-300 bg-white px-4 font-semibold text-content-700">
+          <button type="button" (click)="resolvePending('cancel')" class="btn btn-neutral">
             {{ 'coachWorkspace.client.stay' | translate }}
           </button>
-          <button type="button" (click)="resolvePending('discard')" class="min-h-11 rounded-xl border border-delete-200 bg-white px-4 font-semibold text-delete-700">
+          <button type="button" (click)="resolvePending('discard')" class="btn btn-delete">
             {{ 'coachWorkspace.client.discardAndGo' | translate }}
           </button>
-          <button type="button" (click)="resolvePending('save')" [disabled]="saving" class="min-h-11 rounded-xl bg-primary-700 px-4 font-semibold text-white">
+          <button type="button" (click)="resolvePending('save')" [disabled]="saving" class="btn btn-primary">
             {{ 'coachWorkspace.client.saveAndGo' | translate }}
           </button>
         </div>
@@ -125,7 +125,7 @@
                         <span class="truncate text-sm font-semibold text-content-900">{{ workout.name }}</span>
                       </span>
                       <span class="flex flex-none flex-col items-end gap-1">
-                        <span class="rounded-full px-2 py-0.5 text-xs font-semibold" [class]="statusBadge[status(workout)]">{{ statusLabel[status(workout)] | translate }}</span>
+                        <app-status-badge [status]="status(workout)" />
                         <span class="text-xs text-content-600">{{ 'coachWorkspace.client.setsShort' | translate: { done: workout.setsCompleted, total: workout.setsTotal } }}</span>
                       </span>
                     </button>
@@ -140,7 +140,7 @@
                   <div class="flex flex-wrap items-center gap-3">
                     <button type="button" (click)="selectWorkout(selectedIndex - 1)" [disabled]="selectedIndex <= 0"
                             [attr.aria-label]="'coachWorkspace.client.previousWorkout' | translate"
-                            class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-surface-300 text-content-700 disabled:opacity-40">
+                            class="btn btn-neutral btn-icon">
                       <app-icon name="chevron-left" sizeClass="h-4 w-4" />
                     </button>
                     <div class="min-w-0 flex-[1_1_240px]">
@@ -150,7 +150,7 @@
                       </p>
                       <h2 class="text-xl font-bold text-content-900">{{ workout.name }}</h2>
                     </div>
-                    <span class="rounded-full px-3 py-1 text-xs font-semibold" [class]="statusBadge[status(workout)]">{{ statusLabel[status(workout)] | translate }}</span>
+                    <app-status-badge [status]="status(workout)" />
                     <button type="button" (click)="selectWorkout(selectedIndex + 1)" [disabled]="selectedIndex >= workouts.length - 1"
                             [attr.aria-label]="'coachWorkspace.client.nextWorkout' | translate"
                             class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-surface-300 text-content-700 disabled:opacity-40">
@@ -165,7 +165,7 @@
                              [attr.min]="selectedProgram?.startDate || null" [attr.max]="selectedProgram?.endDate || null" />
                     </label>
                     <button type="button" (click)="reschedule()" [disabled]="!rescheduleDate || rescheduleDate === workout.date"
-                            class="min-h-11 rounded-xl border border-surface-300 bg-white px-4 text-sm font-semibold text-content-700 hover:bg-surface-50 disabled:opacity-50">
+                            class="btn btn-neutral">
                       {{ 'coachWorkspace.client.saveDate' | translate }}
                     </button>
                     @if (workout.feedback) {
@@ -186,7 +186,7 @@
                           {{ 'coachWorkspace.client.completedSets' | translate: { done: completedCount(entry), total: entry.sets.length } }}
                         </span>
                         @if (entry.sets.length > 1) {
-                          <button type="button" (click)="fillDown(entry)" class="min-h-11 rounded-xl px-3 text-xs font-semibold text-primary-700 hover:bg-primary-50">
+                          <button type="button" (click)="fillDown(entry)" class="btn btn-ghost-primary px-3 text-xs">
                             {{ 'coachWorkspace.client.fillDown' | translate }}
                           </button>
                         }
@@ -253,7 +253,7 @@
                                   <td class="px-1 py-1">
                                     <button type="button" (click)="askDeleteSet(row)" [disabled]="setBusy"
                                             [attr.aria-label]="('coachWorkspace.client.removeSet' | translate) + ': ' + entry.exercise.name + ' ' + (r + 1) + '.'"
-                                            class="inline-flex h-11 w-11 items-center justify-center rounded-lg text-delete-700 hover:bg-delete-50 disabled:opacity-40">
+                                            class="btn btn-ghost-delete btn-icon">
                                       <app-icon name="trash-2" sizeClass="h-4 w-4" />
                                     </button>
                                   </td>
@@ -263,10 +263,10 @@
                                     <td colspan="9" class="px-2 pb-2">
                                       <div class="flex flex-wrap items-center gap-3 rounded-xl bg-delete-50 p-3 text-sm text-delete-700">
                                         <span class="flex-1">{{ 'coachWorkspace.client.deleteSetConfirm' | translate: { n: r + 1 } }}</span>
-                                        <button type="button" (click)="cancelDeleteSet()" class="min-h-11 rounded-xl border border-surface-300 bg-white px-3 font-semibold text-content-700">
+                                        <button type="button" (click)="cancelDeleteSet()" class="btn btn-neutral px-3">
                                           {{ 'coachWorkspace.cancel' | translate }}
                                         </button>
-                                        <button type="button" (click)="confirmDeleteSet(entry)" [disabled]="setBusy" class="min-h-11 rounded-xl bg-delete-600 px-3 font-semibold text-white">
+                                        <button type="button" (click)="confirmDeleteSet(entry)" [disabled]="setBusy" class="btn btn-danger px-3">
                                           {{ 'coachWorkspace.delete' | translate }}
                                         </button>
                                       </div>
@@ -281,7 +281,7 @@
                         </div>
                         <div class="flex flex-wrap gap-2 px-4 pb-3">
                           <button type="button" (click)="addSet(entry)" [disabled]="setBusy"
-                                  class="inline-flex min-h-11 items-center gap-1 rounded-xl px-3 text-sm font-semibold text-primary-700 hover:bg-primary-50 disabled:opacity-40">
+                                  class="btn btn-ghost-primary gap-1 px-3">
                             <app-icon name="plus" sizeClass="h-4 w-4" />
                             {{ 'coachWorkspace.client.addSet' | translate }}
                           </button>
@@ -298,12 +298,12 @@
                         {{ 'coachWorkspace.client.unsavedCount' | translate: { count: changedRows.length } }}
                       </span>
                       <button type="button" (click)="discardChanges()" [disabled]="saving"
-                              class="min-h-11 rounded-xl border border-surface-300 bg-white px-4 text-sm font-semibold text-content-700">
+                              class="btn btn-neutral">
                         {{ 'coachWorkspace.client.discard' | translate }}
                       </button>
                     }
                     <button type="button" (click)="saveSets()" [disabled]="saving || !dirty"
-                            class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary-700 px-5 text-sm font-semibold text-white hover:bg-primary-800 disabled:opacity-50">
+                            class="btn btn-primary px-5">
                       <app-icon name="save" sizeClass="h-4 w-4" />
                       {{ (saving ? 'coachWorkspace.saving' : 'coachWorkspace.client.saveChanges') | translate: { count: changedRows.length } }}
                     </button>
@@ -322,12 +322,7 @@
                 <a [routerLink]="['/coach/programs', program.programId]" class="font-bold text-content-900 hover:text-primary-700 hover:underline">
                   {{ program.name }}
                 </a>
-                <span class="whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold"
-                      [class.bg-info-100]="programState(program) === 'active'" [class.text-info-800]="programState(program) === 'active'"
-                      [class.bg-warning-100]="programState(program) === 'upcoming'" [class.text-warning-800]="programState(program) === 'upcoming'"
-                      [class.bg-surface-100]="programState(program) === 'finished'" [class.text-content-700]="programState(program) === 'finished'">
-                  {{ programStateKey(program) | translate }}
-                </span>
+                <app-status-badge [status]="programState(program)" />
               </div>
               <p class="text-sm text-content-600">
                 {{ program.startDate | date: 'yyyy.MM.dd' }} – {{ program.endDate | date: 'yyyy.MM.dd' }} ·
@@ -343,20 +338,20 @@
                   <span class="flex-[1_1_220px]">
                     {{ 'coachWorkspace.client.revokeConfirmCounts' | translate: { total: program.totalWorkouts, done: program.completedWorkouts } }}
                   </span>
-                  <button type="button" (click)="cancelRevoke()" class="min-h-11 rounded-xl border border-surface-300 bg-white px-3 font-semibold text-content-700">
+                  <button type="button" (click)="cancelRevoke()" class="btn btn-neutral px-3">
                     {{ 'coachWorkspace.cancel' | translate }}
                   </button>
-                  <button type="button" (click)="confirmRevoke()" class="min-h-11 rounded-xl bg-delete-600 px-3 font-semibold text-white hover:bg-delete-700">
+                  <button type="button" (click)="confirmRevoke()" class="btn btn-danger px-3">
                     {{ 'coachWorkspace.client.revoke' | translate }}
                   </button>
                 </div>
               } @else {
                 <div class="flex flex-wrap justify-end gap-2">
-                  <button type="button" (click)="askRevoke(program.programId)" class="min-h-11 rounded-xl px-3 text-sm font-semibold text-delete-700 hover:bg-delete-50">
+                  <button type="button" (click)="askRevoke(program.programId)" class="btn btn-ghost-delete px-3">
                     {{ 'coachWorkspace.client.revoke' | translate }}
                   </button>
                   <button type="button" (click)="tab = 'plan'; selectProgram(program.programId)"
-                          class="min-h-11 rounded-xl border border-primary-700 px-4 text-sm font-semibold text-primary-700 hover:bg-primary-50">
+                          class="btn btn-outline">
                     {{ 'coachWorkspace.client.openPlan' | translate }}
                   </button>
                 </div>
@@ -409,11 +404,11 @@
       }
       <div class="flex justify-end gap-3">
         <button type="button" (click)="closeAssign()" [disabled]="assigning"
-                class="min-h-11 rounded-xl border border-surface-300 bg-white px-4 text-sm font-semibold text-content-700 hover:bg-surface-50">
+                class="btn btn-neutral">
           {{ 'coachWorkspace.cancel' | translate }}
         </button>
         <button type="button" (click)="confirmAssign()" [disabled]="assigning || assignProgramId === null"
-                class="min-h-11 rounded-xl bg-primary-700 px-4 text-sm font-semibold text-white hover:bg-primary-800 disabled:opacity-50">
+                class="btn btn-primary">
           {{ (assigning ? 'coachWorkspace.saving' : 'coachWorkspace.client.assign') | translate }}
         </button>
       </div>

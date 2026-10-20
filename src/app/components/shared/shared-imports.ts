@@ -37,6 +37,7 @@ import { FormFieldComponent } from './components/form-field/form-field.component
 import { AppIconComponent } from './components/app-icon/app-icon.component';
 import { AppCardBannerComponent } from './components/app-card-banner/app-card-banner.component';
 import { AppCardStatComponent } from './components/app-card-stat/app-card-stat.component';
+import { AppStatusBadgeComponent } from './components/app-status-badge/app-status-badge.component';
 
 export const SHARED_IMPORTS = [
   AppFormValidationDirective,
@@ -70,4 +71,5 @@ export const SHARED_IMPORTS = [
   AppIconComponent,
   AppCardBannerComponent,
   AppCardStatComponent,
+  AppStatusBadgeComponent,
 ];

@@ -2,32 +2,59 @@ import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import {
   LucideActivity,
+  LucideArchive,
+  LucideArrowDown,
   LucideArrowDownWideNarrow,
+  LucideArrowLeft,
+  LucideArrowRight,
+  LucideArrowUp,
   LucideArrowUpNarrowWide,
   LucideBookOpen,
+  LucideCalendarCheck,
+  LucideCalendarClock,
   LucideCalendarDays,
   LucideChartColumnIncreasing,
+  LucideCheck,
   LucideChevronDown,
   LucideChevronLeft,
   LucideChevronRight,
   LucideChevronUp,
   LucideCircle,
+  LucideCircleAlert,
   LucideCircleCheck,
+  LucideCirclePlay,
   LucideCirclePlus,
   LucideCircleX,
+  LucideClipboardCheck,
   LucideClipboardList,
+  LucideClock,
+  LucideCopy,
   LucideDumbbell,
+  LucideEye,
   LucideFileText,
+  LucideFilter,
+  LucideFlag,
   LucideFlame,
+  LucideFolderOpen,
+  LucideHouse,
+  LucideInfo,
   LucideLink,
+  LucideListChecks,
+  LucideLogOut,
   LucideMenu,
   LucidePencil,
   LucidePlus,
   LucideRepeat,
+  LucideRotateCcw,
   LucideSave,
   LucideSearch,
+  LucideSettings,
+  LucideSquarePen,
   LucideTimer,
   LucideTrash2,
+  LucideTriangleAlert,
+  LucideUserCheck,
+  LucideUserMinus,
   LucideUserPlus,
   LucideUserRound,
   LucideUsers,
@@ -35,11 +62,15 @@ import {
 } from '@lucide/angular';
 
 export type AppIconName =
-  | 'activity' | 'arrow-down-wide-narrow' | 'arrow-up-narrow-wide' | 'book-open'
-  | 'calendar-days' | 'chart-column-increasing' | 'chevron-down' | 'chevron-left' | 'chevron-right' | 'chevron-up'
-  | 'circle' | 'circle-check' | 'circle-plus' | 'circle-x' | 'clipboard-list'
-  | 'dumbbell' | 'file-text' | 'flame' | 'link' | 'menu' | 'pencil' | 'plus' | 'repeat'
-  | 'save' | 'search' | 'timer' | 'trash-2' | 'user-plus' | 'user-round' | 'users' | 'x';
+  | 'activity' | 'archive' | 'arrow-down' | 'arrow-down-wide-narrow' | 'arrow-left' | 'arrow-right'
+  | 'arrow-up' | 'arrow-up-narrow-wide' | 'book-open' | 'calendar-check' | 'calendar-clock'
+  | 'calendar-days' | 'chart-column-increasing' | 'check' | 'chevron-down' | 'chevron-left'
+  | 'chevron-right' | 'chevron-up' | 'circle' | 'circle-alert' | 'circle-check' | 'circle-play'
+  | 'circle-plus' | 'circle-x' | 'clipboard-check' | 'clipboard-list' | 'clock' | 'copy' | 'dumbbell'
+  | 'eye' | 'file-text' | 'filter' | 'flag' | 'flame' | 'folder-open' | 'house' | 'info' | 'link'
+  | 'list-checks' | 'log-out' | 'menu' | 'pencil' | 'plus' | 'repeat' | 'rotate-ccw' | 'save' | 'search'
+  | 'settings' | 'square-pen' | 'timer' | 'trash-2' | 'triangle-alert' | 'user-check' | 'user-minus'
+  | 'user-plus' | 'user-round' | 'users' | 'x';
 
 @Component({
   selector: 'app-icon',
@@ -47,39 +78,72 @@ export type AppIconName =
   imports: [
     CommonModule,
     LucideActivity,
+    LucideArchive,
+    LucideArrowDown,
     LucideArrowDownWideNarrow,
+    LucideArrowLeft,
+    LucideArrowRight,
+    LucideArrowUp,
     LucideArrowUpNarrowWide,
     LucideBookOpen,
+    LucideCalendarCheck,
+    LucideCalendarClock,
     LucideCalendarDays,
     LucideChartColumnIncreasing,
+    LucideCheck,
     LucideChevronDown,
     LucideChevronLeft,
     LucideChevronRight,
     LucideChevronUp,
     LucideCircle,
+    LucideCircleAlert,
     LucideCircleCheck,
+    LucideCirclePlay,
     LucideCirclePlus,
     LucideCircleX,
+    LucideClipboardCheck,
     LucideClipboardList,
+    LucideClock,
+    LucideCopy,
     LucideDumbbell,
+    LucideEye,
     LucideFileText,
+    LucideFilter,
+    LucideFlag,
     LucideFlame,
+    LucideFolderOpen,
+    LucideHouse,
+    LucideInfo,
     LucideLink,
+    LucideListChecks,
+    LucideLogOut,
     LucideMenu,
     LucidePencil,
     LucidePlus,
     LucideRepeat,
+    LucideRotateCcw,
     LucideSave,
     LucideSearch,
+    LucideSettings,
+    LucideSquarePen,
     LucideTimer,
     LucideTrash2,
+    LucideTriangleAlert,
+    LucideUserCheck,
+    LucideUserMinus,
     LucideUserPlus,
     LucideUserRound,
     LucideUsers,
     LucideX,
   ],
   templateUrl: './app-icon.component.html',
-  styles: [':host { display: inline-flex; flex: none; align-items: center; justify-content: center; line-height: 1; }'],
+  // A Lucide-direktíva felülírja az <svg> class attribútumát, ezért a méretet (sizeClass)
+  // a köré tett doboz kapja, az ikon pedig kitölti azt.
+  styles: [
+    ':host { display: inline-flex; flex: none; align-items: center; justify-content: center; line-height: 1; }',
+    '.app-icon-box { display: inline-flex; align-items: center; justify-content: center; }',
+    '.app-icon-box svg { width: 100%; height: 100%; }',
+  ],
 })
 export class AppIconComponent {
   @Input({ required: true }) name!: AppIconName;

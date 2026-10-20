@@ -13,7 +13,7 @@ import type {
   CoachClientWorkout,
   CoachWorkoutStatus,
 } from '../../../models/coach-workspace.model';
-import { STATUS_BADGE, STATUS_LABEL, errorText, initial } from '../coach-ui';
+import { errorText, initial } from '../coach-ui';
 
 interface TodayRow {
   client: CoachClientOverview;
@@ -53,8 +53,6 @@ export class CoachHomeComponent implements OnInit {
   private readonly workspace = inject(CoachWorkspaceService);
   private readonly destroyRef = inject(DestroyRef);
 
-  readonly statusLabel = STATUS_LABEL;
-  readonly statusBadge = STATUS_BADGE;
   readonly initial = initial;
 
   readonly today = toIsoDate(new Date());

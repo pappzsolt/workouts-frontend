@@ -66,9 +66,7 @@
                 <span class="truncate font-semibold text-content-900">{{ row.client.username }}</span>
                 <span class="truncate text-sm text-content-600">{{ row.workout.programName }} · {{ row.workout.workoutName }}</span>
               </span>
-              <span class="whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold" [class]="statusBadge[row.status]">
-                {{ statusLabel[row.status] | translate }}
-              </span>
+              <app-status-badge [status]="row.status" />
             </a>
           } @empty {
             <p class="border-t border-surface-100 px-5 py-6 text-sm text-content-600">
