@@ -76,7 +76,6 @@ export const API_ENDPOINTS = {
   // ============================================================
 
   userWorkoutExercises: `${environment.apiUrl}/user-workout-exercises`,
-  createUserWorkoutWithExercises: `${environment.apiUrl}/user-workout-exercises`,
 
   // ============================================================
   // USER WORKOUT EXERCISE SETS

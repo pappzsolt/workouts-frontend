@@ -21,8 +21,6 @@ export class WorkoutExercisesManagerService {
 
   private readonly baseUrl = API_ENDPOINTS.userWorkoutExercises;
 
-  private readonly userWorkoutsBaseUrl = API_ENDPOINTS.createUserWorkoutWithExercises;
-
   /**
    * Lekéri egy user workout összes exercise-át.
    */
@@ -37,30 +35,6 @@ export class WorkoutExercisesManagerService {
         },
       )
       .pipe(map((response: ApiResponse<UserWorkoutExerciseDto[]>) => response.data ?? []));
-  }
-
-  /**
-   * User workoutok létrehozása exercise-ekkel.
-   */
-  addUserWorkout(
-    userId: number,
-    programId: number,
-    scheduledAt?: string,
-  ): Observable<ApiResponse<number[]>> {
-    const body: {
-      userId: number;
-      programId: number;
-      scheduledAt?: string;
-    } = {
-      userId,
-      programId,
-    };
-
-    if (scheduledAt) {
-      body.scheduledAt = scheduledAt;
-    }
-
-    return this.http.post<ApiResponse<number[]>>(this.userWorkoutsBaseUrl, body);
   }
 
   /**
