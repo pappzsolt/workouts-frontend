@@ -79,9 +79,7 @@ export class UserNewComponent {
   // =============================
 
   onRoleSelected(role: Role): void {
-    if (!this.user.roleIds.some((r) => r.id === role.id)) {
-      this.user.roleIds.push(role);
-    }
+    this.user.roleIds = [role];
   }
 
   // =============================
@@ -109,7 +107,7 @@ export class UserNewComponent {
     if (!this.validateInputs()) return;
     this.clearMessage();
 
-    if (!form.valid || this.user.roleIds.length === 0) {
+    if (!form.valid || this.user.roleIds.length !== 1) {
       this.showError('adminUserNew.validationError');
 
       return;

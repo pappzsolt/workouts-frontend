@@ -55,11 +55,13 @@ export class NewExerciseComponent implements OnInit {
   // =============================
 
   addExercise(): void {
+    if (this.saving) return;
     if (!this.validateInputs()) return;
     this.clearMessage();
 
     this.saving = true;
 
+    const submitted = { ...this.newExercise };
     const payload = {
       name: this.newExercise.name,
       description: this.newExercise.description,
@@ -81,9 +83,15 @@ export class NewExerciseComponent implements OnInit {
           this.showError(responseMessage([res], 'newExercise.error')); return;
         }
         this.showSuccess(responseMessage([res], 'newExercise.success'));
-        this.messageParams = res.message ? {} : { name: this.newExercise.name };
+        this.messageParams = res.message ? {} : { name: payload.name };
 
-        this.newExercise = this.createEmptyExercise();
+        const nextExercise = this.createEmptyExercise();
+        for (const key of Object.keys(submitted) as (keyof Exercise)[]) {
+          if (this.newExercise[key] !== submitted[key]) {
+            Object.assign(nextExercise, { [key]: this.newExercise[key] });
+          }
+        }
+        this.newExercise = nextExercise;
       },
 
       error: (err: HttpErrorResponse) => {
