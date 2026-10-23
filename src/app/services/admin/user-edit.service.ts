@@ -6,6 +6,7 @@ import { API_ENDPOINTS } from '../../api-endpoints';
 import { normalizeGender } from '../../constants/gender';
 
 import { ApiResponse } from '../../models/backend-dto/common/api-response';
+import type { CoachLookupDto } from '../../models/backend-dto/coach/coach-lookup-dto';
 import type { MemberResponse } from '../../models/backend-dto/members/member-response';
 import type { RoleDto } from '../../models/backend-dto/roles/role-dto';
 import type { Role } from '../../models/role.model';
@@ -53,11 +54,11 @@ export class UserEditService {
   }
 
   getCoaches(): Observable<CoachNameId[]> {
-    return this.http.get<ApiResponse<MemberResponse[]>>(this.coachesUrl).pipe(
+    return this.http.get<ApiResponse<CoachLookupDto[]>>(this.coachesUrl).pipe(
       map((response) =>
-        (response.data ?? []).filter((coach): coach is MemberResponse & { id: number } => coach.id != null).map((coach) => ({
+        (response.data ?? []).filter((coach): coach is CoachLookupDto & { id: number } => coach.id != null).map((coach) => ({
           id: coach.id,
-          name: coach.usernameOrName ?? '',
+          name: coach.name ?? '',
         })),
       ),
     );

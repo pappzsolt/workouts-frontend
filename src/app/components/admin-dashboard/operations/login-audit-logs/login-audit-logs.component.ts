@@ -3,6 +3,7 @@ import { AppSelectComponent } from '../../../shared/components/app-select/app-se
 import type { SelectOption } from '../../../../models/common/select-option.model';
 import { AppSearchComponent } from '../../../shared/components/app-search/app-search.component';
 import { Component, DestroyRef, inject } from '@angular/core';
+import { Subject, takeUntil } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import type { LoginAuditAccountType, LoginAuditLogDto } from '../../../../models/backend-dto/admin/login-audit-log-dto';
@@ -27,6 +28,8 @@ interface LoginAuditFilters {
 export class LoginAuditLogsComponent {
   private readonly validateInputs = createInputValidationGuard();
   private readonly destroyRef = inject(DestroyRef);
+
+  private readonly loadCancelled$ = new Subject<void>();
 
   logs: LoginAuditLogDto[] = [];
   loading = false;
@@ -81,6 +84,7 @@ export class LoginAuditLogsComponent {
   }
 
   private loadPage(page: number): void {
+    this.loadCancelled$.next();
     this.loading = true;
     this.message = '';
     this.messageType = '';
@@ -95,7 +99,7 @@ export class LoginAuditLogsComponent {
         from: this.filters.from || null,
         to: this.filters.to || null,
       })
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntil(this.loadCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
           this.logs = result.content;

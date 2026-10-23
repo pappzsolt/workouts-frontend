@@ -3,7 +3,6 @@ import type { ExtraFields } from './extra-fields.model';
 export interface MemberSearchCoach {
   id: number;
   usernameOrName: string;
-  email: string;
   avatarUrl: string | null;
 }
 

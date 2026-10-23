@@ -104,14 +104,13 @@ export class MemberSearchService {
   }
 
   private mapCoach(coach: CoachLookupDto | null): MemberSearchCoach | undefined {
-    if (coach?.id == null || coach.name == null || coach.email == null) {
+    if (coach?.id == null || coach.name == null) {
       return undefined;
     }
 
     return {
       id: coach.id,
       usernameOrName: coach.name,
-      email: coach.email,
       avatarUrl: coach.avatarUrl,
     };
   }
