@@ -4,6 +4,7 @@ import { HttpClient, HttpBackend, HttpParams } from '@angular/common/http';
 import { Observable, Subject, defer, finalize, map, shareReplay, takeUntil, tap, throwError } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 
+import type { RegistrationPayload, RegistrationResult } from '../../models/backend-dto/registration/registration';
 import { API_ENDPOINTS } from '../../api-endpoints';
 
 import { LoginResponse, TokenPayload } from '../../models/auth-model';
@@ -107,6 +108,25 @@ export class AuthService {
           }
 
           return response.data;
+        }),
+      );
+  }
+
+  /**
+   * Önregisztráció: a kérelem admin jóváhagyásra vár, fiók csak jóváhagyás után jön létre.
+   * Sikernél a backend üzenetét adja vissza.
+   */
+  register(payload: RegistrationPayload): Observable<string> {
+    return this.rawHttp
+      .post<ApiResponse<RegistrationResult>>(API_ENDPOINTS.authRegister, payload, {
+        params: this.languageParams(),
+      })
+      .pipe(
+        map((response) => {
+          if (!response.success || !response.data) {
+            throw new Error(response.message ?? 'register.failed');
+          }
+          return response.message ?? 'register.success';
         }),
       );
   }

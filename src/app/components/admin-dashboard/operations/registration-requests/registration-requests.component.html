@@ -1,0 +1,141 @@
+<div class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8">
+  <div class="mx-auto flex w-full max-w-5xl min-w-0 flex-col gap-6">
+    <div class="text-center">
+      <h2 appHeading="page" class="break-words">{{ 'adminRegistrations.title' | translate }}</h2>
+      <p class="mx-auto mt-2 max-w-3xl text-sm text-content-500">{{ 'adminRegistrations.subtitle' | translate }}</p>
+    </div>
+
+    <!-- Állapot szerinti fülek -->
+    <div class="flex flex-wrap justify-center gap-2" role="group" [attr.aria-label]="'adminRegistrations.statusFilter' | translate">
+      @for (tab of tabs; track tab) {
+        <button type="button" (click)="selectTab(tab)" [attr.aria-pressed]="status === tab"
+                class="btn px-4" [ngClass]="status === tab ? 'btn-primary' : 'btn-neutral'">
+          {{ 'adminRegistrations.status.' + tab | translate }}
+          @if (tab === status && totalElements > 0) {
+            <span class="rounded-full bg-white/20 px-2 text-xs">{{ totalElements }}</span>
+          }
+        </button>
+      }
+    </div>
+
+    @if (message) {
+      <app-message [message]="message" [type]="messageType" role="status"></app-message>
+    }
+
+    @if (loading && requests.length === 0) {
+      <p class="text-center text-sm text-content-600">{{ 'adminRegistrations.loading' | translate }}</p>
+    } @else if (requests.length === 0) {
+      <p class="rounded-2xl border border-dashed border-surface-300 bg-white px-4 py-8 text-center text-sm text-content-600">
+        {{ 'adminRegistrations.empty.' + status | translate }}
+      </p>
+    } @else {
+      <ul class="flex flex-col gap-4">
+        @for (request of requests; track request.id) {
+          <li class="rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5" [attr.aria-label]="request.username">
+            <div class="flex flex-wrap items-start gap-3">
+              <span aria-hidden="true"
+                    class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-50 text-primary-700">
+                <app-icon [name]="request.accountType === 'COACH' ? 'clipboard-list' : 'user-round'" sizeClass="h-5 w-5" />
+              </span>
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="break-all text-base font-bold text-content-900">{{ request.username }}</h3>
+                  <span class="rounded-full px-2.5 py-0.5 text-xs font-semibold"
+                        [ngClass]="request.accountType === 'COACH' ? 'bg-info-50 text-info-700' : 'bg-primary-50 text-primary-700'">
+                    {{ 'adminRegistrations.type.' + request.accountType | translate }}
+                  </span>
+                </div>
+                <p class="break-all text-sm text-content-700">{{ request.email }}</p>
+                <p class="text-xs text-content-500">
+                  {{ 'adminRegistrations.submittedAt' | translate }}: {{ request.createdAt | date: 'yyyy.MM.dd HH:mm' }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Megadott profiladatok -->
+            <dl class="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-sm sm:grid-cols-4">
+              @if (request.accountType === 'USER') {
+                <dt class="text-content-500">{{ 'register.age' | translate }}</dt><dd class="text-content-900">{{ request.age ?? '–' }}</dd>
+                <dt class="text-content-500">{{ 'register.weight' | translate }}</dt><dd class="text-content-900">{{ request.weight ?? '–' }}</dd>
+                <dt class="text-content-500">{{ 'register.height' | translate }}</dt><dd class="text-content-900">{{ request.height ?? '–' }}</dd>
+                <dt class="text-content-500">{{ 'register.gender' | translate }}</dt>
+                <dd class="text-content-900">{{ request.gender ? (genderKey(request.gender) | translate) : '–' }}</dd>
+              } @else {
+                <dt class="text-content-500">{{ 'register.phone' | translate }}</dt><dd class="text-content-900 sm:col-span-3">{{ request.phone ?? '–' }}</dd>
+              }
+            </dl>
+            @if (request.goals || request.specialization) {
+              <p class="mt-2 whitespace-pre-line break-words rounded-xl bg-surface-50 px-3 py-2 text-sm text-content-700">
+                {{ request.goals ?? request.specialization }}
+              </p>
+            }
+
+            @if (request.status === 'PENDING') {
+              <div class="mt-4 flex flex-col gap-3 border-t border-surface-200 pt-4">
+                @if (rejectingId === request.id) {
+                  <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+                    {{ 'adminRegistrations.rejectReason' | translate }}
+                    <textarea appTextarea="compact" name="rejectReason" rows="2" maxlength="500"
+                              [(ngModel)]="rejectReason"
+                              [placeholder]="'adminRegistrations.rejectReasonPlaceholder' | translate"></textarea>
+                  </label>
+                  <div class="flex flex-wrap justify-end gap-2">
+                    <button type="button" (click)="cancelReject()" class="btn btn-neutral px-3">
+                      {{ 'adminRegistrations.cancel' | translate }}
+                    </button>
+                    <button type="button" (click)="confirmReject(request)" [disabled]="busyId !== null" class="btn btn-danger px-3">
+                      <app-icon name="x" sizeClass="h-4 w-4" />
+                      {{ 'adminRegistrations.confirmReject' | translate }}
+                    </button>
+                  </div>
+                } @else {
+                  <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
+                    @if (request.accountType === 'USER') {
+                      <label class="flex min-w-0 flex-1 flex-col gap-1 text-sm font-semibold text-content-800">
+                        {{ 'adminRegistrations.coach' | translate }}
+                        <app-select [id]="'coach-' + request.id" [options]="coachOptions"
+                                    [value]="selectedCoach[request.id] ?? null"
+                                    (valueChange)="selectedCoach[request.id] = $event"></app-select>
+                      </label>
+                    } @else {
+                      <span class="flex-1"></span>
+                    }
+                    <div class="flex gap-2">
+                      <button type="button" (click)="startReject(request)" [disabled]="busyId !== null"
+                              class="btn btn-ghost-delete flex-1 px-3 sm:flex-none">
+                        {{ 'adminRegistrations.reject' | translate }}
+                      </button>
+                      <button type="button" (click)="approve(request)" [disabled]="busyId !== null"
+                              class="btn btn-primary flex-1 sm:flex-none">
+                        <app-icon name="check" sizeClass="h-4 w-4" />
+                        {{ 'adminRegistrations.approve' | translate }}
+                      </button>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="mt-3 border-t border-surface-200 pt-3 text-sm text-content-600">
+                {{ 'adminRegistrations.decided.' + request.status | translate: { by: request.decidedBy ?? '–' } }}
+                ({{ request.decidedAt | date: 'yyyy.MM.dd HH:mm' }})
+                @if (request.assignedCoachName) {
+                  · {{ 'adminRegistrations.assignedCoach' | translate: { name: request.assignedCoachName } }}
+                }
+                @if (request.rejectionReason) {
+                  <span class="mt-1 block whitespace-pre-line break-words">{{ 'adminRegistrations.reasonLabel' | translate }}: {{ request.rejectionReason }}</span>
+                }
+              </p>
+            }
+          </li>
+        }
+      </ul>
+    }
+
+    @if (totalPages > 1) {
+      <app-pagination [totalItems]="totalElements" [totalPagesOverride]="totalPages" [pageSize]="pageSize"
+                      [currentPage]="currentPage" [pageSizeOptions]="pageSizeOptions" [showPageSize]="true"
+                      [showInfo]="false" (pageChange)="onPageChange($event)"
+                      (pageSizeChange)="onPageSizeChange($event)"></app-pagination>
+    }
+  </div>
+</div>

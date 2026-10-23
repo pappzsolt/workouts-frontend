@@ -67,6 +67,17 @@
           {{ 'login.forgotPassword' | translate }}
         </a>
       </div>
+
+      <!-- Registration -->
+      <p class="border-t border-surface-200 pt-4 text-center text-sm text-content-600">
+        {{ 'login.noAccount' | translate }}
+        <a
+          routerLink="/register"
+          class="font-medium text-primary-600 transition-colors hover:text-primary-700 hover:underline"
+        >
+          {{ 'login.register' | translate }}
+        </a>
+      </p>
     </form>
   </div>
 </div>

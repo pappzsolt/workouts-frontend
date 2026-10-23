@@ -14,6 +14,7 @@ export const API_ENDPOINTS = {
   authWebLogout: `${environment.apiUrl}/auth/web/logout`,
   authForgotPassword: `${environment.apiUrl}/auth/forgot-password`,
   authResetPassword: `${environment.apiUrl}/auth/reset-password`,
+  authRegister: `${environment.apiUrl}/auth/register`,
 
   // ============================================================
   // MEMBERS / USERS / COACHES
@@ -28,6 +29,10 @@ export const API_ENDPOINTS = {
   coachesNameId: `${environment.apiUrl}/coaches/name-id`,
   roles: `${environment.apiUrl}/roles`,
   adminLoginAuditLogs: `${environment.apiUrl}/admin/login-audit-logs`,
+  adminRegistrations: `${environment.apiUrl}/admin/registrations`,
+  adminRegistrationsPendingCount: `${environment.apiUrl}/admin/registrations/pending-count`,
+  adminRegistrationApprove: (id: number) => `${environment.apiUrl}/admin/registrations/${id}/approve`,
+  adminRegistrationReject: (id: number) => `${environment.apiUrl}/admin/registrations/${id}/reject`,
 
   // ============================================================
   // PROGRAMS

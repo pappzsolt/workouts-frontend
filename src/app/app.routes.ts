@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { RegisterComponent } from './components/register/register.component';
 import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
 import { LayoutComponent } from './layouts/default-layout/layout.component';
 import { UserProgramStatisticsComponent } from './components/user-dashboard/operations/program-statistics/program-statistics.component';
@@ -16,6 +17,7 @@ import { UserNewComponent } from './components/admin-dashboard/operations/user-n
 import { CoachEditComponent } from './components/admin-dashboard/operations/coach-edit/coach-edit.component';
 import { UserEditComponent } from './components/admin-dashboard/operations/user-edit/user-edit.component';
 import { LoginAuditLogsComponent } from './components/admin-dashboard/operations/login-audit-logs/login-audit-logs.component';
+import { RegistrationRequestsComponent } from './components/admin-dashboard/operations/registration-requests/registration-requests.component';
 import { CoachHomeComponent } from './components/coach/coach-home/coach-home.component';
 import { CoachClientsComponent } from './components/coach/coach-clients/coach-clients.component';
 import { CoachClientDetailComponent } from './components/coach/coach-client-detail/coach-client-detail.component';
@@ -57,6 +59,10 @@ export const routes: Routes = [
       {
         path: 'reset-password',
         component: ResetPasswordComponent,
+      },
+      {
+        path: 'register',
+        component: RegisterComponent,
       },
       {
         path: '',
@@ -125,6 +131,11 @@ export const routes: Routes = [
       {
         path: 'login-audit-logs',
         component: LoginAuditLogsComponent,
+      },
+
+      {
+        path: 'registrations',
+        component: RegistrationRequestsComponent,
       },
 
       {

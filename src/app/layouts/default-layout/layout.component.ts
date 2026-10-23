@@ -27,6 +27,7 @@ export class LayoutComponent implements OnInit {
   adminMenuItems: MenuItem[] = [
     { label: 'menu.adminDashboard', icon: 'house', path: '/admin/dashboard' },
     { label: 'menu.users', icon: 'users', path: '/admin/users' },
+    { label: 'menu.registrations', icon: 'user-plus', path: '/admin/registrations' },
     { label: 'menu.loginAuditLogs', icon: 'list-checks', path: '/admin/login-audit-logs' },
     { label: 'menu.logout', icon: 'log-out', action: 'logout' },
   ];

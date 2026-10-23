@@ -37,6 +37,12 @@
       ></app-dashboard-action>
 
       <app-dashboard-action
+        icon="user-plus"
+        [label]="'adminDashboard.registrations' | translate: { count: pendingRegistrations }"
+        (activated)="navigateTo('admin/registrations')"
+      ></app-dashboard-action>
+
+      <app-dashboard-action
         icon="chart-bar"
         [label]="'adminDashboard.loginAuditLogs' | translate"
         (activated)="navigateTo('admin/login-audit-logs')"

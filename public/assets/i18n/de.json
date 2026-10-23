@@ -20,7 +20,8 @@
     "settings": "Einstellungen",
     "security": "Sicherheit",
     "loginAuditLogs": "Anmeldeprotokoll",
-    "coachWorkouts": "Trainingsbibliothek"
+    "coachWorkouts": "Trainingsbibliothek",
+    "registrations": "Registrierungsanfragen"
   },
   "header": {
     "user": "Benutzer",
@@ -35,7 +36,8 @@
     "userSearch": "Benutzersuche",
     "newUser": "Neuer Benutzer",
     "editUser": "Benutzer bearbeiten",
-    "loginAuditLogs": "Anmeldeprotokoll"
+    "loginAuditLogs": "Anmeldeprotokoll",
+    "registrations": "Registrierungsanfragen ({{count}} offen)"
   },
   "adminUsers": {
     "title": "Benutzerliste",
@@ -521,7 +523,9 @@
     "passwordPlaceholder": "Passwort",
     "loading": "Wird geladen...",
     "login": "Anmelden",
-    "forgotPassword": "Passwort vergessen?"
+    "forgotPassword": "Passwort vergessen?",
+    "noAccount": "Noch kein Konto?",
+    "register": "Registrieren"
   },
   "adminLayout": {
     "title": "Admin-Dashboard",
@@ -1097,6 +1101,97 @@
       "dip_station": "Dipstation",
       "jump_rope": "Springseil",
       "treadmill": "Laufband"
+    }
+  },
+  "register": {
+    "title": "Registrierung",
+    "description": "Dein Konto kann nach der Freigabe durch einen Administrator verwendet werden. Über die Entscheidung erhältst du eine E-Mail.",
+    "accountType": "Kontotyp",
+    "typeUser": "Kunde",
+    "typeUserHint": "Ich trainiere",
+    "typeCoach": "Trainer",
+    "typeCoachHint": "Ich erstelle Programme",
+    "username": "Benutzername",
+    "usernamePlaceholder": "z. B. anna.schmidt",
+    "coachName": "Name (Anmeldename)",
+    "coachNamePlaceholder": "z. B. Anna Schmidt",
+    "usernameHint": "Mindestens 3 Zeichen; Buchstaben, Ziffern, Leerzeichen, Punkte, Bindestriche oder Unterstriche. Damit oder mit deiner E-Mail-Adresse meldest du dich an.",
+    "email": "E-Mail-Adresse",
+    "emailPlaceholder": "email@example.com",
+    "password": "Passwort",
+    "passwordHint": "Mindestens 8 Zeichen.",
+    "passwordConfirmation": "Passwort wiederholen",
+    "optionalDetails": "Weitere Angaben (optional)",
+    "age": "Alter",
+    "weight": "Gewicht (kg)",
+    "height": "Größe (cm)",
+    "gender": "Geschlecht",
+    "genderNotSpecified": "Keine Angabe",
+    "genderMale": "Männlich",
+    "genderFemale": "Weiblich",
+    "goals": "Ziel",
+    "goalsPlaceholder": "z. B. Kraft, Abnehmen, Ausdauer",
+    "phone": "Telefonnummer",
+    "phonePlaceholder": "+36301234567",
+    "specialization": "Fachgebiet",
+    "submit": "Registrierung absenden",
+    "sending": "Wird gesendet...",
+    "haveAccount": "Schon ein Konto?",
+    "backToLogin": "Zurück zur Anmeldung",
+    "successTitle": "Registrierung gesendet",
+    "success": "Deine Registrierung ist eingegangen. Das Konto kann nach der Freigabe durch einen Administrator verwendet werden.",
+    "successEmailHint": "Wir informieren dich per E-Mail über die Freigabe oder Ablehnung.",
+    "failed": "Die Registrierung ist fehlgeschlagen. Bitte versuche es später erneut.",
+    "errors": {
+      "usernameFormat": "Muss mit einem Buchstaben oder einer Ziffer beginnen und enden und darf nur Buchstaben, Ziffern, Leerzeichen, Punkte, Bindestriche oder Unterstriche enthalten.",
+      "email": "Ungültige E-Mail-Adresse.",
+      "passwordBlank": "Das Passwort darf nicht nur aus Leerzeichen bestehen.",
+      "passwordTooLong": "Das Passwort ist zu lang (höchstens 72 Byte).",
+      "decimals": "Höchstens zwei Nachkommastellen erlaubt.",
+      "fixFields": "Bitte korrigiere die markierten Felder."
+    }
+  },
+  "adminRegistrations": {
+    "title": "Registrierungsanfragen",
+    "subtitle": "Konten von selbst registrierten Personen werden erst nach deiner Freigabe erstellt. Der Antragsteller erhält eine E-Mail über die Entscheidung.",
+    "statusFilter": "Anfragen nach Status",
+    "status": {
+      "PENDING": "Offen",
+      "APPROVED": "Freigegeben",
+      "REJECTED": "Abgelehnt"
+    },
+    "type": {
+      "USER": "Kunde",
+      "COACH": "Trainer"
+    },
+    "loading": "Wird geladen...",
+    "empty": {
+      "PENDING": "Keine Registrierungen warten auf Freigabe.",
+      "APPROVED": "Noch keine freigegebenen Registrierungen.",
+      "REJECTED": "Noch keine abgelehnten Registrierungen."
+    },
+    "submittedAt": "Eingereicht",
+    "coach": "Trainer (optional)",
+    "noCoach": "Kein Trainer zugeordnet",
+    "approve": "Freigeben",
+    "reject": "Ablehnen",
+    "confirmReject": "Ablehnung bestätigen",
+    "cancel": "Abbrechen",
+    "rejectReason": "Begründung (optional, wird dem Antragsteller per E-Mail gesendet)",
+    "rejectReasonPlaceholder": "z. B. Person unbekannt",
+    "decided": {
+      "APPROVED": "Freigegeben von {{by}}",
+      "REJECTED": "Abgelehnt von {{by}}"
+    },
+    "assignedCoach": "Trainer: {{name}}",
+    "reasonLabel": "Begründung",
+    "approved": "Registrierung freigegeben.",
+    "rejected": "Registrierung abgelehnt.",
+    "errors": {
+      "load": "Die Anfragen konnten nicht geladen werden.",
+      "approve": "Die Freigabe ist fehlgeschlagen.",
+      "reject": "Die Ablehnung ist fehlgeschlagen.",
+      "reasonTooLong": "Die Begründung darf höchstens 500 Zeichen lang sein."
     }
   }
 }

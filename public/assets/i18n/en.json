@@ -20,7 +20,8 @@
     "settings": "Settings",
     "security": "Security",
     "loginAuditLogs": "Login Audit Log",
-    "coachWorkouts": "Workout library"
+    "coachWorkouts": "Workout library",
+    "registrations": "Registration requests"
   },
   "header": {
     "user": "User",
@@ -35,7 +36,8 @@
     "userSearch": "User Search",
     "newUser": "New User",
     "editUser": "Edit User",
-    "loginAuditLogs": "Login Audit Log"
+    "loginAuditLogs": "Login Audit Log",
+    "registrations": "Registration requests ({{count}} pending)"
   },
   "adminUsers": {
     "title": "User List",
@@ -521,7 +523,9 @@
     "passwordPlaceholder": "Password",
     "loading": "Loading...",
     "login": "Login",
-    "forgotPassword": "Forgot password?"
+    "forgotPassword": "Forgot password?",
+    "noAccount": "Don't have an account?",
+    "register": "Sign up"
   },
   "adminLayout": {
     "title": "Admin Dashboard",
@@ -1099,6 +1103,97 @@
       "dip_station": "Dip station",
       "jump_rope": "Jump rope",
       "treadmill": "Treadmill"
+    }
+  },
+  "register": {
+    "title": "Sign up",
+    "description": "Your account can be used once an administrator approves it. You will receive an email about the decision.",
+    "accountType": "Account type",
+    "typeUser": "Client",
+    "typeUserHint": "I do workouts",
+    "typeCoach": "Coach",
+    "typeCoachHint": "I create programs",
+    "username": "Username",
+    "usernamePlaceholder": "e.g. anna.smith",
+    "coachName": "Name (login name)",
+    "coachNamePlaceholder": "e.g. Anna Smith",
+    "usernameHint": "At least 3 characters; letters, digits, spaces, dots, hyphens or underscores. You log in with this or your email address.",
+    "email": "Email address",
+    "emailPlaceholder": "email@example.com",
+    "password": "Password",
+    "passwordHint": "At least 8 characters.",
+    "passwordConfirmation": "Repeat password",
+    "optionalDetails": "More details (optional)",
+    "age": "Age",
+    "weight": "Weight (kg)",
+    "height": "Height (cm)",
+    "gender": "Gender",
+    "genderNotSpecified": "Prefer not to say",
+    "genderMale": "Male",
+    "genderFemale": "Female",
+    "goals": "Goal",
+    "goalsPlaceholder": "e.g. strength, weight loss, endurance",
+    "phone": "Phone number",
+    "phonePlaceholder": "+36301234567",
+    "specialization": "Specialization",
+    "submit": "Submit registration",
+    "sending": "Sending...",
+    "haveAccount": "Already have an account?",
+    "backToLogin": "Back to login",
+    "successTitle": "Registration submitted",
+    "success": "Your registration has been received. The account can be used once an administrator approves it.",
+    "successEmailHint": "We will email you when your registration is approved or rejected.",
+    "failed": "Registration failed. Please try again later.",
+    "errors": {
+      "usernameFormat": "Must start and end with a letter or digit and may only contain letters, digits, spaces, dots, hyphens or underscores.",
+      "email": "Invalid email address.",
+      "passwordBlank": "The password cannot consist of spaces only.",
+      "passwordTooLong": "The password is too long (at most 72 bytes).",
+      "decimals": "At most two decimal places are allowed.",
+      "fixFields": "Please correct the highlighted fields."
+    }
+  },
+  "adminRegistrations": {
+    "title": "Registration requests",
+    "subtitle": "Accounts of self-registered applicants are only created after your approval. The applicant receives an email about the decision.",
+    "statusFilter": "Requests by status",
+    "status": {
+      "PENDING": "Pending",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected"
+    },
+    "type": {
+      "USER": "Client",
+      "COACH": "Coach"
+    },
+    "loading": "Loading...",
+    "empty": {
+      "PENDING": "No registrations are waiting for approval.",
+      "APPROVED": "No approved registrations yet.",
+      "REJECTED": "No rejected registrations yet."
+    },
+    "submittedAt": "Submitted",
+    "coach": "Coach (optional)",
+    "noCoach": "No coach assigned",
+    "approve": "Approve",
+    "reject": "Reject",
+    "confirmReject": "Confirm rejection",
+    "cancel": "Cancel",
+    "rejectReason": "Reason (optional, sent to the applicant by email)",
+    "rejectReasonPlaceholder": "e.g. we do not know the applicant",
+    "decided": {
+      "APPROVED": "Approved by {{by}}",
+      "REJECTED": "Rejected by {{by}}"
+    },
+    "assignedCoach": "coach: {{name}}",
+    "reasonLabel": "Reason",
+    "approved": "Registration approved.",
+    "rejected": "Registration rejected.",
+    "errors": {
+      "load": "Could not load the requests.",
+      "approve": "Approval failed.",
+      "reject": "Rejection failed.",
+      "reasonTooLong": "The reason can be at most 500 characters."
     }
   }
 }

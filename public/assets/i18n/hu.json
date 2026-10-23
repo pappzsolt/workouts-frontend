@@ -20,7 +20,8 @@
     "settings": "Beállítások",
     "security": "Biztonság",
     "loginAuditLogs": "Bejelentkezési napló",
-    "coachWorkouts": "Edzéstár"
+    "coachWorkouts": "Edzéstár",
+    "registrations": "Regisztrációs kérelmek"
   },
   "header": {
     "user": "Felhasználó",
@@ -35,7 +36,8 @@
     "userSearch": "Felhasználó keresés",
     "newUser": "Új felhasználó",
     "editUser": "Felhasználó módosítás",
-    "loginAuditLogs": "Bejelentkezési napló"
+    "loginAuditLogs": "Bejelentkezési napló",
+    "registrations": "Regisztrációs kérelmek ({{count}} függőben)"
   },
   "adminUsers": {
     "title": "Felhasználók listája",
@@ -521,7 +523,9 @@
     "passwordPlaceholder": "Jelszó",
     "loading": "Betöltés...",
     "login": "Bejelentkezés",
-    "forgotPassword": "Elfelejtett jelszó?"
+    "forgotPassword": "Elfelejtett jelszó?",
+    "noAccount": "Még nincs fiókod?",
+    "register": "Regisztráció"
   },
   "adminLayout": {
     "title": "Admin Dashboard",
@@ -1099,6 +1103,97 @@
       "dip_station": "Tolódzkodó állvány",
       "jump_rope": "Ugrókötél",
       "treadmill": "Futópad"
+    }
+  },
+  "register": {
+    "title": "Regisztráció",
+    "description": "A fiókod az adminisztrátor jóváhagyása után lesz használható. A döntésről emailt kapsz.",
+    "accountType": "Fióktípus",
+    "typeUser": "Ügyfél",
+    "typeUserHint": "Edzéseket végzek",
+    "typeCoach": "Edző",
+    "typeCoachHint": "Programokat készítek",
+    "username": "Felhasználónév",
+    "usernamePlaceholder": "pl. kiss.anna",
+    "coachName": "Név (bejelentkezési név)",
+    "coachNamePlaceholder": "pl. Kiss Anna",
+    "usernameHint": "Legalább 3 karakter; betű, szám, szóköz, pont, kötőjel vagy aláhúzás. Ezzel vagy az email címeddel lépsz be.",
+    "email": "Email cím",
+    "emailPlaceholder": "email@example.com",
+    "password": "Jelszó",
+    "passwordHint": "Legalább 8 karakter.",
+    "passwordConfirmation": "Jelszó még egyszer",
+    "optionalDetails": "További adatok (nem kötelező)",
+    "age": "Életkor",
+    "weight": "Testsúly (kg)",
+    "height": "Magasság (cm)",
+    "gender": "Nem",
+    "genderNotSpecified": "Nem adom meg",
+    "genderMale": "Férfi",
+    "genderFemale": "Nő",
+    "goals": "Cél",
+    "goalsPlaceholder": "pl. erősödés, fogyás, állóképesség",
+    "phone": "Telefonszám",
+    "phonePlaceholder": "+36301234567",
+    "specialization": "Szakterület",
+    "submit": "Regisztráció elküldése",
+    "sending": "Küldés...",
+    "haveAccount": "Van már fiókod?",
+    "backToLogin": "Vissza a bejelentkezéshez",
+    "successTitle": "Regisztráció elküldve",
+    "success": "A regisztrációt rögzítettük. A fiók az adminisztrátor jóváhagyása után használható.",
+    "successEmailHint": "A jóváhagyásról vagy az elutasításról emailt küldünk a megadott címre.",
+    "failed": "A regisztráció nem sikerült. Kérlek próbáld újra később.",
+    "errors": {
+      "usernameFormat": "Betűvel vagy számmal kezdődjön és végződjön; csak betű, szám, szóköz, pont, kötőjel vagy aláhúzás lehet benne.",
+      "email": "Érvénytelen email cím.",
+      "passwordBlank": "A jelszó nem állhat csak szóközből.",
+      "passwordTooLong": "A jelszó túl hosszú (legfeljebb 72 bájt).",
+      "decimals": "Legfeljebb két tizedesjegy adható meg.",
+      "fixFields": "Kérlek javítsd a megjelölt mezőket."
+    }
+  },
+  "adminRegistrations": {
+    "title": "Regisztrációs kérelmek",
+    "subtitle": "Az önregisztrációval jelentkezők fiókja csak a jóváhagyásod után jön létre. A döntésről a jelentkező emailt kap.",
+    "statusFilter": "Kérelmek állapot szerint",
+    "status": {
+      "PENDING": "Függőben",
+      "APPROVED": "Jóváhagyva",
+      "REJECTED": "Elutasítva"
+    },
+    "type": {
+      "USER": "Ügyfél",
+      "COACH": "Edző"
+    },
+    "loading": "Betöltés...",
+    "empty": {
+      "PENDING": "Nincs jóváhagyásra váró regisztráció.",
+      "APPROVED": "Még nincs jóváhagyott regisztráció.",
+      "REJECTED": "Még nincs elutasított regisztráció."
+    },
+    "submittedAt": "Beküldve",
+    "coach": "Edző (nem kötelező)",
+    "noCoach": "Nincs edző hozzárendelve",
+    "approve": "Jóváhagyás",
+    "reject": "Elutasítás",
+    "confirmReject": "Elutasítás megerősítése",
+    "cancel": "Mégse",
+    "rejectReason": "Indoklás (nem kötelező, a jelentkező emailben megkapja)",
+    "rejectReasonPlaceholder": "pl. nem ismerjük a jelentkezőt",
+    "decided": {
+      "APPROVED": "Jóváhagyta: {{by}}",
+      "REJECTED": "Elutasította: {{by}}"
+    },
+    "assignedCoach": "edző: {{name}}",
+    "reasonLabel": "Indoklás",
+    "approved": "A regisztrációt jóváhagytad.",
+    "rejected": "A regisztrációt elutasítottad.",
+    "errors": {
+      "load": "A kérelmek betöltése nem sikerült.",
+      "approve": "A jóváhagyás nem sikerült.",
+      "reject": "Az elutasítás nem sikerült.",
+      "reasonTooLong": "Az indoklás legfeljebb 500 karakter lehet."
     }
   }
 }

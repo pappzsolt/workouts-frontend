@@ -1,0 +1,138 @@
+<div class="w-full rounded-2xl border border-surface-200 bg-white p-6 shadow-lg sm:p-8">
+  <div class="mb-6 flex justify-end">
+    <app-language-selector></app-language-selector>
+  </div>
+
+  @if (successMessage) {
+    <!-- Sikeres beküldés: a fiók jóváhagyásra vár -->
+    <div class="flex flex-col items-center gap-4 text-center" role="status">
+      <span class="flex h-14 w-14 items-center justify-center rounded-full bg-primary-50 text-primary-600" aria-hidden="true">
+        <app-icon name="clock" sizeClass="h-7 w-7" />
+      </span>
+      <h2 appHeading="page">{{ 'register.successTitle' | translate }}</h2>
+      <p class="text-sm text-content-600">{{ successMessage | translate }}</p>
+      <p class="text-sm text-content-600">{{ 'register.successEmailHint' | translate }}</p>
+      <app-button variant="primary" type="button" class="w-full" (buttonClick)="backToLogin()"
+                  [label]="'register.backToLogin' | translate"></app-button>
+    </div>
+  } @else {
+    <div class="mb-6 text-center">
+      <h2 appHeading="page">{{ 'register.title' | translate }}</h2>
+      <p class="mt-2 text-sm text-content-500">{{ 'register.description' | translate }}</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-5" novalidate>
+      <!-- Fióktípus -->
+      <fieldset class="flex flex-col gap-2">
+        <legend class="mb-2 text-sm font-semibold text-content-700">{{ 'register.accountType' | translate }} <span aria-hidden="true">*</span></legend>
+        <div class="grid grid-cols-2 gap-2">
+          @for (type of ['USER', 'COACH']; track type) {
+            <label class="cursor-pointer">
+              <input appRadio="card" type="radio" name="accountType" formControlName="accountType" [value]="type" />
+              <span class="flex min-h-16 flex-col items-center justify-center gap-1 rounded-xl border border-surface-300 bg-white px-3 py-2 text-center transition hover:border-primary-400 peer-checked:border-primary-600 peer-checked:bg-primary-50 peer-checked:text-primary-800 peer-focus-visible:ring-4 peer-focus-visible:ring-primary-500/20">
+                <app-icon [name]="type === 'COACH' ? 'clipboard-list' : 'user-round'" sizeClass="h-5 w-5" />
+                <span class="text-sm font-semibold">{{ (type === 'COACH' ? 'register.typeCoach' : 'register.typeUser') | translate }}</span>
+                <span class="text-xs text-content-600">{{ (type === 'COACH' ? 'register.typeCoachHint' : 'register.typeUserHint') | translate }}</span>
+              </span>
+            </label>
+          }
+        </div>
+      </fieldset>
+
+      <app-form-field [labelKey]="isCoach ? 'register.coachName' : 'register.username'" controlId="register-username"
+                      [required]="true" hint="register.usernameHint"
+                      [error]="fieldError('username')" [showError]="!!fieldError('username')">
+        <input appInput="admin" id="register-username" formControlName="username" type="text"
+               autocomplete="username" [minlength]="limits.usernameMin"
+               [maxlength]="isCoach ? limits.usernameMaxCoach : limits.usernameMaxUser"
+               [placeholder]="(isCoach ? 'register.coachNamePlaceholder' : 'register.usernamePlaceholder') | translate"
+               class="placeholder:text-content-400" />
+      </app-form-field>
+
+      <app-form-field labelKey="register.email" controlId="register-email" [required]="true"
+                      [error]="fieldError('email')" [showError]="!!fieldError('email')">
+        <input appInput="admin" id="register-email" formControlName="email" type="email" autocomplete="email"
+               [maxlength]="limits.emailMax" [placeholder]="'register.emailPlaceholder' | translate"
+               class="placeholder:text-content-400" />
+      </app-form-field>
+
+      <app-form-field labelKey="register.password" controlId="register-password" [required]="true"
+                      hint="register.passwordHint"
+                      [error]="fieldError('password')" [showError]="!!fieldError('password')">
+        <input appInput="admin" appValidation="password" id="register-password" formControlName="password" type="password"
+               autocomplete="new-password" />
+      </app-form-field>
+
+      <app-form-field labelKey="register.passwordConfirmation" controlId="register-password-confirmation" [required]="true"
+                      [error]="fieldError('passwordConfirmation')" [showError]="!!fieldError('passwordConfirmation')">
+        <input appInput="admin" id="register-password-confirmation" formControlName="passwordConfirmation"
+               [appMatchControl]="form.controls.password"
+               type="password" autocomplete="new-password" />
+      </app-form-field>
+
+      <!-- Nem kötelező adatok -->
+      <details class="group rounded-xl border border-surface-200 bg-surface-50 px-4 py-3">
+        <summary class="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 text-sm font-semibold text-content-800">
+          {{ 'register.optionalDetails' | translate }}
+          <app-icon name="chevron-down" sizeClass="h-4 w-4" class="transition group-open:rotate-180" />
+        </summary>
+        <div class="mt-3 flex flex-col gap-4">
+          @if (isCoach) {
+            <app-form-field labelKey="register.phone" controlId="register-phone"
+                            [error]="fieldError('phone')" [showError]="!!fieldError('phone')">
+              <input appInput="admin" appValidation="phone" id="register-phone" formControlName="phone" type="tel"
+                     autocomplete="tel" maxlength="12" [placeholder]="'register.phonePlaceholder' | translate"
+                     class="placeholder:text-content-400" />
+            </app-form-field>
+            <app-form-field labelKey="register.specialization" controlId="register-specialization"
+                            [error]="fieldError('specialization')" [showError]="!!fieldError('specialization')">
+              <textarea appTextarea="admin" id="register-specialization" formControlName="specialization" rows="3"
+                        [attr.maxlength]="limits.specializationMax"></textarea>
+            </app-form-field>
+          } @else {
+            <div class="grid grid-cols-3 items-end gap-3">
+              <app-form-field labelKey="register.age" controlId="register-age"
+                              [error]="fieldError('age')" [showError]="!!fieldError('age')">
+                <input appInput="admin" id="register-age" formControlName="age" type="number" inputmode="numeric"
+                       [min]="limits.ageMin" [max]="limits.ageMax" step="1" />
+              </app-form-field>
+              <app-form-field labelKey="register.weight" controlId="register-weight"
+                              [error]="fieldError('weight')" [showError]="!!fieldError('weight')">
+                <input appInput="admin" id="register-weight" formControlName="weight" type="number" inputmode="decimal"
+                       [min]="limits.weightMin" [max]="limits.weightMax" step="0.01" />
+              </app-form-field>
+              <app-form-field labelKey="register.height" controlId="register-height"
+                              [error]="fieldError('height')" [showError]="!!fieldError('height')">
+                <input appInput="admin" id="register-height" formControlName="height" type="number" inputmode="decimal"
+                       [min]="limits.heightMin" [max]="limits.heightMax" step="0.01" />
+              </app-form-field>
+            </div>
+            <app-form-field labelKey="register.gender" controlId="register-gender">
+              <app-select id="register-gender" formControlName="gender" [options]="genderOptions"></app-select>
+            </app-form-field>
+            <app-form-field labelKey="register.goals" controlId="register-goals"
+                            [error]="fieldError('goals')" [showError]="!!fieldError('goals')">
+              <textarea appTextarea="admin" id="register-goals" formControlName="goals" rows="3"
+                        [attr.maxlength]="limits.goalsMax" [placeholder]="'register.goalsPlaceholder' | translate"
+                        class="placeholder:text-content-400"></textarea>
+            </app-form-field>
+          }
+        </div>
+      </details>
+
+      @if (errorMessage) {
+        <app-message [message]="errorMessage" type="error"></app-message>
+      }
+
+      <app-button variant="primary" type="submit" [disabled]="loading"
+                  [label]="(loading ? 'register.sending' : 'register.submit') | translate"></app-button>
+
+      <p class="text-center text-sm text-content-600">
+        {{ 'register.haveAccount' | translate }}
+        <a routerLink="/login" class="font-medium text-primary-600 hover:text-primary-700 hover:underline">
+          {{ 'register.backToLogin' | translate }}
+        </a>
+      </p>
+    </form>
+  }
+</div>

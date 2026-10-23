@@ -85,6 +85,7 @@ export class DashboardNavigationComponent {
       'coach/new': 'adminCoachNew.title',
       'coach/edit': 'adminCoachEdit.title',
       'login-audit-logs': 'adminLoginAudit.title',
+      registrations: 'adminRegistrations.title',
     };
     if (page === 'users/search') {
       this.items.push({ label: 'adminUsers.title', url: '/admin/users' });
