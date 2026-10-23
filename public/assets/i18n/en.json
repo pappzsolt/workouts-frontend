@@ -1,5 +1,6 @@
 {
   "language": {
+    "loadError": "The selected language could not be loaded. Please try again.",
     "english": "English",
     "hungarian": "Hungarian",
     "german": "German"

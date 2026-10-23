@@ -1,3 +1,4 @@
+import { MessageComponent } from '../components/message/message.component';
 import { Component } from '@angular/core';
 import { AppSelectComponent } from '../components/app-select/app-select.component';
 import type { SelectOption } from '../../../models/common/select-option.model';
@@ -7,7 +8,7 @@ import { LanguageCode, LanguageService } from '../../../services/shared/language
 @Component({
   selector: 'app-language-selector',
   standalone: true,
-  imports: [AppSelectComponent],
+  imports: [AppSelectComponent, MessageComponent],
   template: `
     <app-select
       [value]="languageService.getCurrentLanguage()"
@@ -15,6 +16,9 @@ import { LanguageCode, LanguageService } from '../../../services/shared/language
       (valueChange)="onLanguageChange($event)"
       className="bg-white text-primary-600 px-3 py-1 rounded-full font-medium shadow-sm"
     ></app-select>
+    @if (languageService.loadFailed) {
+      <app-message message="language.loadError" type="error"></app-message>
+    }
   `,
 })
 export class LanguageSelectorComponent {

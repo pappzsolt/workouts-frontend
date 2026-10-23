@@ -1,5 +1,6 @@
 {
   "language": {
+    "loadError": "A kiválasztott nyelv betöltése sikertelen. Próbáld újra.",
     "english": "Angol",
     "hungarian": "Magyar",
     "german": "Német"
