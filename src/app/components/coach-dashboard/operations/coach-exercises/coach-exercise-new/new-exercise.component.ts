@@ -120,7 +120,6 @@ export class NewExerciseComponent implements OnInit {
       category: '',
       caloriesBurnedPerMinute: 0,
       durationSeconds: 0,
-      done: false,
     };
   }
 

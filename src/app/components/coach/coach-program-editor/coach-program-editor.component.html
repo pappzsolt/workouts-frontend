@@ -66,7 +66,7 @@
           @if (programId !== null) {
             <p class="mr-auto text-xs text-content-600">{{ 'coachWorkspace.editor.datesHint' | translate }}</p>
           }
-          <button type="submit" [disabled]="savingDetails || loading || (programId !== null && program?.programId !== programId)"
+          <button type="submit" [disabled]="savingDetails || busy || loading || (programId !== null && program?.programId !== programId)"
                   class="btn btn-primary">
             <app-icon name="save" sizeClass="h-4 w-4" />
             {{ (savingDetails ? 'coachWorkspace.saving' : (programId === null ? 'coachWorkspace.editor.create' : 'coachWorkspace.save')) | translate }}
@@ -205,7 +205,7 @@
                           class="inline-flex min-h-11 items-center gap-2 rounded-xl border border-surface-300 bg-white px-4 text-sm font-semibold text-content-700 hover:bg-surface-50 disabled:opacity-60">
                     {{ 'coachWorkspace.editor.applyTemplate' | translate }}
                   </button>
-                  <button type="button" (click)="savePrescriptions()" [disabled]="busy || changedCount === 0"
+                  <button type="button" (click)="savePrescriptions()" [disabled]="busy || savingDetails || loading || changedCount === 0"
                           class="btn btn-primary">
                     <app-icon name="save" sizeClass="h-4 w-4" />
                     {{ 'coachWorkspace.editor.savePrescriptions' | translate: { count: changedCount } }}

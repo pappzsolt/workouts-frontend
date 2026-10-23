@@ -1084,7 +1084,8 @@
       "revokeTitle": "Programkiosztás visszavonása",
       "revokeConfirm": "Biztosan visszavonod a(z) „{{program}}” programot ettől az ügyféltől: {{name}}? Az ügyfél programhoz tartozó edzései és sorozatai, köztük a teljesített edzések adatai is törlődhetnek.",
       "unsavedDayTitle": "Mentetlen módosítások",
-      "unsavedDayPrompt": "A kiválasztott nap módosításai még nincsenek mentve. Elveted őket és másik napra váltasz? Ha meg szeretnéd őrizni őket, maradj ezen a napon, és mentsd a módosításokat."
+      "unsavedDayPrompt": "A kiválasztott nap módosításai még nincsenek mentve. Elveted őket és másik napra váltasz? Ha meg szeretnéd őrizni őket, maradj ezen a napon, és mentsd a módosításokat.",
+      "saveBeforeShortening": "A program rövidítése előtt mentsd vagy vesd el a kiválasztott nap módosításait."
     },
     "picker": {
       "search": "Keresés (név, izom, szinonima, leírás)",

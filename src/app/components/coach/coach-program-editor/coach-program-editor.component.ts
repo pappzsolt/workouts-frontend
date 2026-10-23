@@ -173,7 +173,7 @@ export class CoachProgramEditorComponent implements OnInit {
   // Betöltés
   // ----------------------------------------------------------
 
-  private loadProgram(selectDay: number | null): void {
+  private loadProgram(selectDay: number | null, preserveDrafts = false): void {
     if (this.programId === null) return;
     this.programLoadCancelled$.next();
     this.assignmentLoadCancelled$.next();
@@ -187,6 +187,13 @@ export class CoachProgramEditorComponent implements OnInit {
       .subscribe({
         next: ({ program, links }) => {
           if (this.programId !== programId) return;
+          // Read drafts when the response arrives, including edits made while loading.
+          const draftWorkoutId = preserveDrafts ? this.selectedCell?.workout?.workoutId : undefined;
+          const draftRows = preserveDrafts ? this.rows.filter((row) => this.isChanged(row)) : [];
+          const emptyDraft = preserveDrafts && this.selectedCell && !this.selectedCell.workout
+            ? { workoutName: this.workoutName, pendingExercises: [...this.pendingExercises],
+                copySourceId: this.copySourceId, emptyMode: this.emptyMode, libraryFilter: this.libraryFilter }
+            : null;
           this.program = program;
           this.form = {
             programName: program.programName ?? '',
@@ -199,6 +206,18 @@ export class CoachProgramEditorComponent implements OnInit {
           this.loadAssignment();
           const firstWorkoutDay = this.cells.find((cell) => cell.workout)?.day ?? 1;
           this.openDay(selectDay ?? (this.cells.some((c) => c.day === this.selectedDay) ? this.selectedDay : firstWorkoutDay));
+          if (draftWorkoutId !== undefined && this.selectedCell?.workout?.workoutId === draftWorkoutId) {
+            for (const row of this.rows) {
+              const draft = draftRows.find((item) => item.id === row.id);
+              if (draft) {
+                row.sets = draft.sets;
+                row.repetitions = draft.repetitions;
+                row.restSeconds = draft.restSeconds;
+              }
+            }
+          } else if (emptyDraft && this.selectedCell && !this.selectedCell.workout) {
+            Object.assign(this, emptyDraft);
+          }
           this.loading = false;
         },
         error: (error) => {
@@ -270,12 +289,17 @@ export class CoachProgramEditorComponent implements OnInit {
   // ----------------------------------------------------------
 
   saveDetails(): void {
-    if (this.savingDetails || this.loading ||
+    if (this.savingDetails || this.busy || this.loading ||
         (this.programId !== null && this.program?.programId !== this.programId)) return;
     const name = this.form.programName.trim();
     const duration = Number(this.form.durationDays);
     if (!name || !Number.isInteger(duration) || duration < 1 || duration > 365 || !this.form.startDate) {
       this.showMessage('coachWorkspace.editor.detailsInvalid', 'error');
+      return;
+    }
+    if (duration < this.selectedDay && (this.changedCount > 0 ||
+        (!this.selectedCell?.workout && (this.workoutName.trim() || this.pendingExercises.length || this.copySourceId !== null)))) {
+      this.showMessage('coachWorkspace.editor.saveBeforeShortening', 'error');
       return;
     }
     const details: CoachProgramDetailsInput = {
@@ -332,7 +356,7 @@ export class CoachProgramEditorComponent implements OnInit {
         next: () => {
           this.savingDetails = false;
           this.showMessage('coachWorkspace.editor.saved', 'success');
-          this.loadProgram(this.selectedDay);
+          this.loadProgram(this.selectedDay, true);
         },
         error: (error) => {
           this.savingDetails = false;
@@ -451,7 +475,7 @@ export class CoachProgramEditorComponent implements OnInit {
 
   savePrescriptions(): void {
     const workout = this.selectedCell?.workout;
-    if (!workout || this.busy) return;
+    if (!workout || this.busy || this.savingDetails || this.loading) return;
     const changed = this.rows.filter((row) => this.isChanged(row));
     if (changed.length === 0) return;
     const invalid = changed.find(

@@ -58,7 +58,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   private readonly pendingSetSaves = new Map<string, {
     signature: string;
     request: Observable<void>;
-    confirmed: { completed: boolean };
+    confirmed: { completed: boolean; timerNeedsRefresh: boolean };
   }>();
 
   constructor(
@@ -322,13 +322,19 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     const signature = JSON.stringify(args);
     const previous = this.pendingSetSaves.get(key);
     if (previous?.signature === signature) return previous.request;
-    const confirmed = previous?.confirmed ?? { completed: set.completed === true };
+    const confirmed = previous?.confirmed ?? { completed: set.completed === true, timerNeedsRefresh: false };
     if (completed !== undefined) set.completed = completed;
     const isCurrent = (): boolean => this.workoutExercise === exercise && this.userWorkoutId === args[0];
     this.message = '';
     this.messageParams = {};
     this.messageType = '';
 
+    const syncConfirmedTimer = () => {
+      if (isCurrent() && confirmed.timerNeedsRefresh) {
+        this.selectLastCompletedTimer(confirmed.completed ? set.id ?? undefined : undefined);
+        confirmed.timerNeedsRefresh = false;
+      }
+    };
     const entry = { signature, confirmed, request: EMPTY as Observable<void> };
     // Changed payloads queue behind the existing request; identical blur/page
     // saves share it. Recover an earlier failure so a newer edit can still save.
@@ -336,16 +342,11 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       concatMap(() => defer(() => this.exercisesService.updateSetCompleted(...args))),
       map(response => {
         if (!response.success) throw new Error(responseMessage([response], 'userExerciseDetail.saveError'));
+        if (completed !== undefined || confirmed.completed !== args[5]) confirmed.timerNeedsRefresh = true;
         confirmed.completed = args[5];
         // An older queued response must not replace newer pending UI state.
         const isLatestSave = this.pendingSetSaves.get(key) === entry;
-        if (isCurrent() && isLatestSave && completed !== undefined) {
-          if (completed) {
-            this.selectLastCompletedTimer(set.id ?? undefined);
-          } else {
-            this.selectLastCompletedTimer();
-          }
-        }
+        if (isLatestSave) syncConfirmedTimer();
         if (isCurrent()) {
           this.updateExerciseDone();
           if (isLatestSave && (showSuccessMessage || response.message)) {
@@ -360,6 +361,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       tap({ error: error => {
         if (isCurrent() && this.pendingSetSaves.get(key) === entry) {
           set.completed = confirmed.completed;
+          syncConfirmedTimer();
           this.updateExerciseDone();
           this.message = errorMessage(error, completed === undefined
             ? 'userExerciseDetail.saveError' : 'userExerciseDetail.setUpdateError');

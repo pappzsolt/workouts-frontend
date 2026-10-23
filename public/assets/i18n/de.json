@@ -1084,7 +1084,8 @@
       "revokeTitle": "Programmzuweisung aufheben",
       "revokeConfirm": "Die Zuweisung des Programms „{{program}}“ für {{name}} aufheben? Die Trainings und Sätze des Kunden für dieses Programm, einschließlich abgeschlossener Trainingsdaten, können ebenfalls gelöscht werden.",
       "unsavedDayTitle": "Ungespeicherte Änderungen",
-      "unsavedDayPrompt": "Die Änderungen am ausgewählten Tag sind noch nicht gespeichert. Änderungen verwerfen und den Tag wechseln? Um sie zu behalten, bleibe auf diesem Tag und speichere die Änderungen."
+      "unsavedDayPrompt": "Die Änderungen am ausgewählten Tag sind noch nicht gespeichert. Änderungen verwerfen und den Tag wechseln? Um sie zu behalten, bleibe auf diesem Tag und speichere die Änderungen.",
+      "saveBeforeShortening": "Speichere oder verwirf die Änderungen am ausgewählten Tag, bevor du das Programm verkürzt."
     },
     "picker": {
       "search": "Suche (Name, Muskel, Synonym, Beschreibung)",
