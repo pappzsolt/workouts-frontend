@@ -66,6 +66,7 @@
             id="workoutName"
             type="text"
             name="name"
+            [disabled]="loadingWorkout || !canSaveWorkout"
             [(ngModel)]="workout.name"
             required
             maxlength="255"
@@ -87,6 +88,7 @@
             id="description"
             name="description"
             rows="3"
+            [disabled]="loadingWorkout || !canSaveWorkout"
             [(ngModel)]="workout.description"
             class="min-h-28 leading-6 placeholder:text-content-400"
           ></textarea>
@@ -107,6 +109,7 @@
             id="workoutDate"
             type="date"
             name="workoutDate"
+            [disabled]="loadingWorkout || !canSaveWorkout"
             [(ngModel)]="workout.workoutDate"
             required
           />
@@ -127,6 +130,7 @@
             type="number"
             step="1"
             name="durationMinutes"
+            [disabled]="loadingWorkout || !canSaveWorkout"
             [(ngModel)]="workout.durationMinutes"
             min="0"
           />
@@ -168,6 +172,7 @@
             type="checkbox"
             name="done"
             id="done"
+            [disabled]="loadingWorkout || !canSaveWorkout"
             [(ngModel)]="workout.done"
             class="h-5 w-5 cursor-pointer rounded border-surface-300 accent-primary-600 focus:ring-4 focus:ring-primary-500/10"
           />
@@ -584,7 +589,7 @@
 
           <app-button
             type="submit"
-            [disabled]="!workoutForm.form.valid"
+            [disabled]="!workoutForm.form.valid || !canSaveWorkout"
             variant="save"
             appearance="solid"
             [fullWidth]="true"

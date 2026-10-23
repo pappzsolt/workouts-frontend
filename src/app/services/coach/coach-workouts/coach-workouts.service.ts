@@ -236,10 +236,10 @@ export class CoachWorkoutsService {
   /**
    * Workout lekérése ID alapján.
    */
-  getWorkoutById(id: number): Observable<ApiResponse<UserWorkoutDto>> {
+  getWorkoutById(id: number, language = this.languageService.getCurrentLanguage()): Observable<ApiResponse<UserWorkoutDto>> {
     const params = new HttpParams().set(
       'language',
-      this.languageService.getCurrentLanguage(),
+      language,
     );
 
     return this.http.get<ApiResponse<UserWorkoutDto>>(
@@ -251,7 +251,7 @@ export class CoachWorkoutsService {
   /**
    * Workout módosítása.
    */
-  updateWorkout(id: number, workout: Workout): Observable<ApiResponse<WorkoutResponse>> {
+  updateWorkout(id: number, workout: Workout, language = this.languageService.getCurrentLanguage()): Observable<ApiResponse<WorkoutResponse>> {
     const payload: WorkoutRequest = {
       id,
       name: workout.name ?? workout.workoutName ?? null,
@@ -265,7 +265,7 @@ export class CoachWorkoutsService {
 
     const params = new HttpParams().set(
       'language',
-      this.languageService.getCurrentLanguage(),
+      language,
     );
 
     return this.http.put<ApiResponse<WorkoutResponse>>(

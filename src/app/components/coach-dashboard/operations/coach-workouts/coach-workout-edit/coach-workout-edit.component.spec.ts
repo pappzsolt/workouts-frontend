@@ -22,7 +22,7 @@ describe('Coach workout editor language reloads', () => {
       {provide: WorkoutExerciseService, useValue: {assignExerciseToWorkout: () => of({success: false, message: 'Rejected'})}},
       {provide: ExerciseService, useValue: {}},
       {provide: ProgramWorkoutService, useValue: {}},
-      {provide: LanguageService, useValue: {language$}},
+      {provide: LanguageService, useValue: {language$, getCurrentLanguage: () => language$.value}},
       {provide: CoachWorkspaceService, useValue: {}},
     ]});
     return TestBed.runInInjectionContext(() => new CoachWorkoutEditComponent(
@@ -30,7 +30,7 @@ describe('Coach workout editor language reloads', () => {
       TestBed.inject(WorkoutExerciseService), TestBed.inject(ExerciseService),
       TestBed.inject(ProgramWorkoutService), TestBed.inject(LanguageService)));
   }
-  it('preserves an edited workout name on language change', () => {
+  it('keeps a Hungarian draft separate and restores it on returning to Hungarian', () => {
     const component = create();
     spyOn(component, 'loadExercises');
     spyOn(component, 'loadWorkoutExercises');
@@ -39,6 +39,8 @@ describe('Coach workout editor language reloads', () => {
     component.ngOnInit();
     component.workout.name = 'Unsaved new name';
     language$.next('en');
+    expect(component.workout.name).toBe('Saved name');
+    language$.next('hu');
     expect(component.workout.name).toBe('Unsaved new name');
   });
   it('ignores a late previous workout response', () => {

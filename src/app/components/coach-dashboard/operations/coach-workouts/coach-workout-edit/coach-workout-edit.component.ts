@@ -16,7 +16,7 @@ import type { CoachProgramUsage } from '../../../../../models/coach-workspace.mo
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 
 import { ProgramWorkoutService } from '../../../../../services/coach/program-workout.service';
-import { skip, timer, Subject, takeUntil } from 'rxjs';
+import { skip, timer, Subject, takeUntil, finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { LanguageService } from '../../../../../services/shared/language.service';
@@ -51,6 +51,30 @@ export class CoachWorkoutEditComponent implements OnInit {
   private readonly workoutExercisesLoadCancelled$ = new Subject<void>();
   private readonly assignmentLoadCancelled$ = new Subject<void>();
   private loadedWorkout?: Workout;
+  private formContext = '';
+  private readonly textDrafts = new Map<string, Partial<Workout>>();
+  private readonly sharedDrafts = new Map<number, Partial<Workout>>();
+  loadingWorkout = false;
+  savingWorkout = false;
+  private workoutReady = false;
+
+  get canSaveWorkout(): boolean {
+    return this.workoutReady && !this.loadingWorkout && !this.savingWorkout &&
+      this.formContext === `${this.workoutId}:${this.languageService.getCurrentLanguage()}`;
+  }
+
+  private captureWorkoutDraft(): void {
+    if (!this.loadedWorkout || !this.formContext) return;
+    const text: Partial<Workout> = {};
+    const shared: Partial<Workout> = {};
+    for (const key of Object.keys(this.workout) as (keyof Workout)[]) {
+      if (key === 'id' || key === 'exercises' || this.workout[key] === this.loadedWorkout[key]) continue;
+      const target = ['name', 'description', 'workoutName', 'workoutDescription'].includes(key) ? text : shared;
+      Object.assign(target, { [key]: this.workout[key] });
+    }
+    this.textDrafts.set(this.formContext, text);
+    this.sharedDrafts.set(this.loadedWorkout.id!, shared);
+  }
 
   workoutId?: number;
 
@@ -228,13 +252,19 @@ export class CoachWorkoutEditComponent implements OnInit {
 
     this.workoutLoadCancelled$.next();
     const workoutId = this.workoutId;
-    if (this.loadedWorkout?.id !== workoutId) {
+    const language = this.languageService.getCurrentLanguage();
+    const context = `${workoutId}:${language}`;
+    if (preserveDrafts) this.captureWorkoutDraft();
+    if (!this.formContext || this.loadedWorkout?.id !== workoutId) {
+      this.formContext = context;
       this.loadedWorkout = { ...this.workout, id: workoutId };
     }
-    const baseline = this.loadedWorkout;
-    this.coachWorkoutsService.getWorkoutById(workoutId)
+    this.loadingWorkout = true;
+    this.workoutReady = false;
+    this.coachWorkoutsService.getWorkoutById(workoutId, language)
       .pipe(takeUntil(this.workoutLoadCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res: ApiResponse<UserWorkoutDto>) => {
+        this.loadingWorkout = false;
         if (!res.success || !res.data) {
           this.setMessage(res.message || 'coachWorkoutEdit.notFound', 'error');
           return;
@@ -269,19 +299,19 @@ export class CoachWorkoutEditComponent implements OnInit {
           notes: w.notes ?? undefined,
           exercises: [],
         };
-        const drafts: Partial<Workout> = {};
-        if (preserveDrafts) {
-          for (const key of Object.keys(this.workout) as (keyof Workout)[]) {
-            if (key !== 'id' && key !== 'exercises' && this.workout[key] !== baseline[key]) {
-              Object.assign(drafts, { [key]: this.workout[key] });
-            }
-          }
-        }
+        if (preserveDrafts) this.captureWorkoutDraft();
         this.loadedWorkout = { ...loaded };
-        this.workout = { ...loaded, ...drafts };
+        this.formContext = context;
+        this.workout = {
+          ...loaded,
+          ...(preserveDrafts ? this.sharedDrafts.get(workoutId) : {}),
+          ...(preserveDrafts ? this.textDrafts.get(context) : {}),
+        };
+        this.workoutReady = true;
       },
 
       error: (error) => {
+        this.loadingWorkout = false;
         this.logger.error('Hiba a workout betöltésekor:', error);
 
         this.setMessage('coachWorkoutEdit.loadError', 'error');
@@ -641,6 +671,7 @@ export class CoachWorkoutEditComponent implements OnInit {
   // ==========================================================
 
   saveWorkout(): void {
+    if (!this.canSaveWorkout) return;
     if (!this.validateInputs()) return;
     if (!this.workoutId) {
       return;
@@ -652,15 +683,24 @@ export class CoachWorkoutEditComponent implements OnInit {
       workoutDate: this.workout.workoutDate,
     };
 
-    this.coachWorkoutsService.updateWorkout(this.workoutId, payload).subscribe({
+    const context = this.formContext;
+    const language = this.languageService.getCurrentLanguage();
+    this.savingWorkout = true;
+    this.coachWorkoutsService.updateWorkout(this.workoutId, payload, language).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => { this.savingWorkout = false; }),
+    ).subscribe({
       next: (res) => {
+        if (this.formContext !== context || this.languageService.getCurrentLanguage() !== language) return;
         if (res.success && res.data?.status === 'ok') {
           this.setMessage('coachWorkoutEdit.updateSuccess', 'success');
 
           timer(1500)
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
-              void this.router.navigate(['/coach/workouts']);
+              if (this.formContext === context && this.languageService.getCurrentLanguage() === language) {
+                void this.router.navigate(['/coach/workouts']);
+              }
             });
         } else {
           this.setMessage(res.data?.message || res.message || 'coachWorkoutEdit.updateError', 'error');
@@ -668,6 +708,7 @@ export class CoachWorkoutEditComponent implements OnInit {
       },
 
       error: (error) => {
+        if (this.formContext !== context || this.languageService.getCurrentLanguage() !== language) return;
         this.logger.error('Hiba a workout mentésekor:', error);
 
         const backendMessage = error?.error?.message ?? error?.error?.error ?? error?.message;
