@@ -390,7 +390,7 @@
                         />
                       </app-form-field>
                       <div class="set-rest-field">
-                        <label for="manager-set-rest-seconds">Pihenőidő (másodperc)</label>
+                        <label for="manager-set-rest-seconds">{{ 'userWorkoutExerciseManager.restSeconds' | translate }}</label>
                         <input
                           appInput="plain"
                           id="manager-set-rest-seconds"
@@ -400,7 +400,7 @@
                           [(ngModel)]="set.restSeconds"
                           class="form-input set-number-input"
                         />
-                        <small>Üresen hagyva az edzői alapérték érvényes. A 0 kikapcsolja a pihenőt.</small>
+                        <small>{{ 'userWorkoutExerciseManager.restSecondsHint' | translate }}</small>
                       </div>
                     </div>
                   </div>

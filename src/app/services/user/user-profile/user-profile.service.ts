@@ -38,7 +38,7 @@ export class UserProfilService {
           const user = response.data == null ? null : this.toRawUser(response.data);
 
           if (user == null) {
-            throw new Error('A user profil válaszában nincs érvényes adat.');
+            throw new Error('dataErrors.profileMissing');
           }
 
           return user;

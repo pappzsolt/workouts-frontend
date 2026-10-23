@@ -208,7 +208,13 @@
     "loadError": "Nem sikerült betölteni a workoutokat.",
     "addError": "Hiba történt a workout hozzáadásakor.",
     "addSuccess": "Az edzés sikeresen hozzáadva.",
-    "sortNewest": "Legújabb elöl"
+    "sortNewest": "Legújabb elöl",
+    "programLabel": "Program:",
+    "deleteInvalidId": "Az edzés nem törölhető: érvénytelen azonosító.",
+    "deleteError": "Az edzés törlése sikertelen.",
+    "deleteSuccess": "Edzés sikeresen törölve.",
+    "deleteConfirmNamed": "Biztosan törlöd ezt az edzést: {{name}}? A művelet nem vonható vissza.",
+    "deleteConfirm": "Biztosan törlöd ezt az edzést? A művelet nem vonható vissza."
   },
   "coachProfile": {
     "title": "Coach profil"
@@ -333,7 +339,8 @@
   },
   "userSelect": {
     "selectUser": "Válassz felhasználót",
-    "selectUserOption": "-- Válassz felhasználót --"
+    "selectUserOption": "-- Válassz felhasználót --",
+    "loadError": "A felhasználók betöltése nem sikerült."
   },
   "workoutSelect": {
     "selectWorkout": "Válassz edzést",
@@ -341,7 +348,8 @@
   },
   "coachSelect": {
     "coach": "Coach",
-    "select": "-- Válassz --"
+    "select": "-- Válassz --",
+    "loadError": "Az edzők betöltése nem sikerült."
   },
   "userDashboard": {
     "title": "Felhasználói Dashboard",
@@ -360,7 +368,8 @@
     "seconds": "mp",
     "completed": "Teljesítve",
     "pending": "Függőben",
-    "noExercises": "Nincsenek gyakorlatok ehhez a workouthoz."
+    "noExercises": "Nincsenek gyakorlatok ehhez a workouthoz.",
+    "loadError": "A gyakorlatok betöltése nem sikerült."
   },
   "userExerciseDetail": {
     "exercise": "Exercise",
@@ -410,7 +419,8 @@
     "days": "Napok",
     "workouts": "Edzések",
     "startDate": "Kezdés",
-    "endDate": "Befejezés"
+    "endDate": "Befejezés",
+    "progressLoadError": "A haladás betöltése nem sikerült."
   },
   "userProfile": {
     "noUserId": "Nincs bejelentkezett felhasználó!",
@@ -471,7 +481,8 @@
     "nextMonth": "Következő hónap",
     "monthAgenda": "E havi edzések",
     "noMonthWorkouts": "Ebben a hónapban nincs betervezett edzés.",
-    "completed": "Teljesítve"
+    "completed": "Teljesítve",
+    "staleDataError": "Nem sikerült betölteni az edzéseket. A korábban betöltött adatok láthatók."
   },
   "userWorkouts": {
     "program": "Program",
@@ -491,7 +502,8 @@
     "unknownProgram": "Ismeretlen program",
     "noPendingWorkouts": "Nincs elvégzendő edzés.",
     "noCompletedWorkouts": "Még nincs elvégzett edzés.",
-    "groupingAria": "Edzések csoportosítása"
+    "groupingAria": "Edzések csoportosítása",
+    "loadError": "Az edzések betöltése nem sikerült."
   },
   "newExercise": {
     "title": "Új Gyakorlat",
@@ -513,7 +525,8 @@
     "workoutIdRequired": "Workout ID szükséges!",
     "success": "Gyakorlat \"{{name}}\" sikeresen hozzáadva!",
     "errorWithMessage": "Hiba történt: {{message}}",
-    "errorWithStatus": "Hiba történt ({{status}}): {{statusText}}"
+    "errorWithStatus": "Hiba történt ({{status}}): {{statusText}}",
+    "error": "A gyakorlat létrehozása nem sikerült."
   },
   "login": {
     "title": "Bejelentkezés",
@@ -591,7 +604,9 @@
     "workoutNumber": "Workout {{number}}",
     "previousSet": "Előző set",
     "nextSet": "Következő set",
-    "setNumberAria": "Set {{number}}"
+    "setNumberAria": "Set {{number}}",
+    "restSeconds": "Pihenőidő (másodperc)",
+    "restSecondsHint": "Üresen hagyva az edzői alapérték érvényes. A 0 kikapcsolja a pihenőt."
   },
   "coachDashboard": {
     "title": "Coach Dashboard",
@@ -653,7 +668,14 @@
     "noExercises": "Ehhez a workouthoz nincs exercise.",
     "pagerLabel": "Program statisztikák lapozása",
     "previousProgram": "Előző program",
-    "nextProgram": "Következő program"
+    "nextProgram": "Következő program",
+    "weeklyVolume": "Heti edzésvolumen",
+    "weeklyVolumeDescription": "Teljesített sorozatok: tényleges ismétlés × tényleges súly (kg). A hetek a program kezdőnapjától számítódnak; a változás nem azonos az erőfejlődéssel.",
+    "noWeeklyVolume": "Nem áll rendelkezésre heti volumenadat.",
+    "weekLabel": "{{week}}. hét",
+    "volumeKilograms": "{{volume}} kilogramm",
+    "previousWeek": "Előző héthez:",
+    "noComparison": "Előző héthez: nem számolható"
   },
   "pagination": {
     "page": "Oldal",
@@ -1195,5 +1217,29 @@
       "reject": "Az elutasítás nem sikerült.",
       "reasonTooLong": "Az indoklás legfeljebb 500 karakter lehet."
     }
+  },
+  "restTimer": {
+    "title": "Pihenőidő",
+    "finished": "Pihenő lejárt – jöhet a következő sorozat",
+    "remaining": "Hátralévő idő",
+    "loadError": "A pihenőidő nem tölthető be.",
+    "requestError": "A pihenőidő lekérdezése sikertelen."
+  },
+  "dashboardNavigation": {
+    "label": "Navigációs útvonal"
+  },
+  "authErrors": {
+    "sessionEnded": "A munkamenet kijelentkezés miatt megszűnt.",
+    "refreshFailed": "A token frissítése sikertelen."
+  },
+  "dataErrors": {
+    "coachesMissing": "Az edzők válaszában nincs adat.",
+    "coachMissing": "Az edző válaszában nincs érvényes adat.",
+    "coachLoad": "Az edző adatainak betöltése nem sikerült.",
+    "usersLoad": "A felhasználók listájának betöltése nem sikerült.",
+    "profileMissing": "A felhasználói profil válaszában nincs érvényes adat.",
+    "workoutIdMissing": "Az edzés válaszában hiányzik az azonosító.",
+    "workoutMissing": "Az edzés válaszában nincs adat.",
+    "exerciseIdRequired": "A módosításhoz szükséges a gyakorlat azonosítója."
   }
 }

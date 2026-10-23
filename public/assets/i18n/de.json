@@ -208,7 +208,13 @@
     "loadError": "Trainings konnten nicht geladen werden.",
     "addError": "Fehler beim Hinzufügen des Trainings",
     "addSuccess": "Training erfolgreich hinzugefügt.",
-    "sortNewest": "Neueste zuerst"
+    "sortNewest": "Neueste zuerst",
+    "programLabel": "Programm:",
+    "deleteInvalidId": "Training kann nicht gelöscht werden: ungültige ID.",
+    "deleteError": "Das Training konnte nicht gelöscht werden.",
+    "deleteSuccess": "Training erfolgreich gelöscht.",
+    "deleteConfirmNamed": "Dieses Training löschen: {{name}}? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteConfirm": "Dieses Training löschen? Diese Aktion kann nicht rückgängig gemacht werden."
   },
   "coachProfile": {
     "title": "Coach-Profil"
@@ -333,7 +339,8 @@
   },
   "userSelect": {
     "selectUser": "Benutzer auswählen",
-    "selectUserOption": "-- Benutzer auswählen --"
+    "selectUserOption": "-- Benutzer auswählen --",
+    "loadError": "Benutzer konnten nicht geladen werden."
   },
   "workoutSelect": {
     "selectWorkout": "Training auswählen",
@@ -341,7 +348,8 @@
   },
   "coachSelect": {
     "coach": "Coach",
-    "select": "-- Auswählen --"
+    "select": "-- Auswählen --",
+    "loadError": "Trainer konnten nicht geladen werden."
   },
   "userDashboard": {
     "title": "Benutzer-Dashboard",
@@ -360,7 +368,8 @@
     "seconds": "Sek.",
     "completed": "Abgeschlossen",
     "pending": "Ausstehend",
-    "noExercises": "Keine Übungen für dieses Training."
+    "noExercises": "Keine Übungen für dieses Training.",
+    "loadError": "Übungen konnten nicht geladen werden."
   },
   "userExerciseDetail": {
     "exercise": "Übung",
@@ -410,7 +419,8 @@
     "days": "Tage",
     "workouts": "Trainings",
     "startDate": "Beginn",
-    "endDate": "Ende"
+    "endDate": "Ende",
+    "progressLoadError": "Der Fortschritt konnte nicht geladen werden."
   },
   "userProfile": {
     "noUserId": "Kein angemeldeter Benutzer!",
@@ -471,7 +481,8 @@
     "nextMonth": "Nächster Monat",
     "monthAgenda": "Trainings in diesem Monat",
     "noMonthWorkouts": "Für diesen Monat sind keine Trainings geplant.",
-    "completed": "Abgeschlossen"
+    "completed": "Abgeschlossen",
+    "staleDataError": "Die Trainings konnten nicht geladen werden. Zuvor geladene Daten werden angezeigt."
   },
   "userWorkouts": {
     "program": "Programm",
@@ -491,7 +502,8 @@
     "unknownProgram": "Unbekanntes Programm",
     "noPendingWorkouts": "Keine Trainings zu absolvieren.",
     "noCompletedWorkouts": "Noch keine abgeschlossenen Trainings.",
-    "groupingAria": "Trainings gruppieren"
+    "groupingAria": "Trainings gruppieren",
+    "loadError": "Trainings konnten nicht geladen werden."
   },
   "newExercise": {
     "title": "Neue Übung",
@@ -513,7 +525,8 @@
     "workoutIdRequired": "Die Trainings-ID ist erforderlich!",
     "success": "Übung „{{name}}“ erfolgreich hinzugefügt!",
     "errorWithMessage": "Ein Fehler ist aufgetreten: {{message}}",
-    "errorWithStatus": "Ein Fehler ist aufgetreten ({{status}}): {{statusText}}"
+    "errorWithStatus": "Ein Fehler ist aufgetreten ({{status}}): {{statusText}}",
+    "error": "Die Übung konnte nicht erstellt werden."
   },
   "login": {
     "title": "Anmelden",
@@ -589,7 +602,11 @@
     "workoutNumber": "Training {{number}}",
     "previousSet": "Vorheriger Satz",
     "nextSet": "Nächster Satz",
-    "setNumberAria": "Satz {{number}}"
+    "setNumberAria": "Satz {{number}}",
+    "restSeconds": "Pausenzeit (Sekunden)",
+    "restSecondsHint": "Leer lassen, um den Standardwert des Trainers zu verwenden. 0 deaktiviert die Pause.",
+    "selectionTitle": "Benutzer und Programm",
+    "selectionHint": "Nach Namen suchen, ein Ergebnis auswählen und die Trainings laden."
   },
   "coachDashboard": {
     "title": "Coach-Dashboard",
@@ -651,7 +668,14 @@
     "noExercises": "Dieses Training enthält keine Übungen.",
     "pagerLabel": "Programmstatistik blättern",
     "previousProgram": "Vorheriges Programm",
-    "nextProgram": "Nächstes Programm"
+    "nextProgram": "Nächstes Programm",
+    "weeklyVolume": "Wöchentliches Trainingsvolumen",
+    "weeklyVolumeDescription": "Abgeschlossene Sätze: tatsächliche Wiederholungen × tatsächliches Gewicht (kg). Die Wochen zählen ab dem Programmstart; die Veränderung misst keinen Kraftzuwachs.",
+    "noWeeklyVolume": "Keine wöchentlichen Volumendaten verfügbar.",
+    "weekLabel": "Woche {{week}}",
+    "volumeKilograms": "{{volume}} Kilogramm",
+    "previousWeek": "Im Vergleich zur Vorwoche:",
+    "noComparison": "Im Vergleich zur Vorwoche: nicht berechenbar"
   },
   "pagination": {
     "page": "Seite",
@@ -1193,5 +1217,29 @@
       "reject": "Die Ablehnung ist fehlgeschlagen.",
       "reasonTooLong": "Die Begründung darf höchstens 500 Zeichen lang sein."
     }
+  },
+  "restTimer": {
+    "title": "Pausenzeit",
+    "finished": "Pause beendet – weiter mit dem nächsten Satz",
+    "remaining": "Verbleibende Zeit",
+    "loadError": "Die Pausenzeit konnte nicht geladen werden.",
+    "requestError": "Die Pausenzeit konnte nicht abgerufen werden."
+  },
+  "dashboardNavigation": {
+    "label": "Brotkrümelnavigation"
+  },
+  "authErrors": {
+    "sessionEnded": "Die Sitzung wurde durch die Abmeldung beendet.",
+    "refreshFailed": "Die Sitzung konnte nicht erneuert werden."
+  },
+  "dataErrors": {
+    "coachesMissing": "Die Antwort enthält keine Trainerdaten.",
+    "coachMissing": "Die Antwort enthält keine gültigen Trainerdaten.",
+    "coachLoad": "Die Trainerdaten konnten nicht geladen werden.",
+    "usersLoad": "Die Benutzerliste konnte nicht geladen werden.",
+    "profileMissing": "Die Antwort enthält keine gültigen Profildaten.",
+    "workoutIdMissing": "In der Trainingsantwort fehlt die ID.",
+    "workoutMissing": "Die Antwort enthält keine Trainingsdaten.",
+    "exerciseIdRequired": "Für die Aktualisierung ist eine Übungs-ID erforderlich."
   }
 }

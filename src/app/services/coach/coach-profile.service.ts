@@ -45,7 +45,7 @@ export class CoachProfileService {
     const userId = this.authService.getUserId();
 
     if (!userId) {
-      throw new Error('Nincs bejelentkezett felhasználó');
+      throw new Error('userProfile.noUserId');
     }
 
     return this.getMemberById(userId);

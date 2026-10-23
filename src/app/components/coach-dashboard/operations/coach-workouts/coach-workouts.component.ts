@@ -309,7 +309,7 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
     const workoutId = workout.id;
     if (workoutId == null || workoutId <= 0) {
       this.logger.error('Érvénytelen workout ID törléshez:', workoutId);
-      this.setMessage('A workout nem törölhető: érvénytelen azonosító.', 'error');
+      this.setMessage('coachWorkouts.deleteInvalidId', 'error');
       return;
     }
 
@@ -345,14 +345,14 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
           this.deletingWorkout = false;
 
           if (!response.success) {
-            this.setMessage(responseMessage([response], 'A workout törlése sikertelen.'), 'error');
+            this.setMessage(responseMessage([response], 'coachWorkouts.deleteError'), 'error');
             return;
           }
 
           this.pendingDeleteWorkoutId = null;
           this.pendingDeleteWorkoutName = '';
 
-          const savedMessage = responseMessage([response], 'Workout sikeresen törölve.');
+          const savedMessage = responseMessage([response], 'coachWorkouts.deleteSuccess');
 
           // Lokálisan is kivesszük, így nincs villanás a frissítés előtt.
           this.workouts = this.workouts.filter((workout) => workout.id !== workoutId);
@@ -363,7 +363,7 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
         error: (error) => {
           this.deletingWorkout = false;
           this.logger.error('[CoachWorkouts] workout törlési hiba:', error);
-          this.setMessage(errorMessage(error, 'A workout törlése sikertelen.'), 'error');
+          this.setMessage(errorMessage(error, 'coachWorkouts.deleteError'), 'error');
         },
       });
   }
@@ -371,8 +371,8 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
   get deleteWorkoutConfirmMessage(): string {
     const name = this.pendingDeleteWorkoutName.trim();
     return name
-      ? `Biztosan törlöd ezt a workoutot: ${name}? A művelet nem vonható vissza.`
-      : 'Biztosan törlöd ezt a workoutot? A művelet nem vonható vissza.';
+      ? 'coachWorkouts.deleteConfirmNamed'
+      : 'coachWorkouts.deleteConfirm';
   }
 
   // ==========================================================

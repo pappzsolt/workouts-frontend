@@ -60,7 +60,7 @@ export class AuthService {
       .pipe(
         map((response) => {
           if (!response.success || !response.data) {
-            throw new Error(response.message ?? 'Sikertelen bejelentkezés.');
+            throw new Error(response.message ?? 'userMessages.userOrPassFailed');
           }
 
           return response.data;
@@ -104,7 +104,7 @@ export class AuthService {
       .pipe(
         map((response) => {
           if (!response.success || !response.data) {
-            throw new Error(response.message ?? 'A jelszó-visszaállítási kérés sikertelen.');
+            throw new Error(response.message ?? 'forgotPassword.requestFailed');
           }
 
           return response.data;
@@ -147,7 +147,7 @@ export class AuthService {
       .pipe(
         map((response) => {
           if (!response.success) {
-            throw new Error(response.message ?? 'A jelszó visszaállítása sikertelen.');
+            throw new Error(response.message ?? 'resetPassword.resetFailed');
           }
 
           return response;
@@ -167,7 +167,7 @@ export class AuthService {
     const sessionVersion = this.sessionVersion;
     const request$: Observable<LoginResponse> = defer(() => {
       if (sessionVersion !== this.sessionVersion) {
-        return throwError(() => new Error('A munkamenet kijelentkezés miatt megszűnt.'));
+        return throwError(() => new Error('authErrors.sessionEnded'));
       }
       return this.rawHttp.post<ApiResponse<LoginResponse>>(
           API_ENDPOINTS.authWebRefresh,
@@ -182,10 +182,10 @@ export class AuthService {
         takeUntil(this.refreshCancelled$),
         map((response) => {
           if (sessionVersion !== this.sessionVersion) {
-            throw new Error('A munkamenet kijelentkezés miatt megszűnt.');
+            throw new Error('authErrors.sessionEnded');
           }
           if (!response.success || !response.data) {
-            throw new Error(response.message ?? 'A token frissítése sikertelen.');
+            throw new Error(response.message ?? 'authErrors.refreshFailed');
           }
 
           return response.data;

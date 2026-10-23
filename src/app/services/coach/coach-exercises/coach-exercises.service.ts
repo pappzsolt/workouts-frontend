@@ -43,7 +43,7 @@ export class ExerciseService {
 
   private readonly toWorkoutUiDto = (workout: BackendWorkoutDto): WorkoutUiDto => {
     if (workout.id == null) {
-      throw new Error('A workout válaszban hiányzik az azonosító.');
+      throw new Error('dataErrors.workoutIdMissing');
     }
 
     return {
@@ -115,7 +115,7 @@ export class ExerciseService {
       .pipe(
         map((response) => {
           if (response.data == null) {
-            throw new Error('A workout válaszban nincs adat.');
+            throw new Error('dataErrors.workoutMissing');
           }
 
           return this.toWorkoutUiDto(response.data);
@@ -151,7 +151,7 @@ export class ExerciseService {
 
   updateExercise(exercise: Exercise, language?: string): Observable<ApiResponse<ExerciseDto>> {
     if (exercise.id == null) {
-      throw new Error('Exercise ID is required for update.');
+      throw new Error('dataErrors.exerciseIdRequired');
     }
 
     const payload = {

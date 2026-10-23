@@ -208,7 +208,13 @@
     "loadError": "Failed to load workouts.",
     "addError": "Error adding workout.",
     "addSuccess": "Workout added successfully.",
-    "sortNewest": "Newest first"
+    "sortNewest": "Newest first",
+    "programLabel": "Program:",
+    "deleteInvalidId": "Cannot delete workout: invalid ID.",
+    "deleteError": "Failed to delete workout.",
+    "deleteSuccess": "Workout deleted successfully.",
+    "deleteConfirmNamed": "Delete this workout: {{name}}? This action cannot be undone.",
+    "deleteConfirm": "Delete this workout? This action cannot be undone."
   },
   "coachProfile": {
     "title": "Coach Profile"
@@ -333,7 +339,8 @@
   },
   "userSelect": {
     "selectUser": "Select user",
-    "selectUserOption": "-- Select user --"
+    "selectUserOption": "-- Select user --",
+    "loadError": "Unable to load users."
   },
   "workoutSelect": {
     "selectWorkout": "Select workout",
@@ -341,7 +348,8 @@
   },
   "coachSelect": {
     "coach": "Coach",
-    "select": "-- Select --"
+    "select": "-- Select --",
+    "loadError": "Unable to load coaches."
   },
   "userDashboard": {
     "title": "User Dashboard",
@@ -360,7 +368,8 @@
     "seconds": "sec",
     "completed": "Completed",
     "pending": "Pending",
-    "noExercises": "No exercises for this workout."
+    "noExercises": "No exercises for this workout.",
+    "loadError": "Unable to load exercises."
   },
   "userExerciseDetail": {
     "exercise": "Exercise",
@@ -410,7 +419,8 @@
     "days": "Days",
     "workouts": "Workouts",
     "startDate": "Start",
-    "endDate": "End"
+    "endDate": "End",
+    "progressLoadError": "Unable to load progress."
   },
   "userProfile": {
     "noUserId": "No logged-in user!",
@@ -471,7 +481,8 @@
     "nextMonth": "Next month",
     "monthAgenda": "Workouts this month",
     "noMonthWorkouts": "No workouts scheduled this month.",
-    "completed": "Completed"
+    "completed": "Completed",
+    "staleDataError": "Unable to load workouts. Previously loaded data is shown."
   },
   "userWorkouts": {
     "program": "Program",
@@ -491,7 +502,8 @@
     "unknownProgram": "Unknown program",
     "noPendingWorkouts": "No workouts to complete.",
     "noCompletedWorkouts": "No completed workouts yet.",
-    "groupingAria": "Workout grouping"
+    "groupingAria": "Workout grouping",
+    "loadError": "Unable to load workouts."
   },
   "newExercise": {
     "title": "New Exercise",
@@ -513,7 +525,8 @@
     "workoutIdRequired": "Workout ID is required!",
     "success": "Exercise \"{{name}}\" added successfully!",
     "errorWithMessage": "An error occurred: {{message}}",
-    "errorWithStatus": "An error occurred ({{status}}): {{statusText}}"
+    "errorWithStatus": "An error occurred ({{status}}): {{statusText}}",
+    "error": "Unable to create exercise."
   },
   "login": {
     "title": "Login",
@@ -591,7 +604,9 @@
     "workoutNumber": "Workout {{number}}",
     "previousSet": "Previous set",
     "nextSet": "Next set",
-    "setNumberAria": "Set {{number}}"
+    "setNumberAria": "Set {{number}}",
+    "restSeconds": "Rest time (seconds)",
+    "restSecondsHint": "Leave empty to use the coach’s default. Set to 0 to disable rest."
   },
   "coachDashboard": {
     "title": "Coach Dashboard",
@@ -653,7 +668,14 @@
     "noExercises": "There are no exercises in this workout.",
     "pagerLabel": "Program statistics pages",
     "previousProgram": "Previous program",
-    "nextProgram": "Next program"
+    "nextProgram": "Next program",
+    "weeklyVolume": "Weekly training volume",
+    "weeklyVolumeDescription": "Completed sets: actual repetitions × actual weight (kg). Weeks are counted from the program start date; changes do not measure strength gains.",
+    "noWeeklyVolume": "No weekly volume data available.",
+    "weekLabel": "Week {{week}}",
+    "volumeKilograms": "{{volume}} kilograms",
+    "previousWeek": "Compared to previous week:",
+    "noComparison": "Compared to previous week: unavailable"
   },
   "pagination": {
     "page": "Page",
@@ -1195,5 +1217,29 @@
       "reject": "Rejection failed.",
       "reasonTooLong": "The reason can be at most 500 characters."
     }
+  },
+  "restTimer": {
+    "title": "Rest time",
+    "finished": "Rest finished – time for the next set",
+    "remaining": "Time remaining",
+    "loadError": "Unable to load rest time.",
+    "requestError": "Failed to retrieve rest time."
+  },
+  "dashboardNavigation": {
+    "label": "Breadcrumb navigation"
+  },
+  "authErrors": {
+    "sessionEnded": "The session ended because you signed out.",
+    "refreshFailed": "Unable to refresh the session."
+  },
+  "dataErrors": {
+    "coachesMissing": "No coach data in the response.",
+    "coachMissing": "No valid coach data in the response.",
+    "coachLoad": "Unable to load coach details.",
+    "usersLoad": "Unable to load the user list.",
+    "profileMissing": "No valid profile data in the response.",
+    "workoutIdMissing": "The workout response is missing an ID.",
+    "workoutMissing": "No workout data in the response.",
+    "exerciseIdRequired": "An exercise ID is required for the update."
   }
 }

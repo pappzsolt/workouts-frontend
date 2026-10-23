@@ -26,6 +26,7 @@ frontend-test:
   script:
     - 'test -f package.json && test -f package-lock.json && test -f angular.json'
     - 'test -f Dockerfile && test -f docker-compose.yml && test -f nginx.conf'
+    - 'npm run test:i18n'
     - 'echo "Frontend project validation OK"'
   environment:
     name: test
@@ -64,6 +65,7 @@ frontend-build:
     - 'npm run build'
     - 'test -d dist/workouts-frontend'
     - 'test -f dist/workouts-frontend/browser/index.html'
+    - 'I18N_DIR=dist/workouts-frontend/browser/assets/i18n npm run test:i18n'
     - 'echo "Angular build OK"'
   artifacts:
     paths:

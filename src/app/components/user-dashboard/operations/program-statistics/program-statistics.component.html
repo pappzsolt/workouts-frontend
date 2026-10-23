@@ -108,27 +108,26 @@
               </div>
             </div>
 
-            <section class="border-t border-surface-200 pt-3" aria-label="Heti edzésvolumen">
-              <h4 class="mb-1 text-sm font-semibold text-content-800">Heti edzésvolumen</h4>
+            <section class="border-t border-surface-200 pt-3" [attr.aria-label]="'userProgramStatistics.weeklyVolume' | translate">
+              <h4 class="mb-1 text-sm font-semibold text-content-800">{{ 'userProgramStatistics.weeklyVolume' | translate }}</h4>
               <p class="mb-3 text-xs text-content-600">
-                Teljesített sorozatok: tényleges ismétlés × tényleges súly (kg).
-                A hetek a program kezdőnapjától számítódnak; a változás nem azonos az erőfejlődéssel.
+                {{ 'userProgramStatistics.weeklyVolumeDescription' | translate }}
               </p>
               <div *ngIf="!program.weeklyVolumes.length" class="text-xs text-content-600">
-                Nem áll rendelkezésre heti volumenadat.
+                {{ 'userProgramStatistics.noWeeklyVolume' | translate }}
               </div>
               <div *ngFor="let week of program.weeklyVolumes" class="mb-3 grid grid-cols-[4.5rem_minmax(0,1fr)_5.5rem] items-center gap-2 text-xs">
-                <span class="text-content-700">{{ week.week }}. hét</span>
-                <div class="h-3 overflow-hidden rounded-full bg-surface-100" [attr.aria-label]="week.volumeKg + ' kilogramm'">
+                <span class="text-content-700">{{ 'userProgramStatistics.weekLabel' | translate:{ week: week.week } }}</span>
+                <div class="h-3 overflow-hidden rounded-full bg-surface-100" [attr.aria-label]="'userProgramStatistics.volumeKilograms' | translate:{ volume: (week.volumeKg | number:'1.0-2') }">
                   <div class="h-full rounded-full bg-primary-600"
                     [style.width.%]="weeklyBarWidth(week.volumeKg, maxVolume(program))"></div>
                 </div>
                 <span class="text-right font-semibold text-content-800">{{ week.volumeKg | number:'1.0-2' }} kg</span>
                 <span class="col-start-2 col-span-2 text-content-600">
                   <ng-container *ngIf="week.changePercent !== null; else noComparison">
-                    Előző héthez: {{ week.changePercent > 0 ? '+' : '' }}{{ week.changePercent | number:'1.0-2' }}%
+                    {{ 'userProgramStatistics.previousWeek' | translate }} {{ week.changePercent > 0 ? '+' : '' }}{{ week.changePercent | number:'1.0-2' }}%
                   </ng-container>
-                  <ng-template #noComparison>Előző héthez: nem számolható</ng-template>
+                  <ng-template #noComparison>{{ 'userProgramStatistics.noComparison' | translate }}</ng-template>
                 </span>
               </div>
             </section>

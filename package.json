@@ -8,6 +8,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "check:theme": "node scripts/check-theme.cjs",
+    "test:i18n": "node --test scripts/i18n.test.cjs",
     "test:theme": "node --test scripts/theme.test.cjs",
     "update-version": "node scripts/update-version.js",
     "prestart": "npm run update-version",

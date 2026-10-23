@@ -7,7 +7,7 @@
   >
     @if (scheduledWorkoutsError) {
       <div role="alert" class="rounded-lg border border-delete-200 bg-delete-50 p-3 text-sm text-delete-700">
-        Nem sikerült betölteni az edzéseket. A korábban betöltött adatok láthatók.
+        {{ 'userWorkoutsCalendar.staleDataError' | translate }}
       </div>
     }
     <app-search

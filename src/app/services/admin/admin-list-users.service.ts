@@ -38,7 +38,7 @@ export class AdminListUsersService {
           })),
       ),
       catchError(() =>
-        throwError(() => new Error('A felhasználók listájának betöltése nem sikerült.')),
+        throwError(() => new Error('dataErrors.usersLoad')),
       ),
     );
   }

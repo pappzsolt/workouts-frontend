@@ -90,7 +90,7 @@
 
             @if (w.programNames?.length) {
               <div class="mb-3 text-sm text-content-600">
-                <span class="font-semibold">Program:</span>
+                <span class="font-semibold">{{ 'coachWorkouts.programLabel' | translate }}</span>
                 <span class="ml-1 break-words">{{ w.programNames?.join(', ') }}</span>
               </div>
             }
@@ -204,6 +204,7 @@
   [open]="pendingDeleteWorkoutId !== null"
   [busy]="deletingWorkout"
   [message]="deleteWorkoutConfirmMessage"
+  [messageParams]="{ name: pendingDeleteWorkoutName.trim() }"
   confirmLabel="userWorkoutExerciseManager.delete"
   (confirmed)="confirmDeleteWorkout()"
   (cancelled)="cancelDeleteWorkout()"

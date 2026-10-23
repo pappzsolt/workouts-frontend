@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { CommonModule } from '@angular/common';
 import { Subscription, interval, startWith } from 'rxjs';
 import { UserExerciseDetailService, WebSetRestTimerStatus } from '../../../../../services/user/user-exercises-detail/user-exercises-detail.service';
@@ -7,15 +8,15 @@ import { UserExerciseDetailService, WebSetRestTimerStatus } from '../../../../..
 @Component({
   selector: 'app-set-rest-timer',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   template: `
-    <section *ngIf="timer?.exists" aria-label="Pihenőidő"
+    <section *ngIf="timer?.exists" [attr.aria-label]="'restTimer.title' | translate"
       class="mx-auto my-4 w-full max-w-md rounded-2xl border border-primary-200 bg-primary-50 p-4 text-center shadow-sm sm:p-5"
       role="timer" [attr.aria-live]="remainingSeconds === 0 ? 'polite' : 'off'">
-      <div class="text-sm font-semibold uppercase tracking-wide text-primary-700">Pihenőidő</div>
+      <div class="text-sm font-semibold uppercase tracking-wide text-primary-700">{{ 'restTimer.title' | translate }}</div>
       <div class="my-2 text-5xl font-bold tabular-nums text-content-900 sm:text-6xl">{{ formattedRemaining }}</div>
       <div class="text-sm font-medium text-primary-800">
-        {{ remainingSeconds === 0 ? 'Pihenő lejárt – jöhet a következő sorozat' : 'Hátralévő idő' }}
+        {{ (remainingSeconds === 0 ? 'restTimer.finished' : 'restTimer.remaining') | translate }}
       </div>
       <div class="mt-3 h-2 w-full overflow-hidden rounded-full bg-primary-200" role="progressbar"
         [attr.aria-valuenow]="elapsedSeconds" [attr.aria-valuemin]="0"
@@ -23,7 +24,7 @@ import { UserExerciseDetailService, WebSetRestTimerStatus } from '../../../../..
         <div class="h-full bg-primary-600 transition-[width] duration-300" [style.width.%]="progressPercent"></div>
       </div>
     </section>
-    <p *ngIf="error" role="alert" class="mx-auto my-3 max-w-md text-center text-sm text-danger-700">{{ error }}</p>
+    <p *ngIf="error" role="alert" class="mx-auto my-3 max-w-md text-center text-sm text-danger-700">{{ error | translate }}</p>
   `,
 })
 export class SetRestTimerComponent implements OnChanges, OnDestroy {
@@ -56,7 +57,7 @@ export class SetRestTimerComponent implements OnChanges, OnDestroy {
       next: response => {
         if (this.setId !== requestedId) return;
         if (!response.success || !response.data) {
-          this.error = response.message || 'A pihenőidő nem tölthető be.';
+          this.error = response.message || 'restTimer.loadError';
           this.cdr.markForCheck();
           return;
         }
@@ -81,7 +82,7 @@ export class SetRestTimerComponent implements OnChanges, OnDestroy {
       },
       error: () => {
         if (this.setId === requestedId) {
-          this.error = 'A pihenőidő lekérdezése sikertelen.';
+          this.error = 'restTimer.requestError';
           this.cdr.markForCheck();
         }
       },

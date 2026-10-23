@@ -28,7 +28,7 @@ export class CoachEditService {
     return this.http.get<ApiResponse<MemberResponse[]>>(this.membersUrl).pipe(
       map((response) => {
         if (response.data == null) {
-          throw new Error('Az edzők válaszában nincs adat.');
+          throw new Error('dataErrors.coachesMissing');
         }
 
         return response.data
@@ -37,7 +37,7 @@ export class CoachEditService {
           .map((item) => this.mapCoach(item));
       }),
       catchError(() =>
-        throwError(() => new Error('Az edzők listájának betöltése nem sikerült.')),
+        throwError(() => new Error('coachSelect.loadError')),
       ),
     );
   }
@@ -54,13 +54,13 @@ export class CoachEditService {
       .pipe(
         map((response) => {
           if (response.data == null || !this.isCompleteCoachResponse(response.data)) {
-            throw new Error('Az edző válaszában nincs érvényes adat.');
+            throw new Error('dataErrors.coachMissing');
           }
 
           return this.mapCoach(response.data);
         }),
         catchError(() =>
-          throwError(() => new Error('Az edző adatainak betöltése nem sikerült.')),
+          throwError(() => new Error('dataErrors.coachLoad')),
         ),
       );
   }
