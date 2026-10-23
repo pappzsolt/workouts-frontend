@@ -1,7 +1,7 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subject, concat, forkJoin, last, switchMap, takeUntil, toArray } from 'rxjs';
+import { Observable, Subject, concat, forkJoin, last, switchMap, takeUntil, tap, toArray } from 'rxjs';
 
 import { SHARED_IMPORTS } from '../../shared/shared-imports';
 import {
@@ -223,9 +223,9 @@ export class CoachProgramEditorComponent implements OnInit {
             for (const row of this.rows) {
               const draft = draftRows.find((item) => item.id === row.id);
               if (draft) {
-                row.sets = draft.sets;
-                row.repetitions = draft.repetitions;
-                row.restSeconds = draft.restSeconds;
+                for (const key of ['sets', 'repetitions', 'restSeconds'] as const) {
+                  if (Number(draft[key]) !== Number(draft.original[key])) row[key] = draft[key];
+                }
               }
             }
           } else if (emptyDraft && this.selectedCell && !this.selectedCell.workout) {
@@ -502,18 +502,22 @@ export class CoachProgramEditorComponent implements OnInit {
       this.showMessage('coachWorkspace.editor.prescriptionInvalid', 'error');
       return;
     }
+    const requests = changed.map((row) => {
+      const submitted = {
+        sets: Number(row.sets),
+        repetitions: Number(row.repetitions),
+        restSeconds: Number(row.restSeconds),
+      };
+      return this.workspace.updatePrescription(workout.workoutId, row.id, submitted).pipe(
+        // Advance only the confirmed baseline; newer edits stay in the row.
+        tap(() => { row.original = { ...submitted }; }),
+      );
+    });
     this.run(
-      concat(
-        ...changed.map((row) =>
-          this.workspace.updatePrescription(workout.workoutId, row.id, {
-            sets: Number(row.sets),
-            repetitions: Number(row.repetitions),
-            restSeconds: Number(row.restSeconds),
-          }),
-        ),
-      ).pipe(toArray()),
+      concat(...requests).pipe(toArray()),
       'coachWorkspace.editor.prescriptionSaved',
       this.selectedDay,
+      true,
     );
   }
 
@@ -658,6 +662,7 @@ export class CoachProgramEditorComponent implements OnInit {
       concat(...days.map((day) => this.workspace.addWorkoutToDay(programId, workout.workoutId, day))).pipe(toArray()),
       'coachWorkspace.editor.repeated',
       this.selectedDay,
+      true,
     );
   }
 
@@ -678,6 +683,7 @@ export class CoachProgramEditorComponent implements OnInit {
       this.workspace.addWorkoutToDay(this.programId, workout.workoutId, target),
       'coachWorkspace.editor.addedToDay',
       this.selectedDay,
+      true,
     );
   }
 
@@ -959,20 +965,20 @@ export class CoachProgramEditorComponent implements OnInit {
   // Segédek
   // ----------------------------------------------------------
 
-  private run(operation: Observable<unknown>, successKey: string, selectDay: number): void {
+  private run(operation: Observable<unknown>, successKey: string, selectDay: number, preserveDrafts = false): void {
     this.busy = true;
     operation.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => undefined,
       error: (error) => {
         this.busy = false;
         this.showError(error, 'coachWorkspace.editor.actionError');
-        this.loadProgram(this.selectedDay);
+        this.loadProgram(this.selectedDay, preserveDrafts);
       },
       complete: () => {
         this.busy = false;
         this.myWorkouts = [];
         this.showMessage(successKey, 'success');
-        this.loadProgram(selectDay);
+        this.loadProgram(selectDay, preserveDrafts);
       },
     });
   }
