@@ -1,6 +1,7 @@
 import { createInputValidationGuard } from '../../../shared/components/form-controls/app-input.directive';
 import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { Component, OnInit, inject, DestroyRef } from '@angular/core';
+import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LoggerService } from '../../../../services/logger.service';
 
@@ -47,6 +48,8 @@ export class CoachProfileComponent implements OnInit {
   // ==========================================================
   // ÜZENET
   // ==========================================================
+
+  saving = false;
 
   message = '';
 
@@ -108,6 +111,7 @@ export class CoachProfileComponent implements OnInit {
   // ==========================================================
 
   saveProfile(): void {
+    if (this.saving) return;
     if (!this.validateInputs()) return;
     this.clearMessage();
 
@@ -128,12 +132,18 @@ export class CoachProfileComponent implements OnInit {
       passwordHash: this.profile.password_hash,
     };
 
-    this.coachProfileService.saveCoachProfile(payload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.saving = true;
+    this.coachProfileService.saveCoachProfile(payload).pipe(
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => { this.saving = false; }),
+    ).subscribe({
       next: response => {
         if (!response.success) {
           this.showError(responseMessage([response], USER_MESSAGES.saveProfileUnknownError)); return;
         }
-        this.profile.password_hash = '';
+        if (this.profile.password_hash === payload.passwordHash) {
+          this.profile.password_hash = '';
+        }
 
         this.showSuccess(responseMessage([response], USER_MESSAGES.saveProfileSuccess));
       },

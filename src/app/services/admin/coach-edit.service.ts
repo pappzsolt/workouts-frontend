@@ -89,7 +89,7 @@ export class CoachEditService {
       coachId: null,
       phone: coach.phone,
       specialization: coach.specialization ?? null,
-      roleIds: [3],
+      roleIds: null,
     };
 
     return this.http.post<ApiResponse<void>>(this.membersUrl, payload).pipe(

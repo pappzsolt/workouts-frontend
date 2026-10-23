@@ -158,6 +158,7 @@
           <app-button
             type="button"
             (buttonClick)="saveProfile()"
+            [disabled]="saving"
             variant="save"
             appearance="solid"
             [fullWidth]="true"
