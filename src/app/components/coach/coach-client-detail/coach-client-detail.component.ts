@@ -104,6 +104,8 @@ export class CoachClientDetailComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   private readonly programLoadCancelled$ = new Subject<void>();
+  private readonly clientLoadCancelled$ = new Subject<void>();
+  private readonly clientContextCancelled$ = new Subject<void>();
 
   readonly initial = initial;
   readonly percent = percent;
@@ -149,7 +151,7 @@ export class CoachClientDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
-      this.programLoadCancelled$.next();
+      this.resetClientContext();
       const id = Number(params.get('userId'));
       if (!Number.isInteger(id) || id <= 0) {
         void this.router.navigate(['/coach/clients']);
@@ -162,7 +164,7 @@ export class CoachClientDetailComponent implements OnInit {
       const date = query.get('date');
       this.requestedDate = date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : null;
       const program = Number(query.get('program'));
-      if (query.get('tab') === 'programs') this.tab = 'programs';
+      this.tab = query.get('tab') === 'programs' ? 'programs' : 'plan';
       this.loadClient(Number.isInteger(program) && program > 0 ? program : null);
     });
   }
@@ -171,14 +173,49 @@ export class CoachClientDetailComponent implements OnInit {
   // Ügyfél és programjai
   // ----------------------------------------------------------
 
+  private resetClientContext(): void {
+    this.clientContextCancelled$.next();
+    this.clientLoadCancelled$.next();
+    this.programLoadCancelled$.next();
+    this.userId = 0;
+    this.client = null;
+    this.loading = true;
+    this.programId = null;
+    this.programLoading = false;
+    this.programLoadFailed = false;
+    this.workouts = [];
+    this.weeks = [];
+    this.selectedIndex = -1;
+    this.exerciseSets = [];
+    this.saving = false;
+    this.setBusy = false;
+    this.rescheduleDate = '';
+    this.deleteSetId = null;
+    this.pendingNav = null;
+    this.assignOpen = false;
+    this.assignLoading = false;
+    this.assignablePrograms = [];
+    this.assignProgramId = null;
+    this.assigning = false;
+    this.revokeProgramId = null;
+    this.requestedWorkoutId = null;
+    this.requestedDate = null;
+    this.message = '';
+    this.messageType = 'info';
+    this.messageParams = {};
+  }
+
   private loadClient(preferredProgramId: number | null): void {
+    this.clientLoadCancelled$.next();
+    const userId = this.userId;
     this.loading = true;
     this.workspace
-      .getOverview(this.todayIso, this.todayIso, this.userId)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .getOverview(this.todayIso, this.todayIso, userId)
+      .pipe(takeUntil(this.clientLoadCancelled$), takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (overview) => {
-          this.client = overview.clients[0] ?? null;
+          if (this.userId !== userId) return;
+          this.client = overview.clients.find((client) => client.userId === userId) ?? null;
           this.loading = false;
           const programs = this.sortedPrograms;
           let target = preferredProgramId ?? this.programId;
@@ -187,7 +224,10 @@ export class CoachClientDetailComponent implements OnInit {
           if (target !== null) {
             this.loadProgram(target);
           } else {
+            this.programLoadCancelled$.next();
             this.programId = null;
+            this.programLoading = false;
+            this.programLoadFailed = false;
             this.workouts = [];
             this.weeks = [];
             this.selectedIndex = -1;
@@ -195,6 +235,7 @@ export class CoachClientDetailComponent implements OnInit {
           }
         },
         error: (error) => {
+          if (this.userId !== userId) return;
           this.loading = false;
           this.showError(error, 'coachWorkspace.loadError');
         },
@@ -266,7 +307,7 @@ export class CoachClientDetailComponent implements OnInit {
     this.pendingNav = null;
     this.workspace
       .getClientProgramRows(this.userId, programId)
-      .pipe(takeUntil(this.programLoadCancelled$), takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntil(this.programLoadCancelled$), takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (rows) => {
           if (this.programId !== programId) return;
@@ -366,7 +407,7 @@ export class CoachClientDetailComponent implements OnInit {
     const previous = keepEdits ? entry.sets : [];
     this.workspace
       .getClientWorkoutSets(entry.exercise.userWorkoutExerciseId)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (sets) => {
           entry.sets = [...sets]
@@ -438,7 +479,7 @@ export class CoachClientDetailComponent implements OnInit {
     this.setBusy = true;
     this.workspace
       .addClientSet(entry.exercise.userWorkoutExerciseId)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (setId) => {
           // Az új sorozat az előző sor cél értékeivel indul (utána szabadon módosítható).
@@ -452,7 +493,7 @@ export class CoachClientDetailComponent implements OnInit {
                   notes: null,
                 })
               : of(null);
-          save$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+          save$.pipe(takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
             next: () => {
               this.setBusy = false;
               this.loadSets(entry, true);
@@ -488,7 +529,7 @@ export class CoachClientDetailComponent implements OnInit {
     this.setBusy = true;
     this.workspace
       .deleteClientSet(id)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.setBusy = false;
@@ -519,17 +560,19 @@ export class CoachClientDetailComponent implements OnInit {
       this.showMessage('coachWorkspace.client.invalidSetValues', 'error');
       return;
     }
+    // Snapshot the payload: edits made while the request is pending must remain dirty.
+    const saves = changed.map((row) => ({ row, values: this.values(row)! }));
     this.saving = true;
-    concat(...changed.map((row) => this.workspace.saveClientSet(row.id, this.values(row)!)))
-      .pipe(toArray(), takeUntilDestroyed(this.destroyRef))
+    concat(...saves.map(({ row, values }) => this.workspace.saveClientSet(row.id, values)))
+      .pipe(toArray(), takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.saving = false;
-          for (const row of changed) row.original = this.values(row)!;
+          for (const { row, values } of saves) row.original = { ...values };
           for (const entry of this.exerciseSets) entry.exercise.setsCompleted = this.completedCount(entry);
           this.refreshWorkoutTotals();
           this.showMessage('coachWorkspace.client.saved', 'success');
-          after?.();
+          if (!this.dirty) after?.();
         },
         error: (error) => {
           this.saving = false;
@@ -626,7 +669,7 @@ export class CoachClientDetailComponent implements OnInit {
     const id = workout.userWorkoutId;
     this.workspace
       .rescheduleWorkout(id, this.rescheduleDate)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.showMessage('coachWorkspace.client.rescheduled', 'success');
@@ -648,7 +691,7 @@ export class CoachClientDetailComponent implements OnInit {
     const assigned = new Set((this.client?.programs ?? []).map((program) => program.programId));
     this.workspace
       .getCoachPrograms()
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (programs) => {
           this.assignablePrograms = programs
@@ -676,7 +719,7 @@ export class CoachClientDetailComponent implements OnInit {
     const program = this.assignablePrograms.find((p) => p.programId === programId);
     this.workspace
       .assignProgram(this.userId, programId)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.assigning = false;
@@ -705,7 +748,7 @@ export class CoachClientDetailComponent implements OnInit {
     const programId = this.revokeProgramId;
     this.workspace
       .revokeProgram(programId, this.userId)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.revokeProgramId = null;
