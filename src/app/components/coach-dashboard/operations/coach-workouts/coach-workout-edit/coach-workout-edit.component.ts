@@ -16,7 +16,7 @@ import type { CoachProgramUsage } from '../../../../../models/coach-workspace.mo
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 
 import { ProgramWorkoutService } from '../../../../../services/coach/program-workout.service';
-import { skip, timer } from 'rxjs';
+import { skip, timer, Subject, takeUntil } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { LanguageService } from '../../../../../services/shared/language.service';
@@ -45,6 +45,12 @@ export class CoachWorkoutEditComponent implements OnInit {
   // ==========================================================
   // WORKOUT
   // ==========================================================
+
+  private readonly workoutLoadCancelled$ = new Subject<void>();
+  private readonly exercisesLoadCancelled$ = new Subject<void>();
+  private readonly workoutExercisesLoadCancelled$ = new Subject<void>();
+  private readonly assignmentLoadCancelled$ = new Subject<void>();
+  private loadedWorkout?: Workout;
 
   workoutId?: number;
 
@@ -152,7 +158,7 @@ export class CoachWorkoutEditComponent implements OnInit {
     this.languageService.language$
       .pipe(skip(1), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-      this.loadWorkout();
+      this.loadWorkout(true);
       this.loadExercises();
       this.loadWorkoutExercises();
       this.checkProgramAssignment();
@@ -189,9 +195,11 @@ export class CoachWorkoutEditComponent implements OnInit {
       return;
     }
 
+    this.assignmentLoadCancelled$.next();
     this.checkingProgramAssignment = true;
 
-    this.programWorkoutService.isWorkoutAssignedToAnyProgram(this.workoutId).subscribe({
+    this.programWorkoutService.isWorkoutAssignedToAnyProgram(this.workoutId)
+      .pipe(takeUntil(this.assignmentLoadCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response) => {
         this.workoutAssignedToProgram = response.success && response.data?.assigned === true;
 
@@ -213,12 +221,19 @@ export class CoachWorkoutEditComponent implements OnInit {
   // WORKOUT BETÖLTÉSE
   // ==========================================================
 
-  loadWorkout(): void {
+  loadWorkout(preserveDrafts = false): void {
     if (!this.workoutId) {
       return;
     }
 
-    this.coachWorkoutsService.getWorkoutById(this.workoutId).subscribe({
+    this.workoutLoadCancelled$.next();
+    const workoutId = this.workoutId;
+    if (this.loadedWorkout?.id !== workoutId) {
+      this.loadedWorkout = { ...this.workout, id: workoutId };
+    }
+    const baseline = this.loadedWorkout;
+    this.coachWorkoutsService.getWorkoutById(workoutId)
+      .pipe(takeUntil(this.workoutLoadCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res: ApiResponse<UserWorkoutDto>) => {
         if (!res.success || !res.data) {
           this.setMessage(res.message || 'coachWorkoutEdit.notFound', 'error');
@@ -231,7 +246,7 @@ export class CoachWorkoutEditComponent implements OnInit {
           ? w.workoutDate.split('T')[0]
           : undefined;
 
-        this.workout = {
+        const loaded: Workout = {
           ...this.workout,
           id: w.workoutId ?? this.workout.id,
           name: w.workoutName ?? '',
@@ -254,6 +269,16 @@ export class CoachWorkoutEditComponent implements OnInit {
           notes: w.notes ?? undefined,
           exercises: [],
         };
+        const drafts: Partial<Workout> = {};
+        if (preserveDrafts) {
+          for (const key of Object.keys(this.workout) as (keyof Workout)[]) {
+            if (key !== 'id' && key !== 'exercises' && this.workout[key] !== baseline[key]) {
+              Object.assign(drafts, { [key]: this.workout[key] });
+            }
+          }
+        }
+        this.loadedWorkout = { ...loaded };
+        this.workout = { ...loaded, ...drafts };
       },
 
       error: (error) => {
@@ -273,9 +298,11 @@ export class CoachWorkoutEditComponent implements OnInit {
   // ==========================================================
 
   loadExercises(): void {
+    this.exercisesLoadCancelled$.next();
     this.loadingExercises = true;
 
-    this.exerciseService.getAllExercises().subscribe({
+    this.exerciseService.getAllExercises()
+      .pipe(takeUntil(this.exercisesLoadCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response: ApiResponse<Exercise[]>) => {
 
         this.exercises = response.data ?? [];
@@ -304,7 +331,9 @@ export class CoachWorkoutEditComponent implements OnInit {
       return;
     }
 
-    this.exerciseService.getWorkoutExercises(this.workoutId).subscribe({
+    this.workoutExercisesLoadCancelled$.next();
+    this.exerciseService.getWorkoutExercises(this.workoutId)
+      .pipe(takeUntil(this.workoutExercisesLoadCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (workout: WorkoutUiDto) => {
         this.workoutExercises = (workout.exercises ?? [])
           .filter((item) => item.id != null && item.workoutId != null)
