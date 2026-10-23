@@ -1077,7 +1077,10 @@
       "reordered": "A sorrend módosult (minden ügyfélnél).",
       "saveBeforeApply": "Előbb mentsd a módosított értékeket.",
       "saveBeforeReorder": "Előbb mentsd a módosított értékeket.",
-      "templateApplied": "Átvezetve: {{userWorkouts}} ügyfél-edzés, {{setsUpdated}} sorozat frissítve, {{setsAdded}} hozzáadva, {{setsRemoved}} törölve."
+      "templateApplied": "Átvezetve: {{userWorkouts}} ügyfél-edzés, {{setsUpdated}} sorozat frissítve, {{setsAdded}} hozzáadva, {{setsRemoved}} törölve.",
+      "revokeClient": "Program visszavonása: {{name}}",
+      "revokeTitle": "Programkiosztás visszavonása",
+      "revokeConfirm": "Biztosan visszavonod a(z) „{{program}}” programot ettől az ügyféltől: {{name}}? Az ügyfél programhoz tartozó edzései és sorozatai, köztük a teljesített edzések adatai is törlődhetnek."
     },
     "picker": {
       "search": "Keresés (név, izom, szinonima, leírás)",

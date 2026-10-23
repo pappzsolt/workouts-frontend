@@ -418,7 +418,7 @@
             } @else {
               <ul class="flex max-h-72 flex-wrap content-start gap-2 overflow-y-auto">
                 @for (client of assignedClients; track client.userId) {
-                  <li class="max-w-full">
+                  <li class="flex max-w-full items-center gap-1">
                     <a [routerLink]="['/coach/clients', client.userId]"
                        class="flex min-h-11 max-w-full items-center gap-2 rounded-full border border-primary-200 bg-primary-50 py-1 pl-1 pr-3 text-sm font-semibold text-primary-800 transition hover:border-primary-300 hover:bg-primary-100">
                       <span aria-hidden="true"
@@ -427,6 +427,11 @@
                       </span>
                       <span class="truncate">{{ client.username }}</span>
                     </a>
+                    <button type="button" (click)="askRevoke(client)" [disabled]="busy"
+                            class="btn btn-ghost-delete shrink-0 px-3"
+                            [attr.aria-label]="'coachWorkspace.editor.revokeClient' | translate: { name: client.username }">
+                      {{ 'coachWorkspace.client.revoke' | translate }}
+                    </button>
                   </li>
                 }
               </ul>
@@ -590,3 +595,15 @@
     </form>
   </app-dialog>
 }
+
+<app-confirm-dialog
+  [open]="pendingRevokeClient !== null"
+  [busy]="busy"
+  title="coachWorkspace.editor.revokeTitle"
+  message="coachWorkspace.editor.revokeConfirm"
+  [messageParams]="{ name: pendingRevokeClient?.username, program: form.programName }"
+  confirmLabel="coachWorkspace.client.revoke"
+  cancelLabel="coachWorkspace.cancel"
+  (confirmed)="confirmRevoke()"
+  (cancelled)="cancelRevoke()"
+></app-confirm-dialog>

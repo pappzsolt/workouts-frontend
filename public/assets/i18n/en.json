@@ -1077,7 +1077,10 @@
       "reordered": "Order changed (for every client).",
       "saveBeforeApply": "Save your changes first.",
       "saveBeforeReorder": "Save your changes first.",
-      "templateApplied": "Applied: {{userWorkouts}} client workouts, {{setsUpdated}} sets updated, {{setsAdded}} added, {{setsRemoved}} removed."
+      "templateApplied": "Applied: {{userWorkouts}} client workouts, {{setsUpdated}} sets updated, {{setsAdded}} added, {{setsRemoved}} removed.",
+      "revokeClient": "Revoke program from {{name}}",
+      "revokeTitle": "Revoke program assignment",
+      "revokeConfirm": "Revoke the program “{{program}}” from {{name}}? The client’s workouts and sets for this program, including completed workout data, may also be deleted."
     },
     "picker": {
       "search": "Search (name, muscle, synonym, description)",

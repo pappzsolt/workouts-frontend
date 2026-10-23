@@ -1077,7 +1077,10 @@
       "reordered": "Reihenfolge geändert (für alle Kunden).",
       "saveBeforeApply": "Speichere zuerst die Änderungen.",
       "saveBeforeReorder": "Speichere zuerst die Änderungen.",
-      "templateApplied": "Übernommen: {{userWorkouts}} Kundentrainings, {{setsUpdated}} Sätze aktualisiert, {{setsAdded}} hinzugefügt, {{setsRemoved}} entfernt."
+      "templateApplied": "Übernommen: {{userWorkouts}} Kundentrainings, {{setsUpdated}} Sätze aktualisiert, {{setsAdded}} hinzugefügt, {{setsRemoved}} entfernt.",
+      "revokeClient": "Programmzuweisung für {{name}} aufheben",
+      "revokeTitle": "Programmzuweisung aufheben",
+      "revokeConfirm": "Die Zuweisung des Programms „{{program}}“ für {{name}} aufheben? Die Trainings und Sätze des Kunden für dieses Programm, einschließlich abgeschlossener Trainingsdaten, können ebenfalls gelöscht werden."
     },
     "picker": {
       "search": "Suche (Name, Muskel, Synonym, Beschreibung)",

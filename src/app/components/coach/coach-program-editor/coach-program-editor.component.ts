@@ -119,6 +119,7 @@ export class CoachProgramEditorComponent implements OnInit {
   toAssign = new Set<number>();
   /** Kereső a kiosztható ügyfelek listájához. */
   clientFilter = '';
+  pendingRevokeClient: CoachClientOverview | null = null;
 
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
@@ -799,6 +800,42 @@ export class CoachProgramEditorComponent implements OnInit {
 
   get unassignedClients(): CoachClientOverview[] {
     return this.clients.filter((client) => !this.assignedIds.has(client.userId));
+  }
+
+  askRevoke(client: CoachClientOverview): void {
+    if (this.programId === null || this.busy || !this.assignedIds.has(client.userId)) return;
+    this.pendingRevokeClient = client;
+  }
+
+  cancelRevoke(): void {
+    if (!this.busy) this.pendingRevokeClient = null;
+  }
+
+  confirmRevoke(): void {
+    const client = this.pendingRevokeClient;
+    const programId = this.programId;
+    if (!client || programId === null || this.busy || !this.assignedIds.has(client.userId)) return;
+    this.busy = true;
+    this.workspace.revokeProgram(programId, client.userId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.busy = false;
+          this.pendingRevokeClient = null;
+          this.assignedIds = new Set([...this.assignedIds].filter((id) => id !== client.userId));
+          this.clients = this.clients.map((item) => item.userId === client.userId ? {
+            ...item,
+            programs: item.programs.filter((program) => program.programId !== programId),
+            workouts: item.workouts.filter((workout) => workout.programId !== programId),
+          } : item);
+          this.showMessage('coachWorkspace.client.revoked', 'success');
+        },
+        error: (error) => {
+          this.busy = false;
+          this.pendingRevokeClient = null;
+          this.showError(error, 'coachWorkspace.client.revokeError');
+        },
+      });
   }
 
   assignSelected(): void {
