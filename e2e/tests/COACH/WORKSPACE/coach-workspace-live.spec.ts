@@ -70,7 +70,9 @@ test('NEW COACH LIVE: per-client set values and null clear flags persist in Post
 
 test('NEW COACH LIVE: repeated occurrences move and delete independently', async ({ page, workspace: f }) => {
   await openWorkspace(page, f); const root = page.locator('app-coach-program-editor'); const panel = root.getByRole('region', { name: 'Kiválasztott nap', exact: true });
-  await panel.locator('[name=moveTarget]').fill('3'); await panel.getByRole('button', { name: 'Áthelyezés', exact: true }).click();
+  // A 3. programnap dátuma: kezdőnap + 2 nap.
+  const day3 = (await dbOne('SELECT (start_date + 2)::text AS d FROM programs WHERE id=$1', [f.programId])).d;
+  await panel.locator('[name=moveDate]').fill(day3); await panel.getByRole('button', { name: 'Áthelyezés', exact: true }).click();
   await expect(root.getByRole('button', { name: /^3: / })).toHaveAttribute('aria-pressed', 'true');
   expect((await db().query('SELECT day_index FROM program_workouts WHERE program_id=$1 ORDER BY day_index', [f.programId])).rows.map(r => r.day_index)).toEqual([3,8]);
   await panel.getByRole('button', { name: 'Eltávolítás a programból', exact: true }).click();

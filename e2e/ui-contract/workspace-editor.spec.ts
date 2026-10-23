@@ -94,13 +94,13 @@ test('editor: weekly repeat skips occupied day and confirms only once', async ({
 });
 test('editor: extra day occupied/range validation then add and move occurrence', async ({ page, api }) => {
   await page.goto('/coach/programs/1'); const panel = selected(page);
-  await panel.locator('[name=extraDay]').fill('8'); await panel.getByRole('button', { name: 'Hozzáadás', exact: true }).click();
+  await panel.locator('[name=extraDate]').fill('2030-04-22'); await panel.getByRole('button', { name: 'Hozzáadás', exact: true }).click();
   await expect(editor(page).locator('app-message[role=status]')).toContainText('Azon a napon már van edzés.');
-  await panel.locator('[name=extraDay]').fill('23'); await panel.getByRole('button', { name: 'Hozzáadás', exact: true }).click();
+  await panel.locator('[name=extraDate]').fill('2030-05-07'); await panel.getByRole('button', { name: 'Hozzáadás', exact: true }).click();
   await expect(editor(page).locator('app-message[role=status]')).toContainText('időtartamán kívül'); expect(api.writes()).toEqual([]);
-  await panel.locator('[name=extraDay]').fill('3'); await panel.getByRole('button', { name: 'Hozzáadás', exact: true }).click();
+  await panel.locator('[name=extraDate]').fill('2030-04-17'); await panel.getByRole('button', { name: 'Hozzáadás', exact: true }).click();
   await expect(editor(page).getByRole('button', { name: '3: Workout A', exact: true })).toBeVisible();
-  await panel.locator('[name=moveTarget]').fill('2'); await panel.getByRole('button', { name: 'Áthelyezés', exact: true }).click();
+  await panel.locator('[name=moveDate]').fill('2030-04-16'); await panel.getByRole('button', { name: 'Áthelyezés', exact: true }).click();
   await expect(editor(page).getByRole('button', { name: '2: Workout A', exact: true })).toHaveAttribute('aria-pressed', 'true');
   expect(api.writes('/api/program-workouts/100')[0].body.dayIndex).toBe(2);
 });

@@ -253,7 +253,7 @@
                 <div class="flex flex-wrap items-end gap-2">
                   <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
                     {{ 'coachWorkspace.editor.alsoOnDay' | translate }}
-                    <input appInput="compact" type="number" min="1" [max]="cells.length" name="extraDay" [(ngModel)]="extraDay" class="w-24" />
+                    <input appInput="compact" type="date" [min]="firstDate" [max]="lastDate" name="extraDate" [(ngModel)]="extraDate" class="w-44" />
                   </label>
                   <button type="button" (click)="addToAnotherDay()" [disabled]="busy"
                           class="btn btn-outline">
@@ -263,9 +263,9 @@
                 <div class="flex flex-wrap items-end gap-2">
                   <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
                     {{ 'coachWorkspace.editor.moveToDay' | translate }}
-                    <input appInput="compact" type="number" min="1" [max]="cells.length" name="moveTarget" [(ngModel)]="moveTarget" class="w-24" />
+                    <input appInput="compact" type="date" [min]="firstDate" [max]="lastDate" name="moveDate" [(ngModel)]="moveDate" class="w-44" />
                   </label>
-                  <button type="button" (click)="moveWorkout()" [disabled]="busy || moveTarget === cell.day"
+                  <button type="button" (click)="moveWorkout()" [disabled]="busy || dayForDate(moveDate) === cell.day"
                           class="btn btn-outline">
                     {{ 'coachWorkspace.client.move' | translate }}
                   </button>

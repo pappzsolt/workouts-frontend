@@ -96,11 +96,12 @@ export class CoachProgramEditorComponent implements OnInit {
 
   // Kiválasztott nap edzése
   rows: EditableExercise[] = [];
-  moveTarget = 1;
+  /** Áthelyezés céldátuma (YYYY-MM-DD); a programnap ebből számolódik. */
+  moveDate = '';
   confirmRemove = false;
 
-  // Ugyanaz az edzés másik napra / hetente
-  extraDay = 1;
+  // Ugyanaz az edzés másik napra / hetente; a további nap dátuma (YYYY-MM-DD)
+  extraDate = '';
   confirmRepeat = false;
 
   // Üres nap: új edzés vagy edzés az edzéstárból
@@ -312,8 +313,8 @@ export class CoachProgramEditorComponent implements OnInit {
     this.selectedDay = day;
     this.confirmRemove = false;
     this.confirmRepeat = false;
-    this.moveTarget = day;
-    this.extraDay = Math.min(day + 7, this.cells.length || day);
+    this.moveDate = this.form.startDate ? this.dateForDay(day) : '';
+    this.extraDate = this.form.startDate ? this.dateForDay(Math.min(day + 7, this.cells.length || day)) : '';
     const cell = this.selectedCell;
     this.rows = (cell?.workout?.exercises ?? []).map((exercise) => ({
       id: exercise.id,
@@ -349,6 +350,26 @@ export class CoachProgramEditorComponent implements OnInit {
 
   private dateForDay(day: number): string {
     return toIsoDate(addDays(fromIsoDate(this.form.startDate), day - 1));
+  }
+
+  /** A program első és utolsó napjának dátuma a dátummezők min/max értékéhez. */
+  get firstDate(): string {
+    return this.form.startDate ? this.dateForDay(1) : '';
+  }
+
+  get lastDate(): string {
+    return this.form.startDate ? this.dateForDay(this.cells.length || 1) : '';
+  }
+
+  /**
+   * A dátumhoz tartozó programnap (day_index, 1-től): a kezdőnaptól eltelt napok + 1.
+   * Üres vagy hibás dátumnál NaN. Naptári napokat számol, így az óraátállítás nem zavarja.
+   */
+  dayForDate(value: string): number {
+    if (!this.form.startDate || !/^\d{4}-\d{2}-\d{2}$/.test(value ?? '')) return NaN;
+    const [sy, sm, sd] = this.form.startDate.split('-').map(Number);
+    const [y, m, d] = value.split('-').map(Number);
+    return Math.round((Date.UTC(y, m - 1, d) - Date.UTC(sy, sm - 1, sd)) / 86_400_000) + 1;
   }
 
   // ----------------------------------------------------------
@@ -399,7 +420,7 @@ export class CoachProgramEditorComponent implements OnInit {
 
   moveWorkout(): void {
     const link = this.selectedCell?.link;
-    const target = Number(this.moveTarget);
+    const target = this.dayForDate(this.moveDate);
     if (!link || !Number.isInteger(target) || target < 1 || target === link.dayIndex) return;
     if (target > this.cells.length) {
       this.showMessage('coachWorkspace.editor.dayOutOfRange', 'error');
@@ -544,7 +565,7 @@ export class CoachProgramEditorComponent implements OnInit {
   /** Ugyanez az edzés egy további napra is. */
   addToAnotherDay(): void {
     const workout = this.selectedCell?.workout;
-    const target = Number(this.extraDay);
+    const target = this.dayForDate(this.extraDate);
     if (this.programId === null || !workout || this.busy) return;
     if (!Number.isInteger(target) || target < 1 || target > this.cells.length) {
       this.showMessage('coachWorkspace.editor.dayOutOfRange', 'error');
