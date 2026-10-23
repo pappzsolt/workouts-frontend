@@ -173,7 +173,11 @@ export class CoachProgramEditorComponent implements OnInit {
   // Betöltés
   // ----------------------------------------------------------
 
-  private loadProgram(selectDay: number | null, preserveDrafts = false): void {
+  private loadProgram(
+    selectDay: number | null,
+    preserveDrafts = false,
+    submittedForm?: CoachProgramDetailsInput,
+  ): void {
     if (this.programId === null) return;
     this.programLoadCancelled$.next();
     this.assignmentLoadCancelled$.next();
@@ -194,6 +198,14 @@ export class CoachProgramEditorComponent implements OnInit {
             ? { workoutName: this.workoutName, pendingExercises: [...this.pendingExercises],
                 copySourceId: this.copySourceId, emptyMode: this.emptyMode, libraryFilter: this.libraryFilter }
             : null;
+          const metadataDraft: Partial<CoachProgramDetailsInput> = {};
+          if (submittedForm) {
+            for (const key of Object.keys(submittedForm) as (keyof CoachProgramDetailsInput)[]) {
+              if (this.form[key] !== submittedForm[key]) {
+                Object.assign(metadataDraft, { [key]: this.form[key] });
+              }
+            }
+          }
           this.program = program;
           this.form = {
             programName: program.programName ?? '',
@@ -201,6 +213,7 @@ export class CoachProgramEditorComponent implements OnInit {
             durationDays: program.durationDays ?? 28,
             difficultyLevel: program.difficultyLevel ?? 'BEGINNER',
             startDate: program.startDate ?? toIsoDate(new Date()),
+            ...metadataDraft,
           };
           this.buildCells(links);
           this.loadAssignment();
@@ -302,6 +315,7 @@ export class CoachProgramEditorComponent implements OnInit {
       this.showMessage('coachWorkspace.editor.saveBeforeShortening', 'error');
       return;
     }
+    const submittedForm = { ...this.form };
     const details: CoachProgramDetailsInput = {
       programName: name,
       programDescription: this.form.programDescription?.trim() ?? '',
@@ -356,7 +370,7 @@ export class CoachProgramEditorComponent implements OnInit {
         next: () => {
           this.savingDetails = false;
           this.showMessage('coachWorkspace.editor.saved', 'success');
-          this.loadProgram(this.selectedDay, true);
+          this.loadProgram(this.selectedDay, true, submittedForm);
         },
         error: (error) => {
           this.savingDetails = false;
