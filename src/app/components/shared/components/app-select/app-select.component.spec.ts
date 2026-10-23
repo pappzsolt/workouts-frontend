@@ -144,7 +144,8 @@ describe('AppSelect searchable mode', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     expect(document.querySelector('mat-option')?.textContent).toContain('appSearch.noResults');
-    input.blur();
+    // Dispatch explicitly: an unfocused headless document does not emit native blur.
+    input.dispatchEvent(new FocusEvent('blur'));
     fixture.detectChanges();
     await fixture.whenStable();
     expect(input.value).toBe('Anna');
@@ -186,7 +187,8 @@ describe('AppSelect searchable mode', () => {
       expect(input.value).toBe(query);
       expect(fixture.componentInstance.value).toBe(7);
     }
-    input.blur();
+    // Dispatch explicitly: an unfocused headless document does not emit native blur.
+    input.dispatchEvent(new FocusEvent('blur'));
     fixture.detectChanges();
     await fixture.whenStable();
     expect(input.value).toBe('Anna updated');

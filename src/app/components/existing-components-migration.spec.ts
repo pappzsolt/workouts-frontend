@@ -61,7 +61,8 @@ describe('Existing shared component migration', () => {
     expect(document.activeElement).toBe(input);
     input.value = '12.5';
     input.dispatchEvent(new Event('input'));
-    input.blur();
+    // Headless Firefox may have document.hasFocus() === false, so blur() emits no event.
+    input.dispatchEvent(new FocusEvent('blur'));
     fixture.detectChanges();
     await fixture.whenStable();
     expect(fixture.componentInstance.weight).toBe(12.5);

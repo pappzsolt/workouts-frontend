@@ -234,7 +234,8 @@ describe('New shared presentation components preserve native contracts', () => {
     fixture.nativeElement.querySelector('label[for=weight]').click();
     expect(document.activeElement).toBe(weight);
     input(weight, '12.5');
-    weight.blur();
+    // Dispatch explicitly: an unfocused headless document does not emit native blur.
+    weight.dispatchEvent(new FocusEvent('blur'));
     input(fixture.nativeElement.querySelector('[name=email]'), 'user@example.com');
     input(fixture.nativeElement.querySelector('textarea'), 'Notes');
     fixture.detectChanges();
