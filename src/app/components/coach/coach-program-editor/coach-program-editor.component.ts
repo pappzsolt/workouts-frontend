@@ -1,7 +1,7 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, concat, forkJoin, last, switchMap, toArray } from 'rxjs';
+import { Observable, Subject, concat, forkJoin, last, switchMap, takeUntil, toArray } from 'rxjs';
 
 import { SHARED_IMPORTS } from '../../shared/shared-imports';
 import {
@@ -57,6 +57,9 @@ export class CoachProgramEditorComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
+  private readonly programLoadCancelled$ = new Subject<void>();
+  private readonly assignmentLoadCancelled$ = new Subject<void>();
+
   readonly weekdayKeys = WEEKDAY_KEYS;
   readonly difficultyOptions = DIFFICULTY_OPTIONS;
 
@@ -94,6 +97,7 @@ export class CoachProgramEditorComponent implements OnInit {
   cells: DayCell[] = [];
   leadingBlanks: number[] = [];
   selectedDay = 1;
+  pendingDay: number | null = null;
 
   // Kiválasztott nap edzése
   rows: EditableExercise[] = [];
@@ -123,10 +127,23 @@ export class CoachProgramEditorComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      this.programLoadCancelled$.next();
+      this.assignmentLoadCancelled$.next();
+      this.loading = false;
+      this.pendingDay = null;
       const raw = params.get('id');
       if (raw === null || raw === 'new') {
         this.programId = null;
         this.program = null;
+        this.rows = [];
+        this.clients = [];
+        this.assignedIds = new Set();
+        this.toAssign = new Set();
+        this.pendingRevokeClient = null;
+        this.form = {
+          programName: '', programDescription: '', durationDays: 28,
+          difficultyLevel: 'BEGINNER', startDate: toIsoDate(new Date()),
+        };
         const forUser = Number(this.route.snapshot.queryParamMap.get('userId'));
         this.newForUserId = Number.isInteger(forUser) && forUser > 0 ? forUser : null;
         if (this.newForUserId !== null) this.loadClientsOnly();
@@ -137,6 +154,15 @@ export class CoachProgramEditorComponent implements OnInit {
       if (!Number.isInteger(id) || id <= 0) {
         void this.router.navigate(['/coach/programs']);
         return;
+      }
+      if (this.programId !== id) {
+        this.program = null;
+        this.cells = [];
+        this.rows = [];
+        this.clients = [];
+        this.assignedIds = new Set();
+        this.toAssign = new Set();
+        this.pendingRevokeClient = null;
       }
       this.programId = id;
       this.loadProgram(null);
@@ -149,14 +175,18 @@ export class CoachProgramEditorComponent implements OnInit {
 
   private loadProgram(selectDay: number | null): void {
     if (this.programId === null) return;
+    this.programLoadCancelled$.next();
+    this.assignmentLoadCancelled$.next();
+    const programId = this.programId;
     this.loading = true;
     forkJoin({
-      program: this.workspace.getProgram(this.programId),
-      links: this.workspace.getProgramDays(this.programId),
+      program: this.workspace.getProgram(programId),
+      links: this.workspace.getProgramDays(programId),
     })
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntil(this.programLoadCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ program, links }) => {
+          if (this.programId !== programId) return;
           this.program = program;
           this.form = {
             programName: program.programName ?? '',
@@ -168,10 +198,11 @@ export class CoachProgramEditorComponent implements OnInit {
           this.buildCells(links);
           this.loadAssignment();
           const firstWorkoutDay = this.cells.find((cell) => cell.workout)?.day ?? 1;
-          this.selectDay(selectDay ?? (this.cells.some((c) => c.day === this.selectedDay) ? this.selectedDay : firstWorkoutDay));
+          this.openDay(selectDay ?? (this.cells.some((c) => c.day === this.selectedDay) ? this.selectedDay : firstWorkoutDay));
           this.loading = false;
         },
         error: (error) => {
+          if (this.programId !== programId) return;
           this.loading = false;
           this.showError(error, 'coachWorkspace.loadError');
         },
@@ -212,19 +243,23 @@ export class CoachProgramEditorComponent implements OnInit {
 
   private loadAssignment(): void {
     if (this.programId === null) return;
+    this.assignmentLoadCancelled$.next();
+    const programId = this.programId;
     const today = toIsoDate(new Date());
     forkJoin({
       overview: this.workspace.getOverview(today, today),
-      assigned: this.workspace.getAssignedUserIds(this.programId),
+      assigned: this.workspace.getAssignedUserIds(programId),
     })
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntil(this.assignmentLoadCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ overview, assigned }) => {
+          if (this.programId !== programId) return;
           this.clients = overview.clients;
           this.assignedIds = new Set(assigned);
           this.toAssign = new Set();
         },
         error: () => {
+          if (this.programId !== programId) return;
           this.clients = [];
         },
       });
@@ -235,7 +270,8 @@ export class CoachProgramEditorComponent implements OnInit {
   // ----------------------------------------------------------
 
   saveDetails(): void {
-    if (this.savingDetails) return;
+    if (this.savingDetails || this.loading ||
+        (this.programId !== null && this.program?.programId !== this.programId)) return;
     const name = this.form.programName.trim();
     const duration = Number(this.form.durationDays);
     if (!name || !Number.isInteger(duration) || duration < 1 || duration > 365 || !this.form.startDate) {
@@ -314,6 +350,27 @@ export class CoachProgramEditorComponent implements OnInit {
   }
 
   selectDay(day: number): void {
+    if (day === this.selectedDay || this.busy || this.loading || !this.cells.some((cell) => cell.day === day)) return;
+    const hasNewWorkout = !this.selectedCell?.workout &&
+      (!!this.workoutName.trim() || this.pendingExercises.length > 0 || this.copySourceId !== null);
+    if (this.changedCount > 0 || hasNewWorkout) {
+      this.pendingDay = day;
+      return;
+    }
+    this.openDay(day);
+  }
+
+  cancelDayChange(): void {
+    this.pendingDay = null;
+  }
+
+  discardAndChangeDay(): void {
+    if (this.pendingDay === null || this.busy || this.loading) return;
+    this.openDay(this.pendingDay);
+  }
+
+  private openDay(day: number): void {
+    this.pendingDay = null;
     this.selectedDay = day;
     this.confirmRemove = false;
     this.confirmRepeat = false;
@@ -598,10 +655,11 @@ export class CoachProgramEditorComponent implements OnInit {
   }
 
   private loadClientsOnly(): void {
+    this.assignmentLoadCancelled$.next();
     const today = toIsoDate(new Date());
     this.workspace
       .getOverview(today, today)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntil(this.assignmentLoadCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({ next: (overview) => (this.clients = overview.clients), error: () => (this.clients = []) });
   }
 

@@ -82,7 +82,7 @@ export class UserEditService {
       height: user.extraFields?.height,
       gender: normalizeGender(user.extraFields?.gender) || undefined,
       goals: user.extraFields?.goals,
-      coachId: user.extraFields?.coach_id,
+      coachId: user.extraFields?.coach_id ?? null,
       roleIds: roleIds || [],
     };
 

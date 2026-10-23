@@ -349,7 +349,8 @@
   "coachSelect": {
     "coach": "Coach",
     "select": "-- Select --",
-    "loadError": "Unable to load coaches."
+    "loadError": "Unable to load coaches.",
+    "none": "No coach assigned"
   },
   "userDashboard": {
     "title": "User Dashboard",
@@ -943,7 +944,8 @@
       "unsavedCount": "Unsaved changes: {{count}} sets",
       "unsavedPrompt": "Changes to {{count}} sets are not saved.",
       "weekLabel": "Week {{n}}",
-      "workoutList": "Workouts of the program"
+      "workoutList": "Workouts of the program",
+      "retryProgram": "Try again"
     },
     "programs": {
       "title": "Programs",
@@ -1080,7 +1082,9 @@
       "templateApplied": "Applied: {{userWorkouts}} client workouts, {{setsUpdated}} sets updated, {{setsAdded}} added, {{setsRemoved}} removed.",
       "revokeClient": "Revoke program from {{name}}",
       "revokeTitle": "Revoke program assignment",
-      "revokeConfirm": "Revoke the program “{{program}}” from {{name}}? The client’s workouts and sets for this program, including completed workout data, may also be deleted."
+      "revokeConfirm": "Revoke the program “{{program}}” from {{name}}? The client’s workouts and sets for this program, including completed workout data, may also be deleted.",
+      "unsavedDayTitle": "Unsaved changes",
+      "unsavedDayPrompt": "Changes to the selected day have not been saved. Discard them and switch days? To keep them, stay on this day and save your changes."
     },
     "picker": {
       "search": "Search (name, muscle, synonym, description)",

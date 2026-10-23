@@ -66,7 +66,7 @@
           @if (programId !== null) {
             <p class="mr-auto text-xs text-content-600">{{ 'coachWorkspace.editor.datesHint' | translate }}</p>
           }
-          <button type="submit" [disabled]="savingDetails"
+          <button type="submit" [disabled]="savingDetails || loading || (programId !== null && program?.programId !== programId)"
                   class="btn btn-primary">
             <app-icon name="save" sizeClass="h-4 w-4" />
             {{ (savingDetails ? 'coachWorkspace.saving' : (programId === null ? 'coachWorkspace.editor.create' : 'coachWorkspace.save')) | translate }}
@@ -606,4 +606,15 @@
   cancelLabel="coachWorkspace.cancel"
   (confirmed)="confirmRevoke()"
   (cancelled)="cancelRevoke()"
+></app-confirm-dialog>
+
+<app-confirm-dialog
+  [open]="pendingDay !== null"
+  [busy]="busy || loading"
+  title="coachWorkspace.editor.unsavedDayTitle"
+  message="coachWorkspace.editor.unsavedDayPrompt"
+  confirmLabel="coachWorkspace.client.discardAndGo"
+  cancelLabel="coachWorkspace.client.stay"
+  (confirmed)="discardAndChangeDay()"
+  (cancelled)="cancelDayChange()"
 ></app-confirm-dialog>

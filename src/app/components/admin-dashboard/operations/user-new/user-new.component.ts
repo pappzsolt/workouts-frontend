@@ -96,10 +96,9 @@ export class UserNewComponent {
   // COACH KIVÁLASZTÁSA
   // =============================
 
-  onCoachSelected(coach: CoachNameId): void {
-    this.user.coachId = coach.id;
-
-    this.user.coachName = coach.name;
+  onCoachSelected(coach: CoachNameId | null): void {
+    this.user.coachId = coach?.id;
+    this.user.coachName = coach?.name ?? '';
   }
 
   // =============================

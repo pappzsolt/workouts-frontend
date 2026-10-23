@@ -49,7 +49,7 @@ import { SHARED_IMPORTS } from '../shared-imports';
           [searchable]="searchable"
           [disabled]="disabled"
           searchPlaceholder="appSearch.coachesPlaceholder"
-          placeholder="coachSelect.select"
+          placeholder="coachSelect.none"
           [placeholderValue]="undefined"
           (valueChange)="selectedCoachId = $event; onCoachChange()"
         ></app-select>
@@ -75,10 +75,10 @@ export class CoachSelectComponent implements OnInit {
   selectedCoachId?: number;
 
   @Output()
-  selectedCoachIdChange = new EventEmitter<number>();
+  selectedCoachIdChange = new EventEmitter<number | undefined>();
 
   @Output()
-  coachSelected = new EventEmitter<CoachNameId>();
+  coachSelected = new EventEmitter<CoachNameId | null>();
 
   constructor(private coachService: CoachNameIdService) {}
 
@@ -135,15 +135,14 @@ export class CoachSelectComponent implements OnInit {
   onCoachChange(): void {
     const selected = this.coaches.find((c) => c.id === this.selectedCoachId);
 
-    if (selected) {
-      this.coachSelected.emit(selected);
-    }
-
-    const selectedCoachId = this.selectedCoachId;
-    if (selectedCoachId == null) {
+    if (this.selectedCoachId == null) {
+      this.coachSelected.emit(null);
+      this.selectedCoachIdChange.emit(undefined);
       return;
     }
-
-    this.selectedCoachIdChange.emit(selectedCoachId);
+    if (selected) {
+      this.coachSelected.emit(selected);
+      this.selectedCoachIdChange.emit(selected.id);
+    }
   }
 }

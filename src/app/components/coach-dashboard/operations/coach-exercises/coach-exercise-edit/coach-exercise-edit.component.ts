@@ -4,6 +4,7 @@ import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, finalize, takeUntil } from 'rxjs';
 
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 import { Exercise } from '../../../../../models/exercise.model';
@@ -83,6 +84,9 @@ export class CoachExerciseEditComponent implements OnInit {
   saving = false;
   exerciseFound = false;
   currentLanguage: LanguageCode = 'hu';
+  private loadedLanguage: LanguageCode | null = null;
+  private loadVersion = 0;
+  private readonly loadCancelled$ = new Subject<void>();
 
   // ==========================================================
   // ÜZENET
@@ -132,12 +136,19 @@ export class CoachExerciseEditComponent implements OnInit {
   // ==========================================================
 
   loadExercise(exerciseId: number, language: LanguageCode): void {
+    this.loadCancelled$.next();
+    const version = ++this.loadVersion;
+    this.currentLanguage = language;
+    this.loadedLanguage = null;
+    this.exerciseFound = false;
     this.loading = true;
     this.clearMessage();
 
-    this.exerciseService.getAllExercises(language).subscribe({
+    this.exerciseService.getAllExercises(language)
+      .pipe(takeUntil(this.loadCancelled$), takeUntilDestroyed(this.destroyRef))
+      .subscribe({
       next: (response: ApiResponse<Exercise[]>) => {
-
+        if (version !== this.loadVersion) return;
         if (!response.success) {
           this.loading = false; this.exerciseFound = false;
           this.showError(responseMessage([response], 'coachExerciseEdit.loadError')); return;
@@ -153,6 +164,7 @@ export class CoachExerciseEditComponent implements OnInit {
             ...exercise,
           };
 
+          this.loadedLanguage = language;
           this.exerciseFound = true;
         } else {
           this.exerciseFound = false;
@@ -168,6 +180,7 @@ export class CoachExerciseEditComponent implements OnInit {
       },
 
       error: (err) => {
+        if (version !== this.loadVersion) return;
         this.logger.error('Hiba az exercise betöltésénél:', err);
 
         this.showError(errorMessage(err, 'coachExerciseEdit.loadError'));
@@ -182,14 +195,20 @@ export class CoachExerciseEditComponent implements OnInit {
   // ==========================================================
 
   saveExercise(): void {
+    if (this.loading || this.saving || !this.exerciseFound || this.loadedLanguage !== this.currentLanguage) return;
     if (!this.validateInputs()) return;
+    const version = this.loadVersion;
+    const language = this.loadedLanguage;
+    const exercise = { ...this.exercise };
     this.saving = true;
     this.clearMessage();
 
     this.exerciseService
-      .updateExercise(this.exercise, this.currentLanguage)
+      .updateExercise(exercise, language)
+      .pipe(takeUntilDestroyed(this.destroyRef), finalize(() => { this.saving = false; }))
       .subscribe({
         next: (response) => {
+          if (version !== this.loadVersion) return;
           if (!response.success) {
             this.saving = false; this.showError(responseMessage([response], 'coachExerciseEdit.saveError')); return;
           }
@@ -234,6 +253,7 @@ export class CoachExerciseEditComponent implements OnInit {
         },
 
         error: (err) => {
+        if (version !== this.loadVersion) return;
         this.logger.error('Hiba az exercise frissítésénél:', err);
 
         this.showError(errorMessage(err, 'coachExerciseEdit.saveError'));

@@ -29,13 +29,18 @@ export class RegistrationRequestsService {
   approve(id: number, coachId: number | null): Observable<string> {
     return this.http
       .post<ApiResponse<null>>(API_ENDPOINTS.adminRegistrationApprove(id), { coachId })
-      .pipe(map((response) => response.message ?? 'adminRegistrations.approved'));
+      .pipe(map((response) => this.decisionMessage(response, 'adminRegistrations.approved', 'adminRegistrations.errors.approve')));
   }
 
   reject(id: number, reason: string | null): Observable<string> {
     return this.http
       .post<ApiResponse<null>>(API_ENDPOINTS.adminRegistrationReject(id), { reason })
-      .pipe(map((response) => response.message ?? 'adminRegistrations.rejected'));
+      .pipe(map((response) => this.decisionMessage(response, 'adminRegistrations.rejected', 'adminRegistrations.errors.reject')));
+  }
+
+  private decisionMessage(response: ApiResponse<null>, successKey: string, errorKey: string): string {
+    if (!response.success) throw new Error(response.message?.trim() ? response.message : errorKey);
+    return response.message?.trim() ? response.message : successKey;
   }
 
   private data<T>(response: ApiResponse<T>, fallback: string): T {

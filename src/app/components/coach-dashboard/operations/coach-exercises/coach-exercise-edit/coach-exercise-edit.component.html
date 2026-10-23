@@ -363,7 +363,7 @@
         <div class="col-span-full flex justify-end border-t border-surface-200 pt-5">
           <app-button
             type="submit"
-            [disabled]="!exerciseForm.form.valid || saving"
+            [disabled]="!exerciseForm.form.valid || saving || loading || !exerciseFound"
             variant="save"
             appearance="solid"
             [fullWidth]="true"

@@ -1,7 +1,7 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, concat, of, toArray } from 'rxjs';
+import { Observable, Subject, concat, of, takeUntil, toArray } from 'rxjs';
 
 import { SHARED_IMPORTS } from '../../shared/shared-imports';
 import {
@@ -103,6 +103,8 @@ export class CoachClientDetailComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
+  private readonly programLoadCancelled$ = new Subject<void>();
+
   readonly initial = initial;
   readonly percent = percent;
   readonly todayIso = toIsoDate(new Date());
@@ -119,6 +121,7 @@ export class CoachClientDetailComponent implements OnInit {
   // Program és edzései
   programId: number | null = null;
   programLoading = false;
+  programLoadFailed = false;
   workouts: ClientWorkoutEntry[] = [];
   weeks: WeekGroup[] = [];
   selectedIndex = -1;
@@ -146,6 +149,7 @@ export class CoachClientDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      this.programLoadCancelled$.next();
       const id = Number(params.get('userId'));
       if (!Number.isInteger(id) || id <= 0) {
         void this.router.navigate(['/coach/clients']);
@@ -239,16 +243,33 @@ export class CoachClientDetailComponent implements OnInit {
     this.loadProgram(id);
   }
 
+  retryProgram(): void {
+    if (this.programId !== null && !this.programLoading) this.loadProgram(this.programId);
+  }
+
   private loadProgram(programId: number): void {
+    this.programLoadCancelled$.next();
+    const keep = this.requestedWorkoutId ?? (this.programId === programId ? this.selected?.userWorkoutId : null) ?? null;
     this.programId = programId;
     this.programLoading = true;
+    if (this.programLoadFailed) {
+      this.message = '';
+      this.messageParams = {};
+    }
+    this.programLoadFailed = false;
+    this.workouts = [];
+    this.weeks = [];
+    this.selectedIndex = -1;
+    this.exerciseSets = [];
+    this.rescheduleDate = '';
+    this.deleteSetId = null;
+    this.pendingNav = null;
     this.workspace
       .getClientProgramRows(this.userId, programId)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntil(this.programLoadCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (rows) => {
           if (this.programId !== programId) return;
-          const keep = this.requestedWorkoutId ?? this.selected?.userWorkoutId ?? null;
           this.requestedWorkoutId = null;
           this.workouts = groupWorkouts(rows);
           this.weeks = this.buildWeeks();
@@ -261,7 +282,9 @@ export class CoachClientDetailComponent implements OnInit {
           this.openWorkout(index);
         },
         error: (error) => {
+          if (this.programId !== programId) return;
           this.programLoading = false;
+          this.programLoadFailed = true;
           this.showError(error, 'coachWorkspace.loadError');
         },
       });

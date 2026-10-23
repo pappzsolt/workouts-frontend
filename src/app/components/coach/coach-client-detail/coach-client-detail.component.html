@@ -99,6 +99,13 @@
 
           @if (programLoading) {
             <app-loading message="coachWorkspace.loading"></app-loading>
+          } @else if (programLoadFailed) {
+            <div class="rounded-2xl border border-delete-200 bg-white p-6 text-sm text-delete-700" role="alert">
+              <p>{{ 'coachWorkspace.loadError' | translate }}</p>
+              <button type="button" (click)="retryProgram()" class="btn btn-outline mt-3">
+                {{ 'coachWorkspace.client.retryProgram' | translate }}
+              </button>
+            </div>
           } @else if (workouts.length === 0) {
             <div class="rounded-2xl border border-dashed border-surface-300 bg-white p-6 text-sm text-content-600">
               {{ 'coachWorkspace.client.noWorkoutsInProgram' | translate }}

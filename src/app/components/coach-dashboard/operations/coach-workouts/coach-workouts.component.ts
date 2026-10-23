@@ -3,7 +3,7 @@ import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, inject }
 import { LoggerService } from '../../../../services/logger.service';
 import { Router } from '@angular/router';
 
-import { Subject, debounceTime, distinctUntilChanged, switchMap, takeUntil, timer } from 'rxjs';
+import { EMPTY, Subject, catchError, debounceTime, distinctUntilChanged, switchMap, takeUntil, timer } from 'rxjs';
 
 import {
   CoachWorkoutsService,
@@ -141,21 +141,21 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
             this.itemsPerPage,
             this.searchTerm,
             this.sortMode,
+          ).pipe(
+            catchError((error) => {
+              this.loading = false;
+              this.logger.error('[CoachWorkouts] workout betöltési hiba:', error);
+              this.workouts = [];
+              this.totalItems = 0;
+              this.totalPages = 1;
+              this.setMessage('coachWorkouts.loadError', 'error');
+              return EMPTY;
+            }),
           ),
         ),
         takeUntil(this.destroy$),
       )
-      .subscribe({
-        next: (page) => this.applyPage(page),
-        error: (error) => {
-          this.loading = false;
-          this.logger.error('[CoachWorkouts] workout betöltési hiba:', error);
-          this.workouts = [];
-          this.totalItems = 0;
-          this.totalPages = 1;
-          this.setMessage('coachWorkouts.loadError', 'error');
-        },
-      });
+      .subscribe((page) => this.applyPage(page));
 
     this.searchChanges$
       .pipe(debounceTime(300), distinctUntilChanged(), takeUntil(this.destroy$))
@@ -201,6 +201,10 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
 
   private applyPage(page: WorkoutLibraryPage): void {
     this.loading = false;
+    if (this.message === 'coachWorkouts.loadError') {
+      this.message = '';
+      this.messageType = '';
+    }
     this.totalItems = page.totalElements;
     this.totalPages = Math.max(1, page.totalPages);
 

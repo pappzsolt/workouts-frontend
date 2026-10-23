@@ -1,5 +1,6 @@
 import { Component, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subject, takeUntil } from 'rxjs';
 
 import { errorMessage } from '../../../../models/backend-dto/common/api-response-message';
 import type { RegistrationRequestDto, RegistrationStatus } from '../../../../models/backend-dto/registration/registration';
@@ -23,6 +24,8 @@ export class RegistrationRequestsComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly service = inject(RegistrationRequestsService);
   private readonly members = inject(UserEditService);
+
+  private readonly listLoadCancelled$ = new Subject<void>();
 
   readonly tabs: RegistrationStatus[] = ['PENDING', 'APPROVED', 'REJECTED'];
   readonly pageSizeOptions = [10, 20, 50];
@@ -65,6 +68,7 @@ export class RegistrationRequestsComponent {
   selectTab(status: RegistrationStatus): void {
     if (status === this.status) return;
     this.status = status;
+    this.cancelReject();
     this.message = '';
     this.load(1);
   }
@@ -123,10 +127,15 @@ export class RegistrationRequestsComponent {
   }
 
   private load(page: number): void {
+    this.listLoadCancelled$.next();
     this.loading = true;
+    this.requests = [];
+    this.totalElements = 0;
+    this.totalPages = 0;
+    this.currentPage = page;
     this.service
       .list(this.status, page - 1, this.pageSize)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntil(this.listLoadCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
           this.loading = false;

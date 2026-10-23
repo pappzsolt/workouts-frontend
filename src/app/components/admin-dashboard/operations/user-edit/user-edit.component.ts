@@ -194,10 +194,9 @@ export class UserEditComponent implements OnInit {
   // COACH KIVÁLASZTÁSA
   // =============================
 
-  onCoachSelected(coach: CoachNameId): void {
-    this.selectedCoach = coach;
-
-    this.selectedUser.coachId = coach.id;
+  onCoachSelected(coach: CoachNameId | null): void {
+    this.selectedCoach = coach ?? undefined;
+    this.selectedUser.coachId = coach?.id ?? null;
   }
 
   // =============================

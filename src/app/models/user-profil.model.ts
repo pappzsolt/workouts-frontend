@@ -7,7 +7,7 @@ export interface RawUser {
   roles: string[];
   //roleIds?: number[];  // 🔹 nem szükséges, mert a User interface-ben van
   extraFields?: {
-    coach_id?: number;
+    coach_id?: number | null;
     age?: number;
     weight?: number;
     height?: number;
@@ -27,7 +27,7 @@ export interface UserProfile {
   height?: number;
   gender?: string;
   goals?: string;
-  coachId?: number;
+  coachId?: number | null;
   roleName?: string;
   roleIds: number[]; // ✅ mindig legyen tömb
 }
