@@ -162,6 +162,25 @@ test('editor: assignment checkbox posts only selected client and reloads selecti
   await expect(root.getByRole('checkbox', { name: 'Bob', exact: true })).toHaveCount(0);
   expect(api.writes('/api/programs/assign')[0].body).toEqual({ userId: 8, programId: 1 });
 });
+test('editor: assignment search filters by name/email, select shown and clear', async ({ page, api }) => {
+  api.state.clients.push({ userId: 9, username: 'Carol', email: 'carol@example.test', programs: [], workouts: [], lastCompletedAt: null } as any);
+  await page.goto('/coach/programs/1'); const root = editor(page);
+  await root.locator('[name=clientFilter]').fill('CAROL@');
+  await expect(root.getByRole('checkbox', { name: 'Bob', exact: true })).toHaveCount(0);
+  await root.getByRole('button', { name: 'Látható mind kijelölése', exact: true }).click();
+  await expect(root.getByRole('checkbox', { name: 'Carol', exact: true })).toBeChecked();
+  await root.locator('[name=clientFilter]').fill('nincs ilyen');
+  await expect(root).toContainText('Nincs a keresésnek megfelelő ügyfél.');
+  await root.locator('[name=clientFilter]').fill('');
+  await expect(root.getByRole('button', { name: 'Kiosztás (1)', exact: true })).toBeEnabled();
+  await root.getByRole('button', { name: 'Kijelölés törlése', exact: true }).click();
+  await expect(root.getByRole('button', { name: 'Kiosztás (0)', exact: true })).toBeDisabled();
+  await root.getByRole('checkbox', { name: 'Carol', exact: true }).check();
+  await root.getByRole('button', { name: 'Kiosztás (1)', exact: true }).click();
+  await expect(root.getByRole('checkbox', { name: 'Carol', exact: true })).toHaveCount(0);
+  await expect(root.getByRole('link', { name: 'Carol', exact: true })).toBeVisible();
+  expect(api.writes('/api/programs/assign').map(c => c.body)).toEqual([{ userId: 9, programId: 1 }]);
+});
 test('editor: new program for client assigns after creating', async ({ page, api }) => {
   await page.goto('/coach/programs/new?userId=8'); const root = editor(page);
   await expect(root).toContainText('Bob számára készül'); await root.locator('[name=programName]').fill('For Bob');

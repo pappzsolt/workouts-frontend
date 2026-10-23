@@ -21,6 +21,7 @@ import type {
 } from '../../../models/coach-workspace.model';
 import { DIFFICULTY_OPTIONS, WEEKDAY_KEYS, errorText } from '../coach-ui';
 import { ExercisePickerComponent } from '../exercise-picker/exercise-picker.component';
+import { matchesSearch } from '../../shared/components/app-search/search-match';
 
 interface DayCell {
   day: number;
@@ -116,6 +117,8 @@ export class CoachProgramEditorComponent implements OnInit {
   clients: CoachClientOverview[] = [];
   assignedIds = new Set<number>();
   toAssign = new Set<number>();
+  /** Kereső a kiosztható ügyfelek listájához. */
+  clientFilter = '';
 
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
@@ -765,6 +768,29 @@ export class CoachProgramEditorComponent implements OnInit {
     if (checked) next.add(userId);
     else next.delete(userId);
     this.toAssign = next;
+  }
+
+  /** Az eddig ki nem osztott ügyfelek a kereső szerint (név vagy e-mail). */
+  get filteredUnassignedClients(): CoachClientOverview[] {
+    return this.unassignedClients.filter((client) => matchesSearch(this.clientFilter, client.username, client.email));
+  }
+
+  /** A szűrt listában látható összes ügyfél kijelölése (a korábbi kijelölés megmarad). */
+  selectVisibleClients(): void {
+    const next = new Set(this.toAssign);
+    for (const client of this.filteredUnassignedClients) next.add(client.userId);
+    this.toAssign = next;
+  }
+
+  clearClientSelection(): void {
+    this.toAssign = new Set();
+  }
+
+  /** Monogram a névből (pl. "coach_user01" → "CU", "Andi" → "AN"). */
+  initials(client: CoachClientOverview): string {
+    const parts = (client.username ?? '').trim().split(/[\s._-]+/).filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toLocaleUpperCase();
+    return (parts[0] ?? '?').slice(0, 2).toLocaleUpperCase();
   }
 
   get assignedClients(): CoachClientOverview[] {
