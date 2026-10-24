@@ -29,6 +29,7 @@ describe('Backend messages presented by coach and user components', () => {
   it('does not clear a coach password or report success when the save was rejected', () => {
     const component = TestBed.runInInjectionContext(() => new CoachProfileComponent());
     component.profile.id = 1; component.profile.password_hash = 'new-password';
+    component.currentPassword = 'current-password';
     profileApi.saveCoachProfile.and.returnValue(of(response(false, 'Profile rejected')));
     component.saveProfile();
     expect(component.message).toBe('Profile rejected'); expect(component.messageType).toBe('error');

@@ -201,6 +201,22 @@ describe('Frontend fixes', () => {
     profile.ngOnDestroy();
   });
 
+  it('blocks a user password change without a current password', () => {
+    const update = jasmine.createSpy('updateUser');
+    const profile = new UserProfileComponent({ updateUser: update } as any, {} as any, {} as any, {} as any);
+    profile.selectedUser.id = 1;
+    profile.selectedUser.password = 'new password';
+    for (const currentPassword of ['', '   ']) {
+      profile.selectedUser.currentPassword = currentPassword;
+      profile.onSave();
+      expect(update).not.toHaveBeenCalled();
+      expect(profile.saving).toBeFalse();
+      expect(profile.messageType).toBe('error');
+      expect(profile.selectedUser.password).toBe('new password');
+    }
+    profile.ngOnDestroy();
+  });
+
   it('shows profile rejection as an error, unlocks retry, and blocks duplicate saves', () => {
     const pending = new Subject<any>();
     const update = jasmine.createSpy().and.returnValue(pending);
@@ -214,6 +230,7 @@ describe('Frontend fixes', () => {
     expect(update).not.toHaveBeenCalled();
     profile.selectedUser.id = 1;
     profile.selectedUser.password = 'new password';
+    profile.selectedUser.currentPassword = 'current password';
     profile.onSave();
     profile.onSave();
     expect(update).toHaveBeenCalledTimes(1);

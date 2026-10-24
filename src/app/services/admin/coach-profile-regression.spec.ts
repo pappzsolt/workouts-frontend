@@ -38,13 +38,29 @@ describe('Coach role preservation and profile save regressions', () => {
     return {component, responses, save};
   }
 
+  it('blocks a password change without a current password', () => {
+    const {component, responses, save} = create();
+    component.profile.password_hash = 'FirstPassword123';
+    for (const currentPassword of ['', '   ']) {
+      component.currentPassword = currentPassword;
+      component.saveProfile();
+      expect(save).not.toHaveBeenCalled();
+      expect(responses.length).toBe(0);
+      expect(component.saving).toBeFalse();
+      expect(component.messageType).toBe('error');
+      expect(component.profile.password_hash).toBe('FirstPassword123');
+    }
+  });
+
   it('preserves a newer unsaved password when an earlier save finishes', () => {
     const {component, responses, save} = create();
     component.profile.password_hash = 'FirstPassword123';
+    component.currentPassword = 'CurrentPassword123';
     component.saveProfile();
     component.profile.password_hash = 'SecondPassword456';
     responses[0].next({success: true, data: null, message: null});
     expect(save.calls.first().args[0].passwordHash).toBe('FirstPassword123');
+    expect(save.calls.first().args[0].currentPassword).toBe('CurrentPassword123');
     expect(component.profile.password_hash).toBe('SecondPassword456');
   });
 
@@ -68,10 +84,12 @@ describe('Coach role preservation and profile save regressions', () => {
   it('clears the submitted password after successful save when it is unchanged', () => {
     const {component, responses} = create();
     component.profile.password_hash = 'FirstPassword123';
+    component.currentPassword = 'CurrentPassword123';
     component.saveProfile();
     responses[0].next({success: true, data: null, message: null});
     responses[0].complete();
     expect(component.profile.password_hash).toBe('');
+    expect(component.currentPassword).toBe('');
     expect(component.messageType).toBe('success');
     expect(component.saving).toBeFalse();
   });
@@ -79,10 +97,12 @@ describe('Coach role preservation and profile save regressions', () => {
   it('retains password and permits retry after a network failure', () => {
     const {component, responses, save} = create();
     component.profile.password_hash = 'FirstPassword123';
+    component.currentPassword = 'CurrentPassword123';
     component.saveProfile();
     responses[0].error({status: 0});
     expect(component.saving).toBeFalse();
     expect(component.profile.password_hash).toBe('FirstPassword123');
+    expect(component.currentPassword).toBe('CurrentPassword123');
     expect(component.messageType).toBe('error');
     component.saveProfile();
     expect(save.calls.count()).toBe(2);
@@ -91,11 +111,13 @@ describe('Coach role preservation and profile save regressions', () => {
   it('retains password and permits retry after an unsuccessful response', () => {
     const {component, responses, save} = create();
     component.profile.password_hash = 'FirstPassword123';
+    component.currentPassword = 'CurrentPassword123';
     component.saveProfile();
     responses[0].next({success: false, data: null, message: 'Rejected'});
     responses[0].complete();
     expect(component.saving).toBeFalse();
     expect(component.profile.password_hash).toBe('FirstPassword123');
+    expect(component.currentPassword).toBe('CurrentPassword123');
     expect(component.messageType).toBe('error');
     component.saveProfile();
     expect(save.calls.count()).toBe(2);
