@@ -63,6 +63,8 @@ export class UserExerciseDetailService {
     actualRepetitions: number | null,
     actualWeightKg: number | null,
     notes: string | null,
+    actualRpe?: number | null,
+    rir?: number | null,
   ): Observable<ApiResponse<void>> {
     return this.http.patch<ApiResponse<void>>(API_ENDPOINTS.exerciseSetCompleted, {
       userWorkoutId,
@@ -74,6 +76,8 @@ export class UserExerciseDetailService {
       actualRepetitions,
       actualWeightKg,
       notes,
+      ...(actualRpe !== undefined ? { actualRpe, clearActualRpe: actualRpe === null } : {}),
+      ...(rir !== undefined ? { rir, clearRir: rir === null } : {}),
     });
   }
 }

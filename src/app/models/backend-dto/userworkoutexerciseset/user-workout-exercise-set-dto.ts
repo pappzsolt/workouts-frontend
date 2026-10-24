@@ -1,5 +1,8 @@
 /** GENERATED FROM BACKEND JAVA DTO. Do not add UI-only fields here. */
 export interface UserWorkoutExerciseSetDto {
+  targetRpe?: number | null;
+  actualRpe?: number | null;
+  rir?: number | null;
   id: number | null;
   userWorkoutExerciseId: number | null;
   setNumber: number | null;

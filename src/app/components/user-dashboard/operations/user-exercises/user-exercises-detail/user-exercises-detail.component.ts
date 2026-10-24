@@ -316,8 +316,11 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
     // Capture the occurrence and values at the time of the edit. A queued save
     // must never use identifiers from a different route or later form values.
-    const args = [this.userWorkoutId, this.programId, this.workoutId, exerciseId, set.id,
+    const originalArgs = [this.userWorkoutId, this.programId, this.workoutId, exerciseId, set.id,
       completed ?? (set.completed === true), set.actualRepetitions, set.actualWeightKg, set.notes] as const;
+    const hasEffort = 'actualRpe' in set || 'rir' in set;
+    const effortArgs = [set.actualRpe, set.rir] as const;
+    const args = hasEffort ? [...originalArgs, ...effortArgs] as const : originalArgs;
     const key = `${this.userWorkoutId}:${set.id}`;
     const signature = JSON.stringify(args);
     const previous = this.pendingSetSaves.get(key);
@@ -339,7 +342,9 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     // Changed payloads queue behind the existing request; identical blur/page
     // saves share it. Recover an earlier failure so a newer edit can still save.
     entry.request = (previous ? previous.request.pipe(catchError(() => of(void 0))) : of(void 0)).pipe(
-      concatMap(() => defer(() => this.exercisesService.updateSetCompleted(...args))),
+      concatMap(() => defer(() => hasEffort
+        ? this.exercisesService.updateSetCompleted(...originalArgs, ...effortArgs)
+        : this.exercisesService.updateSetCompleted(...originalArgs))),
       map(response => {
         if (!response.success) throw new Error(responseMessage([response], 'userExerciseDetail.saveError'));
         if (completed !== undefined || confirmed.completed !== args[5]) confirmed.timerNeedsRefresh = true;

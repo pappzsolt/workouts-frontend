@@ -1,4 +1,11 @@
 {
+  "setEffort": {
+    "title": "Satzanstrengung",
+    "targetRpe": "Geplantes RPE",
+    "actualRpe": "Tatsächliches RPE",
+    "rir": "RIR – verbleibende Wiederholungen",
+    "help": "Das geplante RPE gibt der Coach vor. Das tatsächliche RPE ist deine Bewertung (0–10 in halben Schritten). RIR beschreibt, wie viele weitere Wiederholungen deiner Meinung nach möglich gewesen wären (eine nicht negative ganze Zahl). Alle Felder sind optional; RPE und RIR sind unabhängig."
+  },
   "language": {
     "loadError": "Die ausgewählte Sprache konnte nicht geladen werden. Bitte versuche es erneut.",
     "english": "Englisch",

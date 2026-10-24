@@ -216,7 +216,7 @@
                       } @else {
                         <!-- relative: a táblán belüli abszolút (sr-only) elemek is ebben a görgethető dobozban maradjanak -->
                         <div class="relative overflow-x-auto px-2 py-2">
-                          <table class="w-full min-w-[900px] border-collapse text-sm">
+                          <table class="w-full min-w-[1100px] border-collapse text-sm">
                             <thead>
                               <tr class="text-left text-xs text-content-600">
                                 <th scope="col" class="w-10 px-1 py-1 font-semibold">#</th>
@@ -225,6 +225,9 @@
                                 <th scope="col" class="px-1 py-1 font-semibold">{{ 'coachWorkspace.restSeconds' | translate }}</th>
                                 <th scope="col" class="px-1 py-1 font-semibold">{{ 'coachWorkspace.client.actualReps' | translate }}</th>
                                 <th scope="col" class="px-1 py-1 font-semibold">{{ 'coachWorkspace.client.actualWeight' | translate }}</th>
+                                <th scope="col" class="px-1 py-1 font-semibold">{{ 'setEffort.targetRpe' | translate }}</th>
+                                <th scope="col" class="px-1 py-1 font-semibold">{{ 'setEffort.actualRpe' | translate }}</th>
+                                <th scope="col" class="px-1 py-1 font-semibold">{{ 'setEffort.rir' | translate }}</th>
                                 <th scope="col" class="w-16 px-1 py-1 font-semibold">{{ 'coachWorkspace.client.done' | translate }}</th>
                                 <th scope="col" class="px-1 py-1 font-semibold">{{ 'coachWorkspace.client.notes' | translate }}</th>
                                 <th scope="col" class="w-12 px-1 py-1"><span class="sr-only">{{ 'coachWorkspace.delete' | translate }}</span></th>
@@ -257,6 +260,12 @@
                                     <input appInput="compact" type="number" min="0" step="0.25" [name]="'aw' + e + '-' + r" [(ngModel)]="row.actualWeightKg"
                                            [attr.aria-label]="entry.exercise.name + ' ' + (r + 1) + '. ' + ('coachWorkspace.client.actualWeight' | translate)" />
                                   </td>
+                                  <td class="px-1 py-1">
+                                    <input appInput="compact" type="number" min="0" max="10" step="0.5" [name]="'rpe' + e + '-' + r" [(ngModel)]="row.targetRpe"
+                                      [attr.aria-label]="entry.exercise.name + ' ' + (r + 1) + '. ' + ('setEffort.targetRpe' | translate)" />
+                                  </td>
+                                  <td class="px-1 py-1">{{ row.actualRpe ?? '—' }}</td>
+                                  <td class="px-1 py-1">{{ row.rir ?? '—' }}</td>
                                   <td class="px-1 py-1 text-center">
                                     <input appCheckbox="plain" type="checkbox" [name]="'dn' + e + '-' + r" [(ngModel)]="row.completed" class="h-5 w-5"
                                            [attr.aria-label]="entry.exercise.name + ' ' + (r + 1) + '. ' + ('coachWorkspace.client.done' | translate)" />
@@ -276,7 +285,7 @@
                                 </tr>
                                 @if (deleteSetId === row.id) {
                                   <tr>
-                                    <td colspan="9" class="px-2 pb-2">
+                                    <td colspan="12" class="px-2 pb-2">
                                       <div class="flex flex-wrap items-center gap-3 rounded-xl bg-delete-50 p-3 text-sm text-delete-700">
                                         <span class="flex-1">{{ 'coachWorkspace.client.deleteSetConfirm' | translate: { n: r + 1 } }}</span>
                                         <button type="button" (click)="cancelDeleteSet()" class="btn btn-neutral px-3">
@@ -290,7 +299,7 @@
                                   </tr>
                                 }
                               } @empty {
-                                <tr><td colspan="9" class="px-2 py-3 text-content-600">{{ 'coachWorkspace.client.noSets' | translate }}</td></tr>
+                                <tr><td colspan="12" class="px-2 py-3 text-content-600">{{ 'coachWorkspace.client.noSets' | translate }}</td></tr>
                               }
                             </tbody>
                           </table>

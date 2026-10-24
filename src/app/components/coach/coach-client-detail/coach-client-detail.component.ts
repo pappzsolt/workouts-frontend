@@ -54,6 +54,9 @@ export interface ClientExerciseEntry {
 
 /** Egy sorozat szerkeszthető sora (minden mező külön, mint a régi felületen). */
 export interface EditableSet {
+  targetRpe?: number | string | null;
+  actualRpe?: number | null;
+  rir?: number | null;
   id: number;
   setNumber: number;
   targetRepetitions: number | string | null;
@@ -464,6 +467,7 @@ export class CoachClientDetailComponent implements OnInit {
     if (!now) return true;
     const o = row.original;
     return (
+      (now.targetRpe ?? null) !== (o.targetRpe ?? null) ||
       now.targetRepetitions !== o.targetRepetitions ||
       now.targetWeightKg !== o.targetWeightKg ||
       now.restSeconds !== o.restSeconds ||
@@ -616,6 +620,7 @@ export class CoachClientDetailComponent implements OnInit {
     for (const entry of this.exerciseSets) {
       for (const row of entry.sets) {
         const o = row.original;
+        row.targetRpe = o.targetRpe;
         row.targetRepetitions = o.targetRepetitions;
         row.targetWeightKg = o.targetWeightKg;
         row.restSeconds = o.restSeconds;
@@ -667,6 +672,8 @@ export class CoachClientDetailComponent implements OnInit {
 
   /** A sor értékei mentésre kész formában; érvénytelen értéknél null. */
   values(row: EditableSet): ClientSetValues | null {
+    const targetRpe = toNumber(row.targetRpe ?? null);
+    if (targetRpe === undefined || (targetRpe !== null && (targetRpe < 0 || targetRpe > 10 || !Number.isInteger(targetRpe * 2)))) return null;
     const target = toInt(row.targetRepetitions);
     if (target === null || target === undefined || target < 1) return null;
     const weight = toNumber(row.targetWeightKg);
@@ -679,6 +686,7 @@ export class CoachClientDetailComponent implements OnInit {
     }
     const notes = (row.notes ?? '').trim();
     return {
+      ...(row.targetRpe !== undefined ? { targetRpe } : {}),
       targetRepetitions: target,
       targetWeightKg: weight,
       actualRepetitions: actualReps,
@@ -865,6 +873,7 @@ function groupWorkouts(rows: ClientProgramRow[]): ClientWorkoutEntry[] {
 
 function toEditable(set: ClientWorkoutSet): EditableSet {
   const original: ClientSetValues = {
+    targetRpe: set.targetRpe == null ? null : Number(set.targetRpe),
     targetRepetitions: set.targetRepetitions,
     targetWeightKg: set.targetWeightKg === null || set.targetWeightKg === undefined ? null : Number(set.targetWeightKg),
     restSeconds: set.restSeconds ?? null,
@@ -876,6 +885,9 @@ function toEditable(set: ClientWorkoutSet): EditableSet {
   return {
     id: set.id,
     setNumber: set.setNumber,
+    targetRpe: original.targetRpe,
+    actualRpe: set.actualRpe == null ? null : Number(set.actualRpe),
+    rir: set.rir ?? null,
     targetRepetitions: original.targetRepetitions,
     targetWeightKg: original.targetWeightKg,
     restSeconds: original.restSeconds,

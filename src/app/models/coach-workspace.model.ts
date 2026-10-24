@@ -158,6 +158,9 @@ export interface ClientWorkoutExerciseRow {
 
 /** GET /api/user-workout-exercise-sets/{userWorkoutExerciseId} */
 export interface ClientWorkoutSet {
+  targetRpe?: number | null;
+  actualRpe?: number | null;
+  rir?: number | null;
   id: number;
   userWorkoutExerciseId: number;
   setNumber: number;
@@ -198,6 +201,7 @@ export interface ClientProgramRow {
 }
 
 export interface ClientSetValues {
+  targetRpe?: number | null;
   targetRepetitions: number;
   targetWeightKg: number | null;
   actualRepetitions: number | null;

@@ -1,4 +1,11 @@
 {
+  "setEffort": {
+    "title": "Sorozat nehézsége",
+    "targetRpe": "Tervezett RPE",
+    "actualRpe": "Tényleges RPE",
+    "rir": "RIR – tartalék ismétlések",
+    "help": "A tervezett RPE az edző előírása. A tényleges RPE a saját értékelésed (0–10, félpontos lépésekben). A RIR azt jelzi, szerinted hány további ismétlés ment volna (0 vagy több, egész szám). Minden mező opcionális; az RPE és a RIR egymástól független."
+  },
   "language": {
     "loadError": "A kiválasztott nyelv betöltése sikertelen. Próbáld újra.",
     "english": "Angol",

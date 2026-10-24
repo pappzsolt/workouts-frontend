@@ -1,4 +1,11 @@
 {
+  "setEffort": {
+    "title": "Set effort",
+    "targetRpe": "Target RPE",
+    "actualRpe": "Actual RPE",
+    "rir": "RIR – repetitions in reserve",
+    "help": "Target RPE is prescribed by the coach. Actual RPE is your own rating (0–10 in half-point steps). RIR is how many more repetitions you think you could have performed (a non-negative whole number). All fields are optional; RPE and RIR are independent."
+  },
   "language": {
     "loadError": "The selected language could not be loaded. Please try again.",
     "english": "English",

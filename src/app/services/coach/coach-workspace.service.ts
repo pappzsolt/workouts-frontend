@@ -189,6 +189,10 @@ export class CoachWorkspaceService {
   /** Egy sorozat minden mezőjének mentése; az üres mezőket a clear jelzők törlik. */
   saveClientSet(setId: number, values: ClientSetValues): Observable<void> {
     const body = {
+      ...(values.targetRpe !== undefined ? {
+        targetRpe: values.targetRpe,
+        clearTargetRpe: values.targetRpe === null,
+      } : {}),
       targetRepetitions: values.targetRepetitions,
       targetWeightKg: values.targetWeightKg,
       clearTargetWeightKg: values.targetWeightKg === null,
