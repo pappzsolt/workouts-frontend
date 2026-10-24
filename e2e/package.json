@@ -9,7 +9,10 @@
     "report": "playwright show-report",
     "typecheck": "tsc -p tsconfig.json",
     "test:contract": "playwright test -c playwright.contract.config.ts",
-    "test:coach": "playwright test tests/COACH"
+    "test:coach": "playwright test tests/COACH",
+    "mailbox": "node scripts/test-mailbox.cjs",
+    "test:p1": "playwright test tests/USER/WORKOUTS/user-workout-comprehensive.spec.ts tests/USER/READ/user-statistics-exact.spec.ts tests/AUTH/GUI/password-reset-live.spec.ts tests/AUTH/GUI/registration-live.spec.ts",
+    "test:p2": "playwright test tests/USER/GUI/bug-report-live.spec.ts tests/COACH/WORKSPACE/coach-save-resilience.spec.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

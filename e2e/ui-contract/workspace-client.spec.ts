@@ -23,6 +23,9 @@ test('client: edits every field, sends exact values and reload persists', async 
   await input(page, 'dn').check(); await save(page).click();
   await expect(save(page)).toBeDisabled();
   expect(api.writes('/api/user-workout-exercise-sets/7000')[0].body).toEqual({
+    expected: { targetRepetitions: 8, targetWeightKg: 20, actualRepetitions: null, actualWeightKg: null,
+      completed: false, restSeconds: 90, notes: null, targetRpe: null },
+    targetRpe: null, clearTargetRpe: true,
     targetRepetitions: 10, targetWeightKg: 42.5, clearTargetWeightKg: false,
     actualRepetitions: 9, clearActualRepetitions: false, actualWeightKg: 40, clearActualWeightKg: false,
     restSeconds: 0, clearRestSeconds: false, notes: 'Test note', clearNotes: false, completed: true,

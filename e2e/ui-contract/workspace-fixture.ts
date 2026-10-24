@@ -97,7 +97,7 @@ export class WorkspaceApi {
       else if (c.method === 'GET' && /^\/api\/user-workout-exercise-sets\/\d+$/.test(c.path)) data = s.sets[id] ?? [];
       else if (c.method === 'PUT' && /^\/api\/user-workout-exercise-sets\/\d+$/.test(c.path)) {
         const row = Object.values(s.sets).flat().find(x => x.id === id)!;
-        for (const [key, value] of Object.entries(c.body)) if (!key.startsWith('clear')) row[key] = value;
+        for (const [key, value] of Object.entries(c.body)) if (!key.startsWith('clear') && key !== 'expected') row[key] = value;
         data = null;
       } else if (c.method === 'POST' && /^\/api\/user-workout-exercise-sets\/\d+\/sets$/.test(c.path)) {
         const eid = Number(c.path.split('/')[3]); data = this.nextId++;

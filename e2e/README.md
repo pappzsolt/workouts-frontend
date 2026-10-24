@@ -141,3 +141,11 @@ fixture is the exception: no member deletion API exists, so its two newly create
 users are removed by ID and unique username prefix through SQL, matching the
 existing AUTH/DB fixture lifecycle. This SQL is used only for fixture cleanup;
 the admin edit itself runs through the real GUI/API and is verified in PostgreSQL.
+
+## P1 acceptance tests
+
+See [README_P1.md](README_P1.md) for the five real-backend acceptance cases, local SMTP setup, exact statistics and fixture cleanup. Run them with `npm run test:p1 -- --retries=0`.
+
+## P2 regression tests
+
+See [README_P2.md](README_P2.md) for the real-backend screenshot flow, offline retry, concurrent editing and partial-save regressions. Run them with `npm run test:p2 -- --retries=0`.

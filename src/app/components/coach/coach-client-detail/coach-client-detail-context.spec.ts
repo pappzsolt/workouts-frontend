@@ -48,7 +48,7 @@ describe('Client set save snapshots', () => {
   it('keeps a newer repetition count dirty until a second save succeeds', () => {
     const row = component.exerciseSets[0].sets[0];
     component.saveSets();
-    expect(save.calls.mostRecent().args).toEqual([1, values(15)]);
+    expect(save.calls.mostRecent().args).toEqual([1, values(15), values(10)]);
     row.targetRepetitions = 20;
     finish(requests[0]);
     expect(row.original.targetRepetitions).toBe(15);
@@ -81,9 +81,27 @@ describe('Client set save snapshots', () => {
     second.completed = true;
     finish(requests[0]);
     finish(requests[1]);
-    expect(save.calls.argsFor(1)).toEqual([2, values(15)]);
+    expect(save.calls.argsFor(1)).toEqual([2, values(15), values(10)]);
     expect(second.original).toEqual(values(15));
     expect(component.isChanged(second)).toBeTrue();
+  });
+
+  it('does not resend a committed row when a subsequent row fails', () => {
+    component.exerciseSets = [entry([editable(1), editable(2)])];
+    component.exerciseSets[0].sets[0].completed = true;
+    component.saveSets();
+    finish(requests[0]);
+    requests[1].error(new Error('conflict'));
+    expect(component.exerciseSets[0].sets[0].original).toEqual({ ...values(15), completed: true });
+    expect(component.exerciseSets[0].exercise.setsCompleted).toBe(1);
+    expect(component.exerciseSets[0].sets[1].original).toEqual(values(10));
+    expect(component.changedRows.map(row => row.id)).toEqual([2]);
+    expect(component.messageType).toBe('error');
+    component.saveSets();
+    expect(save.calls.allArgs().map(args => args[0])).toEqual([1, 2, 2]);
+    expect(save.calls.mostRecent().args[2]).toEqual(values(10));
+    finish(requests[2]);
+    expect(component.dirty).toBeFalse();
   });
 
   it('does not change the last confirmed values when saving fails', () => {

@@ -1,183 +1,64 @@
-import { API_ENDPOINTS } from '../../helpers/api-endpoints';
-import { expect, test } from '@playwright/test';
-import {
-  apiFor,
-  coachUserId,
-  dbOne,
-  login,
-  rejected,
-  success,
-} from '../../helpers/e2e-next-3-helpers';
+import { test, expect } from '../../helpers/p1-fixture';
+import { closeDb, db, dbOne, success } from '../../helpers/e2e-next-3-helpers';
+import { API_ENDPOINTS as E } from '../../helpers/api-endpoints';
+import { API_ENDPOINTS as FRONTEND } from '../../../../src/app/api-endpoints';
 
-const LANGUAGE = 'hu';
+const savePath = new URL(FRONTEND.exerciseSetCompleted, 'http://localhost').pathname;
 
-test.describe('User - Program Statistics endpoint matrix', () => {
-
-  test('STATISTICS: program + workout activity + exercise strength progress + response contract', async ({
-    page,
-  }) => {
-    await login(page, 'user');
-    const api = await apiFor(page);
-
-    try {
-      const programStats = await success(
-        await api.get(`${API_ENDPOINTS.statistics.userProgram}?language=${LANGUAGE}`),
-        'GET /api/user/program-statistics',
-      );
-
-      expect(programStats.data).toBeTruthy();
-      expect(Number(programStats.data.totalPrograms)).toBeGreaterThanOrEqual(0);
-      expect(Number(programStats.data.completedPrograms)).toBeGreaterThanOrEqual(0);
-      expect(Array.isArray(programStats.data.programs)).toBeTruthy();
-
-      expect(Number(programStats.data.completedPrograms)).toBeLessThanOrEqual(
-        Number(programStats.data.totalPrograms),
-      );
-
-      for (const program of programStats.data.programs) {
-        expect(Number(program.programId)).toBeGreaterThan(0);
-        expect(typeof program.programName).toBe('string');
-
-        expect(Number(program.totalWorkouts)).toBeGreaterThanOrEqual(0);
-        expect(Number(program.completedWorkouts)).toBeGreaterThanOrEqual(0);
-        expect(Number(program.incompleteWorkouts)).toBeGreaterThanOrEqual(0);
-
-        expect(Number(program.completedWorkouts)).toBeLessThanOrEqual(
-          Number(program.totalWorkouts),
-        );
-
-        expect(Number(program.incompleteWorkouts)).toBeLessThanOrEqual(
-          Number(program.totalWorkouts),
-        );
-
-        expect(Boolean(program.completed)).toBe(
-          Number(program.totalWorkouts) > 0 &&
-            Number(program.completedWorkouts) === Number(program.totalWorkouts),
-        );
-      }
-
-      const activity = await success(
-        await api.get(
-          `${API_ENDPOINTS.statistics.userProgramWorkouts}?from=2035-01-01&to=2035-12-31`,
-        ),
-        'GET /api/user/program-statistics/workouts',
-      );
-
-      expect(activity.data).toBeTruthy();
-      expect(Array.isArray(activity.data.weeklyActivity)).toBeTruthy();
-      expect(Array.isArray(activity.data.monthlyActivity)).toBeTruthy();
-      expect(activity.data.weeklyVolume).toBeTruthy();
-
-      for (const item of [...activity.data.weeklyActivity, ...activity.data.monthlyActivity]) {
-        expect(item.periodStart).toBeTruthy();
-        expect(item.periodEnd).toBeTruthy();
-        expect(Number(item.workoutCount)).toBeGreaterThanOrEqual(0);
-        expect(Number(item.activeDays)).toBeGreaterThanOrEqual(0);
-        expect(Number(item.completedSets)).toBeGreaterThanOrEqual(0);
-        expect(Number(item.totalVolume)).toBeGreaterThanOrEqual(0);
-      }
-
-      expect(activity.data.weeklyVolume.currentWeekVolume).toBeDefined();
-      expect(activity.data.weeklyVolume.previousWeekVolume).toBeDefined();
-      expect(activity.data.weeklyVolume.percentageChange).toBeDefined();
-
-      const userId = await coachUserId();
-
-      const exercise = await dbOne<{ exercise_id: number }>(
-        `SELECT uwe.workout_exercise_id AS exercise_id
-           FROM public.user_workout_exercises uwe
-           JOIN public.user_workouts uw
-             ON uw.id = uwe.user_workout_id
-          WHERE uw.user_id = $1
-          ORDER BY uwe.id
-          LIMIT 1`,
-        [userId],
-      );
-
-      if (!exercise) {
-        throw new Error(
-          'A strength-progress E2E teszthez a teszt usernek legalább egy user_workout_exercise rekorddal kell rendelkeznie.',
-        );
-      }
-
-      const workoutExercise = await dbOne<{ exercise_id: number }>(
-        `SELECT exercise_id
-           FROM public.workout_exercises
-          WHERE id = $1`,
-        [Number(exercise.exercise_id)],
-      );
-
-      expect(workoutExercise).not.toBeNull();
-
-      const exerciseId = Number(workoutExercise!.exercise_id);
-
-      expect(exerciseId).toBeGreaterThan(0);
-
-      const strength = await success(
-        await api.get(
-          `${API_ENDPOINTS.statistics.userExerciseStrength(exerciseId)}?from=2035-01-01&to=2035-12-31&language=${LANGUAGE}`,
-        ),
-        'GET /api/user/program-statistics/exercises/{exerciseId}/strength-progress',
-      );
-
-      expect(Array.isArray(strength.data)).toBeTruthy();
-
-      for (const row of strength.data) {
-        expect(Number(row.exerciseId)).toBe(exerciseId);
-        expect(typeof row.exerciseName).toBe('string');
-        expect(row.performedAt).toBeTruthy();
-        expect(Number(row.bestWeightKg)).toBeGreaterThanOrEqual(0);
-        expect(Number(row.repetitions)).toBeGreaterThan(0);
-        expect(Number(row.estimatedOneRepMax)).toBeGreaterThanOrEqual(0);
-      }
-    } finally {
-      await api.dispose();
-    }
+test.afterAll(closeDb);
+test.describe.configure({ timeout: 120_000 });
+test('USER WORKOUT: assigned program → exercise → actual values → complete all sets → reload → DB and API', async ({ page, plan: p }) => {
+  const workout = p.workouts[0];
+  const sets = p.sets.filter(s => s.user_workout_id === workout.id);
+  const untouched = p.sets.filter(s => s.user_workout_id === p.workouts[1].id);
+  // An isolated user has exactly this program, so navigation cannot silently pick existing data.
+  await page.goto('/user/my-programs');
+  await page.locator(`app-user-my-programs a[href*="/user/programs/${p.programId}/workouts"]`).click();
+  await expect(page).toHaveURL(new RegExp(`/user/programs/${p.programId}/workouts\\?`));
+  await page.locator('app-workouts app-card').filter({ has: page.locator('h4') }).first().click();
+  await expect(page).toHaveURL(url => Number(url.searchParams.get('userWorkoutId')) === Number(workout.id));
+  await page.locator('app-user-exercises app-card h3').click();
+  await expect(page).toHaveURL(url => url.pathname.endsWith(`/exercises/${p.exerciseId}`) && Number(url.searchParams.get('userWorkoutId')) === Number(workout.id));
+  const surface = page.locator('app-user-exercise-detail');
+  const writes: any[] = [];
+  page.on('request', r => {
+    if (r.method() === 'PATCH' && new URL(r.url()).pathname === savePath) writes.push(r.postDataJSON());
   });
-
-  test('NEGATIVE VALIDATION + ROLE: fordított dátumtartomány és coach hozzáférés elutasítva', async ({
-    page,
-  }) => {
-    await login(page, 'user');
-
-    const userApi = await apiFor(page);
-
-    try {
-      await rejected(
-        await userApi.get(
-          `${API_ENDPOINTS.statistics.userProgramWorkouts}?from=2035-12-31&to=2035-01-01`,
-        ),
-        'GET workouts invalid date range', 400,
-      );
-
-      await rejected(
-        await userApi.get(
-          `${API_ENDPOINTS.statistics.userExerciseStrength(0)}?from=2035-01-01&to=2035-12-31&language=${LANGUAGE}`,
-        ),
-        'GET strength progress invalid exercise id', 400,
-      );
-    } finally {
-      await userApi.dispose();
+  for (let i = 0; i < sets.length; i++) {
+    const set = sets[i];
+    await expect(surface.locator('#user-set-actual-repetitions')).toHaveAttribute('data-validation-set', String(set.id));
+    for (const [selector, value] of [['#user-set-actual-repetitions', String(8 + i)], ['#user-set-actual-weight', String(20 + i * 2.5)]]) {
+      const saved = page.waitForResponse(r => r.request().method() === 'PATCH' && new URL(r.url()).pathname === savePath && r.request().postDataJSON().setId === set.id);
+      await surface.locator(selector).fill(value);
+      await surface.locator(selector).blur();
+      const response = await saved;
+      expect(response.status()).toBe(200); expect((await response.json()).success).toBe(true);
     }
-
-    await login(page, 'coach');
-
-    const coachApi = await apiFor(page);
-
-    try {
-      await rejected(
-        await coachApi.get(`${API_ENDPOINTS.statistics.userProgram}?language=${LANGUAGE}`),
-        'GET program statistics as coach', 403,
-      );
-
-      await rejected(
-        await coachApi.get(
-          `${API_ENDPOINTS.statistics.userProgramWorkouts}?from=2035-01-01&to=2035-12-31`,
-        ),
-        'GET workout statistics as coach', 403,
-      );
-    } finally {
-      await coachApi.dispose();
-    }
-  });
+    const completed = page.waitForResponse(r => r.request().method() === 'PATCH' && new URL(r.url()).pathname === savePath && r.request().postDataJSON().setId === set.id && r.request().postDataJSON().completed === true);
+    await surface.getByRole('button', { name: 'KÉSZ', exact: true }).click();
+    expect((await completed).status()).toBe(200);
+    await expect(surface.getByText('Sorozat teljesítve', { exact: true })).toBeVisible();
+    if (i < sets.length - 1) await surface.getByRole('button', { name: 'Következő', exact: true }).click();
+  }
+  expect(writes.length).toBeGreaterThanOrEqual(sets.length * 3);
+  for (const write of writes) expect(write).toMatchObject({ userWorkoutId: workout.id, programId: p.programId, workoutId: p.workoutId, exerciseId: p.exerciseId });
+  const stored = (await db().query('SELECT * FROM user_workout_exercise_sets WHERE id=ANY($1::bigint[]) ORDER BY set_number', [sets.map(s => s.id)])).rows;
+  for (let i = 0; i < stored.length; i++) {
+    expect(stored[i].completed).toBe(true); expect(stored[i].completed_at).not.toBeNull();
+    expect(Number(stored[i].actual_repetitions)).toBe(8 + i);
+    expect(Number(stored[i].actual_weight_kg)).toBe(20 + i * 2.5);
+    expect(stored[i].target_repetitions).toEqual(sets[i].target_repetitions);
+    expect(stored[i].target_weight_kg).toEqual(sets[i].target_weight_kg);
+  }
+  expect((await dbOne('SELECT completed FROM user_workouts WHERE id=$1', [workout.id])).completed).toBe(true);
+  expect((await dbOne('SELECT completed FROM user_workouts WHERE id=$1', [p.workouts[1].id])).completed).toBe(false);
+  const other = (await db().query('SELECT * FROM user_workout_exercise_sets WHERE id=ANY($1::bigint[]) ORDER BY set_number', [untouched.map(s => s.id)])).rows;
+  expect(other).toEqual(untouched.map(({ user_workout_id, ...set }) => set));
+  await page.reload();
+  await expect(surface.locator('#user-set-actual-repetitions')).toHaveValue('8');
+  await expect(surface.locator('#user-set-actual-weight')).toHaveValue('20');
+  await expect(surface.getByText('Sorozat teljesítve', { exact: true })).toBeVisible();
+  const read = await success(await p.owner.get(E.userWorkoutExerciseSets.byExercise(sets[0].user_workout_exercise_id)), 'Read completed workout sets');
+  expect(read.data).toHaveLength(sets.length);
+  for (let i = 0; i < sets.length; i++) expect(read.data.find((s: any) => Number(s.id) === Number(sets[i].id))).toMatchObject({ completed: true, actualRepetitions: 8 + i, actualWeightKg: 20 + i * 2.5 });
 });

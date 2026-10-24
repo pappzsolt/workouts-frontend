@@ -1,7 +1,7 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subject, concat, finalize, of, takeUntil, toArray } from 'rxjs';
+import { Observable, Subject, concat, finalize, of, takeUntil, tap, toArray } from 'rxjs';
 
 import { SHARED_IMPORTS } from '../../shared/shared-imports';
 import {
@@ -595,16 +595,21 @@ export class CoachClientDetailComponent implements OnInit {
       return;
     }
     // Snapshot the payload: edits made while the request is pending must remain dirty.
-    const saves = changed.map((row) => ({ row, values: this.values(row)! }));
+    const saves = changed.map((row) => ({ row, values: this.values(row)!, expected: { ...row.original } }));
     this.saving = true;
-    concat(...saves.map(({ row, values }) => this.workspace.saveClientSet(row.id, values)))
+    concat(...saves.map(({ row, values, expected }) => this.workspace.saveClientSet(row.id, values, expected).pipe(
+      // Each request commits independently. Preserve edits made while it was pending;
+      // a later failure must not cause an already confirmed row to be sent again.
+      tap(() => {
+        row.original = { ...values };
+        for (const entry of this.exerciseSets) entry.exercise.setsCompleted = this.completedCount(entry);
+        this.refreshWorkoutTotals();
+      }),
+    )))
       .pipe(toArray(), takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           this.saving = false;
-          for (const { row, values } of saves) row.original = { ...values };
-          for (const entry of this.exerciseSets) entry.exercise.setsCompleted = this.completedCount(entry);
-          this.refreshWorkoutTotals();
           this.showMessage('coachWorkspace.client.saved', 'success');
           if (!this.dirty) after?.();
         },

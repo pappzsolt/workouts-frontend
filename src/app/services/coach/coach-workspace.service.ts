@@ -187,8 +187,9 @@ export class CoachWorkspaceService {
   }
 
   /** Egy sorozat minden mezőjének mentése; az üres mezőket a clear jelzők törlik. */
-  saveClientSet(setId: number, values: ClientSetValues): Observable<void> {
+  saveClientSet(setId: number, values: ClientSetValues, expected?: ClientSetValues): Observable<void> {
     const body = {
+      ...(expected ? { expected } : {}),
       ...(values.targetRpe !== undefined ? {
         targetRpe: values.targetRpe,
         clearTargetRpe: values.targetRpe === null,
