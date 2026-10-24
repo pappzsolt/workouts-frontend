@@ -28,6 +28,7 @@
             "styles": [
               "@angular/material/prebuilt-themes/azure-blue.css",
               "src/styles/phosphor-duotone.css",
+              "src/styles/local-fonts.css",
               "src/styles.css"
             ],
             "scripts": []
@@ -53,7 +54,7 @@
                   "minify": true,
                   "inlineCritical": false
                 },
-                "fonts": true
+                "fonts": { "inline": false }
               },
               "fileReplacements": [
                 {
@@ -106,6 +107,7 @@
             "styles": [
               "@angular/material/prebuilt-themes/azure-blue.css",
               "src/styles/phosphor-duotone.css",
+              "src/styles/local-fonts.css",
               "src/styles.css"
             ],
             "scripts": []
