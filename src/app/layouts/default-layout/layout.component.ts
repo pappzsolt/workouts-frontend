@@ -29,6 +29,7 @@ export class LayoutComponent implements OnInit {
     { label: 'menu.users', icon: 'users', path: '/admin/users' },
     { label: 'menu.registrations', icon: 'user-plus', path: '/admin/registrations' },
     { label: 'menu.loginAuditLogs', icon: 'list-checks', path: '/admin/login-audit-logs' },
+    { label: 'menu.bugReports', icon: 'flag', path: '/admin/bug-reports' },
     { label: 'menu.logout', icon: 'log-out', action: 'logout' },
   ];
 
@@ -39,12 +40,14 @@ export class LayoutComponent implements OnInit {
     { label: 'menu.coachWorkouts', icon: 'flame', path: '/coach/workouts' },
     { label: 'menu.coachExercises', icon: 'dumbbell', path: '/coach/exercises' },
     { label: 'menu.profile', icon: 'user-round', path: '/coach/profile' },
+    { label: 'menu.bugReport', icon: 'triangle-alert', path: '/coach/bug-report' },
     { label: 'menu.logout', icon: 'log-out', action: 'logout' },
   ];
 
   userMenuItems: MenuItem[] = [
     { label: 'menu.dashboard', icon: 'house', path: '/user/dashboard' },
     { label: 'menu.profile', icon: 'user-round', path: '/user/profile' },
+    { label: 'menu.bugReport', icon: 'triangle-alert', path: '/user/bug-report' },
     { label: 'menu.logout', icon: 'log-out', action: 'logout' },
   ];
 

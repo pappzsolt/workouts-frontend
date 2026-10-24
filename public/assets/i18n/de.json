@@ -22,7 +22,9 @@
     "security": "Sicherheit",
     "loginAuditLogs": "Anmeldeprotokoll",
     "coachWorkouts": "Trainingsbibliothek",
-    "registrations": "Registrierungsanfragen"
+    "registrations": "Registrierungsanfragen",
+    "bugReport": "Fehler melden",
+    "bugReports": "Fehlermeldungen"
   },
   "header": {
     "user": "Benutzer",
@@ -1254,5 +1256,67 @@
     "LOW": "Niedrig",
     "MEDIUM": "Mittel",
     "HIGH": "Hoch"
+  },
+  "bugReport": {
+    "title": "Fehler melden",
+    "subtitle": "Beschreibe, was nicht funktioniert, und hänge wenn möglich einen Screenshot an. Die Meldung geht an den Administrator.",
+    "reporter": "Gemeldet von",
+    "date": "Datum",
+    "summary": "Kurzbeschreibung",
+    "summaryHint": "3–150 Zeichen, z. B. „Profil kann nicht gespeichert werden“.",
+    "summaryPlaceholder": "Was ist das Problem?",
+    "description": "Beschreibung",
+    "descriptionHint": "10–5000 Zeichen. Was hast du getan, was hast du erwartet und was ist stattdessen passiert?",
+    "descriptionPlaceholder": "1. Ich habe … geöffnet\n2. Ich habe … geklickt\n3. Ich sah …",
+    "pageUrl": "Seite, auf der der Fehler auftrat",
+    "pageUrlHint": "Mit der vorherigen Seite vorausgefüllt; änderbar oder löschbar.",
+    "screenshots": "Screenshots",
+    "optional": "optional",
+    "addScreenshot": "Screenshot hinzufügen",
+    "screenshotHint": "Klicken, hierher ziehen oder einfügen (Strg+V). Bis zu {{max}} PNG- oder JPEG-Bilder, je {{size}} MB.",
+    "attached": "Angehängte Screenshots",
+    "removeScreenshot": "{{name}} entfernen",
+    "submit": "Meldung senden",
+    "sending": "Wird gesendet…",
+    "success": "Danke, deine Fehlermeldung wurde gespeichert.",
+    "reportId": "Kennung",
+    "submittedAt": "Gesendet",
+    "screenshotCount": "Screenshots",
+    "newReport": "Neue Meldung",
+    "errors": {
+      "titleLength": "Die Kurzbeschreibung muss 3–150 Zeichen lang sein.",
+      "descriptionLength": "Die Beschreibung muss 10–5000 Zeichen lang sein.",
+      "pageUrl": "Nur eine Seite innerhalb der App ist erlaubt (z. B. /user/dashboard).",
+      "tooManyFiles": "Es können höchstens {{max}} Screenshots angehängt werden.",
+      "fileTooLarge": "{{name}}: Bilder dürfen höchstens {{max}} MB groß sein.",
+      "fileType": "{{name}}: nur PNG- oder JPEG-Bilder sind erlaubt.",
+      "fixFields": "Bitte korrigiere die markierten Felder.",
+      "submit": "Die Meldung konnte nicht gesendet werden.",
+      "tooLarge": "Die angehängten Bilder sind zusammen zu groß. Hänge weniger oder kleinere Bilder an."
+    }
+  },
+  "adminBugReports": {
+    "title": "Fehlermeldungen",
+    "subtitle": "Von Benutzern und Trainern gesendete Fehlermeldungen, die neuesten zuerst.",
+    "total": "Gesamt: {{count}}",
+    "refresh": "Aktualisieren",
+    "loading": "Wird geladen…",
+    "empty": "Noch keine Fehlermeldungen.",
+    "reporter": "Gemeldet von",
+    "page": "Seite",
+    "browser": "Browser",
+    "deletedAccount": "Konto inzwischen gelöscht",
+    "type": {
+      "USER": "Benutzer",
+      "COACH": "Trainer"
+    },
+    "screenshots": "Screenshots",
+    "openScreenshot": "Screenshot {{n}} öffnen",
+    "screenshotAlt": "Screenshot {{n}}",
+    "screenshotError": "Das Bild konnte nicht geladen werden.",
+    "close": "Schließen",
+    "errors": {
+      "load": "Die Fehlermeldungen konnten nicht geladen werden."
+    }
   }
 }

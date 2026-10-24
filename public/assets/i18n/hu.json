@@ -22,7 +22,9 @@
     "security": "Biztonság",
     "loginAuditLogs": "Bejelentkezési napló",
     "coachWorkouts": "Edzéstár",
-    "registrations": "Regisztrációs kérelmek"
+    "registrations": "Regisztrációs kérelmek",
+    "bugReport": "Hibabejelentés",
+    "bugReports": "Hibabejelentések"
   },
   "header": {
     "user": "Felhasználó",
@@ -1254,5 +1256,67 @@
     "LOW": "Alacsony",
     "MEDIUM": "Közepes",
     "HIGH": "Magas"
+  },
+  "bugReport": {
+    "title": "Hibabejelentés",
+    "subtitle": "Írd le, mi nem működik, és ha tudsz, csatolj képernyőképet. A bejelentést az adminisztrátor kapja meg.",
+    "reporter": "Bejelentő",
+    "date": "Dátum",
+    "summary": "A hiba rövid leírása",
+    "summaryHint": "3–150 karakter, pl. „Nem menthető a profil”.",
+    "summaryPlaceholder": "Mi a hiba?",
+    "description": "Részletes leírás",
+    "descriptionHint": "10–5000 karakter. Mit csináltál, mit vártál, és mi történt helyette?",
+    "descriptionPlaceholder": "1. Megnyitottam…\n2. Rákattintottam…\n3. Ezt láttam…",
+    "pageUrl": "Az oldal, ahol a hiba történt",
+    "pageUrlHint": "Automatikusan kitöltjük az előző oldallal; módosítható vagy törölhető.",
+    "screenshots": "Képernyőképek",
+    "optional": "nem kötelező",
+    "addScreenshot": "Képernyőkép hozzáadása",
+    "screenshotHint": "Kattints, húzd ide, vagy illeszd be (Ctrl+V). Legfeljebb {{max}} PNG vagy JPEG kép, egyenként {{size}} MB.",
+    "attached": "Csatolt képernyőképek",
+    "removeScreenshot": "{{name}} eltávolítása",
+    "submit": "Bejelentés elküldése",
+    "sending": "Küldés…",
+    "success": "Köszönjük, a hibabejelentést rögzítettük.",
+    "reportId": "Azonosító",
+    "submittedAt": "Beküldve",
+    "screenshotCount": "Képernyőképek",
+    "newReport": "Új bejelentés",
+    "errors": {
+      "titleLength": "A rövid leírás 3–150 karakter legyen.",
+      "descriptionLength": "A leírás 10–5000 karakter legyen.",
+      "pageUrl": "Csak az alkalmazáson belüli oldal adható meg (pl. /user/dashboard).",
+      "tooManyFiles": "Legfeljebb {{max}} képernyőkép csatolható.",
+      "fileTooLarge": "{{name}}: a kép legfeljebb {{max}} MB lehet.",
+      "fileType": "{{name}}: csak PNG vagy JPEG kép csatolható.",
+      "fixFields": "Javítsd a megjelölt mezőket.",
+      "submit": "A bejelentés elküldése nem sikerült.",
+      "tooLarge": "A csatolt képek együtt túl nagyok. Csatolj kevesebb vagy kisebb képet."
+    }
+  },
+  "adminBugReports": {
+    "title": "Hibabejelentések",
+    "subtitle": "A felhasználók és az edzők által beküldött hibabejelentések, a legújabbal kezdve.",
+    "total": "Összesen: {{count}}",
+    "refresh": "Frissítés",
+    "loading": "Betöltés…",
+    "empty": "Még nem érkezett hibabejelentés.",
+    "reporter": "Bejelentő",
+    "page": "Oldal",
+    "browser": "Böngésző",
+    "deletedAccount": "a fiók azóta törölve",
+    "type": {
+      "USER": "Felhasználó",
+      "COACH": "Edző"
+    },
+    "screenshots": "Képernyőképek",
+    "openScreenshot": "{{n}}. képernyőkép megnyitása",
+    "screenshotAlt": "{{n}}. képernyőkép",
+    "screenshotError": "A kép nem tölthető be.",
+    "close": "Bezárás",
+    "errors": {
+      "load": "A hibabejelentések betöltése nem sikerült."
+    }
   }
 }

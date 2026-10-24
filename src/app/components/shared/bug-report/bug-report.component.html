@@ -1,0 +1,117 @@
+<div class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8">
+  <div class="mx-auto flex w-full max-w-3xl min-w-0 flex-col gap-6">
+    <div class="text-center">
+      <h2 appHeading="page" class="flex items-center justify-center gap-2 break-words">
+        <app-icon name="triangle-alert" sizeClass="h-6 w-6" />
+        <span>{{ 'bugReport.title' | translate }}</span>
+      </h2>
+      <p class="mx-auto mt-2 max-w-2xl text-sm text-content-500">{{ 'bugReport.subtitle' | translate }}</p>
+    </div>
+
+    @if (created) {
+      <!-- Sikeres beküldés -->
+      <div class="flex flex-col items-center gap-4 rounded-2xl border border-surface-200 bg-white p-6 text-center shadow-sm sm:p-8" role="status">
+        <span class="flex h-14 w-14 items-center justify-center rounded-full bg-primary-50 text-primary-600" aria-hidden="true">
+          <app-icon name="circle-check" sizeClass="h-7 w-7" />
+        </span>
+        <h3 class="text-lg font-bold text-content-900">{{ successMessage | translate }}</h3>
+        <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-left text-sm">
+          <dt class="text-content-500">{{ 'bugReport.reportId' | translate }}</dt>
+          <dd class="font-semibold text-content-900">#{{ created.id }}</dd>
+          <dt class="text-content-500">{{ 'bugReport.submittedAt' | translate }}</dt>
+          <dd class="font-semibold text-content-900">{{ created.createdAt | date: 'yyyy.MM.dd HH:mm' }}</dd>
+          <dt class="text-content-500">{{ 'bugReport.screenshotCount' | translate }}</dt>
+          <dd class="font-semibold text-content-900">{{ created.screenshots }}</dd>
+        </dl>
+        <app-button variant="primary" type="button" (buttonClick)="newReport()" [label]="'bugReport.newReport' | translate"></app-button>
+      </div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate
+            class="flex flex-col gap-5 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-6">
+        <!-- Bejelentő és dátum: a szerver rögzíti, itt csak tájékoztatás -->
+        <div class="flex flex-wrap gap-x-6 gap-y-1 rounded-xl bg-surface-50 px-4 py-3 text-sm">
+          <p><span class="mr-1 text-content-500">{{ 'bugReport.reporter' | translate }}:</span>
+            <span class="break-all font-semibold text-content-900">{{ reporterName || '–' }}</span></p>
+          <p><span class="mr-1 text-content-500">{{ 'bugReport.date' | translate }}:</span>
+            <span class="font-semibold text-content-900">{{ today | date: 'yyyy.MM.dd' }}</span></p>
+        </div>
+
+        <app-form-field labelKey="bugReport.summary" controlId="bug-title" [required]="true" hint="bugReport.summaryHint"
+                        [error]="fieldError('title')" [showError]="!!fieldError('title')">
+          <input appInput="admin" id="bug-title" formControlName="title" type="text" autocomplete="off"
+                 [maxlength]="limits.titleMax" [placeholder]="'bugReport.summaryPlaceholder' | translate"
+                 class="placeholder:text-content-400" />
+        </app-form-field>
+
+        <app-form-field labelKey="bugReport.description" controlId="bug-description" [required]="true"
+                        hint="bugReport.descriptionHint"
+                        [error]="fieldError('description')" [showError]="!!fieldError('description')">
+          <textarea appTextarea="admin" id="bug-description" formControlName="description" rows="7"
+                    [maxlength]="limits.descriptionMax" [placeholder]="'bugReport.descriptionPlaceholder' | translate"
+                    class="placeholder:text-content-400"></textarea>
+          <p class="mt-1 text-right text-xs text-content-500" aria-live="polite">
+            {{ descriptionLength }} / {{ limits.descriptionMax }}
+          </p>
+        </app-form-field>
+
+        <app-form-field labelKey="bugReport.pageUrl" controlId="bug-page" hint="bugReport.pageUrlHint"
+                        [error]="fieldError('pageUrl')" [showError]="!!fieldError('pageUrl')">
+          <input appInput="admin" id="bug-page" formControlName="pageUrl" type="text" autocomplete="off"
+                 [maxlength]="limits.pageUrlMax" placeholder="/user/dashboard" class="placeholder:text-content-400" />
+        </app-form-field>
+
+        <!-- Képernyőképek -->
+        <fieldset class="flex flex-col gap-2">
+          <legend class="mb-1 text-sm font-semibold text-content-700">
+            {{ 'bugReport.screenshots' | translate }}
+            <span class="font-normal text-content-500">({{ 'bugReport.optional' | translate }})</span>
+          </legend>
+          @if (attachments.length < limits.maxScreenshots) {
+            <label for="bug-screenshots" (dragover)="onDragOver($event)" (dragleave)="dragging = false" (drop)="onDrop($event)"
+                   class="flex min-h-28 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed px-4 py-5 text-center transition focus-within:border-primary-500 focus-within:ring-4 focus-within:ring-primary-500/10"
+                   [ngClass]="dragging ? 'border-primary-500 bg-primary-50' : 'border-surface-300 bg-surface-50 hover:border-primary-400'">
+              <app-icon name="circle-plus" sizeClass="h-6 w-6" class="text-primary-600" />
+              <span class="text-sm font-semibold text-content-800">{{ 'bugReport.addScreenshot' | translate }}</span>
+              <span class="text-xs text-content-500">
+                {{ 'bugReport.screenshotHint' | translate: { max: limits.maxScreenshots, size: limits.maxScreenshotBytes / 1024 / 1024 } }}
+              </span>
+              <input id="bug-screenshots" type="file" accept="image/png,image/jpeg" multiple class="sr-only"
+                     (change)="onFilesSelected($event)" />
+            </label>
+          }
+          @if (fileError) {
+            <app-message [message]="fileError" [messageParams]="fileErrorParams" type="error" [compact]="true" role="alert"></app-message>
+          }
+          @if (attachments.length > 0) {
+            <ul class="grid grid-cols-1 gap-3 sm:grid-cols-3" [attr.aria-label]="'bugReport.attached' | translate">
+              @for (attachment of attachments; track attachment.url; let i = $index) {
+                <li class="relative overflow-hidden rounded-xl border border-surface-200 bg-white">
+                  <img [src]="attachment.url" [alt]="attachment.name" class="h-32 w-full bg-surface-100 object-contain" />
+                  <div class="flex items-center justify-between gap-2 px-3 py-2">
+                    <span class="min-w-0 truncate text-xs text-content-700" [title]="attachment.name">
+                      {{ attachment.name }} · {{ formatSize(attachment.size) }}
+                    </span>
+                    <button type="button" (click)="removeAttachment(i)"
+                            class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-delete-600 hover:bg-delete-50 focus:outline-none focus:ring-4 focus:ring-delete-500/20"
+                            [attr.aria-label]="'bugReport.removeScreenshot' | translate: { name: attachment.name }">
+                      <app-icon name="trash-2" sizeClass="h-4 w-4" />
+                    </button>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        </fieldset>
+
+        @if (errorMessage) {
+          <app-message [message]="errorMessage" type="error" role="alert"></app-message>
+        }
+
+        <div class="flex justify-end">
+          <app-button variant="primary" type="submit" [disabled]="sending"
+                      [label]="(sending ? 'bugReport.sending' : 'bugReport.submit') | translate"></app-button>
+        </div>
+      </form>
+    }
+  </div>
+</div>

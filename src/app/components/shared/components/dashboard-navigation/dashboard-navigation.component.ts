@@ -67,6 +67,8 @@ export class DashboardNavigationComponent {
       else if (segments[3] === 'edit') label = 'coachExerciseEdit.title';
     } else if (page === 'profile') {
       label = 'coachProfile.title';
+    } else if (page === 'bug-report') {
+      label = 'bugReport.title';
     }
     if (label) this.items.push({ label, url: this.router.url });
   }
@@ -86,6 +88,7 @@ export class DashboardNavigationComponent {
       'coach/edit': 'adminCoachEdit.title',
       'login-audit-logs': 'adminLoginAudit.title',
       registrations: 'adminRegistrations.title',
+      'bug-reports': 'adminBugReports.title',
     };
     if (page === 'users/search') {
       this.items.push({ label: 'adminUsers.title', url: '/admin/users' });
@@ -108,6 +111,7 @@ export class DashboardNavigationComponent {
       'my-programs': 'userMyPrograms.title',
       'program-statistics': 'userProgramStatistics.title',
       workouts: 'userDashboard.myWorkouts',
+      'bug-report': 'bugReport.title',
     };
     if (page === 'programs' && segments[3] === 'workouts') {
       this.items.push({ label: 'userMyPrograms.title', url: '/user/my-programs' });

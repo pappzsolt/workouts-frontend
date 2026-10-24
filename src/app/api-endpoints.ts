@@ -33,6 +33,10 @@ export const API_ENDPOINTS = {
   adminRegistrationsPendingCount: `${environment.apiUrl}/admin/registrations/pending-count`,
   adminRegistrationApprove: (id: number) => `${environment.apiUrl}/admin/registrations/${id}/approve`,
   adminRegistrationReject: (id: number) => `${environment.apiUrl}/admin/registrations/${id}/reject`,
+  adminBugReports: `${environment.apiUrl}/admin/bug-reports`,
+  adminBugReportScreenshot: (reportId: number, screenshotId: number) =>
+    `${environment.apiUrl}/admin/bug-reports/${reportId}/screenshots/${screenshotId}`,
+  bugReports: `${environment.apiUrl}/bug-reports`,
 
   // ============================================================
   // PROGRAMS

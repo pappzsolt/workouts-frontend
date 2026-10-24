@@ -18,6 +18,8 @@ import { CoachEditComponent } from './components/admin-dashboard/operations/coac
 import { UserEditComponent } from './components/admin-dashboard/operations/user-edit/user-edit.component';
 import { LoginAuditLogsComponent } from './components/admin-dashboard/operations/login-audit-logs/login-audit-logs.component';
 import { RegistrationRequestsComponent } from './components/admin-dashboard/operations/registration-requests/registration-requests.component';
+import { BugReportsComponent } from './components/admin-dashboard/operations/bug-reports/bug-reports.component';
+import { BugReportComponent } from './components/shared/bug-report/bug-report.component';
 import { CoachHomeComponent } from './components/coach/coach-home/coach-home.component';
 import { CoachClientsComponent } from './components/coach/coach-clients/coach-clients.component';
 import { CoachClientDetailComponent } from './components/coach/coach-client-detail/coach-client-detail.component';
@@ -139,6 +141,11 @@ export const routes: Routes = [
       },
 
       {
+        path: 'bug-reports',
+        component: BugReportsComponent,
+      },
+
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',
@@ -234,6 +241,11 @@ export const routes: Routes = [
       },
 
       {
+        path: 'bug-report',
+        component: BugReportComponent,
+      },
+
+      {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',
@@ -265,6 +277,11 @@ export const routes: Routes = [
       {
         path: 'profile',
         component: UserProfileComponent,
+      },
+
+      {
+        path: 'bug-report',
+        component: BugReportComponent,
       },
 
       {

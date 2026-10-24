@@ -22,7 +22,9 @@
     "security": "Security",
     "loginAuditLogs": "Login Audit Log",
     "coachWorkouts": "Workout library",
-    "registrations": "Registration requests"
+    "registrations": "Registration requests",
+    "bugReport": "Report a bug",
+    "bugReports": "Bug reports"
   },
   "header": {
     "user": "User",
@@ -1254,5 +1256,67 @@
     "LOW": "Low",
     "MEDIUM": "Medium",
     "HIGH": "High"
+  },
+  "bugReport": {
+    "title": "Report a bug",
+    "subtitle": "Describe what isn't working and attach a screenshot if you can. The report goes to the administrator.",
+    "reporter": "Reported by",
+    "date": "Date",
+    "summary": "Short summary",
+    "summaryHint": "3–150 characters, e.g. “Profile cannot be saved”.",
+    "summaryPlaceholder": "What is the problem?",
+    "description": "Details",
+    "descriptionHint": "10–5000 characters. What did you do, what did you expect, and what happened instead?",
+    "descriptionPlaceholder": "1. I opened…\n2. I clicked…\n3. I saw…",
+    "pageUrl": "Page where it happened",
+    "pageUrlHint": "Prefilled with the previous page; you can change or clear it.",
+    "screenshots": "Screenshots",
+    "optional": "optional",
+    "addScreenshot": "Add screenshot",
+    "screenshotHint": "Click, drop here or paste (Ctrl+V). Up to {{max}} PNG or JPEG images, {{size}} MB each.",
+    "attached": "Attached screenshots",
+    "removeScreenshot": "Remove {{name}}",
+    "submit": "Send report",
+    "sending": "Sending…",
+    "success": "Thank you, your bug report has been recorded.",
+    "reportId": "Reference",
+    "submittedAt": "Submitted",
+    "screenshotCount": "Screenshots",
+    "newReport": "New report",
+    "errors": {
+      "titleLength": "The summary must be 3–150 characters.",
+      "descriptionLength": "The description must be 10–5000 characters.",
+      "pageUrl": "Only a page within the app can be given (e.g. /user/dashboard).",
+      "tooManyFiles": "You can attach at most {{max}} screenshots.",
+      "fileTooLarge": "{{name}}: images can be at most {{max}} MB.",
+      "fileType": "{{name}}: only PNG or JPEG images can be attached.",
+      "fixFields": "Please correct the highlighted fields.",
+      "submit": "Could not send the report.",
+      "tooLarge": "The attached images are too large together. Attach fewer or smaller images."
+    }
+  },
+  "adminBugReports": {
+    "title": "Bug reports",
+    "subtitle": "Bug reports sent by users and coaches, newest first.",
+    "total": "Total: {{count}}",
+    "refresh": "Refresh",
+    "loading": "Loading…",
+    "empty": "No bug reports yet.",
+    "reporter": "Reported by",
+    "page": "Page",
+    "browser": "Browser",
+    "deletedAccount": "account deleted since",
+    "type": {
+      "USER": "User",
+      "COACH": "Coach"
+    },
+    "screenshots": "Screenshots",
+    "openScreenshot": "Open screenshot {{n}}",
+    "screenshotAlt": "Screenshot {{n}}",
+    "screenshotError": "The image could not be loaded.",
+    "close": "Close",
+    "errors": {
+      "load": "Could not load the bug reports."
+    }
   }
 }
