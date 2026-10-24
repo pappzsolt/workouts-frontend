@@ -418,7 +418,11 @@
     "workouts": "Trainings",
     "startDate": "Beginn",
     "endDate": "Ende",
-    "progressLoadError": "Der Fortschritt konnte nicht geladen werden."
+    "progressLoadError": "Der Fortschritt konnte nicht geladen werden.",
+    "exportExcel": "Excel herunterladen",
+    "exporting": "Excel wird erstellt…",
+    "exportHint": "Alle Trainings, Übungen und Sätze des Programms als Excel-Datei (Ziel- und Ist-Werte, Pausen, Notizen).",
+    "exportError": "Die Excel-Datei konnte nicht erstellt werden."
   },
   "userProfile": {
     "noUserId": "Kein angemeldeter Benutzer!",

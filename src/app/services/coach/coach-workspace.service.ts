@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { Observable, catchError, from, map, switchMap, throwError } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
 import type { ApiResponse } from '../../models/backend-dto/common/api-response';
@@ -24,6 +24,7 @@ import type {
   CoachWorkoutSummary,
 } from '../../models/coach-workspace.model';
 import { LanguageService } from '../shared/language.service';
+import { ProgramExportService } from '../shared/program-export.service';
 
 /** Egy válaszból kiveszi az adatot; sikertelen válasznál a backend üzenetével dob. */
 function unwrap<T>(response: ApiResponse<T>): T {
@@ -31,23 +32,6 @@ function unwrap<T>(response: ApiResponse<T>): T {
     throw new Error(response?.message || 'coachWorkspace.genericError');
   }
   return response.data as T;
-}
-
-/** Blob válaszú kérés hibájának JSON-törzsét (ApiResponse) visszaalakítja, hogy az üzenet olvasható legyen. */
-async function blobErrorAsJson(error: unknown): Promise<unknown> {
-  if (!(error instanceof HttpErrorResponse) || !(error.error instanceof Blob)) return error;
-  try {
-    const body: unknown = JSON.parse(await error.error.text());
-    return new HttpErrorResponse({
-      error: body,
-      headers: error.headers,
-      status: error.status,
-      statusText: error.statusText,
-      url: error.url ?? undefined,
-    });
-  } catch {
-    return error;
-  }
 }
 
 /** YYYY-MM-DD helyi idő szerint. */
@@ -92,6 +76,7 @@ export function workoutStatus(workout: CoachClientWorkout, today: string): Coach
 export class CoachWorkspaceService {
   private readonly http = inject(HttpClient);
   private readonly languageService = inject(LanguageService);
+  private readonly programExport = inject(ProgramExportService);
 
   private language(): string {
     return this.languageService.getCurrentLanguage();
@@ -198,10 +183,7 @@ export class CoachWorkspaceService {
    * Hiba esetén a backend JSON-üzenete a szokásos {@code error.error.message} helyen érkezik.
    */
   exportClientProgram(userId: number, programId: number): Observable<Blob> {
-    const params = new HttpParams().set('language', this.language());
-    return this.http
-      .get(API_ENDPOINTS.userProgramExport(userId, programId), { params, responseType: 'blob' })
-      .pipe(catchError((error: unknown) => from(blobErrorAsJson(error)).pipe(switchMap((parsed) => throwError(() => parsed)))));
+    return this.programExport.exportUserProgram(userId, programId);
   }
 
   /** Egy sorozat minden mezőjének mentése; az üres mezőket a clear jelzők törlik. */

@@ -418,7 +418,11 @@
     "workouts": "Edzések",
     "startDate": "Kezdés",
     "endDate": "Befejezés",
-    "progressLoadError": "A haladás betöltése nem sikerült."
+    "progressLoadError": "A haladás betöltése nem sikerült.",
+    "exportExcel": "Excel letöltése",
+    "exporting": "Excel készül…",
+    "exportHint": "A program összes edzése, gyakorlata és sorozata Excel-fájlban (cél és tényleges értékek, pihenő, megjegyzések).",
+    "exportError": "Az Excel-fájl elkészítése nem sikerült."
   },
   "userProfile": {
     "noUserId": "Nincs bejelentkezett felhasználó!",

@@ -11,6 +11,9 @@ import { UserMyProgramsService } from '../../../../services/user/user-my-program
 import { UserProgram, ProgramProgress } from '../../../../models/program.model';
 import { SidePaginationComponent } from '../../../shared/components/side-pagination/side-pagination.component';
 import { LanguageService } from '../../../../services/shared/language.service';
+import { ProgramExportService } from '../../../../services/shared/program-export.service';
+import { AuthService } from '../../../../services/auth/auth.service';
+import { downloadBlob, programExportFileName } from '../../../shared/file-download';
 
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 
@@ -88,10 +91,15 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
   // CONSTRUCTOR
   // ============================================================
 
+  /** Az éppen exportált program azonosítója (a gomb addig nem kattintható). */
+  exportingProgramId: number | null = null;
+
   constructor(
     private programsService: UserMyProgramsService,
     private router: Router,
     private languageService: LanguageService,
+    private programExport: ProgramExportService,
+    private authService: AuthService,
   ) {}
 
   // ============================================================
@@ -256,6 +264,46 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
     this.router.navigate(['/user/programs', programId, 'workouts'], {
       queryParams: { programName },
     });
+  }
+
+  // ============================================================
+  // EXCEL-EXPORT
+  // ============================================================
+
+  /**
+   * A program összes edzése, gyakorlata és sorozata Excel-fájlba (cél és tényleges
+   * értékek, pihenő, megjegyzések). A kártya linkjét a gomb nem indítja el.
+   */
+  exportProgram(event: Event, program: UserProgram): void {
+    event.preventDefault();
+    event.stopPropagation();
+    const userId = this.authService.getUserId();
+    if (this.exportingProgramId !== null) return;
+    if (!userId) {
+      this.message = 'userMyPrograms.exportError';
+      this.messageType = 'error';
+      return;
+    }
+    this.exportingProgramId = program.id;
+    this.programExport
+      .exportUserProgram(userId, program.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (blob) => {
+          this.exportingProgramId = null;
+          downloadBlob(blob, programExportFileName(program.name, this.authService.getUserName()));
+        },
+        error: (error) => {
+          this.exportingProgramId = null;
+          this.message = errorMessage(error, 'userMyPrograms.exportError');
+          this.messageType = 'error';
+        },
+      });
+  }
+
+  canExport(program: UserProgram): boolean {
+    const total = this.programProgress[program.id]?.totalWorkouts;
+    return total === undefined || total > 0;
   }
 
   trackByProgram(index: number, program: UserProgram): number {

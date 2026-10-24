@@ -148,6 +148,22 @@
                 ></div>
               </div>
             </div>
+
+            <!-- EXCEL-EXPORT (a kártya linkjét nem indítja el) -->
+
+            <div class="mt-5 flex justify-end">
+              <button
+                type="button"
+                class="btn btn-outline min-h-11 gap-2"
+                (click)="exportProgram($event, program)"
+                [disabled]="exportingProgramId !== null || !canExport(program)"
+                [attr.aria-busy]="exportingProgramId === program.id"
+                [title]="'userMyPrograms.exportHint' | translate"
+              >
+                <app-icon name="arrow-down" sizeClass="h-4 w-4" />
+                {{ (exportingProgramId === program.id ? 'userMyPrograms.exporting' : 'userMyPrograms.exportExcel') | translate }}
+              </button>
+            </div>
           </div>
         </app-card>
       </app-side-pagination>

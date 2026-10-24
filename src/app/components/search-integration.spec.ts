@@ -87,6 +87,8 @@ describe('Shared search integration', () => {
       { getPrograms: () => of(ok(programs)), getProgramProgress: progress } as any,
       {} as any,
       language as any,
+      {} as any,
+      {} as any,
     );
     component.searchTerm = 'endurance';
     component.ngOnInit();

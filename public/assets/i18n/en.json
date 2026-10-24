@@ -418,7 +418,11 @@
     "workouts": "Workouts",
     "startDate": "Start",
     "endDate": "End",
-    "progressLoadError": "Unable to load progress."
+    "progressLoadError": "Unable to load progress.",
+    "exportExcel": "Download Excel",
+    "exporting": "Preparing Excel…",
+    "exportHint": "All workouts, exercises and sets of the program in an Excel file (target and actual values, rest, notes).",
+    "exportError": "Could not create the Excel file."
   },
   "userProfile": {
     "noUserId": "No logged-in user!",

@@ -1,11 +1,12 @@
-import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, from, map, switchMap, throwError } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
 import type { ApiResponse } from '../../models/backend-dto/common/api-response';
 import type { PageResponse } from '../../models/backend-dto/common/page-response';
 import type { BugReportCreated, BugReportDto, BugReportPayload } from '../../models/backend-dto/bug-report/bug-report';
+import { withJsonErrors } from '../shared/blob-error';
 
 /** Hibabejelentés beküldése (felhasználó, edző) és megtekintése (admin). */
 @Injectable({ providedIn: 'root' })
@@ -39,23 +40,7 @@ export class BugReportService {
 
   /** A kép hitelesítéssel kérve, Blobként (közvetlen URL-ként nem kerül a böngészőbe). */
   screenshot(reportId: number, screenshotId: number): Observable<Blob> {
-    return this.http
-      .get(API_ENDPOINTS.adminBugReportScreenshot(reportId, screenshotId), { responseType: 'blob' })
-      .pipe(catchError((error: unknown) => from(jsonError(error)).pipe(switchMap((parsed) => throwError(() => parsed)))));
+    return withJsonErrors(this.http.get(API_ENDPOINTS.adminBugReportScreenshot(reportId, screenshotId), { responseType: 'blob' }));
   }
 }
 
-async function jsonError(error: unknown): Promise<unknown> {
-  if (!(error instanceof HttpErrorResponse) || !(error.error instanceof Blob)) return error;
-  try {
-    return new HttpErrorResponse({
-      error: JSON.parse(await error.error.text()),
-      headers: error.headers,
-      status: error.status,
-      statusText: error.statusText,
-      url: error.url ?? undefined,
-    });
-  } catch {
-    return error;
-  }
-}
