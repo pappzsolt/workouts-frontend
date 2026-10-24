@@ -220,6 +220,7 @@
     "deleteConfirm": "Dieses Training löschen? Diese Aktion kann nicht rückgängig gemacht werden."
   },
   "coachProfile": {
+    "currentPassword": "Aktuelles Passwort",
     "title": "Coach-Profil"
   },
   "coachPrograms": {
@@ -425,6 +426,7 @@
     "exportError": "Die Excel-Datei konnte nicht erstellt werden."
   },
   "userProfile": {
+    "currentPassword": "Aktuelles Passwort",
     "noUserId": "Kein angemeldeter Benutzer!",
     "profileLoaded": "Profil erfolgreich geladen!",
     "loadError": "Beim Laden des Profils ist ein Fehler aufgetreten!",

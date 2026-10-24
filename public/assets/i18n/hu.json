@@ -220,6 +220,7 @@
     "deleteConfirm": "Biztosan törlöd ezt az edzést? A művelet nem vonható vissza."
   },
   "coachProfile": {
+    "currentPassword": "Jelenlegi jelszó",
     "title": "Coach profil"
   },
   "coachPrograms": {
@@ -425,6 +426,7 @@
     "exportError": "Az Excel-fájl elkészítése nem sikerült."
   },
   "userProfile": {
+    "currentPassword": "Jelenlegi jelszó",
     "noUserId": "Nincs bejelentkezett felhasználó!",
     "profileLoaded": "Profil sikeresen betöltve!",
     "loadError": "Hiba történt a profil betöltésekor!",

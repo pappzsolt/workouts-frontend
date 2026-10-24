@@ -220,6 +220,7 @@
     "deleteConfirm": "Delete this workout? This action cannot be undone."
   },
   "coachProfile": {
+    "currentPassword": "Current password",
     "title": "Coach Profile"
   },
   "coachPrograms": {
@@ -425,6 +426,7 @@
     "exportError": "Could not create the Excel file."
   },
   "userProfile": {
+    "currentPassword": "Current password",
     "noUserId": "No logged-in user!",
     "profileLoaded": "Profile loaded successfully!",
     "loadError": "An error occurred while loading the profile!",
