@@ -1,0 +1,13 @@
+:host { display: block; min-width: 0; }
+.chart-scroll { overflow-x: auto; max-width: 100%; }
+svg { display: block; width: 100%; max-height: 350px; }
+.axis-label { fill: var(--app-content-600); stroke: none; font-size: 11px; }
+.grid-line { stroke: var(--app-surface-200); stroke-dasharray: 3 4; }
+.lift-squat { fill: var(--app-info-600); stroke: var(--app-info-600); background-color: var(--app-info-600); }
+.lift-bench { fill: var(--app-primary-600); stroke: var(--app-primary-600); background-color: var(--app-primary-600); }
+.lift-deadlift { fill: var(--app-warning-700); stroke: var(--app-warning-700); background-color: var(--app-warning-700); }
+.strength-line { fill: none; stroke-width: 2; }
+.chart-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem 1rem; font-size: 0.75rem; color: var(--app-content-700); }
+.chart-legend span { display: inline-flex; align-items: center; gap: 0.3rem; }
+.chart-legend i { display: inline-block; width: 0.65rem; height: 0.65rem; border-radius: 50%; }
+.zone-values { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; list-style: none; padding: 0; font-size: 0.75rem; color: var(--app-content-600); }

@@ -1,0 +1,144 @@
+<section class="mt-5 rounded-xl border border-surface-200 bg-surface-50 p-3 sm:p-5" aria-labelledby="strength-dashboard-title">
+  <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+    <div>
+      <h4 id="strength-dashboard-title" class="text-base font-bold text-content-800">{{ 'userProgramStatistics.dashboardTitle' | translate }}</h4>
+      <p class="mt-1 text-xs text-content-600">{{ 'userProgramStatistics.dashboardScope' | translate }}</p>
+    </div>
+    <label class="text-xs text-content-700">
+      <span class="mb-1 block">{{ 'userProgramStatistics.dashboardWeek' | translate }}</span>
+      <select class="rounded-lg border border-surface-300 bg-surface-50 p-2 text-content-800" [(ngModel)]="selectedWeek" [disabled]="!weeks.length">
+        <option *ngFor="let week of weeks" [ngValue]="week">{{ 'userProgramStatistics.weekLabel' | translate:{ week: week } }}</option>
+      </select>
+    </label>
+  </div>
+  <p *ngIf="!validSelection" class="mb-3 text-xs text-content-600">{{ 'userProgramStatistics.sbdMissing' | translate }}</p>
+  <div class="mb-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+    <div class="rounded-lg border border-surface-200 p-3">
+      <div class="text-xs text-content-600">{{ 'userProgramStatistics.dashboardVolume' | translate }}</div>
+      <div class="mt-1 text-lg font-bold text-content-800">{{ summaryWeek ? (summaryWeek.volumeKg | number:'1.0-2') + ' kg' : '—' }}</div>
+      <div *ngIf="summaryWeek?.changePercent != null" class="mt-1 text-xs text-content-700">{{ summaryWeek!.changePercent! > 0 ? '+' : '' }}{{ summaryWeek!.changePercent | number:'1.0-2' }}%</div>
+    </div>
+    <div class="rounded-lg border border-surface-200 p-3">
+      <div class="text-xs text-content-600">{{ 'userProgramStatistics.dashboardSets' | translate }}</div>
+      <div class="mt-1 text-lg font-bold text-content-800">{{ summaryWeek?.completedSets ?? '—' }}</div>
+      <div *ngIf="setsChange !== null" class="mt-1 text-xs text-content-700">{{ setsChange > 0 ? '+' : '' }}{{ setsChange }}</div>
+    </div>
+    <div class="rounded-lg border border-surface-200 p-3">
+      <div class="text-xs text-content-600">{{ 'userProgramStatistics.sbdEstimated' | translate }}</div>
+      <div class="mt-1 text-lg font-bold text-content-800">{{ estimatedTotal(selectedWeek) !== null ? (estimatedTotal(selectedWeek) | number:'1.0-2') + ' kg' : '—' }}</div>
+      <div *ngIf="totalChange !== null" class="mt-1 text-xs text-content-700">{{ totalChange > 0 ? '+' : '' }}{{ totalChange | number:'1.0-2' }} kg</div>
+    </div>
+    <div class="rounded-lg border border-surface-200 p-3">
+      <div class="text-xs text-content-600">{{ 'userProgramStatistics.dashboardProgress' | translate }}</div>
+      <div class="mt-1 text-lg font-bold text-content-800">{{ progress !== null ? (progress | number:'1.0-1') + '%' : '—' }}</div>
+      <div *ngIf="plannedSets !== null" class="mt-1 text-xs text-content-700">{{ completedPlannedSets }} / {{ plannedSets }} {{ 'userProgramStatistics.dashboardSetsUnit' | translate }}</div>
+    </div>
+  </div>
+  <p class="mb-4 text-xs text-content-600">{{ 'userProgramStatistics.dashboardComparisonNote' | translate }}</p>
+
+  <div class="chart-legend" aria-label="SBD">
+    <span *ngFor="let lift of series"><i [class]="lift.className"></i>{{ lift.label | translate }}<span *ngIf="lift.exercise"> · {{ lift.exercise.exerciseName }}</span></span>
+  </div>
+  <figure class="mt-5">
+    <figcaption class="mb-2 text-sm font-semibold text-content-800">{{ 'userProgramStatistics.volumeChartTitle' | translate }}</figcaption>
+    <div *ngIf="validSelection && hasVolumes; else missingChart" class="chart-scroll" tabindex="0" [attr.aria-label]="'userProgramStatistics.volumeChartTitle' | translate">
+      <svg [attr.viewBox]="'0 0 ' + chartWidth + ' 300'" [style.min-width.px]="chartWidth" role="img" [attr.aria-label]="'userProgramStatistics.volumeChartTitle' | translate">
+        <title>{{ 'userProgramStatistics.volumeChartTitle' | translate }}</title>
+        <desc>{{ 'userProgramStatistics.chartDataHint' | translate }}</desc>
+        <g *ngFor="let tick of ticks(volumeMax)">
+          <line class="grid-line" x1="60" [attr.x2]="chartWidth - 20" [attr.y1]="y(tick, volumeMax)" [attr.y2]="y(tick, volumeMax)" />
+          <text class="axis-label" x="52" [attr.y]="y(tick, volumeMax) + 4" text-anchor="end">{{ tick | number:'1.0-1' }}</text>
+        </g>
+        <text class="axis-label" x="20" y="20">kg</text>
+        <g *ngFor="let lift of series; let seriesIndex = index" [attr.class]="lift.className">
+          <ng-container *ngFor="let value of lift.volumes; let index = index">
+            <rect *ngIf="value !== null" [attr.x]="x(index) + (seriesIndex - 1.5) * barWidth" [attr.y]="y(value, volumeMax)" [attr.width]="barWidth - 3" [attr.height]="260 - y(value, volumeMax)" rx="4">
+              <title>{{ lift.label | translate }} · {{ 'userProgramStatistics.weekLabel' | translate:{ week: weeks[index] } }}: {{ value | number:'1.0-2' }} kg</title>
+            </rect>
+          </ng-container>
+        </g>
+        <text *ngFor="let week of weeks; let index = index" class="axis-label" [attr.x]="x(index)" y="283" text-anchor="middle">{{ 'userProgramStatistics.weekLabel' | translate:{ week: week } }}</text>
+      </svg>
+    </div>
+  </figure>
+  <figure class="mt-5">
+    <figcaption class="mb-2 text-sm font-semibold text-content-800">{{ 'userProgramStatistics.strengthChartTitle' | translate }}</figcaption>
+    <div *ngIf="validSelection && hasEstimates; else missingChart" class="chart-scroll" tabindex="0" [attr.aria-label]="'userProgramStatistics.strengthChartTitle' | translate">
+      <svg [attr.viewBox]="'0 0 ' + chartWidth + ' 300'" [style.min-width.px]="chartWidth" role="img" [attr.aria-label]="'userProgramStatistics.strengthChartTitle' | translate">
+        <title>{{ 'userProgramStatistics.strengthChartTitle' | translate }}</title>
+        <desc>{{ 'userProgramStatistics.chartDataHint' | translate }}</desc>
+        <g *ngFor="let tick of ticks(strengthMax)">
+          <line class="grid-line" x1="60" [attr.x2]="chartWidth - 20" [attr.y1]="y(tick, strengthMax)" [attr.y2]="y(tick, strengthMax)" />
+          <text class="axis-label" x="52" [attr.y]="y(tick, strengthMax) + 4" text-anchor="end">{{ tick | number:'1.0-1' }}</text>
+        </g>
+        <text class="axis-label" x="20" y="20">kg</text>
+        <g *ngFor="let lift of series" [attr.class]="lift.className">
+          <path class="strength-line" [attr.d]="linePath(lift.estimates)" />
+          <ng-container *ngFor="let value of lift.estimates; let index = index">
+            <circle *ngIf="value !== null" [attr.cx]="x(index)" [attr.cy]="y(value, strengthMax)" r="4.5">
+              <title>{{ lift.label | translate }} · {{ 'userProgramStatistics.weekLabel' | translate:{ week: weeks[index] } }}: {{ value | number:'1.0-2' }} kg</title>
+            </circle>
+          </ng-container>
+        </g>
+        <text *ngFor="let week of weeks; let index = index" class="axis-label" [attr.x]="x(index)" y="283" text-anchor="middle">{{ 'userProgramStatistics.weekLabel' | translate:{ week: week } }}</text>
+      </svg>
+    </div>
+  </figure>
+  <details *ngIf="validSelection" class="mt-3 text-xs text-content-700">
+    <summary class="cursor-pointer">{{ 'userProgramStatistics.chartDataTable' | translate }}</summary>
+    <div class="mt-2 overflow-x-auto">
+      <table class="w-full text-left"><caption class="sr-only">{{ 'userProgramStatistics.chartDataTable' | translate }}</caption>
+        <thead><tr><th scope="col" class="p-2">{{ 'userProgramStatistics.weekColumn' | translate }}</th><th *ngFor="let lift of series" scope="col" class="p-2">{{ lift.label | translate }} (kg)</th></tr></thead>
+        <tbody><ng-container *ngFor="let week of weeks; let index = index">
+          <tr><th scope="row" class="whitespace-nowrap p-2">{{ 'userProgramStatistics.weekLabel' | translate:{ week: week } }} · {{ 'userProgramStatistics.exerciseVolume' | translate }}</th><td *ngFor="let lift of series" class="p-2">{{ lift.volumes[index] !== null ? (lift.volumes[index] | number:'1.0-2') : '—' }}</td></tr>
+          <tr><th scope="row" class="whitespace-nowrap p-2">{{ 'userProgramStatistics.weekLabel' | translate:{ week: week } }} · e1RM</th><td *ngFor="let lift of series" class="p-2">{{ lift.estimates[index] !== null ? (lift.estimates[index] | number:'1.0-2') : '—' }}</td></tr>
+        </ng-container></tbody>
+      </table>
+    </div>
+  </details>
+
+  <figure class="mt-5">
+    <figcaption class="mb-2 text-sm font-semibold text-content-800">{{ 'userProgramStatistics.zoneChartTitle' | translate }} · {{ selectedWeek !== null ? ('userProgramStatistics.weekLabel' | translate:{ week: selectedWeek }) : '—' }}</figcaption>
+    <p class="mb-2 text-xs text-content-600">{{ 'userProgramStatistics.zoneChartNote' | translate }}</p>
+    <div *ngIf="zones as counts; else missingChart" class="chart-scroll" tabindex="0" [attr.aria-label]="'userProgramStatistics.zoneChartTitle' | translate">
+      <svg viewBox="0 0 720 300" style="min-width: 600px" role="img" [attr.aria-label]="'userProgramStatistics.zoneChartTitle' | translate">
+        <title>{{ 'userProgramStatistics.zoneChartTitle' | translate }}</title>
+        <g *ngFor="let tick of ticks(zoneMax)">
+          <line class="grid-line" x1="60" x2="700" [attr.y1]="y(tick, zoneMax)" [attr.y2]="y(tick, zoneMax)" />
+          <text class="axis-label" x="52" [attr.y]="y(tick, zoneMax) + 4" text-anchor="end">{{ tick | number:'1.0-0' }}</text>
+        </g>
+        <g *ngFor="let label of visibleZoneLabels; let index = index" class="lift-squat">
+          <rect [attr.x]="70 + index * (630 / visibleZoneLabels.length)" [attr.y]="y(counts[index], zoneMax)" [attr.width]="630 / visibleZoneLabels.length - 16" [attr.height]="260 - y(counts[index], zoneMax)" rx="7">
+            <title>{{ label }}: {{ counts[index] }}</title>
+          </rect>
+          <text class="axis-label" [attr.x]="70 + (index + 0.5) * (630 / visibleZoneLabels.length) - 8" y="283" text-anchor="middle">{{ label }}</text>
+          <text class="axis-label" [attr.x]="70 + (index + 0.5) * (630 / visibleZoneLabels.length) - 8" [attr.y]="y(counts[index], zoneMax) - 8" text-anchor="middle">{{ counts[index] }}</text>
+        </g>
+      </svg>
+      <ul class="zone-values"><li *ngFor="let label of visibleZoneLabels; let index = index">{{ label }}: {{ counts[index] }}</li></ul>
+    </div>
+    <p *ngIf="unclassifiedReps" class="mt-2 text-xs text-content-600">{{ 'userProgramStatistics.unclassifiedReps' | translate:{ count: unclassifiedReps } }}</p>
+  </figure>
+
+  <details class="mt-5 border-t border-surface-200 pt-3">
+    <summary class="cursor-pointer text-sm font-semibold text-content-800">{{ 'userProgramStatistics.epleyTitle' | translate }}</summary>
+    <p class="mt-2 text-xs text-content-600">{{ 'userProgramStatistics.epleyExplanation' | translate }}</p>
+    <p class="my-3 text-center text-sm font-semibold text-content-800">e1RM = {{ 'userProgramStatistics.calculatorWeight' | translate }} × (1 + {{ 'userProgramStatistics.calculatorReps' | translate }} / 30)</p>
+    <div class="grid grid-cols-2 gap-3">
+      <label class="text-xs text-content-700">{{ 'userProgramStatistics.calculatorWeight' | translate }} (kg)
+        <input class="mt-1 w-full rounded-lg border border-surface-300 bg-surface-50 p-2" type="number" min="0.01" step="0.5" [(ngModel)]="calculatorWeight">
+      </label>
+      <label class="text-xs text-content-700">{{ 'userProgramStatistics.calculatorReps' | translate }}
+        <input class="mt-1 w-full rounded-lg border border-surface-300 bg-surface-50 p-2" type="number" min="1" max="10" step="1" [(ngModel)]="calculatorReps">
+      </label>
+    </div>
+    <p class="mt-3 text-center text-base font-semibold text-content-800" aria-live="polite">{{ calculatedEstimate !== null ? calculatorWeight + ' × (1 + ' + calculatorReps + ' / 30) = ' + (calculatedEstimate | number:'1.0-2') + ' kg' : ('userProgramStatistics.calculatorInvalid' | translate) }}</p>
+  </details>
+  <div class="mt-5 border-t border-surface-200 pt-3">
+    <p class="mb-2 flex justify-between text-xs text-content-700"><span>{{ 'userProgramStatistics.dashboardProgress' | translate }}</span><span>{{ progress !== null ? (progress | number:'1.0-1') + '%' : '—' }}</span></p>
+    <div class="h-3 overflow-hidden rounded-full bg-surface-200" role="progressbar" [attr.aria-label]="'userProgramStatistics.dashboardProgress' | translate" [attr.aria-valuenow]="progress" aria-valuemin="0" aria-valuemax="100">
+      <div class="h-full rounded-full bg-primary-600" [style.width.%]="progress ?? 0"></div>
+    </div>
+  </div>
+  <ng-template #missingChart><p class="py-5 text-center text-xs text-content-600">{{ 'userProgramStatistics.noChartData' | translate }}</p></ng-template>
+</section>

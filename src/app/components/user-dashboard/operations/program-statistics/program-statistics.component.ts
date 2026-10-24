@@ -1,3 +1,4 @@
+import { ProgramStrengthOverviewComponent } from './program-strength-overview.component';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../services/logger.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -15,7 +16,7 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 @Component({
   selector: 'app-user-program-statistics',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [...SHARED_IMPORTS, ProgramStrengthOverviewComponent],
   templateUrl: './program-statistics.component.html',
   styleUrl: './program-statistics.component.css',
 })
@@ -81,6 +82,9 @@ export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
         this.totalPrograms = response.data.totalPrograms ?? 0;
         this.completedPrograms = response.data.completedPrograms ?? 0;
         this.programs = response.data.programs ?? [];
+        for (const program of this.programs) {
+          if (!this.sbdSelections[program.programId]) this.sbdSelections[program.programId] = defaultMainLifts(program);
+        }
         this.programPage = 1;
 
         if (!this.programs.length) {
@@ -104,6 +108,35 @@ export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
     this.programPage = 1;
   }
 
+  private readonly sbdSelections: Record<number, number[]> = {};
+
+  sbdSelection(programId: number): number[] {
+    return this.sbdSelections[programId] ??= [0, 0, 0];
+  }
+
+  setSbdExercise(programId: number, lift: number, exerciseId: number): void {
+    const selection = [...this.sbdSelection(programId)];
+    selection[lift] = Number(exerciseId);
+    this.sbdSelections[programId] = selection;
+  }
+
+  sbdWeeks(program: ProgramStatisticsProgram): { week: number; estimatedTotalKg: number; singleTotalKg: number | null }[] {
+    const ids = this.sbdSelection(program.programId);
+    if (ids.includes(0) || new Set(ids).size !== 3) return [];
+    const exercises = ids.map(id => program.exerciseStatistics.find(exercise => exercise.exerciseId === id));
+    if (exercises.some(exercise => !exercise)) return [];
+    return exercises[0]!.weeks.flatMap(firstWeek => {
+      const metrics = exercises.map(exercise => exercise!.weeks.find(week => week.week === firstWeek.week)?.metrics);
+      if (metrics.some(value => value?.estimatedOneRepMaxKg == null)) return [];
+      return [{
+        week: firstWeek.week,
+        estimatedTotalKg: metrics.reduce((sum, value) => sum + value!.estimatedOneRepMaxKg!, 0),
+        singleTotalKg: metrics.every(value => value?.bestSingleKg != null)
+          ? metrics.reduce((sum, value) => sum + value!.bestSingleKg!, 0) : null,
+      }];
+    });
+  }
+
   maxVolume(program: ProgramStatisticsProgram): number {
     return Math.max(0, ...program.weeklyVolumes.map(week => week.volumeKg));
   }
@@ -116,4 +149,18 @@ export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
     return program.programId;
   }
 
+}
+
+/** Conservative exact aliases; ambiguous matches remain unselected. */
+export function defaultMainLifts(program: ProgramStatisticsProgram): number[] {
+  const normalize = (name: string) => name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim().toLowerCase().replace(/\s+/g, ' ');
+  const aliases = [
+    ['guggolas', 'guggolas ruddal', 'squat', 'back squat', 'barbell squat', 'barbell back squat', 'kniebeuge', 'kniebeugen', 'langhantelkniebeuge'],
+    ['fekvenyomas', 'fekvenyomas ruddal', 'bench press', 'barbell bench press', 'bankdrucken', 'langhantel-bankdrucken'],
+    ['felhuzas', 'felhuzas ruddal', 'deadlift', 'barbell deadlift', 'conventional deadlift', 'kreuzheben'],
+  ];
+  return aliases.map(names => {
+    const matches = program.exerciseStatistics.filter(exercise => names.includes(normalize(exercise.exerciseName)));
+    return matches.length === 1 ? matches[0].exerciseId : 0;
+  });
 }

@@ -131,6 +131,164 @@
                 </span>
               </div>
             </section>
+
+            <section class="border-t border-surface-200 pt-3" aria-labelledby="sbd-title">
+              <h4 id="sbd-title" class="text-sm font-semibold text-content-800">{{ 'userProgramStatistics.sbdTitle' | translate }}</h4>
+              <p class="mt-1 text-xs text-content-600">{{ 'userProgramStatistics.sbdDescription' | translate }}</p>
+              <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                <label *ngFor="let lift of ['userProgramStatistics.sbdSquat', 'userProgramStatistics.sbdBench', 'userProgramStatistics.sbdDeadlift']; let i = index" class="text-xs text-content-700">
+                  <span class="mb-1 block">{{ lift | translate }}</span>
+                  <select [ngModel]="sbdSelection(program.programId)[i]" (ngModelChange)="setSbdExercise(program.programId, i, $event)"
+                    class="w-full rounded-lg border border-surface-300 bg-surface-50 p-2 text-content-800">
+                    <option [ngValue]="0">{{ 'userProgramStatistics.sbdChoose' | translate }}</option>
+                    <option *ngFor="let exercise of program.exerciseStatistics" [ngValue]="exercise.exerciseId">{{ exercise.exerciseName }}</option>
+                  </select>
+                </label>
+              </div>
+              <app-program-strength-overview [program]="program" [exerciseIds]="sbdSelection(program.programId)"></app-program-strength-overview>
+              <p *ngIf="!sbdWeeks(program).length" class="mt-3 text-xs text-content-600">{{ 'userProgramStatistics.sbdMissing' | translate }}</p>
+              <div *ngFor="let week of sbdWeeks(program)" class="mt-2 rounded-lg bg-surface-50 p-3 text-xs text-content-800">
+                <span class="font-semibold">{{ 'userProgramStatistics.weekLabel' | translate:{ week: week.week } }}</span>
+                · {{ 'userProgramStatistics.sbdEstimated' | translate }}: {{ week.estimatedTotalKg | number:'1.0-2' }} kg
+                · {{ 'userProgramStatistics.sbdSingles' | translate }}: {{ week.singleTotalKg !== null ? (week.singleTotalKg | number:'1.0-2') + ' kg' : '—' }}
+              </div>
+            </section>
+
+            <section class="min-w-0 border-t border-surface-200 pt-3" aria-labelledby="exercise-comparison-title">
+              <h4 id="exercise-comparison-title" class="mb-1 text-sm font-semibold text-content-800">
+                {{ 'userProgramStatistics.exerciseComparison' | translate }}
+              </h4>
+              <p class="mb-3 text-xs text-content-600">{{ 'userProgramStatistics.exerciseComparisonDescription' | translate }}</p>
+              <p *ngIf="!program.exerciseStatistics.length" class="text-xs text-content-600">
+                {{ 'userProgramStatistics.noRecurringExercises' | translate }}
+              </p>
+              <details *ngFor="let exercise of program.exerciseStatistics" class="mb-2 rounded-lg border border-surface-200 p-3">
+                <summary class="cursor-pointer text-sm font-semibold text-content-800">{{ exercise.exerciseName }}</summary>
+                <div class="mt-3 overflow-x-auto">
+                  <table class="w-full text-left text-xs">
+                    <caption class="sr-only">{{ exercise.exerciseName }} – {{ 'userProgramStatistics.exerciseComparison' | translate }}</caption>
+                    <thead>
+                      <tr class="border-b border-surface-200 text-content-600">
+                        <th scope="col" class="p-2">{{ 'userProgramStatistics.weekColumn' | translate }}</th>
+                        <th scope="col" class="p-2">{{ 'userProgramStatistics.setsAndReps' | translate }}</th>
+                        <th scope="col" class="p-2">{{ 'userProgramStatistics.exerciseVolume' | translate }}</th>
+                        <th scope="col" class="p-2">{{ 'userProgramStatistics.volumeChange' | translate }}</th>
+                        <th scope="col" class="p-2">{{ 'userProgramStatistics.maxWeight' | translate }}</th>
+                        <th scope="col" class="p-2">{{ 'userProgramStatistics.weightChange' | translate }}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let week of exercise.weeks" class="border-b border-surface-100 text-content-800">
+                        <th scope="row" class="whitespace-nowrap p-2">{{ 'userProgramStatistics.weekLabel' | translate:{ week: week.week } }}</th>
+                        <td class="p-2">{{ 'userProgramStatistics.setsAndRepsValue' | translate:{ sets: week.completedSets, reps: week.repetitions } }}</td>
+                        <td class="whitespace-nowrap p-2">{{ week.volumeKg | number:'1.0-2' }} kg</td>
+                        <td class="p-2">
+                          <span *ngIf="week.volumeChangePercent !== null; else noVolumeComparison" class="whitespace-nowrap">
+                            {{ week.volumeChangePercent > 0 ? '+' : '' }}{{ week.volumeChangePercent | number:'1.0-2' }}%
+                          </span>
+                          <ng-template #noVolumeComparison>{{ 'userProgramStatistics.noComparison' | translate }}</ng-template>
+                        </td>
+                        <td class="whitespace-nowrap p-2">{{ week.maxWeightKg | number:'1.0-2' }} kg</td>
+                        <td class="p-2">
+                          <ng-container *ngIf="week.maxWeightChangeKg !== null; else noWeightComparison">
+                            <span class="whitespace-nowrap">{{ week.maxWeightChangeKg > 0 ? '+' : '' }}{{ week.maxWeightChangeKg | number:'1.0-2' }} kg</span>
+                            <span *ngIf="week.maxWeightChangePercent !== null" class="whitespace-nowrap">
+                              ({{ week.maxWeightChangePercent > 0 ? '+' : '' }}{{ week.maxWeightChangePercent | number:'1.0-2' }}%)
+                            </span>
+                          </ng-container>
+                          <ng-template #noWeightComparison>{{ 'userProgramStatistics.noComparison' | translate }}</ng-template>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <details *ngIf="exercise.planWeeks.length" class="mt-3 border-t border-surface-200 pt-3">
+                  <summary class="cursor-pointer text-sm font-semibold text-content-800">{{ 'userProgramStatistics.scheduledPlan' | translate }}</summary>
+                  <p class="mt-2 text-xs text-content-600">{{ 'userProgramStatistics.scheduledPlanExplanation' | translate }}</p>
+                  <div class="mt-3 overflow-x-auto">
+                    <table class="w-full text-left text-xs text-content-800">
+                      <caption class="sr-only">{{ exercise.exerciseName }} – {{ 'userProgramStatistics.scheduledPlan' | translate }}</caption>
+                      <thead><tr class="border-b border-surface-200 text-content-600">
+                        <th scope="col" class="p-2">{{ 'userProgramStatistics.weekColumn' | translate }}</th>
+                        <th scope="col" class="p-2">{{ 'userProgramStatistics.completedPlannedSets' | translate }}</th>
+                        <th scope="col" class="p-2">{{ 'userProgramStatistics.adherence' | translate }}</th>
+                        <th scope="col" class="p-2">{{ 'userProgramStatistics.targetActualReps' | translate }}</th>
+                        <th scope="col" class="p-2">{{ 'userProgramStatistics.targetActualVolume' | translate }}</th>
+                      </tr></thead>
+                      <tbody><tr *ngFor="let plan of exercise.planWeeks" class="border-b border-surface-100">
+                        <th scope="row" class="whitespace-nowrap p-2">{{ 'userProgramStatistics.weekLabel' | translate:{ week: plan.week } }}
+                          <span *ngIf="plan.futureWeek" class="block text-content-600">{{ 'userProgramStatistics.futureWeek' | translate }}</span>
+                        </th>
+                        <td class="p-2">{{ plan.completedSets }} / {{ plan.plannedSets }}</td>
+                        <td class="p-2">{{ plan.completionPercent !== null ? (plan.completionPercent | number:'1.0-2') + '%' : '—' }}</td>
+                        <td class="p-2">{{ plan.targetRepetitions ?? '—' }} / {{ plan.actualRepetitions ?? '—' }}</td>
+                        <td class="whitespace-nowrap p-2">{{ plan.targetVolumeKg !== null ? (plan.targetVolumeKg | number:'1.0-2') : '—' }} / {{ plan.actualVolumeKg !== null ? (plan.actualVolumeKg | number:'1.0-2') : '—' }} kg</td>
+                      </tr></tbody>
+                    </table>
+                  </div>
+                </details>
+                <p *ngIf="!exercise.planWeeks.length" class="mt-3 text-xs text-content-600">{{ 'userProgramStatistics.noScheduledPlan' | translate }}</p>
+                <details class="mt-3 border-t border-surface-200 pt-3">
+                  <summary class="cursor-pointer text-sm font-semibold text-content-800">{{ 'userProgramStatistics.strengthMetrics' | translate }}</summary>
+                  <p class="mt-2 text-xs text-content-600">{{ 'userProgramStatistics.strengthExplanation' | translate }}</p>
+                  <p class="mt-2 text-xs text-content-600">{{ 'userProgramStatistics.intensityExplanation' | translate }}</p>
+                  <p class="mt-2 text-xs text-content-600">{{ 'userProgramStatistics.planExplanation' | translate }}</p>
+                  <ng-container *ngFor="let week of exercise.weeks">
+                    <section *ngIf="week.metrics as metrics" class="mt-3 rounded-lg bg-surface-50 p-3 text-xs text-content-800">
+                      <h5 class="mb-2 font-semibold">{{ 'userProgramStatistics.weekLabel' | translate:{ week: week.week } }}</h5>
+                      <dl class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                        <div>
+                          <dt class="text-content-600">{{ 'userProgramStatistics.e1rm' | translate }}</dt>
+                          <dd class="mt-1 font-semibold">{{ metrics.estimatedOneRepMaxKg !== null ? (metrics.estimatedOneRepMaxKg | number:'1.0-2') + ' kg' : '—' }}</dd>
+                        </div>
+                        <div>
+                          <dt class="text-content-600">{{ 'userProgramStatistics.bestSingle' | translate }}</dt>
+                          <dd class="mt-1 font-semibold">{{ metrics.bestSingleKg !== null ? (metrics.bestSingleKg | number:'1.0-2') + ' kg' : '—' }}</dd>
+                        </div>
+                        <div>
+                          <dt class="text-content-600">{{ 'userProgramStatistics.topSet' | translate }}</dt>
+                          <dd class="mt-1 font-semibold">{{ metrics.topSetRepetitions }} × {{ metrics.topSetWeightKg | number:'1.0-2' }} kg</dd>
+                        </div>
+                        <div>
+                          <dt class="text-content-600">{{ 'userProgramStatistics.relativeIntensity' | translate }}</dt>
+                          <dd class="mt-1 font-semibold">{{ metrics.relativeIntensityPercent !== null ? (metrics.relativeIntensityPercent | number:'1.0-2') + '%' : '—' }}</dd>
+                          <dd *ngIf="metrics.referenceOneRepMaxKg !== null" class="mt-1 text-content-600">{{ 'userProgramStatistics.reference1rm' | translate }}: {{ metrics.referenceOneRepMaxKg | number:'1.0-2' }} kg</dd>
+                        </div>
+                        <div>
+                          <dt class="text-content-600">{{ 'userProgramStatistics.intensityZones' | translate }}</dt>
+                          <dd *ngIf="metrics.repsBelow60Percent !== null; else noZones" class="mt-1 font-semibold">
+                            &lt;60%: {{ metrics.repsBelow60Percent }} · 60–&lt;80%: {{ metrics.reps60To80Percent }} · ≥80%: {{ metrics.repsAtLeast80Percent }}
+                          </dd>
+                          <ng-template #noZones><dd class="mt-1">—</dd></ng-template>
+                        </div>
+                        <div>
+                          <dt class="text-content-600">{{ 'userProgramStatistics.exerciseFrequency' | translate }}</dt>
+                          <dd class="mt-1 font-semibold">{{ 'userProgramStatistics.frequencyValue' | translate:{ workouts: metrics.workoutCount, days: metrics.activeDays } }}</dd>
+                        </div>
+                        <div>
+                          <dt class="text-content-600">{{ 'userProgramStatistics.targetActualReps' | translate }}</dt>
+                          <dd class="mt-1 font-semibold">{{ metrics.targetRepetitions ?? '—' }} / {{ week.repetitions }}</dd>
+                        </div>
+                        <div>
+                          <dt class="text-content-600">{{ 'userProgramStatistics.targetActualVolume' | translate }}</dt>
+                          <dd class="mt-1 font-semibold">{{ metrics.targetVolumeKg !== null ? (metrics.targetVolumeKg | number:'1.0-2') : '—' }} / {{ week.volumeKg | number:'1.0-2' }} kg</dd>
+                        </div>
+                        <div>
+                          <dt class="text-content-600">{{ 'userProgramStatistics.prescribedRest' | translate }}</dt>
+                          <dd class="mt-1 font-semibold">{{ metrics.averagePrescribedRestSeconds !== null ? (metrics.averagePrescribedRestSeconds | number:'1.0-1') + ' s' : '—' }}</dd>
+                        </div>
+                        <div>
+                          <dt class="text-content-600">{{ 'userProgramStatistics.programPr' | translate }}</dt>
+                          <dd *ngIf="metrics.estimatedOneRepMaxPr" class="mt-1 font-semibold text-success-700">{{ 'userProgramStatistics.e1rmPr' | translate }}</dd>
+                          <dd *ngIf="metrics.maxWeightPr" class="mt-1 font-semibold text-success-700">{{ 'userProgramStatistics.weightPr' | translate }}</dd>
+                          <dd *ngIf="!metrics.estimatedOneRepMaxPr && !metrics.maxWeightPr" class="mt-1">—</dd>
+                        </div>
+                      </dl>
+                    </section>
+                  </ng-container>
+                </details>
+              </details>
+            </section>
           </div>
         </app-card>
       </div>
