@@ -1,5 +1,6 @@
 import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { intensityLabelKey } from '../../../../constants/intensity';
 import { LoggerService } from '../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -8,6 +9,7 @@ import { Subject, Subscription, takeUntil } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { SidePaginationComponent } from '../../../../components/shared/components/side-pagination/side-pagination.component';
 import { UserWorkoutsService } from '../../../../services/user/user-workouts/user-workouts.service';
+import { UserMyProgramsService } from '../../../../services/user/user-my-program/user-my-programs.service';
 import type { UserWorkoutOccurrence } from '../../../../models/user-workout-occurrence.model';
 
 import { LanguageService } from '../../../../services/shared/language.service';
@@ -22,11 +24,15 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
   templateUrl: './workouts.component.html',
 })
 export class WorkoutsComponent implements OnInit, OnDestroy {
+  readonly intensityLabelKey = intensityLabelKey;
   private readonly logger = inject(LoggerService);
+  private readonly myProgramsService = inject(UserMyProgramsService);
 
   programId!: number;
 
-  programName!: string;
+  /** A program neve; a linkből jön, vagy (ha hiányzik) a felhasználó programjai közül töltődik be. */
+  programName: string | null = null;
+  programNameMissing = false;
 
   private loadRequest?: Subscription;
   workouts: UserWorkoutOccurrence[] = [];
@@ -140,11 +146,32 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
     // ==========================================================
 
     this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.programName =
-        programName || this.translate.instant('userWorkouts.unknownProgram');
+      if (programName) {
+        this.programName = programName;
+      } else {
+        this.loadProgramName();
+      }
 
       this.loadWorkouts();
     });
+  }
+
+  /** Ha a link nem hozza a program nevét (pl. visszalépés, újratöltés), a felhasználó programjai közül. */
+  private loadProgramName(): void {
+    this.myProgramsService
+      .getPrograms()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: response => {
+          const name = response.data?.find(program => program.id === this.programId)?.name ?? null;
+          this.programName = name;
+          this.programNameMissing = !name;
+        },
+        error: () => {
+          this.programName = null;
+          this.programNameMissing = true;
+        },
+      });
   }
 
   // ============================================================
@@ -196,6 +223,7 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
     this.router.navigate(['/user/workouts', workout.workoutId, 'exercises'], {
       queryParams: {
         programId: this.programId,
+        programName: this.programName,
         programWorkoutId: workout.programWorkoutId,
         userWorkoutId: workout.userWorkoutId,
         workoutName: workout.workoutName,

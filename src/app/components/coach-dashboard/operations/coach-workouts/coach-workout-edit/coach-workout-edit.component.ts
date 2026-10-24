@@ -1,5 +1,6 @@
 import { createInputValidationGuard } from '../../../../shared/components/form-controls/app-input.directive';
 import { AppSearchComponent } from '../../../../shared/components/app-search/app-search.component';
+import { INTENSITY_OPTIONS, normalizeIntensity } from '../../../../../constants/intensity';
 import type { WorkoutExerciseView } from '../../../../../models/workout/workout-exercise-view.model';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
@@ -37,6 +38,7 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   styleUrls: ['./coach-workout-edit.component.css'],
 })
 export class CoachWorkoutEditComponent implements OnInit {
+  readonly intensityOptions = INTENSITY_OPTIONS;
   private readonly validateInputs = createInputValidationGuard();
   private readonly logger = inject(LoggerService);
 
@@ -285,7 +287,7 @@ export class CoachWorkoutEditComponent implements OnInit {
           workoutDescription: w.workoutDescription ?? '',
           durationMinutes: w.durationMinutes ?? undefined,
           workoutDate: workoutDateFormatted,
-          intensityLevel: w.intensityLevel ?? undefined,
+          intensityLevel: normalizeIntensity(w.intensityLevel) || undefined,
           done: w.done ?? undefined,
           programId: w.programId ?? undefined,
           dayIndex: w.dayIndex ?? undefined,

@@ -263,9 +263,6 @@
     "intensityLevel": "Intensity Level",
     "save": "Save Workout",
     "selectIntensity": "-- Select Intensity --",
-    "low": "Low",
-    "moderate": "Moderate",
-    "high": "High",
     "completed": "Workout Completed",
     "exercises": "Exercises",
     "exercisesDescription": "Search for an exercise and add it to this workout.",
@@ -310,9 +307,6 @@
     "duration": "Duration (minutes)",
     "intensityLevel": "Intensity Level",
     "select": "Select",
-    "low": "Low",
-    "medium": "Medium",
-    "high": "High",
     "createWorkout": "Create Workout"
   },
   "programForm": {
@@ -1250,5 +1244,10 @@
     "workoutIdMissing": "The workout response is missing an ID.",
     "workoutMissing": "No workout data in the response.",
     "exerciseIdRequired": "An exercise ID is required for the update."
+  },
+  "intensity": {
+    "LOW": "Low",
+    "MEDIUM": "Medium",
+    "HIGH": "High"
   }
 }

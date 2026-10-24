@@ -1,4 +1,5 @@
 import { createInputValidationGuard } from '../../../../shared/components/form-controls/app-input.directive';
+import { INTENSITY_OPTIONS } from '../../../../../constants/intensity';
 import {
   errorMessage,
   responseMessage,
@@ -24,6 +25,7 @@ import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
   imports: [...SHARED_IMPORTS, AppCardComponent, AppSelectComponent],
 })
 export class NewWorkoutComponent implements OnInit, OnDestroy {
+  readonly intensityOptions = INTENSITY_OPTIONS;
   private readonly validateInputs = createInputValidationGuard();
   private readonly logger = inject(LoggerService);
 

@@ -84,7 +84,10 @@ export class LayoutComponent implements OnInit {
 
   // Mobil nézet ellenőrzése
   isMobile(): boolean {
-    return window.innerWidth < 640;
+    // Ugyanaz a határ, mint a CSS "sm" töréspontja (640px), és a CSS-hez hasonlóan a
+    // látható ablakszélességet nézi: egy túl széles tartalom (innerWidth növekedése)
+    // nem kapcsolhatja át asztali nézetre a menüt.
+    return window.matchMedia('(max-width: 639.98px)').matches;
   }
 
   closeMobileMenu(): void {

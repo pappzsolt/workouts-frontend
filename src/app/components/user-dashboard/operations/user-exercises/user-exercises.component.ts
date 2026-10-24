@@ -105,7 +105,7 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
           programId: Number(query.get('programId')),
           userWorkoutId: Number(query.get('userWorkoutId')),
           programWorkoutId: Number(query.get('programWorkoutId')),
-          workoutName: query.get('workoutName') || 'userExercises.unknownWorkout',
+          workoutName: query.get('workoutName') || '',
           language,
         })),
         distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current)),
@@ -193,8 +193,10 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
         programId: this.programId,
         programWorkoutId: this.programWorkoutId,
         userWorkoutId: this.userWorkoutId,
-        workoutName: this.workoutName,
+        workoutName: this.workoutName || null,
       },
+      // A programnév (morzsamenü) is maradjon meg a továbblépéskor.
+      queryParamsHandling: 'merge',
     });
   }
 

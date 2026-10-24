@@ -1,4 +1,5 @@
 import { ANIMATION_MODULE_TYPE, Component, ViewChild } from '@angular/core';
+import { UserMyProgramsService } from '../services/user/user-my-program/user-my-programs.service';
 import { TestBed } from '@angular/core/testing';
 import { FormControl, FormGroup, NgForm, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, convertToParamMap, provideRouter, Router } from '@angular/router';
@@ -439,6 +440,7 @@ describe('Migrated business screens use the same parent actions', () => {
       providers: [
         ...providers,
         { provide: LanguageService, useValue: language },
+        { provide: UserMyProgramsService, useValue: { getPrograms: () => of({ success: true, data: [], message: null }) } },
         {
           provide: ExerciseService,
           useValue: { getAllExercises: () => of({ success: true, data: [exercise] }) },
@@ -497,6 +499,7 @@ describe('Migrated business screens use the same parent actions', () => {
     expect(navigate).toHaveBeenCalledOnceWith(['/user/workouts', 12, 'exercises'], {
       queryParams: {
         programId: 5,
+        programName: 'Program',
         programWorkoutId: 32,
         userWorkoutId: 42,
         workoutName: 'Completed',

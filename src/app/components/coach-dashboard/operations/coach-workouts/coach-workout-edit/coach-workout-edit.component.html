@@ -152,11 +152,7 @@
             [placeholder]="'coachWorkoutEdit.selectIntensity'"
             placeholderValue=""
             [className]="'min-h-11 w-full min-w-0 cursor-pointer rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 sm:text-sm'"
-            [options]="[
-              { value: 'low', label: 'coachWorkoutEdit.low' },
-              { value: 'moderate', label: 'coachWorkoutEdit.moderate' },
-              { value: 'high', label: 'coachWorkoutEdit.high' },
-            ]"
+            [options]="intensityOptions"
           />
         </app-form-field>
 

@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { UserMyProgramsService } from '../services/user/user-my-program/user-my-programs.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { convertToParamMap } from '@angular/router';
 import { BehaviorSubject, of, throwError } from 'rxjs';
@@ -21,6 +22,7 @@ describe('Backend messages presented by coach and user components', () => {
       { provide: AuthService, useValue: {} },
       { provide: CoachProfileService, useValue: profileApi },
       { provide: LoggerService, useValue: { error: () => undefined } },
+      { provide: UserMyProgramsService, useValue: { getPrograms: () => of({ success: true, data: [], message: null }) } },
     ] });
   });
 
@@ -76,6 +78,17 @@ describe('Backend messages presented by coach and user components', () => {
     component.saveSetDetails({ id: 3, completed: false } as any);
     expect(save).toHaveBeenCalledTimes(1);
     expect(component.message).toBe('Details rejected'); expect(component.messageType).toBe('error');
+    component.ngOnDestroy();
+  });
+
+  it('loads the program name when the link does not carry it (back navigation, reload)', () => {
+    const route = { snapshot: { paramMap: convertToParamMap({ id: '7' }), queryParamMap: convertToParamMap({}) } };
+    const api = { getWorkoutsByProgram: () => of({ success: true, data: [], message: null }) };
+    TestBed.overrideProvider(UserMyProgramsService, { useValue: { getPrograms: () => of({ success: true, message: null,
+      data: [{ id: 3, name: 'Other' }, { id: 7, name: 'Erő program' }] }) } });
+    const component = TestBed.runInInjectionContext(() => new WorkoutsComponent(route as any, {} as any, api as any, {} as any, language as any));
+    component.ngOnInit();
+    expect(component.programName).toBe('Erő program'); expect(component.programNameMissing).toBeFalse();
     component.ngOnDestroy();
   });
 

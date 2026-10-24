@@ -31,7 +31,7 @@ test.describe('Coach – új workout létrehozása és PostgreSQL ellenőrzése'
       description: `UI és PostgreSQL ellenőrzés ${unique}`,
       workoutDate: '2035-02-17',
       durationMinutes: 55,
-      intensityLevel: 'Medium',
+      intensityLevel: 'MEDIUM',
     };
     await form.locator('#workoutName').fill(expected.name);
     await form.locator('#description').fill(expected.description);

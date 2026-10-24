@@ -11,7 +11,7 @@ test('COACH: workout módosítás → PUT → PostgreSQL SELECT → takarítás'
   await login(page,'coach');
   const api=await apiFor(page);
   let id:number|undefined;
-  const expected={name:`E2E Modified ${Date.now()}`,description:'E2E workout update',workout_date:'2035-09-19',duration_minutes:65,intensity_level:'moderate'};
+  const expected={name:`E2E Modified ${Date.now()}`,description:'E2E workout update',workout_date:'2035-09-19',duration_minutes:65,intensity_level:'MEDIUM'};
   try {
     id=await createWorkout(api);
     await page.goto(`/coach/workouts/${id}/edit`);

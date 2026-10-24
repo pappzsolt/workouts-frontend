@@ -14,7 +14,7 @@
       <span class="shrink-0"><app-icon name="dumbbell" sizeClass="h-8 w-8" /></span>
 
       <span class="min-w-0 break-words">
-        {{ workoutName }} –
+        {{ workoutName || ('userExercises.unknownWorkout' | translate) }} –
         {{ 'userExercises.exercises' | translate }}
       </span>
     </h2>

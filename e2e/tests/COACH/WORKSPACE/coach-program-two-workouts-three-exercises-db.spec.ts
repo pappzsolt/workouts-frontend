@@ -18,7 +18,7 @@ test('COACH: új program + meglévő workout + új workout 3 gyakorlattal → Po
     programName: `E2E két-workout program ${tag}`,
     workoutName: `E2E háromgyakorlatos workout ${tag}`,
     workoutDescription: `E2E program workflow ${tag}`,
-    workoutDate: '2035-07-03', durationMinutes: 50, intensityLevel: 'Medium',
+    workoutDate: '2035-07-03', durationMinutes: 50, intensityLevel: 'MEDIUM',
   };
   let programId: number | undefined;
   let workoutId: number | undefined;

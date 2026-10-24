@@ -40,7 +40,7 @@ function buildWorkout(prefix: string): WorkoutData {
     description: `Playwright E2E teszt ${suffix}`,
     workoutDate: '2035-01-15',
     durationMinutes: 77,
-    intensityLevel: 'High',
+    intensityLevel: 'HIGH',
   };
 }
 
@@ -398,7 +398,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
       name: `${original.name} MODIFIED`,
       description: `${original.description} - módosítva`,
       durationMinutes: 91,
-      intensityLevel: 'low',
+      intensityLevel: 'LOW',
     };
 
     let workoutId: number | undefined;
@@ -576,7 +576,7 @@ test.describe('Coach - Workout CREATE / UPDATE / DELETE / ASSIGN / PostgreSQL', 
           description: 'E2E NEGATIVE',
           workoutDate: '2035-01-15',
           durationMinutes: 30,
-          intensityLevel: 'High',
+          intensityLevel: 'HIGH',
           done: false,
         },
       });

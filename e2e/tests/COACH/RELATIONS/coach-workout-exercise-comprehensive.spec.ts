@@ -185,7 +185,7 @@ test.describe('Coach - Workout / Exercise / Assignment endpoint matrix', () => {
       expect(dbWorkout).not.toBeNull();
       expect(dbWorkout?.workout_date).toBe('2035-02-16');
       expect(Number(dbWorkout?.duration_minutes)).toBe(95);
-      expect(dbWorkout?.intensity_level).toBe('Low');
+      expect(dbWorkout?.intensity_level).toBe('LOW');
       expect(dbWorkout?.name).toBe(`${name} UPDATED`);
       expect(dbWorkout?.description).toBe('E2E workout update');
 

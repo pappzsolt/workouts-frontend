@@ -263,9 +263,6 @@
     "intensityLevel": "Intensitätsstufe",
     "save": "Training speichern",
     "selectIntensity": "-- Intensität auswählen --",
-    "low": "Niedrig",
-    "moderate": "Mittel",
-    "high": "Hoch",
     "completed": "Training abgeschlossen",
     "exercises": "Übungen",
     "exercisesDescription": "Suche eine Übung und füge sie diesem Training hinzu.",
@@ -310,9 +307,6 @@
     "duration": "Dauer (Minuten)",
     "intensityLevel": "Intensitätsstufe",
     "select": "Auswählen",
-    "low": "Niedrig",
-    "medium": "Mittel",
-    "high": "Hoch",
     "createWorkout": "Training erstellen"
   },
   "programForm": {
@@ -1250,5 +1244,10 @@
     "workoutIdMissing": "In der Trainingsantwort fehlt die ID.",
     "workoutMissing": "Die Antwort enthält keine Trainingsdaten.",
     "exerciseIdRequired": "Für die Aktualisierung ist eine Übungs-ID erforderlich."
+  },
+  "intensity": {
+    "LOW": "Niedrig",
+    "MEDIUM": "Mittel",
+    "HIGH": "Hoch"
   }
 }

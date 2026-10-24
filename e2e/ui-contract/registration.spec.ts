@@ -101,7 +101,7 @@ test('admin: approves a client with a coach and rejects a coach with a reason', 
     { id: 2, accountType: 'COACH', username: 'Nagy Béla', email: 'bela@example.com', age: null, weight: null, height: null, gender: null, goals: null, phone: '+36 30 1', specialization: 'Erő', status: 'PENDING', rejectionReason: null, createdAt: '2026-10-23T11:00:00', decidedAt: null, decidedBy: null, createdUserId: null, createdCoachId: null, assignedCoachId: null, assignedCoachName: null },
   ];
   const calls = await mockApi(page, 'ROLE_ADMIN', c => {
-    if (c.path === '/api/members/coaches') return { json: { success: true, data: [{ id: 205, usernameOrName: 'Coach Carl' }], message: null } };
+    if (c.path === '/api/members/coaches') return { json: { success: true, data: [{ id: 205, name: 'Coach Carl' }], message: null } };
     if (c.path === '/api/admin/registrations/pending-count') return { json: { success: true, data: { count: pending.length }, message: null } };
     if (c.method === 'GET' && c.path === '/api/admin/registrations') return { json: { success: true, data: { content: pending, page: 0, size: 10, totalElements: pending.length, totalPages: 1 }, message: null } };
     const decision = c.path.match(/^\/api\/admin\/registrations\/(\d+)\/(approve|reject)$/);
