@@ -1,7 +1,7 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subject, concat, of, takeUntil, toArray } from 'rxjs';
+import { Observable, Subject, concat, finalize, of, takeUntil, toArray } from 'rxjs';
 
 import { SHARED_IMPORTS } from '../../shared/shared-imports';
 import {
@@ -20,7 +20,7 @@ import type {
   CoachProgram,
   CoachWorkoutStatus,
 } from '../../../models/coach-workspace.model';
-import { errorText, initial, percent } from '../coach-ui';
+import { downloadBlob, errorText, initial, percent, programExportFileName } from '../coach-ui';
 
 /** Az ügyfél egy edzése a programban (a sorokból összerakva). */
 export interface ClientWorkoutEntry {
@@ -146,6 +146,9 @@ export class CoachClientDetailComponent implements OnInit {
   // Visszavonás
   revokeProgramId: number | null = null;
 
+  // Excel-export
+  exporting = false;
+
   private requestedWorkoutId: number | null = null;
   private requestedDate: string | null = null;
 
@@ -198,6 +201,7 @@ export class CoachClientDetailComponent implements OnInit {
     this.assignProgramId = null;
     this.assigning = false;
     this.revokeProgramId = null;
+    this.exporting = false;
     this.requestedWorkoutId = null;
     this.requestedDate = null;
     this.message = '';
@@ -328,6 +332,32 @@ export class CoachClientDetailComponent implements OnInit {
           this.programLoadFailed = true;
           this.showError(error, 'coachWorkspace.loadError');
         },
+      });
+  }
+
+  /**
+   * A kiválasztott program összes edzése, gyakorlata és sorozata Excel-fájlba (cél és
+   * tényleges értékek, pihenő, teljesítés, megjegyzés). A mentett állapot kerül bele.
+   */
+  exportProgram(): void {
+    const programId = this.programId;
+    if (programId === null || this.exporting) return;
+    const unsaved = this.dirty;
+    const fileName = programExportFileName(this.selectedProgram?.name, this.client?.username);
+    this.exporting = true;
+    this.workspace
+      .exportClientProgram(this.userId, programId)
+      .pipe(
+        finalize(() => (this.exporting = false)),
+        takeUntil(this.clientContextCancelled$),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: (blob) => {
+          downloadBlob(blob, fileName);
+          if (unsaved) this.showMessage('coachWorkspace.client.exportUnsaved', 'info');
+        },
+        error: (error) => this.showError(error, 'coachWorkspace.client.exportError'),
       });
   }
 

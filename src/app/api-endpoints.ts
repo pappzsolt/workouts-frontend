@@ -177,6 +177,8 @@ export const API_ENDPOINTS = {
     `${environment.apiUrl}/user-workout-exercises/workouts/${userWorkoutId}`,
   userWorkoutExercisesByUserProgram: (userId: number, programId: number) =>
     `${environment.apiUrl}/user-workout-exercises/user-programs/${userId}/${programId}`,
+  userProgramExport: (userId: number, programId: number) =>
+    `${environment.apiUrl}/user-workout-exercises/user-programs/${userId}/${programId}/export`,
   rescheduleUserWorkout: `${environment.apiUrl}/user-workout-exercises/schedule`,
   scheduledUserWorkouts: `${environment.apiUrl}/user-workout-exercises/scheduled`,
   scheduledUserWorkoutsSearch: `${environment.apiUrl}/user-workout-exercises/scheduled/search`,

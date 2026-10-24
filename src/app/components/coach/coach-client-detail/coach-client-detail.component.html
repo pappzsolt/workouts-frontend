@@ -91,6 +91,14 @@
               <a [routerLink]="['/coach/programs', programId]" class="mb-3 text-sm font-semibold text-primary-700 underline">
                 {{ 'coachWorkspace.client.openProgram' | translate }}
               </a>
+              <button type="button" (click)="exportProgram()" [disabled]="exporting || programLoading || workouts.length === 0"
+                      [attr.aria-busy]="exporting" [title]="'coachWorkspace.client.exportHint' | translate"
+                      class="btn btn-outline mb-1 min-h-11 gap-2">
+                <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
+                  <path d="M10 2a1 1 0 0 1 1 1v7.586l2.293-2.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 1 1 1.414-1.414L9 10.586V3a1 1 0 0 1 1-1Zm-6 13a1 1 0 0 1 1 1v1h10v-1a1 1 0 1 1 2 0v2a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1Z"/>
+                </svg>
+                {{ (exporting ? 'coachWorkspace.client.exporting' : 'coachWorkspace.client.exportExcel') | translate }}
+              </button>
             }
             <p class="mb-3 ml-auto text-sm text-content-600">
               {{ 'coachWorkspace.client.planCounts' | translate: { total: counts.total, done: counts.done, missed: counts.missed } }}

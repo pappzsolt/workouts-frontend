@@ -940,7 +940,12 @@
       "unsavedPrompt": "{{count}} sorozat módosítása nincs mentve.",
       "weekLabel": "{{n}}. hét",
       "workoutList": "A program edzései",
-      "retryProgram": "Újrapróbálás"
+      "retryProgram": "Újrapróbálás",
+      "exportExcel": "Excel letöltése",
+      "exporting": "Excel készül…",
+      "exportHint": "A program összes edzése, gyakorlata és sorozata Excel-fájlban (cél és tényleges értékek, pihenő, megjegyzések).",
+      "exportError": "Az Excel-fájl elkészítése nem sikerült.",
+      "exportUnsaved": "Az Excel a mentett adatokat tartalmazza; a még nem mentett módosítások nincsenek benne."
     },
     "programs": {
       "title": "Programok",

@@ -940,7 +940,12 @@
       "unsavedPrompt": "Änderungen an {{count}} Sätzen sind nicht gespeichert.",
       "weekLabel": "Woche {{n}}",
       "workoutList": "Trainings des Programms",
-      "retryProgram": "Erneut versuchen"
+      "retryProgram": "Erneut versuchen",
+      "exportExcel": "Excel herunterladen",
+      "exporting": "Excel wird erstellt…",
+      "exportHint": "Alle Trainings, Übungen und Sätze des Programms als Excel-Datei (Ziel- und Ist-Werte, Pausen, Notizen).",
+      "exportError": "Die Excel-Datei konnte nicht erstellt werden.",
+      "exportUnsaved": "Die Excel-Datei enthält die gespeicherten Daten; nicht gespeicherte Änderungen sind nicht enthalten."
     },
     "programs": {
       "title": "Programme",

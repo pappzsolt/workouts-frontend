@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, map } from 'rxjs';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { Observable, catchError, from, map, switchMap, throwError } from 'rxjs';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
 import type { ApiResponse } from '../../models/backend-dto/common/api-response';
@@ -31,6 +31,23 @@ function unwrap<T>(response: ApiResponse<T>): T {
     throw new Error(response?.message || 'coachWorkspace.genericError');
   }
   return response.data as T;
+}
+
+/** Blob válaszú kérés hibájának JSON-törzsét (ApiResponse) visszaalakítja, hogy az üzenet olvasható legyen. */
+async function blobErrorAsJson(error: unknown): Promise<unknown> {
+  if (!(error instanceof HttpErrorResponse) || !(error.error instanceof Blob)) return error;
+  try {
+    const body: unknown = JSON.parse(await error.error.text());
+    return new HttpErrorResponse({
+      error: body,
+      headers: error.headers,
+      status: error.status,
+      statusText: error.statusText,
+      url: error.url ?? undefined,
+    });
+  } catch {
+    return error;
+  }
 }
 
 /** YYYY-MM-DD helyi idő szerint. */
@@ -174,6 +191,17 @@ export class CoachWorkspaceService {
     return this.http
       .get<ApiResponse<ClientProgramRow[]>>(API_ENDPOINTS.userWorkoutExercisesByUserProgram(userId, programId), { params })
       .pipe(map((response) => unwrap(response) ?? []));
+  }
+
+  /**
+   * Az ügyfél programjának összes edzése, gyakorlata és sorozata Excel-fájlként.
+   * Hiba esetén a backend JSON-üzenete a szokásos {@code error.error.message} helyen érkezik.
+   */
+  exportClientProgram(userId: number, programId: number): Observable<Blob> {
+    const params = new HttpParams().set('language', this.language());
+    return this.http
+      .get(API_ENDPOINTS.userProgramExport(userId, programId), { params, responseType: 'blob' })
+      .pipe(catchError((error: unknown) => from(blobErrorAsJson(error)).pipe(switchMap((parsed) => throwError(() => parsed)))));
   }
 
   /** Egy sorozat minden mezőjének mentése; az üres mezőket a clear jelzők törlik. */

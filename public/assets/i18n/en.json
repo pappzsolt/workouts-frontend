@@ -940,7 +940,12 @@
       "unsavedPrompt": "Changes to {{count}} sets are not saved.",
       "weekLabel": "Week {{n}}",
       "workoutList": "Workouts of the program",
-      "retryProgram": "Try again"
+      "retryProgram": "Try again",
+      "exportExcel": "Download Excel",
+      "exporting": "Preparing Excel…",
+      "exportHint": "All workouts, exercises and sets of the program in an Excel file (target and actual values, rest, notes).",
+      "exportError": "Could not create the Excel file.",
+      "exportUnsaved": "The Excel file contains the saved data; unsaved changes are not included."
     },
     "programs": {
       "title": "Programs",
