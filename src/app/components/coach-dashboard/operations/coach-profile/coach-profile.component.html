@@ -79,6 +79,20 @@
           />
         </app-form-field>
 
+        <app-form-field labelKey="coachProfile.currentPassword" controlId="current_password">
+          <input
+            appInput="editor"
+            id="current_password"
+            name="current_password"
+            type="password"
+            autocomplete="current-password"
+            [required]="!!profile.password_hash.trim()"
+            [placeholder]="'coachProfile.currentPassword' | translate"
+            [(ngModel)]="currentPassword"
+            class="placeholder:text-content-400"
+          />
+        </app-form-field>
+
         <!-- ==================================================
              JELSZÓ
              ================================================== -->

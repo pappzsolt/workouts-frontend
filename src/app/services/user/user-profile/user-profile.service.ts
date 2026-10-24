@@ -54,6 +54,7 @@ export class UserProfilService {
       name: user.usernameOrName,
       email: user.email,
       passwordHash: user.password?.trim() ? user.password : null,
+      currentPassword: user.password?.trim() ? user.currentPassword ?? null : null,
       age: user.extraFields?.age ?? null,
       weight: user.extraFields?.weight ?? null,
       height: user.extraFields?.height ?? null,

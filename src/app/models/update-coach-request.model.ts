@@ -8,4 +8,5 @@ export interface UpdateCoachRequest {
   specialization?: string;
   roleIds: number[];
   passwordHash?: string;
+  currentPassword?: string | null;
 }

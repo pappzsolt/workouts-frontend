@@ -37,6 +37,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     username: '',
     email: '',
     password: '',
+    currentPassword: '',
     avatarUrl: '',
     age: undefined,
     weight: undefined,
@@ -119,6 +120,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
             username: profile.usernameOrName || '',
             email: profile.email || '',
             password: '',
+            currentPassword: '',
             avatarUrl: profile.avatarUrl || '',
             age: profile.extraFields?.age,
             weight: profile.extraFields?.weight,
@@ -157,6 +159,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       username: raw.usernameOrName || '',
       email: raw.email || '',
       password: '',
+      currentPassword: '',
       avatarUrl: raw.avatarUrl || '',
       age: raw.extraFields?.age,
       weight: raw.extraFields?.weight,
@@ -185,6 +188,11 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
   onSave(): void {
     if (!this.validateInputs()) return;
+    if (this.selectedUser.password?.trim() && !this.selectedUser.currentPassword?.trim()) {
+      this.message = 'A jelenlegi jelszó megadása kötelező a jelszó módosításához';
+      this.messageType = 'error';
+      return;
+    }
     if (this.saving || !this.selectedUser.id) {
       return;
     }
@@ -198,6 +206,9 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
       password: this.selectedUser.password?.trim()
         ? this.selectedUser.password
+        : undefined,
+      currentPassword: this.selectedUser.password?.trim()
+        ? this.selectedUser.currentPassword
         : undefined,
 
       avatarUrl: this.selectedUser.avatarUrl,
@@ -231,7 +242,10 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         next: (response) => {
           this.message = responseMessage([response], response.success ? 'userProfile.updateSuccess' : 'userProfile.updateError');
           this.messageType = response.success ? 'success' : 'error';
-          if (response.success && this.selectedUser.password === rawUser.password) this.selectedUser.password = '';
+          if (response.success && this.selectedUser.password === rawUser.password) {
+            this.selectedUser.password = '';
+            this.selectedUser.currentPassword = '';
+          }
         },
 
         error: (error) => {

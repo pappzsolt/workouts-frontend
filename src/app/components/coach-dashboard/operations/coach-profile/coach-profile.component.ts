@@ -51,6 +51,8 @@ export class CoachProfileComponent implements OnInit {
 
   saving = false;
 
+  currentPassword = '';
+
   message = '';
 
   messageType: 'success' | 'error' | 'info' | '' = '';
@@ -114,6 +116,10 @@ export class CoachProfileComponent implements OnInit {
     if (this.saving) return;
     if (!this.validateInputs()) return;
     this.clearMessage();
+    if (this.profile.password_hash.trim() && !this.currentPassword.trim()) {
+      this.showError('A jelenlegi jelszó megadása kötelező a jelszó módosításához');
+      return;
+    }
 
     if (!this.profile.id) {
       this.showError(USER_MESSAGES.saveProfileNoId);
@@ -129,7 +135,8 @@ export class CoachProfileComponent implements OnInit {
       avatarUrl: this.profile.avatar_url,
       phone: this.profile.phone,
       specialization: this.profile.specialization,
-      passwordHash: this.profile.password_hash,
+      passwordHash: this.profile.password_hash.trim() ? this.profile.password_hash : undefined,
+      currentPassword: this.profile.password_hash.trim() ? this.currentPassword : null,
     };
 
     this.saving = true;
@@ -143,6 +150,7 @@ export class CoachProfileComponent implements OnInit {
         }
         if (this.profile.password_hash === payload.passwordHash) {
           this.profile.password_hash = '';
+          this.currentPassword = '';
         }
 
         this.showSuccess(responseMessage([response], USER_MESSAGES.saveProfileSuccess));

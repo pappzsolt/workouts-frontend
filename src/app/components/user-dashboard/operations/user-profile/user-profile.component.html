@@ -74,6 +74,21 @@
               />
             </app-form-field>
 
+            <!-- Current password is required only when setting a new password. -->
+            <app-form-field labelKey="userProfile.currentPassword" controlId="current_password">
+              <input
+                appInput="compact"
+                id="current_password"
+                name="current_password"
+                type="password"
+                autocomplete="current-password"
+                [required]="!!selectedUser.password?.trim()"
+                [placeholder]="'userProfile.currentPassword' | translate"
+                [(ngModel)]="selectedUser.currentPassword"
+                class="placeholder:text-content-400"
+              />
+            </app-form-field>
+
             <!-- Password -->
             <app-form-field labelKey="userProfile.password" controlId="password_hash">
               <input

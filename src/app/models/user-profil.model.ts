@@ -3,6 +3,7 @@ export interface RawUser {
   usernameOrName: string;
   email: string;
   password?: string;
+  currentPassword?: string;
   avatarUrl?: string;
   roles: string[];
   //roleIds?: number[];  // 🔹 nem szükséges, mert a User interface-ben van
@@ -21,6 +22,7 @@ export interface UserProfile {
   username: string;
   email: string;
   password?: string;
+  currentPassword?: string;
   avatarUrl?: string;
   age?: number;
   weight?: number;

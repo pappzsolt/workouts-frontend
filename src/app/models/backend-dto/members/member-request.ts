@@ -16,4 +16,5 @@ export interface MemberRequest {
   phone: string | null;
   specialization: string | null;
   roleIds: Array<number> | null;
+  currentPassword?: string | null;
 }
