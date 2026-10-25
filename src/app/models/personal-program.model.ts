@@ -22,6 +22,7 @@ export interface PersonalProgramRequest {
   workouts: PersonalProgramDay[];
 }
 export interface PersonalProgramSummary {
+  standalone?: boolean;
   id: number;
   name: string;
   startDate: string | null;
@@ -29,6 +30,7 @@ export interface PersonalProgramSummary {
   startedAt: string | null;
 }
 export interface PersonalProgramDetail {
+  standalone?: boolean;
   id: number;
   startedAt: string | null;
   program: PersonalProgramRequest;

@@ -73,3 +73,22 @@ A frontend és a backend kiadását az új PUT/start válaszszerződés miatt ö
 A frontend is ellenőrzi az összesített 1000 gyakorlat-előfordulás / 5000 sorozat korlátot;
 a backend ezt önállóan is kikényszeríti. A konkrét üzleti hibák magyarul, angolul és németül
 is megmaradnak az API-válaszokban.
+
+## Önálló edzés
+
+A dashboard és a saját programok listája „Önálló edzés létrehozása” műveletet kapott.
+Útvonalak: `/user/personal-workouts/new`, `/user/personal-workouts/:id`.
+A meglévő szerkesztő egyszerűsített módja csak az edzés nevét, opcionális leírását és
+napját, valamint a gyakorlatokat és sorozatokat kéri. Nincs időtartam, napfelvétel,
+nap-sorszám vagy külön edzésnapi név. A kérés egynapos saját programot tartalmaz.
+
+Az elindított önálló edzés „Új alkalom” gombja megerősítés után új, szerkeszthető
+piszkozatot nyit meg. A kezdőnap üres, ezért új dátum választható; indításkor alapértelmezés
+a mai nap. Az új alkalom nem indul el automatikusan, és nem örökli a korábbi eredményeket.
+A korábbi edzés az eredményeivel együtt megmarad. A saját programok listájában az önálló
+edzések külön jelölést és a megfelelő szerkesztőre mutató linket kapnak.
+
+A backend `059-personal-standalone-workouts` migrációt tartalmazó verziója szükséges.
+A `standalone` válaszmező additív; a meglévő programok és coach-folyamatok változatlanok.
+A három nyelvű felület, a nem mentett változások védelme, a katalógusválasztó és a verziózott
+mentés ugyanazokat a közös komponenseket használja, mint a teljes programkészítő.

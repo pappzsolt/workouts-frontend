@@ -1467,5 +1467,30 @@
     "confirm": "Megerősítés",
     "cancel": "Mégse",
     "sizeLimit": "A saját program legfeljebb 1000 gyakorlatot és 5000 sorozatot tartalmazhat."
+  },
+  "personalWorkouts": {
+    "create": "Önálló edzés létrehozása",
+    "editor": "Saját edzés",
+    "type": "Önálló edzés",
+    "details": "Edzés adatai",
+    "name": "Edzés neve",
+    "startDate": "Edzés napja",
+    "days": "Gyakorlatok",
+    "save": "Edzés mentése",
+    "start": "Edzés indítása",
+    "locked": "Ez az edzés már elindult. Az Új alkalom gombbal ismételheted meg; a korábbi eredmények megmaradnak.",
+    "startHint": "Indítás előtt mentsd az edzést, és adj hozzá legalább egy gyakorlatot.",
+    "startTitle": "Edzés indítása",
+    "startConfirm": "Elindítod ezt az edzést? Az eredményeket külön ehhez az alkalomhoz rögzítheted.",
+    "deleteTitle": "Edzés törlése",
+    "deleteConfirm": "Törlöd ezt az el nem indított edzést? A művelet nem vonható vissza.",
+    "repeat": "Új alkalom",
+    "repeatTitle": "Edzés ismétlése",
+    "repeatConfirm": "Új, szerkeszthető edzés készül ugyanazokkal a gyakorlatokkal. A dátumot újra megadhatod; korábbi eredmények nem kerülnek át.",
+    "limit": "Az edzés legfeljebb 100 gyakorlatot és 5000 sorozatot tartalmazhat.",
+    "saved": "Az edzést mentettük.",
+    "startSuccess": "Az edzés elindult. Az Edzések megnyitása gombbal kezdhetsz edzeni.",
+    "started": "Elindított edzés",
+    "draft": "Edzéspiszkozat"
   }
 }

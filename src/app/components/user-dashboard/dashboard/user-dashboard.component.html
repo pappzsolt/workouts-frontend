@@ -9,6 +9,7 @@
 
     <!-- Dashboard kártyák -->
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      <app-dashboard-action icon="barbell" [label]="'personalWorkouts.create' | translate" (activated)="navigateTo('user/personal-workouts/new')" />
       <app-dashboard-action
         icon="pencil-simple"
         [label]="'personalPrograms.title' | translate"

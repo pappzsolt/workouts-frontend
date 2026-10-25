@@ -114,6 +114,11 @@ export class DashboardNavigationComponent {
       workouts: 'userDashboard.myWorkouts',
       'bug-report': 'bugReport.title',
     };
+    if (page === 'personal-workouts' && segments[2]) {
+      this.items.push({ label: 'personalPrograms.title', url: '/user/personal-programs' });
+      this.items.push({ label: segments[2] === 'new' ? 'personalWorkouts.create' : 'personalWorkouts.editor', url: this.router.url });
+      return;
+    }
     if (page === 'personal-programs' && segments[2]) {
       this.items.push({ label: 'personalPrograms.title', url: '/user/personal-programs' });
       this.items.push({ label: segments[2] === 'new' ? 'personalPrograms.create' : 'personalPrograms.editor', url: this.router.url });

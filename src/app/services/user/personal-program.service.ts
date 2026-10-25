@@ -36,10 +36,11 @@ export class PersonalProgramService {
   save(
     id: number | null,
     request: PersonalProgramRequest,
+    standalone = false,
   ): Observable<number | PersonalProgramDetail> {
     if (id == null)
       return this.http
-        .post<ApiResponse<number>>(this.url, request)
+        .post<ApiResponse<number>>(standalone ? `${this.url}/standalone` : this.url, request)
         .pipe(map((response) => this.unwrap(response)));
     return this.http
       .put<ApiResponse<PersonalProgramDetail>>(`${this.url}/${id}`, request)
@@ -53,6 +54,15 @@ export class PersonalProgramService {
   copy(id: number) {
     return this.http
       .post<ApiResponse<number>>(`${this.url}/${id}/copy`, {}, { params: this.params() })
+      .pipe(map((response) => this.unwrap(response)));
+  }
+  repeat(id: number) {
+    return this.http
+      .post<ApiResponse<PersonalProgramDetail>>(
+        `${this.url}/${id}/repeat`,
+        {},
+        { params: this.params() },
+      )
       .pipe(map((response) => this.unwrap(response)));
   }
   delete(id: number) {

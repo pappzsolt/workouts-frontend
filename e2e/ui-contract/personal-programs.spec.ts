@@ -6,7 +6,7 @@ const draft = () => ({ name: 'Saját terv', description: null, durationDays: 7, 
     exercises: [{ exerciseId: 11, sets: 3, repetitions: 10, restSeconds: 60, notes: null }] }] });
 
 async function install(page: Page) {
-  const state = { program: draft(), id: 7, started: false, failSave: false, failList: false,
+  const state = { program: draft(), id: 7, started: false, standalone: false, failSave: false, failList: false,
     calls: [] as { method: string; path: string; body: any }[], unexpected: [] as string[] };
   const token = [Buffer.from(JSON.stringify({ alg: 'none' })).toString('base64url'),
     Buffer.from(JSON.stringify({ sub: 'anna', id: 42, roles: 'ROLE_USER', exp: Math.floor(Date.now()/1000)+3600 })).toString('base64url'), 'signature'].join('.');
@@ -24,15 +24,17 @@ async function install(page: Page) {
       if (state.failList) return route.fulfill({ status: 503, json: { success: false, message: 'Átmeneti betöltési hiba' } });
       return ok([{ id: state.id, name: state.program.name, durationDays: 7, startDate: null, startedAt: null }]);
     }
+    if (path === `${ROOT}/standalone` && req.method() === 'POST') { state.standalone=true;state.program={...call.body,expectedVersion:1};return ok(state.id); }
+    if (path === `${ROOT}/${state.id}/repeat`) { state.id++;state.started=false;state.program={...state.program,startDate:null,expectedVersion:1};return ok({id:state.id,standalone:true,startedAt:null,program:state.program}); }
     if (path === ROOT && req.method() === 'POST') { state.program={...call.body,expectedVersion:1}; return ok(state.id); }
-    if (path === `${ROOT}/${state.id}` && req.method() === 'GET') return ok({ id: state.id, startedAt: state.started ? '2026-10-25T12:00:00' : null, program: state.program });
+    if (path === `${ROOT}/${state.id}` && req.method() === 'GET') return ok({ id: state.id, standalone: state.standalone, startedAt: state.started ? '2026-10-25T12:00:00' : null, program: state.program });
     if (path === `${ROOT}/${state.id}` && req.method() === 'PUT') {
       if (call.body.expectedVersion !== state.program.expectedVersion) return route.fulfill({ status: 409, json: { success: false, message: 'A saját programot időközben módosították. A szerkesztésed megmaradt.' } });
       if (state.failSave) return route.fulfill({ status: 409, json: { success: false, message: 'A mentés most nem sikerült.' } });
-      state.program={...call.body,expectedVersion:state.program.expectedVersion+1}; return ok({id:state.id,startedAt:null,program:state.program});
+      state.program={...call.body,expectedVersion:state.program.expectedVersion+1}; return ok({id:state.id,standalone:state.standalone,startedAt:null,program:state.program});
     }
     if (path === `${ROOT}/${state.id}` && req.method() === 'DELETE') return ok(state.id);
-    if (path === `${ROOT}/${state.id}/start`) { state.started=true; state.program={...state.program,startDate:'2026-10-25'} as typeof state.program; return ok({id:state.id,startedAt:'2026-10-25T12:00:00',program:state.program}); }
+    if (path === `${ROOT}/${state.id}/start`) { state.started=true; state.program={...state.program,startDate:'2026-10-25'} as typeof state.program; return ok({id:state.id,standalone:state.standalone,startedAt:'2026-10-25T12:00:00',program:state.program}); }
     if (path === `${ROOT}/${state.id}/copy`) { state.id++; state.started=false; return ok(state.id); }
     state.unexpected.push(`${req.method()} ${path}`);
     return route.abort('blockedbyclient');
@@ -158,4 +160,34 @@ test('Saját program: egymást követő mentések az új verziót küldik', asyn
   expect(api.calls.filter(c=>c.method==='PUT').map(c=>c.body.expectedVersion)).toEqual([1,2]);
   expect(api.program.name).toBe('Második mentés');
   expect(api.unexpected).toEqual([]);
+});
+
+test('Önálló edzés: egyszerű létrehozás és új alkalom külön eredményekkel', async ({page}, info) => {
+  const api=await install(page);
+  await page.goto('/user/personal-workouts/new');
+  await expect(editor(page).getByRole('heading',{name:'Önálló edzés létrehozása',exact:true})).toBeVisible();
+  await expect(editor(page).locator('input[name=durationDays]')).toHaveCount(0);
+  await expect(editor(page).getByRole('button',{name:'Edzésnap hozzáadása',exact:true})).toHaveCount(0);
+  await editor(page).getByLabel('Edzés neve',{exact:true}).fill('Gyors erősítés');
+  await editor(page).getByRole('button',{name:'Gyakorlat hozzáadása',exact:true}).click();
+  await page.locator('app-exercise-picker').getByRole('button',{name:'Hozzáadás: Guggolás',exact:true}).click();
+  await editor(page).getByRole('button',{name:'Edzés mentése',exact:true}).click();
+  await expect(page).toHaveURL(/personal-workouts\/7$/);
+  expect(api.program.durationDays).toBe(1);expect(api.program.workouts.length).toBe(1);
+  expect(api.program.workouts[0].name).toBe('Gyors erősítés');
+  await editor(page).getByRole('button',{name:'Edzés indítása',exact:true}).click();
+  await page.getByRole('alertdialog').getByRole('button',{name:'Megerősítés',exact:true}).click();
+  await expect(editor(page).getByRole('button',{name:'Új alkalom',exact:true})).toBeVisible();
+  await expect(editor(page).locator('input[name=startDate]')).toHaveValue('2026-10-25');
+  await editor(page).getByRole('button',{name:'Új alkalom',exact:true}).click();
+  await page.getByRole('alertdialog').getByRole('button',{name:'Megerősítés',exact:true}).click();
+  await expect(page).toHaveURL(/personal-workouts\/8$/);
+  await expect(editor(page).getByLabel('Edzés neve',{exact:true})).toHaveValue('Gyors erősítés');
+  await expect(editor(page).locator('input[name=startDate]')).toHaveValue('');
+  await expect(editor(page).getByLabel('Edzés neve',{exact:true})).toBeEnabled();
+  await expect(editor(page).getByRole('button',{name:'Edzés indítása',exact:true})).toBeEnabled();
+  await page.screenshot({path:`/tmp/standalone-workout-${info.project.name}.png`,fullPage:true});
+  expect(api.calls.filter(c=>c.path.endsWith('/start'))).toHaveLength(1);
+  expect(api.unexpected).toEqual([]);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });

@@ -37,22 +37,25 @@ export class PersonalProgramEditorComponent implements OnInit {
   dirty = false;
   message = '';
   messageType: 'success' | 'error' | 'info' = 'info';
-  action: 'start' | 'delete' | 'copy' | 'leave' | null = null;
+  action: 'start' | 'delete' | 'copy' | 'repeat' | 'leave' | null = null;
   pickerDay: PersonalProgramDay | null = null;
   names: Record<number, string> = {};
   catalogueFailed = false;
   private leaveResult?: Subject<boolean>;
+  standaloneMode = !!this.route.snapshot?.data?.['standalone'];
   model: PersonalProgramRequest = this.empty();
 
   private empty(): PersonalProgramRequest {
     return {
       name: '',
       description: null,
-      durationDays: 7,
+      durationDays: this.standaloneMode ? 1 : 7,
       startDate: null,
       difficultyLevel: null,
       languageCode: this.language.getCurrentLanguage(),
-      workouts: [],
+      workouts: this.standaloneMode
+        ? [{ dayIndex: 1, name: '', description: null, exercises: [] }]
+        : [],
     };
   }
   ngOnInit(): void {
@@ -99,6 +102,7 @@ export class PersonalProgramEditorComponent implements OnInit {
       .subscribe((detail) => {
         this.loading = false;
         if (detail) {
+          this.standaloneMode = !!detail.standalone;
           this.model = detail.program;
           this.started = detail.startedAt != null;
         } else if (!this.loadFailed) this.model = this.empty();
@@ -136,7 +140,7 @@ export class PersonalProgramEditorComponent implements OnInit {
     this.message = '';
   }
   addDay(): void {
-    if (this.locked || this.model.workouts.length >= 366) return;
+    if (this.standaloneMode || this.locked || this.model.workouts.length >= 366) return;
     const used = new Set(this.model.workouts.map((day) => day.dayIndex));
     let index = 1;
     while (used.has(index) && index <= this.model.durationDays) index++;
@@ -149,7 +153,7 @@ export class PersonalProgramEditorComponent implements OnInit {
     this.changed();
   }
   removeDay(day: PersonalProgramDay): void {
-    if (this.locked) return;
+    if (this.standaloneMode || this.locked) return;
     this.model.workouts = this.model.workouts.filter((item) => item !== day);
     if (this.pickerDay === day) this.pickerDay = null;
     this.changed();
@@ -203,21 +207,37 @@ export class PersonalProgramEditorComponent implements OnInit {
     this.message = '';
     const request = {
       ...this.model,
+      ...(this.standaloneMode
+        ? {
+            durationDays: 1,
+            workouts: [
+              {
+                ...this.model.workouts[0],
+                dayIndex: 1,
+                name: this.model.name,
+                description: this.model.description,
+              },
+            ],
+          }
+        : {}),
       startDate: this.model.startDate || null,
       difficultyLevel: this.model.difficultyLevel || null,
     };
     this.service
-      .save(this.id, request)
+      .save(this.id, request, this.standaloneMode)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (result) => {
           this.busy = false;
           this.dirty = false;
-          this.message = 'personalPrograms.saved';
+          this.message = this.label('saved');
           this.messageType = 'success';
           if (this.id == null)
             void this.router.navigate(
-              ['/user/personal-programs', typeof result === 'number' ? result : result.id],
+              [
+                this.standaloneMode ? '/user/personal-workouts' : '/user/personal-programs',
+                typeof result === 'number' ? result : result.id,
+              ],
               { replaceUrl: true },
             );
           else if (typeof result !== 'number') {
@@ -232,11 +252,12 @@ export class PersonalProgramEditorComponent implements OnInit {
         },
       });
   }
-  ask(action: 'start' | 'delete' | 'copy'): void {
+  ask(action: 'start' | 'delete' | 'copy' | 'repeat'): void {
     if (this.busy || this.id == null || this.loading || this.loadFailed) return;
     if (action === 'start' && !this.canStart) return;
     if (action === 'delete' && this.started) return;
     if (action === 'copy' && this.dirty) return;
+    if (action === 'repeat' && (!this.standaloneMode || !this.started || this.dirty)) return;
     this.action = action;
   }
   confirm(): void {
@@ -248,11 +269,13 @@ export class PersonalProgramEditorComponent implements OnInit {
     if (this.id == null || this.busy || this.action == null) return;
     const action = this.action;
     const request: Observable<number | PersonalProgramDetail> =
-      action === 'start'
-        ? this.service.start(this.id)
-        : action === 'copy'
-          ? this.service.copy(this.id)
-          : this.service.delete(this.id);
+      action === 'repeat'
+        ? this.service.repeat(this.id)
+        : action === 'start'
+          ? this.service.start(this.id)
+          : action === 'copy'
+            ? this.service.copy(this.id)
+            : this.service.delete(this.id);
     this.busy = true;
     request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
@@ -263,11 +286,18 @@ export class PersonalProgramEditorComponent implements OnInit {
           this.model = result.program;
           this.started = result.startedAt != null;
           this.pickerDay = null;
-          this.message = 'personalPrograms.startSuccess';
+          this.message = this.label('startSuccess');
           this.messageType = 'success';
         } else
           void this.router.navigate(
-            action === 'copy' ? ['/user/personal-programs', result] : ['/user/personal-programs'],
+            action === 'repeat' && typeof result !== 'number'
+              ? ['/user/personal-workouts', result.id]
+              : action === 'copy'
+                ? [
+                    this.standaloneMode ? '/user/personal-workouts' : '/user/personal-programs',
+                    result,
+                  ]
+                : ['/user/personal-programs'],
           );
       },
       error: (error) => {
@@ -301,6 +331,19 @@ export class PersonalProgramEditorComponent implements OnInit {
       event.preventDefault();
       event.returnValue = '';
     }
+  }
+  label(key: string): string {
+    return `${this.standaloneMode ? 'personalWorkouts' : 'personalPrograms'}.${key}`;
+  }
+  get confirmationTitle(): string {
+    return this.action === 'leave'
+      ? 'personalPrograms.leaveTitle'
+      : this.label(`${this.action}Title`);
+  }
+  get confirmationMessage(): string {
+    return this.action === 'leave'
+      ? 'personalPrograms.leaveConfirm'
+      : this.label(`${this.action}Confirm`);
   }
   private fail(error: unknown): void {
     this.message = errorMessage(error, 'personalPrograms.actionError');

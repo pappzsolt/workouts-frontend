@@ -1467,5 +1467,30 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "sizeLimit": "A personal program can contain at most 1000 exercise entries and 5000 sets."
+  },
+  "personalWorkouts": {
+    "create": "Create standalone workout",
+    "editor": "My workout",
+    "type": "Standalone workout",
+    "details": "Workout details",
+    "name": "Workout name",
+    "startDate": "Workout date",
+    "days": "Exercises",
+    "save": "Save workout",
+    "start": "Start workout",
+    "locked": "This workout has started. Use New session to repeat it; previous results are preserved.",
+    "startHint": "Save the workout and add at least one exercise before starting.",
+    "startTitle": "Start workout",
+    "startConfirm": "Start this workout? Results will be recorded separately for this session.",
+    "deleteTitle": "Delete workout",
+    "deleteConfirm": "Delete this workout draft? This action cannot be undone.",
+    "repeat": "New session",
+    "repeatTitle": "Repeat workout",
+    "repeatConfirm": "A new editable workout with the same exercises will be created. Choose a new date; previous results are not copied.",
+    "limit": "A workout can contain at most 100 exercises and 5000 sets.",
+    "saved": "Your workout was saved.",
+    "startSuccess": "Your workout has started. Select Open workouts to begin training.",
+    "started": "Started workout",
+    "draft": "Workout draft"
   }
 }

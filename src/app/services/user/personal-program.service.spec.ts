@@ -86,4 +86,24 @@ describe('PersonalProgramService', () => {
       .expectOne(API_ENDPOINTS.personalPrograms + '/9')
       .flush({ success: false, message: 'Nem menthető', data: null });
   });
+  it('creates standalone workouts through their dedicated endpoint', () => {
+    service.save(null, request, true).subscribe((id) => expect(id).toBe(9));
+    const call = http.expectOne(API_ENDPOINTS.personalPrograms + '/standalone');
+    expect(call.request.method).toBe('POST');
+    expect(call.request.body.userId).toBeUndefined();
+    call.flush({ success: true, data: 9 });
+  });
+  it('prepares a repeat without starting it or sending old performance data', () => {
+    service.repeat(9).subscribe((result) => {
+      expect(result.id).toBe(10);
+      expect(result.program.startDate).toBeNull();
+    });
+    const call = http.expectOne(API_ENDPOINTS.personalPrograms + '/9/repeat?languageCode=de');
+    expect(call.request.method).toBe('POST');
+    expect(call.request.body).toEqual({});
+    call.flush({
+      success: true,
+      data: { id: 10, standalone: true, startedAt: null, program: { ...request, startDate: null } },
+    });
+  });
 });

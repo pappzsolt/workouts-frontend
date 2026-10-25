@@ -1467,5 +1467,30 @@
     "confirm": "Bestätigen",
     "cancel": "Abbrechen",
     "sizeLimit": "Ein eigenes Programm darf höchstens 1000 Übungseinträge und 5000 Sätze enthalten."
+  },
+  "personalWorkouts": {
+    "create": "Einzeltraining erstellen",
+    "editor": "Mein Training",
+    "type": "Einzeltraining",
+    "details": "Trainingsdaten",
+    "name": "Trainingsname",
+    "startDate": "Trainingsdatum",
+    "days": "Übungen",
+    "save": "Training speichern",
+    "start": "Training starten",
+    "locked": "Dieses Training wurde gestartet. Mit Neue Einheit kannst du es wiederholen; bisherige Ergebnisse bleiben erhalten.",
+    "startHint": "Speichere das Training und füge vor dem Start mindestens eine Übung hinzu.",
+    "startTitle": "Training starten",
+    "startConfirm": "Dieses Training starten? Ergebnisse werden separat für diese Einheit erfasst.",
+    "deleteTitle": "Training löschen",
+    "deleteConfirm": "Diesen Trainingsentwurf löschen? Dies kann nicht rückgängig gemacht werden.",
+    "repeat": "Neue Einheit",
+    "repeatTitle": "Training wiederholen",
+    "repeatConfirm": "Ein neues bearbeitbares Training mit denselben Übungen wird erstellt. Wähle ein neues Datum; bisherige Ergebnisse werden nicht kopiert.",
+    "limit": "Ein Training darf höchstens 100 Übungen und 5000 Sätze enthalten.",
+    "saved": "Dein Training wurde gespeichert.",
+    "startSuccess": "Dein Training wurde gestartet. Öffne die Trainingseinheiten, um zu beginnen.",
+    "started": "Gestartetes Training",
+    "draft": "Trainingsentwurf"
   }
 }

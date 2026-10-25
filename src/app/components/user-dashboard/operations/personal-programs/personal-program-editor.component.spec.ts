@@ -42,6 +42,7 @@ describe('PersonalProgramEditorComponent', () => {
       'save',
       'start',
       'copy',
+      'repeat',
       'delete',
     ]);
     api.get.and.returnValue(of({ id: 9, startedAt: null, program: draft() }));
@@ -173,5 +174,41 @@ describe('PersonalProgramEditorComponent', () => {
     expect(api.save).not.toHaveBeenCalled();
     expect(component.message).toBe('personalPrograms.sizeLimit');
     expect(component.canStart).toBeFalse();
+  });
+  it('saves standalone mode as one day using the single visible workout name', () => {
+    component.standaloneMode = true;
+    component.model.durationDays = 1;
+    component.model.name = 'Saját edzés';
+    component.save(form);
+    const args = api.save.calls.mostRecent().args;
+    expect(args[2]).toBeTrue();
+    expect(args[1].durationDays).toBe(1);
+    expect(args[1].workouts.length).toBe(1);
+    expect(args[1].workouts[0].name).toBe('Saját edzés');
+  });
+  it('opens the new repeat as an unstarted editable workout', () => {
+    component.standaloneMode = true;
+    component.started = true;
+    api.repeat.and.returnValue(
+      of({
+        id: 10,
+        standalone: true,
+        startedAt: null,
+        program: { ...draft(), durationDays: 1, startDate: null },
+      }),
+    );
+    component.ask('repeat');
+    expect(api.repeat).not.toHaveBeenCalled();
+    component.confirm();
+    expect(api.repeat).toHaveBeenCalledOnceWith(9);
+    expect(api.start).not.toHaveBeenCalled();
+    expect(router.navigate).toHaveBeenCalledWith(['/user/personal-workouts', 10]);
+  });
+  it('cannot add or remove workout days in standalone mode', () => {
+    component.standaloneMode = true;
+    const day = component.model.workouts[0];
+    component.addDay();
+    component.removeDay(day);
+    expect(component.model.workouts).toEqual([day]);
   });
 });

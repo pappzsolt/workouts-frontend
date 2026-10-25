@@ -9,6 +9,9 @@
         ><app-icon name="plus" sizeClass="h-4 w-4" />{{ 'personalPrograms.create' | translate }}</a
       >
     </div>
+    <a routerLink="/user/personal-workouts/new" class="btn btn-neutral self-start"
+      ><app-icon name="plus" sizeClass="h-4 w-4" />{{ 'personalWorkouts.create' | translate }}</a
+    >
     <a routerLink="/user/my-programs" class="text-sm font-semibold text-primary-700">{{
       'personalPrograms.assigned' | translate
     }}</a>
@@ -39,25 +42,43 @@
           <app-card class="flex min-w-0 flex-col overflow-hidden">
             <app-card-banner icon="clipboard-list" />
             <div class="flex flex-1 flex-col gap-4 p-5">
+              @if (program.standalone) {
+                <p class="text-sm font-semibold text-primary-700">
+                  {{ 'personalWorkouts.type' | translate }}
+                </p>
+              }
               <h2 class="break-words text-lg font-bold text-content-800">{{ program.name }}</h2>
               <p class="text-sm text-content-600">
                 {{
-                  (program.startedAt ? 'personalPrograms.started' : 'personalPrograms.draft')
-                    | translate
+                  (program.standalone
+                    ? program.startedAt
+                      ? 'personalWorkouts.started'
+                      : 'personalWorkouts.draft'
+                    : program.startedAt
+                      ? 'personalPrograms.started'
+                      : 'personalPrograms.draft'
+                  ) | translate
                 }}
               </p>
-              <app-card-stat
-                [label]="'personalPrograms.duration' | translate"
-                [value]="program.durationDays"
-                [unit]="'common.days' | translate"
-              />
+              @if (!program.standalone) {
+                <app-card-stat
+                  [label]="'personalPrograms.duration' | translate"
+                  [value]="program.durationDays"
+                  [unit]="'common.days' | translate"
+                />
+              }
               @if (program.startDate) {
                 <p class="text-sm text-content-600">{{ program.startDate | date: 'yyyy.MM.dd' }}</p>
               }
               <div class="mt-auto flex flex-wrap gap-2">
-                <a [routerLink]="['/user/personal-programs', program.id]" class="btn btn-primary">{{
-                  'personalPrograms.open' | translate
-                }}</a>
+                <a
+                  [routerLink]="[
+                    program.standalone ? '/user/personal-workouts' : '/user/personal-programs',
+                    program.id,
+                  ]"
+                  class="btn btn-primary"
+                  >{{ 'personalPrograms.open' | translate }}</a
+                >
                 @if (program.startedAt) {
                   <a
                     [routerLink]="['/user/programs', program.id, 'workouts']"

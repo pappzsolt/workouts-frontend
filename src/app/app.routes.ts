@@ -286,6 +286,18 @@ export const routes: Routes = [
       },
 
       {
+        path: 'personal-workouts/new',
+        data: { standalone: true },
+        loadComponent: () => import('./components/user-dashboard/operations/personal-programs/personal-program-editor.component').then(m => m.PersonalProgramEditorComponent),
+        canDeactivate: [(component: PersonalProgramEditorComponent) => component.canLeave()],
+      },
+      {
+        path: 'personal-workouts/:id',
+        data: { standalone: true },
+        loadComponent: () => import('./components/user-dashboard/operations/personal-programs/personal-program-editor.component').then(m => m.PersonalProgramEditorComponent),
+        canDeactivate: [(component: PersonalProgramEditorComponent) => component.canLeave()],
+      },
+      {
         path: 'personal-programs',
         loadComponent: () => import('./components/user-dashboard/operations/personal-programs/personal-programs.component').then(m => m.PersonalProgramsComponent),
       },
