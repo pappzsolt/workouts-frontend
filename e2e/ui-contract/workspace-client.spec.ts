@@ -1,6 +1,6 @@
 import { test, expect } from './workspace-fixture';
 const root = (p: any) => p.locator('app-coach-client-detail');
-const labels: Record<string, string> = { tr: 'Cél ism.', tw: 'Cél súly (kg)', rs: 'Pihenő (mp)', ar: 'Tény. ism.', aw: 'Tény. súly (kg)', dn: 'Kész', nt: 'Megjegyzés' };
+const labels: Record<string, string> = { rpe: 'Tervezett RPE', tr: 'Cél ism.', tw: 'Cél súly (kg)', rs: 'Pihenő (mp)', ar: 'Tény. ism.', aw: 'Tény. súly (kg)', dn: 'Kész', nt: 'Megjegyzés' };
 const input = (p: any, name: string, row = 1) => root(p).locator('article').first().getByLabel(new RegExp(` ${row}\\. ${labels[name].replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`));
 const save = (p: any) => root(p).getByRole('button', { name: /^Mentés \(\d+\)$/ });
 
@@ -62,6 +62,17 @@ test('client: fill-down skips completed rows; discard restores originals', async
   await expect(input(page, 'tw', 3)).toHaveValue('20');
   await root(page).getByRole('button', { name: 'Elvetés', exact: true }).click();
   await expect(input(page, 'tw')).toHaveValue('20'); await expect(save(page)).toBeDisabled(); expect(api.writes()).toEqual([]);
+});
+test('client: fill-down copies the target RPE to editable rows and sends it on save', async ({ page, api }) => {
+  await page.goto('/coach/clients/7?workout=70'); await input(page, 'rpe').fill('8.5');
+  await root(page).getByRole('button', { name: 'Első sorozat értékei mindre' }).click();
+  await expect(input(page, 'rpe', 2)).toHaveValue('8.5');
+  await expect(input(page, 'rpe', 3)).toHaveValue('');
+  await save(page).click();
+  await expect(root(page).locator('app-message[role=status]')).toBeVisible();
+  const puts = api.writes().filter(c => c.method === 'PUT');
+  expect(puts).toHaveLength(2);
+  for (const put of puts) expect(put.body).toMatchObject({ targetRpe: 8.5 });
 });
 for (const choice of ['Maradok', 'Elvetés és tovább', 'Mentés és tovább']) {
   test(`client: unsaved tab navigation ${choice}`, async ({ page, api }) => {

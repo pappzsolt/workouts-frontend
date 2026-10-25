@@ -494,7 +494,7 @@ export class CoachClientDetailComponent implements OnInit {
     return entry.sets.filter((row) => row.original.completed).length;
   }
 
-  /** Az első sorozat cél értékei (ismétlés, súly, pihenő) a többi, nem teljesített sorozatra. */
+  /** Az első sorozat cél értékei (ismétlés, súly, pihenő, tervezett RPE) a többi, nem teljesített sorozatra. */
   fillDown(entry: ExerciseSets): void {
     const source = entry.sets[0];
     if (!source) return;
@@ -503,6 +503,7 @@ export class CoachClientDetailComponent implements OnInit {
       row.targetRepetitions = source.targetRepetitions;
       row.targetWeightKg = source.targetWeightKg;
       row.restSeconds = source.restSeconds;
+      row.targetRpe = source.targetRpe ?? null;
     }
   }
 
