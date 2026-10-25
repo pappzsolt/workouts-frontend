@@ -13,14 +13,23 @@
     "mailbox": "node scripts/test-mailbox.cjs",
     "test:p1": "playwright test tests/USER/WORKOUTS/user-workout-comprehensive.spec.ts tests/USER/READ/user-statistics-exact.spec.ts tests/AUTH/GUI/password-reset-live.spec.ts tests/AUTH/GUI/registration-live.spec.ts",
     "test:p2": "playwright test tests/USER/GUI/bug-report-live.spec.ts tests/COACH/WORKSPACE/coach-save-resilience.spec.ts",
-    "test:auth-contract": "playwright test -c playwright.auth.config.ts"
+    "test:auth-contract": "playwright test -c playwright.auth.config.ts",
+    "test:frontend-contract": "playwright test -c playwright.frontend.config.ts",
+    "test:live-api": "playwright test -c playwright.live-api.config.ts",
+    "coverage:live-api": "node scripts/report-live-coverage.cjs",
+    "coverage:live-api:check": "node scripts/report-live-coverage.cjs --strict"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",
     "@types/node": "^22.20.5",
     "@types/pg": "^8.23.1",
     "dotenv": "^17.2.2",
+    "istanbul-lib-coverage": "^3.2.2",
+    "istanbul-lib-instrument": "^6.0.3",
+    "istanbul-lib-report": "^3.0.1",
+    "istanbul-reports": "^3.2.0",
     "pg": "^8.23.0",
-    "typescript": "~5.7.2"
+    "typescript": "~5.7.2",
+    "v8-to-istanbul": "^9.3.0"
   }
 }

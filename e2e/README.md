@@ -164,3 +164,20 @@ npm run test:auth-contract
 
 A 4321-es Angular tesztszerver automatikusan indul és leáll. Első telepítés,
 riport, összes tesztnév és leírás: [hitelesítési tesztútmutató](README_AUTH_CONTRACT.md).
+
+
+## Kibővített frontend UI-tesztek
+
+Hitelesítés, jelszókezelés, regisztrációs határértékek és adminisztrátori
+regisztrációkezelés: 103 teszt, asztali és mobil Chromium-profilon összesen
+206 ellenőrzés. A csomag a korábbi 35 hitelesítési tesztet is futtatja.
+
+```sh
+cd /Users/pappzs/works/develop/workouts-frontend/e2e
+npm run test:frontend-contract
+```
+
+A helyi Angular-kiszolgáló automatikusan indul a 4321-es porton; backend és
+valódi fiók nem szükséges. Az API-válaszok rögzített tesztadatokból származnak.
+Az új 68 teszt teljes név szerinti listája, leírása és a riportok:
+[kibővített frontendteszt-útmutató](README_FRONTEND_CONTRACT.md).

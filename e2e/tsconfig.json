@@ -16,6 +16,9 @@
     "tests/**/*.ts",
     "playwright.contract.config.ts",
     "ui-contract/**/*.ts",
-    "playwright.auth.config.ts"
+    "playwright.auth.config.ts",
+    "playwright.frontend.config.ts",
+    "playwright.live-api.config.ts",
+    "live-api/**/*.ts"
   ]
 }
