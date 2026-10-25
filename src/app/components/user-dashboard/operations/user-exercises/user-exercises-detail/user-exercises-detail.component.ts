@@ -17,6 +17,7 @@ import {
   UserWorkoutExerciseSetDto,
 } from '../../../../../models/user-workout-exercise-detail.dto';
 
+import { PreviousExercisePerformanceComponent } from './previous-exercise-performance.component';
 import { SetRestTimerComponent } from './set-rest-timer.component';
 
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
@@ -25,7 +26,7 @@ import { exerciseImageSources, markExerciseImageBroken } from '../../../../../co
 @Component({
   selector: 'app-user-exercise-detail',
   standalone: true,
-  imports: [...SHARED_IMPORTS, SidePaginationComponent, SetRestTimerComponent],
+  imports: [...SHARED_IMPORTS, SidePaginationComponent, SetRestTimerComponent, PreviousExercisePerformanceComponent],
   templateUrl: './user-exercises-detail.component.html',
   styleUrls: ['./user-exercises-detail.component.css'],
 })

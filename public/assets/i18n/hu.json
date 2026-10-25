@@ -1492,5 +1492,13 @@
     "startSuccess": "Az edzés elindult. Az Edzések megnyitása gombbal kezdhetsz edzeni.",
     "started": "Elindított edzés",
     "draft": "Edzéspiszkozat"
+  },
+  "previousPerformance": {
+    "title": "Legutóbb",
+    "loading": "Korábbi eredmények betöltése…",
+    "empty": "Ehhez a gyakorlathoz még nincs korábbi teljesített sorozatod.",
+    "error": "A korábbi eredményeket most nem sikerült betölteni. Az edzést folytathatod.",
+    "retry": "Újrapróbálás",
+    "set": "{{number}}. sorozat"
   }
 }

@@ -136,6 +136,8 @@ export const API_ENDPOINTS = {
   workoutLibraryPage: `${environment.apiUrl}/exercises/workouts/page`,
   userWorkoutExercisesByWorkout: (userWorkoutId: number) =>
     `${environment.apiUrl}/exercises/user-workouts/${userWorkoutId}`,
+  previousExercisePerformance: (userWorkoutId: number, exerciseId: number) =>
+    `${environment.apiUrl}/exercises/user-workouts/${userWorkoutId}/exercises/${exerciseId}/previous-performance`,
   exerciseSetCompleted: `${environment.apiUrl}/exercises/user-workouts/sets/completed`,
 
   // ============================================================

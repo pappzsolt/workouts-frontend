@@ -50,6 +50,13 @@
     </div>
   </div>
 
+  @if (workoutExercise.exercise.id; as exerciseId) {
+    <app-previous-exercise-performance
+      [userWorkoutId]="userWorkoutId"
+      [exerciseId]="exerciseId"
+    ></app-previous-exercise-performance>
+  }
+
   <app-set-rest-timer [setId]="restTimerSetId" [revision]="restTimerRevision"
     (restFinished)="onRestFinished($event)"></app-set-rest-timer>
 

@@ -1492,5 +1492,13 @@
     "startSuccess": "Dein Training wurde gestartet. Öffne die Trainingseinheiten, um zu beginnen.",
     "started": "Gestartetes Training",
     "draft": "Trainingsentwurf"
+  },
+  "previousPerformance": {
+    "title": "Beim letzten Mal",
+    "loading": "Vorherige Ergebnisse werden geladen…",
+    "empty": "Für diese Übung gibt es noch keine früheren abgeschlossenen Sätze.",
+    "error": "Vorherige Ergebnisse konnten nicht geladen werden. Du kannst dein Training fortsetzen.",
+    "retry": "Erneut versuchen",
+    "set": "Satz {{number}}"
   }
 }

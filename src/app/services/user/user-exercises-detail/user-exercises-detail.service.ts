@@ -1,3 +1,4 @@
+import type { PreviousExercisePerformance } from '../../../models/previous-exercise-performance.model';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -37,6 +38,12 @@ export class UserExerciseDetailService {
       {
         params: { language },
       },
+    );
+  }
+
+  getPreviousPerformance(userWorkoutId: number, exerciseId: number): Observable<ApiResponse<PreviousExercisePerformance | null>> {
+    return this.http.get<ApiResponse<PreviousExercisePerformance | null>>(
+      API_ENDPOINTS.previousExercisePerformance(userWorkoutId, exerciseId),
     );
   }
 

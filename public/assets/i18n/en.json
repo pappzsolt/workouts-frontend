@@ -1492,5 +1492,13 @@
     "startSuccess": "Your workout has started. Select Open workouts to begin training.",
     "started": "Started workout",
     "draft": "Workout draft"
+  },
+  "previousPerformance": {
+    "title": "Last time",
+    "loading": "Loading previous results…",
+    "empty": "You have no previous completed sets for this exercise yet.",
+    "error": "Previous results could not be loaded. You can continue your workout.",
+    "retry": "Retry",
+    "set": "Set {{number}}"
   }
 }
