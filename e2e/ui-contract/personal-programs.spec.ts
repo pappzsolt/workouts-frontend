@@ -191,3 +191,71 @@ test('Önálló edzés: egyszerű létrehozás és új alkalom külön eredmény
   expect(api.unexpected).toEqual([]);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
+
+async function openStartedStandalone(page: Page) {
+  const api=await install(page);
+  api.standalone=true;api.started=true;api.program.durationDays=1;
+  await page.goto('/user/personal-workouts/7');
+  await expect(editor(page).getByRole('button',{name:'Új alkalom',exact:true})).toBeVisible();
+  return api;
+}
+
+test('Önálló edzés: hibás ismétlés után az eredeti edzés megmarad és újrapróbálható',async({page})=>{
+  await openStartedStandalone(page);
+  let fail=true;
+  await page.route('**/api/me/personal-programs/7/repeat*',async route=>{
+    if(fail) return route.fulfill({status:503,json:{success:false,message:'Átmeneti ismétlési hiba'}});
+    await route.fallback();
+  });
+  await editor(page).getByRole('button',{name:'Új alkalom',exact:true}).click();
+  await page.getByRole('alertdialog').getByRole('button',{name:'Megerősítés',exact:true}).click();
+  await expect(editor(page)).toContainText('Átmeneti ismétlési hiba');
+  await expect(page).toHaveURL(/personal-workouts\/7$/);
+  await expect(editor(page).getByLabel('Edzés neve',{exact:true})).toHaveValue('Saját terv');
+  await expect(editor(page).getByLabel('Edzés neve',{exact:true})).toBeDisabled();
+  fail=false;
+  await editor(page).getByRole('button',{name:'Új alkalom',exact:true}).click();
+  await page.getByRole('alertdialog').getByRole('button',{name:'Megerősítés',exact:true}).click();
+  await expect(page).toHaveURL(/personal-workouts\/8$/);
+  await expect(editor(page).getByLabel('Edzés neve',{exact:true})).toBeEnabled();
+});
+
+test('Önálló edzés: megerősítés visszavonása és függő ismétlés nem duplikál',async({page})=>{
+  const api=await openStartedStandalone(page);
+  await editor(page).getByRole('button',{name:'Új alkalom',exact:true}).click();
+  await page.getByRole('alertdialog').getByRole('button',{name:'Mégse',exact:true}).click();
+  expect(api.calls.filter(c=>c.path.endsWith('/repeat'))).toHaveLength(0);
+  let release!:()=>void;
+  const pending=new Promise<void>(resolve=>release=resolve);
+  let requests=0;
+  await page.route('**/api/me/personal-programs/7/repeat*',async route=>{
+    requests++;await pending;await route.fallback();
+  });
+  try {
+    await editor(page).getByRole('button',{name:'Új alkalom',exact:true}).click();
+    const confirm=page.getByRole('alertdialog').getByRole('button',{name:'Megerősítés',exact:true});
+    await confirm.click();await expect(confirm).toBeDisabled();
+    await expect(page.getByRole('alertdialog').getByRole('button',{name:'Mégse',exact:true})).toBeDisabled();
+    await expect.poll(()=>requests).toBe(1);
+  } finally { release(); }
+  await expect(page).toHaveURL(/personal-workouts\/8$/);
+  expect(requests).toBe(1);
+});
+
+for(const [language,title,nameLabel,saveLabel] of [
+  ['en','Create standalone workout','Workout name','Save workout'],
+  ['de','Einzeltraining erstellen','Trainingsname','Training speichern'],
+]) {
+  test(`Önálló edzés: lokalizált egyszerű felület és kötelező név (${language})`,async({page})=>{
+    const api=await install(page);
+    await page.goto('/user/personal-workouts/new');
+    await page.locator('app-language-selector select').selectOption(language);
+    await expect(editor(page).getByRole('heading',{name:title,exact:true})).toBeVisible();
+    await expect(editor(page).locator('input[name=durationDays]')).toHaveCount(0);
+    await expect(editor(page).getByRole('button',{name:saveLabel,exact:true})).toBeDisabled();
+    await editor(page).getByLabel(nameLabel,{exact:true}).fill('Workout');
+    await expect(editor(page).getByRole('button',{name:saveLabel,exact:true})).toBeEnabled();
+    expect(api.calls.filter(c=>c.method==='POST'&&c.path.endsWith('/standalone'))).toHaveLength(0);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  });
+}

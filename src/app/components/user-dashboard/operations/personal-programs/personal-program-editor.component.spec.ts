@@ -1,14 +1,17 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
-import { BehaviorSubject, of, throwError } from 'rxjs';
+import { BehaviorSubject, Subject, of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NgForm } from '@angular/forms';
 import { PersonalProgramEditorComponent } from './personal-program-editor.component';
 import { PersonalProgramService } from '../../../../services/user/personal-program.service';
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
 import { LanguageService } from '../../../../services/shared/language.service';
-import { PersonalProgramRequest } from '../../../../models/personal-program.model';
+import {
+  PersonalProgramDetail,
+  PersonalProgramRequest,
+} from '../../../../models/personal-program.model';
 
 const draft = (): PersonalProgramRequest => ({
   name: 'Saját',
@@ -210,5 +213,71 @@ describe('PersonalProgramEditorComponent', () => {
     component.addDay();
     component.removeDay(day);
     expect(component.model.workouts).toEqual([day]);
+  });
+  it('preserves the original workout and allows retry after a repeat error', () => {
+    component.standaloneMode = true;
+    component.started = true;
+    const original = structuredClone(component.model);
+    api.repeat.and.returnValue(
+      throwError(
+        () =>
+          new HttpErrorResponse({ status: 409, error: { message: 'Az ismétlés nem sikerült.' } }),
+      ),
+    );
+    component.ask('repeat');
+    component.confirm();
+    expect(component.model).toEqual(original);
+    expect(component.started).toBeTrue();
+    expect(component.busy).toBeFalse();
+    expect(component.action).toBeNull();
+    expect(component.message).toBe('Az ismétlés nem sikerült.');
+    expect(router.navigate).not.toHaveBeenCalled();
+    component.ask('repeat');
+    expect(component.action).toBe('repeat');
+  });
+  it('sends only one repeat while a response is pending and blocks leaving', () => {
+    component.standaloneMode = true;
+    component.started = true;
+    const pending = new Subject<PersonalProgramDetail>();
+    api.repeat.and.returnValue(pending.asObservable());
+    component.ask('repeat');
+    component.confirm();
+    component.confirm();
+    component.cancel();
+    expect(api.repeat).toHaveBeenCalledTimes(1);
+    expect(component.busy).toBeTrue();
+    expect(component.canLeave()).toBeFalse();
+    pending.next({
+      id: 10,
+      standalone: true,
+      startedAt: null,
+      program: { ...draft(), durationDays: 1, startDate: null },
+    });
+    pending.complete();
+    expect(component.busy).toBeFalse();
+    expect(router.navigate).toHaveBeenCalledTimes(1);
+  });
+  it('does not repeat normal programs or unstarted standalone drafts', () => {
+    component.standaloneMode = false;
+    component.started = true;
+    component.ask('repeat');
+    expect(component.action).toBeNull();
+    component.standaloneMode = true;
+    component.started = false;
+    component.ask('repeat');
+    expect(component.action).toBeNull();
+    expect(api.repeat).not.toHaveBeenCalled();
+  });
+  it('initializes the standalone route with exactly one hidden workout day', () => {
+    const route = TestBed.inject(ActivatedRoute);
+    Object.defineProperty(route, 'snapshot', {
+      configurable: true,
+      value: { data: { standalone: true } },
+    });
+    const fresh = TestBed.runInInjectionContext(() => new PersonalProgramEditorComponent());
+    expect(fresh.standaloneMode).toBeTrue();
+    expect(fresh.model.durationDays).toBe(1);
+    expect(fresh.model.workouts.length).toBe(1);
+    expect(fresh.model.workouts[0].dayIndex).toBe(1);
   });
 });
