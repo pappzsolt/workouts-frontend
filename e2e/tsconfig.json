@@ -15,6 +15,7 @@
     "global-setup.ts",
     "tests/**/*.ts",
     "playwright.contract.config.ts",
-    "ui-contract/**/*.ts"
+    "ui-contract/**/*.ts",
+    "playwright.auth.config.ts"
   ]
 }

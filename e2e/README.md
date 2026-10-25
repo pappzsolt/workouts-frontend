@@ -149,3 +149,18 @@ See [README_P1.md](README_P1.md) for the five real-backend acceptance cases, loc
 ## P2 regression tests
 
 See [README_P2.md](README_P2.md) for the real-backend screenshot flow, offline retry, concurrent editing and partial-save regressions. Run them with `npm run test:p2 -- --retries=0`.
+
+
+## Hitelesítési UI-tesztek saját Angular-kiszolgálóval
+
+Belépés, elfelejtett jelszó és jelszócsere: 35 új eset, asztali és mobil
+Chromium-profilon összesen 70 ellenőrzés. A valódi Angular-felület rögzített
+API-válaszokkal fut, backend, `.env` és fiókjelszó nélkül.
+
+```sh
+cd /Users/pappzs/works/develop/workouts-frontend/e2e
+npm run test:auth-contract
+```
+
+A 4321-es Angular tesztszerver automatikusan indul és leáll. Első telepítés,
+riport, összes tesztnév és leírás: [hitelesítési tesztútmutató](README_AUTH_CONTRACT.md).

@@ -5,3 +5,6 @@ blob-report/
 .env
 contract-results/
 contract-report/
+
+auth-contract-results/
+auth-contract-report/
