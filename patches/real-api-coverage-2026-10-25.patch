@@ -1,0 +1,278 @@
+diff --git a/angular.json b/angular.json
+index 02e7aa7..64f1b70 100644
+--- a/angular.json
++++ b/angular.json
+@@ -73,6 +73,17 @@
+                   "with": "src/environments/environment.ts"
+                 }
+               ]
++            },
++            "live-api": {
++              "optimization": false,
++              "extractLicenses": false,
++              "sourceMap": true,
++              "fileReplacements": [
++                {
++                  "replace": "src/environments/environment.ts",
++                  "with": "src/environments/environment.live-api.ts"
++                }
++              ]
+             }
+           },
+           "defaultConfiguration": "production"
+@@ -85,6 +96,9 @@
+             },
+             "development": {
+               "buildTarget": "workouts-frontend:build:development"
++            },
++            "live-api": {
++              "buildTarget": "workouts-frontend:build:live-api"
+             }
+           },
+           "defaultConfiguration": "development"
+diff --git a/e2e/live-api/exercise-real.spec.ts b/e2e/live-api/exercise-real.spec.ts
+index d0a0f0b..7a62bab 100644
+--- a/e2e/live-api/exercise-real.spec.ts
++++ b/e2e/live-api/exercise-real.spec.ts
+@@ -18,3 +18,43 @@ test('Valódi API: böngészős gyakorlatlétrehozás után a kereső a tárolt
+     expect(persisted.durationSeconds).toBe(45); expect(Number(persisted.caloriesBurnedPerMinute)).toBe(7.5);
+   } finally { if (id) await ok(await coach.delete(`/api/exercises/${id}`)); }
+ });
++
++for (const language of ['hu', 'en', 'de']) {
++  test(`Valódi API: gyakorlat szerkesztése és újratöltése (${language})`, async ({ page, coach }) => {
++    const name = `Edit ${randomUUID().slice(0, 8)}`;
++    const id = (await ok(await coach.post('/api/exercises', {
++      params: { language }, data: { name, description: 'Before', durationSeconds: 30, caloriesBurnedPerMinute: 1 },
++    }))).data.id;
++    try {
++      await login(page, 'coach');
++      await page.locator('app-language-selector select').first().selectOption(language);
++      await expect.poll(() => page.evaluate(() => localStorage.getItem('language'))).toBe(language);
++      await page.goto(`/coach/exercises/${id}/edit`);
++      await expect(page.locator('app-language-selector select').first()).toHaveValue(language);
++      await expect(page.locator('#name')).toHaveValue(name);
++      await page.locator('#name').fill(`${name} saved`);
++      await page.locator('#description').fill('Persisted browser edit');
++      await page.locator('#durationSeconds').fill('90');
++      await page.locator('#caloriesBurnedPerMinute').fill('12.25');
++      const saved = page.waitForResponse(r => new URL(r.url()).pathname === `/api/exercises/${id}` && r.request().method() === 'PUT');
++      await page.locator('app-coach-exercise-edit button[type=submit]').click();
++      const response = await saved; expect(response.status()).toBe(200);
++      expect(new URL(response.url()).searchParams.get('language')).toBe(language);
++      await expect(page.locator('app-coach-exercise-edit app-message')).toHaveText((await response.json()).message);
++      const all = (await ok(await coach.get('/api/exercises', { params: { language } }))).data;
++      const persisted = all.find((row: any) => row.id === id);
++      expect(persisted.name).toBe(`${name} saved`); expect(persisted.description).toBe('Persisted browser edit');
++      expect(persisted.durationSeconds).toBe(90); expect(Number(persisted.caloriesBurnedPerMinute)).toBe(12.25);
++      await page.reload();
++      await expect(page.locator('app-language-selector select').first()).toHaveValue(language);
++      await expect(page.locator('#name')).toHaveValue(`${name} saved`);
++      await expect(page.locator('#durationSeconds')).toHaveValue('90');
++    } finally { await ok(await coach.delete(`/api/exercises/${id}`)); }
++  });
++}
++
++test('Valódi API: nem létező gyakorlat szerkesztése visszavisz a listára', async ({ page }) => {
++  await login(page, 'coach'); await page.goto('/coach/exercises/2147483647/edit');
++  await expect(page).toHaveURL(/\/coach\/exercises\?exerciseNotFound=true$/);
++  await expect(page.locator('app-coach-exercise-edit form')).toHaveCount(0);
++});
+diff --git a/e2e/live-api/live-fixture.ts b/e2e/live-api/live-fixture.ts
+index 402c769..d944064 100644
+--- a/e2e/live-api/live-fixture.ts
++++ b/e2e/live-api/live-fixture.ts
+@@ -45,7 +45,7 @@ export const workoutBody = (name: string) => ({ name, description: 'Valódi API-
+ export const test = base.extend<{ coach: APIRequestContext; collectCoverage: void }>({
+   coach: async ({}, use) => { const api = await apiFor('coach'); try { await use(api); } finally { await api.dispose(); } },
+   collectCoverage: [async ({ page }, use, info) => {
+-    await page.addInitScript(() => { localStorage.setItem('language', 'hu'); });
++    await page.addInitScript(() => { if (localStorage.getItem('language') === null) localStorage.setItem('language', 'hu'); });
+     await page.coverage.startJSCoverage({ resetOnNavigation: false });
+     try { await use(); } finally {
+       const entries = await page.coverage.stopJSCoverage();
+diff --git a/e2e/live-api/workout-real.spec.ts b/e2e/live-api/workout-real.spec.ts
+index 7f04a5e..7f46471 100644
+--- a/e2e/live-api/workout-real.spec.ts
++++ b/e2e/live-api/workout-real.spec.ts
+@@ -94,11 +94,20 @@ test('Valódi API: admin jóváhagyás előtt nincs belépés, utána valódi us
+ 
+ test('Valódi API: kijelentkezés törli a HttpOnly cookie-t és a munkamenet nem frissíthető újra', async ({ page }) => {
+   await login(page, 'coach');
++  const originalCookie = (await page.context().cookies()).find(cookie => cookie.name === 'workouts_refresh');
++  expect(originalCookie).toBeTruthy();
+   const loggedOut = page.waitForResponse(r => new URL(r.url()).pathname === '/api/auth/web/logout' && r.request().method() === 'POST');
+-  await page.getByRole('button', { name: 'Kijelentkezés', exact: true }).click();
++  await page.getByRole('banner').getByRole('button', { name: 'Kijelentkezés', exact: true }).click();
+   expect((await loggedOut).status()).toBe(200); await expect(page).toHaveURL(/\/login$/);
+   expect((await page.context().cookies()).filter(c => c.name === 'workouts_refresh')).toHaveLength(0);
+-  expect((await page.request.post('http://127.0.0.1:8099/api/auth/web/refresh', { data: {} })).status()).toBe(401);
++  const refreshStatus = await page.evaluate(async () => (await fetch('http://127.0.0.1:8099/api/auth/web/refresh', {
++    method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: '{}',
++  })).status);
++  expect(refreshStatus).toBe(401);
++  const revoked = await page.request.post('http://127.0.0.1:8099/api/auth/web/refresh', {
++    headers: { Origin: 'http://127.0.0.1:4323', Cookie: `workouts_refresh=${originalCookie!.value}` }, data: {},
++  });
++  expect(revoked.status()).toBe(401);
+   await page.goto('/coach/workouts'); await expect(page).toHaveURL(/\/login$/);
+ });
+ 
+diff --git a/e2e/playwright.live-api.config.ts b/e2e/playwright.live-api.config.ts
+index 3438135..1f1b4b8 100644
+--- a/e2e/playwright.live-api.config.ts
++++ b/e2e/playwright.live-api.config.ts
+@@ -9,7 +9,7 @@ export default defineConfig({
+   use: { baseURL: 'http://127.0.0.1:4323', locale: 'hu-HU', timezoneId: 'Europe/Budapest', trace: 'retain-on-failure', screenshot: 'only-on-failure' },
+   webServer: [
+     { command: 'node scripts/test-mailbox.cjs', env: { E2E_SMTP_PORT: '1026', E2E_MAILBOX_PORT: '8026' }, url: 'http://127.0.0.1:8026/health', reuseExistingServer: false },
+-    { command: 'node scripts/start-backend.cjs', url: 'http://127.0.0.1:8099/v3/api-docs', timeout: 180000, reuseExistingServer: false },
++    { command: 'node scripts/start-backend.cjs', gracefulShutdown: { signal: 'SIGTERM', timeout: 30000 }, url: 'http://127.0.0.1:8099/v3/api-docs', timeout: 180000, reuseExistingServer: false },
+     { command: 'node ../node_modules/@angular/cli/bin/ng.js serve --configuration=live-api --host 127.0.0.1 --port 4323', url: 'http://127.0.0.1:4323/login', timeout: 120000, reuseExistingServer: false },
+   ],
+   projects: [ { name: 'desktop', use: { ...devices['Desktop Chrome'] } }, { name: 'mobile', use: { ...devices['Pixel 7'] } } ],
+diff --git a/e2e/scripts/report-live-coverage.cjs b/e2e/scripts/report-live-coverage.cjs
+index e5146dc..a7b8da9 100644
+--- a/e2e/scripts/report-live-coverage.cjs
++++ b/e2e/scripts/report-live-coverage.cjs
+@@ -48,8 +48,8 @@ function files(dir) {
+   console.log(`${coverage.files().length} inventoried application sources; ${unmeasured.filter(file => file.executableStatements).length} executable TypeScript files not loaded (recorded at zero coverage).`);
+   if (process.argv.includes('--strict')) {
+     const summary = coverage.getCoverageSummary().toJSON();
+-    if (['lines','statements','branches','functions'].some(metric => summary[metric].pct !== 100) || unmeasured.some(file => file.executableStatements)) {
+-      throw new Error('100% coverage not achieved; see live-api-coverage. No source file was removed to make this check pass.');
++    if (['lines','statements','branches','functions'].some(metric => summary[metric].pct !== 100) || unmeasured.some(file => file.executableStatements) || unmappedScripts.size > 0) {
++      throw new Error('100% coverage not achieved or a loaded script has no source map; see live-api-coverage. No source file was removed to make this check pass.');
+     }
+   }
+ })().catch(error => { console.error(error); process.exitCode = 1; });
+diff --git a/src/environments/environment.live-api.ts b/src/environments/environment.live-api.ts
+new file mode 100644
+--- /dev/null
++++ b/src/environments/environment.live-api.ts
+@@ -0,0 +1 @@
++export const environment = { production: false, apiUrl: 'http://127.0.0.1:8099/api' };
+diff --git a/e2e/README_LIVE_API.md b/e2e/README_LIVE_API.md
+new file mode 100644
+--- /dev/null
++++ b/e2e/README_LIVE_API.md
+@@ -0,0 +1,119 @@
++# Valódi API-s frontend- és backendtesztek
++
++Ez a csomag közvetlen HTTP-kapcsolaton hívja a futó Spring alkalmazást.
++Nincs `page.route`, HTTP-válaszhelyettesítés, Mockito, MockMvc vagy kézzel
++előállított access token az új tesztekben. A böngésző a valódi bejelentkezést
++használja; a tesztadat-előkészítés is a nyilvános alkalmazás-API-n történik.
++
++A futás saját, véletlen `workouts_it_...` PostgreSQL-adatbázist hoz létre,
++a production Liquibase-lánccal. Az első admin a production bootstrap
++mechanizmusán keresztül jön létre. A további fiókok, gyakorlatok és edzések
++API-kérésekkel készülnek. A rate limitek és a jogosultsági ellenőrzések az
++alkalmazás alapbeállításain maradnak. A külön helyi HTTP-környezethez CORS
++origin és nem Secure helyi refresh-cookie tartozik.
++
++A helyi SMTP-fogadó valódi SMTP-protokollon kapja a leveleket. Az emailes
++jelszó-visszaállítási teszt ebből olvassa ki az alkalmazás által küldött linket;
++nem közvetlen adatbázis-lekérdezésből vagy tesztvégpontból kapja a tokent.
++
++## Telepítés és futtatás
++
++Mindkét repóban legyenek ott az ehhez tartozó patch változásai. Java 25,
++Node/npm és PostgreSQL szükséges; a PostgreSQL-fióknak adatbázis-létrehozási
++jog kell. Kizárólag a `postgres` karbantartási adatbázis URL-je fogadható el.
++Az alkalmazás valódi fejlesztői/production adatbázisát a teszt nem használja.
++
++```sh
++cd /Users/pappzs/works/develop/workouts-frontend
++npm ci
++cd e2e
++npm ci
++npx playwright install chromium
++
++export IT_POSTGRES_URL=jdbc:postgresql://localhost:5432/postgres
++export IT_POSTGRES_USER="$USER"
++export IT_POSTGRES_PASSWORD=''
++npm run test:live-api
++```
++
++A Playwright mindhárom helyi folyamatot indítja és leállítja:
++
++- SMTP 1026, postafiók-HTTP 8026;
++- Spring backend 8099, saját PostgreSQL-adatbázissal;
++- Angular 4323, a `live-api` környezetben közvetlenül a 8099-es API-ra kötve.
++
++Ezek a portok legyenek szabadok. Meglévő kiszolgálót a csomag nem vesz át.
++A backend repó alapértelmezett helye a frontend szomszédságában lévő
++`workouts-project`; más elrendezésnél az `E2E_BACKEND_DIR` abszolút útvonalat
++kell megadni. A csomag nem tölti be a korábbi E2E `.env` fájlt.
++
++Az Angular CLI közvetlenül indul; az alkalmazás verziófrissítő prestart
++scriptje nem fut. Nincs szükség külön `npm start` terminálra.
++
++Csak egy profil vagy csak egy folyamat:
++
++```sh
++npm run test:live-api -- --project=desktop
++npm run test:live-api -- --grep 'SMTP'
++```
++
++Minden futás új, külön adatbázissal indul. A saját üzleti adatok a teszt végén
++API-val törlődnek, ahol van törlési végpont; a teljes tesztadatbázist a Java
++kiszolgáló lezáráskor törli. A folyamat kényszerű SIGKILL leállítása a takarítást
++megszakíthatja, ahogyan a meglévő PostgreSQL-integrációs csomagnál is.
++
++## Lefedettségi riportok
++
++A böngésző natív V8 JavaScript-lefedettséget gyűjt, amelyet a forrástérképek
++visszavezetnek az alkalmazás forrásaira. Minden saját TypeScript-forrást
++számba veszünk: a be nem töltött fájlok nulla számlálókat kapnak. A tisztán
++típusokat tartalmazó fájloknak nincs végrehajtható utasításuk. A harmadik fél
++node_modules kódja nem alkalmazáskód. A `.spec.ts` és `.d.ts` fájlok sem
++részei az alkalmazás mérési nevezőjének.
++
++```sh
++npm run coverage:live-api
++npm run coverage:live-api:check
++npx playwright show-report live-api-report
++npm run typecheck
++```
++
++- HTML kódlefedettség: `live-api-coverage/index.html`;
++- gépi összesítés: `live-api-coverage/coverage-summary.json`;
++- az adott futásban be nem töltött források: `live-api-coverage/unmeasured-sources.json`;
++- JUnit-szerű teszteredmény JSON: `live-api-results/results.json`;
++- bukáskor screenshot és trace a teszt eredménykönyvtárában.
++
++A `coverage:live-api:check` pontosan 100% sort, utasítást, függvényt és ágat
++követel; az el nem ért végrehajtható TypeScript-források miatt is hibázik.
++Nem csökkentettük a küszöböt. A sikeres Playwright-futás ettől külön
++ellenőrzés: sikeres tesztek mellett is lehet piros a 100%-os kapu.
++
++A V8/Istanbul böngészős mérés és a korábbi Karma-instrumentálás számlálói
++eltérnek; százalékaikból nem szabad javulást vagy romlást számolni.
++A backend összesített riportjának elkészítése és a részletes eredmények:
++[backend és közös tesztútmutató](../../workouts-project/docs/live-api-testing.md).
++
++## A most hozzáadott esetek
++
++- `gyakorlat szerkesztése és újratöltése (hu/en/de)`: három nyelven mentés, API-visszaolvasás és újratöltés utáni mezőértékek (6 futás desktop/mobil).
++- `nem létező gyakorlat szerkesztése visszavisz a listára`: hiányzó azonosító kezelése, szerkesztőűrlap hiánya (2 futás).
++- Javított meglévő teszt: kijelentkezéskor a fejléc gombja egyértelműen kiválasztható.
++- Javított fixture: navigáláskor és újratöltéskor megmarad a felületen választott nyelv.
++
++A teljes csomag 18 nevesített esetet, desktop és mobil profillal 36 futást tartalmaz.
++A backend Maven-fordítását és ezt a csomagot egymás után futtasd; a futó Spring kiszolgáló classpath-jának változtatása megzavarhatja a fejlesztői újratöltést.
++
++## Ellenőrzött eredmény
++
++2026-10-25: a teljes valódi API-s csomag **36/36 sikeres**, kihagyás és újrapróbálkozás nélkül; `npm run typecheck` sikeres.
++
++| Natív böngészős V8/Istanbul mutató | Eredmény |
++| --- | ---: |
++| Sor / utasítás | 71,18% |
++| Ág | 63,80% |
++| Függvény | 25,35% |
++
++249 alkalmazásforrás szerepel a riportban; 2 végrehajtható TypeScript-környezetváltozat nem töltődött be, ezért nullával szerepel. A `coverage:live-api:check` **nem teljesül**, a kód nincs 100%-ban lefedve. Az új esetek tényleges nyelvaktiválásra várnak, és újratöltés után a nyelvválasztást is ellenőrzik. A kijelentkezési eset a korábbi refresh token szerveroldali visszavonását is valódi API-hívással ellenőrzi.
++
++Egy betöltött scripthez nem volt forrástérkép (`unmappedScripts` a JSON-riportban). A szigorú kapu ezt is hibának tekinti, így hiányos forrástérképezés mellett sem adhat 100%-os sikert.

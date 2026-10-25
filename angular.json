@@ -73,6 +73,17 @@
                   "with": "src/environments/environment.ts"
                 }
               ]
+            },
+            "live-api": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.live-api.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -85,6 +96,9 @@
             },
             "development": {
               "buildTarget": "workouts-frontend:build:development"
+            },
+            "live-api": {
+              "buildTarget": "workouts-frontend:build:live-api"
             }
           },
           "defaultConfiguration": "development"

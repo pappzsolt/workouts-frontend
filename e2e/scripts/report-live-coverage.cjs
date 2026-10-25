@@ -48,8 +48,8 @@ function files(dir) {
   console.log(`${coverage.files().length} inventoried application sources; ${unmeasured.filter(file => file.executableStatements).length} executable TypeScript files not loaded (recorded at zero coverage).`);
   if (process.argv.includes('--strict')) {
     const summary = coverage.getCoverageSummary().toJSON();
-    if (['lines','statements','branches','functions'].some(metric => summary[metric].pct !== 100) || unmeasured.some(file => file.executableStatements)) {
-      throw new Error('100% coverage not achieved; see live-api-coverage. No source file was removed to make this check pass.');
+    if (['lines','statements','branches','functions'].some(metric => summary[metric].pct !== 100) || unmeasured.some(file => file.executableStatements) || unmappedScripts.size > 0) {
+      throw new Error('100% coverage not achieved or a loaded script has no source map; see live-api-coverage. No source file was removed to make this check pass.');
     }
   }
 })().catch(error => { console.error(error); process.exitCode = 1; });

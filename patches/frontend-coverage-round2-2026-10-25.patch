@@ -1,0 +1,730 @@
+diff --git a/e2e/.gitignore b/e2e/.gitignore
+index b99685f..7aa3b85 100644
+--- a/e2e/.gitignore
++++ b/e2e/.gitignore
+@@ -8,3 +8,5 @@ contract-report/
+ 
+ auth-contract-results/
+ auth-contract-report/
++frontend-contract-results/
++frontend-contract-report/
+diff --git a/e2e/README.md b/e2e/README.md
+index 34f5483..541c017 100644
+--- a/e2e/README.md
++++ b/e2e/README.md
+@@ -164,3 +164,20 @@ npm run test:auth-contract
+ 
+ A 4321-es Angular tesztszerver automatikusan indul és leáll. Első telepítés,
+ riport, összes tesztnév és leírás: [hitelesítési tesztútmutató](README_AUTH_CONTRACT.md).
++
++
++## Kibővített frontend UI-tesztek
++
++Hitelesítés, jelszókezelés, regisztrációs határértékek és adminisztrátori
++regisztrációkezelés: 103 teszt, asztali és mobil Chromium-profilon összesen
++206 ellenőrzés. A csomag a korábbi 35 hitelesítési tesztet is futtatja.
++
++```sh
++cd /Users/pappzs/works/develop/workouts-frontend/e2e
++npm run test:frontend-contract
++```
++
++A helyi Angular-kiszolgáló automatikusan indul a 4321-es porton; backend és
++valódi fiók nem szükséges. Az API-válaszok rögzített tesztadatokból származnak.
++Az új 68 teszt teljes név szerinti listája, leírása és a riportok:
++[kibővített frontendteszt-útmutató](README_FRONTEND_CONTRACT.md).
+diff --git a/e2e/package.json b/e2e/package.json
+index a5deee2..224e433 100644
+--- a/e2e/package.json
++++ b/e2e/package.json
+@@ -13,7 +13,8 @@
+     "mailbox": "node scripts/test-mailbox.cjs",
+     "test:p1": "playwright test tests/USER/WORKOUTS/user-workout-comprehensive.spec.ts tests/USER/READ/user-statistics-exact.spec.ts tests/AUTH/GUI/password-reset-live.spec.ts tests/AUTH/GUI/registration-live.spec.ts",
+     "test:p2": "playwright test tests/USER/GUI/bug-report-live.spec.ts tests/COACH/WORKSPACE/coach-save-resilience.spec.ts",
+-    "test:auth-contract": "playwright test -c playwright.auth.config.ts"
++    "test:auth-contract": "playwright test -c playwright.auth.config.ts",
++    "test:frontend-contract": "playwright test -c playwright.frontend.config.ts"
+   },
+   "devDependencies": {
+     "@playwright/test": "^1.55.0",
+diff --git a/e2e/tsconfig.json b/e2e/tsconfig.json
+index 9c16d1d..d2d1f10 100644
+--- a/e2e/tsconfig.json
++++ b/e2e/tsconfig.json
+@@ -16,6 +16,7 @@
+     "tests/**/*.ts",
+     "playwright.contract.config.ts",
+     "ui-contract/**/*.ts",
+-    "playwright.auth.config.ts"
++    "playwright.auth.config.ts",
++    "playwright.frontend.config.ts"
+   ]
+ }
+diff --git a/e2e/README_FRONTEND_CONTRACT.md b/e2e/README_FRONTEND_CONTRACT.md
+new file mode 100644
+index 0000000..d05f7f2
+--- /dev/null
++++ b/e2e/README_FRONTEND_CONTRACT.md
+@@ -0,0 +1,127 @@
++# Frontend Playwright-bővítés – 2026-10-25
++
++Ebben a körben **68 új teszteset** készült: 38 regisztrációs és 30 adminisztrációs. Mindegyik asztali Chrome- és Pixel 7 Chromium-profilon is fut, így ez **136 új böngészős ellenőrzés**. A korábbi 35 hitelesítési esettel együtt a kibővített csomag **103 tesztet, 206 profil szerinti ellenőrzést** tartalmaz.
++
++A csomag valódi Angular-felületet futtat, rögzített API-válaszokkal. Az ismeretlen API-hívások hibát okoznak. A kliens útvonalvédelmi tesztjei nem helyettesítik a szerveroldali hitelesítési teszteket. Százalékos forráskód-lefedettségi mérés ebben a körben nem készült.
++
++## Futtatás
++
++A frontend és az e2e függőségeinek telepítése, valamint a Chromium telepítése után:
++
++```sh
++cd /Users/pappzs/works/develop/workouts-frontend/e2e
++npm run test:frontend-contract
++```
++
++Az Angular a konfigurációban megadott, külön 4321-es porton automatikusan indul és leáll. Nem kell backend, `.env`, adatbázis vagy tesztfiók. A 4321-es port legyen szabad.
++
++Csak a most hozzáadott tesztek:
++
++```sh
++npm run test:frontend-contract -- --grep 'Regisztráció:|Admin kérelmek:'
++```
++
++Csak asztali böngésző és a HTML-riport:
++
++```sh
++npm run test:frontend-contract -- --project=desktop
++npx playwright show-report frontend-contract-report
++npm run typecheck
++```
++
++JSON-riport: `frontend-contract-results/results.json`. Bukáskor screenshot és trace készül. Retry nincs. A mobilprofil emulált Chromium.
++
++Első telepítéshez a korábbi [hitelesítési útmutató](README_AUTH_CONTRACT.md#futtatás-a-frontend-repóból) használható.
++
++## registration-boundaries.spec.ts
++
++Forrás: [tesztfájl](ui-contract/registration-boundaries.spec.ts)
++
++| Teszt neve | Mit ellenőriz? |
++|---|---|
++| Regisztráció: hibás felhasználónév nem küldhető (ab) | A kétkarakteres név kliensoldali hibát ad, API-kérés nélkül. |
++| Regisztráció: hibás felhasználónév nem küldhető (anna@kiss) | Az @ karakteres név kliensoldali hibát ad, API-kérés nélkül. |
++| Regisztráció: hibás felhasználónév nem küldhető (.anna) | Ponttal kezdődő név kliensoldali hibát ad, API-kérés nélkül. |
++| Regisztráció: hibás felhasználónév nem küldhető (anna.) | Ponttal végződő név kliensoldali hibát ad, API-kérés nélkül. |
++| Regisztráció: érvénytelen jelszó blokkolása (csak szóköz) | A csak szóközökből álló jelszó elutasított, regisztrációs kérés nem történik. |
++| Regisztráció: érvénytelen jelszó blokkolása (74 UTF-8 bájt) | A 37 darab kétbájtos á karakterből álló, 74 UTF-8 bájtos jelszó elutasított. |
++| Regisztráció: érvénytelen jelszó blokkolása (73 karakter) | A 73 ASCII karakteres jelszó elutasított, regisztrációs kérés nem történik. |
++| Regisztráció: érvényes jelszóhatárérték elküldhető (8 karakter) | A nyolckarakteres jelszó sikeresen beküldhető és a megerősítéssel együtt változatlanul jut a kérésbe. |
++| Regisztráció: érvényes jelszóhatárérték elküldhető (72 ASCII bájt) | A 72 ASCII bájtos jelszó elfogadott, a kérés és a sikerállapot ellenőrzött. |
++| Regisztráció: érvényes jelszóhatárérték elküldhető (72 UTF-8 bájt) | A 36 darab á karakterből álló, pontosan 72 UTF-8 bájtos jelszó elfogadott. |
++| Regisztráció: hibás opcionális számmező blokkolja a beküldést (age=9) | A tízéves alsó korhatár alatti életkor blokkolja a beküldést. |
++| Regisztráció: hibás opcionális számmező blokkolja a beküldést (age=121) | A 120 éves felső korhatár feletti életkor blokkolja a beküldést. |
++| Regisztráció: hibás opcionális számmező blokkolja a beküldést (weight=19.99) | A 20 kg alatti testsúly blokkolja a beküldést. |
++| Regisztráció: hibás opcionális számmező blokkolja a beküldést (weight=400.01) | A 400 kg feletti testsúly blokkolja a beküldést. |
++| Regisztráció: hibás opcionális számmező blokkolja a beküldést (weight=70.123) | Három tizedesjegyű testsúly blokkolja a beküldést. |
++| Regisztráció: hibás opcionális számmező blokkolja a beküldést (height=79.99) | A 80 cm alatti magasság blokkolja a beküldést. |
++| Regisztráció: hibás opcionális számmező blokkolja a beküldést (height=250.01) | A 250 cm feletti magasság blokkolja a beküldést. |
++| Regisztráció: hibás opcionális számmező blokkolja a beküldést (height=170.123) | Három tizedesjegyű magasság blokkolja a beküldést. |
++| Regisztráció: opcionális számmezők határértékei elfogadottak (10/20/80) | Az életkor/testsúly/magasság alsó határértékei elfogadottak; a teljes küldött JSON numerikus és null mezői ellenőrzöttek. |
++| Regisztráció: opcionális számmezők határértékei elfogadottak (120/400/250) | Az életkor/testsúly/magasság felső határértékei elfogadottak; a teljes küldött JSON ellenőrzött. |
++| Regisztráció: USER névhosszkorlát és Unicode név helyesen működik | USER módban maxlength=50 és az 50 karakteres Unicode felhasználónév helyes accountType-pal beküldhető. |
++| Regisztráció: COACH névhosszkorlát és Unicode név helyesen működik | COACH módban maxlength=100 és a 100 karakteres Unicode név helyes accountType-pal beküldhető. |
++| Regisztráció: USER→COACH váltás törli a hibás rejtett ügyfélmezőket | USER→COACH váltáskor a hibás életkor és a cél törlődik; csak coachmezők kerülnek a kérésbe, trimmelt specializációval. |
++| Regisztráció: COACH→USER váltás törli a hibás rejtett edzőmezőket | COACH→USER váltáskor a hibás telefon és a specializáció törlődik; csak usermezők kerülnek a kérésbe, két tizedessel és trimmelt céllal. |
++| Regisztráció: hibás magyar telefonszám blokkolása (36301234567) | A + előtag nélküli magyar telefonszám elutasított, API-kérés nélkül. |
++| Regisztráció: hibás magyar telefonszám blokkolása (+3630123456) | A túl rövid +36 telefonszám elutasított, API-kérés nélkül. |
++| Regisztráció: függő válasz alatt nincs új beküldés, siker után az űrlap eltűnik | Függő válasznál a beküldőgomb tiltott, csak egy kérés történik; siker után az űrlap eltűnik és loginra lehet navigálni. |
++| Regisztráció: HTTP 409 után az adatok megmaradnak és újrapróbálhatók | HTTP 409 hiba után a szerverüzenet, email és újrapróbálható gomb megmarad; a második kérés sikeres. |
++| Regisztráció: HTTP 503 után az adatok megmaradnak és újrapróbálhatók | HTTP 503 hiba után az adatok megmaradnak, a második kérés sikeres. |
++| Regisztráció: hibás HTTP 200 üzleti válasz nem mutat sikert (success=false) | HTTP 200 success=false nem eredményez sikerállapotot, a szerver hibaüzenete látszik. |
++| Regisztráció: hibás HTTP 200 üzleti válasz nem mutat sikert (success=true) | HTTP 200 success=true,data:null nem eredményez sikerállapotot; lokalizált tartalékhiba látszik. |
++| Regisztráció: nyelvváltás után a fejléc és a kérés nyelve is helyes (hu) | Magyar nyelvválasztás után magyar fejléc és language=hu kérés ellenőrzött. |
++| Regisztráció: nyelvváltás után a fejléc és a kérés nyelve is helyes (en) | Angol nyelvválasztás után angol fejléc és language=en kérés ellenőrzött. |
++| Regisztráció: nyelvváltás után a fejléc és a kérés nyelve is helyes (de) | Német nyelvválasztás után német fejléc és language=de kérés ellenőrzött. |
++| Regisztráció: a kiválasztott nem enumként kerül elküldésre (MALE) | A Férfi címke választása a MALE enumot küldi az API-nak. |
++| Regisztráció: a kiválasztott nem enumként kerül elküldésre (FEMALE) | A Nő címke választása a FEMALE enumot küldi az API-nak. |
++| Regisztráció: a jelszó szándékos szélső szóközei nem vesznek el a kérésből | A jelszó elején és végén lévő szándékos szóközök változatlanul megmaradnak a kérésben. |
++| Regisztráció: tört életkor bevitele elutasított, érvényes egész számra javítható | A tört életkor bevitelét az input azonnal visszautasítja; egész számra javítva a sikeres kérés 31 éves kort tartalmaz. |
++
++## admin-registration-resilience.spec.ts
++
++Forrás: [tesztfájl](ui-contract/admin-registration-resilience.spec.ts)
++
++| Teszt neve | Mit ellenőriz? |
++|---|---|
++| Admin kérelmek: a kezdőlap megfelelő státusszal és nulla alapú lapozással kérdez | A kezdeti lekérdezés PENDING státuszt, page=0, size=10, language=hu paramétert kap; tíz sor látszik, az előző oldal tiltott. |
++| Admin kérelmek: lapozás után státuszváltás az első oldalról indul és elrejti a döntési gombokat | Második oldalról APPROVED fülre váltás page=0 lekérdezést indít; a döntési gombok eltűnnek, a döntéshozó és a coach neve látható. |
++| Admin kérelmek: oldalméret-váltás visszaállítja az első oldalt és a kért darabszámot | Második oldalon a 20-as oldalméret kiválasztása page=0,size=20 kérést és húsz megjelenített sort eredményez. |
++| Admin kérelmek: üres PENDING lista a megfelelő üzenetet mutatja | Üres PENDING válasznál a függő kérelmekhez tartozó üzenet látszik; nincs lapozó vagy döntési kérés. |
++| Admin kérelmek: üres APPROVED lista a megfelelő üzenetet mutatja | Üres APPROVED válasznál a jóváhagyott kérelmekhez tartozó üzenet látszik; nincs lapozó vagy döntési kérés. |
++| Admin kérelmek: üres REJECTED lista a megfelelő üzenetet mutatja | Üres REJECTED válasznál az elutasított kérelmekhez tartozó üzenet látszik; nincs lapozó vagy döntési kérés. |
++| Admin kérelmek: ugyanarra a státuszfülre kattintás nem indít új listaolvasást | Az aktív státuszfül újbóli kiválasztása nem küld redundáns listaolvasást. |
++| Admin kérelmek: elutasítás megszakítása törli az indoklást, döntési kérés nélkül | Mégse után az indoklásmező eltűnik, újranyitva üres; döntési kérés nem történt. |
++| Admin kérelmek: státuszváltás törli a folyamatban lévő elutasítást | Státuszváltás után a megkezdett elutasítás megszűnik; visszatérve sincs megnyitott indoklásmező. |
++| Admin kérelmek: elutasítás indoklása normalizált (üres→null) | Csak whitespace indoklás esetén a beküldött reason null; a sikerüzenet után az érintett sor eltűnik. |
++| Admin kérelmek: elutasítás indoklása normalizált (trim) | A beküldött indoklás szélső szóközök nélkül kerül az egyetlen, megfelelő id-jú döntési kérésbe. |
++| Admin kérelmek: ügyfél jóváhagyása coach nélkül | Ügyfél coachválasztás nélküli jóváhagyása coachId:null törzset küld, és a sor eltűnik. |
++| Admin kérelmek: ügyfél jóváhagyása kiválasztott coachcsal | A coach címkéje szerinti választás a valódi numerikus 205 azonosítót küldi; a sikerüzenet és a sor eltűnése ellenőrzött. |
++| Admin kérelmek: coach jóváhagyásánál nincs coachválasztó és null coachId kerül elküldésre | Coachkérelemnél nincs coachválasztó; a helyes kérelemazonosítóhoz coachId:null kerül. |
++| Admin kérelmek: sikertelen approve után a hiba látszik és a döntés újrapróbálható | HTTP 409 jóváhagyási hiba után a sor és a hiba megmarad, a gomb engedélyezett; újrapróbálva sikeres a második kérés. |
++| Admin kérelmek: sikertelen reject után a hiba látszik és a döntés újrapróbálható | HTTP 409 elutasítási hiba után a megerősítés újrapróbálható, a második kérés sikeres. |
++| Admin kérelmek: függő döntés alatt minden sor döntési gombja letiltott | Vezérelt válaszkésleltetés alatt az érintett és a többi sor döntési gombjai is letiltottak; válasz után újra használhatók. |
++| Admin kérelmek: utolsó oldalon meghozott döntés visszalapoz az utolsó létező oldalra | A harmadik oldal utolsó kérelmének eldöntése után az üres harmadik lap helyett a második lap töltődik be, a következő oldal tiltott. |
++| Admin kérelmek: hibás lista-válasz nem látszik sikeres üres listának (http) | HTTP 500 listaolvasási hiba látható üzenetet ad; másik státuszra váltás után az adatok újra betölthetők. |
++| Admin kérelmek: hibás lista-válasz nem látszik sikeres üres listának (business) | HTTP 200 success=false listaolvasási hiba látható üzenetet ad; a lista később helyreállítható. |
++| Admin kérelmek: hibás lista-válasz nem látszik sikeres üres listának (null-data) | HTTP 200 success=true,data:null listaolvasási hiba látható üzenetet ad; a lista később helyreállítható. |
++| Admin kérelmek: coachlista hibájánál coach nélkül is jóváhagyható az ügyfél | Coachlista HTTP 500 hibájánál a Nincs edző opció megmarad, az ügyfél null coachId-val jóváhagyható. |
++| Admin kérelmek: anonim megnyitás loginra irányít lista és döntési API-hívás nélkül | A refresh 401 után a route guard loginra irányít, a regisztrációs listát és döntési API-t nem hívja. |
++| Admin kérelmek: lassú lista betöltése alatt állapotjelzés látható | Késleltetett listaolvasás alatt Betöltés állapot és üres lista látszik; válasz után megjelenik a kérelem. |
++| Admin kérelmek: nem érvényes adminmunkamenet nem kérhet listát (hasonló nevű idegen szerepkör) | ROLE_ADMINISTRATOR nem egyezik ROLE_ADMIN-nal: a kliens loginra irányít és nem kér listát. |
++| Admin kérelmek: nem érvényes adminmunkamenet nem kérhet listát (hiányzó szerepkör) | Üres szerepkörrel a kliens loginra irányít és nem kér listát vagy döntést. |
++| Admin kérelmek: nem érvényes adminmunkamenet nem kérhet listát (lejárt token) | Lejárt exp mezőjű kliens tokennel a guard loginra irányít, listaolvasás nélkül. |
++| Admin kérelmek: több szerepkör közül a pontos ADMIN szerepkör engedélyezi az olvasást | A vesszővel elválasztott szerepkörlista pontos ADMIN eleme szóközök mellett is engedélyezi a kliens útvonalát. |
++| Admin kérelmek: a jelentkező neve és profiladatai nem hajthatnak végre HTML-kódot | A név és a profiladat img/script tartalma szövegként jelenik meg; DOM-elem és futó kód nem keletkezik. |
++| Admin kérelmek: státuszváltás megszakítja a régi lista kérését, a késői válasz nem írja felül az újat | Státuszváltáskor a régi HTTP-kérés megszakad; a késői PENDING válasz nem írhatja felül az új APPROVED listát. |
++
++## Ellenőrzött eredmény
++
++2026-10-25: **206/206 sikeres** (103 asztali, 103 mobil), 0 bukás, 0 kihagyás,
++0 flaky, retry nélkül. A futás 157.6 másodperc volt.
++Az új 68 teszthez tartozó mind a 136 böngészős ellenőrzés sikeres.
++A teljes e2e TypeScript-ellenőrzés (`tsc -p e2e/tsconfig.json`) is sikeres.
++
++A patch az előző, 35 hitelesítési tesztet tartalmazó bővítésre épül.
++Az új csomag azokat is újrafuttatja, a régi `test:auth-contract` parancs
++változatlanul használható.
+diff --git a/e2e/playwright.frontend.config.ts b/e2e/playwright.frontend.config.ts
+new file mode 100644
+index 0000000..9c35144
+--- /dev/null
++++ b/e2e/playwright.frontend.config.ts
+@@ -0,0 +1,14 @@
++import { defineConfig } from '@playwright/test';
++import auth from './playwright.auth.config';
++
++// Explicit allowlist: authentication and registration only, including earlier regression tests.
++export default defineConfig({
++  ...auth,
++  testMatch: /(?:auth-(?:password-recovery|login-resilience)|registration-boundaries|admin-registration-resilience)\.spec\.ts/,
++  outputDir: 'frontend-contract-results',
++  reporter: [
++    ['list'],
++    ['html', { outputFolder: 'frontend-contract-report', open: 'never' }],
++    ['json', { outputFile: 'frontend-contract-results/results.json' }],
++  ],
++});
+diff --git a/e2e/ui-contract/admin-registration-fixture.ts b/e2e/ui-contract/admin-registration-fixture.ts
+new file mode 100644
+index 0000000..3e0f4b2
+--- /dev/null
++++ b/e2e/ui-contract/admin-registration-fixture.ts
+@@ -0,0 +1,71 @@
++import { test as base, expect, type Page, type Route } from '@playwright/test';
++export { gate } from './auth-contract-fixture';
++export const REGISTRATIONS = '/api/admin/registrations';
++export type Call = { method: string; path: string; query: URLSearchParams; body: any };
++type Handler = (route: Route, call: Call) => Promise<void>;
++
++export function application(id: number, status = 'PENDING', accountType = id % 2 ? 'USER' : 'COACH') {
++  return {
++    id, status, accountType, username: `Applicant ${String(id).padStart(3, '0')}`, email: `person${id}@example.test`,
++    age: accountType === 'USER' ? 31 : null, weight: accountType === 'USER' ? 70.5 : null,
++    height: accountType === 'USER' ? 170 : null, gender: accountType === 'USER' ? 'FEMALE' : null,
++    goals: accountType === 'USER' ? 'Erő' : null, phone: accountType === 'COACH' ? '+36301234567' : null,
++    specialization: accountType === 'COACH' ? 'Erőnlét' : null,
++    rejectionReason: status === 'REJECTED' ? 'Nem ismert jelentkező.' : null,
++    createdAt: '2026-10-20T10:00:00', decidedAt: status === 'PENDING' ? null : '2026-10-21T11:00:00',
++    decidedBy: status === 'PENDING' ? null : 'Admin Anna', createdUserId: null, createdCoachId: null,
++    assignedCoachId: status === 'APPROVED' ? 205 : null, assignedCoachName: status === 'APPROVED' ? 'Coach Carl' : null,
++  };
++}
++
++export class RegistrationApi {
++  calls: Call[] = [];
++  unexpected: string[] = [];
++  rows = [...Array.from({ length: 21 }, (_, i) => application(i + 1)), application(101, 'APPROVED'), application(102, 'REJECTED')];
++  authenticated = true;
++  custom = new Map<string, Handler>();
++  reads() { return this.calls.filter(c => c.method === 'GET' && c.path === REGISTRATIONS); }
++  writes() { return this.calls.filter(c => c.method === 'POST' && c.path.startsWith(`${REGISTRATIONS}/`)); }
++  on(method: string, path: string, handler: Handler) { this.custom.set(`${method} ${path}`, handler); }
++  async install(page: Page) {
++    await page.addInitScript(() => { localStorage.setItem('language', 'hu'); localStorage.setItem('lang', 'hu'); });
++    await page.route('**/api/**', async route => {
++      const request = route.request(); const url = new URL(request.url());
++      const c: Call = { method: request.method(), path: url.pathname, query: url.searchParams, body: request.postData() ? request.postDataJSON() : null };
++      if (c.method === 'OPTIONS') return route.fulfill({ status: 204, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' } });
++      this.calls.push(c);
++      const custom = this.custom.get(`${c.method} ${c.path}`);
++      if (custom) return custom(route, c);
++      const success = (data: unknown, message: string | null = null) => route.fulfill({ json: { success: true, data, message } });
++      if (c.method === 'POST' && c.path === '/api/auth/web/refresh') {
++        if (!this.authenticated) return route.fulfill({ status: 401, json: { success: false, data: null, message: null } });
++        const payload = Buffer.from(JSON.stringify({ sub: 'contract-admin', roles: 'ROLE_ADMIN', exp: 4102444800 })).toString('base64url');
++        return success({ accessToken: `eyJhbGciOiJIUzI1NiJ9.${payload}.contract` });
++      }
++      if (c.method === 'GET' && c.path === '/api/members/coaches') return success([{ id: 205, name: 'Coach Carl' }]);
++      if (c.method === 'GET' && c.path === `${REGISTRATIONS}/pending-count`) return success({ count: this.rows.filter(r => r.status === 'PENDING').length });
++      if (c.method === 'GET' && c.path === REGISTRATIONS) {
++        const page = Number(c.query.get('page')); const size = Number(c.query.get('size'));
++        const rows = this.rows.filter(r => r.status === c.query.get('status'));
++        return success({ content: rows.slice(page * size, (page + 1) * size), page, size, totalElements: rows.length, totalPages: Math.ceil(rows.length / size) });
++      }
++      const decision = c.path.match(/^\/api\/admin\/registrations\/(\d+)\/(approve|reject)$/);
++      if (c.method === 'POST' && decision) {
++        const row = this.rows.find(r => r.id === Number(decision[1]));
++        if (!row) throw new Error(`Unknown fixture application ${decision[1]}`);
++        row.status = decision[2] === 'approve' ? 'APPROVED' : 'REJECTED';
++        row.rejectionReason = c.body.reason ?? null;
++        return success(null, decision[2] === 'approve' ? 'Jóváhagyás rögzítve.' : 'Elutasítás rögzítve.');
++      }
++      this.unexpected.push(`${c.method} ${c.path}`); return route.abort('blockedbyclient');
++    });
++  }
++}
++
++export const test = base.extend<{ api: RegistrationApi }>({
++  api: async ({ page }, use) => {
++    const api = new RegistrationApi(); await api.install(page); await use(api);
++    expect(api.unexpected, 'Ismeretlen API-hívás nem kaphat automatikus sikeres választ').toEqual([]);
++  },
++});
++export { expect };
+diff --git a/e2e/ui-contract/admin-registration-resilience.spec.ts b/e2e/ui-contract/admin-registration-resilience.spec.ts
+new file mode 100644
+index 0000000..5735877
+--- /dev/null
++++ b/e2e/ui-contract/admin-registration-resilience.spec.ts
+@@ -0,0 +1,234 @@
++import { test, expect, REGISTRATIONS, application, gate } from './admin-registration-fixture';
++import type { Page } from '@playwright/test';
++const card = (page: Page, id = 1) => page.getByRole('listitem', { name: `Applicant ${String(id).padStart(3, '0')}`, exact: true });
++const tab = (page: Page, name: string) => page.getByRole('group', { name: 'Kérelmek állapot szerint' }).getByRole('button', { name: new RegExp(`^${name}`) });
++async function open(page: Page) { await page.goto('/admin/registrations'); await expect(card(page)).toBeVisible(); }
++
++test('Admin kérelmek: a kezdőlap megfelelő státusszal és nulla alapú lapozással kérdez', async ({ page, api }) => {
++  await open(page);
++  expect(api.reads().map(c => Object.fromEntries(c.query))).toEqual([{ status: 'PENDING', page: '0', size: '10', language: 'hu' }]);
++  await expect(page.locator('app-registration-requests li')).toHaveCount(10);
++  await expect(tab(page, 'Függőben')).toHaveAttribute('aria-pressed', 'true');
++  await expect(page.locator('app-pagination').getByRole('button', { name: 'Előző', exact: true })).toBeDisabled();
++});
++
++test('Admin kérelmek: lapozás után státuszváltás az első oldalról indul és elrejti a döntési gombokat', async ({ page, api }) => {
++  await open(page); await page.locator('app-pagination').getByRole('button', { name: 'Következő', exact: true }).click();
++  await expect(card(page, 11)).toBeVisible();
++  await tab(page, 'Jóváhagyva').click(); await expect(card(page, 101)).toBeVisible();
++  expect(api.reads().at(-1)!.query.get('page')).toBe('0'); expect(api.reads().at(-1)!.query.get('status')).toBe('APPROVED');
++  await expect(card(page, 101).getByRole('button', { name: 'Jóváhagyás', exact: true })).toHaveCount(0);
++  await expect(card(page, 101)).toContainText('Admin Anna'); await expect(card(page, 101)).toContainText('Coach Carl');
++});
++
++test('Admin kérelmek: oldalméret-váltás visszaállítja az első oldalt és a kért darabszámot', async ({ page, api }) => {
++  await open(page); await page.locator('app-pagination').getByRole('button', { name: 'Következő', exact: true }).click();
++  await expect(card(page, 11)).toBeVisible();
++  await page.locator('app-pagination select').selectOption({ label: '20' });
++  await expect(card(page)).toBeVisible(); await expect(page.locator('app-registration-requests li')).toHaveCount(20);
++  expect(api.reads().at(-1)!.query.get('page')).toBe('0'); expect(api.reads().at(-1)!.query.get('size')).toBe('20');
++});
++
++for (const [status, name, message] of [
++  ['PENDING', 'Függőben', 'Nincs jóváhagyásra váró regisztráció.'],
++  ['APPROVED', 'Jóváhagyva', 'Még nincs jóváhagyott regisztráció.'],
++  ['REJECTED', 'Elutasítva', 'Még nincs elutasított regisztráció.'],
++]) {
++  test(`Admin kérelmek: üres ${status} lista a megfelelő üzenetet mutatja`, async ({ page, api }) => {
++    api.rows = [];
++    await page.goto('/admin/registrations');
++    await expect(page.getByText('Nincs jóváhagyásra váró regisztráció.', { exact: true })).toBeVisible();
++    if (status !== 'PENDING') await tab(page, name).click();
++    await expect(page.getByText(message, { exact: true })).toBeVisible();
++    await expect(page.locator('app-pagination')).toHaveCount(0); expect(api.writes()).toHaveLength(0);
++  });
++}
++
++test('Admin kérelmek: ugyanarra a státuszfülre kattintás nem indít új listaolvasást', async ({ page, api }) => {
++  await open(page); const before = api.reads().length;
++  await tab(page, 'Függőben').click(); await expect(card(page)).toBeVisible();
++  expect(api.reads()).toHaveLength(before);
++});
++
++test('Admin kérelmek: elutasítás megszakítása törli az indoklást, döntési kérés nélkül', async ({ page, api }) => {
++  await open(page); const row = card(page);
++  await row.getByRole('button', { name: 'Elutasítás', exact: true }).click(); await row.locator('textarea').fill('Ideiglenes indok');
++  await row.getByRole('button', { name: 'Mégse', exact: true }).click(); await expect(row.locator('textarea')).toHaveCount(0);
++  await row.getByRole('button', { name: 'Elutasítás', exact: true }).click(); await expect(row.locator('textarea')).toHaveValue('');
++  expect(api.writes()).toHaveLength(0);
++});
++
++test('Admin kérelmek: státuszváltás törli a folyamatban lévő elutasítást', async ({ page, api }) => {
++  await open(page); await card(page).getByRole('button', { name: 'Elutasítás', exact: true }).click();
++  await card(page).locator('textarea').fill('Nem maradhat meg'); await tab(page, 'Elutasítva').click();
++  await expect(card(page, 102)).toBeVisible(); await expect(card(page, 102)).toContainText('Nem ismert jelentkező.');
++  await tab(page, 'Függőben').click(); await expect(card(page)).toBeVisible();
++  await expect(card(page).locator('textarea')).toHaveCount(0); expect(api.writes()).toHaveLength(0);
++});
++
++for (const [reason, expected] of [['   ', null], ['  Ismeretlen jelentkező  ', 'Ismeretlen jelentkező']]) {
++  test(`Admin kérelmek: elutasítás indoklása normalizált (${expected === null ? 'üres→null' : 'trim'})`, async ({ page, api }) => {
++    await open(page); await card(page).getByRole('button', { name: 'Elutasítás', exact: true }).click();
++    await card(page).locator('textarea').fill(reason); await card(page).getByRole('button', { name: 'Elutasítás megerősítése', exact: true }).click();
++    await expect(page.locator('app-registration-requests app-message')).toHaveText('Elutasítás rögzítve.');
++    await expect(card(page)).toHaveCount(0);
++    expect(api.writes().map(c => ({ path: c.path, body: c.body }))).toEqual([{ path: `${REGISTRATIONS}/1/reject`, body: { reason: expected } }]);
++  });
++}
++
++for (const assign of [false, true]) {
++  test(`Admin kérelmek: ügyfél jóváhagyása ${assign ? 'kiválasztott coachcsal' : 'coach nélkül'}`, async ({ page, api }) => {
++    await open(page);
++    if (assign) await card(page).locator('select').selectOption({ label: 'Coach Carl' });
++    await card(page).getByRole('button', { name: 'Jóváhagyás', exact: true }).click();
++    await expect(page.locator('app-registration-requests app-message')).toHaveText('Jóváhagyás rögzítve.');
++    await expect(card(page)).toHaveCount(0);
++    expect(api.writes().map(c => c.body)).toEqual([{ coachId: assign ? 205 : null }]);
++  });
++}
++
++test('Admin kérelmek: coach jóváhagyásánál nincs coachválasztó és null coachId kerül elküldésre', async ({ page, api }) => {
++  await open(page); await expect(card(page, 2).locator('select')).toHaveCount(0);
++  await card(page, 2).getByRole('button', { name: 'Jóváhagyás', exact: true }).click();
++  await expect(card(page, 2)).toHaveCount(0);
++  expect(api.writes().map(c => ({ path: c.path, body: c.body }))).toEqual([{ path: `${REGISTRATIONS}/2/approve`, body: { coachId: null } }]);
++});
++
++for (const decision of ['approve', 'reject']) {
++  test(`Admin kérelmek: sikertelen ${decision} után a hiba látszik és a döntés újrapróbálható`, async ({ page, api }) => {
++    const path = `${REGISTRATIONS}/1/${decision}`;
++    api.on('POST', path, route => route.fulfill({ status: 409, json: { success: false, data: null, message: 'A döntés nem sikerült.' } }));
++    await open(page);
++    const click = async () => {
++      if (decision === 'approve') await card(page).getByRole('button', { name: 'Jóváhagyás', exact: true }).click();
++      else {
++        await card(page).getByRole('button', { name: 'Elutasítás', exact: true }).click();
++        await card(page).getByRole('button', { name: 'Elutasítás megerősítése', exact: true }).click();
++      }
++    };
++    await click(); await expect(page.locator('app-registration-requests app-message')).toHaveText('A döntés nem sikerült.');
++    await expect(card(page)).toBeVisible();
++    await expect(card(page).getByRole('button', { name: decision === 'approve' ? 'Jóváhagyás' : 'Elutasítás megerősítése', exact: true })).toBeEnabled();
++    api.custom.delete(`POST ${path}`);
++    if (decision === 'approve') await click();
++    else await card(page).getByRole('button', { name: 'Elutasítás megerősítése', exact: true }).click();
++    await expect(card(page)).toHaveCount(0); expect(api.writes()).toHaveLength(2);
++  });
++}
++
++test('Admin kérelmek: függő döntés alatt minden sor döntési gombja letiltott', async ({ page, api }) => {
++  const response = gate();
++  api.on('POST', `${REGISTRATIONS}/1/approve`, async route => {
++    await response.pending; api.rows[0].status = 'APPROVED';
++    await route.fulfill({ json: { success: true, data: null, message: 'Mentve.' } });
++  });
++  await open(page);
++  try {
++    await card(page).getByRole('button', { name: 'Jóváhagyás', exact: true }).click();
++    await expect(card(page).getByRole('button', { name: 'Jóváhagyás', exact: true })).toBeDisabled();
++    await expect(card(page, 2).getByRole('button', { name: 'Jóváhagyás', exact: true })).toBeDisabled();
++    await expect(card(page, 2).getByRole('button', { name: 'Elutasítás', exact: true })).toBeDisabled();
++    await expect.poll(() => api.writes().length).toBe(1);
++  } finally { response.release(); }
++  await expect(card(page)).toHaveCount(0); await expect(card(page, 2).getByRole('button', { name: 'Jóváhagyás', exact: true })).toBeEnabled();
++});
++
++test('Admin kérelmek: utolsó oldalon meghozott döntés visszalapoz az utolsó létező oldalra', async ({ page, api }) => {
++  await open(page);
++  await page.locator('app-pagination').getByRole('button', { name: 'Következő', exact: true }).click();
++  await expect(card(page, 11)).toBeVisible();
++  await page.locator('app-pagination').getByRole('button', { name: 'Következő', exact: true }).click();
++  await expect(card(page, 21)).toBeVisible(); await card(page, 21).getByRole('button', { name: 'Jóváhagyás', exact: true }).click();
++  await expect(card(page, 11)).toBeVisible(); expect(api.reads().at(-1)!.query.get('page')).toBe('1');
++  await expect(page.locator('app-pagination').getByRole('button', { name: 'Következő', exact: true })).toBeDisabled();
++});
++
++for (const result of ['http', 'business', 'null-data']) {
++  test(`Admin kérelmek: hibás lista-válasz nem látszik sikeres üres listának (${result})`, async ({ page, api }) => {
++    api.on('GET', REGISTRATIONS, route => route.fulfill({ status: result === 'http' ? 500 : 200,
++      json: { success: result !== 'business', data: null, message: 'Lista betöltési hiba.' } }));
++    await page.goto('/admin/registrations');
++    await expect(page.locator('app-registration-requests app-message')).toHaveText('Lista betöltési hiba.');
++    await expect(page.locator('app-registration-requests li')).toHaveCount(0); expect(api.writes()).toHaveLength(0);
++    api.custom.delete(`GET ${REGISTRATIONS}`); await tab(page, 'Jóváhagyva').click();
++    await expect(card(page, 101)).toBeVisible();
++  });
++}
++
++test('Admin kérelmek: coachlista hibájánál coach nélkül is jóváhagyható az ügyfél', async ({ page, api }) => {
++  api.on('GET', '/api/members/coaches', route => route.fulfill({ status: 500, json: { success: false, data: null, message: null } }));
++  await open(page); await expect(card(page).locator('select option')).toHaveCount(1);
++  await card(page).getByRole('button', { name: 'Jóváhagyás', exact: true }).click();
++  await expect(card(page)).toHaveCount(0); expect(api.writes().map(c => c.body)).toEqual([{ coachId: null }]);
++});
++
++test('Admin kérelmek: anonim megnyitás loginra irányít lista és döntési API-hívás nélkül', async ({ page, api }) => {
++  api.authenticated = false; await page.goto('/admin/registrations');
++  await expect(page).toHaveURL(/\/login$/); await expect(page.locator('#login-username')).toBeVisible();
++  expect(api.reads()).toHaveLength(0); expect(api.writes()).toHaveLength(0);
++});
++
++test('Admin kérelmek: lassú lista betöltése alatt állapotjelzés látható', async ({ page, api }) => {
++  const response = gate();
++  api.on('GET', REGISTRATIONS, async route => {
++    await response.pending; await route.fulfill({ json: { success: true, data: { content: [application(1)], page: 0, size: 10, totalElements: 1, totalPages: 1 }, message: null } });
++  });
++  try {
++    await page.goto('/admin/registrations');
++    await expect(page.locator('app-registration-requests').getByText('Betöltés...', { exact: true })).toBeVisible();
++    await expect(card(page)).toHaveCount(0);
++  } finally { response.release(); }
++  await expect(card(page)).toBeVisible();
++});
++
++for (const [label, roles, expiry] of [
++  ['hasonló nevű idegen szerepkör', 'ROLE_ADMINISTRATOR', 4102444800],
++  ['hiányzó szerepkör', '', 4102444800],
++  ['lejárt token', 'ROLE_ADMIN', 1],
++]) {
++  test(`Admin kérelmek: nem érvényes adminmunkamenet nem kérhet listát (${label})`, async ({ page, api }) => {
++    const payload = Buffer.from(JSON.stringify({ sub: 'contract-account', roles, exp: expiry })).toString('base64url');
++    api.on('POST', '/api/auth/web/refresh', route => route.fulfill({ json: { success: true, data: { accessToken: `eyJhbGciOiJIUzI1NiJ9.${payload}.contract` }, message: null } }));
++    await page.goto('/admin/registrations'); await expect(page).toHaveURL(/\/login$/);
++    await expect(page.locator('#login-username')).toBeVisible(); expect(api.reads()).toHaveLength(0); expect(api.writes()).toHaveLength(0);
++  });
++}
++
++test('Admin kérelmek: több szerepkör közül a pontos ADMIN szerepkör engedélyezi az olvasást', async ({ page, api }) => {
++  const payload = Buffer.from(JSON.stringify({ sub: 'contract-admin', roles: 'ROLE_AUDITOR, ROLE_ADMIN', exp: 4102444800 })).toString('base64url');
++  api.on('POST', '/api/auth/web/refresh', route => route.fulfill({ json: { success: true, data: { accessToken: `eyJhbGciOiJIUzI1NiJ9.${payload}.contract` }, message: null } }));
++  await open(page); expect(api.reads()).toHaveLength(1);
++});
++
++test('Admin kérelmek: a jelentkező neve és profiladatai nem hajthatnak végre HTML-kódot', async ({ page, api }) => {
++  const name = '<img src=x onerror="window.registrationXss=true">';
++  api.rows = [{ ...application(1), username: name, goals: '<script>window.registrationXss=true</script>' }];
++  await page.goto('/admin/registrations');
++  await expect(page.getByRole('heading', { name, exact: true })).toBeVisible();
++  await expect(page.locator('app-registration-requests')).toContainText('<script>window.registrationXss=true</script>');
++  await expect(page.locator('app-registration-requests img, app-registration-requests script')).toHaveCount(0);
++  expect(await page.evaluate(() => (window as any).registrationXss)).toBeUndefined();
++});
++
++test('Admin kérelmek: státuszváltás megszakítja a régi lista kérését, a késői válasz nem írja felül az újat', async ({ page, api }) => {
++  const response = gate(); const finished = gate();
++  api.on('GET', REGISTRATIONS, async (route, call) => {
++    if (call.query.get('status') === 'PENDING') {
++      await response.pending;
++      try { await route.fulfill({ json: { success: true, data: { content: [application(1)], page: 0, size: 10, totalElements: 1, totalPages: 1 }, message: null } }); }
++      finally { finished.release(); }
++    } else {
++      await route.fulfill({ json: { success: true, data: { content: [application(101, 'APPROVED')], page: 0, size: 10, totalElements: 1, totalPages: 1 }, message: null } });
++    }
++  });
++  try {
++    await page.goto('/admin/registrations');
++    await expect(page.locator('app-registration-requests').getByText('Betöltés...', { exact: true })).toBeVisible();
++    const aborted = page.waitForEvent('requestfailed', request => new URL(request.url()).pathname === REGISTRATIONS && new URL(request.url()).searchParams.get('status') === 'PENDING');
++    await tab(page, 'Jóváhagyva').click(); await aborted;
++    await expect(card(page, 101)).toBeVisible();
++  } finally { response.release(); }
++  await finished.pending;
++  await expect(card(page, 101)).toBeVisible(); await expect(card(page)).toHaveCount(0);
++  await expect(tab(page, 'Jóváhagyva')).toHaveAttribute('aria-pressed', 'true');
++});
+diff --git a/e2e/ui-contract/registration-boundaries.spec.ts b/e2e/ui-contract/registration-boundaries.spec.ts
+new file mode 100644
+index 0000000..db79d38
+--- /dev/null
++++ b/e2e/ui-contract/registration-boundaries.spec.ts
+@@ -0,0 +1,192 @@
++import { test, expect, PASSWORD, gate, translated } from './auth-contract-fixture';
++import type { Page } from '@playwright/test';
++
++const REGISTER = '/api/auth/register';
++async function fill(page: Page, password = PASSWORD) {
++  await page.locator('#register-username').fill('kiss.anna');
++  await page.locator('#register-email').fill('anna@example.test');
++  await page.locator('#register-password').fill(password);
++  await page.locator('#register-password-confirmation').fill(password);
++}
++const submit = (page: Page) => page.locator('app-register button[type=submit]');
++async function optional(page: Page) { await page.locator('app-register details > summary').click(); }
++const accepted = { success: true, data: { status: 'PENDING' }, message: 'Kérelem rögzítve.' };
++
++for (const username of ['ab', 'anna@kiss', '.anna', 'anna.']) {
++  test(`Regisztráció: hibás felhasználónév nem küldhető (${username})`, async ({ page, api }) => {
++    await page.goto('/register'); await fill(page); await page.locator('#register-username').fill(username);
++    await submit(page).click();
++    await expect(page.locator('app-register').getByRole('alert').first()).toBeVisible();
++    expect(api.writes(REGISTER)).toHaveLength(0);
++  });
++}
++
++for (const [label, password] of [['csak szóköz', ' '.repeat(8)], ['74 UTF-8 bájt', 'á'.repeat(37)], ['73 karakter', 'x'.repeat(73)]]) {
++  test(`Regisztráció: érvénytelen jelszó blokkolása (${label})`, async ({ page, api }) => {
++    await page.goto('/register'); await fill(page, password); await submit(page).click();
++    await expect(page.locator('app-register').getByRole('alert').first()).toBeVisible();
++    expect(api.writes(REGISTER)).toHaveLength(0);
++  });
++}
++
++for (const [label, password] of [['8 karakter', 'x'.repeat(8)], ['72 ASCII bájt', 'x'.repeat(72)], ['72 UTF-8 bájt', 'á'.repeat(36)]]) {
++  test(`Regisztráció: érvényes jelszóhatárérték elküldhető (${label})`, async ({ page, api }) => {
++    api.reply(REGISTER, 202, accepted);
++    await page.goto('/register'); await fill(page, password); await submit(page).click();
++    await expect(page.getByRole('status')).toContainText('Kérelem rögzítve.');
++    expect(api.writes(REGISTER).map(c => (c.body as any).password)).toEqual([password]);
++    expect(api.writes(REGISTER).map(c => (c.body as any).passwordConfirmation)).toEqual([password]);
++  });
++}
++
++for (const [field, value] of [
++  ['age', '9'], ['age', '121'],
++  ['weight', '19.99'], ['weight', '400.01'], ['weight', '70.123'],
++  ['height', '79.99'], ['height', '250.01'], ['height', '170.123'],
++]) {
++  test(`Regisztráció: hibás opcionális számmező blokkolja a beküldést (${field}=${value})`, async ({ page, api }) => {
++    await page.goto('/register'); await fill(page); await optional(page);
++    await page.locator(`#register-${field}`).fill(value); await submit(page).click();
++    await expect(page.locator('app-register').getByRole('alert').first()).toBeVisible();
++    expect(api.writes(REGISTER)).toHaveLength(0);
++  });
++}
++
++for (const [age, weight, height] of [[10, 20, 80], [120, 400, 250]]) {
++  test(`Regisztráció: opcionális számmezők határértékei elfogadottak (${age}/${weight}/${height})`, async ({ page, api }) => {
++    api.reply(REGISTER, 202, accepted);
++    await page.goto('/register'); await fill(page); await optional(page);
++    await page.locator('#register-age').fill(String(age)); await page.locator('#register-weight').fill(String(weight));
++    await page.locator('#register-height').fill(String(height)); await submit(page).click();
++    await expect(page.getByRole('status')).toBeVisible();
++    expect(api.writes(REGISTER).map(c => c.body)).toEqual([{
++      accountType: 'USER', username: 'kiss.anna', email: 'anna@example.test', password: PASSWORD,
++      passwordConfirmation: PASSWORD, age, weight, height, gender: null, goals: null,
++    }]);
++  });
++}
++
++for (const [type, limit] of [['USER', 50], ['COACH', 100]] as const) {
++  test(`Regisztráció: ${type} névhosszkorlát és Unicode név helyesen működik`, async ({ page, api }) => {
++    api.reply(REGISTER, 202, accepted);
++    await page.goto('/register'); await fill(page);
++    if (type === 'COACH') await page.getByText('Programokat készítek', { exact: true }).click();
++    await expect(page.locator('#register-username')).toHaveAttribute('maxlength', String(limit));
++    const name = 'Á'.repeat(limit); await page.locator('#register-username').fill(name); await submit(page).click();
++    await expect(page.getByRole('status')).toBeVisible();
++    expect(api.writes(REGISTER).map(c => (c.body as any).username)).toEqual([name]);
++    expect(api.writes(REGISTER).map(c => (c.body as any).accountType)).toEqual([type]);
++  });
++}
++
++test('Regisztráció: USER→COACH váltás törli a hibás rejtett ügyfélmezőket', async ({ page, api }) => {
++  api.reply(REGISTER, 202, accepted);
++  await page.goto('/register'); await fill(page); await optional(page);
++  await page.locator('#register-age').fill('9'); await page.locator('#register-goals').fill('Nem kerülhet a coach-kérésbe');
++  await page.getByText('Programokat készítek', { exact: true }).click();
++  await expect(page.locator('#register-age')).toHaveCount(0);
++  await page.locator('#register-specialization').fill('  Erőnlét  '); await submit(page).click();
++  await expect(page.getByRole('status')).toBeVisible();
++  expect(api.writes(REGISTER).map(c => c.body)).toEqual([{
++    accountType: 'COACH', username: 'kiss.anna', email: 'anna@example.test', password: PASSWORD,
++    passwordConfirmation: PASSWORD, phone: null, specialization: 'Erőnlét',
++  }]);
++});
++
++test('Regisztráció: COACH→USER váltás törli a hibás rejtett edzőmezőket', async ({ page, api }) => {
++  api.reply(REGISTER, 202, accepted);
++  await page.goto('/register'); await fill(page);
++  await page.getByText('Programokat készítek', { exact: true }).click(); await optional(page);
++  await page.locator('#register-phone').fill('12'); await page.locator('#register-specialization').fill('Rejtett coachadat');
++  await page.getByText(translated('hu', 'register', 'typeUserHint'), { exact: true }).click();
++  await expect(page.locator('#register-phone')).toHaveCount(0);
++  await page.locator('#register-weight').fill('70.25'); await page.locator('#register-height').fill('170.75');
++  await page.locator('#register-goals').fill('  Erő  '); await submit(page).click();
++  await expect(page.getByRole('status')).toBeVisible();
++  expect(api.writes(REGISTER).map(c => c.body)).toEqual([{
++    accountType: 'USER', username: 'kiss.anna', email: 'anna@example.test', password: PASSWORD,
++    passwordConfirmation: PASSWORD, age: null, weight: 70.25, height: 170.75, gender: null, goals: 'Erő',
++  }]);
++});
++
++for (const phone of ['36301234567', '+3630123456']) {
++  test(`Regisztráció: hibás magyar telefonszám blokkolása (${phone})`, async ({ page, api }) => {
++    await page.goto('/register'); await fill(page);
++    await page.getByText('Programokat készítek', { exact: true }).click(); await optional(page);
++    await page.locator('#register-phone').fill(phone); await submit(page).click();
++    await expect(page.locator('app-register').getByRole('alert').first()).toBeVisible();
++    expect(api.writes(REGISTER)).toHaveLength(0);
++  });
++}
++
++test('Regisztráció: függő válasz alatt nincs új beküldés, siker után az űrlap eltűnik', async ({ page, api }) => {
++  const response = gate();
++  api.on(REGISTER, async route => { await response.pending; await route.fulfill({ status: 202, json: accepted }); });
++  await page.goto('/register'); await fill(page);
++  try {
++    await submit(page).click(); await expect(submit(page)).toBeDisabled();
++    await expect.poll(() => api.writes(REGISTER).length).toBe(1);
++  } finally { response.release(); }
++  await expect(page.getByRole('status')).toBeVisible();
++  await expect(page.locator('app-register form')).toHaveCount(0);
++  await page.getByRole('button', { name: translated('hu', 'register', 'backToLogin'), exact: true }).click();
++  await expect(page).toHaveURL(/\/login$/);
++});
++
++for (const status of [409, 503]) {
++  test(`Regisztráció: HTTP ${status} után az adatok megmaradnak és újrapróbálhatók`, async ({ page, api }) => {
++    api.reply(REGISTER, status, { success: false, data: null, message: 'Regisztrációs teszthiba.' });
++    await page.goto('/register'); await fill(page); await submit(page).click();
++    await expect(page.locator('app-register app-message[type=error]')).toHaveText('Regisztrációs teszthiba.');
++    await expect(submit(page)).toBeEnabled(); await expect(page.locator('#register-email')).toHaveValue('anna@example.test');
++    api.reply(REGISTER, 202, accepted); await submit(page).click();
++    await expect(page.getByRole('status')).toBeVisible(); expect(api.writes(REGISTER)).toHaveLength(2);
++  });
++}
++
++for (const [success, message] of [[false, 'A regisztráció elutasítva.'], [true, null]] as const) {
++  test(`Regisztráció: hibás HTTP 200 üzleti válasz nem mutat sikert (success=${success})`, async ({ page, api }) => {
++    api.reply(REGISTER, 200, { success, data: null, message });
++    await page.goto('/register'); await fill(page); await submit(page).click();
++    await expect(page.locator('app-register app-message[type=error]')).toHaveText(message ?? translated('hu', 'register', 'failed'));
++    await expect(page.locator('app-register form')).toBeVisible(); await expect(page.getByRole('status')).toHaveCount(0);
++  });
++}
++
++for (const language of ['hu', 'en', 'de']) {
++  test(`Regisztráció: nyelvváltás után a fejléc és a kérés nyelve is helyes (${language})`, async ({ page, api }) => {
++    api.reply(REGISTER, 202, accepted);
++    await page.goto('/register'); await page.locator('app-language-selector select').selectOption(language);
++    await expect(page.getByRole('heading', { name: translated(language, 'register', 'title'), exact: true })).toBeVisible();
++    await fill(page); await submit(page).click(); await expect(page.getByRole('status')).toBeVisible();
++    expect(api.writes(REGISTER)[0].language).toBe(language);
++  });
++}
++
++for (const [value, label] of [['MALE', 'genderMale'], ['FEMALE', 'genderFemale']]) {
++  test(`Regisztráció: a kiválasztott nem enumként kerül elküldésre (${value})`, async ({ page, api }) => {
++    api.reply(REGISTER, 202, accepted); await page.goto('/register'); await fill(page); await optional(page);
++    await page.getByRole('combobox', { name: 'Nem', exact: true }).selectOption({ label: translated('hu', 'register', label) });
++    await submit(page).click(); await expect(page.getByRole('status')).toBeVisible();
++    expect(api.writes(REGISTER).map(c => (c.body as any).gender)).toEqual([value]);
++  });
++}
++
++test('Regisztráció: a jelszó szándékos szélső szóközei nem vesznek el a kérésből', async ({ page, api }) => {
++  api.reply(REGISTER, 202, accepted); const password = '  Password123!  ';
++  await page.goto('/register'); await fill(page, password); await submit(page).click();
++  await expect(page.getByRole('status')).toBeVisible();
++  expect(api.writes(REGISTER).map(c => (c.body as any).password)).toEqual([password]);
++});
++
++
++test('Regisztráció: tört életkor bevitele elutasított, érvényes egész számra javítható', async ({ page, api }) => {
++  api.reply(REGISTER, 202, accepted); await page.goto('/register'); await fill(page); await optional(page);
++  await page.locator('#register-age').fill('10.5');
++  await expect(page.locator('#register-age')).toHaveValue('');
++  await expect(page.locator('app-register').getByRole('alert').first()).toBeVisible();
++  expect(api.writes(REGISTER)).toHaveLength(0);
++  await page.locator('#register-age').fill('31'); await submit(page).click();
++  await expect(page.getByRole('status')).toBeVisible();
++  expect(api.writes(REGISTER).map(c => (c.body as any).age)).toEqual([31]);
++});

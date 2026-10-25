@@ -1,0 +1,533 @@
+diff --git a/e2e/.gitignore b/e2e/.gitignore
+index b424ae7..b99685f 100644
+--- a/e2e/.gitignore
++++ b/e2e/.gitignore
+@@ -5,3 +5,6 @@ blob-report/
+ .env
+ contract-results/
+ contract-report/
++
++auth-contract-results/
++auth-contract-report/
+diff --git a/e2e/README.md b/e2e/README.md
+index 2ad5007..34f5483 100644
+--- a/e2e/README.md
++++ b/e2e/README.md
+@@ -149,3 +149,18 @@ See [README_P1.md](README_P1.md) for the five real-backend acceptance cases, loc
+ ## P2 regression tests
+ 
+ See [README_P2.md](README_P2.md) for the real-backend screenshot flow, offline retry, concurrent editing and partial-save regressions. Run them with `npm run test:p2 -- --retries=0`.
++
++
++## Hitelesítési UI-tesztek saját Angular-kiszolgálóval
++
++Belépés, elfelejtett jelszó és jelszócsere: 35 új eset, asztali és mobil
++Chromium-profilon összesen 70 ellenőrzés. A valódi Angular-felület rögzített
++API-válaszokkal fut, backend, `.env` és fiókjelszó nélkül.
++
++```sh
++cd /Users/pappzs/works/develop/workouts-frontend/e2e
++npm run test:auth-contract
++```
++
++A 4321-es Angular tesztszerver automatikusan indul és leáll. Első telepítés,
++riport, összes tesztnév és leírás: [hitelesítési tesztútmutató](README_AUTH_CONTRACT.md).
+diff --git a/e2e/package.json b/e2e/package.json
+index 5cb0b5b..a5deee2 100644
+--- a/e2e/package.json
++++ b/e2e/package.json
+@@ -12,7 +12,8 @@
+     "test:coach": "playwright test tests/COACH",
+     "mailbox": "node scripts/test-mailbox.cjs",
+     "test:p1": "playwright test tests/USER/WORKOUTS/user-workout-comprehensive.spec.ts tests/USER/READ/user-statistics-exact.spec.ts tests/AUTH/GUI/password-reset-live.spec.ts tests/AUTH/GUI/registration-live.spec.ts",
+-    "test:p2": "playwright test tests/USER/GUI/bug-report-live.spec.ts tests/COACH/WORKSPACE/coach-save-resilience.spec.ts"
++    "test:p2": "playwright test tests/USER/GUI/bug-report-live.spec.ts tests/COACH/WORKSPACE/coach-save-resilience.spec.ts",
++    "test:auth-contract": "playwright test -c playwright.auth.config.ts"
+   },
+   "devDependencies": {
+     "@playwright/test": "^1.55.0",
+diff --git a/e2e/tsconfig.json b/e2e/tsconfig.json
+index b19a69b..9c16d1d 100644
+--- a/e2e/tsconfig.json
++++ b/e2e/tsconfig.json
+@@ -15,6 +15,7 @@
+     "global-setup.ts",
+     "tests/**/*.ts",
+     "playwright.contract.config.ts",
+-    "ui-contract/**/*.ts"
++    "ui-contract/**/*.ts",
++    "playwright.auth.config.ts"
+   ]
+ }
+diff --git a/e2e/playwright.auth.config.ts b/e2e/playwright.auth.config.ts
+new file mode 100644
+index 0000000..92711ad
+--- /dev/null
++++ b/e2e/playwright.auth.config.ts
+@@ -0,0 +1,21 @@
++import { defineConfig } from '@playwright/test';
++import contract from './playwright.contract.config';
++
++// Dedicated local Angular instance; never loads .env or the live suite's setup.
++export default defineConfig({
++  ...contract,
++  testMatch: /auth-(?:password-recovery|login-resilience)\.spec\.ts/,
++  use: { ...contract.use, baseURL: 'http://127.0.0.1:4321' },
++  reporter: [
++    ['list'],
++    ['html', { outputFolder: 'auth-contract-report', open: 'never' }],
++    ['json', { outputFile: 'auth-contract-results/results.json' }],
++  ],
++  outputDir: 'auth-contract-results',
++  webServer: {
++    command: 'node ../node_modules/@angular/cli/bin/ng.js serve --host 127.0.0.1 --port 4321',
++    url: 'http://127.0.0.1:4321/login',
++    reuseExistingServer: false,
++    timeout: 120000,
++  },
++});
+diff --git a/e2e/ui-contract/auth-contract-fixture.ts b/e2e/ui-contract/auth-contract-fixture.ts
+new file mode 100644
+index 0000000..960e03c
+--- /dev/null
++++ b/e2e/ui-contract/auth-contract-fixture.ts
+@@ -0,0 +1,65 @@
++import { test as base, expect, type Page, type Route } from '@playwright/test';
++import { readFileSync } from 'node:fs';
++import { resolve } from 'node:path';
++
++export type Call = { method: string; path: string; language: string | null; body: unknown };
++type Handler = (route: Route, call: Call) => Promise<void>;
++export const LOGIN = '/api/auth/web/login';
++export const FORGOT = '/api/auth/forgot-password';
++export const RESET = '/api/auth/reset-password';
++export const PASSWORD = 'Contract-password-123!';
++
++export class AuthApi {
++  calls: Call[] = [];
++  unexpected: string[] = [];
++  private handlers = new Map<string, Handler>();
++  on(path: string, handler: Handler) { this.handlers.set(`POST ${path}`, handler); }
++  reply(path: string, status: number, json: unknown) {
++    this.on(path, route => route.fulfill({ status, json }));
++  }
++  writes(path: string) { return this.calls.filter(call => call.method === 'POST' && call.path === path); }
++  async install(page: Page) {
++    await page.addInitScript(() => { localStorage.setItem('language', 'hu'); localStorage.setItem('lang', 'hu'); });
++    await page.route('**/api/**', async route => {
++      const request = route.request(); const url = new URL(request.url());
++      if (request.method() === 'OPTIONS') {
++        return route.fulfill({ status: 204, headers: { 'access-control-allow-origin': '*', 'access-control-allow-headers': '*' } });
++      }
++      const call: Call = { method: request.method(), path: url.pathname,
++        language: url.searchParams.get('language'), body: request.postData() ? request.postDataJSON() : null };
++      this.calls.push(call);
++      if (call.method === 'POST' && call.path === '/api/auth/web/refresh') {
++        return route.fulfill({ status: 401, json: { success: false, data: null, message: null } });
++      }
++      const handler = this.handlers.get(`${call.method} ${call.path}`);
++      if (handler) return handler(route, call);
++      this.unexpected.push(`${call.method} ${call.path}`);
++      return route.abort('blockedbyclient');
++    });
++  }
++}
++
++export function translated(language: string, group: string, key: string): string {
++  return JSON.parse(readFileSync(resolve(__dirname, `../../public/assets/i18n/${language}.json`), 'utf8'))[group][key];
++}
++
++export async function fillReset(page: Page, password = PASSWORD, confirmation = password) {
++  await page.getByLabel('Új jelszó', { exact: false }).first().fill(password);
++  await page.locator('#reset-password-confirmPassword').fill(confirmation);
++}
++
++// A gate lets a test observe the actual pending UI without relying on sleeps.
++export function gate() {
++  let release!: () => void;
++  const pending = new Promise<void>(resolve => { release = resolve; });
++  return { pending, release };
++}
++
++export const test = base.extend<{ api: AuthApi }>({
++  api: async ({ page }, use) => {
++    const api = new AuthApi(); await api.install(page);
++    await use(api);
++    expect(api.unexpected, 'Nem engedélyezett vagy nem mockolt API-hívások').toEqual([]);
++  },
++});
++export { expect };
+diff --git a/e2e/ui-contract/auth-login-resilience.spec.ts b/e2e/ui-contract/auth-login-resilience.spec.ts
+new file mode 100644
+index 0000000..79244ee
+--- /dev/null
++++ b/e2e/ui-contract/auth-login-resilience.spec.ts
+@@ -0,0 +1,95 @@
++import { test, expect, LOGIN, FORGOT, gate, translated } from './auth-contract-fixture';
++
++for (const [username, password] of [['', ''], ['anna', ''], ['', 'Password123!']]) {
++  test(`Belépés: hiányzó kötelező mező nem indít kérést (${username ? 'jelszó' : password ? 'felhasználónév' : 'mindkettő'})`, async ({ page, api }) => {
++    await page.goto('/login');
++    await page.locator('#login-username').fill(username); await page.locator('#login-password').fill(password);
++    await page.locator('app-login button[type=submit]').click();
++    await expect(page.locator('app-login').getByRole('alert').first()).toBeVisible();
++    expect(api.writes(LOGIN)).toHaveLength(0);
++    await expect(page).toHaveURL(/\/login$/);
++  });
++}
++
++test('Belépés: függő kérés alatt a gomb letiltott, elutasítás után a mezők szerkeszthetők', async ({ page, api }) => {
++  const response = gate();
++  api.on(LOGIN, async route => { await response.pending; await route.fulfill({ status: 401, json: { success: false, data: null, message: 'Hibás belépési adatok.' } }); });
++  await page.goto('/login');
++  await page.locator('#login-username').fill('anna'); await page.locator('#login-password').fill('Password123!');
++  const submit = page.locator('app-login button[type=submit]');
++  try {
++    await submit.click(); await expect(submit).toBeDisabled(); await expect(submit).toHaveText('Betöltés...');
++    await expect.poll(() => api.writes(LOGIN).length).toBe(1);
++  } finally { response.release(); }
++  await expect(page.locator('app-login app-message[type=error]')).toHaveText('Hibás belépési adatok.');
++  await expect(submit).toBeEnabled(); await expect(page.locator('#login-username')).toHaveValue('anna');
++  await expect(page.locator('#login-password')).toHaveAttribute('type', 'password');
++  expect(api.writes(LOGIN).map(call => call.body)).toEqual([{ username: 'anna', password: 'Password123!' }]);
++});
++
++test('Belépés: HTTP 200 success=false nem jelent sikeres bejelentkezést', async ({ page, api }) => {
++  api.reply(LOGIN, 200, { success: false, data: null, message: 'A fiók még jóváhagyásra vár.' });
++  await page.goto('/login');
++  await page.locator('#login-username').fill('anna'); await page.locator('#login-password').fill('Password123!');
++  await page.locator('app-login button[type=submit]').click();
++  await expect(page.locator('app-login app-message[type=error]')).toHaveText('A fiók még jóváhagyásra vár.');
++  await expect(page).toHaveURL(/\/login$/);
++  expect(api.calls.filter(call => call.path.includes('/dashboard'))).toEqual([]);
++});
++
++test('Belépés: hálózati hiba után az Enter billentyűvel újrapróbálható a kérés', async ({ page, api }) => {
++  api.on(LOGIN, route => route.abort('failed'));
++  await page.goto('/login');
++  await page.locator('#login-username').fill('anna'); await page.locator('#login-password').fill('Password123!');
++  await page.locator('#login-password').press('Enter');
++  await expect(page.locator('app-login app-message[type=error]')).toBeVisible();
++  await expect(page.locator('app-login button[type=submit]')).toBeEnabled();
++  api.reply(LOGIN, 401, { success: false, data: null, message: 'Második kérés feldolgozva.' });
++  await page.locator('#login-password').press('Enter');
++  await expect(page.locator('app-login app-message[type=error]')).toHaveText('Második kérés feldolgozva.');
++  expect(api.writes(LOGIN)).toHaveLength(2);
++});
++
++test('Belépés: régi access és refresh tokenek eltűnnek a localStorage-ból', async ({ page, api }) => {
++  await page.addInitScript(() => {
++    localStorage.setItem('accessToken', 'obsolete-access-token');
++    localStorage.setItem('refreshToken', 'obsolete-refresh-token');
++  });
++  await page.goto('/login');
++  await expect(page.locator('#login-username')).toBeVisible();
++  expect(await page.evaluate(() => [localStorage.getItem('accessToken'), localStorage.getItem('refreshToken')])).toEqual([null, null]);
++  expect(api.writes(LOGIN)).toHaveLength(0);
++});
++
++test('Belépés: elfelejtett jelszó és visszalépés valódi router-navigációval működik', async ({ page, api }) => {
++  await page.goto('/login');
++  await page.getByRole('link', { name: 'Elfelejtett jelszó?', exact: true }).click();
++  await expect(page).toHaveURL(/\/forgot-password$/);
++  await expect(page.getByLabel('Email cím', { exact: false })).toBeVisible();
++  await page.getByRole('button', { name: 'Vissza a bejelentkezéshez', exact: true }).click();
++  await expect(page).toHaveURL(/\/login$/);
++  expect(api.calls).toEqual([]);
++});
++
++for (const language of ['hu', 'en', 'de']) {
++  test(`Nyelvváltás: a jelszóemlékeztető feliratai és a kérés nyelve egyezik (${language})`, async ({ page, api }) => {
++    api.reply(FORGOT, 200, { success: true, data: { message: 'Contract response' }, message: null });
++    await page.goto('/forgot-password');
++    await page.locator('app-language-selector select').selectOption(language);
++    await expect(page.getByRole('heading', { name: translated(language, 'forgotPassword', 'title'), exact: true })).toBeVisible();
++    await page.locator('#forgot-password-email').fill('anna@example.test');
++    await page.getByRole('button', { name: translated(language, 'forgotPassword', 'submit'), exact: true }).click();
++    await expect(page.locator('app-forgot-password app-message[type=success]')).toHaveText('Contract response');
++    expect(api.writes(FORGOT)[0].language).toBe(language);
++  });
++}
++
++for (const path of ['/login', '/forgot-password', '/reset-password?token=contract-token']) {
++  test(`Publikus hitelesítési űrlap nem lóg túl a képernyőn (${path.split('?')[0]})`, async ({ page, api }) => {
++    await page.goto(path);
++    await expect(page.locator('form')).toBeVisible();
++    const width = await page.evaluate(() => ({ document: document.documentElement.scrollWidth, viewport: window.innerWidth }));
++    expect(width.document).toBeLessThanOrEqual(width.viewport);
++    expect(api.calls).toEqual([]);
++  });
++}
+diff --git a/e2e/ui-contract/auth-password-recovery.spec.ts b/e2e/ui-contract/auth-password-recovery.spec.ts
+new file mode 100644
+index 0000000..48e0d7a
+--- /dev/null
++++ b/e2e/ui-contract/auth-password-recovery.spec.ts
+@@ -0,0 +1,147 @@
++import { test, expect, FORGOT, RESET, PASSWORD, fillReset, gate, translated } from './auth-contract-fixture';
++
++for (const email of ['', 'not-an-email']) {
++  test(`Elfelejtett jelszó: hibás email nem indít API-kérést (${email || 'üres'})`, async ({ page, api }) => {
++    await page.goto('/forgot-password');
++    await page.locator('#forgot-password-email').fill(email);
++    await page.locator('app-forgot-password button[type=submit]').click();
++    await expect(page.locator('app-forgot-password').getByRole('alert').first()).toBeVisible();
++    expect(api.writes(FORGOT)).toHaveLength(0);
++  });
++}
++
++test('Elfelejtett jelszó: sikeres kérés csak az emailt küldi, és a szerver üzenetét mutatja', async ({ page, api }) => {
++  api.reply(FORGOT, 200, { success: true, data: { message: 'Ha létezik a fiók, elküldtük a levelet.' }, message: null });
++  await page.goto('/forgot-password');
++  await page.locator('#forgot-password-email').fill('anna@example.test');
++  await page.locator('app-forgot-password button[type=submit]').click();
++  await expect(page.locator('app-forgot-password app-message[type=success]')).toHaveText('Ha létezik a fiók, elküldtük a levelet.');
++  expect(api.writes(FORGOT).map(call => call.body)).toEqual([{ email: 'anna@example.test' }]);
++  expect(api.writes(FORGOT)[0].language).toBe('hu');
++  await expect(page).toHaveURL(/\/forgot-password$/);
++});
++
++test('Elfelejtett jelszó: folyamatban lévő kérés alatt a küldés letiltott', async ({ page, api }) => {
++  const response = gate();
++  api.on(FORGOT, async route => { await response.pending; await route.fulfill({ json: { success: true, data: { message: 'Email elküldve.' }, message: null } }); });
++  await page.goto('/forgot-password');
++  await page.locator('#forgot-password-email').fill('anna@example.test');
++  const submit = page.locator('app-forgot-password button[type=submit]');
++  try {
++    await submit.click();
++    await expect(submit).toBeDisabled(); await expect(submit).toHaveText('Küldés...');
++    await expect.poll(() => api.writes(FORGOT).length).toBe(1);
++  } finally { response.release(); }
++  await expect(page.locator('app-message[type=success]')).toBeVisible();
++  await expect(submit).toBeEnabled();
++});
++
++for (const status of [429, 503]) {
++  test(`Elfelejtett jelszó: HTTP ${status} után látható a szerverhiba és újra lehet próbálni`, async ({ page, api }) => {
++    api.reply(FORGOT, status, { success: false, data: null, message: 'Próbáld újra később.' });
++    await page.goto('/forgot-password');
++    await page.locator('#forgot-password-email').fill('anna@example.test');
++    const submit = page.locator('app-forgot-password button[type=submit]');
++    await submit.click();
++    await expect(page.locator('app-forgot-password app-message[type=error]')).toHaveText('Próbáld újra később.');
++    await expect(submit).toBeEnabled();
++    api.reply(FORGOT, 200, { success: true, data: { message: 'Újrapróbálás sikeres.' }, message: null });
++    await submit.click();
++    await expect(page.locator('app-message[type=success]')).toHaveText('Újrapróbálás sikeres.');
++    await expect(page.locator('app-forgot-password app-message[type=error]')).toHaveCount(0);
++    expect(api.writes(FORGOT)).toHaveLength(2);
++  });
++}
++
++test('Elfelejtett jelszó: üres HTTP 503 üzenetnél a lokalizált tartaléküzenet jelenik meg', async ({ page, api }) => {
++  api.reply(FORGOT, 503, { success: false, data: null, message: '' });
++  await page.goto('/forgot-password'); await page.locator('#forgot-password-email').fill('anna@example.test');
++  await page.locator('app-forgot-password button[type=submit]').click();
++  await expect(page.locator('app-forgot-password app-message[type=error]')).toHaveText(translated('hu', 'forgotPassword', 'serviceUnavailable'));
++});
++
++test('Elfelejtett jelszó: hálózati hiba után az űrlap megőrzi az emailt és újra használható', async ({ page, api }) => {
++  api.on(FORGOT, route => route.abort('failed'));
++  await page.goto('/forgot-password'); await page.locator('#forgot-password-email').fill('anna@example.test');
++  await page.locator('app-forgot-password button[type=submit]').click();
++  await expect(page.locator('app-forgot-password app-message[type=error]')).toHaveText(translated('hu', 'forgotPassword', 'requestFailed'));
++  await expect(page.locator('#forgot-password-email')).toHaveValue('anna@example.test');
++  await expect(page.locator('app-forgot-password button[type=submit]')).toBeEnabled();
++});
++
++for (const token of [null, '   ']) {
++  test(`Jelszócsere: hiányzó token letiltja a mentést (${token === null ? 'nincs paraméter' : 'whitespace'})`, async ({ page, api }) => {
++    await page.goto(token === null ? '/reset-password' : `/reset-password?token=${encodeURIComponent(token)}`);
++    await expect(page.locator('app-reset-password app-message[type=error]')).toHaveText(translated('hu', 'resetPassword', 'invalidLink'));
++    await expect(page.locator('app-reset-password button[type=submit]')).toBeDisabled();
++    expect(api.writes(RESET)).toHaveLength(0);
++  });
++}
++
++for (const password of ['', 'short12', 'x'.repeat(73)]) {
++  test(`Jelszócsere: érvénytelen jelszóhossz nem indít kérést (${password.length} karakter)`, async ({ page, api }) => {
++    await page.goto('/reset-password?token=contract-token'); await fillReset(page, password);
++    await page.locator('app-reset-password button[type=submit]').click();
++    await expect(page.locator('app-reset-password').getByRole('alert').first()).toBeVisible();
++    expect(api.writes(RESET)).toHaveLength(0);
++  });
++}
++
++test('Jelszócsere: eltérő megerősítés javításig blokkolja a kérést', async ({ page, api }) => {
++  api.reply(RESET, 200, { success: true, data: null, message: 'Mentve.' });
++  await page.goto('/reset-password?token=contract-token'); await fillReset(page, PASSWORD, 'Different-password-123!');
++  await page.locator('app-reset-password button[type=submit]').click();
++  await expect(page.getByText('A két jelszó nem egyezik.', { exact: true })).toBeVisible();
++  expect(api.writes(RESET)).toHaveLength(0);
++  await page.locator('#reset-password-confirmPassword').fill(PASSWORD);
++  await page.locator('app-reset-password button[type=submit]').click();
++  await expect(page.locator('app-message[type=success]')).toHaveText('Mentve.');
++  await expect.poll(() => api.writes(RESET).length).toBe(1);
++});
++
++for (const length of [8, 72]) {
++  test(`Jelszócsere: a ${length} karakteres határérték elfogadott, a token trimmelve kerül elküldésre`, async ({ page, api }) => {
++    api.reply(RESET, 200, { success: true, data: null, message: 'A jelszó elmentve.' });
++    await page.goto('/reset-password?token=%20contract-token%20'); await fillReset(page, 'x'.repeat(length));
++    await page.locator('app-reset-password button[type=submit]').click();
++    await expect(page.locator('app-message[type=success]')).toHaveText('A jelszó elmentve.');
++    expect(api.writes(RESET).map(call => call.body)).toEqual([{ token: 'contract-token', newPassword: 'x'.repeat(length) }]);
++    await expect(page.locator('app-reset-password form')).toHaveCount(0);
++    await page.getByRole('button', { name: 'Bejelentkezés', exact: true }).click();
++    await expect(page).toHaveURL(/\/login$/);
++  });
++}
++
++test('Jelszócsere: folyamatban lévő mentés alatt a gomb letiltott, siker után nincs újraküldhető űrlap', async ({ page, api }) => {
++  const response = gate();
++  api.on(RESET, async route => { await response.pending; await route.fulfill({ json: { success: true, data: null, message: null } }); });
++  await page.goto('/reset-password?token=contract-token'); await fillReset(page);
++  const submit = page.locator('app-reset-password button[type=submit]');
++  try {
++    await submit.click(); await expect(submit).toBeDisabled(); await expect(submit).toHaveText('Mentés...');
++    await expect.poll(() => api.writes(RESET).length).toBe(1);
++  } finally { response.release(); }
++  await expect(page.locator('app-message[type=success]')).toHaveText(translated('hu', 'resetPassword', 'success'));
++  await expect(page.locator('app-reset-password form')).toHaveCount(0);
++});
++
++for (const [status, key] of [[400, 'invalidToken'], [503, 'serviceUnavailable'], [500, 'resetFailed']] as const) {
++  test(`Jelszócsere: HTTP ${status} lokalizált hibát ad, a token és a kitöltés megmarad`, async ({ page, api }) => {
++    api.reply(RESET, status, { success: false, data: null, message: null });
++    await page.goto('/reset-password?token=contract-token'); await fillReset(page);
++    const submit = page.locator('app-reset-password button[type=submit]'); await submit.click();
++    await expect(page.locator('app-reset-password app-message[type=error]')).toHaveText(translated('hu', 'resetPassword', key));
++    await expect(submit).toBeEnabled(); await expect(page.locator('#reset-password-newPassword')).toHaveValue(PASSWORD);
++    await expect(page).toHaveURL(/token=contract-token/);
++    await expect(page.locator('app-reset-password form')).toBeVisible();
++  });
++}
++
++test('Jelszócsere: HTTP 200 success=false is hibaként jelenik meg', async ({ page, api }) => {
++  api.reply(RESET, 200, { success: false, data: null, message: 'A token már felhasznált.' });
++  await page.goto('/reset-password?token=contract-token'); await fillReset(page);
++  await page.locator('app-reset-password button[type=submit]').click();
++  await expect(page.locator('app-reset-password app-message[type=error]')).toHaveText('A token már felhasznált.');
++  await expect(page.locator('app-reset-password form')).toBeVisible();
++  await expect(page.locator('app-message[type=success]')).toHaveCount(0);
++});
+diff --git a/e2e/README_AUTH_CONTRACT.md b/e2e/README_AUTH_CONTRACT.md
+new file mode 100644
+index 0000000..8cb370e
+--- /dev/null
++++ b/e2e/README_AUTH_CONTRACT.md
+@@ -0,0 +1,114 @@
++# Hitelesítési Playwright-tesztek
++
++35 új teszteset a valódi Angular-felületen, asztali Chrome- és Pixel 7
++Chromium-profilon: összesen 70 böngészős ellenőrzés. A témák: belépés,
++elfelejtett jelszó, jelszócsere, nyelvváltás és ezek mobil megjelenése.
++
++Az API-válaszokat a Playwright rögzített tesztadatokból szolgálja ki. Ismeretlen
++API-hívás hibát okoz; nincs általános sikeres fallback. A csomag nem olvas `.env`
++fájlt, nem használ valódi fiókot, adatbázist, emailküldést vagy szerveroldali
++tokent. A valódi backend hitelesítését a meglévő live csomagok ellenőrzik.
++
++## Futtatás a frontend repóból
++
++Első alkalommal a frontend és az e2e függőségeit is telepítsd:
++
++```sh
++cd /Users/pappzs/works/develop/workouts-frontend
++npm ci
++cd e2e
++npm ci
++npx playwright install chromium
++npm run test:auth-contract
++```
++
++Ha a függőségek és a Chromium már telepítve vannak:
++
++```sh
++cd /Users/pappzs/works/develop/workouts-frontend/e2e
++npm run test:auth-contract
++```
++
++A konfiguráció automatikusan indít és leállít egy külön Angular fejlesztői
++szervert a `http://127.0.0.1:4321` címen. Nem kell másik terminálban `npm start`.
++A 4321-es port legyen szabad; a teszt nem vesz át már futó szervert.
++Az Angular CLI közvetlenül indul, így a frontend `prestart` verziófrissítője
++nem módosítja a forrásfájlokat.
++
++Csak asztali böngésző:
++
++```sh
++npm run test:auth-contract -- --project=desktop
++```
++
++Csak jelszócsere:
++
++```sh
++npm run test:auth-contract -- --grep 'Jelszócsere:'
++```
++
++Látható böngészővel:
++
++```sh
++npm run test:auth-contract -- --headed
++```
++
++## Riport és ellenőrzés
++
++```sh
++npx playwright show-report auth-contract-report
++npm run typecheck
++```
++
++JSON-riport: `auth-contract-results/results.json`. Bukáskor képernyőkép és trace
++is készül. Retry nincs. A mobilprofil emulált Chromium, nem fizikai telefon.
++Az API-várakozást vezérelt Promise kezeli, rögzített sleep nélkül.
++
++## Új tesztek
++
++A következő táblázatban minden név egy önálló tesztet jelöl. Mindegyik két
++böngészőprofilon fut. A tesztek neve magyarul írja le az ellenőrzött viselkedést.
++
++| Teszt neve | Mit ellenőriz? |
++|---|---|
++| Belépés: hiányzó kötelező mező nem indít kérést (mindkettő) | Üres felhasználónév és jelszó esetén látható mezőhiba jelenik meg, és nem indul login kérés. |
++| Belépés: hiányzó kötelező mező nem indít kérést (jelszó) | Kitöltött felhasználónév mellett az üres jelszó blokkolja a belépési kérést. |
++| Belépés: hiányzó kötelező mező nem indít kérést (felhasználónév) | Kitöltött jelszó mellett az üres felhasználónév blokkolja a belépési kérést. |
++| Belépés: függő kérés alatt a gomb letiltott, elutasítás után a mezők szerkeszthetők | Vezérelt válaszkésleltetés alatt letiltott gomb és Betöltés felirat látszik; a 401 üzenete és a pontos JSON-törzs ellenőrzött, utána a gomb engedélyezett. |
++| Belépés: HTTP 200 success=false nem jelent sikeres bejelentkezést | A sikeres HTTP-státusz mellett érkező success=false választ a felület hibának kezeli, és a login oldalon marad. |
++| Belépés: hálózati hiba után az Enter billentyűvel újrapróbálható a kérés | Hálózati hiba után a gomb újra engedélyezett; Enterrel második kérés küldhető, és annak válasza jelenik meg. |
++| Belépés: régi access és refresh tokenek eltűnnek a localStorage-ból | A korábbi verzióból megmaradt accessToken és refreshToken kulcsok eltűnnek a localStorage-ból API-belépés nélkül. |
++| Belépés: elfelejtett jelszó és visszalépés valódi router-navigációval működik | A login linkje a jelszóemlékeztetőhöz visz; a visszagomb API-kérés nélkül visszajuttat a loginhoz. |
++| Nyelvváltás: a jelszóemlékeztető feliratai és a kérés nyelve egyezik (hu) | Magyar nyelvválasztás után magyar fejléc és gomb látszik, a kérés language=hu paramétert kap. |
++| Nyelvváltás: a jelszóemlékeztető feliratai és a kérés nyelve egyezik (en) | Angol nyelvválasztás után angol fejléc és gomb látszik, a kérés language=en paramétert kap. |
++| Nyelvváltás: a jelszóemlékeztető feliratai és a kérés nyelve egyezik (de) | Német nyelvválasztás után német fejléc és gomb látszik, a kérés language=de paramétert kap. |
++| Publikus hitelesítési űrlap nem lóg túl a képernyőn (/login) | A login űrlap látható és nincs vízszintes túllógás a profil képernyőszélességén. |
++| Publikus hitelesítési űrlap nem lóg túl a képernyőn (/forgot-password) | A jelszóemlékeztető űrlap látható és nincs vízszintes túllógás. |
++| Publikus hitelesítési űrlap nem lóg túl a képernyőn (/reset-password) | A jelszócsere űrlap látható és nincs vízszintes túllógás. |
++| Elfelejtett jelszó: hibás email nem indít API-kérést (üres) | Üres emailt a kliensoldali validáció API-kérés nélkül elutasít. |
++| Elfelejtett jelszó: hibás email nem indít API-kérést (not-an-email) | Hibás emailformátumot a kliensoldali validáció API-kérés nélkül elutasít. |
++| Elfelejtett jelszó: sikeres kérés csak az emailt küldi, és a szerver üzenetét mutatja | A JSON csak emailt tartalmaz, magyar nyelvparaméterrel; a szerver sikerüzenete látszik, az oldal nem navigál el. |
++| Elfelejtett jelszó: folyamatban lévő kérés alatt a küldés letiltott | Függő válasz alatt a Küldés feliratú gomb letiltott; válasz után a sikerüzenet megjelenik és a gomb újra használható. |
++| Elfelejtett jelszó: HTTP 429 után látható a szerverhiba és újra lehet próbálni | A 429 szerverüzenete megjelenik; újrapróbálás után a sikerüzenet váltja a hibát, két kérés történik. |
++| Elfelejtett jelszó: HTTP 503 után látható a szerverhiba és újra lehet próbálni | A 503 szerverüzenete megjelenik; újrapróbálás után a sikerüzenet váltja a hibát, két kérés történik. |
++| Elfelejtett jelszó: üres HTTP 503 üzenetnél a lokalizált tartaléküzenet jelenik meg | Hiányzó backend üzenet esetén a magyar szolgáltatáselérhetőségi tartalékszöveg látszik. |
++| Elfelejtett jelszó: hálózati hiba után az űrlap megőrzi az emailt és újra használható | Hálózati hiba után lokalizált hibaüzenet látszik, az email megmarad és a küldés engedélyezett. |
++| Jelszócsere: hiányzó token letiltja a mentést (nincs paraméter) | Token queryparaméter nélkül az érvénytelen link üzenete látszik, a mentés letiltott és nincs reset kérés. |
++| Jelszócsere: hiányzó token letiltja a mentést (whitespace) | Csak whitespace token esetén az érvénytelen link üzenete látszik, a mentés letiltott és nincs reset kérés. |
++| Jelszócsere: érvénytelen jelszóhossz nem indít kérést (0 karakter) | Üres új jelszóval a mezővalidáció látható hibát jelez és nem küld reset kérést. |
++| Jelszócsere: érvénytelen jelszóhossz nem indít kérést (7 karakter) | A minimumnál rövidebb, hétkarakteres jelszó blokkolja a reset kérést. |
++| Jelszócsere: érvénytelen jelszóhossz nem indít kérést (73 karakter) | A maximumnál hosszabb, 73 karakteres jelszó blokkolja a reset kérést. |
++| Jelszócsere: eltérő megerősítés javításig blokkolja a kérést | A nem egyező megerősítésnél nincs API-kérés; javítás után egyetlen kérés sikeres, és megjelenik a válasz. |
++| Jelszócsere: a 8 karakteres határérték elfogadott, a token trimmelve kerül elküldésre | A nyolckarakteres alsó határérték elfogadott; a küldött törzs csak trimmelt tokent és új jelszót tartalmaz, siker után az űrlap eltűnik és loginhoz lehet navigálni. |
++| Jelszócsere: a 72 karakteres határérték elfogadott, a token trimmelve kerül elküldésre | A 72 karakteres felső határérték elfogadott; a törzs csak trimmelt tokent és új jelszót tartalmaz, siker után az űrlap eltűnik. |
++| Jelszócsere: folyamatban lévő mentés alatt a gomb letiltott, siker után nincs újraküldhető űrlap | Függő mentésnél Mentés felirat és letiltott gomb látszik; üzenet nélküli sikernél a magyar sikerüzenet jelenik meg és az űrlap eltűnik. |
++| Jelszócsere: HTTP 400 lokalizált hibát ad, a token és a kitöltés megmarad | A 400 hiba a lejárt/hibás token magyar tartaléküzenetét mutatja, a jelszó, URL és újrapróbálható űrlap megmarad. |
++| Jelszócsere: HTTP 503 lokalizált hibát ad, a token és a kitöltés megmarad | A 503 hiba a szolgáltatáselérhetőségi magyar tartaléküzenetet mutatja, a jelszó, URL és űrlap megmarad. |
++| Jelszócsere: HTTP 500 lokalizált hibát ad, a token és a kitöltés megmarad | Az 500 hiba az általános magyar reset hibát mutatja, a jelszó, URL és újrapróbálható űrlap megmarad. |
++| Jelszócsere: HTTP 200 success=false is hibaként jelenik meg | A HTTP 200 mellett érkező success=false backendüzenetet a felület hibaként mutatja; az űrlap megmarad és nincs sikerjelzés. |
++
++## Ellenőrzött eredmény
++
++2026-10-25: **70/70 sikeres**, 0 kihagyás, 0 flaky, 0 bukás, retry nélkül.
++A tesztfutás 55,7 másodperc volt a helyi Angular-kiszolgálóval.
++A teljes `npm run typecheck` ellenőrzés is sikeres.

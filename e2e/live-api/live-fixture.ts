@@ -45,7 +45,7 @@ export const workoutBody = (name: string) => ({ name, description: 'Valódi API-
 export const test = base.extend<{ coach: APIRequestContext; collectCoverage: void }>({
   coach: async ({}, use) => { const api = await apiFor('coach'); try { await use(api); } finally { await api.dispose(); } },
   collectCoverage: [async ({ page }, use, info) => {
-    await page.addInitScript(() => { localStorage.setItem('language', 'hu'); });
+    await page.addInitScript(() => { if (localStorage.getItem('language') === null) localStorage.setItem('language', 'hu'); });
     await page.coverage.startJSCoverage({ resetOnNavigation: false });
     try { await use(); } finally {
       const entries = await page.coverage.stopJSCoverage();

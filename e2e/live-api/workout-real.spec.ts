@@ -94,11 +94,20 @@ test('Valódi API: admin jóváhagyás előtt nincs belépés, utána valódi us
 
 test('Valódi API: kijelentkezés törli a HttpOnly cookie-t és a munkamenet nem frissíthető újra', async ({ page }) => {
   await login(page, 'coach');
+  const originalCookie = (await page.context().cookies()).find(cookie => cookie.name === 'workouts_refresh');
+  expect(originalCookie).toBeTruthy();
   const loggedOut = page.waitForResponse(r => new URL(r.url()).pathname === '/api/auth/web/logout' && r.request().method() === 'POST');
-  await page.getByRole('button', { name: 'Kijelentkezés', exact: true }).click();
+  await page.getByRole('banner').getByRole('button', { name: 'Kijelentkezés', exact: true }).click();
   expect((await loggedOut).status()).toBe(200); await expect(page).toHaveURL(/\/login$/);
   expect((await page.context().cookies()).filter(c => c.name === 'workouts_refresh')).toHaveLength(0);
-  expect((await page.request.post('http://127.0.0.1:8099/api/auth/web/refresh', { data: {} })).status()).toBe(401);
+  const refreshStatus = await page.evaluate(async () => (await fetch('http://127.0.0.1:8099/api/auth/web/refresh', {
+    method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: '{}',
+  })).status);
+  expect(refreshStatus).toBe(401);
+  const revoked = await page.request.post('http://127.0.0.1:8099/api/auth/web/refresh', {
+    headers: { Origin: 'http://127.0.0.1:4323', Cookie: `workouts_refresh=${originalCookie!.value}` }, data: {},
+  });
+  expect(revoked.status()).toBe(401);
   await page.goto('/coach/workouts'); await expect(page).toHaveURL(/\/login$/);
 });
 
