@@ -1,0 +1,81 @@
+<div class="min-h-full bg-surface-50 px-4 py-6 sm:px-6 lg:px-8">
+  <div class="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-6">
+    <div appPageHeader="actions">
+      <div>
+        <h1 appHeading="page">{{ 'personalPrograms.title' | translate }}</h1>
+        <p class="mt-1 text-sm text-content-600">{{ 'personalPrograms.subtitle' | translate }}</p>
+      </div>
+      <a routerLink="/user/personal-programs/new" class="btn btn-primary"
+        ><app-icon name="plus" sizeClass="h-4 w-4" />{{ 'personalPrograms.create' | translate }}</a
+      >
+    </div>
+    <a routerLink="/user/my-programs" class="text-sm font-semibold text-primary-700">{{
+      'personalPrograms.assigned' | translate
+    }}</a>
+    <app-search
+      inputId="personalProgramSearch"
+      [searchTerm]="search"
+      (searchTermChange)="search = $event"
+      label="appSearch.programsLabel"
+      placeholder="appSearch.programsPlaceholder"
+      [showClearButton]="true"
+    />
+    <app-message [message]="message" type="error" />
+    @if (message) {
+      <button
+        type="button"
+        class="btn btn-neutral self-start"
+        (click)="reload()"
+        [disabled]="loading"
+      >
+        {{ 'personalPrograms.retry' | translate }}
+      </button>
+    }
+    @if (loading) {
+      <app-loading message="personalPrograms.loading" />
+    } @else if (!message) {
+      <section class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        @for (program of filtered; track program.id) {
+          <app-card class="flex min-w-0 flex-col overflow-hidden">
+            <app-card-banner icon="clipboard-list" />
+            <div class="flex flex-1 flex-col gap-4 p-5">
+              <h2 class="break-words text-lg font-bold text-content-800">{{ program.name }}</h2>
+              <p class="text-sm text-content-600">
+                {{
+                  (program.startedAt ? 'personalPrograms.started' : 'personalPrograms.draft')
+                    | translate
+                }}
+              </p>
+              <app-card-stat
+                [label]="'personalPrograms.duration' | translate"
+                [value]="program.durationDays"
+                [unit]="'common.days' | translate"
+              />
+              @if (program.startDate) {
+                <p class="text-sm text-content-600">{{ program.startDate | date: 'yyyy.MM.dd' }}</p>
+              }
+              <div class="mt-auto flex flex-wrap gap-2">
+                <a [routerLink]="['/user/personal-programs', program.id]" class="btn btn-primary">{{
+                  'personalPrograms.open' | translate
+                }}</a>
+                @if (program.startedAt) {
+                  <a
+                    [routerLink]="['/user/programs', program.id, 'workouts']"
+                    [queryParams]="{ programName: program.name }"
+                    class="btn btn-neutral"
+                    >{{ 'personalPrograms.workouts' | translate }}</a
+                  >
+                }
+              </div>
+            </div>
+          </app-card>
+        } @empty {
+          <app-empty-state
+            class="sm:col-span-2 lg:col-span-3"
+            [message]="search ? 'personalPrograms.noResults' : 'personalPrograms.empty'"
+          />
+        }
+      </section>
+    }
+  </div>
+</div>

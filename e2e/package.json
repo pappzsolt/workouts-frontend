@@ -17,7 +17,8 @@
     "test:frontend-contract": "playwright test -c playwright.frontend.config.ts",
     "test:live-api": "playwright test -c playwright.live-api.config.ts",
     "coverage:live-api": "node scripts/report-live-coverage.cjs",
-    "coverage:live-api:check": "node scripts/report-live-coverage.cjs --strict"
+    "coverage:live-api:check": "node scripts/report-live-coverage.cjs --strict",
+    "test:personal-programs": "playwright test -c playwright.personal-programs.config.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

@@ -42,6 +42,7 @@ export const API_ENDPOINTS = {
   // PROGRAMS
   // ============================================================
 
+  personalPrograms: `${environment.apiUrl}/me/personal-programs`,
   allPrograms: `${environment.apiUrl}/programs`,
   assignedPrograms: `${environment.apiUrl}/programs/my/assigned`,
   coachPrograms: `${environment.apiUrl}/programs/my/coach`,

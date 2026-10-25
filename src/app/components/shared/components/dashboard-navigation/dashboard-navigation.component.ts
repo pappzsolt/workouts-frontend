@@ -109,10 +109,16 @@ export class DashboardNavigationComponent {
     const pages: Record<string, string> = {
       profile: 'userProfile.title',
       'my-programs': 'userMyPrograms.title',
+      'personal-programs': 'personalPrograms.title',
       'program-statistics': 'userProgramStatistics.title',
       workouts: 'userDashboard.myWorkouts',
       'bug-report': 'bugReport.title',
     };
+    if (page === 'personal-programs' && segments[2]) {
+      this.items.push({ label: 'personalPrograms.title', url: '/user/personal-programs' });
+      this.items.push({ label: segments[2] === 'new' ? 'personalPrograms.create' : 'personalPrograms.editor', url: this.router.url });
+      return;
+    }
     if (page === 'programs' && segments[3] === 'workouts') {
       this.items.push({ label: 'userMyPrograms.title', url: '/user/my-programs' });
       this.items.push({ label: 'userDashboard.myWorkouts', url: this.router.url });

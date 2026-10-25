@@ -1,3 +1,4 @@
+import type { PersonalProgramEditorComponent } from './components/user-dashboard/operations/personal-programs/personal-program-editor.component';
 import { Routes } from '@angular/router';
 
 import { LoginComponent } from './components/login/login.component';
@@ -284,6 +285,20 @@ export const routes: Routes = [
         component: BugReportComponent,
       },
 
+      {
+        path: 'personal-programs',
+        loadComponent: () => import('./components/user-dashboard/operations/personal-programs/personal-programs.component').then(m => m.PersonalProgramsComponent),
+      },
+      {
+        path: 'personal-programs/new',
+        loadComponent: () => import('./components/user-dashboard/operations/personal-programs/personal-program-editor.component').then(m => m.PersonalProgramEditorComponent),
+        canDeactivate: [(component: PersonalProgramEditorComponent) => component.canLeave()],
+      },
+      {
+        path: 'personal-programs/:id',
+        loadComponent: () => import('./components/user-dashboard/operations/personal-programs/personal-program-editor.component').then(m => m.PersonalProgramEditorComponent),
+        canDeactivate: [(component: PersonalProgramEditorComponent) => component.canLeave()],
+      },
       {
         path: 'my-programs',
         component: UserMyProgramsComponent,

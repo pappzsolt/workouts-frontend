@@ -10,6 +10,11 @@
     <!-- Dashboard kártyák -->
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
       <app-dashboard-action
+        icon="pencil-simple"
+        [label]="'personalPrograms.title' | translate"
+        (activated)="navigateTo('user/personal-programs')"
+      ></app-dashboard-action>
+      <app-dashboard-action
         icon="book-open-text"
         [label]="'userDashboard.myPrograms' | translate"
         (activated)="navigateTo('user/my-programs')"
