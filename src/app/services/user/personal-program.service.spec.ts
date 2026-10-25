@@ -16,6 +16,7 @@ describe('PersonalProgramService', () => {
     startDate: null,
     difficultyLevel: null,
     languageCode: 'hu',
+    expectedVersion: 1,
     workouts: [],
   };
   beforeEach(() => {
@@ -50,13 +51,23 @@ describe('PersonalProgramService', () => {
     service.save(9, request).subscribe();
     call = http.expectOne(API_ENDPOINTS.personalPrograms + '/9');
     expect(call.request.method).toBe('PUT');
-    call.flush({ success: true, data: 9 });
+    call.flush({
+      success: true,
+      data: { id: 9, startedAt: null, program: { ...request, expectedVersion: 2 } },
+    });
   });
   it('uses separate start, copy and delete endpoints', () => {
     service.start(9).subscribe();
     const start = http.expectOne(API_ENDPOINTS.personalPrograms + '/9/start');
     expect(start.request.method).toBe('POST');
-    start.flush({ success: true, data: 9 });
+    start.flush({
+      success: true,
+      data: {
+        id: 9,
+        startedAt: '2026-10-25T12:00:00',
+        program: { ...request, startDate: '2026-10-25' },
+      },
+    });
     service.copy(9).subscribe((id) => expect(id).toBe(10));
     const copy = http.expectOne(API_ENDPOINTS.personalPrograms + '/9/copy?languageCode=de');
     expect(copy.request.method).toBe('POST');
@@ -67,12 +78,10 @@ describe('PersonalProgramService', () => {
     remove.flush({ success: true, data: 10 });
   });
   it('rejects application failures instead of treating them as a saved program', () => {
-    service
-      .save(9, request)
-      .subscribe({
-        next: () => fail('must fail'),
-        error: (error) => expect(error.message).toBe('Nem menthető'),
-      });
+    service.save(9, request).subscribe({
+      next: () => fail('must fail'),
+      error: (error) => expect(error.message).toBe('Nem menthető'),
+    });
     http
       .expectOne(API_ENDPOINTS.personalPrograms + '/9')
       .flush({ success: false, message: 'Nem menthető', data: null });

@@ -10,6 +10,7 @@ import { ExerciseService } from '../../../../services/coach/coach-exercises/coac
 import { LanguageService } from '../../../../services/shared/language.service';
 import {
   PersonalProgramDay,
+  PersonalProgramDetail,
   PersonalProgramRequest,
 } from '../../../../models/personal-program.model';
 import { CoachExerciseSearchItem } from '../../../../models/coach-workspace.model';
@@ -115,8 +116,16 @@ export class PersonalProgramEditorComponent implements OnInit {
       this.id != null &&
       !this.dirty &&
       !this.locked &&
+      this.withinLimits &&
       this.model.workouts.length > 0 &&
       this.model.workouts.every((day) => day.exercises.length > 0)
+    );
+  }
+  get withinLimits(): boolean {
+    const exercises = this.model.workouts.flatMap((day) => day.exercises);
+    return (
+      exercises.length <= 1000 &&
+      exercises.reduce((sum, exercise) => sum + exercise.sets, 0) <= 5000
     );
   }
   get chosenIds(): number[] {
@@ -185,6 +194,11 @@ export class PersonalProgramEditorComponent implements OnInit {
       this.messageType = 'error';
       return;
     }
+    if (!this.withinLimits) {
+      this.message = 'personalPrograms.sizeLimit';
+      this.messageType = 'error';
+      return;
+    }
     this.busy = true;
     this.message = '';
     const request = {
@@ -196,13 +210,21 @@ export class PersonalProgramEditorComponent implements OnInit {
       .save(this.id, request)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (id) => {
+        next: (result) => {
           this.busy = false;
           this.dirty = false;
           this.message = 'personalPrograms.saved';
           this.messageType = 'success';
           if (this.id == null)
-            void this.router.navigate(['/user/personal-programs', id], { replaceUrl: true });
+            void this.router.navigate(
+              ['/user/personal-programs', typeof result === 'number' ? result : result.id],
+              { replaceUrl: true },
+            );
+          else if (typeof result !== 'number') {
+            this.model = result.program;
+            this.started = result.startedAt != null;
+            this.pickerDay = null;
+          }
         },
         error: (error) => {
           this.busy = false;
@@ -214,6 +236,7 @@ export class PersonalProgramEditorComponent implements OnInit {
     if (this.busy || this.id == null || this.loading || this.loadFailed) return;
     if (action === 'start' && !this.canStart) return;
     if (action === 'delete' && this.started) return;
+    if (action === 'copy' && this.dirty) return;
     this.action = action;
   }
   confirm(): void {
@@ -224,7 +247,7 @@ export class PersonalProgramEditorComponent implements OnInit {
     }
     if (this.id == null || this.busy || this.action == null) return;
     const action = this.action;
-    const request =
+    const request: Observable<number | PersonalProgramDetail> =
       action === 'start'
         ? this.service.start(this.id)
         : action === 'copy'
@@ -232,18 +255,19 @@ export class PersonalProgramEditorComponent implements OnInit {
           : this.service.delete(this.id);
     this.busy = true;
     request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (id) => {
+      next: (result) => {
         this.busy = false;
         this.action = null;
         this.dirty = false;
-        if (action === 'start') {
-          this.started = true;
+        if (action === 'start' && typeof result !== 'number') {
+          this.model = result.program;
+          this.started = result.startedAt != null;
           this.pickerDay = null;
           this.message = 'personalPrograms.startSuccess';
           this.messageType = 'success';
         } else
           void this.router.navigate(
-            action === 'copy' ? ['/user/personal-programs', id] : ['/user/personal-programs'],
+            action === 'copy' ? ['/user/personal-programs', result] : ['/user/personal-programs'],
           );
       },
       error: (error) => {

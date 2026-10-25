@@ -2,7 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 
 const ROOT = '/api/me/personal-programs';
 const draft = () => ({ name: 'Saját terv', description: null, durationDays: 7, startDate: null,
-  difficultyLevel: null, languageCode: 'hu', workouts: [{ dayIndex: 1, name: 'Első nap', description: null,
+  difficultyLevel: null, languageCode: 'hu', expectedVersion: 1, workouts: [{ dayIndex: 1, name: 'Első nap', description: null,
     exercises: [{ exerciseId: 11, sets: 3, repetitions: 10, restSeconds: 60, notes: null }] }] });
 
 async function install(page: Page) {
@@ -24,14 +24,15 @@ async function install(page: Page) {
       if (state.failList) return route.fulfill({ status: 503, json: { success: false, message: 'Átmeneti betöltési hiba' } });
       return ok([{ id: state.id, name: state.program.name, durationDays: 7, startDate: null, startedAt: null }]);
     }
-    if (path === ROOT && req.method() === 'POST') { state.program=call.body; return ok(state.id); }
+    if (path === ROOT && req.method() === 'POST') { state.program={...call.body,expectedVersion:1}; return ok(state.id); }
     if (path === `${ROOT}/${state.id}` && req.method() === 'GET') return ok({ id: state.id, startedAt: state.started ? '2026-10-25T12:00:00' : null, program: state.program });
     if (path === `${ROOT}/${state.id}` && req.method() === 'PUT') {
+      if (call.body.expectedVersion !== state.program.expectedVersion) return route.fulfill({ status: 409, json: { success: false, message: 'A saját programot időközben módosították. A szerkesztésed megmaradt.' } });
       if (state.failSave) return route.fulfill({ status: 409, json: { success: false, message: 'A mentés most nem sikerült.' } });
-      state.program=call.body; return ok(state.id);
+      state.program={...call.body,expectedVersion:state.program.expectedVersion+1}; return ok({id:state.id,startedAt:null,program:state.program});
     }
     if (path === `${ROOT}/${state.id}` && req.method() === 'DELETE') return ok(state.id);
-    if (path === `${ROOT}/${state.id}/start`) { state.started=true; return ok(state.id); }
+    if (path === `${ROOT}/${state.id}/start`) { state.started=true; state.program={...state.program,startDate:'2026-10-25'} as typeof state.program; return ok({id:state.id,startedAt:'2026-10-25T12:00:00',program:state.program}); }
     if (path === `${ROOT}/${state.id}/copy`) { state.id++; state.started=false; return ok(state.id); }
     state.unexpected.push(`${req.method()} ${path}`);
     return route.abort('blockedbyclient');
@@ -58,6 +59,7 @@ test('Saját program: létrehozás, gyakorlatválasztás, indítás, másolás �
   await page.getByRole('alertdialog').getByRole('button', { name: 'Megerősítés', exact: true }).click();
   await expect(editor(page).getByRole('link', { name: 'Edzések megnyitása', exact: true })).toBeVisible();
   await expect(editor(page).locator('input[name=name]')).toBeDisabled();
+  await expect(editor(page).locator('input[name=startDate]')).toHaveValue('2026-10-25');
   await expect(editor(page).getByRole('button', { name: 'Piszkozat törlése', exact: true })).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await expect(editor(page).locator('fieldset').last()).toHaveCSS('display', 'flex');
@@ -129,3 +131,31 @@ for (const [language, label] of [['en', 'Program name'], ['de', 'Programmname']]
     expect(api.unexpected).toEqual([]);
   });
 }
+
+test('Saját program: régi verzió mentése nem veszít adatot', async ({ page }) => {
+  const api=await install(page);
+  await page.goto('/user/personal-programs/7');
+  await editor(page).getByLabel('Program neve',{exact:true}).fill('Megőrzendő helyi szerkesztés');
+  api.program.expectedVersion++;
+  api.program.name='Másik ablak mentése';
+  await editor(page).getByRole('button',{name:'Piszkozat mentése',exact:true}).click();
+  await expect(editor(page)).toContainText('A saját programot időközben módosították.');
+  await expect(editor(page).getByLabel('Program neve',{exact:true})).toHaveValue('Megőrzendő helyi szerkesztés');
+  expect(api.program.name).toBe('Másik ablak mentése');
+  await expect(editor(page).getByRole('button',{name:'Program indítása',exact:true})).toBeDisabled();
+  expect(api.unexpected).toEqual([]);
+});
+
+test('Saját program: egymást követő mentések az új verziót küldik', async ({page}) => {
+  const api=await install(page);
+  await page.goto('/user/personal-programs/7');
+  for (const name of ['Első mentés','Második mentés']) {
+    await editor(page).getByLabel('Program neve',{exact:true}).fill(name);
+    await editor(page).getByRole('button',{name:'Piszkozat mentése',exact:true}).click();
+    await expect(editor(page)).toContainText('A saját programot mentettük.');
+    await expect(editor(page).getByRole('button',{name:'Piszkozat mentése',exact:true})).toBeDisabled();
+  }
+  expect(api.calls.filter(c=>c.method==='PUT').map(c=>c.body.expectedVersion)).toEqual([1,2]);
+  expect(api.program.name).toBe('Második mentés');
+  expect(api.unexpected).toEqual([]);
+});

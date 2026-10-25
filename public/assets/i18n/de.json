@@ -1465,6 +1465,7 @@
     "leaveTitle": "Ungespeicherte Änderungen",
     "leaveConfirm": "Seite verlassen? Ungespeicherte Änderungen gehen verloren.",
     "confirm": "Bestätigen",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "sizeLimit": "Ein eigenes Programm darf höchstens 1000 Übungseinträge und 5000 Sätze enthalten."
   }
 }

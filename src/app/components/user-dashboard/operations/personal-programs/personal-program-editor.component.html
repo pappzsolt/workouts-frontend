@@ -15,6 +15,7 @@
       @if (started) {
         <app-message message="personalPrograms.locked" type="info" />
       }
+      <app-message message="personalPrograms.sizeLimit" type="info" />
       <form
         #programForm="ngForm"
         (ngSubmit)="save(programForm)"

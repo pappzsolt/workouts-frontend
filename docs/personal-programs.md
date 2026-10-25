@@ -55,6 +55,21 @@ ellenőrzi a teljes programkészítési folyamatot, a nem mentett változások v
 a mentési/betöltési hibák kezelését, a nyelvváltást és a mobilméretet.
 A szerver a projekt gyökeréből indul, hogy a Tailwind tartalomkeresése is helyes legyen.
 
-Ellenőrzés eredménye: production build sikeres, 313 unit teszt, 6 fordítási/téma
-teszt és 12 böngészős szerződésteszt sikeres. A build a meglévő admin hibajelentés
+Ellenőrzés eredménye: production build sikeres, 316 unit teszt, 6 fordítási/téma
+teszt és 16 böngészős szerződésteszt sikeres. A build a meglévő admin hibajelentés
 komponens optional chaining figyelmeztetéseit továbbra is jelzi.
+
+## Verziózott mentés és hiteles indítási válasz
+
+A backend `058-personal-program-safety` migrációt tartalmazó verziója szükséges.
+A szerkesztő a GET-ből kapott `program.expectedVersion` értéket visszaküldi mentéskor.
+A PUT teljes programrészleteket ad vissza: ebből frissül a következő mentés verziója.
+Másik ablak elavult mentése 409-et kap; a helyi szerkesztés megmarad.
+
+A `/start` szintén teljes részleteket ad vissza, ezért az automatikusan választott
+kezdőnap azonnal látszik, újratöltés nélkül. A létrehozás/másolás válasza továbbra is ID.
+A frontend és a backend kiadását az új PUT/start válaszszerződés miatt össze kell hangolni.
+
+A frontend is ellenőrzi az összesített 1000 gyakorlat-előfordulás / 5000 sorozat korlátot;
+a backend ezt önállóan is kikényszeríti. A konkrét üzleti hibák magyarul, angolul és németül
+is megmaradnak az API-válaszokban.

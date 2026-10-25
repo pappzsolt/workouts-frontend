@@ -1465,6 +1465,7 @@
     "leaveTitle": "Unsaved changes",
     "leaveConfirm": "Leave this page? Unsaved changes will be lost.",
     "confirm": "Confirm",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "sizeLimit": "A personal program can contain at most 1000 exercise entries and 5000 sets."
   }
 }

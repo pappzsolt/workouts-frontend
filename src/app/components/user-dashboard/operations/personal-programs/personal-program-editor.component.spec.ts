@@ -17,6 +17,7 @@ const draft = (): PersonalProgramRequest => ({
   startDate: null,
   difficultyLevel: null,
   languageCode: 'hu',
+  expectedVersion: 1,
   workouts: [
     {
       dayIndex: 1,
@@ -44,8 +45,16 @@ describe('PersonalProgramEditorComponent', () => {
       'delete',
     ]);
     api.get.and.returnValue(of({ id: 9, startedAt: null, program: draft() }));
-    api.save.and.returnValue(of(9));
-    api.start.and.returnValue(of(9));
+    api.save.and.returnValue(
+      of({ id: 9, startedAt: null, program: { ...draft(), expectedVersion: 2 } }),
+    );
+    api.start.and.returnValue(
+      of({
+        id: 9,
+        startedAt: '2026-10-25T12:00:00',
+        program: { ...draft(), startDate: '2026-10-25', expectedVersion: 2 },
+      }),
+    );
     api.copy.and.returnValue(of(10));
     router = jasmine.createSpyObj('Router', ['navigate']);
     router.navigate.and.resolveTo(true);
@@ -136,5 +145,33 @@ describe('PersonalProgramEditorComponent', () => {
     expect(component.pickerDay.exercises.length).toBe(2);
     component.moveExercise(component.pickerDay, 1, -1);
     expect(component.pickerDay.exercises.map((e) => e.exerciseId)).toEqual([2, 1]);
+  });
+  it('takes the returned start date and latest revision from the server', () => {
+    component.ask('start');
+    component.confirm();
+    expect(component.model.startDate).toBe('2026-10-25');
+    expect(component.model.expectedVersion).toBe(2);
+  });
+  it('uses the newly returned version for the next save', () => {
+    component.changed();
+    component.save(form);
+    expect(component.model.expectedVersion).toBe(2);
+    component.model.name = 'Második mentés';
+    component.changed();
+    component.save(form);
+    expect(api.save.calls.mostRecent().args[1].expectedVersion).toBe(2);
+  });
+  it('rejects too many prescribed sets before sending a save', () => {
+    component.model.durationDays = 60;
+    component.model.workouts = Array.from({ length: 51 }, (_, index) => ({
+      dayIndex: index + 1,
+      name: 'Nap',
+      description: null,
+      exercises: [{ exerciseId: 1, sets: 100, repetitions: 10, restSeconds: 60, notes: null }],
+    }));
+    component.save(form);
+    expect(api.save).not.toHaveBeenCalled();
+    expect(component.message).toBe('personalPrograms.sizeLimit');
+    expect(component.canStart).toBeFalse();
   });
 });

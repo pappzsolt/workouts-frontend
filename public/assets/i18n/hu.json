@@ -1465,6 +1465,7 @@
     "leaveTitle": "Nem mentett változások",
     "leaveConfirm": "Elhagyod az oldalt? A nem mentett változások elvesznek.",
     "confirm": "Megerősítés",
-    "cancel": "Mégse"
+    "cancel": "Mégse",
+    "sizeLimit": "A saját program legfeljebb 1000 gyakorlatot és 5000 sorozatot tartalmazhat."
   }
 }

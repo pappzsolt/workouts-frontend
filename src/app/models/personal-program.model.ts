@@ -12,6 +12,7 @@ export interface PersonalProgramDay {
   exercises: PersonalProgramExercise[];
 }
 export interface PersonalProgramRequest {
+  expectedVersion?: number | null;
   name: string;
   description: string | null;
   durationDays: number;
