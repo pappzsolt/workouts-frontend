@@ -1500,5 +1500,22 @@
     "error": "Previous results could not be loaded. You can continue your workout.",
     "retry": "Retry",
     "set": "Set {{number}}"
+  },
+  "workoutTemplates": {
+    "delete": "Delete template",
+    "title": "My workout templates",
+    "subtitle": "Save your standalone workouts, mark favorites and create new sessions from them.",
+    "save": "Save as workout template",
+    "saved": "Workout template saved. Create a new session from your template library at any time.",
+    "saveHint": "Save your workout changes before saving a template.",
+    "search": "Search workout templates",
+    "favoritesOnly": "Favorites only",
+    "favorite": "Mark as favorite",
+    "unfavorite": "Remove favorite",
+    "use": "New workout session",
+    "exerciseCount": "{{count}} exercises",
+    "empty": "You have no workout templates yet. Open a saved standalone workout and select Save as workout template.",
+    "deleteTitle": "Delete workout template",
+    "deleteMessage": "Delete this template? Your previous workouts and sessions created from it will remain."
   }
 }

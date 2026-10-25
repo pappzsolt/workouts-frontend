@@ -46,6 +46,7 @@ describe('PersonalProgramEditorComponent', () => {
       'start',
       'copy',
       'repeat',
+      'saveTemplate',
       'delete',
     ]);
     api.get.and.returnValue(of({ id: 9, startedAt: null, program: draft() }));
@@ -268,6 +269,32 @@ describe('PersonalProgramEditorComponent', () => {
     expect(component.action).toBeNull();
     expect(api.repeat).not.toHaveBeenCalled();
   });
+  it('saves the persisted standalone version as a template and blocks duplicate requests', () => {
+    component.standaloneMode = true;
+    const pending = new Subject<any>();
+    api.saveTemplate.and.returnValue(pending);
+    component.saveTemplate();
+    component.saveTemplate();
+    expect(api.saveTemplate).toHaveBeenCalledOnceWith(9, 1);
+    expect(component.busy).toBeTrue();
+    pending.next({ id: 12 });
+    pending.complete();
+    expect(component.busy).toBeFalse();
+    expect(component.message).toBe('workoutTemplates.saved');
+    expect(component.model.expectedVersion).toBe(1);
+  });
+
+  it('does not save an unsaved or normal program as a workout template', () => {
+    component.saveTemplate();
+    component.standaloneMode = true;
+    component.dirty = true;
+    component.saveTemplate();
+    component.dirty = false;
+    component.id = null;
+    component.saveTemplate();
+    expect(api.saveTemplate).not.toHaveBeenCalled();
+  });
+
   it('initializes the standalone route with exactly one hidden workout day', () => {
     const route = TestBed.inject(ActivatedRoute);
     Object.defineProperty(route, 'snapshot', {

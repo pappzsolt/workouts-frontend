@@ -1500,5 +1500,22 @@
     "error": "A korábbi eredményeket most nem sikerült betölteni. Az edzést folytathatod.",
     "retry": "Újrapróbálás",
     "set": "{{number}}. sorozat"
+  },
+  "workoutTemplates": {
+    "delete": "Sablon törlése",
+    "title": "Edzéssablonjaim",
+    "subtitle": "Mentsd el a bevált önálló edzéseidet, jelöld a kedvenceket, és készíts belőlük új alkalmat.",
+    "save": "Mentés edzéssablonként",
+    "saved": "Az edzéssablon mentve. A sablontárból bármikor készíthetsz új alkalmat.",
+    "saveHint": "Sablon mentése előtt mentsd el az edzés módosításait.",
+    "search": "Edzéssablon keresése",
+    "favoritesOnly": "Csak a kedvencek",
+    "favorite": "Kedvencnek jelölés",
+    "unfavorite": "Kedvenc eltávolítása",
+    "use": "Új edzésalkalom",
+    "exerciseCount": "{{count}} gyakorlat",
+    "empty": "Még nincs edzéssablonod. Egy elmentett önálló edzésnél válaszd a Mentés edzéssablonként lehetőséget.",
+    "deleteTitle": "Edzéssablon törlése",
+    "deleteMessage": "Törlöd ezt a sablont? A korábbi és a sablonból készített edzéseid megmaradnak."
   }
 }

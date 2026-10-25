@@ -1500,5 +1500,22 @@
     "error": "Vorherige Ergebnisse konnten nicht geladen werden. Du kannst dein Training fortsetzen.",
     "retry": "Erneut versuchen",
     "set": "Satz {{number}}"
+  },
+  "workoutTemplates": {
+    "delete": "Vorlage löschen",
+    "title": "Meine Trainingsvorlagen",
+    "subtitle": "Speichere deine Einzeltrainings, markiere Favoriten und erstelle daraus neue Einheiten.",
+    "save": "Als Trainingsvorlage speichern",
+    "saved": "Trainingsvorlage gespeichert. In deiner Vorlagensammlung kannst du jederzeit eine neue Einheit erstellen.",
+    "saveHint": "Speichere deine Trainingsänderungen, bevor du eine Vorlage speicherst.",
+    "search": "Trainingsvorlage suchen",
+    "favoritesOnly": "Nur Favoriten",
+    "favorite": "Als Favorit markieren",
+    "unfavorite": "Favorit entfernen",
+    "use": "Neue Trainingseinheit",
+    "exerciseCount": "{{count}} Übungen",
+    "empty": "Du hast noch keine Trainingsvorlagen. Öffne ein gespeichertes Einzeltraining und wähle Als Trainingsvorlage speichern.",
+    "deleteTitle": "Trainingsvorlage löschen",
+    "deleteMessage": "Diese Vorlage löschen? Deine bisherigen und daraus erstellten Trainingseinheiten bleiben erhalten."
   }
 }

@@ -42,6 +42,7 @@ export const API_ENDPOINTS = {
   // PROGRAMS
   // ============================================================
 
+  workoutTemplates: `${environment.apiUrl}/me/workout-templates`,
   personalPrograms: `${environment.apiUrl}/me/personal-programs`,
   allPrograms: `${environment.apiUrl}/programs`,
   assignedPrograms: `${environment.apiUrl}/programs/my/assigned`,

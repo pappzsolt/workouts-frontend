@@ -109,6 +109,7 @@ export class DashboardNavigationComponent {
     const pages: Record<string, string> = {
       profile: 'userProfile.title',
       'my-programs': 'userMyPrograms.title',
+      'workout-templates': 'workoutTemplates.title',
       'personal-programs': 'personalPrograms.title',
       'program-statistics': 'userProgramStatistics.title',
       workouts: 'userDashboard.myWorkouts',

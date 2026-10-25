@@ -252,6 +252,35 @@ export class PersonalProgramEditorComponent implements OnInit {
         },
       });
   }
+  saveTemplate(): void {
+    if (
+      this.id == null ||
+      !this.standaloneMode ||
+      this.busy ||
+      this.loading ||
+      this.loadFailed ||
+      this.dirty ||
+      this.model.expectedVersion == null
+    )
+      return;
+    this.busy = true;
+    this.message = '';
+    this.service
+      .saveTemplate(this.id, this.model.expectedVersion)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.busy = false;
+          this.message = 'workoutTemplates.saved';
+          this.messageType = 'success';
+        },
+        error: (error) => {
+          this.busy = false;
+          this.fail(error);
+        },
+      });
+  }
+
   ask(action: 'start' | 'delete' | 'copy' | 'repeat'): void {
     if (this.busy || this.id == null || this.loading || this.loadFailed) return;
     if (action === 'start' && !this.canStart) return;

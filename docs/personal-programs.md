@@ -92,3 +92,6 @@ A backend `059-personal-standalone-workouts` migrációt tartalmazó verziója s
 A `standalone` válaszmező additív; a meglévő programok és coach-folyamatok változatlanok.
 A három nyelvű felület, a nem mentett változások védelme, a katalógusválasztó és a verziózott
 mentés ugyanazokat a közös komponenseket használja, mint a teljes programkészítő.
+
+
+A saját önálló edzésekből sablon is menthető: [Saját edzéssablonok és kedvencek](workout-templates.md).

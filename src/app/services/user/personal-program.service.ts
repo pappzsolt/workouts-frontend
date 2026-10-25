@@ -1,3 +1,4 @@
+import type { WorkoutTemplate } from '../../models/workout-template.model';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
@@ -63,6 +64,36 @@ export class PersonalProgramService {
         {},
         { params: this.params() },
       )
+      .pipe(map((response) => this.unwrap(response)));
+  }
+  listTemplates() {
+    return this.http
+      .get<ApiResponse<WorkoutTemplate[]>>(API_ENDPOINTS.workoutTemplates)
+      .pipe(map((response) => this.unwrap(response)));
+  }
+  saveTemplate(sourceProgramId: number, expectedVersion: number) {
+    return this.http
+      .post<ApiResponse<WorkoutTemplate>>(API_ENDPOINTS.workoutTemplates, {
+        sourceProgramId,
+        expectedVersion,
+      })
+      .pipe(map((response) => this.unwrap(response)));
+  }
+  favoriteTemplate(id: number, favorite: boolean) {
+    return this.http
+      .put<ApiResponse<WorkoutTemplate>>(`${API_ENDPOINTS.workoutTemplates}/${id}/favorite`, {
+        favorite,
+      })
+      .pipe(map((response) => this.unwrap(response)));
+  }
+  useTemplate(id: number) {
+    return this.http
+      .post<ApiResponse<PersonalProgramDetail>>(`${API_ENDPOINTS.workoutTemplates}/${id}/use`, {})
+      .pipe(map((response) => this.unwrap(response)));
+  }
+  deleteTemplate(id: number) {
+    return this.http
+      .delete<ApiResponse<number>>(`${API_ENDPOINTS.workoutTemplates}/${id}`)
       .pipe(map((response) => this.unwrap(response)));
   }
   delete(id: number) {

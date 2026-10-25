@@ -1,0 +1,114 @@
+<div class="min-h-full bg-surface-50 px-4 py-6 sm:px-6 lg:px-8">
+  <div class="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-6">
+    <div appPageHeader="actions">
+      <div>
+        <h1 appHeading="page">{{ 'workoutTemplates.title' | translate }}</h1>
+        <p class="mt-1 text-sm text-content-600">{{ 'workoutTemplates.subtitle' | translate }}</p>
+      </div>
+      <a routerLink="/user/personal-programs" class="btn btn-neutral">{{
+        'personalPrograms.back' | translate
+      }}</a>
+    </div>
+    <a routerLink="/user/personal-workouts/new" class="btn btn-primary self-start">{{
+      'personalWorkouts.create' | translate
+    }}</a>
+    <app-search
+      inputId="workoutTemplateSearch"
+      [searchTerm]="search"
+      (searchTermChange)="search = $event"
+      label="workoutTemplates.search"
+      placeholder="workoutTemplates.search"
+      [showClearButton]="true"
+    />
+    <label class="flex items-center gap-2 text-sm font-semibold text-content-800">
+      <input appCheckbox="default" type="checkbox" [(ngModel)]="favoritesOnly" />{{
+        'workoutTemplates.favoritesOnly' | translate
+      }}
+    </label>
+    <app-message [message]="message" type="error" />
+    @if (loadFailed) {
+      <button
+        type="button"
+        class="btn btn-neutral self-start"
+        (click)="reload()"
+        [disabled]="loading"
+      >
+        {{ 'personalPrograms.retry' | translate }}
+      </button>
+    }
+    @if (loading) {
+      <app-loading message="personalPrograms.loading" />
+    } @else if (!loadFailed) {
+      <section class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        @for (template of filtered; track template.id) {
+          <app-card class="flex min-w-0 flex-col overflow-hidden">
+            <app-card-banner icon="clipboard-list" />
+            <div class="flex flex-1 flex-col gap-4 p-5">
+              <h2 class="break-words text-lg font-bold text-content-800">
+                {{ template.program.name }}
+              </h2>
+              @if (template.program.description) {
+                <p class="break-words text-sm text-content-600">
+                  {{ template.program.description }}
+                </p>
+              }
+              <p class="text-sm text-content-600">
+                {{
+                  'workoutTemplates.exerciseCount'
+                    | translate: { count: template.program.workouts[0].exercises.length }
+                }}
+              </p>
+              <button
+                type="button"
+                class="btn btn-neutral self-start"
+                [attr.aria-pressed]="template.favorite"
+                [disabled]="busy"
+                (click)="favorite(template)"
+              >
+                {{
+                  (template.favorite ? 'workoutTemplates.unfavorite' : 'workoutTemplates.favorite')
+                    | translate
+                }}
+              </button>
+              <div class="mt-auto flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  [disabled]="busy"
+                  (click)="use(template)"
+                >
+                  {{ 'workoutTemplates.use' | translate }}
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-delete"
+                  [disabled]="busy"
+                  (click)="pendingDelete = template"
+                >
+                  {{ 'workoutTemplates.delete' | translate }}
+                </button>
+              </div>
+            </div>
+          </app-card>
+        } @empty {
+          <app-empty-state
+            class="sm:col-span-2 lg:col-span-3"
+            [message]="
+              search || favoritesOnly ? 'personalPrograms.noResults' : 'workoutTemplates.empty'
+            "
+          />
+        }
+      </section>
+    }
+    <app-confirm-dialog
+      [open]="pendingDelete !== null"
+      [busy]="busy"
+      title="workoutTemplates.deleteTitle"
+      message="workoutTemplates.deleteMessage"
+      confirmLabel="personalPrograms.confirm"
+      cancelLabel="personalPrograms.cancel"
+      (confirmed)="confirmDelete()"
+      (cancelled)="pendingDelete = null"
+    />
+  </div>
+</div>

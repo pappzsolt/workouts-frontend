@@ -337,6 +337,31 @@
               >{{ 'personalPrograms.workouts' | translate }}</a
             >
           }
+          @if (standaloneMode) {
+            <button
+              type="button"
+              class="btn btn-neutral"
+              (click)="saveTemplate()"
+              [disabled]="
+                busy ||
+                dirty ||
+                loading ||
+                loadFailed ||
+                model.workouts.length !== 1 ||
+                !model.workouts[0].exercises.length
+              "
+            >
+              {{ 'workoutTemplates.save' | translate }}
+            </button>
+            <a routerLink="/user/workout-templates" class="btn btn-neutral">{{
+              'workoutTemplates.title' | translate
+            }}</a>
+            @if (dirty) {
+              <p class="w-full text-sm text-content-600">
+                {{ 'workoutTemplates.saveHint' | translate }}
+              </p>
+            }
+          }
           @if (standaloneMode && started) {
             <button
               type="button"
