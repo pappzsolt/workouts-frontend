@@ -47,6 +47,9 @@ export class UserProgramStatisticsService {
                   completedWorkouts: program.completedWorkouts ?? 0,
                   incompleteWorkouts: program.incompleteWorkouts ?? 0,
                   completed: program.completed ?? false,
+                  startDate: program.startDate ?? null,
+                  endDate: program.endDate ?? null,
+                  status: program.status ?? null,
                   exerciseStatistics: (program.exerciseStatistics ?? []).map(exercise => ({
                     exerciseId: exercise.exerciseId,
                     exerciseName: exercise.exerciseName,

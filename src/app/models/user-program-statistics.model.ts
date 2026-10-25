@@ -13,6 +13,10 @@ export interface ProgramStatisticsProgram {
   completed: boolean;
   weeklyVolumes: ProgramWeeklyVolume[];
   exerciseStatistics: ProgramExerciseStatistics[];
+  startDate?: string | null;
+  endDate?: string | null;
+  /** COMPLETED | FINISHED (lejárt, nem minden teljesült) | UPCOMING | ACTIVE; régebbi backendnél hiányozhat. */
+  status?: 'COMPLETED' | 'FINISHED' | 'UPCOMING' | 'ACTIVE' | null;
 }
 
 export interface ProgramWeeklyVolume {

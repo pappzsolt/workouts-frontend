@@ -62,6 +62,29 @@ export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
   }
 
 
+  /** A program állapotcímkéje: teljesítve, befejezett (lejárt), hamarosan induló vagy folyamatban. */
+  programStatus(program: ProgramStatisticsProgram): 'COMPLETED' | 'FINISHED' | 'UPCOMING' | 'ACTIVE' {
+    return program.status ?? (program.completed ? 'COMPLETED' : 'ACTIVE');
+  }
+
+  programStatusKey(program: ProgramStatisticsProgram): string {
+    return {
+      COMPLETED: 'userProgramStatistics.completed',
+      FINISHED: 'userProgramStatistics.finished',
+      UPCOMING: 'userProgramStatistics.upcoming',
+      ACTIVE: 'userProgramStatistics.inProgress',
+    }[this.programStatus(program)];
+  }
+
+  programStatusClass(program: ProgramStatisticsProgram): string {
+    return {
+      COMPLETED: 'bg-success-50 text-success-700',
+      FINISHED: 'bg-surface-100 text-content-700',
+      UPCOMING: 'bg-info-50 text-info-700',
+      ACTIVE: 'bg-warning-50 text-warning-700',
+    }[this.programStatus(program)];
+  }
+
   loadStatistics(language: string): void {
     this.statisticsRequest?.unsubscribe();
     this.loading = true;

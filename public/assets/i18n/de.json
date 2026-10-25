@@ -722,7 +722,6 @@
     "progress": "Fortschritt",
     "startWeight": "Startgewicht",
     "currentWeight": "Aktuelles Gewicht",
-    "weightChange": "Gewichtsänderung",
     "startRepetitions": "Anfängliche Wiederholungen",
     "currentRepetitions": "Aktuelle Wiederholungen",
     "repetitionsChange": "Änderung der Wiederholungen",
@@ -750,7 +749,9 @@
     "weekLabel": "Woche {{week}}",
     "volumeKilograms": "{{volume}} Kilogramm",
     "previousWeek": "Im Vergleich zur Vorwoche:",
-    "noComparison": "Im Vergleich zur Vorwoche: nicht berechenbar"
+    "noComparison": "Im Vergleich zur Vorwoche: nicht berechenbar",
+    "finished": "Beendet",
+    "upcoming": "Demnächst"
   },
   "pagination": {
     "page": "Seite",

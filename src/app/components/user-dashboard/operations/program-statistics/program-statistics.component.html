@@ -67,17 +67,9 @@
               </h3>
               <span
                 class="shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold"
-                [class.bg-success-50]="program.completed"
-                [class.text-success-700]="program.completed"
-                [class.bg-warning-50]="!program.completed"
-                [class.text-warning-700]="!program.completed"
+                [ngClass]="programStatusClass(program)"
               >
-                {{
-                  (program.completed
-                    ? 'userProgramStatistics.completed'
-                    : 'userProgramStatistics.inProgress'
-                  ) | translate
-                }}
+                {{ programStatusKey(program) | translate }}
               </span>
             </div>
 

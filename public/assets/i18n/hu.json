@@ -691,7 +691,7 @@
     "exerciseVolume": "Volumen",
     "volumeChange": "Volumenváltozás",
     "maxWeight": "Legnagyobb súly",
-    "weightChange": "Súlyváltozás",
+    "weightChange": "Súly változás",
     "setsAndRepsValue": "{{sets}} sorozat / {{reps}} ismétlés",
     "title": "Program statisztika",
     "selectProgram": "Válassz programot",
@@ -722,7 +722,6 @@
     "progress": "Fejlődés",
     "startWeight": "Kezdő súly",
     "currentWeight": "Jelenlegi súly",
-    "weightChange": "Súly változás",
     "startRepetitions": "Kezdő ismétlésszám",
     "currentRepetitions": "Jelenlegi ismétlésszám",
     "repetitionsChange": "Ismétlésszám változás",
@@ -750,7 +749,9 @@
     "weekLabel": "{{week}}. hét",
     "volumeKilograms": "{{volume}} kilogramm",
     "previousWeek": "Előző héthez:",
-    "noComparison": "Előző héthez: nem számolható"
+    "noComparison": "Előző héthez: nem számolható",
+    "finished": "Befejezett",
+    "upcoming": "Hamarosan indul"
   },
   "pagination": {
     "page": "Oldal",

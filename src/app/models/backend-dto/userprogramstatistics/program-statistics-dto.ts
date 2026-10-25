@@ -8,7 +8,13 @@ export interface ProgramStatisticsDto {
   completed: boolean | null;
   weeklyVolumes: ProgramWeeklyVolumeDto[] | null;
   exerciseStatistics: ProgramExerciseStatisticsDto[] | null;
+  startDate: string | null;
+  endDate: string | null;
+  status: ProgramStatisticsStatus | null;
 }
+
+/** COMPLETED: minden workout teljesítve; FINISHED: lejárt, nem minden teljesült; UPCOMING: még nem indult; ACTIVE: folyamatban. */
+export type ProgramStatisticsStatus = 'COMPLETED' | 'FINISHED' | 'UPCOMING' | 'ACTIVE';
 
 export interface ProgramWeeklyVolumeDto {
   week: number;
