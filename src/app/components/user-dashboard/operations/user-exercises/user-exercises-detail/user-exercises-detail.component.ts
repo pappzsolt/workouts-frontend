@@ -377,7 +377,9 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       finalize(() => {
         if (this.pendingSetSaves.get(key) === entry) this.pendingSetSaves.delete(key);
       }),
-      shareReplay({ bufferSize: 1, refCount: true }),
+      // Navigation only detaches UI observers. Keep the finite HTTP save and
+      // any queued edits alive until they finish, even after component teardown.
+      shareReplay({ bufferSize: 1, refCount: false }),
     );
     this.pendingSetSaves.set(key, entry);
     return entry.request;

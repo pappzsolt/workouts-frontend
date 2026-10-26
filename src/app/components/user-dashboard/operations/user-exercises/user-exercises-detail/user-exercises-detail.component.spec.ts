@@ -1,5 +1,5 @@
 import { UserExerciseDetailComponent } from './user-exercises-detail.component';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import type { UserWorkoutExerciseDetailDto } from '../../../../../models/user-workout-exercise-detail.dto';
 
 describe('UserExerciseDetailComponent prescription summary', () => {
@@ -128,6 +128,50 @@ describe('UserExerciseDetailComponent persisted rest timer selection', () => {
 
 
 describe('UserExerciseDetailComponent queued save regression', () => {
+  for (const firstFails of [false, true]) {
+    it(`finishes active and queued edits after destruction when the first save ${firstFails ? 'fails' : 'succeeds'}`, () => {
+      const component = Object.create(UserExerciseDetailComponent.prototype) as UserExerciseDetailComponent;
+      const firstResponse = new Subject<any>();
+      const secondResponse = new Subject<any>();
+      const firstTeardown = jasmine.createSpy('firstTeardown');
+      const updateSetCompleted = jasmine.createSpy('updateSetCompleted').and.returnValues(
+        new Observable(subscriber => {
+          const subscription = firstResponse.subscribe(subscriber);
+          return () => { firstTeardown(); subscription.unsubscribe(); };
+        }),
+        secondResponse.asObservable(),
+      );
+      const set = { id: 101, setNumber: 1, completed: false, actualWeightKg: 20 } as any;
+      component.workoutExercise = { exercise: { id: 55 }, userWorkoutExerciseSets: [set] } as any;
+      component.userWorkoutId = 77;
+      component.programId = 10;
+      component.workoutId = 20;
+      (component as any).validateInputs = () => true;
+      (component as any).pendingSetSaves = new Map();
+      (component as any).destroy$ = new Subject<void>();
+      (component as any).exercisesService = { updateSetCompleted };
+
+      component.saveSetDetails(set);
+      set.actualWeightKg = 25;
+      component.saveSetDetails(set);
+      component.ngOnDestroy();
+
+      expect(firstTeardown).not.toHaveBeenCalled();
+      expect(updateSetCompleted).toHaveBeenCalledTimes(1);
+      if (firstFails) firstResponse.error(new Error('Save failed'));
+      else {
+        firstResponse.next({ success: true });
+        firstResponse.complete();
+      }
+      expect(updateSetCompleted).toHaveBeenCalledTimes(2);
+      expect(updateSetCompleted.calls.argsFor(0)[7]).toBe(20);
+      expect(updateSetCompleted.calls.argsFor(1)[7]).toBe(25);
+      secondResponse.next({ success: true });
+      secondResponse.complete();
+      expect((component as any).pendingSetSaves.size).toBe(0);
+    });
+  }
+
   it('runs a newer completion edit after an earlier HTTP failure without reverting the newer UI state', () => {
     const component = Object.create(UserExerciseDetailComponent.prototype) as UserExerciseDetailComponent;
     const firstResponse = new Subject<any>();

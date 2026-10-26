@@ -63,8 +63,8 @@
                     <button type="button" (click)="openScreenshot(report, shot)" [disabled]="!previews[shot.id]?.url"
                             class="flex w-full flex-col overflow-hidden rounded-xl border border-surface-200 bg-surface-50 text-left hover:border-primary-400 focus:outline-none focus:ring-4 focus:ring-primary-500/20"
                             [attr.aria-label]="'adminBugReports.openScreenshot' | translate: { n: shot.position }">
-                      @if (previews[shot.id]?.url) {
-                        <img [src]="previews[shot.id].url" [alt]="'adminBugReports.screenshotAlt' | translate: { n: shot.position }"
+                      @if (previews[shot.id]?.url; as previewUrl) {
+                        <img [src]="previewUrl" [alt]="'adminBugReports.screenshotAlt' | translate: { n: shot.position }"
                              class="h-28 w-full object-contain" />
                       } @else {
                         <span class="flex h-28 items-center justify-center text-xs text-content-500">
@@ -102,7 +102,7 @@
       </button>
     </div>
     <div class="min-h-0 flex-1 overflow-auto bg-surface-100 p-2">
-      <img [src]="previews[zoomed.screenshot.id].url" [alt]="'adminBugReports.screenshotAlt' | translate: { n: zoomed.screenshot.position }"
+      <img [src]="previews[zoomed.screenshot.id]?.url" [alt]="'adminBugReports.screenshotAlt' | translate: { n: zoomed.screenshot.position }"
            class="mx-auto h-auto max-w-full" />
     </div>
   </app-dialog>

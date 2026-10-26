@@ -19,8 +19,6 @@ export class WorkoutExercisesManagerService {
   private readonly http = inject(HttpClient);
   private readonly languageService = inject(LanguageService);
 
-  private readonly baseUrl = API_ENDPOINTS.userWorkoutExercises;
-
   /**
    * Lekéri egy user workout összes exercise-át.
    */
@@ -116,21 +114,6 @@ export class WorkoutExercisesManagerService {
       );
   }
 
-  /**
-   * Workout exercise sorrendjének módosítása.
-   */
-  updateExerciseOrderIndex(
-    workoutId: number,
-    exerciseId: number,
-    orderIndex: number,
-  ): Observable<void> {
-    const params = new HttpParams()
-      .set('workoutId', workoutId)
-      .set('exerciseId', exerciseId)
-      .set('orderIndex', orderIndex);
-
-    return this.http.put<void>(API_ENDPOINTS.workoutExerciseOrderIndex, null, { params });
-  }
   /**
    * A belépett user számára ütemezett workoutok
    * keresése és lapozása.

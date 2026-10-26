@@ -39,7 +39,7 @@ export class BugReportsComponent implements OnDestroy {
   totalPages = 0;
 
   /** Képernyőkép-előnézetek a képazonosító szerint. */
-  previews: Record<number, Preview> = {};
+  previews: Record<number, Preview | undefined> = {};
   /** A nagyítva megnyitott kép. */
   zoomed: { report: BugReportDto; screenshot: BugReportScreenshot } | null = null;
 
@@ -128,7 +128,7 @@ export class BugReportsComponent implements OnDestroy {
 
   private releasePreviews(): void {
     for (const preview of Object.values(this.previews)) {
-      if (preview.url) URL.revokeObjectURL(preview.url);
+      if (preview?.url) URL.revokeObjectURL(preview.url);
     }
     this.previews = {};
   }

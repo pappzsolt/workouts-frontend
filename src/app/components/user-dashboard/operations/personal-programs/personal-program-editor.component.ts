@@ -115,6 +115,12 @@ export class PersonalProgramEditorComponent implements OnInit {
   get locked(): boolean {
     return this.busy || this.started || this.loading || this.loadFailed;
   }
+  get minimumStartDate(): string {
+    const today = new Date();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${today.getFullYear()}-${month}-${day}`;
+  }
   get canStart(): boolean {
     return (
       this.id != null &&

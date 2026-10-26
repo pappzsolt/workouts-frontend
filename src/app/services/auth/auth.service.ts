@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { LoggerService } from '../logger.service';
 import { HttpClient, HttpBackend, HttpParams } from '@angular/common/http';
-import { Observable, Subject, defer, finalize, map, shareReplay, takeUntil, tap, throwError } from 'rxjs';
+import { Observable, Subject, defer, finalize, firstValueFrom, map, shareReplay, takeUntil, tap, throwError } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 
 import type { RegistrationPayload, RegistrationResult } from '../../models/backend-dto/registration/registration';
@@ -165,7 +165,7 @@ export class AuthService {
     }
 
     const sessionVersion = this.sessionVersion;
-    const request$: Observable<LoginResponse> = defer(() => {
+    const refresh = () => {
       if (sessionVersion !== this.sessionVersion) {
         return throwError(() => new Error('authErrors.sessionEnded'));
       }
@@ -177,6 +177,14 @@ export class AuthService {
             withCredentials: true,
           },
         );
+    };
+    const request$: Observable<LoginResponse> = defer(() => {
+      // The HttpOnly cookie is shared by all tabs. Hold an origin-wide lock
+      // until the response has rotated it, so another tab cannot replay it.
+      if (typeof navigator !== 'undefined' && navigator.locks) {
+        return navigator.locks.request('workouts-auth-refresh', () => firstValueFrom(refresh()));
+      }
+      return refresh();
     })
       .pipe(
         takeUntil(this.refreshCancelled$),

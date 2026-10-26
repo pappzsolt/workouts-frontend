@@ -30,7 +30,7 @@ describe('Admin bug reports', () => {
     list.next({ content: [report], page: 0, size: 10, totalElements: 1, totalPages: 1 });
     expect(component.reports.length).toBe(1);
     expect(screenshot).toHaveBeenCalledWith(4, 11);
-    expect(component.previews[11].url).toBe('blob:shot');
+    expect(component.previews[11]?.url).toBe('blob:shot');
     component.openScreenshot(report, report.screenshots[0]);
     expect(component.zoomed?.screenshot.id).toBe(11);
     component.closeScreenshot();
@@ -42,7 +42,7 @@ describe('Admin bug reports', () => {
   it('marks a failed screenshot and shows list errors', () => {
     screenshot.and.returnValue(throwError(() => new Error('403')));
     list.next({ content: [report], page: 0, size: 10, totalElements: 1, totalPages: 1 });
-    expect(component.previews[11].failed).toBeTrue();
+    expect(component.previews[11]?.failed).toBeTrue();
     component.openScreenshot(report, report.screenshots[0]);
     expect(component.zoomed).toBeNull();
     list.error(new Error('Nincs jogosultság'));

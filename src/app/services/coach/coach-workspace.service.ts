@@ -25,6 +25,7 @@ import type {
 } from '../../models/coach-workspace.model';
 import { LanguageService } from '../shared/language.service';
 import { ProgramExportService } from '../shared/program-export.service';
+import { WorkoutExerciseService } from './workout-exercises.service';
 
 /** Egy válaszból kiveszi az adatot; sikertelen válasznál a backend üzenetével dob. */
 function unwrap<T>(response: ApiResponse<T>): T {
@@ -77,6 +78,7 @@ export class CoachWorkspaceService {
   private readonly http = inject(HttpClient);
   private readonly languageService = inject(LanguageService);
   private readonly programExport = inject(ProgramExportService);
+  private readonly workoutExercises = inject(WorkoutExerciseService);
 
   private language(): string {
     return this.languageService.getCurrentLanguage();
@@ -378,9 +380,7 @@ export class CoachWorkspaceService {
 
   /** Sablon szintű sorrend: a gyakorlat új helye (a többi a backendben tolódik). */
   moveTemplateExercise(workoutId: number, exerciseId: number, orderIndex: number): Observable<void> {
-    const params = new HttpParams().set('workoutId', workoutId).set('exerciseId', exerciseId).set('orderIndex', orderIndex);
-    return this.http
-      .put<ApiResponse<void>>(API_ENDPOINTS.workoutExerciseOrderIndex, null, { params })
+    return this.workoutExercises.updateOrderIndex(workoutId, exerciseId, orderIndex)
       .pipe(map(unwrap));
   }
 

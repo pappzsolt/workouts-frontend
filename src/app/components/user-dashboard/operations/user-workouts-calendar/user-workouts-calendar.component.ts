@@ -7,7 +7,7 @@ import { LoggerService } from '../../../../services/logger.service';
 
 import { BehaviorSubject, Subject, Subscription, catchError, combineLatest, of, switchMap, takeUntil } from 'rxjs';
 
-import { WorkoutExercisesManagerService } from '../../../../services/coach/workout-exercises-manager.service';
+import { WorkoutExercisesManagerService } from '../../../../services/user/workout-exercises-manager.service';
 import { UserWorkoutExerciseDto } from '../../../../models/user-workout-exercise.dto';
 import { LanguageService } from '../../../../services/shared/language.service';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
