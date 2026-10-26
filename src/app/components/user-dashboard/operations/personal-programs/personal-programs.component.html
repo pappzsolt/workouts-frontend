@@ -31,7 +31,7 @@
       <select name="kind" [(ngModel)]="kind" (ngModelChange)="filtersChanged()" class="min-h-11 rounded-xl border border-surface-300 bg-white px-3">
         <option value="all">{{ 'personalPrograms.allKinds' | translate }}</option>
         <option value="program">{{ 'personalPrograms.title' | translate }}</option>
-        <option value="standalone">{{ 'personalWorkouts.title' | translate }}</option>
+        <option value="standalone">{{ 'personalWorkouts.type' | translate }}</option>
       </select>
     </label>
     <app-message [message]="message" type="error" />
