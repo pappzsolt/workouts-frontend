@@ -1398,6 +1398,8 @@
     }
   },
   "personalPrograms": {
+    "kindFilter": "Typ",
+    "allKinds": "Alle Typen",
     "title": "Selbst erstellte Programme",
     "subtitle": "Stelle dein eigenes Programm aus dem Übungskatalog zusammen und starte es, sobald du bereit bist.",
     "create": "Neues eigenes Programm",

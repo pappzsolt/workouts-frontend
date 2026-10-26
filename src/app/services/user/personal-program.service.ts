@@ -1,3 +1,4 @@
+import { PageResponse } from '../../models/backend-dto/common/page-response';
 import type { WorkoutTemplate } from '../../models/workout-template.model';
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
@@ -27,6 +28,12 @@ export class PersonalProgramService {
   list() {
     return this.http
       .get<ApiResponse<PersonalProgramSummary[]>>(this.url, { params: this.params() })
+      .pipe(map((response) => this.unwrap(response)));
+  }
+  listPage(page = 0, size = 12, standalone: boolean | null = null, search = '') {
+    let params = this.params().set('page', page).set('size', size).set('search', search);
+    if (standalone != null) params = params.set('standalone', standalone);
+    return this.http.get<ApiResponse<PageResponse<PersonalProgramSummary>>>(`${this.url}/page`, { params })
       .pipe(map((response) => this.unwrap(response)));
   }
   get(id: number) {

@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, catchError, merge, of, switchMap, tap } from 'rxjs';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 import { AppSearchComponent } from '../../../shared/components/app-search/app-search.component';
-import { matchesSearch } from '../../../shared/components/app-search/search-match';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { PersonalProgramService } from '../../../../services/user/personal-program.service';
 import { LanguageService } from '../../../../services/shared/language.service';
 import { PersonalProgramSummary } from '../../../../models/personal-program.model';
@@ -12,7 +12,7 @@ import { errorMessage } from '../../../../models/backend-dto/common/api-response
 @Component({
   selector: 'app-personal-programs',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppSearchComponent],
+  imports: [...SHARED_IMPORTS, AppSearchComponent, PaginationComponent],
   templateUrl: './personal-programs.component.html',
 })
 export class PersonalProgramsComponent implements OnInit {
@@ -22,10 +22,14 @@ export class PersonalProgramsComponent implements OnInit {
   programs: PersonalProgramSummary[] = [];
   private readonly reload$ = new Subject<void>();
   search = '';
+  page = 0;
+  readonly pageSize = 12;
+  totalItems = 0;
+  kind = 'all';
   loading = false;
   message = '';
   get filtered(): PersonalProgramSummary[] {
-    return this.programs.filter((program) => matchesSearch(this.search, program.name));
+    return this.programs;
   }
   ngOnInit(): void {
     merge(this.language.language$, this.reload$)
@@ -35,19 +39,28 @@ export class PersonalProgramsComponent implements OnInit {
           this.message = '';
         }),
         switchMap(() =>
-          this.service.list().pipe(
+          this.service.listPage(this.page, this.pageSize, this.kind === 'all' ? null : this.kind === 'standalone', this.search).pipe(
             catchError((error) => {
               this.message = errorMessage(error, 'personalPrograms.loadError');
-              return of([]);
+              return of({ content: [], totalElements: 0 });
             }),
           ),
         ),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((programs) => {
-        this.programs = programs;
+        this.programs = programs.content;
+        this.totalItems = programs.totalElements;
         this.loading = false;
       });
+  }
+  filtersChanged(): void {
+    this.page = 0;
+    this.reload$.next();
+  }
+  changePage(page: number): void {
+    this.page = page - 1;
+    this.reload$.next();
   }
   reload(): void {
     if (!this.loading) this.reload$.next();

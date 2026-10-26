@@ -1398,6 +1398,8 @@
     }
   },
   "personalPrograms": {
+    "kindFilter": "Típus",
+    "allKinds": "Összes típus",
     "title": "Saját készítésű programok",
     "subtitle": "Állíts össze magadnak programot a gyakorlatkatalógusból, majd indítsd el, amikor elkészültél.",
     "create": "Új saját program",

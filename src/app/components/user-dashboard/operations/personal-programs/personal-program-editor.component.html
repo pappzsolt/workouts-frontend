@@ -196,7 +196,7 @@
                         [(ngModel)]="exercise.sets"
                         (ngModelChange)="changed()"
                         min="1"
-                        max="100"
+                        [max]="prescriptionLimits.maxSets"
                         step="1"
                         required
                       />
@@ -210,7 +210,7 @@
                         [(ngModel)]="exercise.repetitions"
                         (ngModelChange)="changed()"
                         min="1"
-                        max="10000"
+                        [max]="prescriptionLimits.maxRepetitions"
                         step="1"
                         required
                       />
@@ -224,7 +224,7 @@
                         [(ngModel)]="exercise.restSeconds"
                         (ngModelChange)="changed()"
                         min="0"
-                        max="86400"
+                        [max]="prescriptionLimits.maxRestSeconds"
                         step="1"
                         required
                       />

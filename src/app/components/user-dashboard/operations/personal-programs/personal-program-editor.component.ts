@@ -1,3 +1,4 @@
+import { WORKOUT_PRESCRIPTION_LIMITS } from '../../../../models/workout-prescription-limits';
 import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -23,6 +24,7 @@ import { errorMessage } from '../../../../models/backend-dto/common/api-response
   templateUrl: './personal-program-editor.component.html',
 })
 export class PersonalProgramEditorComponent implements OnInit {
+  readonly prescriptionLimits = WORKOUT_PRESCRIPTION_LIMITS;
   private readonly service = inject(PersonalProgramService);
   private readonly catalogue = inject(ExerciseService);
   private readonly language = inject(LanguageService);
@@ -116,10 +118,7 @@ export class PersonalProgramEditorComponent implements OnInit {
     return this.busy || this.started || this.loading || this.loadFailed;
   }
   get minimumStartDate(): string {
-    const today = new Date();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    return `${today.getFullYear()}-${month}-${day}`;
+    return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Budapest' }).format(new Date());
   }
   get canStart(): boolean {
     return (
@@ -127,6 +126,7 @@ export class PersonalProgramEditorComponent implements OnInit {
       !this.dirty &&
       !this.locked &&
       this.withinLimits &&
+      (!this.model.startDate || this.model.startDate >= this.minimumStartDate) &&
       this.model.workouts.length > 0 &&
       this.model.workouts.every((day) => day.exercises.length > 0)
     );
@@ -303,6 +303,10 @@ export class PersonalProgramEditorComponent implements OnInit {
     }
     if (this.id == null || this.busy || this.action == null) return;
     const action = this.action;
+    if (action === 'start' && !this.canStart) {
+      this.action = null;
+      return;
+    }
     const request: Observable<number | PersonalProgramDetail> =
       action === 'repeat'
         ? this.service.repeat(this.id)

@@ -21,11 +21,19 @@
     <app-search
       inputId="personalProgramSearch"
       [searchTerm]="search"
-      (searchTermChange)="search = $event"
+      (searchTermChange)="search = $event; filtersChanged()"
       label="appSearch.programsLabel"
       placeholder="appSearch.programsPlaceholder"
       [showClearButton]="true"
     />
+    <label class="flex flex-col gap-1 text-sm font-semibold">
+      {{ 'personalPrograms.kindFilter' | translate }}
+      <select name="kind" [(ngModel)]="kind" (ngModelChange)="filtersChanged()" class="min-h-11 rounded-xl border border-surface-300 bg-white px-3">
+        <option value="all">{{ 'personalPrograms.allKinds' | translate }}</option>
+        <option value="program">{{ 'personalPrograms.title' | translate }}</option>
+        <option value="standalone">{{ 'personalWorkouts.title' | translate }}</option>
+      </select>
+    </label>
     <app-message [message]="message" type="error" />
     @if (message) {
       <button
@@ -100,6 +108,8 @@
           />
         }
       </section>
+      <app-pagination [totalItems]="totalItems" [pageSize]="pageSize" [currentPage]="page + 1"
+        [showPageSize]="false" (pageChange)="changePage($event)" />
     }
   </div>
 </div>

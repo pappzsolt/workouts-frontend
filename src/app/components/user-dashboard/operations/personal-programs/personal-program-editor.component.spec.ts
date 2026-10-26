@@ -117,6 +117,26 @@ describe('PersonalProgramEditorComponent', () => {
     component.ask('delete');
     expect(component.action).toBeNull();
   });
+  it('blocks starting a saved draft with a past date', () => {
+    component.model.startDate = '2000-01-01';
+    expect(component.canStart).toBeFalse();
+    component.ask('start');
+    expect(component.action).toBeNull();
+    expect(api.start).not.toHaveBeenCalled();
+  });
+  it('allows today, future and unspecified start dates', () => {
+    for (const date of [component.minimumStartDate, '2099-01-01', null]) {
+      component.model.startDate = date;
+      expect(component.canStart).toBeTrue();
+    }
+  });
+  it('checks the date again when confirming start', () => {
+    component.ask('start');
+    component.model.startDate = '2000-01-01';
+    component.confirm();
+    expect(api.start).not.toHaveBeenCalled();
+    expect(component.action).toBeNull();
+  });
   it('copies a saved program without starting its new copy', () => {
     component.ask('copy');
     component.confirm();

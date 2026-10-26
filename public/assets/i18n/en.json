@@ -1398,6 +1398,8 @@
     }
   },
   "personalPrograms": {
+    "kindFilter": "Type",
+    "allKinds": "All types",
     "title": "Self-created programs",
     "subtitle": "Build your own program from the exercise catalogue and start it when ready.",
     "create": "New personal program",

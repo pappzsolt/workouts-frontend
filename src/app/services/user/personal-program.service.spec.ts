@@ -31,6 +31,16 @@ describe('PersonalProgramService', () => {
     http = TestBed.inject(HttpTestingController);
   });
   afterEach(() => http.verify());
+  it('sends bounded pagination, type and literal search to the server', () => {
+    service.listPage(2, 12, true, '%_!').subscribe((page) => expect(page.totalElements).toBe(30));
+    const call = http.expectOne((request) => request.url === API_ENDPOINTS.personalPrograms + '/page');
+    expect(call.request.params.get('languageCode')).toBe('de');
+    expect(call.request.params.get('page')).toBe('2');
+    expect(call.request.params.get('size')).toBe('12');
+    expect(call.request.params.get('standalone')).toBe('true');
+    expect(call.request.params.get('search')).toBe('%_!');
+    call.flush({ success: true, data: { content: [], page: 2, size: 12, totalElements: 30, totalPages: 3 } });
+  });
   it('uses the private API and current language for lists and details', () => {
     service.list().subscribe((result) => expect(result).toEqual([]));
     http

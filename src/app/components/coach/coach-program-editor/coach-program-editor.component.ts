@@ -1,3 +1,4 @@
+import { WORKOUT_PRESCRIPTION_LIMITS } from '../../../models/workout-prescription-limits';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -52,6 +53,7 @@ interface EditableExercise {
   templateUrl: './coach-program-editor.component.html',
 })
 export class CoachProgramEditorComponent implements OnInit {
+  readonly prescriptionLimits = WORKOUT_PRESCRIPTION_LIMITS;
   private readonly workspace = inject(CoachWorkspaceService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -494,9 +496,9 @@ export class CoachProgramEditorComponent implements OnInit {
     if (changed.length === 0) return;
     const invalid = changed.find(
       (row) =>
-        !Number.isInteger(Number(row.sets)) || Number(row.sets) < 1 || Number(row.sets) > 20 ||
-        !Number.isInteger(Number(row.repetitions)) || Number(row.repetitions) < 1 || Number(row.repetitions) > 200 ||
-        !Number.isInteger(Number(row.restSeconds)) || Number(row.restSeconds) < 0 || Number(row.restSeconds) > 3600,
+        !Number.isInteger(Number(row.sets)) || Number(row.sets) < 1 || Number(row.sets) > this.prescriptionLimits.maxSets ||
+        !Number.isInteger(Number(row.repetitions)) || Number(row.repetitions) < 1 || Number(row.repetitions) > this.prescriptionLimits.maxRepetitions ||
+        !Number.isInteger(Number(row.restSeconds)) || Number(row.restSeconds) < 0 || Number(row.restSeconds) > this.prescriptionLimits.maxRestSeconds,
     );
     if (invalid) {
       this.showMessage('coachWorkspace.editor.prescriptionInvalid', 'error');
