@@ -118,7 +118,17 @@ export class PersonalProgramEditorComponent implements OnInit {
     return this.busy || this.started || this.loading || this.loadFailed;
   }
   get minimumStartDate(): string {
-    return new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Budapest' }).format(new Date());
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Europe/Budapest',
+      calendar: 'gregory',
+      numberingSystem: 'latn',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(new Date());
+    const value = (type: Intl.DateTimeFormatPartTypes) =>
+      parts.find((part) => part.type === type)!.value;
+    return `${value('year')}-${value('month')}-${value('day')}`;
   }
   get canStart(): boolean {
     return (

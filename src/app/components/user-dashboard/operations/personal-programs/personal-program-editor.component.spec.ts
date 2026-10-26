@@ -117,6 +117,24 @@ describe('PersonalProgramEditorComponent', () => {
     component.ask('delete');
     expect(component.action).toBeNull();
   });
+  it('builds an ISO business date even when the formatter uses month/day/year order', () => {
+    const original = Intl.DateTimeFormat;
+    spyOn(Intl, 'DateTimeFormat').and.callFake((function (_locales, options) {
+      return new original('en-US', options);
+    }) as typeof Intl.DateTimeFormat);
+    jasmine.clock().install();
+    try {
+      // Budapest is already on the next day at this UTC instant.
+      jasmine.clock().mockDate(new Date('2030-01-01T23:30:00Z'));
+      expect(component.minimumStartDate).toBe('2030-01-02');
+      component.model.startDate = '2030-01-01';
+      expect(component.canStart).toBeFalse();
+      component.model.startDate = '2030-01-02';
+      expect(component.canStart).toBeTrue();
+    } finally {
+      jasmine.clock().uninstall();
+    }
+  });
   it('blocks starting a saved draft with a past date', () => {
     component.model.startDate = '2000-01-01';
     expect(component.canStart).toBeFalse();
