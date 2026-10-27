@@ -196,6 +196,13 @@ export const routes: Routes = [
       },
 
       {
+        path: 'programs/import',
+        data: { importScope: 'coach' },
+        canDeactivate: [(component: { canLeave(): boolean }) => component.canLeave()],
+        loadComponent: () => import('./components/shared/components/program-import/program-import.component').then(m => m.ProgramImportComponent),
+      },
+
+      {
         path: 'programs/:id',
         component: CoachProgramEditorComponent,
       },
@@ -309,6 +316,12 @@ export const routes: Routes = [
         path: 'personal-programs/new',
         loadComponent: () => import('./components/user-dashboard/operations/personal-programs/personal-program-editor.component').then(m => m.PersonalProgramEditorComponent),
         canDeactivate: [(component: PersonalProgramEditorComponent) => component.canLeave()],
+      },
+      {
+        path: 'personal-programs/import',
+        data: { importScope: 'personal' },
+        canDeactivate: [(component: { canLeave(): boolean }) => component.canLeave()],
+        loadComponent: () => import('./components/shared/components/program-import/program-import.component').then(m => m.ProgramImportComponent),
       },
       {
         path: 'personal-programs/:id',

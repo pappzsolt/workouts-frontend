@@ -50,7 +50,7 @@
         <div class="flex items-center justify-between gap-2">
           <button type="button" (click)="toggleDetails(exercise.id)" [attr.aria-expanded]="expandedId === exercise.id"
                   class="min-h-11 min-w-0 flex-1 text-left">
-            <span class="block font-semibold text-content-900">{{ exercise.name }}</span>
+            <span class="block font-semibold text-content-900">{{ exercise.name }} @if (showIds) { <span class="text-xs font-normal text-content-600">#{{ exercise.id }}</span> }</span>
             <span class="block text-xs text-content-600">
               {{ bodyPartLabel(exercise.bodyPart) }}
               @if (exercise.bodyPart && exercise.equipment) { · }

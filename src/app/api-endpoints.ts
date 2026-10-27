@@ -54,6 +54,8 @@ export const API_ENDPOINTS = {
   coachWorkoutApplyTemplate: (workoutId: number) => `${environment.apiUrl}/coach/workouts/${workoutId}/apply-template`,
   coachWorkoutPrograms: (workoutId: number) => `${environment.apiUrl}/coach/workouts/${workoutId}/programs`,
   coachProgramAssignmentCounts: `${environment.apiUrl}/coach/programs/assignment-counts`,
+  programImport: `${environment.apiUrl}/user-programs/import`,
+  personalProgramImport: `${environment.apiUrl}/me/personal-programs/import`,
   createProgram: `${environment.apiUrl}/user-programs`,
   assignProgram: `${environment.apiUrl}/programs/assign`,
 

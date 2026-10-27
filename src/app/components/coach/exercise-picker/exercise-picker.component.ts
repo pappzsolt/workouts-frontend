@@ -32,6 +32,7 @@ export class ExercisePickerComponent implements OnInit {
   @Input() chosenIds: number[] = [];
   /** Oldalméret. */
   @Input() pageSize = 10;
+  @Input() showIds = false;
   @Output() picked = new EventEmitter<CoachExerciseSearchItem>();
 
   query: CoachExerciseQuery = { search: '', bodyPart: '', equipment: '', page: 0, size: 10 };

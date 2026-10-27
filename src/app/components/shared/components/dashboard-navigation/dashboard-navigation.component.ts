@@ -55,7 +55,8 @@ export class DashboardNavigationComponent {
       if (segments[2]) label = 'coachWorkspace.client.title';
     } else if (page === 'programs') {
       this.items.push({ label: 'coachWorkspace.programs.title', url: '/coach/programs' });
-      if (segments[2] === 'new') label = 'coachWorkspace.editor.newTitle';
+      if (segments[2] === 'import') label = 'excelImport.title';
+      else if (segments[2] === 'new') label = 'coachWorkspace.editor.newTitle';
       else if (segments[2]) label = 'coachWorkspace.editor.title';
     } else if (page === 'workouts') {
       this.items.push({ label: 'menu.coachWorkouts', url: '/coach/workouts' });
@@ -122,7 +123,7 @@ export class DashboardNavigationComponent {
     }
     if (page === 'personal-programs' && segments[2]) {
       this.items.push({ label: 'personalPrograms.title', url: '/user/personal-programs' });
-      this.items.push({ label: segments[2] === 'new' ? 'personalPrograms.create' : 'personalPrograms.editor', url: this.router.url });
+      this.items.push({ label: segments[2] === 'import' ? 'excelImport.title' : segments[2] === 'new' ? 'personalPrograms.create' : 'personalPrograms.editor', url: this.router.url });
       return;
     }
     if (page === 'programs' && segments[3] === 'workouts') {

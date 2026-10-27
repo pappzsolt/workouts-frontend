@@ -1,0 +1,118 @@
+<div class="min-h-full bg-surface-50 px-4 py-6 sm:px-6 lg:px-8">
+  <div class="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-6">
+    <a [routerLink]="backLink" class="self-start text-sm font-semibold text-primary-700">{{ 'excelImport.back' | translate }}</a>
+    <div>
+      <h1 appHeading="page">{{ 'excelImport.title' | translate }}</h1>
+      <p class="mt-2 text-sm text-content-600">{{ (scope === 'coach' ? 'excelImport.coachHint' : 'excelImport.personalHint') | translate }}</p>
+    </div>
+    <app-message [message]="message" type="error" role="alert" />
+    @if (uncertain) { <app-message message="excelImport.uncertain" type="info" role="alert" /> }
+
+    @if (result) {
+      <section aria-live="polite" class="flex flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-5">
+        <h2 class="text-xl font-bold text-content-900">{{ 'excelImport.success' | translate }}</h2>
+        <p class="break-words font-semibold">{{ result.programName }}</p>
+        <p>{{ 'excelImport.counts' | translate: { workouts: result.workouts, exercises: result.exercises, sets: result.sets } }}</p>
+        @for (warning of result.warnings; track $index) { <p class="text-sm text-content-700">{{ warning }}</p> }
+        <div class="flex flex-wrap gap-3">
+          @if (scope === 'coach') {
+            <a [routerLink]="['/coach/clients', userId]" [queryParams]="{ program: result.programId }" class="btn btn-primary">{{ 'excelImport.open' | translate }}</a>
+          } @else {
+            <a [routerLink]="['/user/personal-programs', result.programId]" class="btn btn-primary">{{ 'excelImport.open' | translate }}</a>
+          }
+          <button type="button" class="btn btn-neutral" (click)="reset()">{{ 'excelImport.another' | translate }}</button>
+        </div>
+      </section>
+    } @else {
+      <form #importForm="ngForm" (ngSubmit)="check()" class="rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
+        <fieldset [disabled]="!!busy" class="flex min-w-0 flex-col gap-5" [attr.aria-busy]="!!busy">
+          @if (scope === 'coach') {
+            <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+              {{ 'excelImport.client' | translate }}
+              <select name="client" [attr.aria-label]="'excelImport.client' | translate" required [(ngModel)]="userId" (ngModelChange)="changed()" [disabled]="loadingClients"
+                class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 font-normal">
+                <option [ngValue]="null">{{ 'excelImport.chooseClient' | translate }}</option>
+                @for (client of clients; track client.userId) { <option [ngValue]="client.userId">{{ client.username }}</option> }
+              </select>
+            </label>
+            @if (loadingClients) { <app-loading message="coachWorkspace.loading" /> }
+            @if (clientError) {
+              <app-message [message]="clientError" type="error" />
+              <button type="button" class="btn btn-neutral self-start" (click)="loadClients()">{{ 'excelImport.retry' | translate }}</button>
+            } @else if (!loadingClients && clients.length === 0) { <p class="text-sm text-content-600">{{ 'excelImport.noClients' | translate }}</p> }
+          }
+          <label class="flex min-w-0 flex-col gap-2 text-sm font-semibold text-content-800">
+            {{ 'excelImport.file' | translate }}
+            <input name="file" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required
+              (change)="selectFile($event)" aria-describedby="excel-file-hint" class="min-h-11 max-w-full rounded-xl border border-surface-300 bg-white p-2 font-normal" />
+            <span id="excel-file-hint" class="font-normal text-content-600">{{ 'excelImport.fileHint' | translate }}</span>
+          </label>
+          <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+            {{ 'excelImport.name' | translate }}
+            <input appInput="default" type="text" name="programName" maxlength="255" [attr.aria-label]="'excelImport.name' | translate" aria-describedby="excel-name-hint" [(ngModel)]="programName" (ngModelChange)="changed()" />
+            <span id="excel-name-hint" class="font-normal text-content-600">{{ 'excelImport.nameHint' | translate }}</span>
+          </label>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+              {{ 'excelImport.start' | translate }}
+              <input appInput="default" type="date" name="startDate" min="1900-01-01" max="9999-12-31" [(ngModel)]="startDate" (ngModelChange)="changed()" aria-describedby="excel-start-hint" />
+            </label>
+            <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+              {{ 'excelImport.language' | translate }}
+              <select name="language" [(ngModel)]="programLanguage" (ngModelChange)="changed()" class="min-h-11 rounded-xl border border-surface-300 bg-white px-3 font-normal">
+                <option value="hu">Magyar</option><option value="en">English</option><option value="de">Deutsch</option>
+              </select>
+            </label>
+          </div>
+          <p id="excel-start-hint" class="text-sm text-content-600">{{ 'excelImport.startHint' | translate }}</p>
+
+          @if (issues.length) {
+            <section class="flex flex-col gap-3" aria-labelledby="excel-mapping-title">
+              <h2 id="excel-mapping-title" class="text-lg font-bold text-content-900">{{ 'excelImport.mappingTitle' | translate }}</h2>
+              <p class="text-sm text-content-600">{{ 'excelImport.mappingHint' | translate }}</p>
+              @for (issue of issues; track issue.name) {
+                <div class="flex min-w-0 flex-wrap items-center gap-3 rounded-xl border border-surface-200 p-3">
+                  <div class="min-w-0 flex-[1_1_220px]">
+                    <p class="break-words font-semibold">{{ issue.name }}</p>
+                    @if (mappings[issue.name]; as chosen) {
+                      <p class="break-words text-sm text-content-600">{{ chosen.name }} · #{{ chosen.id }}</p>
+                    } @else {
+                      <p class="text-sm text-content-600">{{ (issue.candidateIds.length ? 'excelImport.ambiguous' : 'excelImport.unknown') | translate }}</p>
+                      @if (issue.candidateIds.length) { <p class="text-sm text-content-600">{{ 'excelImport.candidates' | translate }}: {{ issue.candidateIds.join(', ') }}</p> }
+                    }
+                  </div>
+                  <button type="button" class="btn btn-neutral" (click)="activeMapping = issue.name">{{ 'excelImport.chooseExercise' | translate }}</button>
+                  @if (mappings[issue.name]) { <button type="button" class="btn btn-neutral" (click)="clearMapping(issue.name)">{{ 'excelImport.clearMapping' | translate }}</button> }
+                </div>
+              }
+              @if (activeMapping) {
+                <div class="rounded-xl border border-primary-200 p-3">
+                  <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <h3 class="break-words font-semibold">{{ activeMapping }}</h3>
+                    <button type="button" class="btn btn-neutral" (click)="activeMapping = null">{{ 'excelImport.close' | translate }}</button>
+                  </div>
+                  <app-exercise-picker [showIds]="true" (picked)="pickExercise($event)" />
+                </div>
+              }
+            </section>
+          }
+          <button type="submit" class="btn btn-primary self-start" [disabled]="!canPreview || importForm.invalid">{{ (busy === 'preview' ? 'excelImport.checking' : 'excelImport.preview') | translate }}</button>
+        </fieldset>
+      </form>
+
+      @if (preview) {
+        <section aria-live="polite" class="flex flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-5">
+          <h2 class="text-xl font-bold text-content-900">{{ 'excelImport.previewTitle' | translate }}</h2>
+          <p class="break-words font-semibold">{{ preview.programName }}</p>
+          @if (scope === 'coach') { <p>{{ 'excelImport.client' | translate }}: {{ selectedClient }}</p> }
+          <p>{{ preview.startDate | date: 'yyyy.MM.dd' }} – {{ preview.endDate | date: 'yyyy.MM.dd' }}</p>
+          <p>{{ 'excelImport.counts' | translate: { workouts: preview.workouts, exercises: preview.exercises, sets: preview.sets } }}</p>
+          @for (warning of preview.warnings; track $index) { <p class="text-sm text-content-700">{{ warning }}</p> }
+          @if (preview.unresolvedExercises.length) { <app-message message="excelImport.resolveFirst" type="info" /> }
+          <p class="text-sm text-content-600">{{ 'excelImport.duplicateHint' | translate }}</p>
+          <button type="button" class="btn btn-primary self-start" [disabled]="!canImport" (click)="save()">{{ (busy === 'import' ? 'excelImport.importing' : 'excelImport.import') | translate }}</button>
+        </section>
+      }
+    }
+  </div>
+</div>
