@@ -416,6 +416,11 @@
     "notesPlaceholder": "Pl.: Ez a sorozat nehéz volt..."
   },
   "userMyPrograms": {
+    "completed": "Teljesítve",
+    "inProgress": "Folyamatban",
+    "workoutsCompleted": "{{completed}} / {{total}} edzés teljesítve · {{remaining}} hátravan",
+    "allWorkoutsCompleted": "Mind a {{total}} edzés teljesítve",
+    "noWorkouts": "A programban még nincs edzés.",
     "title": "Programjaim",
     "loading": "Programok betöltése folyamatban...",
     "noPrograms": "Jelenleg nincsenek elérhető programok.",

@@ -416,6 +416,11 @@
     "notesPlaceholder": "E.g. This set felt difficult..."
   },
   "userMyPrograms": {
+    "completed": "Completed",
+    "inProgress": "In progress",
+    "workoutsCompleted": "{{completed}} / {{total}} workouts completed · {{remaining}} remaining",
+    "allWorkoutsCompleted": "All {{total}} workouts completed",
+    "noWorkouts": "This program has no workouts yet.",
     "title": "My Programs",
     "loading": "Loading programs...",
     "noPrograms": "There are currently no available programs.",

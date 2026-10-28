@@ -56,7 +56,8 @@
         <app-card
           *ngFor="let program of paginatedPrograms; trackBy: trackByProgram"
           variant="default"
-          class="block w-full min-w-0 cursor-pointer"
+          class="block w-full min-w-0 cursor-pointer rounded-2xl"
+          [ngClass]="{ 'ring-2 ring-success-300': isProgramCompleted(program.id) }"
           [routerLink]="['/user/programs', program.id, 'workouts']"
           [queryParams]="{ programName: program.name }"
         >
@@ -89,9 +90,21 @@
           <div class="flex min-w-0 flex-1 flex-col p-4 sm:p-7">
             <!-- PROGRAM NÉV -->
 
-            <h3 class="mb-4 break-words text-xl sm:text-2xl font-bold leading-tight text-content-800">
-              {{ program.name }}
-            </h3>
+            <div class="mb-4 flex flex-wrap items-center gap-3">
+              <h3 class="min-w-0 break-words text-xl sm:text-2xl font-bold leading-tight text-content-800">
+                {{ program.name }}
+              </h3>
+              <ng-container *ngIf="programProgress[program.id] as progress">
+                <span
+                  *ngIf="progress.totalWorkouts > 0"
+                  class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold"
+                  [ngClass]="isProgramCompleted(program.id) ? 'bg-success-50 text-success-800' : 'bg-surface-100 text-content-600'"
+                >
+                  <app-icon [name]="isProgramCompleted(program.id) ? 'circle-check' : 'clock'" sizeClass="h-4 w-4" />
+                  {{ (isProgramCompleted(program.id) ? 'userMyPrograms.completed' : 'userMyPrograms.inProgress') | translate }}
+                </span>
+              </ng-container>
+            </div>
 
             <!-- KEZDÉS / BEFEJEZÉS -->
 
@@ -131,19 +144,21 @@
 
             <!-- PROGRESS -->
 
-            <div class="mt-5">
+            <div class="mt-5" *ngIf="programProgress[program.id] as progress">
               <!-- PROGRESS LABEL -->
 
-              <div class="mb-2 flex items-center justify-between gap-3 text-base sm:text-lg">
-                <span class="font-semibold text-content-700">
-                  {{ 'userMyPrograms.workouts' | translate }}:
-                </span>
-
-                <span class="font-semibold text-content-600">
-                  {{ programProgress[program.id]?.completedWorkouts ?? 0 }}
-                  /
-                  {{ programProgress[program.id]?.totalWorkouts ?? 0 }}
-                </span>
+              <div class="mb-2 flex flex-wrap items-center gap-2 text-base sm:text-lg"
+                   [ngClass]="isProgramCompleted(program.id) ? 'text-success-800' : 'text-content-700'">
+                <ng-container *ngIf="progress.totalWorkouts > 0; else emptyProgram">
+                  <app-icon *ngIf="isProgramCompleted(program.id)" name="circle-check" sizeClass="h-5 w-5" />
+                  <span class="font-semibold">
+                    {{ (isProgramCompleted(program.id) ? 'userMyPrograms.allWorkoutsCompleted' : 'userMyPrograms.workoutsCompleted')
+                      | translate: { completed: progress.completedWorkouts, total: progress.totalWorkouts, remaining: remainingWorkouts(program.id) } }}
+                  </span>
+                </ng-container>
+                <ng-template #emptyProgram>
+                  <span class="font-semibold">{{ 'userMyPrograms.noWorkouts' | translate }}</span>
+                </ng-template>
               </div>
 
               <!-- PROGRESS BAR -->

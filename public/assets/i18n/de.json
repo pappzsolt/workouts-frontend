@@ -416,6 +416,11 @@
     "notesPlaceholder": "Z. B.: Dieser Satz war schwierig..."
   },
   "userMyPrograms": {
+    "completed": "Abgeschlossen",
+    "inProgress": "In Bearbeitung",
+    "workoutsCompleted": "{{completed}} / {{total}} Trainings abgeschlossen · {{remaining}} verbleibend",
+    "allWorkoutsCompleted": "Alle {{total}} Trainings abgeschlossen",
+    "noWorkouts": "Dieses Programm enthält noch keine Trainings.",
     "title": "Meine Programme",
     "loading": "Programme werden geladen...",
     "noPrograms": "Derzeit sind keine Programme verfügbar.",

@@ -301,6 +301,17 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
       });
   }
 
+  isProgramCompleted(programId: number): boolean {
+    const progress = this.programProgress[programId];
+    return !!progress && progress.totalWorkouts > 0
+      && progress.completedWorkouts >= progress.totalWorkouts;
+  }
+
+  remainingWorkouts(programId: number): number {
+    const progress = this.programProgress[programId];
+    return progress ? Math.max(0, progress.totalWorkouts - progress.completedWorkouts) : 0;
+  }
+
   canExport(program: UserProgram): boolean {
     const total = this.programProgress[program.id]?.totalWorkouts;
     return total === undefined || total > 0;
