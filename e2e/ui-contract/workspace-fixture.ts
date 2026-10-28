@@ -76,6 +76,10 @@ export class WorkspaceApi {
       if (failure) return route.fulfill({ status: failure, json: { success: false, message: 'Contract failure', data: null } });
       let data: any; const s = this.state; const id = Number(c.path.split('/').at(-1));
       const match = (method: string, path: string) => c.method === method && c.path === path;
+      if (c.method === 'GET' && /^\/api\/user-workout-exercises\/user-programs\/\d+\/\d+\/export$/.test(c.path)) {
+        return route.fulfill({ status: 200, contentType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          headers: { 'access-control-expose-headers': 'Content-Disposition' }, body: Buffer.from('PK contract xlsx') });
+      }
       if (c.path === '/api/auth/web/refresh') {
         const payload = Buffer.from(JSON.stringify({ sub: 'contract-coach', roles: 'ROLE_COACH', exp: 4102444800 })).toString('base64url');
         data = { accessToken: `eyJhbGciOiJIUzI1NiJ9.${payload}.contract` };
@@ -136,6 +140,33 @@ export class WorkspaceApi {
           const w = structuredClone(s.workouts.find(w => w.id === l.workoutId)!); w.id = this.nextId++; s.workouts.push(w);
           s.links.push({ ...l, id: this.nextId++, programId: data, workoutId: w.id });
         }
+      } else if (c.method === 'GET' && /^\/api\/workouts\/\d+$/.test(c.path)) {
+        const w: any = s.workouts.find(w => w.id === id);
+        if (!w) return route.fulfill({ status: 404, json: { success: false, message: 'A workout nem található.', data: null } });
+        data = { workoutId: w.id, workoutName: w.name, workoutDescription: w.description ?? 'Workout description', workoutDate: w.workoutDate ?? TODAY,
+          durationMinutes: w.durationMinutes ?? 45, intensityLevel: w.intensityLevel ?? 'MEDIUM', done: w.done ?? false };
+      } else if (c.method === 'PUT' && /^\/api\/workouts\/\d+$/.test(c.path)) {
+        Object.assign(s.workouts.find(w => w.id === id)!, { name: c.body.name, description: c.body.description, workoutDate: c.body.workoutDate,
+          durationMinutes: c.body.durationMinutes, intensityLevel: c.body.intensityLevel, done: c.body.done });
+        data = { status: 'ok', message: 'Workout sikeresen módosítva', workoutId: id };
+      } else if (match('GET', '/api/exercises/workouts/page')) data = { content: [], page: 0, size: Number(c.query.get('size') ?? 12), totalElements: 0, totalPages: 0 };
+      else if (match('GET', '/api/exercises')) data = s.exercises.map(e => ({ ...e }));
+      else if (c.method === 'GET' && /^\/api\/exercises\/workouts\/\d+$/.test(c.path)) {
+        const w = s.workouts.find(w => w.id === id);
+        if (!w) return route.fulfill({ status: 404, json: { success: false, message: 'A workout nem található.', data: null } });
+        data = { id: w.id, name: w.name, exercises: w.exercises.map((e, i) => ({ id: w.id * 1000 + e.id, workoutId: w.id, exercise: { ...e },
+          sets: e.sets, repetitions: e.repetitions, orderIndex: i, restSeconds: e.restSeconds, notes: null, done: false })) };
+      } else if (c.method === 'GET' && /^\/api\/program-workouts\/workouts\/\d+\/assigned$/.test(c.path)) {
+        const wid = Number(c.path.split('/')[4]); data = { assigned: s.links.some(l => l.workoutId === wid) };
+      } else if (c.method === 'GET' && /^\/api\/coach\/workouts\/\d+\/programs$/.test(c.path)) {
+        const wid = Number(c.path.split('/')[4]);
+        data = s.programs.filter(p => s.links.some(l => l.programId === p.programId && l.workoutId === wid)).map(p => ({ programId: p.programId, name: p.programName }));
+      } else if (c.method === 'POST' && /^\/api\/coach\/workouts\/\d+\/copy$/.test(c.path)) {
+        const source = s.workouts.find(w => w.id === Number(c.path.split('/')[4]))!; data = this.nextId++;
+        s.workouts.push({ ...structuredClone(source), id: data, name: c.body.name });
+      } else if (match('DELETE', '/api/workout-exercises')) {
+        const w = s.workouts.find(w => w.id === Number(c.query.get('workoutId')))!;
+        w.exercises = w.exercises.filter(e => e.id !== Number(c.query.get('exerciseId'))); data = null;
       } else { this.unknown.push(`${c.method} ${c.path}`); return route.fulfill({ status: 501, json: { success: false, message: 'Unhandled contract API' } }); }
       await route.fulfill({ json: { success: true, data } });
     });
