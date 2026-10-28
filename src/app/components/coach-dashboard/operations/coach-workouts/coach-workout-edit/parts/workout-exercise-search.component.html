@@ -1,0 +1,100 @@
+<div class="m-4 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:m-5 sm:p-5">
+  <div class="mb-5 flex items-start gap-3">
+    <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-50 text-xl text-primary-700">
+      <app-icon name="circle-plus" sizeClass="h-5 w-5" />
+    </span>
+    <div class="min-w-0">
+      <strong class="block text-base font-bold text-content-800">{{ 'coachWorkoutEdit.addExercise' | translate }}</strong>
+      <small class="mt-1 block text-sm leading-5 text-content-500">{{ 'coachWorkoutEdit.addExerciseDescription' | translate }}</small>
+    </div>
+  </div>
+
+  <app-search
+    inputId="exerciseSearch"
+    [searchTerm]="searchTerm"
+    label="coachWorkoutEdit.searchExercise"
+    placeholder="coachWorkoutEdit.searchExercisePlaceholder"
+    [showClearButton]="true"
+    (searchTermChange)="searchTermChange.emit($event)"
+    [debounceMs]="0"
+    clearLabel="coachWorkoutEdit.clearSearch"
+  ></app-search>
+
+  <div class="mt-5">
+    @if (!loading && exercises.length > 0) {
+      <div class="mb-2 flex items-center justify-between">
+        <span class="text-sm font-semibold text-content-700">{{ 'coachWorkoutEdit.exercises' | translate }}</span>
+        <span appBadge="step" class="bg-primary-100 text-primary-800">{{ exercises.length }}</span>
+      </div>
+
+      <div class="flex max-h-72 min-w-0 flex-col gap-2 overflow-y-auto rounded-xl border border-surface-200 bg-surface-50 p-2">
+        @for (exercise of exercises; track exercise.id ?? $index) {
+          <app-button
+            appearance="custom"
+            type="button"
+            (buttonClick)="exerciseSelected.emit(exercise.id)"
+            [buttonClass]="
+              'group flex min-w-0 items-center gap-3 rounded-xl border border-transparent bg-white px-3 py-3 text-left shadow-sm transition duration-150 hover:border-primary-200 hover:bg-primary-50' +
+              (selectedId === exercise.id ? ' bg-primary-50' : '') +
+              (selectedId === exercise.id ? ' border-primary-300' : '') +
+              (selectedId === exercise.id ? ' text-primary-800' : '')
+            "
+          >
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-surface-100 text-lg group-hover:bg-white">
+              <app-icon name="dumbbell" sizeClass="h-5 w-5" />
+            </span>
+            <span class="min-w-0 flex-1 break-words text-sm font-semibold text-content-700">{{ exercise.name }}</span>
+            <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-50 text-primary-700">
+              <app-icon [name]="selectedId === exercise.id ? 'check' : 'plus'" sizeClass="h-4 w-4" />
+            </span>
+          </app-button>
+        }
+      </div>
+    }
+
+    @if (loading) {
+      <div appLoading class="flex items-center gap-3 rounded-xl border border-info-100 bg-info-50 px-4 py-3 text-sm text-info-700">
+        <span class="h-5 w-5 animate-spin rounded-full border-2 border-info-200 border-t-primary-600"></span>
+        <span>{{ 'coachWorkoutEdit.loadingExercises' | translate }}</span>
+      </div>
+    }
+
+    @if (!loading && searchTerm.trim() && exercises.length === 0 && hasExercises) {
+      <app-message [message]="'coachWorkoutEdit.noSearchResults'" type="info"></app-message>
+    }
+
+    @if (!loading && !searchTerm.trim() && exercises.length === 0 && hasExercises) {
+      <app-message [message]="'coachWorkoutEdit.allExercisesAdded'" type="info"></app-message>
+    }
+  </div>
+
+  @if (selectedId !== null) {
+    <div class="mt-5 flex min-w-0 flex-col gap-4 rounded-xl border border-primary-200 bg-primary-50/60 p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div class="flex min-w-0 items-center gap-3">
+        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-primary-700 shadow-sm">
+          <app-icon name="check" sizeClass="h-5 w-5" />
+        </span>
+        <div class="min-w-0">
+          <small class="block text-xs font-semibold uppercase tracking-wide text-primary-700">{{ 'coachWorkoutEdit.selectedExercise' | translate }}</small>
+          <strong class="mt-0.5 block break-words text-sm font-bold text-content-800">{{ selectedName }}</strong>
+        </div>
+      </div>
+
+      <app-button
+        type="button"
+        [disabled]="addDisabled"
+        (buttonClick)="add.emit()"
+        variant="primary"
+        appearance="solid"
+        [fullWidth]="true"
+        buttonClass="sm:w-auto"
+        class="block w-full sm:w-auto"
+      >
+        @if (!adding) {
+          <span><app-icon name="circle-plus" sizeClass="h-5 w-5" /></span>
+        }
+        <span>{{ (adding ? 'coachWorkoutEdit.adding' : 'coachWorkoutEdit.addExercise') | translate }}</span>
+      </app-button>
+    </div>
+  }
+</div>

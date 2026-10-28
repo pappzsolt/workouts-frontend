@@ -1,6 +1,5 @@
 import { createInputValidationGuard } from '../../../../shared/components/form-controls/app-input.directive';
-import { AppSearchComponent } from '../../../../shared/components/app-search/app-search.component';
-import { INTENSITY_OPTIONS, normalizeIntensity } from '../../../../../constants/intensity';
+import { INTENSITY_OPTIONS } from '../../../../../constants/intensity';
 import type { WorkoutExerciseView } from '../../../../../models/workout/workout-exercise-view.model';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
@@ -13,28 +12,35 @@ import type { WorkoutWithExercises as WorkoutUiDto } from '../../../../../models
 import { WorkoutExerciseService } from '../../../../../services/coach/workout-exercises.service';
 import { CoachWorkspaceService } from '../../../../../services/coach/coach-workspace.service';
 import type { CoachProgramUsage } from '../../../../../models/coach-workspace.model';
-
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
-
 import { ProgramWorkoutService } from '../../../../../services/coach/program-workout.service';
 import { skip, timer, Subject, takeUntil, finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { LanguageService } from '../../../../../services/shared/language.service';
-import { toExercise } from '../../../../../services/shared/exercise-mapping';
-import { USER_MESSAGES } from '../../../../../constants/user-messages';
-
 import { Workout } from '../../../../../models/workout.model';
-
 import { Exercise } from '../../../../../models/exercise.model';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
+import { WorkoutExerciseListComponent } from './parts/workout-exercise-list.component';
+import { WorkoutExerciseSearchComponent } from './parts/workout-exercise-search.component';
+import {
+  containsExercise,
+  emptyWorkout,
+  selectableExercises,
+  toWorkoutExerciseViews,
+  workoutFromDto,
+} from './workout-edit.helpers';
 
+/**
+ * Edzés szerkesztése az Edzéstárban: az edzés adatai és a gyakorlatlistája. A programban
+ * lévő edzés gyakorlatlistája zárolt; ilyenkor szerkeszthető másolat készíthető.
+ */
 @Component({
   selector: 'app-coach-workout-edit',
   standalone: true,
-  imports: [AppSearchComponent, ...SHARED_IMPORTS, AppSelectComponent],
+  imports: [...SHARED_IMPORTS, AppSelectComponent, WorkoutExerciseSearchComponent, WorkoutExerciseListComponent],
   templateUrl: './coach-workout-edit.component.html',
   styleUrls: ['./coach-workout-edit.component.css'],
 })
@@ -42,12 +48,12 @@ export class CoachWorkoutEditComponent implements OnInit {
   readonly intensityOptions = INTENSITY_OPTIONS;
   private readonly validateInputs = createInputValidationGuard();
   private readonly logger = inject(LoggerService);
-
   private readonly destroyRef = inject(DestroyRef);
+  private readonly workspace = inject(CoachWorkspaceService);
 
-  // ==========================================================
-  // WORKOUT
-  // ==========================================================
+  // ----------------------------------------------------------
+  // Az edzés űrlapja
+  // ----------------------------------------------------------
 
   private readonly workoutLoadCancelled$ = new Subject<void>();
   private readonly exercisesLoadCancelled$ = new Subject<void>();
@@ -55,15 +61,99 @@ export class CoachWorkoutEditComponent implements OnInit {
   private readonly assignmentLoadCancelled$ = new Subject<void>();
   private loadedWorkout?: Workout;
   private formContext = '';
+  /** Nyelvenként a szöveges mezők, edzésenként a többi mező mentetlen módosításai. */
   private readonly textDrafts = new Map<string, Partial<Workout>>();
   private readonly sharedDrafts = new Map<number, Partial<Workout>>();
   loadingWorkout = false;
   savingWorkout = false;
   private workoutReady = false;
 
+  workoutId?: number;
+  workout: Workout = emptyWorkout();
+
+  message = '';
+  messageType: 'success' | 'error' | '' = '';
+
+  // ----------------------------------------------------------
+  // Gyakorlatok
+  // ----------------------------------------------------------
+
+  /** Igaz, ha az edzés már legalább egy programban szerepel: ekkor a gyakorlatlista zárolt. */
+  workoutAssignedToProgram = false;
+  checkingProgramAssignment = false;
+
+  /** Az összes választható gyakorlat. */
+  exercises: Exercise[] = [];
+  /** Az edzés jelenlegi gyakorlatai. */
+  workoutExercises: WorkoutExerciseView[] = [];
+  selectedExerciseId: number | null = null;
+  exerciseSearchTerm = '';
+  loadingExercises = false;
+  addingExercise = false;
+  structureBusy = false;
+
+  // Programok, amelyek használják; másolat szerkesztéshez
+  usedInPrograms: CoachProgramUsage[] = [];
+  copying = false;
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private coachWorkoutsService: CoachWorkoutsService,
+    private workoutExerciseService: WorkoutExerciseService,
+    private exerciseService: ExerciseService,
+    private programWorkoutService: ProgramWorkoutService,
+    private languageService: LanguageService,
+  ) {}
+
   get canSaveWorkout(): boolean {
     return this.workoutReady && !this.loadingWorkout && !this.savingWorkout &&
       this.formContext === `${this.workoutId}:${this.languageService.getCurrentLanguage()}`;
+  }
+
+  ngOnInit(): void {
+    this.languageService.language$
+      .pipe(skip(1), takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.loadWorkout(true);
+        this.loadExercises();
+        this.loadWorkoutExercises();
+        this.checkProgramAssignment();
+      });
+
+    this.workoutId = Number(this.route.snapshot.paramMap.get('id'));
+    if (!this.workoutId || this.workoutId <= 0) {
+      this.setMessage('coachWorkoutEdit.invalidWorkoutId', 'error');
+      return;
+    }
+
+    this.loadWorkout();
+    this.loadExercises();
+    this.loadWorkoutExercises();
+    this.checkProgramAssignment();
+    this.loadUsage();
+  }
+
+  // ----------------------------------------------------------
+  // Betöltés
+  // ----------------------------------------------------------
+
+  checkProgramAssignment(): void {
+    if (!this.workoutId) return;
+    this.assignmentLoadCancelled$.next();
+    this.checkingProgramAssignment = true;
+    this.programWorkoutService.isWorkoutAssignedToAnyProgram(this.workoutId)
+      .pipe(takeUntil(this.assignmentLoadCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: (response) => {
+          this.workoutAssignedToProgram = response.success && response.data?.assigned === true;
+          this.checkingProgramAssignment = false;
+        },
+        error: (error: HttpErrorResponse) => {
+          this.logger.error('Hiba a workout programhoz tartozásának ellenőrzésekor:', error);
+          this.workoutAssignedToProgram = false;
+          this.checkingProgramAssignment = false;
+        },
+      });
   }
 
   private captureWorkoutDraft(): void {
@@ -79,179 +169,8 @@ export class CoachWorkoutEditComponent implements OnInit {
     this.sharedDrafts.set(this.loadedWorkout.id!, shared);
   }
 
-  workoutId?: number;
-
-  workout: Workout = {
-    name: '',
-    workoutName: '',
-    description: '',
-    workoutDescription: '',
-    durationMinutes: undefined,
-    difficultyLevel: '',
-    programId: undefined,
-
-    workoutDate: undefined,
-    intensityLevel: undefined,
-    dayIndex: undefined,
-    completed: undefined,
-    performedAt: undefined,
-    actualSets: undefined,
-    actualRepetitions: undefined,
-    weightUsed: undefined,
-    durationSeconds: undefined,
-    feedback: undefined,
-    notes: undefined,
-    done: undefined,
-  };
-
-  // ==========================================================
-  // ÜZENETEK
-  // ==========================================================
-
-  message: string = '';
-
-  messageType: 'success' | 'error' | '' = '';
-
-  // ==========================================================
-  // PROGRAMHOZ TARTOZÁS
-  // ==========================================================
-
-  /**
-   * Igaz, ha a workout már legalább egy programban szerepel.
-   *
-   * Ilyen esetben új exercise hozzáadása nem engedélyezett.
-   */
-  workoutAssignedToProgram: boolean = false;
-
-  /**
-   * A program-hozzárendelés ellenőrzésének állapota.
-   */
-  checkingProgramAssignment: boolean = false;
-
-  // ==========================================================
-  // EXERCISE-EK
-  // ==========================================================
-
-  /**
-   * Az összes választható exercise.
-   */
-  exercises: Exercise[] = [];
-
-  /**
-   * Az aktuális workoutban már meglévő
-   * WorkoutExercise kapcsolatok.
-   */
-  workoutExercises: WorkoutExerciseView[] = [];
-
-  /**
-   * Kiválasztott exercise ID.
-   */
-  selectedExerciseId: number | null = null;
-
-  /**
-   * Exercise keresés.
-   */
-  exerciseSearchTerm: string = '';
-
-  /**
-   * Exercise-ek betöltési állapota.
-   */
-  loadingExercises: boolean = false;
-
-  /**
-   * Exercise hozzáadás folyamatban van.
-   */
-  addingExercise: boolean = false;
-
-  // ==========================================================
-  // CONSTRUCTOR
-  // ==========================================================
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private coachWorkoutsService: CoachWorkoutsService,
-    private workoutExerciseService: WorkoutExerciseService,
-    private exerciseService: ExerciseService,
-    private programWorkoutService: ProgramWorkoutService,
-    private languageService: LanguageService,
-  ) {}
-
-  // ==========================================================
-  // INIT
-  // ==========================================================
-
-  ngOnInit(): void {
-    this.languageService.language$
-      .pipe(skip(1), takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => {
-      this.loadWorkout(true);
-      this.loadExercises();
-      this.loadWorkoutExercises();
-      this.checkProgramAssignment();
-    });
-
-    this.workoutId = Number(this.route.snapshot.paramMap.get('id'));
-
-    if (!this.workoutId || this.workoutId <= 0) {
-      this.setMessage('coachWorkoutEdit.invalidWorkoutId', 'error');
-
-      return;
-    }
-
-    // Workout betöltése
-    this.loadWorkout();
-
-    // Összes exercise betöltése
-    this.loadExercises();
-
-    // Workout jelenlegi exercise-einek betöltése
-    this.loadWorkoutExercises();
-
-    // Ellenőrizzük, hogy a workout programban van-e
-    this.checkProgramAssignment();
-    this.loadUsage();
-  }
-
-  // ==========================================================
-  // PROGRAMHOZ TARTOZÁS ELLENŐRZÉSE
-  // ==========================================================
-
-  checkProgramAssignment(): void {
-    if (!this.workoutId) {
-      return;
-    }
-
-    this.assignmentLoadCancelled$.next();
-    this.checkingProgramAssignment = true;
-
-    this.programWorkoutService.isWorkoutAssignedToAnyProgram(this.workoutId)
-      .pipe(takeUntil(this.assignmentLoadCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (response) => {
-        this.workoutAssignedToProgram = response.success && response.data?.assigned === true;
-
-        this.checkingProgramAssignment = false;
-
-      },
-
-      error: (error: HttpErrorResponse) => {
-        this.logger.error('Hiba a workout programhoz tartozásának ellenőrzésekor:', error);
-
-        this.workoutAssignedToProgram = false;
-
-        this.checkingProgramAssignment = false;
-      },
-    });
-  }
-
-  // ==========================================================
-  // WORKOUT BETÖLTÉSE
-  // ==========================================================
-
   loadWorkout(preserveDrafts = false): void {
-    if (!this.workoutId) {
-      return;
-    }
+    if (!this.workoutId) return;
 
     this.workoutLoadCancelled$.next();
     const workoutId = this.workoutId;
@@ -266,351 +185,134 @@ export class CoachWorkoutEditComponent implements OnInit {
     this.workoutReady = false;
     this.coachWorkoutsService.getWorkoutById(workoutId, language)
       .pipe(takeUntil(this.workoutLoadCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (res: ApiResponse<UserWorkoutDto>) => {
-        this.loadingWorkout = false;
-        if (!res.success || !res.data) {
-          this.setMessage(res.message || 'coachWorkoutEdit.notFound', 'error');
-          return;
-        }
-
-        const w = res.data;
-
-        const workoutDateFormatted = w.workoutDate
-          ? w.workoutDate.split('T')[0]
-          : undefined;
-
-        const loaded: Workout = {
-          ...this.workout,
-          id: w.workoutId ?? this.workout.id,
-          name: w.workoutName ?? '',
-          workoutName: w.workoutName ?? '',
-          description: w.workoutDescription ?? '',
-          workoutDescription: w.workoutDescription ?? '',
-          durationMinutes: w.durationMinutes ?? undefined,
-          workoutDate: workoutDateFormatted,
-          intensityLevel: normalizeIntensity(w.intensityLevel) || undefined,
-          done: w.done ?? undefined,
-          programId: w.programId ?? undefined,
-          dayIndex: w.dayIndex ?? undefined,
-          completed: w.completed ?? undefined,
-          performedAt: w.performedAt ?? undefined,
-          actualSets: w.actualSets ?? undefined,
-          actualRepetitions: w.actualRepetitions ?? undefined,
-          weightUsed: w.weightUsed ?? undefined,
-          durationSeconds: w.durationSeconds ?? undefined,
-          feedback: w.feedback ?? undefined,
-          notes: w.notes ?? undefined,
-          exercises: [],
-        };
-        if (preserveDrafts) this.captureWorkoutDraft();
-        this.loadedWorkout = { ...loaded };
-        this.formContext = context;
-        this.workout = {
-          ...loaded,
-          ...(preserveDrafts ? this.sharedDrafts.get(workoutId) : {}),
-          ...(preserveDrafts ? this.textDrafts.get(context) : {}),
-        };
-        this.workoutReady = true;
-      },
-
-      error: (error) => {
-        this.loadingWorkout = false;
-        this.logger.error('Hiba a workout betöltésekor:', error);
-
-        this.setMessage('coachWorkoutEdit.loadError', 'error');
-      },
-    });
+        next: (res: ApiResponse<UserWorkoutDto>) => {
+          this.loadingWorkout = false;
+          if (!res.success || !res.data) {
+            this.setMessage(res.message || 'coachWorkoutEdit.notFound', 'error');
+            return;
+          }
+          const loaded = workoutFromDto(this.workout, res.data);
+          if (preserveDrafts) this.captureWorkoutDraft();
+          this.loadedWorkout = { ...loaded };
+          this.formContext = context;
+          this.workout = {
+            ...loaded,
+            ...(preserveDrafts ? this.sharedDrafts.get(workoutId) : {}),
+            ...(preserveDrafts ? this.textDrafts.get(context) : {}),
+          };
+          this.workoutReady = true;
+        },
+        error: (error) => {
+          this.loadingWorkout = false;
+          this.logger.error('Hiba a workout betöltésekor:', error);
+          this.setMessage('coachWorkoutEdit.loadError', 'error');
+        },
+      });
   }
-
-  // ==========================================================
-  // ÖSSZES EXERCISE BETÖLTÉSE
-  // ==========================================================
-
-  // ==========================================================
-  // ÖSSZES EXERCISE BETÖLTÉSE
-  // ==========================================================
 
   loadExercises(): void {
     this.exercisesLoadCancelled$.next();
     this.loadingExercises = true;
-
     this.exerciseService.getAllExercises()
       .pipe(takeUntil(this.exercisesLoadCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (response: ApiResponse<Exercise[]>) => {
-
-        this.exercises = response.data ?? [];
-
-        this.loadingExercises = false;
-      },
-
-      error: (error) => {
-        this.logger.error('Hiba az exercise-ek betöltésekor:', error);
-
-        this.exercises = [];
-
-        this.loadingExercises = false;
-
-        this.setMessage('coachWorkoutEdit.loadExercisesError', 'error');
-      },
-    });
+        next: (response: ApiResponse<Exercise[]>) => {
+          this.exercises = response.data ?? [];
+          this.loadingExercises = false;
+        },
+        error: (error) => {
+          this.logger.error('Hiba az exercise-ek betöltésekor:', error);
+          this.exercises = [];
+          this.loadingExercises = false;
+          this.setMessage('coachWorkoutEdit.loadExercisesError', 'error');
+        },
+      });
   }
 
-  // ==========================================================
-  // WORKOUT EXERCISE-EK BETÖLTÉSE
-  // ==========================================================
-
   loadWorkoutExercises(): void {
-    if (!this.workoutId) {
-      return;
-    }
-
+    if (!this.workoutId) return;
     this.workoutExercisesLoadCancelled$.next();
     this.exerciseService.getWorkoutExercises(this.workoutId)
       .pipe(takeUntil(this.workoutExercisesLoadCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (workout: WorkoutUiDto) => {
-        this.workoutExercises = (workout.exercises ?? [])
-          .filter((item) => item.id != null && item.workoutId != null)
-          .map((item) => ({
-            id: item.id ?? undefined,
-            workoutId: item.workoutId ?? this.workoutId!,
-            exerciseId: item.exercise?.id ?? undefined,
-            exercise: item.exercise ? toExercise(item.exercise) : undefined,
-            sets: item.sets ?? undefined,
-            repetitions: item.repetitions ?? undefined,
-            orderIndex: item.orderIndex ?? undefined,
-            restSeconds: item.restSeconds ?? undefined,
-            notes: item.notes ?? undefined,
-            done: item.done ?? undefined,
-            name: item.exercise?.name ?? undefined,
-          }))
-          .sort((x, y) => (x.orderIndex ?? 0) - (y.orderIndex ?? 0));
-      },
+        next: (workout: WorkoutUiDto) => {
+          this.workoutExercises = toWorkoutExerciseViews(workout, this.workoutId!);
+        },
+        error: (error: HttpErrorResponse) => {
+          this.logger.error('Hiba a workout exercise-ek betöltésekor:', error);
+          this.workoutExercises = [];
+          this.setMessage('coachWorkoutEdit.loadWorkoutExercisesError', 'error');
+        },
+      });
+  }
 
-      error: (error: HttpErrorResponse) => {
-        this.logger.error('Hiba a workout exercise-ek betöltésekor:', error);
-
-        this.workoutExercises = [];
-
-        this.setMessage('coachWorkoutEdit.loadWorkoutExercisesError', 'error');
-      },
+  private loadUsage(): void {
+    if (!this.workoutId) return;
+    this.workspace.programsUsingWorkout(this.workoutId).subscribe({
+      next: (programs) => (this.usedInPrograms = programs),
+      error: () => (this.usedInPrograms = []),
     });
   }
 
-  // ==========================================================
-  // WORKOUT EXERCISE ID LEKÉRÉSE
-  // ==========================================================
-
-  private getWorkoutExerciseId(workoutExercise: WorkoutExerciseView): number | null {
-    if (!workoutExercise) {
-      return null;
-    }
-
-    /**
-     * Normál WorkoutExercise response:
-     *
-     * {
-     *   exerciseId: 123
-     * }
-     *
-     * vagy:
-     *
-     * {
-     *   exercise: {
-     *     id: 123
-     *   }
-     * }
-     */
-
-    if (workoutExercise.exercise?.id != null) {
-      return Number(workoutExercise.exercise.id);
-    }
-
-    if (workoutExercise.exerciseId != null) {
-      return Number(workoutExercise.exerciseId);
-    }
-
-    /**
-     * Ha közvetlen Exercise objektumot
-     * kapunk vissza.
-     */
-    if (workoutExercise.name != null && workoutExercise.id != null) {
-      return Number(workoutExercise.id);
-    }
-
-    return null;
-  }
-
-  // ==========================================================
-  // MÁR BENNE VAN-E AZ EXERCISE?
-  // ==========================================================
+  // ----------------------------------------------------------
+  // Gyakorlat kiválasztása és hozzáadása
+  // ----------------------------------------------------------
 
   isExerciseAlreadyAdded(exerciseId: number): boolean {
-    return this.workoutExercises.some((workoutExercise) => {
-      const existingExerciseId = this.getWorkoutExerciseId(workoutExercise);
-
-      return existingExerciseId != null && existingExerciseId === Number(exerciseId);
-    });
+    return containsExercise(this.workoutExercises, exerciseId);
   }
 
-  // ==========================================================
-  // EXERCISE KIVÁLASZTÁSA
-  // ==========================================================
-
   selectExercise(exerciseId: number | undefined): void {
-    if (exerciseId == null) {
-      return;
-    }
-
+    if (exerciseId == null) return;
     if (this.workoutAssignedToProgram) {
       this.setMessage('coachWorkoutEdit.workoutAssigned', 'error');
-
       return;
     }
-
     this.selectedExerciseId = exerciseId;
   }
 
-  // ==========================================================
-  // KIVÁLASZTOTT EXERCISE NEVE
-  // ==========================================================
-
   getSelectedExerciseName(): string {
-    if (this.selectedExerciseId == null) {
-      return '';
-    }
-
-    const selectedExercise = this.exercises.find(
-      (exercise) => Number(exercise.id) === Number(this.selectedExerciseId),
-    );
-
-    return selectedExercise?.name || '';
+    if (this.selectedExerciseId == null) return '';
+    return this.exercises.find((exercise) => Number(exercise.id) === Number(this.selectedExerciseId))?.name || '';
   }
-
-  // ==========================================================
-  // ELÉRHETŐ EXERCISE-EK
-  // ==========================================================
 
   onExerciseSearchChange(term: string): void {
     this.exerciseSearchTerm = term;
     if (!term) this.selectedExerciseId = null;
   }
 
+  /** A még hozzá nem adott gyakorlatok a keresés szerint; programban lévő edzésnél egy sem. */
   get availableExercises(): Exercise[] {
-    const locale = this.languageService.getCurrentLanguage();
-    const search = this.exerciseSearchTerm.trim().toLocaleLowerCase(locale);
-
-    /*
-     * Ha a workout már programban van,
-     * nincs hozzáadható exercise.
-     */
-    if (this.workoutAssignedToProgram) {
-      return [];
-    }
-
-    return (
-      this.exercises
-
-        // Csak még hozzá nem adott exercise-ek.
-        .filter((exercise) => exercise.id != null && !this.isExerciseAlreadyAdded(exercise.id))
-
-        // Keresés név alapján.
-        .filter((exercise) => {
-          if (!search) {
-            return true;
-          }
-
-          const name = (exercise.name || '').toLocaleLowerCase(locale);
-
-          return name.includes(search);
-        })
-
-        // ABC rendezés név szerint.
-        .sort((a, b) => {
-          const nameA = (a.name || '').trim();
-
-          const nameB = (b.name || '').trim();
-
-          return nameA.localeCompare(nameB, locale, {
-            sensitivity: 'base',
-          });
-        })
-    );
+    if (this.workoutAssignedToProgram) return [];
+    return selectableExercises(this.exercises, this.workoutExercises, this.exerciseSearchTerm,
+      this.languageService.getCurrentLanguage());
   }
-
-  // ==========================================================
-  // EXERCISE HOZZÁADÁSA A WORKOUT-HOZ
-  // ==========================================================
-
-  // ==========================================================
-  // EXERCISE HOZZÁADÁSA A WORKOUT-HOZ
-  // ==========================================================
-
-  // ==========================================================
-  // EXERCISE HOZZÁADÁSA A WORKOUT-HOZ
-  // ==========================================================
 
   addExerciseToWorkout(): void {
     if (!this.workoutId) {
       this.setMessage('coachWorkoutEdit.invalidWorkoutId', 'error');
-
       return;
     }
-
-    /*
-     * Megvárjuk, amíg a programhoz tartozás
-     * ellenőrzése befejeződik.
-     */
-    if (this.checkingProgramAssignment) {
-      return;
-    }
-
-    /*
-     * Frontend oldali védelem.
-     *
-     * A backend védelem ettől függetlenül megmarad.
-     */
+    // Megvárjuk a programhoz tartozás ellenőrzését; a backend ettől függetlenül is véd.
+    if (this.checkingProgramAssignment) return;
     if (this.workoutAssignedToProgram) {
       this.setMessage('coachWorkoutEdit.workoutAssigned', 'error');
-
       return;
     }
-
     if (!this.selectedExerciseId) {
       this.setMessage('coachWorkoutEdit.selectExercise', 'error');
-
       return;
     }
-
     if (this.isExerciseAlreadyAdded(this.selectedExerciseId)) {
       this.setMessage('coachWorkoutEdit.exerciseAlreadyAdded', 'error');
-
       return;
     }
 
     const exerciseId = this.selectedExerciseId;
     const workoutId = this.workoutId;
-
-    if (workoutId == null) {
-      this.setMessage('coachWorkoutEdit.workoutIdMissing', 'error');
-      return;
-    }
-
     this.addingExercise = true;
-
     this.workoutExerciseService.assignExerciseToWorkout(workoutId, exerciseId).subscribe({
-      next: (response: ApiResponse<void>) => {
-
-        const addedExercise = this.exercises.find(
-          (exercise) => Number(exercise.id) === Number(exerciseId),
-        );
-
-        /*
-         * Azonnali frontend frissítés.
-         *
-         * A backend jelenleg nem küld vissza
-         * WorkoutExercise objektumot, ezért
-         * csak a szükséges adatokat tesszük be.
-         */
+      next: () => {
+        const addedExercise = this.exercises.find((exercise) => Number(exercise.id) === Number(exerciseId));
+        // A backend nem küldi vissza az új kapcsolatot: a listába a szükséges adatok kerülnek.
         if (addedExercise && !this.isExerciseAlreadyAdded(exerciseId)) {
           this.workoutExercises.push({
             workoutId,
@@ -623,99 +325,66 @@ export class CoachWorkoutEditComponent implements OnInit {
             done: false,
           });
         }
-
         this.selectedExerciseId = null;
-
         this.addingExercise = false;
-
         this.setMessage('coachWorkoutEdit.addSuccess', 'success');
       },
-
       error: (error: HttpErrorResponse) => {
         this.logger.error('Hiba az exercise workoutba adásakor:', error);
-
         this.addingExercise = false;
-
         const backendMessage = error?.error?.message ?? error?.error?.error ?? error?.message;
-
         this.setMessage(backendMessage || 'coachWorkoutEdit.addError', 'error');
       },
     });
   }
 
-  // ==========================================================
-  // WORKOUT MENTÉSE
-  // ==========================================================
+  // ----------------------------------------------------------
+  // Mentés
+  // ----------------------------------------------------------
 
   saveWorkout(): void {
     if (!this.canSaveWorkout) return;
     if (!this.validateInputs()) return;
-    if (!this.workoutId) {
-      return;
-    }
+    if (!this.workoutId) return;
 
-    const payload: Workout = {
-      ...this.workout,
-
-      workoutDate: this.workout.workoutDate,
-    };
-
+    const payload: Workout = { ...this.workout, workoutDate: this.workout.workoutDate };
     const context = this.formContext;
     const language = this.languageService.getCurrentLanguage();
+    const unchangedContext = () => this.formContext === context && this.languageService.getCurrentLanguage() === language;
     this.savingWorkout = true;
     this.coachWorkoutsService.updateWorkout(this.workoutId, payload, language).pipe(
       takeUntilDestroyed(this.destroyRef),
       finalize(() => { this.savingWorkout = false; }),
     ).subscribe({
       next: (res) => {
-        if (this.formContext !== context || this.languageService.getCurrentLanguage() !== language) return;
+        if (!unchangedContext()) return;
         if (res.success && res.data?.status === 'ok') {
           this.setMessage('coachWorkoutEdit.updateSuccess', 'success');
-
           timer(1500)
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
-              if (this.formContext === context && this.languageService.getCurrentLanguage() === language) {
-                void this.router.navigate(['/coach/workouts']);
-              }
+              if (unchangedContext()) void this.router.navigate(['/coach/workouts']);
             });
         } else {
           this.setMessage(res.data?.message || res.message || 'coachWorkoutEdit.updateError', 'error');
         }
       },
-
       error: (error) => {
-        if (this.formContext !== context || this.languageService.getCurrentLanguage() !== language) return;
+        if (!unchangedContext()) return;
         this.logger.error('Hiba a workout mentésekor:', error);
-
         const backendMessage = error?.error?.message ?? error?.error?.error ?? error?.message;
-
         this.setMessage(backendMessage || 'coachWorkoutEdit.saveError', 'error');
       },
     });
   }
 
-  // ==========================================================
-  // GYAKORLAT ELTÁVOLÍTÁSA / SORREND (csak programon kívüli edzésnél)
-  // ==========================================================
-
-  structureBusy = false;
-
-  // ==========================================================
-  // PROGRAMOK, AMELYEK HASZNÁLJÁK; MÁSOLAT SZERKESZTÉSHEZ
-  // ==========================================================
-
-  private readonly workspace = inject(CoachWorkspaceService);
-  usedInPrograms: CoachProgramUsage[] = [];
-  copying = false;
-
-  private loadUsage(): void {
-    if (!this.workoutId) return;
-    this.workspace.programsUsingWorkout(this.workoutId).subscribe({
-      next: (programs) => (this.usedInPrograms = programs),
-      error: () => (this.usedInPrograms = []),
-    });
+  cancelEdit(): void {
+    this.router.navigate(['/coach/workouts']);
   }
+
+  // ----------------------------------------------------------
+  // Másolat, eltávolítás és sorrend (az utóbbi kettő csak programon kívüli edzésnél)
+  // ----------------------------------------------------------
 
   /** A programban lévő edzés zárolt; a másolat szabadon szerkeszthető, és napra tehető. */
   copyForEditing(): void {
@@ -784,23 +453,9 @@ export class CoachWorkoutEditComponent implements OnInit {
     });
   }
 
-  // ==========================================================
-  // CANCEL
-  // ==========================================================
-
-  cancelEdit(): void {
-    this.router.navigate(['/coach/workouts']);
-  }
-
-  // ==========================================================
-  // ÜZENET
-  // ==========================================================
-
   private setMessage(msg: string, type: 'success' | 'error'): void {
     this.message = msg;
-
     this.messageType = type;
-
     timer(4000)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
@@ -808,13 +463,4 @@ export class CoachWorkoutEditComponent implements OnInit {
         this.messageType = '';
       });
   }
-
-  trackByExercise(index: number, exercise: Exercise): number {
-    return exercise.id ?? index;
-  }
-
-  trackByWorkoutExercise(index: number, workoutExercise: WorkoutExerciseView): number | string {
-    return workoutExercise.id ?? `${workoutExercise.exerciseId}-${workoutExercise.orderIndex ?? index}`;
-  }
-
 }
