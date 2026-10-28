@@ -10,37 +10,12 @@ import type { ApiResponse } from '../../../models/backend-dto/common/api-respons
 import type { PageResponse } from '../../../models/backend-dto/common/page-response';
 import { API_ENDPOINTS } from '../../../api-endpoints';
 import { LanguageService } from '../../shared/language.service';
+import { type CompleteWorkoutExerciseDto, toExercise, toWorkoutExercise } from '../../shared/exercise-mapping';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ExerciseService {
-  private readonly toExercise = (exercise: ExerciseDto): Exercise => ({
-    id: exercise.id ?? undefined,
-    name: exercise.name ?? '',
-    description: exercise.description ?? undefined,
-    bodyPart: exercise.bodyPart ?? undefined,
-    synonyms: exercise.synonyms ?? undefined,
-    instructions: exercise.instructions ?? undefined,
-    tips: exercise.tips ?? undefined,
-    primaryMuscles: exercise.primaryMuscles ?? undefined,
-    secondaryMuscles: exercise.secondaryMuscles ?? undefined,
-    imageUrl: exercise.imageUrl ?? undefined,
-    videoUrl: exercise.videoUrl ?? undefined,
-    muscleGroup: exercise.muscleGroup ?? undefined,
-    equipment: exercise.equipment ?? undefined,
-    difficultyLevel: exercise.difficultyLevel ?? undefined,
-    category: exercise.category ?? undefined,
-    caloriesBurnedPerMinute: exercise.caloriesBurnedPerMinute ?? undefined,
-    durationSeconds: exercise.durationSeconds ?? undefined,
-    done: exercise.done ?? undefined,
-    forceType: exercise.forceType ?? undefined,
-    mechanic: exercise.mechanic ?? undefined,
-    isUnilateral: exercise.isUnilateral ?? undefined,
-    isBodyweight: exercise.isBodyweight ?? undefined,
-    variationGroup: exercise.variationGroup ?? undefined,
-  });
-
   private readonly toWorkoutUiDto = (workout: BackendWorkoutDto): WorkoutUiDto => {
     if (workout.id == null) {
       throw new Error('dataErrors.workoutIdMissing');
@@ -54,30 +29,10 @@ export class ExerciseService {
       durationMinutes: workout.durationMinutes ?? undefined,
       intensityLevel: workout.intensityLevel ?? undefined,
       done: workout.done ?? undefined,
-      exercises: (workout.exercises ?? []).flatMap((item) => {
-        if (
-          item.id == null ||
-          item.workoutId == null ||
-          item.exercise == null ||
-          item.exercise.id == null
-        ) {
-          return [];
-        }
-
-        return [
-          {
-            id: item.id,
-            workoutId: item.workoutId,
-            exercise: this.toExercise(item.exercise),
-            sets: item.sets ?? 0,
-            repetitions: item.repetitions ?? 0,
-            orderIndex: item.orderIndex ?? 0,
-            restSeconds: item.restSeconds ?? 0,
-            notes: item.notes ?? undefined,
-            done: item.done ?? false,
-          },
-        ];
-      }),
+      exercises: (workout.exercises ?? [])
+        .filter((item): item is CompleteWorkoutExerciseDto =>
+          item.id != null && item.workoutId != null && item.exercise != null && item.exercise.id != null)
+        .map(toWorkoutExercise),
     };
   };
 
@@ -223,7 +178,7 @@ export class ExerciseService {
     return this.http.get<ApiResponse<ExerciseDto[]>>(API_ENDPOINTS.allExercises, { params }).pipe(
       map((response) => ({
         ...response,
-        data: (response.data ?? []).map((exercise) => this.toExercise(exercise)),
+        data: (response.data ?? []).map((exercise) => toExercise(exercise)),
       })),
     );
   }
@@ -275,7 +230,7 @@ export class ExerciseService {
           data: response.data
             ? {
                 ...response.data,
-                content: (response.data.content ?? []).map((exercise) => this.toExercise(exercise)),
+                content: (response.data.content ?? []).map((exercise) => toExercise(exercise)),
               }
             : null,
         })),

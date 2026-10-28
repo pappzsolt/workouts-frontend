@@ -12,6 +12,7 @@ import type { ApiResponse } from '../../../../../models/backend-dto/common/api-r
 import type { ExerciseDto } from '../../../../../models/backend-dto/exercise/exercise-dto';
 
 import { LanguageCode, LanguageService } from '../../../../../services/shared/language.service';
+import { toExercise } from '../../../../../services/shared/exercise-mapping';
 
 import { AppSelectComponent } from '../../../../shared/components/app-select/app-select.component';
 import type { SelectOption } from '../../../../../models/common/select-option.model';
@@ -221,29 +222,9 @@ export class CoachExerciseEditComponent implements OnInit {
 
             this.exercise = {
               ...this.exercise,
+              ...toExercise(updated),
               id: updated.id ?? this.exercise.id,
               name: updated.name ?? this.exercise.name,
-              description: updated.description ?? undefined,
-              bodyPart: updated.bodyPart ?? undefined,
-              synonyms: updated.synonyms ?? undefined,
-              instructions: updated.instructions ?? undefined,
-              tips: updated.tips ?? undefined,
-              primaryMuscles: updated.primaryMuscles ?? undefined,
-              secondaryMuscles: updated.secondaryMuscles ?? undefined,
-              imageUrl: updated.imageUrl ?? undefined,
-              videoUrl: updated.videoUrl ?? undefined,
-              muscleGroup: updated.muscleGroup ?? undefined,
-              equipment: updated.equipment ?? undefined,
-              difficultyLevel: updated.difficultyLevel ?? undefined,
-              category: updated.category ?? undefined,
-              caloriesBurnedPerMinute: updated.caloriesBurnedPerMinute ?? undefined,
-              durationSeconds: updated.durationSeconds ?? undefined,
-              done: updated.done ?? undefined,
-              forceType: updated.forceType ?? undefined,
-              mechanic: updated.mechanic ?? undefined,
-              isUnilateral: updated.isUnilateral ?? undefined,
-              isBodyweight: updated.isBodyweight ?? undefined,
-              variationGroup: updated.variationGroup ?? undefined,
             };
           }
 

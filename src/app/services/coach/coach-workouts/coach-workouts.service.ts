@@ -11,6 +11,7 @@ import type { WorkoutResponse } from '../../../models/backend-dto/workout/workou
 import type { ApiResponse } from '../../../models/backend-dto/common/api-response';
 import type { PageResponse } from '../../../models/backend-dto/common/page-response';
 import { LanguageService } from '../../shared/language.service';
+import { type CompleteWorkoutExerciseDto, toWorkoutExercise } from '../../shared/exercise-mapping';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
 
@@ -36,59 +37,9 @@ export class CoachWorkoutsService {
     intensityLevel: workout.intensityLevel ?? undefined,
     done: workout.done ?? undefined,
     exercises: (workout.exercises ?? [])
-      .filter(
-        (
-          item,
-        ): item is NonNullable<BackendWorkoutDto['exercises']>[number] & {
-          id: number;
-          workoutId: number;
-          exercise: NonNullable<
-            NonNullable<BackendWorkoutDto['exercises']>[number]['exercise']
-          >;
-        } =>
-          item.id != null &&
-          item.workoutId != null &&
-          item.exercise != null,
-      )
-      .map((item) => {
-        const exercise = item.exercise;
-
-        return {
-          id: item.id,
-          workoutId: item.workoutId,
-          exercise: {
-            id: exercise.id ?? undefined,
-            name: exercise.name ?? '',
-            description: exercise.description ?? undefined,
-            bodyPart: exercise.bodyPart ?? undefined,
-            synonyms: exercise.synonyms ?? undefined,
-            instructions: exercise.instructions ?? undefined,
-            tips: exercise.tips ?? undefined,
-            primaryMuscles: exercise.primaryMuscles ?? undefined,
-            secondaryMuscles: exercise.secondaryMuscles ?? undefined,
-            imageUrl: exercise.imageUrl ?? undefined,
-            videoUrl: exercise.videoUrl ?? undefined,
-            muscleGroup: exercise.muscleGroup ?? undefined,
-            equipment: exercise.equipment ?? undefined,
-            difficultyLevel: exercise.difficultyLevel ?? undefined,
-            category: exercise.category ?? undefined,
-            caloriesBurnedPerMinute: exercise.caloriesBurnedPerMinute ?? undefined,
-            durationSeconds: exercise.durationSeconds ?? undefined,
-            done: exercise.done ?? undefined,
-            forceType: exercise.forceType ?? undefined,
-            mechanic: exercise.mechanic ?? undefined,
-            isUnilateral: exercise.isUnilateral ?? undefined,
-            isBodyweight: exercise.isBodyweight ?? undefined,
-            variationGroup: exercise.variationGroup ?? undefined,
-          },
-          sets: item.sets ?? 0,
-          repetitions: item.repetitions ?? 0,
-          orderIndex: item.orderIndex ?? 0,
-          restSeconds: item.restSeconds ?? 0,
-          notes: item.notes ?? undefined,
-          done: item.done ?? false,
-        };
-      }),
+      .filter((item): item is CompleteWorkoutExerciseDto =>
+        item.id != null && item.workoutId != null && item.exercise != null)
+      .map(toWorkoutExercise),
   });
 
   private readonly toWorkout = (workout: BackendWorkoutDto): Workout => ({

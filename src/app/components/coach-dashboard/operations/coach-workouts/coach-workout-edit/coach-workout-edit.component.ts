@@ -21,6 +21,7 @@ import { skip, timer, Subject, takeUntil, finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { LanguageService } from '../../../../../services/shared/language.service';
+import { toExercise } from '../../../../../services/shared/exercise-mapping';
 import { USER_MESSAGES } from '../../../../../constants/user-messages';
 
 import { Workout } from '../../../../../models/workout.model';
@@ -373,33 +374,7 @@ export class CoachWorkoutEditComponent implements OnInit {
             id: item.id ?? undefined,
             workoutId: item.workoutId ?? this.workoutId!,
             exerciseId: item.exercise?.id ?? undefined,
-            exercise: item.exercise
-              ? {
-                  id: item.exercise.id ?? undefined,
-                  name: item.exercise.name ?? '',
-                  description: item.exercise.description ?? undefined,
-                  bodyPart: item.exercise.bodyPart ?? undefined,
-                  synonyms: item.exercise.synonyms ?? undefined,
-                  instructions: item.exercise.instructions ?? undefined,
-                  tips: item.exercise.tips ?? undefined,
-                  primaryMuscles: item.exercise.primaryMuscles ?? undefined,
-                  secondaryMuscles: item.exercise.secondaryMuscles ?? undefined,
-                  imageUrl: item.exercise.imageUrl ?? undefined,
-                  videoUrl: item.exercise.videoUrl ?? undefined,
-                  muscleGroup: item.exercise.muscleGroup ?? undefined,
-                  equipment: item.exercise.equipment ?? undefined,
-                  difficultyLevel: item.exercise.difficultyLevel ?? undefined,
-                  category: item.exercise.category ?? undefined,
-                  caloriesBurnedPerMinute: item.exercise.caloriesBurnedPerMinute ?? undefined,
-                  durationSeconds: item.exercise.durationSeconds ?? undefined,
-                  done: item.exercise.done ?? undefined,
-                  forceType: item.exercise.forceType ?? undefined,
-                  mechanic: item.exercise.mechanic ?? undefined,
-                  isUnilateral: item.exercise.isUnilateral ?? undefined,
-                  isBodyweight: item.exercise.isBodyweight ?? undefined,
-                  variationGroup: item.exercise.variationGroup ?? undefined,
-                }
-              : undefined,
+            exercise: item.exercise ? toExercise(item.exercise) : undefined,
             sets: item.sets ?? undefined,
             repetitions: item.repetitions ?? undefined,
             orderIndex: item.orderIndex ?? undefined,
