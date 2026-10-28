@@ -17,6 +17,7 @@ function metrics(estimate: number): ProgramExerciseWeekMetrics {
 function program(): ProgramStatisticsProgram {
   return {
     programId: 1, programName: 'Program', totalWorkouts: 4, completedWorkouts: 2, incompleteWorkouts: 2, completed: false,
+    startDate: null, endDate: null, status: null,
     weeklyVolumes: [1, 2, 3, 4].map((week, index) => ({
       week, weekStart: '2026-10-01', futureWeek: week === 4, currentWeek: week === 3,
       volumeKg: week * 3000, changePercent: index ? 50 : null, completedSets: week * 10,

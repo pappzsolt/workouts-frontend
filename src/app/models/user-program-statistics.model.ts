@@ -1,3 +1,17 @@
+import type {
+  ProgramExercisePlanWeekDto,
+  ProgramExerciseStatisticsDto,
+  ProgramExerciseWeekMetricsDto,
+  ProgramExerciseWeeklyVolumeDto,
+  ProgramStatisticsStatus,
+  ProgramWeeklyVolumeDto,
+} from './backend-dto/userprogramstatistics/program-statistics-dto';
+
+/**
+ * A program statisztikák a felületen. A heti és gyakorlatonkénti adatok szerkezete azonos a
+ * backend DTO-éval; csak a program szintje tér el: ott a hiányzó értékek már alapértéket kaptak
+ * (lásd UserProgramStatisticsService).
+ */
 export interface ProgramStatistics {
   totalPrograms: number;
   completedPrograms: number;
@@ -13,76 +27,14 @@ export interface ProgramStatisticsProgram {
   completed: boolean;
   weeklyVolumes: ProgramWeeklyVolume[];
   exerciseStatistics: ProgramExerciseStatistics[];
-  startDate?: string | null;
-  endDate?: string | null;
-  /** COMPLETED | FINISHED (lejárt, nem minden teljesült) | UPCOMING | ACTIVE; régebbi backendnél hiányozhat. */
-  status?: 'COMPLETED' | 'FINISHED' | 'UPCOMING' | 'ACTIVE' | null;
+  startDate: string | null;
+  endDate: string | null;
+  /** COMPLETED | FINISHED (lejárt, nem minden teljesült) | UPCOMING | ACTIVE; régebbi backendnél null. */
+  status: ProgramStatisticsStatus | null;
 }
 
-export interface ProgramWeeklyVolume {
-  week: number;
-  volumeKg: number;
-  changePercent: number | null;
-  weekStart: string | null;
-  futureWeek: boolean;
-  currentWeek: boolean;
-  completedSets: number | null;
-  repetitions: number | null;
-  plannedSets: number | null;
-  completedPlannedSets: number | null;
-}
-
-export interface ProgramExerciseStatistics {
-  exerciseId: number;
-  exerciseName: string;
-  weeks: ProgramExerciseWeek[];
-  planWeeks: ProgramExercisePlanWeek[];
-}
-
-export interface ProgramExerciseWeek {
-  week: number;
-  completedSets: number;
-  repetitions: number;
-  volumeKg: number;
-  volumeChangePercent: number | null;
-  maxWeightKg: number;
-  maxWeightChangeKg: number | null;
-  maxWeightChangePercent: number | null;
-  metrics: ProgramExerciseWeekMetrics | null;
-}
-
-export interface ProgramExerciseWeekMetrics {
-  estimatedOneRepMaxKg: number | null;
-  bestSingleKg: number | null;
-  referenceOneRepMaxKg: number | null;
-  relativeIntensityPercent: number | null;
-  topSetWeightKg: number;
-  topSetRepetitions: number;
-  workoutCount: number;
-  activeDays: number;
-  targetRepetitions: number | null;
-  targetVolumeKg: number | null;
-  averagePrescribedRestSeconds: number | null;
-  repsBelow60Percent: number | null;
-  reps60To80Percent: number | null;
-  repsAtLeast80Percent: number | null;
-  reps60To70Percent: number | null;
-  reps70To80Percent: number | null;
-  reps80To90Percent: number | null;
-  reps90To100Percent: number | null;
-  repsAbove100Percent: number | null;
-  estimatedOneRepMaxPr: boolean;
-  maxWeightPr: boolean;
-}
-
-export interface ProgramExercisePlanWeek {
-  week: number;
-  futureWeek: boolean;
-  plannedSets: number;
-  completedSets: number;
-  completionPercent: number | null;
-  targetRepetitions: number | null;
-  actualRepetitions: number | null;
-  targetVolumeKg: number | null;
-  actualVolumeKg: number | null;
-}
+export type ProgramWeeklyVolume = ProgramWeeklyVolumeDto;
+export type ProgramExerciseStatistics = ProgramExerciseStatisticsDto;
+export type ProgramExerciseWeek = ProgramExerciseWeeklyVolumeDto;
+export type ProgramExerciseWeekMetrics = ProgramExerciseWeekMetricsDto;
+export type ProgramExercisePlanWeek = ProgramExercisePlanWeekDto;

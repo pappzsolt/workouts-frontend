@@ -3,7 +3,7 @@ import type { ProgramStatisticsProgram } from '../../../../models/user-program-s
 
 const program = (patch: Partial<ProgramStatisticsProgram>): ProgramStatisticsProgram => ({
   programId: 1, programName: 'P', totalWorkouts: 6, completedWorkouts: 3, incompleteWorkouts: 3, completed: false,
-  weeklyVolumes: [], exerciseStatistics: [], ...patch,
+  weeklyVolumes: [], exerciseStatistics: [], startDate: null, endDate: null, status: null, ...patch,
 });
 
 describe('Program statistics status badge', () => {
