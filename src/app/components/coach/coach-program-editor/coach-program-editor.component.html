@@ -29,51 +29,9 @@
     <app-message [message]="message" [messageParams]="messageParams" [type]="messageType" role="status"></app-message>
 
     <!-- Program adatai -->
-    <section class="rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
-      <h2 class="mb-4 text-lg font-bold text-content-900">{{ 'coachWorkspace.editor.details' | translate }}</h2>
-      <form class="grid grid-cols-1 gap-4 md:grid-cols-2" (ngSubmit)="saveDetails()">
-        <label class="flex flex-col gap-1 text-sm font-semibold text-content-800 md:col-span-2">
-          {{ 'coachWorkspace.editor.name' | translate }}
-          <input appInput="default" type="text" name="programName" required maxlength="255"
-                 [(ngModel)]="form.programName" class="font-normal" />
-        </label>
-        <label class="flex flex-col gap-1 text-sm font-semibold text-content-800 md:col-span-2">
-          {{ 'coachWorkspace.editor.description' | translate }}
-          <textarea appTextarea="default" name="programDescription" rows="2"
-                    [(ngModel)]="form.programDescription" class="font-normal"></textarea>
-        </label>
-        <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
-          {{ 'coachWorkspace.editor.startDate' | translate }}
-          <input appInput="default" type="date" name="startDate" required [(ngModel)]="form.startDate" class="font-normal" />
-        </label>
-        <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
-          {{ 'coachWorkspace.editor.durationDays' | translate }}
-          <input appInput="default" type="number" name="durationDays" min="1" max="365" required
-                 [(ngModel)]="form.durationDays" class="font-normal" />
-        </label>
-        <fieldset class="flex flex-col gap-2 md:col-span-2">
-          <legend class="mb-1 text-sm font-semibold text-content-800">{{ 'coachWorkspace.editor.difficulty' | translate }}</legend>
-          <div class="flex flex-wrap gap-4">
-            @for (option of difficultyOptions; track option.value) {
-              <label class="inline-flex min-h-11 items-center gap-2 text-sm text-content-800">
-                <input appRadio="plain" type="radio" name="difficultyLevel" [value]="option.value" [(ngModel)]="form.difficultyLevel" />
-                {{ option.label | translate }}
-              </label>
-            }
-          </div>
-        </fieldset>
-        <div class="flex flex-wrap items-center justify-end gap-3 md:col-span-2">
-          @if (programId !== null) {
-            <p class="mr-auto text-xs text-content-600">{{ 'coachWorkspace.editor.datesHint' | translate }}</p>
-          }
-          <button type="submit" [disabled]="savingDetails || busy || loading || (programId !== null && program?.programId !== programId)"
-                  class="btn btn-primary">
-            <app-icon name="save" sizeClass="h-4 w-4" />
-            {{ (savingDetails ? 'coachWorkspace.saving' : (programId === null ? 'coachWorkspace.editor.create' : 'coachWorkspace.save')) | translate }}
-          </button>
-        </div>
-      </form>
-    </section>
+    <app-program-details-form [form]="form" [isNew]="programId === null" [saving]="savingDetails"
+                              [submitDisabled]="savingDetails || busy || loading || (programId !== null && program?.programId !== programId)"
+                              (save)="saveDetails()" />
 
     @if (programId === null) {
       <p class="rounded-2xl bg-info-50 p-4 text-sm text-info-800">{{ 'coachWorkspace.editor.createFirst' | translate }}</p>
@@ -83,46 +41,8 @@
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
 
         <!-- Napok rácsa -->
-        <section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm lg:col-span-3"
-                 [attr.aria-label]="'coachWorkspace.editor.days' | translate">
-          <div class="mb-4 flex flex-wrap items-center gap-2">
-            <h2 class="flex-1 text-lg font-bold text-content-900">{{ 'coachWorkspace.editor.days' | translate }}</h2>
-            <button type="button" (click)="openMulti()" [disabled]="busy"
-                    class="btn btn-neutral">
-              <app-icon name="plus" sizeClass="h-4 w-4" />
-              {{ 'coachWorkspace.editor.multiAdd' | translate }}
-            </button>
-          </div>
-          <div class="grid grid-cols-7 gap-1 sm:gap-2">
-            @for (key of weekdayKeys; track key) {
-              <div class="pb-1 text-center text-xs font-semibold uppercase text-content-600">{{ key | translate }}</div>
-            }
-            @for (blank of leadingBlanks; track blank) {
-              <div></div>
-            }
-            @for (cell of cells; track cell.day) {
-              <button type="button" (click)="selectDay(cell.day)"
-                      [attr.aria-pressed]="cell.day === selectedDay"
-                      [attr.aria-label]="dayAriaLabel(cell)"
-                      class="flex min-h-16 min-w-0 flex-col items-start gap-1 rounded-xl border p-1 text-left text-xs sm:p-2"
-                      [class.border-primary-700]="cell.day === selectedDay"
-                      [class.ring-2]="cell.day === selectedDay"
-                      [class.ring-primary-200]="cell.day === selectedDay"
-                      [class.border-surface-200]="cell.day !== selectedDay"
-                      [class.bg-primary-50]="!!cell.workout"
-                      [class.bg-white]="!cell.workout">
-                <span class="font-semibold text-content-700">{{ cell.day }}.
-                  @if (cell.date) {
-                    <span class="hidden font-normal text-content-500 sm:inline">{{ cell.date | date: 'MM.dd' }}</span>
-                  }
-                </span>
-                @if (cell.workout) {
-                  <span class="line-clamp-3 w-full break-words font-semibold text-primary-800" [title]="cell.workout.name">{{ cell.label }}</span>
-                }
-              </button>
-            }
-          </div>
-        </section>
+        <app-program-day-grid [cells]="cells" [leadingBlanks]="leadingBlanks" [selectedDay]="selectedDay" [busy]="busy"
+                              (daySelected)="selectDay($event)" (openMulti)="openMulti()" />
 
         <!-- Kiválasztott nap -->
         <section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm lg:col-span-2"
@@ -134,466 +54,51 @@
             </p>
 
             @if (cell.workout; as workout) {
-              <h2 class="mb-1 text-xl font-bold text-content-900">{{ workout.name }}</h2>
-              <p class="mb-1 text-xs text-content-600">{{ 'coachWorkspace.editor.lockedHint' | translate }}</p>
-              @if (selectedWorkoutDayCount > 1) {
-                <p class="mb-4 rounded-lg bg-info-50 px-2 py-1 text-xs text-info-800">
-                  {{ 'coachWorkspace.editor.sharedHint' | translate: { count: selectedWorkoutDayCount } }}
-                </p>
-              } @else {
-                <div class="mb-3"></div>
-              }
-
-              @if (selectedDayClients.length > 0) {
-                <div class="mb-4 rounded-xl border border-info-100 bg-info-50 p-3 text-sm text-info-800">
-                  <p class="mb-2">{{ 'coachWorkspace.editor.perClientHint' | translate }}</p>
-                  <ul class="flex flex-col gap-1">
-                    @for (entry of selectedDayClients; track entry.client.userId) {
-                      <li>
-                        <a [routerLink]="['/coach/clients', entry.client.userId]"
-                           [queryParams]="{ program: programId, date: entry.date }"
-                           class="inline-flex min-h-11 items-center gap-2 font-semibold text-primary-700 underline hover:text-primary-800">
-                          <app-icon name="user-round" sizeClass="h-4 w-4" />
-                          {{ 'coachWorkspace.editor.editClientSets' | translate: { name: entry.client.username } }}
-                          <span class="font-normal text-content-600">({{ entry.date | date: 'yyyy.MM.dd' }})</span>
-                        </a>
-                      </li>
-                    }
-                  </ul>
-                </div>
-              }
-              @if (rows.length === 0) {
-                <p class="text-sm text-content-600">{{ 'coachWorkspace.client.noExercises' | translate }}</p>
-              } @else {
-                <div class="flex flex-col gap-3">
-                  @for (row of rows; track row.id; let i = $index) {
-                    <div class="rounded-xl border p-3"
-                         [class.border-warning-300]="isChanged(row)"
-                         [class.border-surface-200]="!isChanged(row)">
-                      <div class="mb-2 flex items-center gap-1">
-                        <p class="flex-1 font-semibold text-content-900">{{ i + 1 }}. {{ row.name }}</p>
-                        <button type="button" (click)="moveRow(i, -1)" [disabled]="busy || i === 0"
-                                [attr.aria-label]="('coachWorkoutEdit.moveUp' | translate) + ': ' + row.name"
-                                class="btn btn-ghost btn-icon">
-                          <app-icon name="chevron-up" sizeClass="h-4 w-4" />
-                        </button>
-                        <button type="button" (click)="moveRow(i, 1)" [disabled]="busy || i === rows.length - 1"
-                                [attr.aria-label]="('coachWorkoutEdit.moveDown' | translate) + ': ' + row.name"
-                                class="btn btn-ghost btn-icon">
-                          <app-icon name="chevron-down" sizeClass="h-4 w-4" />
-                        </button>
-                      </div>
-                      <div class="grid grid-cols-3 gap-2">
-                        <label class="flex flex-col gap-1 text-xs font-semibold text-content-700">
-                          {{ 'coachWorkspace.sets' | translate }}
-                          <input appInput="compact" type="number" min="1" [max]="prescriptionLimits.maxSets" [name]="'psets' + i" [(ngModel)]="row.sets" />
-                        </label>
-                        <label class="flex flex-col gap-1 text-xs font-semibold text-content-700">
-                          {{ 'coachWorkspace.reps' | translate }}
-                          <input appInput="compact" type="number" min="1" [max]="prescriptionLimits.maxRepetitions" [name]="'preps' + i" [(ngModel)]="row.repetitions" />
-                        </label>
-                        <label class="flex flex-col gap-1 text-xs font-semibold text-content-700">
-                          {{ 'coachWorkspace.restSeconds' | translate }}
-                          <input appInput="compact" type="number" min="0" [max]="prescriptionLimits.maxRestSeconds" [name]="'prest' + i" [(ngModel)]="row.restSeconds" />
-                        </label>
-                      </div>
-                    </div>
-                  }
-                </div>
-                <div class="mt-3 flex flex-wrap justify-end gap-2">
-                  <button type="button" (click)="applyTemplateToClients()" [disabled]="busy || changedCount > 0"
-                          class="inline-flex min-h-11 items-center gap-2 rounded-xl border border-surface-300 bg-white px-4 text-sm font-semibold text-content-700 hover:bg-surface-50 disabled:opacity-60">
-                    {{ 'coachWorkspace.editor.applyTemplate' | translate }}
-                  </button>
-                  <button type="button" (click)="savePrescriptions()" [disabled]="busy || savingDetails || loading || changedCount === 0"
-                          class="btn btn-primary">
-                    <app-icon name="save" sizeClass="h-4 w-4" />
-                    {{ 'coachWorkspace.editor.savePrescriptions' | translate: { count: changedCount } }}
-                  </button>
-                </div>
-              }
-
-              <div class="mt-6 flex flex-col gap-3 border-t border-surface-200 pt-4">
-                <div class="flex flex-wrap gap-2">
-                  <a [routerLink]="['/coach/workouts', workout.workoutId, 'edit']"
-                     class="inline-flex min-h-11 items-center rounded-xl border border-surface-300 bg-white px-4 text-sm font-semibold text-content-700 hover:bg-surface-50">
-                    {{ 'coachWorkspace.editor.openInLibrary' | translate }}
-                  </a>
-                  <button type="button" (click)="copyToLibrary()" [disabled]="busy"
-                          class="btn btn-neutral">
-                    {{ 'coachWorkspace.editor.copyToLibrary' | translate }}
-                  </button>
-                </div>
-                <h3 class="text-sm font-semibold text-content-800">{{ 'coachWorkspace.editor.moreDays' | translate }}</h3>
-                @if (confirmRepeat) {
-                  <div class="flex flex-col gap-2 rounded-xl bg-primary-50 p-3 text-sm text-primary-800">
-                    <span>{{ 'coachWorkspace.editor.repeatConfirm' | translate: { count: weeklyRepeatDays.length, days: weeklyRepeatDays.join(', ') } }}</span>
-                    @if (weeklyRepeatSkipped > 0) {
-                      <span class="text-xs">{{ 'coachWorkspace.editor.repeatSkipped' | translate: { count: weeklyRepeatSkipped } }}</span>
-                    }
-                    <div class="flex flex-wrap justify-end gap-2">
-                      <button type="button" (click)="confirmRepeat = false" class="btn btn-neutral px-3">
-                        {{ 'coachWorkspace.cancel' | translate }}
-                      </button>
-                      <button type="button" (click)="repeatWeekly()" [disabled]="busy" class="btn btn-primary px-3">
-                        {{ 'coachWorkspace.editor.repeatWeekly' | translate }}
-                      </button>
-                    </div>
-                  </div>
-                } @else {
-                  <button type="button" (click)="confirmRepeat = true" [disabled]="busy || weeklyRepeatDays.length === 0"
-                          class="btn btn-outline self-start">
-                    <app-icon name="repeat" sizeClass="h-4 w-4" />
-                    {{ 'coachWorkspace.editor.repeatWeekly' | translate }}
-                  </button>
-                  @if (weeklyRepeatDays.length === 0) {
-                    <p class="text-xs text-content-600">{{ 'coachWorkspace.editor.repeatNothing' | translate }}</p>
-                  }
-                }
-                <div class="flex flex-wrap items-end gap-2">
-                  <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
-                    {{ 'coachWorkspace.editor.alsoOnDay' | translate }}
-                    <input appInput="compact" type="date" [min]="firstDate" [max]="lastDate" name="extraDate" [(ngModel)]="extraDate" class="w-44" />
-                  </label>
-                  <button type="button" (click)="addToAnotherDay()" [disabled]="busy"
-                          class="btn btn-outline">
-                    {{ 'coachWorkspace.editor.addToThatDay' | translate }}
-                  </button>
-                </div>
-                <div class="flex flex-wrap items-end gap-2">
-                  <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
-                    {{ 'coachWorkspace.editor.moveToDay' | translate }}
-                    <input appInput="compact" type="date" [min]="firstDate" [max]="lastDate" name="moveDate" [(ngModel)]="moveDate" class="w-44" />
-                  </label>
-                  <button type="button" (click)="moveWorkout()" [disabled]="busy || dayForDate(moveDate) === cell.day"
-                          class="btn btn-outline">
-                    {{ 'coachWorkspace.client.move' | translate }}
-                  </button>
-                </div>
-                @if (confirmRemove) {
-                  <div class="flex flex-wrap items-center gap-3 rounded-xl bg-delete-50 p-3 text-sm text-delete-700">
-                    <span class="flex-1">{{ 'coachWorkspace.editor.removeConfirm' | translate }}</span>
-                    <button type="button" (click)="confirmRemove = false" class="btn btn-neutral px-3">
-                      {{ 'coachWorkspace.cancel' | translate }}
-                    </button>
-                    <button type="button" (click)="removeWorkout()" [disabled]="busy" class="btn btn-danger px-3">
-                      {{ 'coachWorkspace.editor.remove' | translate }}
-                    </button>
-                  </div>
-                } @else {
-                  <button type="button" (click)="confirmRemove = true"
-                          class="btn btn-ghost-delete self-start px-3">
-                    <app-icon name="trash-2" sizeClass="h-4 w-4" />
-                    {{ 'coachWorkspace.editor.remove' | translate }}
-                  </button>
-                }
-              </div>
+              <app-program-day-workout
+                [workout]="workout" [rows]="rows" [selectedWorkoutDayCount]="selectedWorkoutDayCount" [selectedDayClients]="selectedDayClients"
+                [programId]="programId" [busy]="busy" [changedCount]="changedCount"
+                [saveDisabled]="busy || savingDetails || loading || changedCount === 0"
+                [weeklyRepeatDays]="weeklyRepeatDays" [weeklyRepeatSkipped]="weeklyRepeatSkipped"
+                [firstDate]="firstDate" [lastDate]="lastDate" [moveTargetIsSameDay]="dayForDate(moveDate) === cell.day"
+                [(confirmRepeat)]="confirmRepeat" [(confirmRemove)]="confirmRemove" [(extraDate)]="extraDate" [(moveDate)]="moveDate"
+                (moveRow)="moveRow($event.index, $event.direction)" (applyTemplate)="applyTemplateToClients()"
+                (savePrescriptions)="savePrescriptions()" (copyToLibrary)="copyToLibrary()" (repeatWeekly)="repeatWeekly()"
+                (addToAnotherDay)="addToAnotherDay()" (moveWorkout)="moveWorkout()" (removeWorkout)="removeWorkout()" />
             } @else {
-              <h2 class="mb-3 text-xl font-bold text-content-900">{{ 'coachWorkspace.client.restDay' | translate }}</h2>
-              <p class="mb-4 text-sm text-content-600">{{ 'coachWorkspace.editor.emptyDayHint' | translate }}</p>
-
-              <div class="mb-4 flex gap-2" role="tablist">
-                <button type="button" role="tab" [attr.aria-selected]="emptyMode === 'new'" (click)="emptyMode = 'new'"
-                        class="btn flex-1 px-3"
-                        [class.btn-primary]="emptyMode === 'new'" [class.btn-neutral]="emptyMode !== 'new'">
-                  {{ 'coachWorkspace.editor.newWorkout' | translate }}
-                </button>
-                <button type="button" role="tab" [attr.aria-selected]="emptyMode === 'library'" (click)="emptyMode = 'library'"
-                        class="btn flex-1 px-3"
-                        [class.btn-primary]="emptyMode === 'library'" [class.btn-neutral]="emptyMode !== 'library'">
-                  {{ 'coachWorkspace.editor.fromLibrary' | translate }}
-                </button>
-              </div>
-
-              @if (emptyMode === 'new') {
-                <label class="mb-3 flex flex-col gap-1 text-sm font-semibold text-content-800">
-                  {{ 'coachWorkspace.editor.workoutName' | translate }}
-                  <input appInput="default" type="text" name="workoutName" maxlength="255" [(ngModel)]="workoutName" class="font-normal" />
-                </label>
-
-                <h3 class="mb-2 text-sm font-semibold text-content-800">
-                  {{ 'coachWorkspace.editor.chosenExercises' | translate: { count: pendingExercises.length } }}
-                </h3>
-                @if (pendingExercises.length === 0) {
-                  <p class="mb-3 text-sm text-content-600">{{ 'coachWorkspace.editor.noChosenExercises' | translate }}</p>
-                } @else {
-                  <ol class="mb-3 flex flex-col gap-1">
-                    @for (exercise of pendingExercises; track exercise.id; let i = $index) {
-                      <li class="flex items-center justify-between gap-2 rounded-xl bg-surface-50 px-3 text-sm">
-                        <span>{{ i + 1 }}. {{ exercise.name }}</span>
-                        <button type="button" (click)="removePending(exercise.id)"
-                                [attr.aria-label]="('coachWorkspace.delete' | translate) + ': ' + exercise.name"
-                                class="btn btn-ghost-delete btn-icon">
-                          <app-icon name="trash-2" sizeClass="h-4 w-4" />
-                        </button>
-                      </li>
-                    }
-                  </ol>
-                  <p class="mb-3 text-xs text-content-600">{{ 'coachWorkspace.editor.defaultPrescriptionHint' | translate }}</p>
-                }
-                <div class="mb-4 flex justify-end">
-                  <button type="button" (click)="createWorkoutForDay()" [disabled]="busy || !workoutName.trim() || pendingExercises.length === 0"
-                          class="btn btn-primary">
-                    <app-icon name="plus" sizeClass="h-4 w-4" />
-                    {{ 'coachWorkspace.editor.addToDay' | translate }}
-                  </button>
-                </div>
-
-                <h3 class="mb-2 text-sm font-semibold text-content-800">{{ 'coachWorkspace.editor.browseExercises' | translate }}</h3>
-                <app-exercise-picker [chosenIds]="pendingIds" (picked)="addPending($event)"></app-exercise-picker>
-              } @else {
-                @if (myWorkouts.length === 0) {
-                  <p class="text-sm text-content-600">{{ 'coachWorkspace.editor.noWorkoutsToCopy' | translate }}</p>
-                } @else {
-                  <label class="mb-2 flex flex-col gap-1 text-sm font-semibold text-content-800">
-                    {{ 'coachWorkspace.editor.libraryFilter' | translate }}
-                    <input appInput="compact" type="search" name="libraryFilter" [(ngModel)]="libraryFilter" class="font-normal" />
-                  </label>
-                  <fieldset class="max-h-72 overflow-y-auto rounded-xl border border-surface-200 p-2">
-                    <legend class="sr-only">{{ 'coachWorkspace.editor.copySource' | translate }}</legend>
-                    @for (workout of libraryWorkouts; track workout.id) {
-                      <label class="flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm text-content-800 hover:bg-surface-50">
-                        <input appRadio="plain" type="radio" name="copySource" [value]="workout.id"
-                               [ngModel]="copySourceId" (ngModelChange)="onCopySourceChange($event)" />
-                        <span class="flex-1">{{ workout.name }}</span>
-                        @if (isInProgram(workout.id)) {
-                          <span class="rounded-full bg-primary-100 px-2 py-0.5 text-xs font-semibold text-primary-800">{{ 'coachWorkspace.editor.inThisProgram' | translate }}</span>
-                        }
-                      </label>
-                    } @empty {
-                      <p class="px-2 py-4 text-center text-sm text-content-600">{{ 'coachWorkspace.picker.empty' | translate }}</p>
-                    }
-                  </fieldset>
-                  <div class="mt-3 flex flex-col gap-3 rounded-xl border border-surface-200 p-3">
-                    <div>
-                      <button type="button" (click)="linkLibraryWorkout()" [disabled]="busy || copySourceId === null"
-                              class="btn btn-primary">
-                        <app-icon name="plus" sizeClass="h-4 w-4" />
-                        {{ 'coachWorkspace.editor.linkToDay' | translate }}
-                      </button>
-                      <p class="mt-1 text-xs text-content-600">{{ 'coachWorkspace.editor.linkHint' | translate }}</p>
-                    </div>
-                    <div class="border-t border-surface-200 pt-3">
-                      <label class="mb-2 flex flex-col gap-1 text-sm font-semibold text-content-800">
-                        {{ 'coachWorkspace.editor.copyName' | translate }}
-                        <input appInput="compact" type="text" name="copyName" maxlength="255" [(ngModel)]="workoutName" class="font-normal" />
-                      </label>
-                      <button type="button" (click)="copyWorkoutToDay()" [disabled]="busy || copySourceId === null || !workoutName.trim()"
-                              class="btn btn-outline">
-                        {{ 'coachWorkspace.editor.copyToDay' | translate }}
-                      </button>
-                      <p class="mt-1 text-xs text-content-600">{{ 'coachWorkspace.editor.copyHint' | translate }}</p>
-                    </div>
-                  </div>
-                }
-                <p class="mt-3 text-xs text-content-600">
-                  {{ 'coachWorkspace.editor.libraryHint' | translate }}
-                  <a routerLink="/coach/workouts" class="font-semibold text-primary-700 underline">{{ 'menu.coachWorkouts' | translate }}</a>
-                </p>
-              }
+              <app-program-empty-day
+                [pendingExercises]="pendingExercises" [pendingIds]="pendingIds" [busy]="busy"
+                [hasLibrary]="myWorkouts.length > 0" [libraryWorkouts]="libraryWorkouts" [programWorkoutIds]="programWorkoutIds"
+                [copySourceId]="copySourceId"
+                [(emptyMode)]="emptyMode" [(workoutName)]="workoutName" [(libraryFilter)]="libraryFilter"
+                (removePending)="removePending($event)" (addPending)="addPending($event)" (create)="createWorkoutForDay()"
+                (copySourceChange)="onCopySourceChange($event)" (link)="linkLibraryWorkout()" (copyToDay)="copyWorkoutToDay()" />
             }
           }
         </section>
       </div>
 
       <!-- Ügyfelek -->
-      <section class="rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5">
-        <div class="mb-1 flex flex-wrap items-center gap-2">
-          <app-icon name="users" sizeClass="h-5 w-5" class="text-primary-600" />
-          <h2 class="text-lg font-bold text-content-900">{{ 'coachWorkspace.editor.clients' | translate }}</h2>
-          <span class="rounded-full bg-primary-50 px-2.5 py-0.5 text-xs font-semibold text-primary-700">
-            {{ 'coachWorkspace.editor.assignedCount' | translate: { count: assignedClients.length } }}
-          </span>
-        </div>
-        <p class="mb-4 text-sm text-content-600">{{ 'coachWorkspace.client.assignHint' | translate }}</p>
-
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
-          <!-- Akiknek már ki van osztva -->
-          <div class="lg:col-span-2">
-            <h3 class="mb-2 text-sm font-semibold text-content-800">{{ 'coachWorkspace.editor.assignedClients' | translate }}</h3>
-            @if (assignedClients.length === 0) {
-              <p class="rounded-xl border border-dashed border-surface-300 px-3 py-4 text-sm text-content-600">
-                {{ 'coachWorkspace.editor.noAssignedClients' | translate }}
-              </p>
-            } @else {
-              <ul class="flex max-h-72 flex-wrap content-start gap-2 overflow-y-auto">
-                @for (client of assignedClients; track client.userId) {
-                  <li class="flex max-w-full items-center gap-1">
-                    <a [routerLink]="['/coach/clients', client.userId]"
-                       class="flex min-h-11 max-w-full items-center gap-2 rounded-full border border-primary-200 bg-primary-50 py-1 pl-1 pr-3 text-sm font-semibold text-primary-800 transition hover:border-primary-300 hover:bg-primary-100">
-                      <span aria-hidden="true"
-                            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-600 text-xs font-bold uppercase text-white">
-                        {{ initials(client) }}
-                      </span>
-                      <span class="truncate">{{ client.username }}</span>
-                    </a>
-                    <button type="button" (click)="askRevoke(client)" [disabled]="busy"
-                            class="btn btn-ghost-delete shrink-0 px-3"
-                            [attr.aria-label]="'coachWorkspace.editor.revokeClient' | translate: { name: client.username }">
-                      {{ 'coachWorkspace.client.revoke' | translate }}
-                    </button>
-                  </li>
-                }
-              </ul>
-            }
-          </div>
-
-          <!-- Kiosztás további ügyfeleknek -->
-          <div class="lg:col-span-3">
-            <h3 class="mb-2 text-sm font-semibold text-content-800">{{ 'coachWorkspace.editor.assignMore' | translate }}</h3>
-            @if (unassignedClients.length === 0) {
-              <p class="rounded-xl border border-dashed border-surface-300 px-3 py-4 text-sm text-content-600">
-                {{ 'coachWorkspace.editor.noMoreClients' | translate }}
-              </p>
-            } @else {
-              <div class="relative mb-2">
-                <app-icon name="search" sizeClass="h-4 w-4"
-                          class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-content-400" />
-                <input appInput="default" type="search" name="clientFilter" [(ngModel)]="clientFilter"
-                       [attr.aria-label]="'coachWorkspace.editor.searchClients' | translate"
-                       [placeholder]="'coachWorkspace.editor.searchClientsPlaceholder' | translate"
-                       autocomplete="off" class="w-full pl-9" />
-              </div>
-              <div class="mb-2 flex flex-wrap items-center justify-between gap-2 text-sm">
-                <span class="text-content-600" aria-live="polite">
-                  {{ 'coachWorkspace.editor.selectedCount' | translate: { count: toAssign.size, total: unassignedClients.length } }}
-                </span>
-                <div class="flex flex-wrap gap-1">
-                  <button type="button" (click)="selectVisibleClients()" [disabled]="busy || filteredUnassignedClients.length === 0"
-                          class="btn btn-ghost px-3">
-                    {{ 'coachWorkspace.editor.selectVisible' | translate }}
-                  </button>
-                  <button type="button" (click)="clearClientSelection()" [disabled]="busy || toAssign.size === 0"
-                          class="btn btn-ghost px-3">
-                    {{ 'coachWorkspace.editor.clearSelection' | translate }}
-                  </button>
-                </div>
-              </div>
-              @if (filteredUnassignedClients.length === 0) {
-                <p class="rounded-xl border border-dashed border-surface-300 px-3 py-4 text-sm text-content-600">
-                  {{ 'coachWorkspace.editor.noClientMatch' | translate }}
-                </p>
-              } @else {
-                <ul class="max-h-80 divide-y divide-surface-100 overflow-y-auto rounded-xl border border-surface-200">
-                  @for (client of filteredUnassignedClients; track client.userId) {
-                    <li>
-                      <label class="flex min-h-14 cursor-pointer items-center gap-3 px-3 py-2 transition"
-                             [ngClass]="toAssign.has(client.userId) ? 'bg-primary-50' : 'hover:bg-surface-50'">
-                        <span aria-hidden="true"
-                              class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold uppercase"
-                              [ngClass]="toAssign.has(client.userId) ? 'bg-primary-600 text-white' : 'bg-surface-100 text-content-700'">
-                          {{ initials(client) }}
-                        </span>
-                        <span class="flex min-w-0 flex-1 flex-col">
-                          <span class="truncate text-sm font-semibold text-content-900">{{ client.username }}</span>
-                          @if (client.email) {
-                            <span class="truncate text-xs text-content-600">{{ client.email }}</span>
-                          }
-                        </span>
-                        <input appCheckbox="selection" type="checkbox" class="shrink-0"
-                               [attr.aria-label]="client.username"
-                               [checked]="toAssign.has(client.userId)"
-                               (change)="toggleAssign(client.userId, $any($event.target).checked)" />
-                      </label>
-                    </li>
-                  }
-                </ul>
-              }
-              <div class="mt-3 flex justify-end">
-                <button type="button" (click)="assignSelected()" [disabled]="busy || toAssign.size === 0"
-                        class="btn btn-primary w-full sm:w-auto">
-                  <app-icon name="user-plus" sizeClass="h-4 w-4" />
-                  {{ 'coachWorkspace.editor.assignSelected' | translate: { count: toAssign.size } }}
-                </button>
-              </div>
-            }
-          </div>
-        </div>
-      </section>
+      <app-program-clients-panel
+        [assignedClients]="assignedClients" [unassignedClients]="unassignedClients" [visibleClients]="filteredUnassignedClients"
+        [toAssign]="toAssign" [busy]="busy" [(clientFilter)]="clientFilter"
+        (askRevoke)="askRevoke($event)" (selectVisible)="selectVisibleClients()" (clearSelection)="clearClientSelection()"
+        (toggleAssign)="toggleAssign($event.userId, $event.checked)" (assignSelected)="assignSelected()" />
     }
   </div>
 </div>
 
 <!-- Több edzés egyszerre az Edzéstárból -->
 @if (multiOpen) {
-  <app-dialog [ariaLabel]="'coachWorkspace.editor.multiAdd' | translate" [trapFocus]="true" [closeOnEscape]="true"
-              [closeOnBackdrop]="true" [busy]="busy" (dismissed)="multiOpen = false">
-    <div class="flex flex-col gap-4 p-6">
-      <h2 class="text-xl font-bold text-content-900">{{ 'coachWorkspace.editor.multiAdd' | translate }}</h2>
-      <p class="text-sm text-content-700">{{ 'coachWorkspace.editor.multiHint' | translate: { day: selectedDay } }}</p>
-      <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
-        {{ 'coachWorkspace.editor.libraryFilter' | translate }}
-        <input appInput="compact" type="search" name="multiFilter" [(ngModel)]="multiFilter" class="font-normal" />
-      </label>
-      <fieldset class="flex max-h-80 flex-col gap-1 overflow-y-auto rounded-xl border border-surface-200 p-2">
-        <legend class="sr-only">{{ 'coachWorkspace.editor.multiAdd' | translate }}</legend>
-        @for (workout of multiWorkouts; track workout.id) {
-          <label class="flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm text-content-800 hover:bg-surface-50">
-            <input appCheckbox="plain" type="checkbox" [checked]="multiSelected.includes(workout.id)"
-                   (change)="toggleMulti(workout.id, $any($event.target).checked)" />
-            <span class="flex-1">{{ workout.name }}</span>
-            @if (multiSelected.includes(workout.id)) {
-              <span class="text-xs font-semibold text-primary-700">#{{ multiSelected.indexOf(workout.id) + 1 }}</span>
-            }
-          </label>
-        } @empty {
-          <p class="px-2 py-4 text-center text-sm text-content-600">{{ 'coachWorkspace.picker.empty' | translate }}</p>
-        }
-      </fieldset>
-      @if (multiSelected.length > 0) {
-        <p class="text-sm text-content-700">
-          {{ 'coachWorkspace.editor.multiTarget' | translate: { days: multiTargetDays.join(', ') } }}
-        </p>
-      }
-      <div class="flex justify-end gap-3">
-        <button type="button" (click)="multiOpen = false" class="btn btn-neutral">
-          {{ 'coachWorkspace.cancel' | translate }}
-        </button>
-        <button type="button" (click)="addMultiple()" [disabled]="busy || multiSelected.length === 0"
-                class="btn btn-primary">
-          {{ 'coachWorkspace.editor.multiConfirm' | translate: { count: multiSelected.length } }}
-        </button>
-      </div>
-    </div>
-  </app-dialog>
+  <app-program-multi-add-dialog
+    [selectedDay]="selectedDay" [workouts]="multiWorkouts" [selected]="multiSelected" [targetDays]="multiTargetDays" [busy]="busy"
+    [(multiFilter)]="multiFilter" (toggle)="toggleMulti($event.workoutId, $event.checked)"
+    (dismissed)="multiOpen = false" (confirmed)="addMultiple()" />
 }
 
 <!-- Program másolása -->
 @if (copyOpen) {
-  <app-dialog [ariaLabel]="'coachWorkspace.editor.copyProgram' | translate" [trapFocus]="true" [closeOnEscape]="true"
-              [closeOnBackdrop]="true" [busy]="busy" (dismissed)="copyOpen = false">
-    <form class="flex flex-col gap-4 p-6" (ngSubmit)="confirmCopy()">
-      <h2 class="text-xl font-bold text-content-900">{{ 'coachWorkspace.editor.copyProgram' | translate }}</h2>
-      <p class="text-sm text-content-700">{{ 'coachWorkspace.editor.copyProgramHint' | translate }}</p>
-      <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
-        {{ 'coachWorkspace.editor.name' | translate }}
-        <input appInput="default" type="text" name="copyName" required maxlength="255" [(ngModel)]="copyName" class="font-normal" />
-      </label>
-      <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
-        {{ 'coachWorkspace.editor.startDate' | translate }}
-        <input appInput="default" type="date" name="copyStart" required [(ngModel)]="copyStart" class="font-normal" />
-      </label>
-      <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
-        {{ 'coachWorkspace.editor.copyForClient' | translate }}
-        <select name="copyUser" [(ngModel)]="copyUserId"
-                class="min-h-11 rounded-xl border border-surface-300 bg-white px-3 text-sm font-normal text-content-800 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/10">
-          <option [ngValue]="null">{{ 'coachWorkspace.editor.copyNoClient' | translate }}</option>
-          @for (client of clients; track client.userId) {
-            <option [ngValue]="client.userId">{{ client.username }}</option>
-          }
-        </select>
-      </label>
-      <div class="flex justify-end gap-3">
-        <button type="button" (click)="copyOpen = false" class="btn btn-neutral">
-          {{ 'coachWorkspace.cancel' | translate }}
-        </button>
-        <button type="submit" [disabled]="busy || !copyName.trim() || !copyStart"
-                class="btn btn-primary">
-          {{ 'coachWorkspace.editor.copyConfirm' | translate }}
-        </button>
-      </div>
-    </form>
-  </app-dialog>
+  <app-program-copy-dialog [clients]="clients" [busy]="busy" [(copyName)]="copyName" [(copyStart)]="copyStart" [(copyUserId)]="copyUserId"
+                           (dismissed)="copyOpen = false" (confirmed)="confirmCopy()" />
 }
 
 <app-confirm-dialog

@@ -7,8 +7,6 @@ import { Observable, Subject, concat, forkJoin, last, switchMap, takeUntil, tap,
 import { SHARED_IMPORTS } from '../../shared/shared-imports';
 import {
   CoachWorkspaceService,
-  addDays,
-  fromIsoDate,
   toIsoDate,
 } from '../../../services/coach/coach-workspace.service';
 import type {
@@ -17,29 +15,29 @@ import type {
   CoachProgram,
   CoachProgramDayLink,
   CoachProgramDetailsInput,
-  CoachProgramWorkout,
   CoachWorkoutSummary,
 } from '../../../models/coach-workspace.model';
 import { DIFFICULTY_OPTIONS, WEEKDAY_KEYS, errorText } from '../coach-ui';
-import { ExercisePickerComponent } from '../exercise-picker/exercise-picker.component';
+import {
+  DayCell,
+  EditableExercise,
+  buildDayCells,
+  clientInitials,
+  dateForDay,
+  dayAriaLabel,
+  dayForDate,
+  freeDaysFrom,
+  isPrescriptionChanged,
+  weeklyRepeat,
+} from './program-days';
+import { ProgramClientsPanelComponent } from './parts/program-clients-panel.component';
+import { ProgramCopyDialogComponent } from './parts/program-copy-dialog.component';
+import { ProgramDayGridComponent } from './parts/program-day-grid.component';
+import { ProgramDayWorkoutComponent } from './parts/program-day-workout.component';
+import { ProgramDetailsFormComponent } from './parts/program-details-form.component';
+import { ProgramEmptyDayComponent } from './parts/program-empty-day.component';
+import { ProgramMultiAddDialogComponent } from './parts/program-multi-add-dialog.component';
 import { matchesSearch } from '../../shared/components/app-search/search-match';
-
-interface DayCell {
-  day: number;
-  date: Date | null;
-  workout: CoachProgramWorkout | null;
-  link: CoachProgramDayLink | null;
-  label: string;
-}
-
-interface EditableExercise {
-  id: number;
-  name: string;
-  sets: number;
-  repetitions: number;
-  restSeconds: number;
-  original: { sets: number; repetitions: number; restSeconds: number };
-}
 
 /**
  * Programszerkesztő egy oldalon: program adatai, napok rácsa, a kiválasztott
@@ -49,7 +47,16 @@ interface EditableExercise {
 @Component({
   selector: 'app-coach-program-editor',
   standalone: true,
-  imports: [...SHARED_IMPORTS, ExercisePickerComponent],
+  imports: [
+    ...SHARED_IMPORTS,
+    ProgramDetailsFormComponent,
+    ProgramDayGridComponent,
+    ProgramDayWorkoutComponent,
+    ProgramEmptyDayComponent,
+    ProgramClientsPanelComponent,
+    ProgramMultiAddDialogComponent,
+    ProgramCopyDialogComponent,
+  ],
   templateUrl: './coach-program-editor.component.html',
 })
 export class CoachProgramEditorComponent implements OnInit {
@@ -244,35 +251,9 @@ export class CoachProgramEditorComponent implements OnInit {
   }
 
   private buildCells(links: CoachProgramDayLink[] = []): void {
-    const workoutsByLinkId = new Map<number, CoachProgramWorkout>();
-    const workoutsById = new Map<number, CoachProgramWorkout>();
-    for (const workout of this.program?.workouts ?? []) {
-      workoutsByLinkId.set(workout.programWorkoutId, workout);
-      if (!workoutsById.has(workout.workoutId)) workoutsById.set(workout.workoutId, workout);
-    }
-    const byDay = new Map<number, CoachProgramDayLink>();
-    for (const link of links) byDay.set(link.dayIndex, link);
-
-    const duration = Math.max(1, Number(this.form.durationDays) || 1);
-    const start = this.form.startDate ? fromIsoDate(this.form.startDate) : null;
-    const prefix = commonPrefix((this.program?.workouts ?? []).map((workout) => workout.name));
-    this.cells = Array.from({ length: duration }, (_, index) => {
-      const day = index + 1;
-      const link = byDay.get(day) ?? null;
-      const workout = link
-        ? workoutsByLinkId.get(link.id) ?? workoutsById.get(link.workoutId) ?? null
-        : null;
-      return {
-        day,
-        date: start ? addDays(start, index) : null,
-        workout,
-        link,
-        label: workout ? shortName(workout.name, prefix) : '',
-      };
-    });
-    // A rács hétfővel kezdődik: a kezdőnap előtti üres helyek.
-    const offset = start ? (start.getDay() + 6) % 7 : 0;
-    this.leadingBlanks = Array.from({ length: offset }, (_, i) => i);
+    const { cells, leadingBlanks } = buildDayCells(this.program, links, this.form.durationDays, this.form.startDate);
+    this.cells = cells;
+    this.leadingBlanks = leadingBlanks;
   }
 
   private loadAssignment(): void {
@@ -439,7 +420,7 @@ export class CoachProgramEditorComponent implements OnInit {
   }
 
   dayAriaLabel(cell: DayCell): string {
-    return cell.workout ? `${cell.day}: ${cell.workout.name}` : `${cell.day}`;
+    return dayAriaLabel(cell);
   }
 
   private loadMyWorkouts(): void {
@@ -450,7 +431,7 @@ export class CoachProgramEditorComponent implements OnInit {
   }
 
   private dateForDay(day: number): string {
-    return toIsoDate(addDays(fromIsoDate(this.form.startDate), day - 1));
+    return dateForDay(this.form.startDate, day);
   }
 
   /** A program első és utolsó napjának dátuma a dátummezők min/max értékéhez. */
@@ -467,10 +448,7 @@ export class CoachProgramEditorComponent implements OnInit {
    * Üres vagy hibás dátumnál NaN. Naptári napokat számol, így az óraátállítás nem zavarja.
    */
   dayForDate(value: string): number {
-    if (!this.form.startDate || !/^\d{4}-\d{2}-\d{2}$/.test(value ?? '')) return NaN;
-    const [sy, sm, sd] = this.form.startDate.split('-').map(Number);
-    const [y, m, d] = value.split('-').map(Number);
-    return Math.round((Date.UTC(y, m - 1, d) - Date.UTC(sy, sm - 1, sd)) / 86_400_000) + 1;
+    return dayForDate(this.form.startDate, value);
   }
 
   // ----------------------------------------------------------
@@ -478,11 +456,7 @@ export class CoachProgramEditorComponent implements OnInit {
   // ----------------------------------------------------------
 
   isChanged(row: EditableExercise): boolean {
-    return (
-      Number(row.sets) !== row.original.sets ||
-      Number(row.repetitions) !== row.original.repetitions ||
-      Number(row.restSeconds) !== row.original.restSeconds
-    );
+    return isPrescriptionChanged(row);
   }
 
   get changedCount(): number {
@@ -600,6 +574,11 @@ export class CoachProgramEditorComponent implements OnInit {
     return (this.program?.workouts ?? []).some((workout) => workout.workoutId === workoutId);
   }
 
+  /** A programban szereplő edzések azonosítói (az edzéstár listájának jelöléséhez). */
+  get programWorkoutIds(): Set<number> {
+    return new Set((this.program?.workouts ?? []).map((workout) => workout.workoutId));
+  }
+
   /** A kiválasztott edzéstári edzés ugyanazzal a gyakorlatlistával kerül a napra (nem másolat). */
   linkLibraryWorkout(): void {
     if (this.programId === null || this.copySourceId === null || this.busy) return;
@@ -639,19 +618,11 @@ export class CoachProgramEditorComponent implements OnInit {
 
   /** A kiválasztott nap után hetente ugyanarra a hétnapra eső, még üres napok. */
   get weeklyRepeatDays(): number[] {
-    const days: number[] = [];
-    for (let day = this.selectedDay + 7; day <= this.cells.length; day += 7) {
-      if (!this.cells[day - 1]?.link) days.push(day);
-    }
-    return days;
+    return weeklyRepeat(this.cells, this.selectedDay).days;
   }
 
   get weeklyRepeatSkipped(): number {
-    let skipped = 0;
-    for (let day = this.selectedDay + 7; day <= this.cells.length; day += 7) {
-      if (this.cells[day - 1]?.link) skipped++;
-    }
-    return skipped;
+    return weeklyRepeat(this.cells, this.selectedDay).skipped;
   }
 
   repeatWeekly(): void {
@@ -798,12 +769,7 @@ export class CoachProgramEditorComponent implements OnInit {
 
   /** A kiválasztott naptól kezdve a következő szabad napok, a kijelölés sorrendjében. */
   get multiTargetDays(): number[] {
-    const days: number[] = [];
-    for (const cell of this.cells) {
-      if (days.length === this.multiSelected.length) break;
-      if (cell.day >= this.selectedDay && !cell.link) days.push(cell.day);
-    }
-    return days;
+    return freeDaysFrom(this.cells, this.selectedDay, this.multiSelected.length);
   }
 
   addMultiple(): void {
@@ -893,9 +859,7 @@ export class CoachProgramEditorComponent implements OnInit {
 
   /** Monogram a névből (pl. "coach_user01" → "CU", "Andi" → "AN"). */
   initials(client: CoachClientOverview): string {
-    const parts = (client.username ?? '').trim().split(/[\s._-]+/).filter(Boolean);
-    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toLocaleUpperCase();
-    return (parts[0] ?? '?').slice(0, 2).toLocaleUpperCase();
+    return clientInitials(client);
   }
 
   get assignedClients(): CoachClientOverview[] {
@@ -994,22 +958,4 @@ export class CoachProgramEditorComponent implements OnInit {
   private showError(error: unknown, fallbackKey: string): void {
     this.showMessage(errorText(error, fallbackKey), 'error');
   }
-}
-
-/** Az edzésnevek közös eleje (szóhatárig), pl. "workouts-Workout-". */
-function commonPrefix(names: string[]): string {
-  const unique = [...new Set(names.filter(Boolean))];
-  if (unique.length < 2) return '';
-  let prefix = unique[0];
-  for (const name of unique.slice(1)) {
-    while (prefix && !name.startsWith(prefix)) prefix = prefix.slice(0, -1);
-  }
-  const cut = Math.max(prefix.lastIndexOf(' '), prefix.lastIndexOf('-'), prefix.lastIndexOf('_'));
-  return cut >= 0 ? prefix.slice(0, cut + 1) : '';
-}
-
-/** A rácsban a név közös előtag nélküli része, hogy a lényeg látsszon. */
-function shortName(name: string, prefix: string): string {
-  const rest = prefix && name.startsWith(prefix) ? name.slice(prefix.length).trim() : name;
-  return rest || name;
 }

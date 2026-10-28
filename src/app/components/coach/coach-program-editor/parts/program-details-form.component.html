@@ -1,0 +1,45 @@
+<section class="rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
+  <h2 class="mb-4 text-lg font-bold text-content-900">{{ 'coachWorkspace.editor.details' | translate }}</h2>
+  <form class="grid grid-cols-1 gap-4 md:grid-cols-2" (ngSubmit)="save.emit()">
+    <label class="flex flex-col gap-1 text-sm font-semibold text-content-800 md:col-span-2">
+      {{ 'coachWorkspace.editor.name' | translate }}
+      <input appInput="default" type="text" name="programName" required maxlength="255"
+             [(ngModel)]="form.programName" class="font-normal" />
+    </label>
+    <label class="flex flex-col gap-1 text-sm font-semibold text-content-800 md:col-span-2">
+      {{ 'coachWorkspace.editor.description' | translate }}
+      <textarea appTextarea="default" name="programDescription" rows="2"
+                [(ngModel)]="form.programDescription" class="font-normal"></textarea>
+    </label>
+    <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+      {{ 'coachWorkspace.editor.startDate' | translate }}
+      <input appInput="default" type="date" name="startDate" required [(ngModel)]="form.startDate" class="font-normal" />
+    </label>
+    <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+      {{ 'coachWorkspace.editor.durationDays' | translate }}
+      <input appInput="default" type="number" name="durationDays" min="1" max="365" required
+             [(ngModel)]="form.durationDays" class="font-normal" />
+    </label>
+    <fieldset class="flex flex-col gap-2 md:col-span-2">
+      <legend class="mb-1 text-sm font-semibold text-content-800">{{ 'coachWorkspace.editor.difficulty' | translate }}</legend>
+      <div class="flex flex-wrap gap-4">
+        @for (option of difficultyOptions; track option.value) {
+          <label class="inline-flex min-h-11 items-center gap-2 text-sm text-content-800">
+            <input appRadio="plain" type="radio" name="difficultyLevel" [value]="option.value" [(ngModel)]="form.difficultyLevel" />
+            {{ option.label | translate }}
+          </label>
+        }
+      </div>
+    </fieldset>
+    <div class="flex flex-wrap items-center justify-end gap-3 md:col-span-2">
+      @if (!isNew) {
+        <p class="mr-auto text-xs text-content-600">{{ 'coachWorkspace.editor.datesHint' | translate }}</p>
+      }
+      <button type="submit" [disabled]="submitDisabled"
+              class="btn btn-primary">
+        <app-icon name="save" sizeClass="h-4 w-4" />
+        {{ (saving ? 'coachWorkspace.saving' : (isNew ? 'coachWorkspace.editor.create' : 'coachWorkspace.save')) | translate }}
+      </button>
+    </div>
+  </form>
+</section>

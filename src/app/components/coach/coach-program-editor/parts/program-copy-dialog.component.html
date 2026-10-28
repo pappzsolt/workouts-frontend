@@ -1,0 +1,34 @@
+<app-dialog [ariaLabel]="'coachWorkspace.editor.copyProgram' | translate" [trapFocus]="true" [closeOnEscape]="true"
+            [closeOnBackdrop]="true" [busy]="busy" (dismissed)="dismissed.emit()">
+  <form class="flex flex-col gap-4 p-6" (ngSubmit)="confirmed.emit()">
+    <h2 class="text-xl font-bold text-content-900">{{ 'coachWorkspace.editor.copyProgram' | translate }}</h2>
+    <p class="text-sm text-content-700">{{ 'coachWorkspace.editor.copyProgramHint' | translate }}</p>
+    <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+      {{ 'coachWorkspace.editor.name' | translate }}
+      <input appInput="default" type="text" name="copyName" required maxlength="255" [(ngModel)]="copyName" class="font-normal" />
+    </label>
+    <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+      {{ 'coachWorkspace.editor.startDate' | translate }}
+      <input appInput="default" type="date" name="copyStart" required [(ngModel)]="copyStart" class="font-normal" />
+    </label>
+    <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+      {{ 'coachWorkspace.editor.copyForClient' | translate }}
+      <select name="copyUser" [(ngModel)]="copyUserId"
+              class="min-h-11 rounded-xl border border-surface-300 bg-white px-3 text-sm font-normal text-content-800 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/10">
+        <option [ngValue]="null">{{ 'coachWorkspace.editor.copyNoClient' | translate }}</option>
+        @for (client of clients; track client.userId) {
+          <option [ngValue]="client.userId">{{ client.username }}</option>
+        }
+      </select>
+    </label>
+    <div class="flex justify-end gap-3">
+      <button type="button" (click)="dismissed.emit()" class="btn btn-neutral">
+        {{ 'coachWorkspace.cancel' | translate }}
+      </button>
+      <button type="submit" [disabled]="busy || !copyName().trim() || !copyStart()"
+              class="btn btn-primary">
+        {{ 'coachWorkspace.editor.copyConfirm' | translate }}
+      </button>
+    </div>
+  </form>
+</app-dialog>

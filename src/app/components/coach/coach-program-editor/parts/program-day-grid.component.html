@@ -1,0 +1,40 @@
+<section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm lg:col-span-3"
+         [attr.aria-label]="'coachWorkspace.editor.days' | translate">
+  <div class="mb-4 flex flex-wrap items-center gap-2">
+    <h2 class="flex-1 text-lg font-bold text-content-900">{{ 'coachWorkspace.editor.days' | translate }}</h2>
+    <button type="button" (click)="openMulti.emit()" [disabled]="busy"
+            class="btn btn-neutral">
+      <app-icon name="plus" sizeClass="h-4 w-4" />
+      {{ 'coachWorkspace.editor.multiAdd' | translate }}
+    </button>
+  </div>
+  <div class="grid grid-cols-7 gap-1 sm:gap-2">
+    @for (key of weekdayKeys; track key) {
+      <div class="pb-1 text-center text-xs font-semibold uppercase text-content-600">{{ key | translate }}</div>
+    }
+    @for (blank of leadingBlanks; track blank) {
+      <div></div>
+    }
+    @for (cell of cells; track cell.day) {
+      <button type="button" (click)="daySelected.emit(cell.day)"
+              [attr.aria-pressed]="cell.day === selectedDay"
+              [attr.aria-label]="dayAriaLabel(cell)"
+              class="flex min-h-16 min-w-0 flex-col items-start gap-1 rounded-xl border p-1 text-left text-xs sm:p-2"
+              [class.border-primary-700]="cell.day === selectedDay"
+              [class.ring-2]="cell.day === selectedDay"
+              [class.ring-primary-200]="cell.day === selectedDay"
+              [class.border-surface-200]="cell.day !== selectedDay"
+              [class.bg-primary-50]="!!cell.workout"
+              [class.bg-white]="!cell.workout">
+        <span class="font-semibold text-content-700">{{ cell.day }}.
+          @if (cell.date) {
+            <span class="hidden font-normal text-content-500 sm:inline">{{ cell.date | date: 'MM.dd' }}</span>
+          }
+        </span>
+        @if (cell.workout) {
+          <span class="line-clamp-3 w-full break-words font-semibold text-primary-800" [title]="cell.workout.name">{{ cell.label }}</span>
+        }
+      </button>
+    }
+  </div>
+</section>
