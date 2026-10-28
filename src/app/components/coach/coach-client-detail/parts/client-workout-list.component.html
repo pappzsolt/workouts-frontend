@@ -1,0 +1,25 @@
+<nav [attr.aria-label]="'coachWorkspace.client.workoutList' | translate"
+     class="flex max-h-[70rem] min-w-0 flex-[1_1_280px] flex-col gap-1 overflow-y-auto rounded-2xl border border-surface-200 bg-white p-3 shadow-sm lg:max-w-sm">
+  @for (week of weeks; track week.from) {
+    <h2 class="mx-2 mb-1 mt-3 text-xs font-bold uppercase tracking-wide text-content-600">
+      {{ 'coachWorkspace.client.weekLabel' | translate: { n: week.label } }} · {{ week.from | date: 'MM.dd' }}–{{ week.to | date: 'MM.dd' }}
+    </h2>
+    @for (workout of week.workouts; track workout.userWorkoutId) {
+      <button type="button" (click)="workoutSelected.emit(workout.userWorkoutId)" [attr.aria-current]="workout.userWorkoutId === selectedId ? 'true' : null"
+              class="flex min-h-14 w-full items-center justify-between gap-3 rounded-xl border px-3 py-2 text-left"
+              [class.border-primary-700]="workout.userWorkoutId === selectedId" [class.bg-primary-50]="workout.userWorkoutId === selectedId"
+              [class.border-surface-200]="workout.userWorkoutId !== selectedId" [class.bg-white]="workout.userWorkoutId !== selectedId">
+        <span class="flex min-w-0 flex-col">
+          <span class="text-xs text-content-600">
+            {{ workout.date | date: 'MM.dd' }} · {{ 'coachWorkspace.editor.dayLabel' | translate: { day: workout.dayIndex } }}
+          </span>
+          <span class="truncate text-sm font-semibold text-content-900">{{ workout.name }}</span>
+        </span>
+        <span class="flex flex-none flex-col items-end gap-1">
+          <app-status-badge [status]="status(workout)" />
+          <span class="text-xs text-content-600">{{ 'coachWorkspace.client.setsShort' | translate: { done: workout.setsCompleted, total: workout.setsTotal } }}</span>
+        </span>
+      </button>
+    }
+  }
+</nav>
