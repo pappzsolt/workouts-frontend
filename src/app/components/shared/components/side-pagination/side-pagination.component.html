@@ -27,24 +27,29 @@
          ELŐZŐ
          ================================================== -->
 
-    <div *ngIf="totalPages > 1" [ngClass]="compact ? 'flex items-center justify-between gap-3' : navigationBelow ? 'mt-4 flex items-center justify-between gap-3' : 'contents'">
+    <div *ngIf="totalPages > 1" [ngClass]="compact ? 'flex items-center justify-between gap-2' : navigationBelow ? 'mt-4 flex items-center justify-between gap-3' : 'contents'">
       <app-button
         *ngIf="totalPages > 1"
         type="button"
         [ariaLabel]="'common.previous' | translate"
         [disabled]="currentPage <= 1"
         (buttonClick)="onPreviousPage()"
-        variant="secondary"
-        appearance="outline"
-        [iconOnly]="true"
-        [round]="true"
+        [variant]="compact ? 'primary' : 'secondary'"
+        [appearance]="compact ? 'solid' : 'outline'"
+        [size]="compact ? 'lg' : 'md'"
+        [buttonClass]="compact ? '!gap-1 !px-2 !text-xs sm:!gap-2 sm:!px-5 sm:!text-sm ring-2 ring-primary-200 ring-offset-2 shadow-md enabled:hover:shadow-lg enabled:active:scale-95 disabled:shadow-none' : ''"
+        [iconOnly]="!compact"
+        [round]="!compact"
         [ngClass]="navigationBelow || compact ? '' : 'absolute top-1/2 z-10 -translate-y-1/2 -left-3 sm:-left-5'"
       >
-        <app-icon name="chevron-left" sizeClass="h-5 w-5" />
+        <app-icon name="chevron-left" [sizeClass]="compact ? 'h-5 w-5 sm:h-7 sm:w-7' : 'h-5 w-5'" />
+        @if (compact) {
+          <span>{{ 'common.previous' | translate }}</span>
+        }
       </app-button>
 
       @if (compact) {
-        <span class="text-sm font-semibold text-content-700" aria-live="polite">
+        <span class="shrink-0 whitespace-nowrap text-sm font-semibold text-content-700" aria-live="polite">
           {{ currentPage }} / {{ totalPages }}
         </span>
       }
@@ -59,13 +64,18 @@
         [ariaLabel]="'common.next' | translate"
         [disabled]="currentPage >= totalPages"
         (buttonClick)="onNextPage()"
-        variant="secondary"
-        appearance="outline"
-        [iconOnly]="true"
-        [round]="true"
+        [variant]="compact ? 'primary' : 'secondary'"
+        [appearance]="compact ? 'solid' : 'outline'"
+        [size]="compact ? 'lg' : 'md'"
+        [buttonClass]="compact ? '!gap-1 !px-2 !text-xs sm:!gap-2 sm:!px-5 sm:!text-sm ring-2 ring-primary-200 ring-offset-2 shadow-md enabled:hover:shadow-lg enabled:active:scale-95 disabled:shadow-none' : ''"
+        [iconOnly]="!compact"
+        [round]="!compact"
         [ngClass]="navigationBelow || compact ? '' : 'absolute top-1/2 z-10 -translate-y-1/2 -right-3 sm:-right-5'"
       >
-        <app-icon name="chevron-right" sizeClass="h-5 w-5" />
+        @if (compact) {
+          <span>{{ 'common.next' | translate }}</span>
+        }
+        <app-icon name="chevron-right" [sizeClass]="compact ? 'h-5 w-5 sm:h-7 sm:w-7' : 'h-5 w-5'" />
       </app-button>
     </div>
 

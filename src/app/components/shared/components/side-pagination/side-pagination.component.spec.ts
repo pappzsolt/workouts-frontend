@@ -15,6 +15,7 @@ describe('SidePaginationComponent layouts', () => {
     expect(host.querySelector('[aria-live]')?.textContent?.trim()).toBe('1 / 4');
     expect(host.querySelector('[aria-live]')?.classList.contains('mt-5')).toBeTrue();
     expect(host.querySelector('app-button')?.classList.contains('absolute')).toBeTrue();
+    expect(host.querySelector('button')?.classList.contains('btn-outline')).toBeTrue();
   });
 
   it('places the count between compact navigation buttons and preserves page boundaries', () => {
@@ -29,6 +30,13 @@ describe('SidePaginationComponent layouts', () => {
     expect(host.querySelectorAll('[aria-live]').length).toBe(1);
     const buttons = host.querySelectorAll('button');
     expect(buttons[0].disabled).toBeTrue();
+    expect(buttons[1].classList.contains('btn-primary')).toBeTrue();
+    expect(buttons[1].classList.contains('min-h-12')).toBeTrue();
+    expect(buttons[1].classList.contains('shadow-md')).toBeTrue();
+    expect(buttons[0].textContent).toContain('common.previous');
+    expect(buttons[1].textContent).toContain('common.next');
+    expect(buttons[0].querySelector('app-icon')).not.toBeNull();
+    expect(buttons[1].querySelector('app-icon')).not.toBeNull();
     const emit = spyOn(fixture.componentInstance.pageChange, 'emit');
     buttons[1].click();
     expect(emit).toHaveBeenCalledOnceWith(2);
