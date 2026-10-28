@@ -1,4 +1,4 @@
-import { addDays, fromIsoDate, toIsoDate } from '../../../services/coach/coach-workspace.service';
+import { addDays, fromIsoDate, toIsoDate } from '../../../shared/local-date';
 import type {
   CoachClientOverview,
   CoachProgram,

@@ -2,13 +2,8 @@ import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { SHARED_IMPORTS } from '../../shared/shared-imports';
-import {
-  CoachWorkspaceService,
-  addDays,
-  startOfWeek,
-  toIsoDate,
-  workoutStatus,
-} from '../../../services/coach/coach-workspace.service';
+import { CoachWorkspaceService, workoutStatus } from '../../../services/coach/coach-workspace.service';
+import { addDays, startOfWeek, toIsoDate } from '../../../shared/local-date';
 import type { CoachClientOverview } from '../../../models/coach-workspace.model';
 import { errorText, initial, percent } from '../coach-ui';
 

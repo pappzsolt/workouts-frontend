@@ -4,7 +4,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, concat, finalize, of, takeUntil, tap, toArray } from 'rxjs';
 
 import { SHARED_IMPORTS } from '../../shared/shared-imports';
-import { CoachWorkspaceService, toIsoDate } from '../../../services/coach/coach-workspace.service';
+import { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
+import { toIsoDate } from '../../../shared/local-date';
 import type {
   ClientSetValues,
   CoachClientOverview,

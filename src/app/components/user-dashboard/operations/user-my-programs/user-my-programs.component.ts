@@ -4,10 +4,11 @@ import { errorMessage, responseMessage } from '../../../../models/backend-dto/co
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { EMPTY, Observable, Subject, catchError, defer, switchMap, takeUntil, tap } from 'rxjs';
 
 import { UserMyProgramsService } from '../../../../services/user/user-my-program/user-my-programs.service';
 
+import { ApiResponse } from '../../../../models/backend-dto/common/api-response';
 import { UserProgram, ProgramProgress } from '../../../../models/program.model';
 import { SidePaginationComponent } from '../../../shared/components/side-pagination/side-pagination.component';
 import { LanguageService } from '../../../../services/shared/language.service';
@@ -27,8 +28,6 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 export class UserMyProgramsComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();
 
-  private loadRequest?: Subscription;
-  private progressRequest?: Subscription;
   loadFailed = false;
   loading = false;
 
@@ -114,9 +113,10 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
      * azonnal kibocsátja, ezért az első
      * programbetöltés is innen történik.
      */
-    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
-      this.loadPrograms();
-    });
+    this.languageService.language$.pipe(
+      switchMap(() => this.loadPrograms()),
+      takeUntil(this.destroy$),
+    ).subscribe();
   }
 
   // ============================================================
@@ -132,86 +132,73 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
   // PROGRAMOK BETÖLTÉSE
   // ============================================================
 
-  private loadPrograms(): void {
-    this.loadRequest?.unsubscribe(); this.progressRequest?.unsubscribe();
-    this.loading = true; this.loadFailed = false; this.messageType = 'info';
-    this.message = 'userMyPrograms.loading';
-    this.programProgress = {};
+  private loadPrograms(): Observable<ApiResponse<ProgramProgress[]>> {
+    return defer(() => {
+      this.loading = true;
+      this.loadFailed = false;
+      this.messageType = 'info';
+      this.message = 'userMyPrograms.loading';
+      this.programProgress = {};
 
-    this.loadRequest = this.programsService.getPrograms().pipe(takeUntil(this.destroy$)).subscribe({
-      next: response => {
-        this.loading = false;
-        this.loadFailed = !response.success;
-        this.messageType = response.success ? 'info' : 'error';
-        this.message = responseMessage([response], response.success ? '' : 'userMyPrograms.loadError');
-        const programs = response.success ? response.data ?? [] : [];
-        // TELJES PROGRAMLISTA ELTÁROLÁSA
-
-        this.allPrograms = programs ?? [];
-
-        // ÜRES LISTA KEZELÉSE
-
-        if (this.allPrograms.length === 0) {
-          if (response.success) this.message = responseMessage([response], 'userMyPrograms.noPrograms');
+      return this.programsService.getPrograms().pipe(
+        catchError(error => {
+          this.loading = false;
+          this.loadFailed = true;
+          this.messageType = 'error';
+          this.message = errorMessage(error, 'userMyPrograms.loadError');
           this.programProgress = {};
-
+          this.allPrograms = [];
+          this.paginatedPrograms = [];
           this.totalItems = 0;
           this.currentPage = 1;
-          this.paginatedPrograms = [];
+          return EMPTY;
+        }),
+        tap(response => this.applyProgramsResponse(response)),
+        switchMap(() => this.allPrograms.length === 0 ? EMPTY : this.loadProgress()),
+      );
+    });
+  }
 
+  private applyProgramsResponse(response: ApiResponse<UserProgram[]>): void {
+    this.loading = false;
+    this.loadFailed = !response.success;
+    this.messageType = response.success ? 'info' : 'error';
+    this.message = responseMessage([response], response.success ? '' : 'userMyPrograms.loadError');
+    this.allPrograms = response.success ? response.data ?? [] : [];
+    this.currentPage = 1;
+
+    if (this.allPrograms.length === 0) {
+      if (response.success) this.message = responseMessage([response], 'userMyPrograms.noPrograms');
+      this.programProgress = {};
+      this.totalItems = 0;
+      this.paginatedPrograms = [];
+      return;
+    }
+
+    this.updatePaginatedPrograms();
+  }
+
+  private loadProgress(): Observable<ApiResponse<ProgramProgress[]>> {
+    return this.programsService.getProgramProgress(this.allPrograms.map(program => program.id)).pipe(
+      tap(response => {
+        if (!response.success) {
+          this.programProgress = {};
+          this.message = responseMessage([response], 'userMyPrograms.progressLoadError');
+          this.messageType = 'error';
           return;
         }
-
-
-
-        // PAGINATION ADATOK FRISSÍTÉSE
-
-        this.totalItems = this.allPrograms.length;
-        this.currentPage = 1;
-
-        this.updatePaginatedPrograms();
-
-        // PROGRESS ADATOK LEKÉRÉSE
-        // TOVÁBBRA IS AZ ÖSSZES PROGRAMHOZ
-
-        this.progressRequest = this.programsService
-          .getProgramProgress(this.allPrograms.map((program) => program.id))
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: response => {
-              if (!response.success) {
-                this.programProgress = {}; this.message = responseMessage([response], 'userMyPrograms.progressLoadError');
-                this.messageType = 'error'; return;
-              }
-              this.message = responseMessage([{ message: this.message }, response], '');
-              const progress = response.data ?? [];
-              this.programProgress = Object.fromEntries(
-                progress.map((item) => [item.programId, item]),
-              );
-            },
-
-            error: error => {
-              this.message = errorMessage(error, 'userMyPrograms.progressLoadError'); this.messageType = 'error';
-              /*
-               * Ha a progress lekérése nem sikerül,
-               * a programlista ettől még megjelenik.
-               */
-              this.programProgress = {};
-            },
-          });
-      },
-
-      error: error => {
-        this.loading = false; this.loadFailed = true; this.messageType = 'error';
-        this.message = errorMessage(error, 'userMyPrograms.loadError');
+        this.message = responseMessage([{ message: this.message }, response], '');
+        this.programProgress = Object.fromEntries(
+          (response.data ?? []).map(item => [item.programId, item]),
+        );
+      }),
+      catchError(error => {
+        this.message = errorMessage(error, 'userMyPrograms.progressLoadError');
+        this.messageType = 'error';
         this.programProgress = {};
-
-        this.allPrograms = [];
-        this.paginatedPrograms = [];
-        this.totalItems = 0;
-        this.currentPage = 1;
-      },
-    });
+        return EMPTY;
+      }),
+    );
   }
 
   // ============================================================
