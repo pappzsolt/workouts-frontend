@@ -29,7 +29,7 @@
             <app-icon name="plus" sizeClass="h-4 w-4" />
             {{ 'coachWorkspace.client.newProgramFor' | translate }}
           </a>
-          <button type="button" (click)="openAssign()"
+          <button type="button" (click)="assignments.openAssign(client)"
                   class="btn btn-primary">
             <app-icon name="user-plus" sizeClass="h-4 w-4" />
             {{ 'coachWorkspace.client.assignProgram' | translate }}
@@ -56,14 +56,14 @@
       <!-- Mentetlen változás közbeni váltás -->
       @if (pendingNav) {
         <div role="alertdialog" aria-live="assertive" class="flex flex-wrap items-center gap-3 rounded-2xl border border-warning-300 bg-warning-50 p-4 text-sm text-warning-800">
-          <span class="flex-[1_1_240px] font-semibold">{{ 'coachWorkspace.client.unsavedPrompt' | translate: { count: changedRows.length } }}</span>
+          <span class="flex-[1_1_240px] font-semibold">{{ 'coachWorkspace.client.unsavedPrompt' | translate: { count: setEditor.changedRows.length } }}</span>
           <button type="button" (click)="resolvePending('cancel')" class="btn btn-neutral">
             {{ 'coachWorkspace.client.stay' | translate }}
           </button>
           <button type="button" (click)="resolvePending('discard')" class="btn btn-delete">
             {{ 'coachWorkspace.client.discardAndGo' | translate }}
           </button>
-          <button type="button" (click)="resolvePending('save')" [disabled]="saving" class="btn btn-primary">
+          <button type="button" (click)="resolvePending('save')" [disabled]="setEditor.saving" class="btn btn-primary">
             {{ 'coachWorkspace.client.saveAndGo' | translate }}
           </button>
         </div>
@@ -154,10 +154,10 @@
                   <div class="flex flex-wrap items-end gap-3 rounded-xl bg-surface-50 px-4 py-3">
                     <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
                       {{ 'coachWorkspace.client.scheduledDate' | translate }}
-                      <input appInput="compact" type="date" name="rescheduleDate" [(ngModel)]="rescheduleDate" class="w-44"
+                      <input appInput="compact" type="date" name="rescheduleDate" [(ngModel)]="schedule.rescheduleDate" class="w-44"
                              [attr.min]="selectedProgram?.startDate || null" [attr.max]="selectedProgram?.endDate || null" />
                     </label>
-                    <button type="button" (click)="reschedule()" [disabled]="!rescheduleDate || rescheduleDate === workout.date"
+                    <button type="button" (click)="schedule.reschedule(selected)" [disabled]="!schedule.rescheduleDate || schedule.rescheduleDate === workout.date"
                             class="btn btn-neutral">
                       {{ 'coachWorkspace.client.saveDate' | translate }}
                     </button>
@@ -170,29 +170,29 @@
 
                   <p class="text-xs text-content-600">{{ 'coachWorkspace.client.restHint' | translate }}</p>
 
-                  @for (entry of exerciseSets; track entry.exercise.userWorkoutExerciseId; let e = $index) {
-                    <app-client-exercise-sets [entry]="entry" [index]="e" [setBusy]="setBusy" [deleteSetId]="deleteSetId"
-                                              (fillDown)="fillDown(entry)" (addSet)="addSet(entry)"
-                                              (askDelete)="askDeleteSet($event)" (cancelDelete)="cancelDeleteSet()"
-                                              (confirmDelete)="confirmDeleteSet(entry)" />
+                  @for (entry of setEditor.exerciseSets; track entry.exercise.userWorkoutExerciseId; let e = $index) {
+                    <app-client-exercise-sets [entry]="entry" [index]="e" [setBusy]="setEditor.setBusy" [deleteSetId]="setEditor.deleteSetId"
+                                              (fillDown)="setEditor.fillDown(entry)" (addSet)="setEditor.addSet(entry)"
+                                              (askDelete)="setEditor.askDeleteSet($event)" (cancelDelete)="setEditor.cancelDeleteSet()"
+                                              (confirmDelete)="setEditor.confirmDeleteSet(entry)" />
                   } @empty {
                     <p class="text-sm text-content-600">{{ 'coachWorkspace.client.noExercises' | translate }}</p>
                   }
 
                   <div class="sticky bottom-0 flex flex-wrap items-center justify-end gap-3 border-t border-surface-200 bg-white pt-3">
-                    @if (dirty) {
+                    @if (setEditor.dirty) {
                       <span class="mr-auto text-sm font-semibold text-warning-800">
-                        {{ 'coachWorkspace.client.unsavedCount' | translate: { count: changedRows.length } }}
+                        {{ 'coachWorkspace.client.unsavedCount' | translate: { count: setEditor.changedRows.length } }}
                       </span>
-                      <button type="button" (click)="discardChanges()" [disabled]="saving"
+                      <button type="button" (click)="setEditor.discardChanges()" [disabled]="setEditor.saving"
                               class="btn btn-neutral">
                         {{ 'coachWorkspace.client.discard' | translate }}
                       </button>
                     }
-                    <button type="button" (click)="saveSets()" [disabled]="saving || !dirty"
+                    <button type="button" (click)="setEditor.saveSets()" [disabled]="setEditor.saving || !setEditor.dirty"
                             class="btn btn-primary px-5">
                       <app-icon name="save" sizeClass="h-4 w-4" />
-                      {{ (saving ? 'coachWorkspace.saving' : 'coachWorkspace.client.saveChanges') | translate: { count: changedRows.length } }}
+                      {{ (setEditor.saving ? 'coachWorkspace.saving' : 'coachWorkspace.client.saveChanges') | translate: { count: setEditor.changedRows.length } }}
                     </button>
                   </div>
                 </section>
@@ -202,8 +202,8 @@
         }
       } @else {
         <!-- Programok fül -->
-        <app-client-programs-tab [programs]="sortedPrograms" [revokeProgramId]="revokeProgramId" [today]="todayIso"
-                                 (askRevoke)="askRevoke($event)" (cancelRevoke)="cancelRevoke()" (confirmRevoke)="confirmRevoke()"
+        <app-client-programs-tab [programs]="sortedPrograms" [revokeProgramId]="assignments.revokeProgramId" [today]="todayIso"
+                                 (askRevoke)="assignments.askRevoke($event)" (cancelRevoke)="assignments.cancelRevoke()" (confirmRevoke)="assignments.confirmRevoke(userId)"
                                  (openPlan)="tab = 'plan'; selectProgram($event)" />
       }
     } @else {
@@ -213,8 +213,8 @@
 </div>
 
 <!-- Program hozzárendelése -->
-@if (assignOpen) {
-  <app-client-assign-dialog [username]="client?.username" [loading]="assignLoading" [programs]="assignablePrograms"
-                            [assigning]="assigning" [(selectedId)]="assignProgramId"
-                            (closed)="closeAssign()" (confirmed)="confirmAssign()" />
+@if (assignments.assignOpen) {
+  <app-client-assign-dialog [username]="client?.username" [loading]="assignments.assignLoading" [programs]="assignments.assignablePrograms"
+                            [assigning]="assignments.assigning" [(selectedId)]="assignments.assignProgramId"
+                            (closed)="assignments.closeAssign()" (confirmed)="assignments.confirmAssign(userId)" />
 }

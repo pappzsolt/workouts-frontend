@@ -1,34 +1,24 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subject, concat, finalize, of, takeUntil, tap, toArray } from 'rxjs';
+import { Subject, finalize, takeUntil } from 'rxjs';
 
 import { SHARED_IMPORTS } from '../../shared/shared-imports';
 import { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import { toIsoDate } from '../../../shared/local-date';
 import type {
-  ClientSetValues,
   CoachClientOverview,
   CoachClientProgram,
-  CoachProgram,
   CoachWorkoutStatus,
 } from '../../../models/coach-workspace.model';
 import { downloadBlob, errorText, initial, programExportFileName } from '../coach-ui';
 import {
   type ClientWorkoutEntry,
-  type EditableSet,
-  type ExerciseSets,
   type WeekGroup,
   buildWeeks,
-  fillDownSets,
   groupWorkouts,
-  isSetChanged,
-  isSetInvalid,
   programStateKey,
-  restoreSet,
-  setValues,
   sortPrograms,
-  toEditable,
   workoutStatus,
 } from './client-plan';
 import { ClientAssignDialogComponent } from './parts/client-assign-dialog.component';
@@ -36,7 +26,10 @@ import { ClientExerciseSetsComponent } from './parts/client-exercise-sets.compon
 import { ClientProgramsTabComponent } from './parts/client-programs-tab.component';
 import { ClientWorkoutListComponent } from './parts/client-workout-list.component';
 
-export type { ClientExerciseEntry, ClientWorkoutEntry, EditableSet, ExerciseSets } from './client-plan';
+import type { ClientDetailEffects } from './client-detail-effects';
+import { ClientSetEditor } from './client-set-editor';
+import { ClientProgramAssignments } from './client-program-assignments';
+import { ClientWorkoutSchedule } from './client-workout-schedule';
 
 type PendingNav =
   | { kind: 'workout'; index: number }
@@ -69,6 +62,31 @@ export class CoachClientDetailComponent implements OnInit {
   private readonly clientLoadCancelled$ = new Subject<void>();
   private readonly clientContextCancelled$ = new Subject<void>();
 
+  private readonly effects: ClientDetailEffects = {
+    cancelled$: this.clientContextCancelled$,
+    destroyRef: this.destroyRef,
+    showMessage: (key, type, params) => this.showMessage(key, type, params),
+    showError: (error, fallbackKey) => this.showError(error, fallbackKey),
+  };
+
+  readonly setEditor = new ClientSetEditor(this.workspace, this.effects, () => this.selected);
+  readonly assignments = new ClientProgramAssignments(
+    this.workspace,
+    this.effects,
+    programId => {
+      this.tab = 'plan';
+      this.loadClient(programId);
+    },
+    programId => {
+      if (this.programId === programId) this.programId = null;
+      this.loadClient(null);
+    },
+  );
+  readonly schedule = new ClientWorkoutSchedule(this.workspace, this.effects, userWorkoutId => {
+    this.requestedWorkoutId = userWorkoutId;
+    if (this.programId !== null) this.loadProgram(this.programId);
+  });
+
   readonly initial = initial;
   readonly todayIso = toIsoDate(new Date());
 
@@ -89,23 +107,7 @@ export class CoachClientDetailComponent implements OnInit {
   weeks: WeekGroup[] = [];
   selectedIndex = -1;
 
-  // Kiválasztott edzés sorozatai
-  exerciseSets: ExerciseSets[] = [];
-  saving = false;
-  rescheduleDate = '';
-  deleteSetId: number | null = null;
-  setBusy = false;
   pendingNav: PendingNav | null = null;
-
-  // Program kiosztás
-  assignOpen = false;
-  assignLoading = false;
-  assignablePrograms: CoachProgram[] = [];
-  assignProgramId: number | null = null;
-  assigning = false;
-
-  // Visszavonás
-  revokeProgramId: number | null = null;
 
   // Excel-export
   exporting = false;
@@ -150,18 +152,10 @@ export class CoachClientDetailComponent implements OnInit {
     this.workouts = [];
     this.weeks = [];
     this.selectedIndex = -1;
-    this.exerciseSets = [];
-    this.saving = false;
-    this.setBusy = false;
-    this.rescheduleDate = '';
-    this.deleteSetId = null;
+    this.setEditor.reset();
+    this.schedule.reset();
+    this.assignments.reset();
     this.pendingNav = null;
-    this.assignOpen = false;
-    this.assignLoading = false;
-    this.assignablePrograms = [];
-    this.assignProgramId = null;
-    this.assigning = false;
-    this.revokeProgramId = null;
     this.exporting = false;
     this.requestedWorkoutId = null;
     this.requestedDate = null;
@@ -196,7 +190,7 @@ export class CoachClientDetailComponent implements OnInit {
             this.workouts = [];
             this.weeks = [];
             this.selectedIndex = -1;
-            this.exerciseSets = [];
+            this.setEditor.exerciseSets = [];
           }
         },
         error: (error) => {
@@ -227,7 +221,7 @@ export class CoachClientDetailComponent implements OnInit {
   selectProgram(programId: number | string): void {
     const id = Number(programId);
     if (id === this.programId) return;
-    if (this.dirty) {
+    if (this.setEditor.dirty) {
       this.pendingNav = { kind: 'program', programId: id };
       return;
     }
@@ -251,9 +245,8 @@ export class CoachClientDetailComponent implements OnInit {
     this.workouts = [];
     this.weeks = [];
     this.selectedIndex = -1;
-    this.exerciseSets = [];
-    this.rescheduleDate = '';
-    this.deleteSetId = null;
+    this.setEditor.clearWorkout();
+    this.schedule.reset();
     this.pendingNav = null;
     this.workspace
       .getClientProgramRows(this.userId, programId)
@@ -288,7 +281,7 @@ export class CoachClientDetailComponent implements OnInit {
   exportProgram(): void {
     const programId = this.programId;
     if (programId === null || this.exporting) return;
-    const unsaved = this.dirty;
+    const unsaved = this.setEditor.dirty;
     const fileName = programExportFileName(this.selectedProgram?.name, this.client?.username);
     this.exporting = true;
     this.workspace
@@ -336,7 +329,7 @@ export class CoachClientDetailComponent implements OnInit {
 
   selectWorkout(index: number): void {
     if (index < 0 || index >= this.workouts.length || index === this.selectedIndex) return;
-    if (this.dirty) {
+    if (this.setEditor.dirty) {
       this.pendingNav = { kind: 'workout', index };
       return;
     }
@@ -349,183 +342,10 @@ export class CoachClientDetailComponent implements OnInit {
 
   private openWorkout(index: number): void {
     this.selectedIndex = index;
-    this.deleteSetId = null;
     this.pendingNav = null;
     const workout = this.selected;
-    this.rescheduleDate = workout?.date ?? '';
-    this.exerciseSets = (workout?.exercises ?? []).map((exercise) => ({ exercise, sets: [], loading: true }));
-    for (const entry of this.exerciseSets) this.loadSets(entry);
-  }
-
-  private loadSets(entry: ExerciseSets, keepEdits = false): void {
-    entry.loading = true;
-    const previous = keepEdits ? entry.sets : [];
-    this.workspace
-      .getClientWorkoutSets(entry.exercise.userWorkoutExerciseId)
-      .pipe(takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (sets) => {
-          entry.sets = [...sets]
-            .sort((a, b) => a.setNumber - b.setNumber)
-            .map((set) => {
-              const edited = previous.find((row) => row.id === set.id);
-              return edited && this.isChanged(edited) ? edited : toEditable(set);
-            });
-          entry.loading = false;
-        },
-        error: (error) => {
-          entry.loading = false;
-          this.showError(error, 'coachWorkspace.client.planLoadError');
-        },
-      });
-  }
-
-  // ----------------------------------------------------------
-  // Sorozatok
-  // ----------------------------------------------------------
-
-  isChanged(row: EditableSet): boolean {
-    return isSetChanged(row);
-  }
-
-  isInvalid(row: EditableSet): boolean {
-    return isSetInvalid(row);
-  }
-
-  get changedRows(): EditableSet[] {
-    return this.exerciseSets.flatMap((entry) => entry.sets.filter((row) => this.isChanged(row)));
-  }
-
-  get dirty(): boolean {
-    return this.changedRows.length > 0;
-  }
-
-  completedCount(entry: ExerciseSets): number {
-    return entry.sets.filter((row) => row.original.completed).length;
-  }
-
-  /** Az első sorozat cél értékei (ismétlés, súly, pihenő, tervezett RPE) a többi, nem teljesített sorozatra. */
-  fillDown(entry: ExerciseSets): void {
-    fillDownSets(entry);
-  }
-
-  addSet(entry: ExerciseSets): void {
-    if (this.setBusy) return;
-    const last = entry.sets[entry.sets.length - 1];
-    const prefill = last ? this.values(last) : null;
-    this.setBusy = true;
-    this.workspace
-      .addClientSet(entry.exercise.userWorkoutExerciseId)
-      .pipe(takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (setId) => {
-          // Az új sorozat az előző sor cél értékeivel indul (utána szabadon módosítható).
-          const save$: Observable<unknown> =
-            prefill && setId
-              ? this.workspace.saveClientSet(setId, {
-                  ...prefill,
-                  actualRepetitions: null,
-                  actualWeightKg: null,
-                  completed: false,
-                  notes: null,
-                })
-              : of(null);
-          save$.pipe(takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
-            next: () => {
-              this.setBusy = false;
-              this.loadSets(entry, true);
-              entry.exercise.setsTotal += 1;
-              this.refreshWorkoutTotals();
-            },
-            error: (error) => {
-              this.setBusy = false;
-              this.loadSets(entry, true);
-              this.showError(error, 'coachWorkspace.client.saveError');
-            },
-          });
-        },
-        error: (error) => {
-          this.setBusy = false;
-          this.showError(error, 'coachWorkspace.client.addSetError');
-        },
-      });
-  }
-
-  askDeleteSet(row: EditableSet): void {
-    this.deleteSetId = row.id;
-  }
-
-  cancelDeleteSet(): void {
-    this.deleteSetId = null;
-  }
-
-  confirmDeleteSet(entry: ExerciseSets): void {
-    const id = this.deleteSetId;
-    if (id === null || this.setBusy) return;
-    const removed = entry.sets.find((row) => row.id === id);
-    this.setBusy = true;
-    this.workspace
-      .deleteClientSet(id)
-      .pipe(takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.setBusy = false;
-          this.deleteSetId = null;
-          entry.sets = entry.sets.filter((row) => row.id !== id);
-          entry.exercise.setsTotal = Math.max(0, entry.exercise.setsTotal - 1);
-          if (removed?.original.completed) entry.exercise.setsCompleted = Math.max(0, entry.exercise.setsCompleted - 1);
-          this.refreshWorkoutTotals();
-          this.showMessage('coachWorkspace.client.setDeleted', 'success');
-          this.loadSets(entry, true);
-        },
-        error: (error) => {
-          this.setBusy = false;
-          this.deleteSetId = null;
-          this.showError(error, 'coachWorkspace.client.deleteSetError');
-        },
-      });
-  }
-
-  saveSets(after?: () => void): void {
-    if (this.saving) return;
-    const changed = this.changedRows;
-    if (changed.length === 0) {
-      after?.();
-      return;
-    }
-    if (changed.some((row) => this.isInvalid(row))) {
-      this.showMessage('coachWorkspace.client.invalidSetValues', 'error');
-      return;
-    }
-    // Snapshot the payload: edits made while the request is pending must remain dirty.
-    const saves = changed.map((row) => ({ row, values: this.values(row)!, expected: { ...row.original } }));
-    this.saving = true;
-    concat(...saves.map(({ row, values, expected }) => this.workspace.saveClientSet(row.id, values, expected).pipe(
-      // Each request commits independently. Preserve edits made while it was pending;
-      // a later failure must not cause an already confirmed row to be sent again.
-      tap(() => {
-        row.original = { ...values };
-        for (const entry of this.exerciseSets) entry.exercise.setsCompleted = this.completedCount(entry);
-        this.refreshWorkoutTotals();
-      }),
-    )))
-      .pipe(toArray(), takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.saving = false;
-          this.showMessage('coachWorkspace.client.saved', 'success');
-          if (!this.dirty) after?.();
-        },
-        error: (error) => {
-          this.saving = false;
-          this.showError(error, 'coachWorkspace.client.saveError');
-          for (const entry of this.exerciseSets) this.loadSets(entry, true);
-        },
-      });
-  }
-
-  discardChanges(): void {
-    for (const entry of this.exerciseSets) entry.sets.forEach(restoreSet);
+    this.schedule.rescheduleDate = workout?.date ?? '';
+    this.setEditor.loadWorkout(workout);
   }
 
   /** Mentetlen változás közbeni navigáció: mentés, elvetés vagy maradás. */
@@ -543,136 +363,20 @@ export class CoachClientDetailComponent implements OnInit {
       else this.tab = nav.tab;
     };
     if (action === 'discard') {
-      this.discardChanges();
+      this.setEditor.discardChanges();
       go();
     } else {
-      this.saveSets(go);
+      this.setEditor.saveSets(go);
     }
   }
 
   setTab(tab: 'plan' | 'programs'): void {
     if (tab === this.tab) return;
-    if (this.dirty && tab !== 'plan') {
+    if (this.setEditor.dirty && tab !== 'plan') {
       this.pendingNav = { kind: 'tab', tab };
       return;
     }
     this.tab = tab;
-  }
-
-  private refreshWorkoutTotals(): void {
-    const workout = this.selected;
-    if (!workout) return;
-    workout.setsTotal = workout.exercises.reduce((sum, e) => sum + e.setsTotal, 0);
-    workout.setsCompleted = workout.exercises.reduce((sum, e) => sum + e.setsCompleted, 0);
-  }
-
-  /** A sor értékei mentésre kész formában; érvénytelen értéknél null. */
-  values(row: EditableSet): ClientSetValues | null {
-    return setValues(row);
-  }
-
-  // ----------------------------------------------------------
-  // Edzés dátuma
-  // ----------------------------------------------------------
-
-  reschedule(): void {
-    const workout = this.selected;
-    if (!workout || !this.rescheduleDate || this.rescheduleDate === workout.date) return;
-    const id = workout.userWorkoutId;
-    this.workspace
-      .rescheduleWorkout(id, this.rescheduleDate)
-      .pipe(takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.showMessage('coachWorkspace.client.rescheduled', 'success');
-          this.requestedWorkoutId = id;
-          if (this.programId !== null) this.loadProgram(this.programId);
-        },
-        error: (error) => this.showError(error, 'coachWorkspace.client.rescheduleError'),
-      });
-  }
-
-  // ----------------------------------------------------------
-  // Program kiosztás / visszavonás
-  // ----------------------------------------------------------
-
-  openAssign(): void {
-    this.assignOpen = true;
-    this.assignLoading = true;
-    this.assignProgramId = null;
-    const assigned = new Set((this.client?.programs ?? []).map((program) => program.programId));
-    this.workspace
-      .getCoachPrograms()
-      .pipe(takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (programs) => {
-          this.assignablePrograms = programs
-            .filter((program) => !assigned.has(program.programId))
-            .sort((a, b) => (b.startDate ?? '').localeCompare(a.startDate ?? ''));
-          this.assignProgramId = this.assignablePrograms[0]?.programId ?? null;
-          this.assignLoading = false;
-        },
-        error: (error) => {
-          this.assignLoading = false;
-          this.assignOpen = false;
-          this.showError(error, 'coachWorkspace.loadError');
-        },
-      });
-  }
-
-  closeAssign(): void {
-    if (!this.assigning) this.assignOpen = false;
-  }
-
-  confirmAssign(): void {
-    if (this.assignProgramId === null || this.assigning) return;
-    this.assigning = true;
-    const programId = this.assignProgramId;
-    const program = this.assignablePrograms.find((p) => p.programId === programId);
-    this.workspace
-      .assignProgram(this.userId, programId)
-      .pipe(takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.assigning = false;
-          this.assignOpen = false;
-          this.showMessage('coachWorkspace.client.assignedNamed', 'success', { program: program?.programName ?? '' });
-          this.tab = 'plan';
-          this.loadClient(programId);
-        },
-        error: (error) => {
-          this.assigning = false;
-          this.showError(error, 'coachWorkspace.client.assignError');
-        },
-      });
-  }
-
-  askRevoke(programId: number): void {
-    this.revokeProgramId = programId;
-  }
-
-  cancelRevoke(): void {
-    this.revokeProgramId = null;
-  }
-
-  confirmRevoke(): void {
-    if (this.revokeProgramId === null) return;
-    const programId = this.revokeProgramId;
-    this.workspace
-      .revokeProgram(programId, this.userId)
-      .pipe(takeUntil(this.clientContextCancelled$), takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          this.revokeProgramId = null;
-          this.showMessage('coachWorkspace.client.revoked', 'success');
-          if (this.programId === programId) this.programId = null;
-          this.loadClient(null);
-        },
-        error: (error) => {
-          this.revokeProgramId = null;
-          this.showError(error, 'coachWorkspace.client.revokeError');
-        },
-      });
   }
 
   // ----------------------------------------------------------

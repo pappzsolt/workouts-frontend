@@ -33,12 +33,12 @@ describe('Client program loading regressions', () => {
 
   it('clears previous workouts and sets immediately and keeps them cleared on failure', () => {
     expect(component.workouts.length).toBe(1);
-    expect(component.exerciseSets.length).toBe(1);
+    expect(component.setEditor.exerciseSets.length).toBe(1);
     component.selectProgram(2);
     expect(component.workouts).toEqual([]);
     expect(component.weeks).toEqual([]);
     expect(component.selected).toBeNull();
-    expect(component.exerciseSets).toEqual([]);
+    expect(component.setEditor.exerciseSets).toEqual([]);
     second.error(new Error('offline'));
     expect(component.programLoadFailed).toBeTrue();
     expect(component.programLoading).toBeFalse();

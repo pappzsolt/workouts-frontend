@@ -8,7 +8,8 @@ import { UserExerciseDetailService } from './user/user-exercises-detail/user-exe
 import { CoachWorkspaceService } from './coach/coach-workspace.service';
 import { LanguageService } from './shared/language.service';
 import { LoggerService } from './logger.service';
-import { CoachClientDetailComponent, EditableSet } from '../components/coach/coach-client-detail/coach-client-detail.component';
+import { CoachClientDetailComponent } from '../components/coach/coach-client-detail/coach-client-detail.component';
+import type { EditableSet } from '../components/coach/coach-client-detail/client-plan';
 import { UserExerciseDetailComponent } from '../components/user-dashboard/operations/user-exercises/user-exercises-detail/user-exercises-detail.component';
 import type { UserWorkoutExerciseSetDto, UserWorkoutExerciseDetailDto } from '../models/user-workout-exercise-detail.dto';
 import type { ApiResponse } from '../models/backend-dto/common/api-response';
@@ -67,15 +68,15 @@ describe('Optional set effort fields', () => {
     const component = TestBed.runInInjectionContext(() => new CoachClientDetailComponent());
     const row: EditableSet = { ...oldValues, id: 5, setNumber: 1, targetRpe: 7.5, actualRpe: 9, rir: 0,
       original: { ...oldValues, targetRpe: 7.5 } };
-    component.exerciseSets = [{ loading: false, exercise: {} as never, sets: [row] }];
-    expect(component.isChanged(row)).toBeFalse();
+    component.setEditor.exerciseSets = [{ loading: false, exercise: {} as never, sets: [row] }];
+    expect(component.setEditor.isChanged(row)).toBeFalse();
     row.targetRpe = 8.5;
-    expect(component.isChanged(row)).toBeTrue();
-    component.discardChanges();
+    expect(component.setEditor.isChanged(row)).toBeTrue();
+    component.setEditor.discardChanges();
     expect(row.targetRpe).toBe(7.5); expect(row.actualRpe).toBe(9); expect(row.rir).toBe(0);
-    row.targetRpe = 7.25; expect(component.isInvalid(row)).toBeTrue();
-    row.targetRpe = 11; expect(component.isInvalid(row)).toBeTrue();
-    row.targetRpe = null; expect(component.values(row)!.targetRpe).toBeNull();
+    row.targetRpe = 7.25; expect(component.setEditor.isInvalid(row)).toBeTrue();
+    row.targetRpe = 11; expect(component.setEditor.isInvalid(row)).toBeTrue();
+    row.targetRpe = null; expect(component.setEditor.values(row)!.targetRpe).toBeNull();
   });
 
   it('queues effort edits with captured values and leaves the confirmed timer untouched', () => {

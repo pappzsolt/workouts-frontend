@@ -58,7 +58,10 @@ export class LayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.username = this.authService.getUserName();
-    this.role = this.authService.getUserRole();
+    this.role = this.authService.getUserRole()
+      ?.split(',')
+      .map(role => role.trim().replace(/^ROLE_/i, ''))
+      .join(', ') ?? null;
 
   }
 
