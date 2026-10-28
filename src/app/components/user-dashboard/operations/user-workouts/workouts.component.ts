@@ -192,7 +192,11 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
             ? [...(response.data ?? [])].sort(compareByWorkoutDate)
             : [];
           this.pendingWorkouts = this.workouts.filter(workout => workout.completed !== true);
-          this.completedWorkouts = this.workouts.filter(workout => workout.completed === true);
+          this.completedWorkouts = this.workouts
+            .filter(workout => workout.completed === true)
+            .sort((a, b) =>
+              (b.performedAt || b.workoutDate || '').localeCompare(a.performedAt || a.workoutDate || ''),
+            );
           this.pendingCurrentPage = 1; this.completedCurrentPage = 1;
         },
         error: error => {
