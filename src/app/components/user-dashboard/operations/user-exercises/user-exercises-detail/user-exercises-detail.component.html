@@ -75,13 +75,6 @@
            ================================================== -->
 
       <div *ngIf="workoutExercise.userWorkoutExerciseSets.length; else noSets" class="w-full">
-        <app-side-pagination
-          [fullWidth]="true"
-          [navigationBelow]="true"
-          [currentPage]="currentSetIndex + 1"
-          [totalPages]="workoutExercise.userWorkoutExerciseSets.length"
-          (pageChange)="goToSet($event - 1)"
-        >
           <!-- =================================================
                AKTUÁLIS SET KÁRTYA
                ================================================= -->
@@ -99,14 +92,14 @@
                    ================================================= -->
 
               <div
-                class="relative flex h-28 items-center justify-center overflow-hidden bg-gradient-to-br from-primary-600 via-primary-600 to-primary-700"
+                class="relative flex h-16 items-center sm:h-20 justify-center overflow-hidden bg-gradient-to-br from-primary-600 via-primary-600 to-primary-700"
               >
                 <div class="absolute -left-8 -bottom-12 h-28 w-28 rounded-full bg-white/10"></div>
 
                 <div class="absolute -right-8 -top-12 h-28 w-28 rounded-full bg-white/10"></div>
 
                 <div
-                  class="relative flex h-20 w-20 items-center justify-center rounded-2xl border border-warning-100 bg-white shadow-md"
+                  class="relative flex h-11 w-11 items-center sm:h-12 sm:w-12 justify-center rounded-2xl border border-warning-100 bg-white shadow-md"
                 >
                   <span class="text-4xl" aria-hidden="true">
                     <app-icon name="dumbbell" sizeClass="h-5 w-5" />
@@ -119,11 +112,20 @@
                    ================================================= -->
 
               <div class="p-4 sm:p-7">
+                <app-side-pagination
+                  class="mb-4 block"
+                  [fullWidth]="true"
+                  [compact]="true"
+                  [currentPage]="currentSetIndex + 1"
+                  [totalPages]="workoutExercise.userWorkoutExerciseSets.length"
+                  (pageChange)="goToSet($event - 1)"
+                ></app-side-pagination>
+
                 <!-- =================================================
                      TOP ROW
                      ================================================= -->
 
-                <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
                   <!-- SET NUMBER -->
 
                   <div>
@@ -141,100 +143,63 @@
                       {{ set.setNumber }}
                     </div>
                   </div>
-
-                  <!-- KÉSZ GOMB -->
-
-                  <app-button
-                    [variant]="set.completed ? 'save' : 'secondary'"
-                    type="button"
-                    [label]="'userExerciseDetail.done' | translate"
-                    [lucideIcon]="set.completed ? 'circle-check' : 'circle'"
-                    [disabled]="false"
-                    (buttonClick)="updateSetCompleted(set, !set.completed)"
-                  ></app-button>
                 </div>
 
-                <!-- =================================================
-                     TARGET VALUES
-                     ================================================= -->
-
-                <div class="grid grid-cols-2 gap-3 mt-4">
-                  <!-- TARGET REPETITIONS -->
-
-                  <div class="bg-white rounded-xl p-3 border border-surface-200 shadow-sm">
-                    <div class="text-xs text-content-500 mb-1">
-                      {{ 'userExerciseDetail.repetitions' | translate }}
+                <!-- Pair each prescription with its actual value, including on mobile. -->
+                <div class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div class="min-w-0 rounded-xl border border-surface-200 bg-white/70 p-3 sm:p-4">
+                    <div class="mb-3 flex items-baseline justify-between gap-3 border-b border-surface-200 pb-3">
+                      <span class="text-sm text-content-600">{{ 'userExerciseDetail.repetitions' | translate }}</span>
+                      <span class="text-xl font-bold text-content-900">
+                        {{ set.targetRepetitions }}
+                        <span class="text-xs font-normal text-content-500">{{ 'userExerciseDetail.reps' | translate }}</span>
+                      </span>
                     </div>
-
-                    <div class="text-xl font-bold text-content-900">
-                      {{ set.targetRepetitions }}
-                    </div>
-
-                    <div class="text-xs text-content-500">
-                      {{ 'userExerciseDetail.reps' | translate }}
-                    </div>
+                    <app-form-field
+                      labelKey="userExerciseDetail.actualRepetitions"
+                      controlId="user-set-actual-repetitions"
+                    >
+                      <input
+                        appInput="login"
+                        id="user-set-actual-repetitions"
+                        [attr.data-validation-set]="set.id"
+                        type="number"
+                        step="1"
+                        min="1"
+                        [(ngModel)]="set.actualRepetitions"
+                        (blur)="saveSetDetails(set, false)"
+                      />
+                    </app-form-field>
                   </div>
-
-                  <!-- TARGET WEIGHT -->
-
-                  <div class="bg-white rounded-xl p-3 border border-surface-200 shadow-sm">
-                    <div class="text-xs text-content-500 mb-1">
-                      {{ 'userExerciseDetail.weight' | translate }}
+                  <div class="min-w-0 rounded-xl border border-surface-200 bg-white/70 p-3 sm:p-4">
+                    <div class="mb-3 flex items-baseline justify-between gap-3 border-b border-surface-200 pb-3">
+                      <span class="text-sm text-content-600">{{ 'userExerciseDetail.weight' | translate }}</span>
+                      <span class="text-xl font-bold text-content-900">
+                        {{ set.targetWeightKg ?? '-' }}
+                        <span class="text-xs font-normal text-content-500">kg</span>
+                      </span>
                     </div>
+                    <app-form-field
+                      labelKey="userExerciseDetail.actualWeight"
+                      controlId="user-set-actual-weight"
+                    >
+                      <input
+                        appInput="login"
+                        id="user-set-actual-weight"
+                        [attr.data-validation-set]="set.id"
+                        type="number"
+                        min="0"
+                        step="0.5"
+                        [(ngModel)]="set.actualWeightKg"
+                        (blur)="saveSetDetails(set, false)"
+                      />
 
-                    <div class="text-xl font-bold text-content-900">
-                      {{ set.targetWeightKg ?? '-' }}
-                    </div>
-
-                    <div class="text-xs text-content-500">kg</div>
+                      <div class="mt-1 text-xs text-content-500">kg</div>
+                    </app-form-field>
                   </div>
                 </div>
 
-                <!-- =================================================
-                     ACTUAL VALUES
-                     ================================================= -->
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
-                  <!-- ACTUAL REPETITIONS -->
-
-                  <app-form-field
-                    labelKey="userExerciseDetail.actualRepetitions"
-                    controlId="user-set-actual-repetitions"
-                  >
-                    <input
-                      appInput="login"
-                      id="user-set-actual-repetitions"
-                      [attr.data-validation-set]="set.id"
-                      type="number"
-                      step="1"
-                      min="1"
-                      [(ngModel)]="set.actualRepetitions"
-                      (blur)="saveSetDetails(set, false)"
-                    />
-                  </app-form-field>
-
-                  <!-- ACTUAL WEIGHT -->
-
-                  <app-form-field
-                    labelKey="userExerciseDetail.actualWeight"
-                    controlId="user-set-actual-weight"
-                  >
-                    <input
-                      appInput="login"
-                      id="user-set-actual-weight"
-                      [attr.data-validation-set]="set.id"
-                      type="number"
-                      min="0"
-                      step="0.5"
-                      [(ngModel)]="set.actualWeightKg"
-                      (blur)="saveSetDetails(set, false)"
-                    />
-
-                    <div class="mt-1 text-xs text-content-500">kg</div>
-                  </app-form-field>
-                </div>
-
-                <section class="mt-4 rounded-xl border border-surface-200 p-3">
+                <section class="mt-4 rounded-xl border border-surface-200 bg-surface-50 p-3 sm:p-4">
                   <h3 class="text-sm font-semibold text-content-800">{{ 'setEffort.title' | translate }}</h3>
                   <p class="mt-1 text-xs text-content-600">{{ 'setEffort.help' | translate }}</p>
                   <p class="mt-3 text-sm text-content-700">{{ 'setEffort.targetRpe' | translate }}:
@@ -271,6 +236,17 @@
                     class="resize-none"
                   ></textarea>
                 </app-form-field>
+
+                <div class="mt-4 flex justify-end">
+                  <app-button
+                    [variant]="set.completed ? 'save' : 'secondary'"
+                    type="button"
+                    [label]="'userExerciseDetail.done' | translate"
+                    [lucideIcon]="set.completed ? 'circle-check' : 'circle'"
+                    [disabled]="false"
+                    (buttonClick)="updateSetCompleted(set, !set.completed)"
+                  ></app-button>
+                </div>
 
                 <!-- =================================================
                      SET STATUS
@@ -448,7 +424,6 @@
               </div>
             </div>
           </app-card>
-        </app-side-pagination>
       </div>
 
       <!-- =================================================

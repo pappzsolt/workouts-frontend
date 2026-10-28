@@ -27,7 +27,7 @@
          ELŐZŐ
          ================================================== -->
 
-    <div *ngIf="totalPages > 1" [ngClass]="navigationBelow ? 'mt-4 flex items-center justify-between gap-3' : 'contents'">
+    <div *ngIf="totalPages > 1" [ngClass]="compact ? 'flex items-center justify-between gap-3' : navigationBelow ? 'mt-4 flex items-center justify-between gap-3' : 'contents'">
       <app-button
         *ngIf="totalPages > 1"
         type="button"
@@ -38,10 +38,16 @@
         appearance="outline"
         [iconOnly]="true"
         [round]="true"
-        [ngClass]="navigationBelow ? '' : 'absolute top-1/2 z-10 -translate-y-1/2 -left-3 sm:-left-5'"
+        [ngClass]="navigationBelow || compact ? '' : 'absolute top-1/2 z-10 -translate-y-1/2 -left-3 sm:-left-5'"
       >
         <app-icon name="chevron-left" sizeClass="h-5 w-5" />
       </app-button>
+
+      @if (compact) {
+        <span class="text-sm font-semibold text-content-700" aria-live="polite">
+          {{ currentPage }} / {{ totalPages }}
+        </span>
+      }
 
       <!-- ==================================================
            KÖVETKEZŐ
@@ -57,7 +63,7 @@
         appearance="outline"
         [iconOnly]="true"
         [round]="true"
-        [ngClass]="navigationBelow ? '' : 'absolute top-1/2 z-10 -translate-y-1/2 -right-3 sm:-right-5'"
+        [ngClass]="navigationBelow || compact ? '' : 'absolute top-1/2 z-10 -translate-y-1/2 -right-3 sm:-right-5'"
       >
         <app-icon name="chevron-right" sizeClass="h-5 w-5" />
       </app-button>
@@ -70,7 +76,7 @@
        ================================================== -->
 
   <div
-    *ngIf="totalPages > 1"
+    *ngIf="totalPages > 1 && !compact"
     class="mt-5 text-center text-sm font-medium text-content-600"
     aria-live="polite"
   >

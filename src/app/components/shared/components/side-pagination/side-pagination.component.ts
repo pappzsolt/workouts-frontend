@@ -30,6 +30,9 @@ export class SidePaginationComponent {
   /** Keep navigation inside the page when cards use the full content width. */
   @Input() navigationBelow = false;
 
+  /** Display arrows and page count on one row without changing other layouts. */
+  @Input() compact = false;
+
   @Output() pageChange = new EventEmitter<number>();
 
   onPreviousPage(): void {
