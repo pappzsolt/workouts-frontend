@@ -1,5 +1,6 @@
 import { DestroyRef, EnvironmentInjector, createEnvironmentInjector, runInInjectionContext } from '@angular/core';
-import { convertToParamMap } from '@angular/router';
+import { Router, convertToParamMap } from '@angular/router';
+import { TestBed } from '@angular/core/testing';
 import { BehaviorSubject, Subject, of, throwError } from 'rxjs';
 import { LoggerService } from '../services/logger.service';
 import { UserExercisesComponent } from './user-dashboard/operations/user-exercises/user-exercises.component';
@@ -16,12 +17,13 @@ describe('Business flow regressions', () => {
   beforeEach(() => {
     destroyCallbacks.length = 0;
     injector = createEnvironmentInjector([
+      { provide: Router, useValue: { navigate: jasmine.createSpy('navigate').and.resolveTo(true) } },
       { provide: LoggerService, useValue: { error() {}, warn() {} } },
       { provide: DestroyRef, useValue: { onDestroy(callback: () => void) {
         destroyCallbacks.push(callback);
         return () => { const index = destroyCallbacks.indexOf(callback); if (index >= 0) destroyCallbacks.splice(index, 1); };
       } } },
-    ], {} as EnvironmentInjector);
+    ], TestBed.inject(EnvironmentInjector));
   });
   afterEach(() => {
     [...destroyCallbacks].forEach(callback => callback());
