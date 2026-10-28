@@ -4,7 +4,7 @@ import type { ApiResponse } from '../../../../../models/backend-dto/common/api-r
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { EMPTY, Observable, Subject, catchError, combineLatest, concatMap, defer, distinctUntilChanged, finalize, map, of, shareReplay, switchMap, takeUntil, tap } from 'rxjs';
 
@@ -35,6 +35,10 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   private readonly logger = inject(LoggerService);
 
   private readonly destroy$ = new Subject<void>();
+  private readonly router = inject(Router, { optional: true });
+  private readonly failedSetSaves = new Set<string>();
+  private readonly advancedExercises = new WeakSet<object>();
+  private destroyed = false;
 
   workout?: UserWorkoutDetailDto;
 
@@ -115,6 +119,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroyed = true;
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -340,6 +345,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       }
     };
     const entry = { signature, confirmed, request: EMPTY as Observable<void> };
+    let succeeded = false;
     // Changed payloads queue behind the existing request; identical blur/page
     // saves share it. Recover an earlier failure so a newer edit can still save.
     entry.request = (previous ? previous.request.pipe(catchError(() => of(void 0))) : of(void 0)).pipe(
@@ -352,7 +358,11 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
         confirmed.completed = args[5];
         // An older queued response must not replace newer pending UI state.
         const isLatestSave = this.pendingSetSaves.get(key) === entry;
-        if (isLatestSave) syncConfirmedTimer();
+        if (isLatestSave) {
+          succeeded = true;
+          this.failedSetSaves.delete(key);
+          syncConfirmedTimer();
+        }
         if (isCurrent()) {
           this.updateExerciseDone();
           if (isLatestSave && (showSuccessMessage || response.message)) {
@@ -366,6 +376,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       }),
       tap({ error: error => {
         if (isCurrent() && this.pendingSetSaves.get(key) === entry) {
+          this.failedSetSaves.add(key);
           set.completed = confirmed.completed;
           syncConfirmedTimer();
           this.updateExerciseDone();
@@ -375,7 +386,10 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
         }
       } }),
       finalize(() => {
-        if (this.pendingSetSaves.get(key) === entry) this.pendingSetSaves.delete(key);
+        if (this.pendingSetSaves.get(key) === entry) {
+          this.pendingSetSaves.delete(key);
+          if (succeeded && isCurrent() && !this.destroyed) this.advanceToNextExercise();
+        }
       }),
       // Navigation only detaches UI observers. Keep the finite HTTP save and
       // any queued edits alive until they finish, even after component teardown.
@@ -383,6 +397,30 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     );
     this.pendingSetSaves.set(key, entry);
     return entry.request;
+  }
+
+  private advanceToNextExercise(): void {
+    const exercise = this.workoutExercise;
+    const sets = exercise?.userWorkoutExerciseSets;
+    if (!exercise || !sets?.length || this.advancedExercises.has(exercise)) return;
+    const ready = sets.every(set => {
+      const key = `${this.userWorkoutId}:${set.id}`;
+      return set.completed === true
+        && !this.pendingSetSaves.has(key) && !this.failedSetSaves.has(key)
+        && typeof set.actualRepetitions === 'number' && Number.isInteger(set.actualRepetitions) && set.actualRepetitions >= 1
+        && typeof set.actualWeightKg === 'number' && Number.isFinite(set.actualWeightKg) && set.actualWeightKg >= 0
+        && (set.actualRpe == null || (Number.isFinite(set.actualRpe) && set.actualRpe >= 0 && set.actualRpe <= 10))
+        && (set.rir == null || (Number.isInteger(set.rir) && set.rir >= 0));
+    });
+    if (!ready) return;
+    const exercises = this.workout?.exercises ?? [];
+    const index = exercises.indexOf(exercise);
+    const next = index >= 0 ? exercises[index + 1] : undefined;
+    if (!next || !this.router) return;
+    this.advancedExercises.add(exercise);
+    void this.router.navigate(['/user/workouts', this.workoutId, 'exercises', next.exercise.id], {
+      queryParamsHandling: 'merge',
+    });
   }
 
   goToSet(index: number): void {

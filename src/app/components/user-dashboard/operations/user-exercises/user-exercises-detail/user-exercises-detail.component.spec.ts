@@ -148,6 +148,8 @@ describe('UserExerciseDetailComponent queued save regression', () => {
       component.workoutId = 20;
       (component as any).validateInputs = () => true;
       (component as any).pendingSetSaves = new Map();
+      (component as any).failedSetSaves = new Set();
+      (component as any).advancedExercises = new WeakSet();
       (component as any).destroy$ = new Subject<void>();
       (component as any).exercisesService = { updateSetCompleted };
 
@@ -187,6 +189,8 @@ describe('UserExerciseDetailComponent queued save regression', () => {
     component.restTimerRevision = 0;
     (component as any).validateInputs = () => true;
     (component as any).pendingSetSaves = new Map();
+    (component as any).failedSetSaves = new Set();
+    (component as any).advancedExercises = new WeakSet();
     (component as any).exercisesService = { updateSetCompleted };
 
     const earlierErrors: unknown[] = [];
