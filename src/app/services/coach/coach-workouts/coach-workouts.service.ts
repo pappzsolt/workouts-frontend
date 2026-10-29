@@ -2,23 +2,18 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 
-import type { Workout } from '../../../models/workout.model';
+import type { WorkoutForm } from '../../../models/workout/workout-form.model';
+import type { WorkoutCatalogItem } from '../../../models/workout/workout-catalog-item.model';
 import type { WorkoutWithExercises as WorkoutUiDto } from '../../../models/exercise.model';
 import type { WorkoutDto as BackendWorkoutDto } from '../../../models/backend-dto/exercise/workout-dto';
 import type { UserWorkoutDto } from '../../../models/backend-dto/workout/user-workout-dto';
-import type { WorkoutRequest } from '../../../models/backend-dto/workout/workout-request';
 import type { WorkoutResponse } from '../../../models/backend-dto/workout/workout-response';
 import type { ApiResponse } from '../../../models/backend-dto/common/api-response';
 import type { PageResponse } from '../../../models/backend-dto/common/page-response';
 import { LanguageService } from '../../shared/language.service';
-import { type CompleteWorkoutExerciseDto, toWorkoutExercise } from '../../shared/exercise-mapping';
+import { toWorkoutCatalogItem, toWorkoutRequest, toWorkoutWithExercises } from '../../shared/workout-mapping';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
-
-/** Az időtartam csak pozitív érték lehet; üres vagy 0 = nincs megadva (null). */
-function positiveOrNull(value: number | null | undefined): number | null {
-  return value != null && value > 0 ? value : null;
-}
 
 @Injectable({
   providedIn: 'root',
@@ -26,34 +21,6 @@ function positiveOrNull(value: number | null | undefined): number | null {
 export class CoachWorkoutsService {
   private readonly http = inject(HttpClient);
   private readonly languageService = inject(LanguageService);
-
-  private readonly toWorkoutUiDto = (workout: BackendWorkoutDto): WorkoutUiDto => ({
-    id: workout.id ?? 0,
-    programNames: workout.programNames ?? [],
-    name: workout.name ?? '',
-    description: workout.description ?? '',
-    workoutDate: workout.workoutDate ?? undefined,
-    durationMinutes: workout.durationMinutes ?? undefined,
-    intensityLevel: workout.intensityLevel ?? undefined,
-    done: workout.done ?? undefined,
-    exercises: (workout.exercises ?? [])
-      .filter((item): item is CompleteWorkoutExerciseDto =>
-        item.id != null && item.workoutId != null && item.exercise != null)
-      .map(toWorkoutExercise),
-  });
-
-  private readonly toWorkout = (workout: BackendWorkoutDto): Workout => ({
-    id: workout.id ?? undefined,
-    workoutName: workout.name ?? undefined,
-    name: workout.name ?? undefined,
-    description: workout.description ?? undefined,
-    workoutDescription: workout.description ?? undefined,
-    workoutDate: workout.workoutDate ?? undefined,
-    durationMinutes: workout.durationMinutes ?? undefined,
-    intensityLevel: workout.intensityLevel ?? undefined,
-    done: workout.done ?? undefined,
-    exercises: [],
-  });
 
   private readonly apiUrl = API_ENDPOINTS.workouts;
 
@@ -63,7 +30,7 @@ export class CoachWorkoutsService {
    *
    * GET /api/workouts/my-workouts
    */
-  getMyWorkouts(): Observable<ApiResponse<Workout[]>> {
+  getMyWorkouts(): Observable<ApiResponse<WorkoutCatalogItem[]>> {
     const params = new HttpParams().set(
       'language',
       this.languageService.getCurrentLanguage(),
@@ -74,7 +41,7 @@ export class CoachWorkoutsService {
       .pipe(
         map((response) => ({
           ...response,
-          data: (response.data ?? []).map((workout) => this.toWorkout(workout)),
+          data: (response.data ?? []).map((workout) => toWorkoutCatalogItem(workout)),
         })),
       );
   }
@@ -84,7 +51,7 @@ export class CoachWorkoutsService {
    *
    * GET /api/workouts/my-workouts/unique
    */
-  getUniqueMyWorkouts(): Observable<ApiResponse<Workout[]>> {
+  getUniqueMyWorkouts(): Observable<ApiResponse<WorkoutCatalogItem[]>> {
     const params = new HttpParams().set(
       'language',
       this.languageService.getCurrentLanguage(),
@@ -95,7 +62,7 @@ export class CoachWorkoutsService {
       .pipe(
         map((response) => ({
           ...response,
-          data: (response.data ?? []).map((workout) => this.toWorkout(workout)),
+          data: (response.data ?? []).map((workout) => toWorkoutCatalogItem(workout)),
         })),
       );
   }
@@ -119,7 +86,7 @@ export class CoachWorkoutsService {
       .pipe(
         map((response) => ({
           ...response,
-          data: (response.data ?? []).map((workout) => this.toWorkoutUiDto(workout)),
+          data: (response.data ?? []).map((workout) => toWorkoutWithExercises(workout)),
         })),
       );
   }
@@ -149,7 +116,7 @@ export class CoachWorkoutsService {
         map((response) => {
           const data = response.data;
           return {
-            items: (data?.content ?? []).map((workout) => this.toWorkoutUiDto(workout)),
+            items: (data?.content ?? []).map((workout) => toWorkoutWithExercises(workout)),
             totalElements: data?.totalElements ?? 0,
             totalPages: data?.totalPages ?? 1,
           };
@@ -160,17 +127,8 @@ export class CoachWorkoutsService {
   /**
    * Új workout létrehozása.
    */
-  addWorkout(workout: Workout): Observable<ApiResponse<WorkoutResponse>> {
-    const payload: WorkoutRequest = {
-      id: workout.id ?? null,
-      name: workout.name ?? workout.workoutName ?? null,
-      description: workout.description ?? workout.workoutDescription ?? null,
-      workoutDate: workout.workoutDate ?? null,
-      durationMinutes: positiveOrNull(workout.durationMinutes),
-      intensityLevel: workout.intensityLevel ?? null,
-      dayIndex: workout.dayIndex ?? null,
-      done: workout.done ?? null,
-    };
+  addWorkout(workout: WorkoutForm): Observable<ApiResponse<WorkoutResponse>> {
+    const payload = toWorkoutRequest(workout);
 
     const params = new HttpParams().set(
       'language',
@@ -202,17 +160,8 @@ export class CoachWorkoutsService {
   /**
    * Workout módosítása.
    */
-  updateWorkout(id: number, workout: Workout, language = this.languageService.getCurrentLanguage()): Observable<ApiResponse<WorkoutResponse>> {
-    const payload: WorkoutRequest = {
-      id,
-      name: workout.name ?? workout.workoutName ?? null,
-      description: workout.description ?? workout.workoutDescription ?? null,
-      workoutDate: workout.workoutDate ?? null,
-      durationMinutes: positiveOrNull(workout.durationMinutes),
-      intensityLevel: workout.intensityLevel ?? null,
-      dayIndex: workout.dayIndex ?? null,
-      done: workout.done ?? null,
-    };
+  updateWorkout(id: number, workout: WorkoutForm, language = this.languageService.getCurrentLanguage()): Observable<ApiResponse<WorkoutResponse>> {
+    const payload = toWorkoutRequest(workout, id);
 
     const params = new HttpParams().set(
       'language',
@@ -244,7 +193,7 @@ export class CoachWorkoutsService {
     size: number = 6,
     language?: string,
     sortDirection: 'asc' | 'desc' = 'asc',
-  ): Observable<PageResponse<Workout>> {
+  ): Observable<PageResponse<WorkoutCatalogItem>> {
     const params = new HttpParams()
       .set('search', search)
       .set('page', page)
@@ -252,7 +201,7 @@ export class CoachWorkoutsService {
       .set('language', language ?? this.languageService.getCurrentLanguage())
       .set('sortDirection', sortDirection);
 
-    return this.http.get<PageResponse<Workout>>(API_ENDPOINTS.myWorkoutsSearch, { params });
+    return this.http.get<PageResponse<WorkoutCatalogItem>>(API_ENDPOINTS.myWorkoutsSearch, { params });
   }
 }
 

@@ -18,7 +18,8 @@ import { skip, timer, Subject, takeUntil, finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { LanguageService } from '../../../../../services/shared/language.service';
-import { Workout } from '../../../../../models/workout.model';
+import type { WorkoutForm } from '../../../../../models/workout/workout-form.model';
+import { emptyWorkoutForm, toWorkoutForm } from '../../../../../services/shared/workout-mapping';
 import { Exercise } from '../../../../../models/exercise.model';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -27,10 +28,8 @@ import { WorkoutExerciseListComponent } from './parts/workout-exercise-list.comp
 import { WorkoutExerciseSearchComponent } from './parts/workout-exercise-search.component';
 import {
   containsExercise,
-  emptyWorkout,
   selectableExercises,
   toWorkoutExerciseViews,
-  workoutFromDto,
 } from './workout-edit.helpers';
 
 /**
@@ -59,17 +58,17 @@ export class CoachWorkoutEditComponent implements OnInit {
   private readonly exercisesLoadCancelled$ = new Subject<void>();
   private readonly workoutExercisesLoadCancelled$ = new Subject<void>();
   private readonly assignmentLoadCancelled$ = new Subject<void>();
-  private loadedWorkout?: Workout;
+  private loadedWorkout?: WorkoutForm;
   private formContext = '';
   /** Nyelvenként a szöveges mezők, edzésenként a többi mező mentetlen módosításai. */
-  private readonly textDrafts = new Map<string, Partial<Workout>>();
-  private readonly sharedDrafts = new Map<number, Partial<Workout>>();
+  private readonly textDrafts = new Map<string, Partial<WorkoutForm>>();
+  private readonly sharedDrafts = new Map<number, Partial<WorkoutForm>>();
   loadingWorkout = false;
   savingWorkout = false;
   private workoutReady = false;
 
   workoutId?: number;
-  workout: Workout = emptyWorkout();
+  workout: WorkoutForm = emptyWorkoutForm();
 
   message = '';
   messageType: 'success' | 'error' | '' = '';
@@ -158,11 +157,11 @@ export class CoachWorkoutEditComponent implements OnInit {
 
   private captureWorkoutDraft(): void {
     if (!this.loadedWorkout || !this.formContext) return;
-    const text: Partial<Workout> = {};
-    const shared: Partial<Workout> = {};
-    for (const key of Object.keys(this.workout) as (keyof Workout)[]) {
-      if (key === 'id' || key === 'exercises' || this.workout[key] === this.loadedWorkout[key]) continue;
-      const target = ['name', 'description', 'workoutName', 'workoutDescription'].includes(key) ? text : shared;
+    const text: Partial<WorkoutForm> = {};
+    const shared: Partial<WorkoutForm> = {};
+    for (const key of Object.keys(this.workout) as (keyof WorkoutForm)[]) {
+      if (key === 'id' || this.workout[key] === this.loadedWorkout[key]) continue;
+      const target = ['name', 'description'].includes(key) ? text : shared;
       Object.assign(target, { [key]: this.workout[key] });
     }
     this.textDrafts.set(this.formContext, text);
@@ -191,7 +190,7 @@ export class CoachWorkoutEditComponent implements OnInit {
             this.setMessage(res.message || 'coachWorkoutEdit.notFound', 'error');
             return;
           }
-          const loaded = workoutFromDto(this.workout, res.data);
+          const loaded = toWorkoutForm(this.workout, res.data);
           if (preserveDrafts) this.captureWorkoutDraft();
           this.loadedWorkout = { ...loaded };
           this.formContext = context;
@@ -347,7 +346,7 @@ export class CoachWorkoutEditComponent implements OnInit {
     if (!this.validateInputs()) return;
     if (!this.workoutId) return;
 
-    const payload: Workout = { ...this.workout, workoutDate: this.workout.workoutDate };
+    const payload: WorkoutForm = { ...this.workout, workoutDate: this.workout.workoutDate };
     const context = this.formContext;
     const language = this.languageService.getCurrentLanguage();
     const unchangedContext = () => this.formContext === context && this.languageService.getCurrentLanguage() === language;

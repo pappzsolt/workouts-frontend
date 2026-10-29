@@ -12,7 +12,7 @@ import {
 } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { LanguageService } from '../../../../services/shared/language.service';
 import { SHARED_IMPORTS } from '../../../shared/shared-imports';
-import { Workout } from '../../../../models/workout.model';
+import type { WorkoutForm } from '../../../../models/workout/workout-form.model';
 import { WorkoutWithExercises } from '../../../../models/exercise.model';
 import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
@@ -44,14 +44,14 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
   // WORKOUTOK
   // ==========================================================
 
-  workouts: Workout[] = [];
+  workouts: WorkoutWithExercises[] = [];
 
   // ==========================================================
   // ÚJ WORKOUT
   // ==========================================================
 
-  newWorkout: Workout = {
-    workoutName: '',
+  newWorkout: WorkoutForm = {
+    name: '',
     description: '',
     durationMinutes: 0,
   };
@@ -215,7 +215,7 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
 
-    this.workouts = page.items.map(toLibraryWorkout);
+    this.workouts = page.items;
   }
 
   // ==========================================================
@@ -258,15 +258,13 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
 
-    this.newWorkout.programId = this.programId;
-
     this.coachWorkoutsService.addWorkout(this.newWorkout).pipe(takeUntil(this.destroy$)).subscribe({
       next: (res) => {
         if (res.data?.done === true) {
           this.setMessage(res.data.message || res.message || 'coachWorkouts.addSuccess', 'success');
 
           this.newWorkout = {
-            workoutName: '',
+            name: '',
             description: '',
             durationMinutes: 0,
           };
@@ -307,7 +305,7 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
   // WORKOUT TÖRLÉSE
   // ==========================================================
 
-  requestDeleteWorkout(workout: Workout, event: MouseEvent): void {
+  requestDeleteWorkout(workout: WorkoutWithExercises, event: MouseEvent): void {
     event.stopPropagation();
 
     const workoutId = workout.id;
@@ -318,7 +316,7 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     this.pendingDeleteWorkoutId = workoutId;
-    this.pendingDeleteWorkoutName = workout.workoutName ?? workout.name ?? '';
+    this.pendingDeleteWorkoutName = workout.name ?? '';
     this.message = '';
     this.messageType = '';
   }
@@ -412,21 +410,8 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
     this.router.navigate(['/coach/workouts/new']);
   }
 
-  trackByWorkout(index: number, workout: Workout): number | string {
-    return workout.id ?? workout.programWorkoutId ?? index;
+  trackByWorkout(index: number, workout: WorkoutWithExercises): number | string {
+    return workout.id ?? index;
   }
 
-}
-
-/** Backend edzés → edzéstár kártya. */
-function toLibraryWorkout(w: WorkoutWithExercises): Workout {
-  return {
-    id: w.id,
-    programNames: w.programNames ?? [],
-    workoutName: w.name ?? '',
-    description: w.description ?? '',
-    durationMinutes: w.durationMinutes,
-    difficultyLevel: undefined,
-    exercises: w.exercises ?? [],
-  };
 }

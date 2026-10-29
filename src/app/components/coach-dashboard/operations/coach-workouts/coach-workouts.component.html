@@ -85,7 +85,7 @@
             <!-- WORKOUT NÉV -->
 
             <h3 class="mb-2 break-words text-lg font-bold text-content-800">
-              {{ w.workoutName }}
+              {{ w.name }}
             </h3>
 
             @if (w.programNames?.length) {
@@ -116,7 +116,7 @@
 
               <app-card-stat
                 [label]="'coachWorkouts.exercises' | translate"
-                [value]="w.exercises?.length || 0"
+                [value]="w.exercises.length"
               />
             </div>
 
@@ -124,7 +124,7 @@
                  NINCS GYAKORLAT
                  ================================================== -->
 
-            @if (!w.exercises?.length) {
+            @if (!w.exercises.length) {
               <div class="mt-4">
                 <app-message
                   [message]="'coachWorkouts.noExercisesAssigned'"
