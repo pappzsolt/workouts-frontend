@@ -19,7 +19,8 @@
     "coverage:live-api": "node scripts/report-live-coverage.cjs",
     "coverage:live-api:check": "node scripts/report-live-coverage.cjs --strict",
     "test:workout-templates": "playwright test -c playwright.workout-templates.config.ts",
-    "test:personal-programs": "playwright test -c playwright.personal-programs.config.ts"
+    "test:personal-programs": "playwright test -c playwright.personal-programs.config.ts",
+    "test:workout-editor": "playwright test -c playwright.workout-editor.config.ts"
   },
   "devDependencies": {
     "@playwright/test": "^1.55.0",

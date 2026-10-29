@@ -19,6 +19,7 @@
     "playwright.auth.config.ts",
     "playwright.frontend.config.ts",
     "playwright.live-api.config.ts",
-    "live-api/**/*.ts"
+    "live-api/**/*.ts",
+    "playwright.workout-editor.config.ts"
   ]
 }
