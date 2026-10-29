@@ -1,3 +1,5 @@
+import { TestBed } from '@angular/core/testing';
+import { LoggerService } from '../../../../../services/logger.service';
 import { UserExerciseDetailComponent } from './user-exercises-detail.component';
 import { Observable, Subject } from 'rxjs';
 import type { UserWorkoutExerciseDetailDto } from '../../../../../models/user-workout-exercise-detail.dto';
@@ -127,10 +129,17 @@ describe('UserExerciseDetailComponent persisted rest timer selection', () => {
 });
 
 
+
+function makeSaveComponent(updateSetCompleted: jasmine.Spy): UserExerciseDetailComponent {
+  TestBed.configureTestingModule({ providers: [{ provide: LoggerService, useValue: { error() {} } }] });
+  return TestBed.runInInjectionContext(() => new UserExerciseDetailComponent(
+    {} as never, { updateSetCompleted } as never, {} as never,
+  ));
+}
+
 describe('UserExerciseDetailComponent queued save regression', () => {
   for (const firstFails of [false, true]) {
     it(`finishes active and queued edits after destruction when the first save ${firstFails ? 'fails' : 'succeeds'}`, () => {
-      const component = Object.create(UserExerciseDetailComponent.prototype) as UserExerciseDetailComponent;
       const firstResponse = new Subject<any>();
       const secondResponse = new Subject<any>();
       const firstTeardown = jasmine.createSpy('firstTeardown');
@@ -141,17 +150,13 @@ describe('UserExerciseDetailComponent queued save regression', () => {
         }),
         secondResponse.asObservable(),
       );
+      const component = makeSaveComponent(updateSetCompleted);
       const set = { id: 101, setNumber: 1, completed: false, actualWeightKg: 20 } as any;
       component.workoutExercise = { exercise: { id: 55 }, userWorkoutExerciseSets: [set] } as any;
       component.userWorkoutId = 77;
       component.programId = 10;
       component.workoutId = 20;
       (component as any).validateInputs = () => true;
-      (component as any).pendingSetSaves = new Map();
-      (component as any).failedSetSaves = new Set();
-      (component as any).advancedExercises = new WeakSet();
-      (component as any).destroy$ = new Subject<void>();
-      (component as any).exercisesService = { updateSetCompleted };
 
       component.saveSetDetails(set);
       set.actualWeightKg = 25;
@@ -170,16 +175,16 @@ describe('UserExerciseDetailComponent queued save regression', () => {
       expect(updateSetCompleted.calls.argsFor(1)[7]).toBe(25);
       secondResponse.next({ success: true });
       secondResponse.complete();
-      expect((component as any).pendingSetSaves.size).toBe(0);
+      expect((component as any).setSaves.isSettled(77, 101)).toBeTrue();
     });
   }
 
   it('runs a newer completion edit after an earlier HTTP failure without reverting the newer UI state', () => {
-    const component = Object.create(UserExerciseDetailComponent.prototype) as UserExerciseDetailComponent;
     const firstResponse = new Subject<any>();
     const secondResponse = new Subject<any>();
     const updateSetCompleted = jasmine.createSpy('updateSetCompleted')
       .and.returnValues(firstResponse.asObservable(), secondResponse.asObservable());
+    const component = makeSaveComponent(updateSetCompleted);
     const set = { id: 101, setNumber: 1, completed: false, completedAt: null } as any;
     const exercise = { exercise: { id: 55 }, userWorkoutExerciseSets: [set], done: false } as any;
     component.workoutExercise = exercise;
@@ -188,16 +193,12 @@ describe('UserExerciseDetailComponent queued save regression', () => {
     component.workoutId = 20;
     component.restTimerRevision = 0;
     (component as any).validateInputs = () => true;
-    (component as any).pendingSetSaves = new Map();
-    (component as any).failedSetSaves = new Set();
-    (component as any).advancedExercises = new WeakSet();
-    (component as any).exercisesService = { updateSetCompleted };
 
     const earlierErrors: unknown[] = [];
     const laterErrors: unknown[] = [];
-    (component as any).createSetSaveRequest(set, true, true)
+    (component as any).setSaves.createRequest(set, true, true)
       .subscribe({ error: (error: unknown) => earlierErrors.push(error) });
-    (component as any).createSetSaveRequest(set, true, false)
+    (component as any).setSaves.createRequest(set, true, false)
       .subscribe({ error: (error: unknown) => laterErrors.push(error) });
 
     expect(updateSetCompleted).toHaveBeenCalledTimes(1);
@@ -212,7 +213,7 @@ describe('UserExerciseDetailComponent queued save regression', () => {
     expect(laterErrors).toEqual([]);
     expect(set.completed).toBe(false);
     expect(component.messageType).toBe('success');
-    expect((component as any).pendingSetSaves.size).toBe(0);
+    expect((component as any).setSaves.isSettled(77, 101)).toBeTrue();
   });
 });
 

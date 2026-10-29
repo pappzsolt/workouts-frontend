@@ -2,43 +2,43 @@
   <div class="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-6">
     <div appPageHeader="actions">
       <h1 appHeading="page">
-        {{ label(id ? 'editor' : 'create') | translate }}
+        {{ state.label(state.id ? 'editor' : 'create') | translate }}
       </h1>
       <a routerLink="/user/personal-programs" class="btn btn-neutral">{{
         'personalPrograms.back' | translate
       }}</a>
     </div>
-    <app-message [message]="message" [type]="messageType" role="status" />
-    @if (loading) {
+    <app-message [message]="state.message" [type]="state.messageType" role="status" />
+    @if (state.loading) {
       <app-loading message="personalPrograms.loading" />
-    } @else if (!loadFailed) {
-      @if (started) {
-        <app-message [message]="label('locked')" type="info" />
+    } @else if (!state.loadFailed) {
+      @if (state.started) {
+        <app-message [message]="state.label('locked')" type="info" />
       }
       <app-message
-        [message]="standaloneMode ? 'personalWorkouts.limit' : 'personalPrograms.sizeLimit'"
+        [message]="state.standaloneMode ? 'personalWorkouts.limit' : 'personalPrograms.sizeLimit'"
         type="info"
       />
       <form
         #programForm="ngForm"
-        (ngSubmit)="save(programForm)"
+        (ngSubmit)="actions.save(programForm)"
         class="flex min-w-0 flex-col gap-6"
       >
         <fieldset
-          [disabled]="locked"
+          [disabled]="state.locked"
           class="min-w-0 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-6"
         >
           <legend class="px-2 font-bold text-content-800">
-            {{ label('details') | translate }}
+            {{ state.label('details') | translate }}
           </legend>
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <label class="flex flex-col gap-1 text-sm font-semibold text-content-800 sm:col-span-2"
-              >{{ label('name') | translate }}
+              >{{ state.label('name') | translate }}
               <input
                 appInput="default"
                 name="name"
-                [(ngModel)]="model.name"
-                (ngModelChange)="changed()"
+                [(ngModel)]="state.model.name"
+                (ngModelChange)="state.changed()"
                 required
                 maxlength="255"
                 pattern=".*\S.*"
@@ -49,21 +49,21 @@
               <textarea
                 appTextarea="default"
                 name="description"
-                [(ngModel)]="model.description"
-                (ngModelChange)="changed()"
+                [(ngModel)]="state.model.description"
+                (ngModelChange)="state.changed()"
                 maxlength="10000"
                 rows="3"
               ></textarea>
             </label>
-            @if (!standaloneMode) {
+            @if (!state.standaloneMode) {
               <label class="flex flex-col gap-1 text-sm font-semibold text-content-800"
                 >{{ 'personalPrograms.duration' | translate }}
                 <input
                   appInput="default"
                   type="number"
                   name="durationDays"
-                  [(ngModel)]="model.durationDays"
-                  (ngModelChange)="changed()"
+                  [(ngModel)]="state.model.durationDays"
+                  (ngModelChange)="state.changed()"
                   required
                   min="1"
                   max="366"
@@ -72,26 +72,26 @@
               </label>
             }
             <label class="flex flex-col gap-1 text-sm font-semibold text-content-800"
-              >{{ label('startDate') | translate }}
+              >{{ state.label('startDate') | translate }}
               <input
                 appInput="default"
                 type="date"
                 name="startDate"
-                [min]="minimumStartDate"
-                [(ngModel)]="model.startDate"
-                (ngModelChange)="changed()"
+                [min]="state.minimumStartDate"
+                [(ngModel)]="state.model.startDate"
+                (ngModelChange)="state.changed()"
               />
               <span class="text-xs font-normal text-content-600">{{
                 'personalPrograms.dateHint' | translate
               }}</span>
             </label>
-            @if (!standaloneMode) {
+            @if (!state.standaloneMode) {
               <label class="flex flex-col gap-1 text-sm font-semibold text-content-800"
                 >{{ 'personalPrograms.difficulty' | translate }}
                 <select
                   name="difficulty"
-                  [(ngModel)]="model.difficultyLevel"
-                  (ngModelChange)="changed()"
+                  [(ngModel)]="state.model.difficultyLevel"
+                  (ngModelChange)="state.changed()"
                   class="min-h-11 rounded-xl border border-surface-300 bg-white px-3 text-sm font-normal text-content-800"
                 >
                   <option [ngValue]="null">{{ 'personalPrograms.unspecified' | translate }}</option>
@@ -106,35 +106,35 @@
         <section class="flex min-w-0 flex-col gap-4">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <h2 class="text-xl font-bold text-content-800">
-              {{ label('days') | translate }}
+              {{ state.label('days') | translate }}
             </h2>
-            @if (!started && !standaloneMode) {
+            @if (!state.started && !state.standaloneMode) {
               <button
                 type="button"
                 class="btn btn-primary"
-                (click)="addDay()"
-                [disabled]="locked || model.workouts.length >= 366"
+                (click)="days.addDay()"
+                [disabled]="state.locked || state.model.workouts.length >= 366"
               >
                 {{ 'personalPrograms.addDay' | translate }}
               </button>
             }
           </div>
-          @if (!standaloneMode) {
+          @if (!state.standaloneMode) {
             <p class="text-sm text-content-600">{{ 'personalPrograms.daysHint' | translate }}</p>
           }
-          @for (day of model.workouts; track day; let d = $index) {
+          @for (day of state.model.workouts; track day; let d = $index) {
             <fieldset
-              [disabled]="locked"
+              [disabled]="state.locked"
               class="flex min-w-0 flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-6"
             >
               <legend class="px-2 font-semibold text-content-800">
                 {{
-                  standaloneMode
+                  state.standaloneMode
                     ? ('personalWorkouts.days' | translate)
                     : ('personalPrograms.dayNumber' | translate: { number: day.dayIndex })
                 }}
               </legend>
-              @if (!standaloneMode) {
+              @if (!state.standaloneMode) {
                 <div class="grid grid-cols-1 items-end gap-3 sm:grid-cols-3">
                   <label class="flex flex-col gap-1 text-sm font-semibold text-content-800"
                     >{{ 'personalPrograms.dayIndex' | translate }}
@@ -143,9 +143,9 @@
                       type="number"
                       [name]="'dayIndex' + d"
                       [(ngModel)]="day.dayIndex"
-                      (ngModelChange)="changed()"
+                      (ngModelChange)="state.changed()"
                       min="1"
-                      [max]="model.durationDays"
+                      [max]="state.model.durationDays"
                       step="1"
                       required
                     />
@@ -157,7 +157,7 @@
                       appInput="default"
                       [name]="'dayName' + d"
                       [(ngModel)]="day.name"
-                      (ngModelChange)="changed()"
+                      (ngModelChange)="state.changed()"
                       maxlength="255"
                       pattern=".*\S.*"
                       required
@@ -170,7 +170,7 @@
                       appTextarea="default"
                       [name]="'dayDescription' + d"
                       [(ngModel)]="day.description"
-                      (ngModelChange)="changed()"
+                      (ngModelChange)="state.changed()"
                       maxlength="10000"
                       rows="2"
                     ></textarea>
@@ -181,7 +181,7 @@
                 <div class="flex min-w-0 flex-col gap-3 rounded-xl border border-surface-200 p-3">
                   <h3 class="break-words font-semibold text-content-800">
                     {{
-                      names[exercise.exerciseId] ||
+                      days.names[exercise.exerciseId] ||
                         ('personalPrograms.exerciseFallback'
                           | translate: { id: exercise.exerciseId })
                     }}
@@ -194,7 +194,7 @@
                         type="number"
                         [name]="'sets' + d + '_' + e"
                         [(ngModel)]="exercise.sets"
-                        (ngModelChange)="changed()"
+                        (ngModelChange)="state.changed()"
                         min="1"
                         [max]="prescriptionLimits.maxSets"
                         step="1"
@@ -208,7 +208,7 @@
                         type="number"
                         [name]="'reps' + d + '_' + e"
                         [(ngModel)]="exercise.repetitions"
-                        (ngModelChange)="changed()"
+                        (ngModelChange)="state.changed()"
                         min="1"
                         [max]="prescriptionLimits.maxRepetitions"
                         step="1"
@@ -222,7 +222,7 @@
                         type="number"
                         [name]="'rest' + d + '_' + e"
                         [(ngModel)]="exercise.restSeconds"
-                        (ngModelChange)="changed()"
+                        (ngModelChange)="state.changed()"
                         min="0"
                         [max]="prescriptionLimits.maxRestSeconds"
                         step="1"
@@ -235,20 +235,20 @@
                         appInput="compact"
                         [name]="'notes' + d + '_' + e"
                         [(ngModel)]="exercise.notes"
-                        (ngModelChange)="changed()"
+                        (ngModelChange)="state.changed()"
                         maxlength="255"
                       />
                     </label>
                   </div>
-                  @if (!started) {
+                  @if (!state.started) {
                     <div class="flex flex-wrap gap-2">
                       <button
                         type="button"
                         class="btn btn-neutral"
-                        [disabled]="locked || e === 0"
-                        (click)="moveExercise(day, e, -1)"
+                        [disabled]="state.locked || e === 0"
+                        (click)="days.moveExercise(day, e, -1)"
                         [attr.aria-label]="
-                          ('personalPrograms.up' | translate) + ': ' + names[exercise.exerciseId]
+                          ('personalPrograms.up' | translate) + ': ' + days.names[exercise.exerciseId]
                         "
                       >
                         {{ 'personalPrograms.up' | translate }}
@@ -256,15 +256,15 @@
                       <button
                         type="button"
                         class="btn btn-neutral"
-                        [disabled]="locked || e === day.exercises.length - 1"
-                        (click)="moveExercise(day, e, 1)"
+                        [disabled]="state.locked || e === day.exercises.length - 1"
+                        (click)="days.moveExercise(day, e, 1)"
                         [attr.aria-label]="
-                          ('personalPrograms.down' | translate) + ': ' + names[exercise.exerciseId]
+                          ('personalPrograms.down' | translate) + ': ' + days.names[exercise.exerciseId]
                         "
                       >
                         {{ 'personalPrograms.down' | translate }}
                       </button>
-                      <button type="button" class="btn btn-delete" (click)="removeExercise(day, e)">
+                      <button type="button" class="btn btn-delete" (click)="days.removeExercise(day, e)">
                         {{ 'personalPrograms.removeExercise' | translate }}
                       </button>
                     </div>
@@ -273,29 +273,29 @@
               } @empty {
                 <app-empty-state message="personalPrograms.noExercises" />
               }
-              @if (!started) {
+              @if (!state.started) {
                 <div class="flex flex-wrap gap-2">
                   <button
                     type="button"
                     class="btn btn-primary"
-                    (click)="pickerDay = pickerDay === day ? null : day"
-                    [disabled]="locked || day.exercises.length >= 100"
+                    (click)="days.pickerDay = days.pickerDay === day ? null : day"
+                    [disabled]="state.locked || day.exercises.length >= 100"
                   >
                     {{
-                      (pickerDay === day
+                      (days.pickerDay === day
                         ? 'personalPrograms.closePicker'
                         : 'personalPrograms.addExercise'
                       ) | translate
                     }}
                   </button>
-                  @if (!standaloneMode) {
-                    <button type="button" class="btn btn-delete" (click)="removeDay(day)">
+                  @if (!state.standaloneMode) {
+                    <button type="button" class="btn btn-delete" (click)="days.removeDay(day)">
                       {{ 'personalPrograms.removeDay' | translate }}
                     </button>
                   }
                 </div>
-                @if (pickerDay === day) {
-                  <app-exercise-picker [chosenIds]="chosenIds" (picked)="addExercise($event)" />
+                @if (days.pickerDay === day) {
+                  <app-exercise-picker [chosenIds]="days.chosenIds" (picked)="days.addExercise($event)" />
                 }
               }
             </fieldset>
@@ -303,53 +303,53 @@
             <app-empty-state message="personalPrograms.noDays" />
           }
         </section>
-        @if (!started) {
+        @if (!state.started) {
           <button
             type="submit"
             class="btn btn-primary self-start"
-            [disabled]="locked || programForm.invalid || (id !== null && !dirty)"
+            [disabled]="state.locked || programForm.invalid || (state.id !== null && !state.dirty)"
           >
-            {{ (busy ? 'personalPrograms.saving' : label('save')) | translate }}
+            {{ (state.busy ? 'personalPrograms.saving' : state.label('save')) | translate }}
           </button>
         }
       </form>
-      @if (catalogueFailed) {
+      @if (days.catalogueFailed) {
         <app-message message="personalPrograms.catalogueError" type="error" />
       }
-      @if (id) {
+      @if (state.id) {
         <div class="flex flex-wrap gap-3 rounded-2xl border border-surface-200 bg-white p-4">
-          @if (!started) {
+          @if (!state.started) {
             <button
               type="button"
               class="btn btn-primary"
-              (click)="ask('start')"
-              [disabled]="!canStart"
+              (click)="actions.ask('start')"
+              [disabled]="!state.canStart"
             >
-              {{ label('start') | translate }}
+              {{ state.label('start') | translate }}
             </button>
-            <button type="button" class="btn btn-delete" (click)="ask('delete')" [disabled]="busy">
+            <button type="button" class="btn btn-delete" (click)="actions.ask('delete')" [disabled]="state.busy">
               {{ 'personalPrograms.delete' | translate }}
             </button>
           } @else {
             <a
-              [routerLink]="['/user/programs', id, 'workouts']"
-              [queryParams]="{ programName: model.name }"
+              [routerLink]="['/user/programs', state.id, 'workouts']"
+              [queryParams]="{ programName: state.model.name }"
               class="btn btn-primary"
               >{{ 'personalPrograms.workouts' | translate }}</a
             >
           }
-          @if (standaloneMode) {
+          @if (state.standaloneMode) {
             <button
               type="button"
               class="btn btn-neutral"
-              (click)="saveTemplate()"
+              (click)="actions.saveTemplate()"
               [disabled]="
-                busy ||
-                dirty ||
-                loading ||
-                loadFailed ||
-                model.workouts.length !== 1 ||
-                !model.workouts[0].exercises.length
+                state.busy ||
+                state.dirty ||
+                state.loading ||
+                state.loadFailed ||
+                state.model.workouts.length !== 1 ||
+                !state.model.workouts[0].exercises.length
               "
             >
               {{ 'workoutTemplates.save' | translate }}
@@ -357,46 +357,46 @@
             <a routerLink="/user/workout-templates" class="btn btn-neutral">{{
               'workoutTemplates.title' | translate
             }}</a>
-            @if (dirty) {
+            @if (state.dirty) {
               <p class="w-full text-sm text-content-600">
                 {{ 'workoutTemplates.saveHint' | translate }}
               </p>
             }
           }
-          @if (standaloneMode && started) {
+          @if (state.standaloneMode && state.started) {
             <button
               type="button"
               class="btn btn-neutral"
-              (click)="ask('repeat')"
-              [disabled]="busy || dirty"
+              (click)="actions.ask('repeat')"
+              [disabled]="state.busy || state.dirty"
             >
               {{ 'personalWorkouts.repeat' | translate }}
             </button>
-          } @else if (!standaloneMode) {
+          } @else if (!state.standaloneMode) {
             <button
               type="button"
               class="btn btn-neutral"
-              (click)="ask('copy')"
-              [disabled]="busy || dirty"
+              (click)="actions.ask('copy')"
+              [disabled]="state.busy || state.dirty"
             >
               {{ 'personalPrograms.copy' | translate }}
             </button>
           }
         </div>
-        @if (!started && (dirty || !canStart)) {
-          <p class="text-sm text-content-600">{{ label('startHint') | translate }}</p>
+        @if (!state.started && (state.dirty || !state.canStart)) {
+          <p class="text-sm text-content-600">{{ state.label('startHint') | translate }}</p>
         }
       }
     }
     <app-confirm-dialog
-      [open]="action !== null"
-      [busy]="busy"
-      [title]="confirmationTitle"
-      [message]="confirmationMessage"
+      [open]="state.action !== null"
+      [busy]="state.busy"
+      [title]="actions.confirmationTitle"
+      [message]="actions.confirmationMessage"
       confirmLabel="personalPrograms.confirm"
       cancelLabel="personalPrograms.cancel"
-      (confirmed)="confirm()"
-      (cancelled)="cancel()"
+      (confirmed)="actions.confirm()"
+      (cancelled)="navigation.cancel()"
     />
   </div>
 </div>

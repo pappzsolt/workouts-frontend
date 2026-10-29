@@ -20,6 +20,19 @@ async function install(page: Page) {
     if (path === '/api/exercises' && req.method() === 'GET') return ok([{ id: 11, name: 'Guggolás' }]);
     if (path === '/api/exercises/filter-options') return ok({ bodyParts: [], equipment: [] });
     if (path === '/api/exercises/search') return ok({ content: [{ id: 11, name: 'Guggolás' }], totalElements: 1, totalPages: 1 });
+    if (path === `${ROOT}/page` && req.method() === 'GET') {
+      if (state.failList) return route.fulfill({ status: 503, json: { success: false, message: 'Átmeneti betöltési hiba' } });
+      const query = new URL(req.url()).searchParams;
+      const pageIndex = Number(query.get('page') ?? 0);
+      const size = Number(query.get('size') ?? 12);
+      const search = (query.get('search') ?? '').toLowerCase();
+      const items = [{ id: state.id, name: state.program.name, durationDays: state.program.durationDays,
+        startDate: state.program.startDate, startedAt: state.started ? '2026-10-25T12:00:00' : null, standalone: state.standalone }]
+        .filter(item => item.name.toLowerCase().includes(search)
+          && (!query.has('standalone') || item.standalone === (query.get('standalone') === 'true')));
+      return ok({ content: items.slice(pageIndex * size, (pageIndex + 1) * size), page: pageIndex, size,
+        totalElements: items.length, totalPages: Math.ceil(items.length / size) });
+    }
     if (path === ROOT && req.method() === 'GET') {
       if (state.failList) return route.fulfill({ status: 503, json: { success: false, message: 'Átmeneti betöltési hiba' } });
       return ok([{ id: state.id, name: state.program.name, durationDays: 7, startDate: null, startedAt: null }]);
@@ -259,3 +272,38 @@ for(const [language,title,nameLabel,saveLabel] of [
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   });
 }
+
+test('Saját program: függő mentés alatt nem hagyható el a szerkesztő és nincs második kérés', async ({ page }) => {
+  const api = await install(page);
+  let release!: () => void;
+  const gate = new Promise<void>(resolve => release = resolve);
+  const submitted: unknown[] = [];
+  await page.route(`**${ROOT}/7?**`, async route => {
+    if (route.request().method() !== 'PUT') return route.fallback();
+    submitted.push(route.request().postDataJSON());
+    await gate;
+    await route.fallback();
+  });
+  try {
+    await page.goto('/user/personal-programs/7');
+    await editor(page).getByLabel('Program neve', { exact: true }).fill('Mentés alatt');
+    const save = editor(page).getByRole('button', { name: 'Piszkozat mentése', exact: true });
+    await save.click();
+    await expect.poll(() => submitted.length).toBe(1);
+    await expect(editor(page).locator('button[type=submit]')).toBeDisabled();
+    await editor(page).getByRole('link', { name: 'Vissza a saját programokhoz', exact: true }).click();
+    await expect(page).toHaveURL(/personal-programs\/7$/);
+    await expect(page.getByRole('alertdialog')).toHaveCount(0);
+    expect(submitted).toHaveLength(1);
+    const finished = page.waitForResponse(response => response.request().method() === 'PUT' && new URL(response.url()).pathname === `${ROOT}/7`);
+    release();
+    await finished;
+    await expect(editor(page).getByRole('button', { name: 'Program indítása', exact: true })).toBeEnabled();
+    await expect(editor(page).getByLabel('Program neve', { exact: true })).toHaveValue('Mentés alatt');
+    expect(api.calls.filter(call => call.method === 'PUT')).toHaveLength(1);
+    expect(api.program.expectedVersion).toBe(2);
+    expect(api.unexpected).toEqual([]);
+  } finally {
+    release();
+  }
+});

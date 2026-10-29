@@ -6,7 +6,7 @@ import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { EMPTY, Observable, Subject, catchError, combineLatest, concatMap, defer, distinctUntilChanged, finalize, map, of, shareReplay, switchMap, takeUntil, tap } from 'rxjs';
+import { EMPTY, Subject, catchError, combineLatest, distinctUntilChanged, map, switchMap, takeUntil } from 'rxjs';
 
 import { UserExerciseDetailService } from '../../../../../services/user/user-exercises-detail/user-exercises-detail.service';
 import { SidePaginationComponent } from '../../../../../components/shared/components/side-pagination/side-pagination.component';
@@ -17,6 +17,7 @@ import {
   UserWorkoutExerciseSetDto,
 } from '../../../../../models/user-workout-exercise-detail.dto';
 
+import { ExerciseSetSaves } from './exercise-set-saves';
 import { PreviousExercisePerformanceComponent } from './previous-exercise-performance.component';
 import { SetRestTimerComponent } from './set-rest-timer.component';
 
@@ -36,7 +37,6 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
   private readonly router = inject(Router, { optional: true });
-  private readonly failedSetSaves = new Set<string>();
   private readonly advancedExercises = new WeakSet<object>();
   private destroyed = false;
 
@@ -56,21 +56,26 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   messageType: 'success' | 'error' | 'info' | '' = '';
   messageParams: Record<string, unknown> = {};
 
-  /**
-   * Egy sethez egyszerre csak egy mentési HTTP kérés futhat.
-   * Így a blur és a lapozás nem indít párhuzamos mentéseket ugyanarra a setre.
-   */
-  private readonly pendingSetSaves = new Map<string, {
-    signature: string;
-    request: Observable<void>;
-    confirmed: { completed: boolean; timerNeedsRefresh: boolean };
-  }>();
+  private readonly setSaves: ExerciseSetSaves;
 
   constructor(
     private route: ActivatedRoute,
     private exercisesService: UserExerciseDetailService,
     private languageService: LanguageService,
-  ) {}
+  ) {
+    this.setSaves = new ExerciseSetSaves(this.exercisesService, {
+      context: () => ({ userWorkoutId: this.userWorkoutId, programId: this.programId,
+        workoutId: this.workoutId, workoutExercise: this.workoutExercise }),
+      validateInputs: selector => this.validateInputs(selector),
+      clearMessage: () => { this.message = ''; this.messageParams = {}; this.messageType = ''; },
+      showSuccess: (message, params) => { this.message = message; this.messageParams = params; this.messageType = 'success'; },
+      showError: message => { this.message = message; this.messageType = 'error'; },
+      selectLastCompletedTimer: setId => this.selectLastCompletedTimer(setId),
+      updateExerciseDone: () => this.updateExerciseDone(),
+      isDestroyed: () => this.destroyed,
+      onSettled: () => this.advanceToNextExercise(),
+    });
+  }
 
   ngOnInit(): void {
     combineLatest([this.route.paramMap, this.route.queryParamMap, this.languageService.language$])
@@ -241,7 +246,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
    * és aktuális adatainak frissítése a backendben.
    */
   updateSetCompleted(set: UserWorkoutExerciseSetDto, completed: boolean): void {
-    this.createSetSaveRequest(set, true, completed).pipe(takeUntil(this.destroy$)).subscribe({
+    this.setSaves.createRequest(set, true, completed).pipe(takeUntil(this.destroy$)).subscribe({
       error: () => { /* The shared save reports the failure. */ },
     });
   }
@@ -301,102 +306,9 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
    * használja az összes set adat mentésére.
    */
   saveSetDetails(set: UserWorkoutExerciseSetDto, showSuccessMessage = true): void {
-    this.createSetSaveRequest(set, showSuccessMessage).pipe(takeUntil(this.destroy$)).subscribe({
+    this.setSaves.createRequest(set, showSuccessMessage).pipe(takeUntil(this.destroy$)).subscribe({
       error: () => { /* The shared request reports the failure through MessageComponent. */ },
     });
-  }
-
-  private createSetSaveRequest(
-    set: UserWorkoutExerciseSetDto,
-    showSuccessMessage = true,
-    completed?: boolean,
-  ): Observable<void> {
-    if (!this.validateInputs(`input[data-validation-set="${set.id}"]`)) return EMPTY;
-    const exercise = this.workoutExercise;
-    const exerciseId = exercise?.exercise.id;
-    if (!exercise || exerciseId == null || set.id == null) {
-      this.message = 'userExerciseDetail.invalidSet';
-      this.messageType = 'error';
-      return EMPTY;
-    }
-
-    // Capture the occurrence and values at the time of the edit. A queued save
-    // must never use identifiers from a different route or later form values.
-    const originalArgs = [this.userWorkoutId, this.programId, this.workoutId, exerciseId, set.id,
-      completed ?? (set.completed === true), set.actualRepetitions, set.actualWeightKg, set.notes] as const;
-    const hasEffort = 'actualRpe' in set || 'rir' in set;
-    const effortArgs = [set.actualRpe, set.rir] as const;
-    const args = hasEffort ? [...originalArgs, ...effortArgs] as const : originalArgs;
-    const key = `${this.userWorkoutId}:${set.id}`;
-    const signature = JSON.stringify(args);
-    const previous = this.pendingSetSaves.get(key);
-    if (previous?.signature === signature) return previous.request;
-    const confirmed = previous?.confirmed ?? { completed: set.completed === true, timerNeedsRefresh: false };
-    if (completed !== undefined) set.completed = completed;
-    const isCurrent = (): boolean => this.workoutExercise === exercise && this.userWorkoutId === args[0];
-    this.message = '';
-    this.messageParams = {};
-    this.messageType = '';
-
-    const syncConfirmedTimer = () => {
-      if (isCurrent() && confirmed.timerNeedsRefresh) {
-        this.selectLastCompletedTimer(confirmed.completed ? set.id ?? undefined : undefined);
-        confirmed.timerNeedsRefresh = false;
-      }
-    };
-    const entry = { signature, confirmed, request: EMPTY as Observable<void> };
-    let succeeded = false;
-    // Changed payloads queue behind the existing request; identical blur/page
-    // saves share it. Recover an earlier failure so a newer edit can still save.
-    entry.request = (previous ? previous.request.pipe(catchError(() => of(void 0))) : of(void 0)).pipe(
-      concatMap(() => defer(() => hasEffort
-        ? this.exercisesService.updateSetCompleted(...originalArgs, ...effortArgs)
-        : this.exercisesService.updateSetCompleted(...originalArgs))),
-      map(response => {
-        if (!response.success) throw new Error(responseMessage([response], 'userExerciseDetail.saveError'));
-        if (completed !== undefined || confirmed.completed !== args[5]) confirmed.timerNeedsRefresh = true;
-        confirmed.completed = args[5];
-        // An older queued response must not replace newer pending UI state.
-        const isLatestSave = this.pendingSetSaves.get(key) === entry;
-        if (isLatestSave) {
-          succeeded = true;
-          this.failedSetSaves.delete(key);
-          syncConfirmedTimer();
-        }
-        if (isCurrent()) {
-          this.updateExerciseDone();
-          if (isLatestSave && (showSuccessMessage || response.message)) {
-            this.message = responseMessage([response], completed === undefined
-              ? 'userExerciseDetail.saveSuccess' : 'userExerciseDetail.setUpdated');
-            this.messageParams = completed !== undefined && !response.message ? { setNumber: set.setNumber } : {};
-            this.messageType = 'success';
-          }
-        }
-        return void 0;
-      }),
-      tap({ error: error => {
-        if (isCurrent() && this.pendingSetSaves.get(key) === entry) {
-          this.failedSetSaves.add(key);
-          set.completed = confirmed.completed;
-          syncConfirmedTimer();
-          this.updateExerciseDone();
-          this.message = errorMessage(error, completed === undefined
-            ? 'userExerciseDetail.saveError' : 'userExerciseDetail.setUpdateError');
-          this.messageType = 'error';
-        }
-      } }),
-      finalize(() => {
-        if (this.pendingSetSaves.get(key) === entry) {
-          this.pendingSetSaves.delete(key);
-          if (succeeded && isCurrent() && !this.destroyed) this.advanceToNextExercise();
-        }
-      }),
-      // Navigation only detaches UI observers. Keep the finite HTTP save and
-      // any queued edits alive until they finish, even after component teardown.
-      shareReplay({ bufferSize: 1, refCount: false }),
-    );
-    this.pendingSetSaves.set(key, entry);
-    return entry.request;
   }
 
   private advanceToNextExercise(): void {
@@ -405,9 +317,8 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     const sets = exercise?.userWorkoutExerciseSets;
     if (!exercise || !sets?.length || this.advancedExercises.has(exercise)) return;
     const ready = sets.every(set => {
-      const key = `${this.userWorkoutId}:${set.id}`;
       return set.completed === true
-        && !this.pendingSetSaves.has(key) && !this.failedSetSaves.has(key)
+        && this.setSaves.isSettled(this.userWorkoutId, set.id)
         && typeof set.actualRepetitions === 'number' && Number.isInteger(set.actualRepetitions) && set.actualRepetitions >= 1
         && typeof set.actualWeightKg === 'number' && Number.isFinite(set.actualWeightKg) && set.actualWeightKg >= 0
         && (set.actualRpe == null || (Number.isFinite(set.actualRpe) && set.actualRpe >= 0 && set.actualRpe <= 10))
@@ -446,7 +357,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
     // Lapozáskor megvárjuk az aktuális set mentését.
     // Ha blur már elindította, ugyanazt a folyamatban lévő requestet használjuk.
-    this.createSetSaveRequest(currentSet, false)
+    this.setSaves.createRequest(currentSet, false)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
