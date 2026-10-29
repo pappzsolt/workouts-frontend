@@ -11,6 +11,7 @@ import { UserWorkoutExerciseDto } from '../../models/user-workout-exercise.dto';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
 import { LanguageService } from '../shared/language.service';
+import { toCalendarScheduledWorkouts } from '../shared/scheduled-workout-mapping';
 
 @Injectable({
   providedIn: 'root',
@@ -79,37 +80,7 @@ export class WorkoutExercisesManagerService {
       .pipe(
         map((response) => ({
           ...response,
-          data: (response.data ?? []).reduce<ScheduledWorkout[]>((workouts, item) => {
-            const userWorkoutId = Number(
-              item.userWorkoutId ?? item.user_workout_id,
-            );
-            const programWorkoutId = Number(
-              item.programWorkoutId ?? item.program_workout_id,
-            );
-            const workoutId = Number(item.workoutId ?? item.workout_id);
-            const programId = Number(item.programId ?? item.program_id);
-
-            if (
-              !Number.isFinite(userWorkoutId) || userWorkoutId <= 0 ||
-              !Number.isFinite(programWorkoutId) || programWorkoutId <= 0 ||
-              !Number.isFinite(workoutId) || workoutId <= 0 ||
-              !Number.isFinite(programId) || programId <= 0
-            ) {
-              return workouts;
-            }
-
-            workouts.push({
-              userWorkoutId,
-              programWorkoutId,
-              workoutId,
-              programId,
-              scheduledAt: item.scheduledAt ?? item.scheduled_at ?? null,
-              completed: item.completed ?? null,
-              workoutName: item.workoutName ?? item.workout_name ?? null,
-            });
-
-            return workouts;
-          }, []),
+          data: toCalendarScheduledWorkouts(response.data ?? []),
         })),
       );
   }

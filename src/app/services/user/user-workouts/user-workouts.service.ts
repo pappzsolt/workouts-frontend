@@ -5,6 +5,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
 import { LanguageService } from '../../shared/language.service';
+import { toUserScheduledWorkouts } from '../../shared/scheduled-workout-mapping';
 
 import { API_ENDPOINTS } from '../../../api-endpoints';
 import type { UserWorkoutOccurrence } from '../../../models/user-workout-occurrence.model';
@@ -84,41 +85,7 @@ export class UserWorkoutsService {
       )
       .pipe(
         map((response) =>
-          (response.data ?? [])
-            .map((item): ScheduledWorkout | null => {
-              const userWorkoutId = Number(
-                item.user_workout_id ?? item.userWorkoutId,
-              );
-              const programWorkoutId = Number(
-                item.programWorkoutId ?? item.program_workout_id,
-              );
-              const workoutId = Number(
-                item.workoutId ?? item.workout_id,
-              );
-              const programId = Number(
-                item.programId ?? item.program_id,
-              );
-
-              if (
-                !Number.isFinite(userWorkoutId) || userWorkoutId <= 0 ||
-                !Number.isFinite(programWorkoutId) || programWorkoutId <= 0 ||
-                !Number.isFinite(workoutId) || workoutId <= 0 ||
-                !Number.isFinite(programId) || programId <= 0
-              ) {
-                return null;
-              }
-
-              return {
-                userWorkoutId,
-                programWorkoutId,
-                workoutId,
-                programId,
-                scheduledAt: item.scheduled_at ?? item.scheduledAt ?? null,
-                completed: item.completed ?? null,
-                workoutName: item.workout_name ?? item.workoutName ?? null,
-              };
-            })
-            .filter((item): item is ScheduledWorkout => item !== null),
+          toUserScheduledWorkouts(response.data ?? []),
         ),
       );
   }

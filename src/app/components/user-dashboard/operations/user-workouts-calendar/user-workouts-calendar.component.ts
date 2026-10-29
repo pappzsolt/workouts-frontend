@@ -1,6 +1,7 @@
 import { matchesSearch } from '../../../shared/components/app-search/search-match';
 import { AppSearchComponent } from '../../../shared/components/app-search/app-search.component';
 import type { CalendarDay } from '../../../../models/common/calendar-day.model';
+import { buildCalendarMonth } from '../../../../shared/calendar-month';
 import type { ScheduledWorkout } from '../../../../models/scheduled-workout/scheduled-workout.model';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../services/logger.service';
@@ -198,73 +199,7 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   // =========================================================
 
   private generateCalendar(): void {
-    this.calendarDays = [];
-
-    const firstDayOfMonth = new Date(this.currentYear, this.currentMonth, 1);
-
-    const lastDayOfMonth = new Date(this.currentYear, this.currentMonth + 1, 0);
-
-    let firstDayIndex = firstDayOfMonth.getDay();
-
-    /*
-     * JavaScript:
-     *
-     * vasárnap = 0
-     * hétfő = 1
-     *
-     * A naptár hétfővel kezdődik.
-     */
-    if (firstDayIndex === 0) {
-      firstDayIndex = 6;
-    } else {
-      firstDayIndex--;
-    }
-
-    // =======================================================
-    // ELŐZŐ HÓNAP NAPJAI
-    // =======================================================
-
-    const previousMonthLastDay = new Date(this.currentYear, this.currentMonth, 0).getDate();
-
-    for (let i = firstDayIndex - 1; i >= 0; i--) {
-      const date = new Date(this.currentYear, this.currentMonth - 1, previousMonthLastDay - i);
-
-      this.calendarDays.push({
-        date,
-        currentMonth: false,
-        isToday: this.isToday(date),
-      });
-    }
-
-    // =======================================================
-    // AKTUÁLIS HÓNAP NAPJAI
-    // =======================================================
-
-    for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
-      const date = new Date(this.currentYear, this.currentMonth, day);
-
-      this.calendarDays.push({
-        date,
-        currentMonth: true,
-        isToday: this.isToday(date),
-      });
-    }
-
-    // =======================================================
-    // KÖVETKEZŐ HÓNAP NAPJAI
-    // =======================================================
-
-    let nextMonthDay = 1;
-
-    while (this.calendarDays.length % 7 !== 0) {
-      const date = new Date(this.currentYear, this.currentMonth + 1, nextMonthDay++);
-
-      this.calendarDays.push({
-        date,
-        currentMonth: false,
-        isToday: this.isToday(date),
-      });
-    }
+    this.calendarDays = buildCalendarMonth(this.currentYear, this.currentMonth, new Date());
   }
 
   // =========================================================
@@ -352,20 +287,5 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
     this.selectedWorkout = null;
     this.selectedExercises = [];
     this.selectedWorkoutId$.next(null);
-  }
-
-
-  // =========================================================
-  // MAI NAP ELLENŐRZÉSE
-  // =========================================================
-
-  private isToday(date: Date): boolean {
-    const today = new Date();
-
-    return (
-      date.getFullYear() === today.getFullYear() &&
-      date.getMonth() === today.getMonth() &&
-      date.getDate() === today.getDate()
-    );
   }
 }
