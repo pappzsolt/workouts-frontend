@@ -24,6 +24,7 @@ import { Exercise } from '../../../../../models/exercise.model';
 import { HttpErrorResponse } from '@angular/common/http';
 
 import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
+import { WorkoutFormDrafts } from './workout-form-drafts';
 import { WorkoutExerciseListComponent } from './parts/workout-exercise-list.component';
 import { WorkoutExerciseSearchComponent } from './parts/workout-exercise-search.component';
 import {
@@ -58,11 +59,7 @@ export class CoachWorkoutEditComponent implements OnInit {
   private readonly exercisesLoadCancelled$ = new Subject<void>();
   private readonly workoutExercisesLoadCancelled$ = new Subject<void>();
   private readonly assignmentLoadCancelled$ = new Subject<void>();
-  private loadedWorkout?: WorkoutForm;
-  private formContext = '';
-  /** Nyelvenként a szöveges mezők, edzésenként a többi mező mentetlen módosításai. */
-  private readonly textDrafts = new Map<string, Partial<WorkoutForm>>();
-  private readonly sharedDrafts = new Map<number, Partial<WorkoutForm>>();
+  private readonly drafts = new WorkoutFormDrafts();
   loadingWorkout = false;
   savingWorkout = false;
   private workoutReady = false;
@@ -107,7 +104,7 @@ export class CoachWorkoutEditComponent implements OnInit {
 
   get canSaveWorkout(): boolean {
     return this.workoutReady && !this.loadingWorkout && !this.savingWorkout &&
-      this.formContext === `${this.workoutId}:${this.languageService.getCurrentLanguage()}`;
+      this.drafts.context === `${this.workoutId}:${this.languageService.getCurrentLanguage()}`;
   }
 
   ngOnInit(): void {
@@ -155,31 +152,13 @@ export class CoachWorkoutEditComponent implements OnInit {
       });
   }
 
-  private captureWorkoutDraft(): void {
-    if (!this.loadedWorkout || !this.formContext) return;
-    const text: Partial<WorkoutForm> = {};
-    const shared: Partial<WorkoutForm> = {};
-    for (const key of Object.keys(this.workout) as (keyof WorkoutForm)[]) {
-      if (key === 'id' || this.workout[key] === this.loadedWorkout[key]) continue;
-      const target = ['name', 'description'].includes(key) ? text : shared;
-      Object.assign(target, { [key]: this.workout[key] });
-    }
-    this.textDrafts.set(this.formContext, text);
-    this.sharedDrafts.set(this.loadedWorkout.id!, shared);
-  }
-
   loadWorkout(preserveDrafts = false): void {
     if (!this.workoutId) return;
 
     this.workoutLoadCancelled$.next();
     const workoutId = this.workoutId;
     const language = this.languageService.getCurrentLanguage();
-    const context = `${workoutId}:${language}`;
-    if (preserveDrafts) this.captureWorkoutDraft();
-    if (!this.formContext || this.loadedWorkout?.id !== workoutId) {
-      this.formContext = context;
-      this.loadedWorkout = { ...this.workout, id: workoutId };
-    }
+    this.drafts.beginLoad(this.workout, workoutId, language, preserveDrafts);
     this.loadingWorkout = true;
     this.workoutReady = false;
     this.coachWorkoutsService.getWorkoutById(workoutId, language)
@@ -191,14 +170,7 @@ export class CoachWorkoutEditComponent implements OnInit {
             return;
           }
           const loaded = toWorkoutForm(this.workout, res.data);
-          if (preserveDrafts) this.captureWorkoutDraft();
-          this.loadedWorkout = { ...loaded };
-          this.formContext = context;
-          this.workout = {
-            ...loaded,
-            ...(preserveDrafts ? this.sharedDrafts.get(workoutId) : {}),
-            ...(preserveDrafts ? this.textDrafts.get(context) : {}),
-          };
+          this.workout = this.drafts.applyLoaded(this.workout, loaded, workoutId, language, preserveDrafts);
           this.workoutReady = true;
         },
         error: (error) => {
@@ -347,9 +319,9 @@ export class CoachWorkoutEditComponent implements OnInit {
     if (!this.workoutId) return;
 
     const payload: WorkoutForm = { ...this.workout, workoutDate: this.workout.workoutDate };
-    const context = this.formContext;
+    const context = this.drafts.context;
     const language = this.languageService.getCurrentLanguage();
-    const unchangedContext = () => this.formContext === context && this.languageService.getCurrentLanguage() === language;
+    const unchangedContext = () => this.drafts.context === context && this.languageService.getCurrentLanguage() === language;
     this.savingWorkout = true;
     this.coachWorkoutsService.updateWorkout(this.workoutId, payload, language).pipe(
       takeUntilDestroyed(this.destroyRef),
