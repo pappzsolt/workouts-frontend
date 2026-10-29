@@ -26,66 +26,66 @@ describe('Program editor assignment revocation', () => {
       { provide: Router, useValue: {} },
     ] });
     component = TestBed.runInInjectionContext(() => new CoachProgramEditorComponent());
-    component.programId = 10;
-    component.clients = [client(1), client(2), client(3)];
-    component.assignedIds = new Set([1, 2]);
+    component.state.programId = 10;
+    component.assignments.clients = [client(1), client(2), client(3)];
+    component.assignments.assignedIds = new Set([1, 2]);
   });
 
   it('requires confirmation and lets the coach cancel without sending a request', () => {
-    component.askRevoke(component.clients[0]);
-    expect(component.pendingRevokeClient?.userId).toBe(1);
+    component.assignments.askRevoke(component.assignments.clients[0]);
+    expect(component.assignments.pendingRevokeClient?.userId).toBe(1);
     expect(revoke).not.toHaveBeenCalled();
-    component.cancelRevoke();
-    component.confirmRevoke();
-    expect(component.pendingRevokeClient).toBeNull();
+    component.assignments.cancelRevoke();
+    component.assignments.confirmRevoke();
+    expect(component.assignments.pendingRevokeClient).toBeNull();
     expect(revoke).not.toHaveBeenCalled();
-    expect([...component.assignedIds]).toEqual([1, 2]);
+    expect([...component.assignments.assignedIds]).toEqual([1, 2]);
   });
 
   it('revokes only the selected assignment and makes the client available for reassignment', () => {
-    component.toAssign = new Set([3]);
-    component.askRevoke(component.clients[0]);
-    component.confirmRevoke();
+    component.assignments.toAssign = new Set([3]);
+    component.assignments.askRevoke(component.assignments.clients[0]);
+    component.assignments.confirmRevoke();
     expect(revoke).toHaveBeenCalledOnceWith(10, 1);
-    expect(component.busy).toBeTrue();
-    expect(component.assignedIds.has(1)).toBeTrue();
-    component.confirmRevoke();
-    component.cancelRevoke();
+    expect(component.state.busy).toBeTrue();
+    expect(component.assignments.assignedIds.has(1)).toBeTrue();
+    component.assignments.confirmRevoke();
+    component.assignments.cancelRevoke();
     expect(revoke).toHaveBeenCalledTimes(1);
-    expect(component.pendingRevokeClient?.userId).toBe(1);
+    expect(component.assignments.pendingRevokeClient?.userId).toBe(1);
     request.next();
     request.complete();
-    expect(component.busy).toBeFalse();
-    expect(component.pendingRevokeClient).toBeNull();
-    expect(component.assignedClients.map(item => item.userId)).toEqual([2]);
-    expect(component.unassignedClients.map(item => item.userId)).toEqual([1, 3]);
-    expect(component.clients[0].programs).toEqual([]);
-    expect(component.clients[1].programs.length).toBe(1);
-    expect(component.toAssign.has(3)).toBeTrue();
-    expect(component.message).toBe('coachWorkspace.client.revoked');
+    expect(component.state.busy).toBeFalse();
+    expect(component.assignments.pendingRevokeClient).toBeNull();
+    expect(component.assignments.assignedClients.map(item => item.userId)).toEqual([2]);
+    expect(component.assignments.unassignedClients.map(item => item.userId)).toEqual([1, 3]);
+    expect(component.assignments.clients[0].programs).toEqual([]);
+    expect(component.assignments.clients[1].programs.length).toBe(1);
+    expect(component.assignments.toAssign.has(3)).toBeTrue();
+    expect(component.state.message).toBe('coachWorkspace.client.revoked');
   });
 
   it('preserves the assignment on failure and allows retrying', () => {
-    component.askRevoke(component.clients[0]);
-    component.confirmRevoke();
+    component.assignments.askRevoke(component.assignments.clients[0]);
+    component.assignments.confirmRevoke();
     request.error({});
-    expect(component.busy).toBeFalse();
-    expect(component.pendingRevokeClient).toBeNull();
-    expect([...component.assignedIds]).toEqual([1, 2]);
-    expect(component.message).toBe('coachWorkspace.client.revokeError');
+    expect(component.state.busy).toBeFalse();
+    expect(component.assignments.pendingRevokeClient).toBeNull();
+    expect([...component.assignments.assignedIds]).toEqual([1, 2]);
+    expect(component.state.message).toBe('coachWorkspace.client.revokeError');
     request = new Subject<void>();
     revoke.and.returnValue(request);
-    component.askRevoke(component.clients[0]);
-    component.confirmRevoke();
+    component.assignments.askRevoke(component.assignments.clients[0]);
+    component.assignments.confirmRevoke();
     expect(revoke).toHaveBeenCalledTimes(2);
   });
 
   it('does not revoke an unassigned client or a missing program', () => {
-    component.askRevoke(component.clients[2]);
-    expect(component.pendingRevokeClient).toBeNull();
-    component.askRevoke(component.clients[0]);
-    component.programId = null;
-    component.confirmRevoke();
+    component.assignments.askRevoke(component.assignments.clients[2]);
+    expect(component.assignments.pendingRevokeClient).toBeNull();
+    component.assignments.askRevoke(component.assignments.clients[0]);
+    component.state.programId = null;
+    component.assignments.confirmRevoke();
     expect(revoke).not.toHaveBeenCalled();
   });
 });

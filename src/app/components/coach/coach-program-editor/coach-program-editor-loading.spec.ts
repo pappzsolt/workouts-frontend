@@ -50,13 +50,13 @@ describe('Program editor loading regressions', () => {
     route.next(convertToParamMap({ id: '2' }));
     respond(second, program(2));
     respond(first, program(1));
-    expect(component.programId).toBe(2);
-    expect(component.program?.programId).toBe(2);
-    expect(component.form.programName).toBe('Program 2');
-    expect(component.loading).toBeFalse();
+    expect(component.state.programId).toBe(2);
+    expect(component.state.program?.programId).toBe(2);
+    expect(component.state.form.programName).toBe('Program 2');
+    expect(component.state.loading).toBeFalse();
     expect(workspace.getAssignedUserIds).toHaveBeenCalledOnceWith(2);
-    component.form.programName = 'Edited program 2';
-    component.saveDetails();
+    component.state.form.programName = 'Edited program 2';
+    component.details.saveDetails();
     expect(workspace.updateProgram).toHaveBeenCalledOnceWith(2, jasmine.objectContaining({ programName: 'Edited program 2' }));
   });
 
@@ -64,10 +64,10 @@ describe('Program editor loading regressions', () => {
     route.next(convertToParamMap({ id: '1' }));
     route.next(convertToParamMap({ id: '2' }));
     first.error(new Error('old failure'));
-    expect(component.loading).toBeTrue();
-    expect(component.message).toBe('');
+    expect(component.state.loading).toBeTrue();
+    expect(component.state.message).toBe('');
     respond(second, program(2));
-    expect(component.loading).toBeFalse();
+    expect(component.state.loading).toBeFalse();
   });
 
   it('cancels an earlier reload even if the program ID is unchanged', () => {
@@ -76,7 +76,7 @@ describe('Program editor loading regressions', () => {
     route.next(convertToParamMap({ id: '1' }));
     respond(second, { ...program(1), programName: 'Newest version' });
     respond(first, program(1));
-    expect(component.form.programName).toBe('Newest version');
+    expect(component.state.form.programName).toBe('Newest version');
   });
 
   it('does not let old assignment responses populate a different program', () => {
@@ -87,29 +87,29 @@ describe('Program editor loading regressions', () => {
     route.next(convertToParamMap({ id: '2' }));
     respond(second, program(2));
     respond(oldAssignments, [11]);
-    expect([...component.assignedIds]).toEqual([22]);
+    expect([...component.assignments.assignedIds]).toEqual([22]);
   });
 
   it('cancels pending responses when switching to a new program', () => {
     route.next(convertToParamMap({ id: '1' }));
     route.next(convertToParamMap({ id: 'new' }));
     respond(first, program(1));
-    expect(component.programId).toBeNull();
-    expect(component.program).toBeNull();
-    expect(component.form.programName).toBe('');
-    expect(component.loading).toBeFalse();
+    expect(component.state.programId).toBeNull();
+    expect(component.state.program).toBeNull();
+    expect(component.state.form.programName).toBe('');
+    expect(component.state.loading).toBeFalse();
   });
 
   it('prevents saving old form data while the new program is loading or its load failed', () => {
     route.next(convertToParamMap({ id: '1' }));
     respond(first, program(1));
     route.next(convertToParamMap({ id: '2' }));
-    component.saveDetails();
+    component.details.saveDetails();
     expect(workspace.updateProgram).not.toHaveBeenCalled();
     second.error(new Error('current failure'));
-    component.saveDetails();
+    component.details.saveDetails();
     expect(workspace.updateProgram).not.toHaveBeenCalled();
-    expect(component.loading).toBeFalse();
-    expect(component.message).toBe('current failure');
+    expect(component.state.loading).toBeFalse();
+    expect(component.state.message).toBe('current failure');
   });
 });

@@ -11,43 +11,43 @@
 
     <div class="flex flex-wrap items-center gap-3">
       <h1 class="flex-1 text-2xl font-bold text-content-900 sm:text-3xl">
-        {{ (programId === null ? 'coachWorkspace.editor.newTitle' : 'coachWorkspace.editor.title') | translate }}
+        {{ (state.programId === null ? 'coachWorkspace.editor.newTitle' : 'coachWorkspace.editor.title') | translate }}
       </h1>
-      @if (programId !== null) {
-        <button type="button" (click)="openCopy()" [disabled]="busy"
+      @if (state.programId !== null) {
+        <button type="button" (click)="copy.openCopy()" [disabled]="state.busy"
                 class="btn btn-outline">
           {{ 'coachWorkspace.editor.copyProgram' | translate }}
         </button>
       }
     </div>
-    @if (programId === null && newForUserId !== null) {
+    @if (state.programId === null && state.newForUserId !== null) {
       <p class="rounded-xl bg-info-50 px-4 py-3 text-sm text-info-800">
-        {{ 'coachWorkspace.editor.newForClientHint' | translate: { name: newForUserName } }}
+        {{ 'coachWorkspace.editor.newForClientHint' | translate: { name: assignments.newForUserName } }}
       </p>
     }
 
-    <app-message [message]="message" [messageParams]="messageParams" [type]="messageType" role="status"></app-message>
+    <app-message [message]="state.message" [messageParams]="state.messageParams" [type]="state.messageType" role="status"></app-message>
 
     <!-- Program adatai -->
-    <app-program-details-form [form]="form" [isNew]="programId === null" [saving]="savingDetails"
-                              [submitDisabled]="savingDetails || busy || loading || (programId !== null && program?.programId !== programId)"
-                              (save)="saveDetails()" />
+    <app-program-details-form [form]="state.form" [isNew]="state.programId === null" [saving]="state.savingDetails"
+                              [submitDisabled]="state.savingDetails || state.busy || state.loading || (state.programId !== null && state.program?.programId !== state.programId)"
+                              (save)="details.saveDetails()" />
 
-    @if (programId === null) {
+    @if (state.programId === null) {
       <p class="rounded-2xl bg-info-50 p-4 text-sm text-info-800">{{ 'coachWorkspace.editor.createFirst' | translate }}</p>
-    } @else if (loading && !program) {
+    } @else if (state.loading && !state.program) {
       <app-loading message="coachWorkspace.loading"></app-loading>
     } @else {
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
 
         <!-- Napok rácsa -->
-        <app-program-day-grid [cells]="cells" [leadingBlanks]="leadingBlanks" [selectedDay]="selectedDay" [busy]="busy"
-                              (daySelected)="selectDay($event)" (openMulti)="openMulti()" />
+        <app-program-day-grid [cells]="state.cells" [leadingBlanks]="state.leadingBlanks" [selectedDay]="state.selectedDay" [busy]="state.busy"
+                              (daySelected)="selectDay($event)" (openMulti)="library.openMulti()" />
 
         <!-- Kiválasztott nap -->
         <section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm lg:col-span-2"
                  [attr.aria-label]="'coachWorkspace.editor.selectedDay' | translate">
-          @if (selectedCell; as cell) {
+          @if (state.selectedCell; as cell) {
             <p class="text-sm text-content-600">
               {{ 'coachWorkspace.editor.dayLabel' | translate: { day: cell.day } }}
               @if (cell.date) { · {{ cell.date | date: 'yyyy.MM.dd' }} }
@@ -55,23 +55,23 @@
 
             @if (cell.workout; as workout) {
               <app-program-day-workout
-                [workout]="workout" [rows]="rows" [selectedWorkoutDayCount]="selectedWorkoutDayCount" [selectedDayClients]="selectedDayClients"
-                [programId]="programId" [busy]="busy" [changedCount]="changedCount"
-                [saveDisabled]="busy || savingDetails || loading || changedCount === 0"
-                [weeklyRepeatDays]="weeklyRepeatDays" [weeklyRepeatSkipped]="weeklyRepeatSkipped"
-                [firstDate]="firstDate" [lastDate]="lastDate" [moveTargetIsSameDay]="dayForDate(moveDate) === cell.day"
-                [(confirmRepeat)]="confirmRepeat" [(confirmRemove)]="confirmRemove" [(extraDate)]="extraDate" [(moveDate)]="moveDate"
-                (moveRow)="moveRow($event.index, $event.direction)" (applyTemplate)="applyTemplateToClients()"
-                (savePrescriptions)="savePrescriptions()" (copyToLibrary)="copyToLibrary()" (repeatWeekly)="repeatWeekly()"
-                (addToAnotherDay)="addToAnotherDay()" (moveWorkout)="moveWorkout()" (removeWorkout)="removeWorkout()" />
+                [workout]="workout" [rows]="workouts.rows" [selectedWorkoutDayCount]="workouts.selectedWorkoutDayCount" [selectedDayClients]="assignments.selectedDayClients"
+                [programId]="state.programId" [busy]="state.busy" [changedCount]="workouts.changedCount"
+                [saveDisabled]="state.busy || state.savingDetails || state.loading || workouts.changedCount === 0"
+                [weeklyRepeatDays]="workouts.weeklyRepeatDays" [weeklyRepeatSkipped]="workouts.weeklyRepeatSkipped"
+                [firstDate]="state.firstDate" [lastDate]="state.lastDate" [moveTargetIsSameDay]="state.dayForDate(workouts.moveDate) === cell.day"
+                [(confirmRepeat)]="workouts.confirmRepeat" [(confirmRemove)]="workouts.confirmRemove" [(extraDate)]="workouts.extraDate" [(moveDate)]="workouts.moveDate"
+                (moveRow)="workouts.moveRow($event.index, $event.direction)" (applyTemplate)="workouts.applyTemplateToClients()"
+                (savePrescriptions)="workouts.savePrescriptions()" (copyToLibrary)="workouts.copyToLibrary()" (repeatWeekly)="workouts.repeatWeekly()"
+                (addToAnotherDay)="workouts.addToAnotherDay()" (moveWorkout)="workouts.moveWorkout()" (removeWorkout)="workouts.removeWorkout()" />
             } @else {
               <app-program-empty-day
-                [pendingExercises]="pendingExercises" [pendingIds]="pendingIds" [busy]="busy"
-                [hasLibrary]="myWorkouts.length > 0" [libraryWorkouts]="libraryWorkouts" [programWorkoutIds]="programWorkoutIds"
-                [copySourceId]="copySourceId"
-                [(emptyMode)]="emptyMode" [(workoutName)]="workoutName" [(libraryFilter)]="libraryFilter"
-                (removePending)="removePending($event)" (addPending)="addPending($event)" (create)="createWorkoutForDay()"
-                (copySourceChange)="onCopySourceChange($event)" (link)="linkLibraryWorkout()" (copyToDay)="copyWorkoutToDay()" />
+                [pendingExercises]="library.pendingExercises" [pendingIds]="library.pendingIds" [busy]="state.busy"
+                [hasLibrary]="library.myWorkouts.length > 0" [libraryWorkouts]="library.libraryWorkouts" [programWorkoutIds]="library.programWorkoutIds"
+                [copySourceId]="library.copySourceId"
+                [(emptyMode)]="library.emptyMode" [(workoutName)]="library.workoutName" [(libraryFilter)]="library.libraryFilter"
+                (removePending)="library.removePending($event)" (addPending)="library.addPending($event)" (create)="library.createWorkoutForDay()"
+                (copySourceChange)="library.onCopySourceChange($event)" (link)="library.linkLibraryWorkout()" (copyToDay)="library.copyWorkoutToDay()" />
             }
           }
         </section>
@@ -79,43 +79,43 @@
 
       <!-- Ügyfelek -->
       <app-program-clients-panel
-        [assignedClients]="assignedClients" [unassignedClients]="unassignedClients" [visibleClients]="filteredUnassignedClients"
-        [toAssign]="toAssign" [busy]="busy" [(clientFilter)]="clientFilter"
-        (askRevoke)="askRevoke($event)" (selectVisible)="selectVisibleClients()" (clearSelection)="clearClientSelection()"
-        (toggleAssign)="toggleAssign($event.userId, $event.checked)" (assignSelected)="assignSelected()" />
+        [assignedClients]="assignments.assignedClients" [unassignedClients]="assignments.unassignedClients" [visibleClients]="assignments.filteredUnassignedClients"
+        [toAssign]="assignments.toAssign" [busy]="state.busy" [(clientFilter)]="assignments.clientFilter"
+        (askRevoke)="assignments.askRevoke($event)" (selectVisible)="assignments.selectVisibleClients()" (clearSelection)="assignments.clearClientSelection()"
+        (toggleAssign)="assignments.toggleAssign($event.userId, $event.checked)" (assignSelected)="assignments.assignSelected()" />
     }
   </div>
 </div>
 
 <!-- Több edzés egyszerre az Edzéstárból -->
-@if (multiOpen) {
+@if (library.multiOpen) {
   <app-program-multi-add-dialog
-    [selectedDay]="selectedDay" [workouts]="multiWorkouts" [selected]="multiSelected" [targetDays]="multiTargetDays" [busy]="busy"
-    [(multiFilter)]="multiFilter" (toggle)="toggleMulti($event.workoutId, $event.checked)"
-    (dismissed)="multiOpen = false" (confirmed)="addMultiple()" />
+    [selectedDay]="state.selectedDay" [workouts]="library.multiWorkouts" [selected]="library.multiSelected" [targetDays]="library.multiTargetDays" [busy]="state.busy"
+    [(multiFilter)]="library.multiFilter" (toggle)="library.toggleMulti($event.workoutId, $event.checked)"
+    (dismissed)="library.multiOpen = false" (confirmed)="library.addMultiple()" />
 }
 
 <!-- Program másolása -->
-@if (copyOpen) {
-  <app-program-copy-dialog [clients]="clients" [busy]="busy" [(copyName)]="copyName" [(copyStart)]="copyStart" [(copyUserId)]="copyUserId"
-                           (dismissed)="copyOpen = false" (confirmed)="confirmCopy()" />
+@if (copy.copyOpen) {
+  <app-program-copy-dialog [clients]="assignments.clients" [busy]="state.busy" [(copyName)]="copy.copyName" [(copyStart)]="copy.copyStart" [(copyUserId)]="copy.copyUserId"
+                           (dismissed)="copy.copyOpen = false" (confirmed)="copy.confirmCopy()" />
 }
 
 <app-confirm-dialog
-  [open]="pendingRevokeClient !== null"
-  [busy]="busy"
+  [open]="assignments.pendingRevokeClient !== null"
+  [busy]="state.busy"
   title="coachWorkspace.editor.revokeTitle"
   message="coachWorkspace.editor.revokeConfirm"
-  [messageParams]="{ name: pendingRevokeClient?.username, program: form.programName }"
+  [messageParams]="{ name: assignments.pendingRevokeClient?.username, program: state.form.programName }"
   confirmLabel="coachWorkspace.client.revoke"
   cancelLabel="coachWorkspace.cancel"
-  (confirmed)="confirmRevoke()"
-  (cancelled)="cancelRevoke()"
+  (confirmed)="assignments.confirmRevoke()"
+  (cancelled)="assignments.cancelRevoke()"
 ></app-confirm-dialog>
 
 <app-confirm-dialog
-  [open]="pendingDay !== null"
-  [busy]="busy || loading"
+  [open]="state.pendingDay !== null"
+  [busy]="state.busy || state.loading"
   title="coachWorkspace.editor.unsavedDayTitle"
   message="coachWorkspace.editor.unsavedDayPrompt"
   confirmLabel="coachWorkspace.client.discardAndGo"

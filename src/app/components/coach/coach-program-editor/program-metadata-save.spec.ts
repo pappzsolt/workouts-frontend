@@ -23,24 +23,24 @@ describe('Program metadata save', () => {
         {provide: ActivatedRoute, useValue: {}}, {provide: Router, useValue: {}},
       ]});
       const component = TestBed.runInInjectionContext(() => new CoachProgramEditorComponent());
-      component.programId = 10;
-      component.program = saved;
-      component.loading = false;
-      component.form = {
+      component.state.programId = 10;
+      component.state.program = saved;
+      component.state.loading = false;
+      component.state.form = {
         programName: 'Submitted name', programDescription: 'Submitted description', durationDays: 28,
         difficultyLevel: 'BEGINNER', startDate: '2026-10-23',
       };
-      component.saveDetails();
+      component.details.saveDetails();
       if (editDuringReload) { request.next(); request.complete(); }
-      component.form.programName = 'New unsaved name';
-      component.form.programDescription = 'New unsaved description';
+      component.state.form.programName = 'New unsaved name';
+      component.state.form.programDescription = 'New unsaved description';
       if (!editDuringReload) { request.next(); request.complete(); }
       reload.next(saved);
       reload.complete();
-      expect(component.program?.programName).toBe('Submitted name');
+      expect(component.state.program?.programName).toBe('Submitted name');
       expect(update.calls.first().args[1].programName).toBe('Submitted name');
-      expect(component.form.programName).toBe('New unsaved name');
-      expect(component.form.programDescription).toBe('New unsaved description');
+      expect(component.state.form.programName).toBe('New unsaved name');
+      expect(component.state.form.programDescription).toBe('New unsaved description');
     });
   }
 });
