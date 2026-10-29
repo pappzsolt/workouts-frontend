@@ -4,6 +4,7 @@ const net = require('node:net');
 const http = require('node:http');
 const { randomUUID } = require('node:crypto');
 const messages = [];
+let rejectedDeliveries = 0, failNextDeliveries = 0;
 const smtpPort = Number(process.env.E2E_SMTP_PORT || 1025);
 const httpPort = Number(process.env.E2E_MAILBOX_PORT || 8025);
 const smtp = net.createServer(socket => {
@@ -20,6 +21,7 @@ const smtp = net.createServer(socket => {
       const line = buffer.slice(0, end); buffer = buffer.slice(end + 2);
       if (data !== null) {
         if (line === '.') {
+          if (failNextDeliveries > 0) { failNextDeliveries--; rejectedDeliveries++; recipients = []; data = null; socket.write('451 Temporary test delivery failure\r\n'); continue; }
           messages.push({ id: randomUUID(), to: recipients, raw: data.join('\r\n') });
           if (messages.length > 200) messages.shift();
           recipients = []; data = null; socket.write('250 Message accepted\r\n');
@@ -47,7 +49,12 @@ const api = http.createServer((req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.setHeader('Cache-Control', 'no-store');
   const to = url.searchParams.get('to');
-  if (req.method === 'GET' && url.pathname === '/messages' && to) {
+  if (req.method === 'POST' && url.pathname === '/delivery-failures') {
+    failNextDeliveries = Number(url.searchParams.get('count') || '0');
+    if (!Number.isInteger(failNextDeliveries) || failNextDeliveries < 0 || failNextDeliveries > 5) { failNextDeliveries = 0; res.statusCode = 400; }
+    res.end(JSON.stringify({ rejectedDeliveries, failNextDeliveries }));
+  } else if (req.method === 'GET' && url.pathname === '/delivery-failures') res.end(JSON.stringify({ rejectedDeliveries, failNextDeliveries }));
+  else if (req.method === 'GET' && url.pathname === '/messages' && to) {
     res.end(JSON.stringify(messages.filter(m => m.to.includes(to.toLowerCase()))));
   } else if (req.method === 'DELETE' && url.pathname === '/messages' && to) {
     for (let i = messages.length - 1; i >= 0; i--) if (messages[i].to.includes(to.toLowerCase())) messages.splice(i, 1);

@@ -105,4 +105,45 @@ describe('Exercise set save queue', () => {
     expect(update).not.toHaveBeenCalled();
     expect(effects.clearMessage).not.toHaveBeenCalled();
   });
+
+  it('keeps silent blur feedback stable even when the server returns a success message', () => {
+    saves.createRequest(set, false).subscribe();
+    expect(effects.clearMessage).not.toHaveBeenCalled();
+    responses[0].next({ success: true, message: 'Set saved', data: null });
+    responses[0].complete();
+    expect(effects.showSuccess).not.toHaveBeenCalled();
+    expect(saves.isSettled(30, 1)).toBeTrue();
+    expect(effects.updateExerciseDone).toHaveBeenCalled();
+    expect(effects.onSettled).toHaveBeenCalled();
+  });
+
+  it('still reports failures from silent saves and clears them on an explicit successful retry', () => {
+    saves.createRequest(set, false).subscribe({ error() {} });
+    responses[0].next({ success: false, message: 'Save failed', data: null });
+    responses[0].complete();
+    expect(effects.showError).toHaveBeenCalledWith('Save failed');
+    expect(saves.isSettled(30, 1)).toBeFalse();
+    saves.createRequest(set, true, true).subscribe();
+    expect(effects.clearMessage).toHaveBeenCalled();
+    responses[1].next({ success: true, message: 'Completion saved', data: null });
+    responses[1].complete();
+    expect(effects.showSuccess).toHaveBeenCalledWith('Completion saved', {});
+    expect(set.completed).toBeTrue();
+    expect(saves.isSettled(30, 1)).toBeTrue();
+    expect(effects.selectLastCompletedTimer).toHaveBeenCalledWith(1);
+  });
+
+  it('queues an explicit completion behind a silent edit without changing the captured values', () => {
+    saves.createRequest(set, false).subscribe();
+    saves.createRequest(set, true, true).subscribe();
+    expect(update).toHaveBeenCalledTimes(1);
+    finish(0);
+    expect(update.calls.argsFor(1)).toEqual([30, 40, 50, 60, 1, true, 10, 20, null]);
+    expect(effects.showSuccess).not.toHaveBeenCalled();
+    finish(1);
+    expect(set.completed).toBeTrue();
+    expect(saves.isSettled(30, 1)).toBeTrue();
+    expect(effects.selectLastCompletedTimer).toHaveBeenCalledWith(1);
+  });
+
 });

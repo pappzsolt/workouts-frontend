@@ -70,7 +70,9 @@ export class ExerciseSetSaves {
       const current = this.effects.context();
       return current.workoutExercise === exercise && current.userWorkoutId === args[0];
     };
-    this.effects.clearMessage();
+    // Blur saves must not move the form while the user clicks another control.
+    // They report failures, but leave feedback changes to explicit actions.
+    if (showSuccessMessage) this.effects.clearMessage();
 
     const syncConfirmedTimer = () => {
       if (isCurrent() && confirmed.timerNeedsRefresh) {
@@ -99,7 +101,7 @@ export class ExerciseSetSaves {
         }
         if (isCurrent()) {
           this.effects.updateExerciseDone();
-          if (isLatestSave && (showSuccessMessage || response.message)) {
+          if (isLatestSave && showSuccessMessage) {
             this.effects.showSuccess(
               responseMessage([response], completed === undefined
                 ? 'userExerciseDetail.saveSuccess' : 'userExerciseDetail.setUpdated'),
