@@ -400,6 +400,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   }
 
   private advanceToNextExercise(): void {
+    if (this.workout?.completed === true) return;
     const exercise = this.workoutExercise;
     const sets = exercise?.userWorkoutExerciseSets;
     if (!exercise || !sets?.length || this.advancedExercises.has(exercise)) return;

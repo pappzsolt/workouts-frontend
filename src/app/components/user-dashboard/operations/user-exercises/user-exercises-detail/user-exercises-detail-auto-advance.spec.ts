@@ -49,6 +49,28 @@ describe('Automatic navigation after completing an exercise', () => {
     expect(navigate).toHaveBeenCalledOnceWith(['/user/workouts', 5, 'exercises', 8], { queryParamsHandling: 'merge' });
   });
 
+  it('stays in a completed workout after editing set details', () => {
+    component.workout!.completed = true;
+    sets[3].completed = true;
+    sets[3].actualWeightKg = 30;
+    component.saveSetDetails(sets[3], false); finish();
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('stays in a completed workout after unchecking and completing a set again', () => {
+    component.workout!.completed = true;
+    sets[3].completed = true;
+    component.updateSetCompleted(sets[3], false); finish();
+    component.updateSetCompleted(sets[3], true); finish(1);
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('advances in an unfinished workout', () => {
+    component.workout!.completed = false;
+    component.updateSetCompleted(sets[3], true); finish();
+    expect(navigate).toHaveBeenCalledTimes(1);
+  });
+
   it('stays when any other set is unfinished', () => {
     sets[0].completed = false;
     component.updateSetCompleted(sets[3], true); finish();

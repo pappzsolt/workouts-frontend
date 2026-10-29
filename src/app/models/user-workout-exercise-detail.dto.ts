@@ -31,6 +31,7 @@ export interface UserWorkoutDetailDto {
   durationMinutes?: number | null;
   intensityLevel?: string | null;
   done?: boolean | null;
+  completed?: boolean | null;
 
   exercises: UserWorkoutExerciseDetailDto[];
 }
