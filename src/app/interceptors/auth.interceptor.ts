@@ -20,6 +20,7 @@ import {
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth/auth.service';
 import { API_ENDPOINTS } from '../api-endpoints';
+import { environment } from '../../environments/environment';
 
 const AUTH_RETRY = new HttpContextToken<boolean>(() => false);
 
@@ -37,7 +38,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // A web login/refresh/logout nem függhet access tokentől.
-    if (this.isWebAuthEndpoint(req.url)) {
+    if (!this.isApiUrl(req.url) || this.isWebAuthEndpoint(req.url)) {
       return next.handle(req);
     }
 
@@ -131,6 +132,18 @@ export class AuthInterceptor implements HttpInterceptor {
     return req.clone({
       headers: req.headers.set('Authorization', `Bearer ${token}`),
     });
+  }
+
+  private isApiUrl(url: string): boolean {
+    try {
+      const api = new URL(environment.apiUrl, window.location.origin);
+      const target = new URL(url, document.baseURI);
+      const path = api.pathname.replace(/\/$/, '');
+      return target.origin === api.origin &&
+        (target.pathname === path || target.pathname.startsWith(`${path}/`));
+    } catch {
+      return false;
+    }
   }
 
   private isWebAuthEndpoint(url: string): boolean {

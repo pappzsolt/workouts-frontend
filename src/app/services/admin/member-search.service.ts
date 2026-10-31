@@ -65,13 +65,9 @@ export class MemberSearchService {
             this.http
               .get<ApiResponse<CoachLookupDto>>(API_ENDPOINTS.coachById(coachId))
               .pipe(
-                map((coachResponse) => {
-                  const coach = coachResponse.success ? this.mapCoach(coachResponse.data) : undefined;
-                  if (!coach) {
-                    throw new Error(coachResponse.message || 'memberSearch.errors.server');
-                  }
-                  return coach;
-                }),
+                map((coachResponse) => coachResponse.success ? this.mapCoach(coachResponse.data) : undefined),
+                // Coach details are optional; keep the member results if enrichment fails.
+                catchError(() => of(undefined)),
               ),
           );
 

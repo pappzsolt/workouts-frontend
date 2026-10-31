@@ -14,7 +14,7 @@ import { CoachWorkspaceService } from '../../../../../services/coach/coach-works
 import type { CoachProgramUsage } from '../../../../../models/coach-workspace.model';
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 import { ProgramWorkoutService } from '../../../../../services/coach/program-workout.service';
-import { skip, timer, Subject, takeUntil, finalize } from 'rxjs';
+import { skip, timer, Subject, takeUntil, finalize, distinctUntilChanged, map } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { LanguageService } from '../../../../../services/shared/language.service';
@@ -59,6 +59,8 @@ export class CoachWorkoutEditComponent implements OnInit {
   private readonly exercisesLoadCancelled$ = new Subject<void>();
   private readonly workoutExercisesLoadCancelled$ = new Subject<void>();
   private readonly assignmentLoadCancelled$ = new Subject<void>();
+  private readonly contextCancelled$ = new Subject<void>();
+  private readonly messageCancelled$ = new Subject<void>();
   private readonly drafts = new WorkoutFormDrafts();
   loadingWorkout = false;
   savingWorkout = false;
@@ -77,6 +79,11 @@ export class CoachWorkoutEditComponent implements OnInit {
   /** Igaz, ha az edzés már legalább egy programban szerepel: ekkor a gyakorlatlista zárolt. */
   workoutAssignedToProgram = false;
   checkingProgramAssignment = false;
+  private assignmentVerified = false;
+
+  get canEditStructure(): boolean {
+    return this.assignmentVerified && !this.checkingProgramAssignment && !this.workoutAssignedToProgram;
+  }
 
   /** Az összes választható gyakorlat. */
   exercises: Exercise[] = [];
@@ -117,17 +124,45 @@ export class CoachWorkoutEditComponent implements OnInit {
         this.checkProgramAssignment();
       });
 
-    this.workoutId = Number(this.route.snapshot.paramMap.get('id'));
-    if (!this.workoutId || this.workoutId <= 0) {
-      this.setMessage('coachWorkoutEdit.invalidWorkoutId', 'error');
-      return;
-    }
-
-    this.loadWorkout();
-    this.loadExercises();
-    this.loadWorkoutExercises();
-    this.checkProgramAssignment();
-    this.loadUsage();
+    this.route.paramMap.pipe(
+      map(params => Number(params.get('id'))),
+      distinctUntilChanged(),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(id => {
+      this.contextCancelled$.next();
+      this.workoutLoadCancelled$.next();
+      this.exercisesLoadCancelled$.next();
+      this.workoutExercisesLoadCancelled$.next();
+      this.assignmentLoadCancelled$.next();
+      this.messageCancelled$.next();
+      this.workoutId = undefined;
+      this.workoutReady = false;
+      this.workout = emptyWorkoutForm();
+      this.workoutExercises = [];
+      this.usedInPrograms = [];
+      this.selectedExerciseId = null;
+      this.exerciseSearchTerm = '';
+      this.assignmentVerified = false;
+      this.workoutAssignedToProgram = false;
+      this.checkingProgramAssignment = false;
+      this.loadingWorkout = false;
+      this.savingWorkout = false;
+      this.addingExercise = false;
+      this.structureBusy = false;
+      this.copying = false;
+      this.message = '';
+      this.messageType = '';
+      if (!Number.isSafeInteger(id) || id <= 0) {
+        this.setMessage('coachWorkoutEdit.invalidWorkoutId', 'error');
+        return;
+      }
+      this.workoutId = id;
+      this.loadWorkout();
+      this.loadExercises();
+      this.loadWorkoutExercises();
+      this.checkProgramAssignment();
+      this.loadUsage();
+    });
   }
 
   // ----------------------------------------------------------
@@ -137,16 +172,20 @@ export class CoachWorkoutEditComponent implements OnInit {
   checkProgramAssignment(): void {
     if (!this.workoutId) return;
     this.assignmentLoadCancelled$.next();
+    this.assignmentVerified = false;
     this.checkingProgramAssignment = true;
     this.programWorkoutService.isWorkoutAssignedToAnyProgram(this.workoutId)
       .pipe(takeUntil(this.assignmentLoadCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (response) => {
-          this.workoutAssignedToProgram = response.success && response.data?.assigned === true;
+          this.assignmentVerified = response.success && typeof response.data?.assigned === 'boolean';
+          this.workoutAssignedToProgram = response.data?.assigned === true;
+          if (!this.assignmentVerified) this.setMessage('coachWorkoutEdit.loadError', 'error');
           this.checkingProgramAssignment = false;
         },
         error: (error: HttpErrorResponse) => {
           this.logger.error('Hiba a workout programhoz tartozásának ellenőrzésekor:', error);
-          this.workoutAssignedToProgram = false;
+          this.assignmentVerified = false;
+          this.setMessage('coachWorkoutEdit.loadError', 'error');
           this.checkingProgramAssignment = false;
         },
       });
@@ -217,7 +256,7 @@ export class CoachWorkoutEditComponent implements OnInit {
 
   private loadUsage(): void {
     if (!this.workoutId) return;
-    this.workspace.programsUsingWorkout(this.workoutId).subscribe({
+    this.workspace.programsUsingWorkout(this.workoutId).pipe(takeUntil(this.contextCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (programs) => (this.usedInPrograms = programs),
       error: () => (this.usedInPrograms = []),
     });
@@ -232,7 +271,7 @@ export class CoachWorkoutEditComponent implements OnInit {
   }
 
   selectExercise(exerciseId: number | undefined): void {
-    if (exerciseId == null) return;
+    if (exerciseId == null || !this.canEditStructure) return;
     if (this.workoutAssignedToProgram) {
       this.setMessage('coachWorkoutEdit.workoutAssigned', 'error');
       return;
@@ -252,7 +291,7 @@ export class CoachWorkoutEditComponent implements OnInit {
 
   /** A még hozzá nem adott gyakorlatok a keresés szerint; programban lévő edzésnél egy sem. */
   get availableExercises(): Exercise[] {
-    if (this.workoutAssignedToProgram) return [];
+    if (!this.canEditStructure) return [];
     return selectableExercises(this.exercises, this.workoutExercises, this.exerciseSearchTerm,
       this.languageService.getCurrentLanguage());
   }
@@ -263,7 +302,7 @@ export class CoachWorkoutEditComponent implements OnInit {
       return;
     }
     // Megvárjuk a programhoz tartozás ellenőrzését; a backend ettől függetlenül is véd.
-    if (this.checkingProgramAssignment) return;
+    if (!this.canEditStructure || this.addingExercise || this.structureBusy) return;
     if (this.workoutAssignedToProgram) {
       this.setMessage('coachWorkoutEdit.workoutAssigned', 'error');
       return;
@@ -280,7 +319,7 @@ export class CoachWorkoutEditComponent implements OnInit {
     const exerciseId = this.selectedExerciseId;
     const workoutId = this.workoutId;
     this.addingExercise = true;
-    this.workoutExerciseService.assignExerciseToWorkout(workoutId, exerciseId).subscribe({
+    this.workoutExerciseService.assignExerciseToWorkout(workoutId, exerciseId).pipe(takeUntil(this.contextCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         const addedExercise = this.exercises.find((exercise) => Number(exercise.id) === Number(exerciseId));
         // A backend nem küldi vissza az új kapcsolatot: a listába a szükséges adatok kerülnek.
@@ -324,6 +363,7 @@ export class CoachWorkoutEditComponent implements OnInit {
     const unchangedContext = () => this.drafts.context === context && this.languageService.getCurrentLanguage() === language;
     this.savingWorkout = true;
     this.coachWorkoutsService.updateWorkout(this.workoutId, payload, language).pipe(
+      takeUntil(this.contextCancelled$),
       takeUntilDestroyed(this.destroyRef),
       finalize(() => { this.savingWorkout = false; }),
     ).subscribe({
@@ -332,7 +372,7 @@ export class CoachWorkoutEditComponent implements OnInit {
         if (res.success && res.data?.status === 'ok') {
           this.setMessage('coachWorkoutEdit.updateSuccess', 'success');
           timer(1500)
-            .pipe(takeUntilDestroyed(this.destroyRef))
+            .pipe(takeUntil(this.contextCancelled$), takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
               if (unchangedContext()) void this.router.navigate(['/coach/workouts']);
             });
@@ -362,16 +402,10 @@ export class CoachWorkoutEditComponent implements OnInit {
     if (!this.workoutId || this.copying) return;
     this.copying = true;
     const name = `${this.workout?.name ?? ''} (2)`.trim();
-    this.workspace.copyWorkout(this.workoutId, name).subscribe({
+    this.workspace.copyWorkout(this.workoutId, name).pipe(takeUntil(this.contextCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (id) => {
         this.copying = false;
-        void this.router.navigate(['/coach/workouts', id, 'edit']).then(() => {
-          this.workoutId = id;
-          this.loadWorkout();
-          this.loadWorkoutExercises();
-          this.checkProgramAssignment();
-          this.loadUsage();
-        });
+        void this.router.navigate(['/coach/workouts', id, 'edit']);
       },
       error: (error: HttpErrorResponse) => {
         this.copying = false;
@@ -382,9 +416,9 @@ export class CoachWorkoutEditComponent implements OnInit {
 
   removeExercise(view: WorkoutExerciseView): void {
     const exerciseId = view.exerciseId ?? view.exercise?.id;
-    if (!this.workoutId || exerciseId == null || this.workoutAssignedToProgram || this.structureBusy) return;
+    if (!this.workoutId || exerciseId == null || !this.canEditStructure || this.structureBusy || this.addingExercise) return;
     this.structureBusy = true;
-    this.workoutExerciseService.deleteExerciseFromWorkout(this.workoutId, exerciseId).subscribe({
+    this.workoutExerciseService.deleteExerciseFromWorkout(this.workoutId, exerciseId).pipe(takeUntil(this.contextCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.structureBusy = false;
         if (!res.success) {
@@ -405,12 +439,12 @@ export class CoachWorkoutEditComponent implements OnInit {
   moveExercise(index: number, direction: -1 | 1): void {
     const a = this.workoutExercises[index];
     const b = this.workoutExercises[index + direction];
-    if (!this.workoutId || !a || !b || this.workoutAssignedToProgram || this.structureBusy) return;
+    if (!this.workoutId || !a || !b || !this.canEditStructure || this.structureBusy || this.addingExercise) return;
     const exerciseId = a.exerciseId ?? a.exercise?.id;
     const targetIndex = b.orderIndex ?? index + direction;
     if (exerciseId == null) return;
     this.structureBusy = true;
-    this.workoutExerciseService.updateOrderIndex(this.workoutId, exerciseId, targetIndex).subscribe({
+    this.workoutExerciseService.updateOrderIndex(this.workoutId, exerciseId, targetIndex).pipe(takeUntil(this.contextCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (res) => {
         this.structureBusy = false;
         if (!res.success) this.setMessage(res.message || 'coachWorkoutEdit.reorderError', 'error');
@@ -425,10 +459,11 @@ export class CoachWorkoutEditComponent implements OnInit {
   }
 
   private setMessage(msg: string, type: 'success' | 'error'): void {
+    this.messageCancelled$.next();
     this.message = msg;
     this.messageType = type;
     timer(4000)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntil(this.messageCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.message = '';
         this.messageType = '';

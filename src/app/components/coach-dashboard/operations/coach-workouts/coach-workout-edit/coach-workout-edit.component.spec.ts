@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { fakeAsync, tick, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import { CoachWorkoutEditComponent } from './coach-workout-edit.component';
@@ -16,7 +16,7 @@ describe('Coach workout editor language reloads', () => {
   function create() {
     TestBed.configureTestingModule({providers: [
       {provide: LoggerService, useValue: {error: () => {}}},
-      {provide: ActivatedRoute, useValue: {snapshot: {paramMap: convertToParamMap({id: '7'})}}},
+      {provide: ActivatedRoute, useValue: {paramMap: of(convertToParamMap({id: '7'}))}},
       {provide: Router, useValue: {}},
       {provide: CoachWorkoutsService, useValue: {getWorkoutById: () => of({success: true, data: {workoutId: 7, workoutName: 'Saved name'}})}},
       {provide: WorkoutExerciseService, useValue: {assignExerciseToWorkout: () => of({success: false, message: 'Rejected'})}},
@@ -30,6 +30,78 @@ describe('Coach workout editor language reloads', () => {
       TestBed.inject(WorkoutExerciseService), TestBed.inject(ExerciseService),
       TestBed.inject(ProgramWorkoutService), TestBed.inject(LanguageService)));
   }
+  it('reloads the route on copy navigation and browser back, ignoring stale loads', () => {
+    const component = create();
+    const routes = new BehaviorSubject(convertToParamMap({id: '7'}));
+    Object.assign(TestBed.inject(ActivatedRoute), {paramMap: routes});
+    const first = new Subject<any>();
+    const copied = new Subject<any>();
+    const back = new Subject<any>();
+    const load = spyOn(TestBed.inject(CoachWorkoutsService), 'getWorkoutById').and.returnValues(first, copied, back);
+    spyOn(component, 'loadExercises');
+    spyOn(component, 'loadWorkoutExercises');
+    spyOn(component, 'checkProgramAssignment');
+    spyOn<any>(component, 'loadUsage');
+    component.ngOnInit();
+    routes.next(convertToParamMap({id: '8'}));
+    routes.next(convertToParamMap({id: '7'}));
+    back.next({success: true, data: {workoutId: 7, workoutName: 'Original'}});
+    copied.next({success: true, data: {workoutId: 8, workoutName: 'Copy'}});
+    first.next({success: true, data: {workoutId: 7, workoutName: 'Stale'}});
+    expect(component.workoutId).toBe(7);
+    expect(component.workout.name).toBe('Original');
+    expect(load.calls.allArgs().map(args => args[0])).toEqual([7, 8, 7]);
+  });
+
+  it('blocks structure changes until assignment is explicitly verified as false', () => {
+    const component = create();
+    component.workoutId = 7;
+    const response = new Subject<any>();
+    Object.assign(TestBed.inject(ProgramWorkoutService), {
+      isWorkoutAssignedToAnyProgram: () => response,
+    });
+    const remove = jasmine.createSpy();
+    const move = jasmine.createSpy();
+    const add = spyOn(TestBed.inject(WorkoutExerciseService), 'assignExerciseToWorkout');
+    Object.assign(TestBed.inject(WorkoutExerciseService), {deleteExerciseFromWorkout: remove, updateOrderIndex: move});
+    component.selectedExerciseId = 12;
+    component.workoutExercises = [{workoutId: 7, exerciseId: 12}, {workoutId: 7, exerciseId: 13}];
+    const assertBlocked = () => {
+      expect(component.canEditStructure).toBeFalse();
+      component.addExerciseToWorkout();
+      component.removeExercise(component.workoutExercises[0]);
+      component.moveExercise(0, 1);
+      expect(add).not.toHaveBeenCalled();
+      expect(remove).not.toHaveBeenCalled();
+      expect(move).not.toHaveBeenCalled();
+    };
+    component.checkProgramAssignment();
+    assertBlocked();
+    response.next({success: false, data: {assigned: false}});
+    assertBlocked();
+    response.next({success: true, data: null});
+    assertBlocked();
+    response.error(new Error('Offline'));
+    assertBlocked();
+    Object.assign(TestBed.inject(ProgramWorkoutService), {
+      isWorkoutAssignedToAnyProgram: () => of({success: true, data: {assigned: false}}),
+    });
+    component.checkProgramAssignment();
+    expect(component.canEditStructure).toBeTrue();
+  });
+
+  it('keeps a new message visible for its full timeout', fakeAsync(() => {
+    const component = create();
+    component.addExerciseToWorkout();
+    tick(3000);
+    component.selectExercise(undefined);
+    component.addExerciseToWorkout();
+    tick(1000);
+    expect(component.message).toBe('coachWorkoutEdit.invalidWorkoutId');
+    tick(3000);
+    expect(component.message).toBe('');
+  }));
+
   it('keeps a Hungarian draft separate and restores it on returning to Hungarian', () => {
     const component = create();
     spyOn(component, 'loadExercises');

@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import { HttpErrorResponse, HttpRequest, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, Subject, of, throwError } from 'rxjs';
+import { API_ENDPOINTS } from '../api-endpoints';
 import { AuthInterceptor } from '../interceptors/auth.interceptor';
 import { CoachEditService } from '../services/admin/coach-edit.service';
 import { LoggerService } from '../services/logger.service';
@@ -50,12 +51,28 @@ describe('Frontend fixes', () => {
     return { auth, router, interceptor: new AuthInterceptor(auth as any, router as any) };
   }
 
+  it('does not attach tokens or refresh sessions outside the configured API', () => {
+    const { auth, interceptor } = authFixture();
+    const api = new URL(API_ENDPOINTS.workouts, window.location.origin);
+    for (const url of ['https://outside.example/api/workouts', '/assets/i18n/hu.json',
+      `${api.origin}/api-other/workouts`, `${api.origin}.evil.example/api/workouts`]) {
+      const request = new HttpRequest('GET', url);
+      interceptor.intercept(request, { handle: forwarded => {
+        expect(forwarded).toBe(request);
+        expect(forwarded.headers.has('Authorization')).toBeFalse();
+        return throwError(() => failure(401));
+      }}).subscribe({ error() {} });
+    }
+    expect(auth.refreshAccessToken).not.toHaveBeenCalled();
+    expect(auth.logout).not.toHaveBeenCalled();
+  });
+
   it('preserves the session when a retry after successful refresh returns HTTP 500', () => {
     const { auth, router, interceptor } = authFixture();
     let calls = 0;
     let received: any;
     interceptor
-      .intercept(new HttpRequest('GET', '/example'), {
+      .intercept(new HttpRequest('GET', `${API_ENDPOINTS.workouts}/example`), {
         handle: () => throwError(() => failure(++calls === 1 ? 401 : 500)),
       })
       .subscribe({ error: (error) => (received = error) });
@@ -67,14 +84,14 @@ describe('Frontend fixes', () => {
   it('invalidates the session when the refresh fails or the retried request returns 401', () => {
     const failedRefresh = authFixture(throwError(() => failure(401)));
     failedRefresh.interceptor
-      .intercept(new HttpRequest('GET', '/example'), {
+      .intercept(new HttpRequest('GET', `${API_ENDPOINTS.workouts}/example`), {
         handle: () => throwError(() => failure(401)),
       })
       .subscribe({ error() {} });
     expect(failedRefresh.auth.logout).toHaveBeenCalledTimes(1);
     const invalidToken = authFixture();
     invalidToken.interceptor
-      .intercept(new HttpRequest('GET', '/example'), {
+      .intercept(new HttpRequest('GET', `${API_ENDPOINTS.workouts}/example`), {
         handle: () => throwError(() => failure(401)),
       })
       .subscribe({ error() {} });
@@ -90,15 +107,15 @@ describe('Frontend fixes', () => {
         calls[request.url] = (calls[request.url] ?? 0) + 1;
         if (calls[request.url] === 1) return throwError(() => failure(401));
         expect(request.headers.get('Authorization')).toBe('Bearer new');
-        return request.url === '/first'
+        return request.url === `${API_ENDPOINTS.workouts}/first`
           ? throwError(() => failure(500))
           : of(new HttpResponse({ status: 200 }));
       },
     };
     let secondSucceeded = false;
-    interceptor.intercept(new HttpRequest('GET', '/first'), next).subscribe({ error() {} });
+    interceptor.intercept(new HttpRequest('GET', `${API_ENDPOINTS.workouts}/first`), next).subscribe({ error() {} });
     interceptor
-      .intercept(new HttpRequest('GET', '/second'), next)
+      .intercept(new HttpRequest('GET', `${API_ENDPOINTS.workouts}/second`), next)
       .subscribe(() => (secondSucceeded = true));
     refresh.next({ accessToken: 'new' });
     refresh.complete();

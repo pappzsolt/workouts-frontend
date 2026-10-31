@@ -237,7 +237,7 @@
             </div>
           }
 
-          @if (!checkingProgramAssignment && !workoutAssignedToProgram) {
+          @if (canEditStructure) {
             <app-workout-exercise-search
               [exercises]="availableExercises"
               [hasExercises]="exercises.length > 0"
@@ -256,7 +256,7 @@
           <app-workout-exercise-list
             [items]="workoutExercises"
             [locked]="workoutAssignedToProgram"
-            [busy]="structureBusy"
+            [busy]="structureBusy || addingExercise || !canEditStructure"
             (move)="moveExercise($event.index, $event.direction)"
             (remove)="removeExercise($event)"
           />

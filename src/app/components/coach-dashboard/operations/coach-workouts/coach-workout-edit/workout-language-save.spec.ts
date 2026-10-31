@@ -22,7 +22,7 @@ describe('Workout language-bound saves', () => {
       const english = new Subject<ApiResponse<UserWorkoutDto>>();
       TestBed.configureTestingModule({providers: [provideHttpClient(), provideHttpClientTesting(),
         {provide: LanguageService, useValue: {language$, getCurrentLanguage: () => language$.value}},
-        {provide: ActivatedRoute, useValue: {snapshot: {paramMap: convertToParamMap({id: '7'})}}},
+        {provide: ActivatedRoute, useValue: {paramMap: of(convertToParamMap({id: '7'}))}},
         {provide: Router, useValue: {}}, {provide: LoggerService, useValue: {error: () => {}}},
         {provide: CoachWorkspaceService, useValue: {}},
       ]});
