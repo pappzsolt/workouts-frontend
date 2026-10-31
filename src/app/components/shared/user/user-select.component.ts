@@ -15,12 +15,14 @@ import { UserNameIdService } from '../../../services/user/user-name-id.service';
 import { AppSelectComponent } from '../components/app-select/app-select.component';
 import type { SelectOption } from '../../../models/common/select-option.model';
 
-import { SHARED_IMPORTS } from '../shared-imports';
+import { CommonModule } from '@angular/common';
+import { MessageComponent } from '../components/message/message.component';
+import { FormFieldComponent } from '../components/form-field/form-field.component';
 
 @Component({
   selector: 'app-user-select',
   standalone: true,
-  imports: [AppSearchComponent, ...SHARED_IMPORTS, AppSelectComponent],
+  imports: [AppSearchComponent, CommonModule, MessageComponent, FormFieldComponent, AppSelectComponent],
   template: `
     @if (!searchable) {
       <app-search

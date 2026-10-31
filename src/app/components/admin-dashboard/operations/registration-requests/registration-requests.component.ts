@@ -8,7 +8,14 @@ import type { SelectOption } from '../../../../models/common/select-option.model
 import { RegistrationRequestsService } from '../../../../services/admin/registration-requests.service';
 import { UserEditService } from '../../../../services/admin/user-edit.service';
 import { AppSelectComponent } from '../../../shared/components/app-select/app-select.component';
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppTextareaDirective } from '../../../shared/components/form-controls/app-textarea.directive';
+import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../shared/components/message/message.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 
 /**
  * Regisztrációs kérelmek: függők jóváhagyása (ügyfélnél opcionálisan edzővel) vagy elutasítása,
@@ -17,7 +24,17 @@ import { SHARED_IMPORTS } from '../../../shared/shared-imports';
 @Component({
   selector: 'app-registration-requests',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppSelectComponent],
+  imports: [
+    AppTextareaDirective,
+    AppHeadingDirective,
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    MessageComponent,
+    PaginationComponent,
+    AppIconComponent,
+    AppSelectComponent,
+  ],
   templateUrl: './registration-requests.component.html',
 })
 export class RegistrationRequestsComponent {

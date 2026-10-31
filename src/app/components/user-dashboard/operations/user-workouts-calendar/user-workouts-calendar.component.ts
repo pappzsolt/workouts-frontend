@@ -11,12 +11,25 @@ import { BehaviorSubject, Subject, Subscription, catchError, combineLatest, of, 
 import { WorkoutExercisesManagerService } from '../../../../services/user/workout-exercises-manager.service';
 import { UserWorkoutExerciseDto } from '../../../../models/user-workout-exercise.dto';
 import { LanguageService } from '../../../../services/shared/language.service';
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
+import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../shared/components/message/message.component';
+import { AppButtonComponent } from '../../../shared/components/app-button/app-button.component';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 
 @Component({
   selector: 'app-user-workouts-calendar',
   standalone: true,
-  imports: [AppSearchComponent, ...SHARED_IMPORTS],
+  imports: [
+    AppSearchComponent,
+    AppHeadingDirective,
+    CommonModule,
+    TranslatePipe,
+    MessageComponent,
+    AppButtonComponent,
+    AppIconComponent,
+  ],
   templateUrl: './user-workouts-calendar.component.html',
   styleUrls: ['./user-workouts-calendar.component.css'],
 })

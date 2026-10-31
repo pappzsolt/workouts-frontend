@@ -3,7 +3,19 @@ import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/co
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, catchError, of, switchMap, tap } from 'rxjs';
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppFormValidationDirective } from '../../../shared/components/form-controls/app-form-validation.directive';
+import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
+import { AppTextareaDirective } from '../../../shared/components/form-controls/app-textarea.directive';
+import { AppPageHeaderComponent } from '../../../shared/components/app-page-header/app-page-header.component';
+import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
+import { AppLoadingComponent } from '../../../shared/components/app-state/app-state.component';
+import { AppEmptyStateComponent } from '../../../shared/components/app-state/app-state.component';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { MessageComponent } from '../../../shared/components/message/message.component';
 import { ExercisePickerComponent } from '../../../coach/exercise-picker/exercise-picker.component';
 import { PersonalProgramService } from '../../../../services/user/personal-program.service';
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
@@ -16,7 +28,22 @@ import { PersonalProgramNavigation } from './personal-program-navigation';
 @Component({
   selector: 'app-personal-program-editor',
   standalone: true,
-  imports: [...SHARED_IMPORTS, ExercisePickerComponent],
+  imports: [
+    AppFormValidationDirective,
+    AppInputDirective,
+    AppTextareaDirective,
+    AppPageHeaderComponent,
+    AppHeadingDirective,
+    AppLoadingComponent,
+    AppEmptyStateComponent,
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    TranslatePipe,
+    ConfirmDialogComponent,
+    MessageComponent,
+    ExercisePickerComponent,
+  ],
   templateUrl: './personal-program-editor.component.html',
 })
 export class PersonalProgramEditorComponent implements OnInit {

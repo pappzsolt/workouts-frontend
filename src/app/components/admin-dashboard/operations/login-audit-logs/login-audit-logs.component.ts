@@ -8,7 +8,22 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import type { LoginAuditAccountType, LoginAuditLogDto } from '../../../../models/backend-dto/admin/login-audit-log-dto';
 import { LoginAuditLogsService } from '../../../../services/admin/login-audit-logs.service';
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppFormValidationDirective } from '../../../shared/components/form-controls/app-form-validation.directive';
+import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
+import { AppBadgeComponent } from '../../../shared/components/app-badge/app-badge.component';
+import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
+import { AppLoadingComponent } from '../../../shared/components/app-state/app-state.component';
+import { AppTableDirective } from '../../../shared/components/app-table/app-table.directive';
+import { AppTableHeaderDirective } from '../../../shared/components/app-table/app-table.directive';
+import { AppTableCellDirective } from '../../../shared/components/app-table/app-table.directive';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../shared/components/message/message.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { AppButtonComponent } from '../../../shared/components/app-button/app-button.component';
+import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
+import { FormFieldComponent } from '../../../shared/components/form-field/form-field.component';
 
 interface LoginAuditFilters {
   accountType: '' | LoginAuditAccountType;
@@ -21,7 +36,26 @@ interface LoginAuditFilters {
 @Component({
   selector: 'app-login-audit-logs',
   standalone: true,
-  imports: [AppSelectComponent, AppSearchComponent, ...SHARED_IMPORTS],
+  imports: [
+    AppSelectComponent,
+    AppSearchComponent,
+    AppFormValidationDirective,
+    AppInputDirective,
+    AppBadgeComponent,
+    AppHeadingDirective,
+    AppLoadingComponent,
+    AppTableDirective,
+    AppTableHeaderDirective,
+    AppTableCellDirective,
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    MessageComponent,
+    PaginationComponent,
+    AppButtonComponent,
+    AppCardComponent,
+    FormFieldComponent,
+  ],
   templateUrl: './login-audit-logs.component.html',
   styleUrls: ['./login-audit-logs.component.css'],
 })

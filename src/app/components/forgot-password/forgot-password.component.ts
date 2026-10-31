@@ -8,13 +8,33 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 import { AuthService } from '../../services/auth/auth.service';
-import { SHARED_IMPORTS } from '../shared/shared-imports';
+import { AppFormValidationDirective } from '../shared/components/form-controls/app-form-validation.directive';
+import { AppInputDirective } from '../shared/components/form-controls/app-input.directive';
+import { AppHeadingDirective } from '../shared/components/app-page-header/app-page-header.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../shared/components/message/message.component';
+import { AppButtonComponent } from '../shared/components/app-button/app-button.component';
+import { FormFieldComponent } from '../shared/components/form-field/form-field.component';
 import { LanguageSelectorComponent } from '../shared/language/language-selector.component';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [...SHARED_IMPORTS, ReactiveFormsModule, LanguageSelectorComponent],
+  imports: [
+    AppFormValidationDirective,
+    AppInputDirective,
+    AppHeadingDirective,
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    MessageComponent,
+    AppButtonComponent,
+    FormFieldComponent,
+    ReactiveFormsModule,
+    LanguageSelectorComponent,
+  ],
   templateUrl: './forgot-password.component.html',
 })
 export class ForgotPasswordComponent {

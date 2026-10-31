@@ -4,14 +4,27 @@ import { Router } from '@angular/router';
 import { DynamicMenuComponent } from '../../components/dynamic-menu/dynamic-menu.component';
 import { LanguageSelectorComponent } from '../../components/shared/language/language-selector.component';
 import { AuthService } from '../../services/auth/auth.service';
-import { SHARED_IMPORTS } from '../../components/shared/shared-imports';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
+import { AppButtonComponent } from '../../components/shared/components/app-button/app-button.component';
+import { AppIconComponent } from '../../components/shared/components/app-icon/app-icon.component';
 import { APP_VERSION } from '../../config/app-version';
 import type { MenuItem } from '../../models/common/menu-item.model';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [...SHARED_IMPORTS, DynamicMenuComponent, LanguageSelectorComponent, DashboardNavigationComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    TranslatePipe,
+    AppButtonComponent,
+    AppIconComponent,
+    DynamicMenuComponent,
+    LanguageSelectorComponent,
+    DashboardNavigationComponent,
+  ],
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css'],
 })

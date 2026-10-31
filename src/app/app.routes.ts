@@ -1,47 +1,13 @@
 import type { PersonalProgramEditorComponent } from './components/user-dashboard/operations/personal-programs/personal-program-editor.component';
 import { Routes } from '@angular/router';
-
-import { LoginComponent } from './components/login/login.component';
-import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
-import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
-import { RegisterComponent } from './components/register/register.component';
-import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
-import { LayoutComponent } from './layouts/default-layout/layout.component';
-import { UserProgramStatisticsComponent } from './components/user-dashboard/operations/program-statistics/program-statistics.component';
-import { AdminDashboardComponent } from './components/admin-dashboard/dashboard/admin-dashboard.component';
-import { AdminListUsersComponent } from './components/admin-dashboard/operations/admin-list-users/admin-list-users.component';
-import { MemberSearchComponent } from './components/admin-dashboard/operations/user-search/member-search.component';
-import { ChoiceUserNewComponent } from './components/admin-dashboard/operations/choice-user-new/choice-user-new.component';
-import { ChoiceUserEditComponent } from './components/admin-dashboard/operations/choice-user-edit/choice-user-edit.component';
-import { CoachNewComponent } from './components/admin-dashboard/operations/coach-new/coach-new.component';
-import { UserNewComponent } from './components/admin-dashboard/operations/user-new/user-new.component';
-import { CoachEditComponent } from './components/admin-dashboard/operations/coach-edit/coach-edit.component';
-import { UserEditComponent } from './components/admin-dashboard/operations/user-edit/user-edit.component';
-import { LoginAuditLogsComponent } from './components/admin-dashboard/operations/login-audit-logs/login-audit-logs.component';
-import { RegistrationRequestsComponent } from './components/admin-dashboard/operations/registration-requests/registration-requests.component';
-import { BugReportsComponent } from './components/admin-dashboard/operations/bug-reports/bug-reports.component';
-import { BugReportComponent } from './components/shared/bug-report/bug-report.component';
-import { CoachHomeComponent } from './components/coach/coach-home/coach-home.component';
-import { CoachClientsComponent } from './components/coach/coach-clients/coach-clients.component';
-import { CoachClientDetailComponent } from './components/coach/coach-client-detail/coach-client-detail.component';
-import { CoachProgramsComponent } from './components/coach/coach-programs/coach-programs.component';
-import { CoachProgramEditorComponent } from './components/coach/coach-program-editor/coach-program-editor.component';
-import { CoachProfileComponent } from './components/coach-dashboard/operations/coach-profile/coach-profile.component';
-import { ExerciseControllerComponent } from './components/coach-dashboard/operations/coach-exercises/coach-exercises.component';
-import { WorkoutListComponent } from './components/coach-dashboard/operations/coach-workouts/coach-workouts.component';
-import { CoachWorkoutEditComponent } from './components/coach-dashboard/operations/coach-workouts/coach-workout-edit/coach-workout-edit.component';
-import { CoachExerciseEditComponent } from './components/coach-dashboard/operations/coach-exercises/coach-exercise-edit/coach-exercise-edit.component';
-
-import { UserDashboardComponent } from './components/user-dashboard/dashboard/user-dashboard.component';
-import { UserProfileComponent } from './components/user-dashboard/operations/user-profile/user-profile.component';
-import { UserMyProgramsComponent } from './components/user-dashboard/operations/user-my-programs/user-my-programs.component';
-import { WorkoutsComponent } from './components/user-dashboard/operations/user-workouts/workouts.component';
-import { UserExercisesComponent } from './components/user-dashboard/operations/user-exercises/user-exercises.component';
-import { UserExerciseDetailComponent } from './components/user-dashboard/operations/user-exercises/user-exercises-detail/user-exercises-detail.component';
-import { UserWorkoutsCalendarComponent } from './components/user-dashboard/operations/user-workouts-calendar/user-workouts-calendar.component';
-
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
+
+import { LoginComponent } from './components/login/login.component';
+import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
+import { LayoutComponent } from './layouts/default-layout/layout.component';
+
+
 
 export const routes: Routes = [
   // ============================================================
@@ -57,15 +23,15 @@ export const routes: Routes = [
       },
       {
         path: 'forgot-password',
-        component: ForgotPasswordComponent,
+        loadComponent: () => import('./components/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent),
       },
       {
         path: 'reset-password',
-        component: ResetPasswordComponent,
+        loadComponent: () => import('./components/reset-password/reset-password.component').then(m => m.ResetPasswordComponent),
       },
       {
         path: 'register',
-        component: RegisterComponent,
+        loadComponent: () => import('./components/register/register.component').then(m => m.RegisterComponent),
       },
       {
         path: '',
@@ -88,62 +54,62 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        component: AdminDashboardComponent,
+        loadComponent: () => import('./components/admin-dashboard/dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent),
       },
 
       {
         path: 'users',
-        component: AdminListUsersComponent,
+        loadComponent: () => import('./components/admin-dashboard/operations/admin-list-users/admin-list-users.component').then(m => m.AdminListUsersComponent),
       },
 
       {
         path: 'users/search',
-        component: MemberSearchComponent,
+        loadComponent: () => import('./components/admin-dashboard/operations/user-search/member-search.component').then(m => m.MemberSearchComponent),
       },
 
       {
         path: 'choice-users/edit',
-        component: ChoiceUserEditComponent,
+        loadComponent: () => import('./components/admin-dashboard/operations/choice-user-edit/choice-user-edit.component').then(m => m.ChoiceUserEditComponent),
       },
 
       {
         path: 'choice-users/new',
-        component: ChoiceUserNewComponent,
+        loadComponent: () => import('./components/admin-dashboard/operations/choice-user-new/choice-user-new.component').then(m => m.ChoiceUserNewComponent),
       },
 
       {
         path: 'users/new',
-        component: UserNewComponent,
+        loadComponent: () => import('./components/admin-dashboard/operations/user-new/user-new.component').then(m => m.UserNewComponent),
       },
 
       {
         path: 'coach/new',
-        component: CoachNewComponent,
+        loadComponent: () => import('./components/admin-dashboard/operations/coach-new/coach-new.component').then(m => m.CoachNewComponent),
       },
 
       {
         path: 'coach/edit',
-        component: CoachEditComponent,
+        loadComponent: () => import('./components/admin-dashboard/operations/coach-edit/coach-edit.component').then(m => m.CoachEditComponent),
       },
 
       {
         path: 'users/edit',
-        component: UserEditComponent,
+        loadComponent: () => import('./components/admin-dashboard/operations/user-edit/user-edit.component').then(m => m.UserEditComponent),
       },
 
       {
         path: 'login-audit-logs',
-        component: LoginAuditLogsComponent,
+        loadComponent: () => import('./components/admin-dashboard/operations/login-audit-logs/login-audit-logs.component').then(m => m.LoginAuditLogsComponent),
       },
 
       {
         path: 'registrations',
-        component: RegistrationRequestsComponent,
+        loadComponent: () => import('./components/admin-dashboard/operations/registration-requests/registration-requests.component').then(m => m.RegistrationRequestsComponent),
       },
 
       {
         path: 'bug-reports',
-        component: BugReportsComponent,
+        loadComponent: () => import('./components/admin-dashboard/operations/bug-reports/bug-reports.component').then(m => m.BugReportsComponent),
       },
 
       {
@@ -172,27 +138,27 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        component: CoachHomeComponent,
+        loadComponent: () => import('./components/coach/coach-home/coach-home.component').then(m => m.CoachHomeComponent),
       },
 
       {
         path: 'clients',
-        component: CoachClientsComponent,
+        loadComponent: () => import('./components/coach/coach-clients/coach-clients.component').then(m => m.CoachClientsComponent),
       },
 
       {
         path: 'clients/:userId',
-        component: CoachClientDetailComponent,
+        loadComponent: () => import('./components/coach/coach-client-detail/coach-client-detail.component').then(m => m.CoachClientDetailComponent),
       },
 
       {
         path: 'programs',
-        component: CoachProgramsComponent,
+        loadComponent: () => import('./components/coach/coach-programs/coach-programs.component').then(m => m.CoachProgramsComponent),
       },
 
       {
         path: 'programs/new',
-        component: CoachProgramEditorComponent,
+        loadComponent: () => import('./components/coach/coach-program-editor/coach-program-editor.component').then(m => m.CoachProgramEditorComponent),
       },
 
       {
@@ -204,12 +170,12 @@ export const routes: Routes = [
 
       {
         path: 'programs/:id',
-        component: CoachProgramEditorComponent,
+        loadComponent: () => import('./components/coach/coach-program-editor/coach-program-editor.component').then(m => m.CoachProgramEditorComponent),
       },
 
       {
         path: 'workouts',
-        component: WorkoutListComponent,
+        loadComponent: () => import('./components/coach-dashboard/operations/coach-workouts/coach-workouts.component').then(m => m.WorkoutListComponent),
       },
 
       {
@@ -222,12 +188,12 @@ export const routes: Routes = [
 
       {
         path: 'workouts/:id/edit',
-        component: CoachWorkoutEditComponent,
+        loadComponent: () => import('./components/coach-dashboard/operations/coach-workouts/coach-workout-edit/coach-workout-edit.component').then(m => m.CoachWorkoutEditComponent),
       },
 
       {
         path: 'exercises',
-        component: ExerciseControllerComponent,
+        loadComponent: () => import('./components/coach-dashboard/operations/coach-exercises/coach-exercises.component').then(m => m.ExerciseControllerComponent),
       },
 
       {
@@ -240,17 +206,17 @@ export const routes: Routes = [
 
       {
         path: 'exercises/:id/edit',
-        component: CoachExerciseEditComponent,
+        loadComponent: () => import('./components/coach-dashboard/operations/coach-exercises/coach-exercise-edit/coach-exercise-edit.component').then(m => m.CoachExerciseEditComponent),
       },
 
       {
         path: 'profile',
-        component: CoachProfileComponent,
+        loadComponent: () => import('./components/coach-dashboard/operations/coach-profile/coach-profile.component').then(m => m.CoachProfileComponent),
       },
 
       {
         path: 'bug-report',
-        component: BugReportComponent,
+        loadComponent: () => import('./components/shared/bug-report/bug-report.component').then(m => m.BugReportComponent),
       },
 
       {
@@ -279,17 +245,17 @@ export const routes: Routes = [
     children: [
       {
         path: 'dashboard',
-        component: UserDashboardComponent,
+        loadComponent: () => import('./components/user-dashboard/dashboard/user-dashboard.component').then(m => m.UserDashboardComponent),
       },
 
       {
         path: 'profile',
-        component: UserProfileComponent,
+        loadComponent: () => import('./components/user-dashboard/operations/user-profile/user-profile.component').then(m => m.UserProfileComponent),
       },
 
       {
         path: 'bug-report',
-        component: BugReportComponent,
+        loadComponent: () => import('./components/shared/bug-report/bug-report.component').then(m => m.BugReportComponent),
       },
 
       {
@@ -330,31 +296,31 @@ export const routes: Routes = [
       },
       {
         path: 'my-programs',
-        component: UserMyProgramsComponent,
+        loadComponent: () => import('./components/user-dashboard/operations/user-my-programs/user-my-programs.component').then(m => m.UserMyProgramsComponent),
       },
 
       {
         path: 'program-statistics',
-        component: UserProgramStatisticsComponent,
+        loadComponent: () => import('./components/user-dashboard/operations/program-statistics/program-statistics.component').then(m => m.UserProgramStatisticsComponent),
       },
       {
         path: 'workouts',
-        component: UserWorkoutsCalendarComponent,
+        loadComponent: () => import('./components/user-dashboard/operations/user-workouts-calendar/user-workouts-calendar.component').then(m => m.UserWorkoutsCalendarComponent),
       },
 
       {
         path: 'programs/:id/workouts',
-        component: WorkoutsComponent,
+        loadComponent: () => import('./components/user-dashboard/operations/user-workouts/workouts.component').then(m => m.WorkoutsComponent),
       },
 
       {
         path: 'workouts/:workoutId/exercises',
-        component: UserExercisesComponent,
+        loadComponent: () => import('./components/user-dashboard/operations/user-exercises/user-exercises.component').then(m => m.UserExercisesComponent),
       },
 
       {
         path: 'workouts/:workoutId/exercises/:exerciseId',
-        component: UserExerciseDetailComponent,
+        loadComponent: () => import('./components/user-dashboard/operations/user-exercises/user-exercises-detail/user-exercises-detail.component').then(m => m.UserExerciseDetailComponent),
       },
 
       {

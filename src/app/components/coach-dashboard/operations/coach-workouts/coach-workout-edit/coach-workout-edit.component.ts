@@ -17,7 +17,19 @@ import { LanguageService } from '../../../../../services/shared/language.service
 import { emptyWorkoutForm } from '../../../../../services/shared/workout-mapping';
 import { Exercise } from '../../../../../models/exercise.model';
 
-import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
+import { AppFormValidationDirective } from '../../../../shared/components/form-controls/app-form-validation.directive';
+import { AppInputDirective } from '../../../../shared/components/form-controls/app-input.directive';
+import { AppTextareaDirective } from '../../../../shared/components/form-controls/app-textarea.directive';
+import { AppCheckboxDirective } from '../../../../shared/components/form-controls/app-check.directive';
+import { AppHeadingDirective } from '../../../../shared/components/app-page-header/app-page-header.component';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../../shared/components/message/message.component';
+import { AppButtonComponent } from '../../../../shared/components/app-button/app-button.component';
+import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
+import { AppIconComponent } from '../../../../shared/components/app-icon/app-icon.component';
 import { WorkoutExerciseListComponent } from './parts/workout-exercise-list.component';
 import { WorkoutExerciseSearchComponent } from './parts/workout-exercise-search.component';
 import { WorkoutEditorState } from './workout-editor-state';
@@ -32,7 +44,24 @@ import type { WorkoutEditorEffects } from './workout-editor-effects';
 @Component({
   selector: 'app-coach-workout-edit',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppSelectComponent, WorkoutExerciseSearchComponent, WorkoutExerciseListComponent],
+  imports: [
+    AppFormValidationDirective,
+    AppInputDirective,
+    AppTextareaDirective,
+    AppCheckboxDirective,
+    AppHeadingDirective,
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    TranslatePipe,
+    MessageComponent,
+    AppButtonComponent,
+    FormFieldComponent,
+    AppIconComponent,
+    AppSelectComponent,
+    WorkoutExerciseSearchComponent,
+    WorkoutExerciseListComponent,
+  ],
   templateUrl: './coach-workout-edit.component.html',
   styleUrls: ['./coach-workout-edit.component.css'],
 })

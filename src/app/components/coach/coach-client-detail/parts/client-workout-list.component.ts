@@ -1,13 +1,15 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
+import { AppStatusBadgeComponent } from '../../../shared/components/app-status-badge/app-status-badge.component';
 import { type ClientWorkoutEntry, type WeekGroup, workoutStatus } from '../client-plan';
 
 /** A program edzései hetekre bontva; a kiválasztott edzés kiemelve. */
 @Component({
   selector: 'app-client-workout-list',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [CommonModule, TranslatePipe, AppStatusBadgeComponent],
   templateUrl: './client-workout-list.component.html',
   host: { class: 'contents' },
 })

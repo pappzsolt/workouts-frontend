@@ -1,7 +1,19 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, catchError, merge, of, switchMap, tap } from 'rxjs';
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppPageHeaderComponent } from '../../../shared/components/app-page-header/app-page-header.component';
+import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
+import { AppLoadingComponent } from '../../../shared/components/app-state/app-state.component';
+import { AppEmptyStateComponent } from '../../../shared/components/app-state/app-state.component';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../shared/components/message/message.component';
+import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
+import { AppCardBannerComponent } from '../../../shared/components/app-card-banner/app-card-banner.component';
+import { AppCardStatComponent } from '../../../shared/components/app-card-stat/app-card-stat.component';
 import { AppSearchComponent } from '../../../shared/components/app-search/app-search.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { PersonalProgramService } from '../../../../services/user/personal-program.service';
@@ -12,7 +24,23 @@ import { errorMessage } from '../../../../models/backend-dto/common/api-response
 @Component({
   selector: 'app-personal-programs',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppSearchComponent, PaginationComponent],
+  imports: [
+    AppPageHeaderComponent,
+    AppHeadingDirective,
+    AppLoadingComponent,
+    AppEmptyStateComponent,
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    TranslatePipe,
+    MessageComponent,
+    AppCardComponent,
+    AppIconComponent,
+    AppCardBannerComponent,
+    AppCardStatComponent,
+    AppSearchComponent,
+    PaginationComponent,
+  ],
   templateUrl: './personal-programs.component.html',
 })
 export class PersonalProgramsComponent implements OnInit {

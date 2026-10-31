@@ -1,6 +1,13 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppFormValidationDirective } from '../../../shared/components/form-controls/app-form-validation.directive';
+import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
+import { AppTextareaDirective } from '../../../shared/components/form-controls/app-textarea.directive';
+import { AppRadioDirective } from '../../../shared/components/form-controls/app-check.directive';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 import type { CoachProgramDetailsInput } from '../../../../models/coach-workspace.model';
 import { DIFFICULTY_OPTIONS } from '../../coach-ui';
 
@@ -8,7 +15,16 @@ import { DIFFICULTY_OPTIONS } from '../../coach-ui';
 @Component({
   selector: 'app-program-details-form',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [
+    AppFormValidationDirective,
+    AppInputDirective,
+    AppTextareaDirective,
+    AppRadioDirective,
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    AppIconComponent,
+  ],
   templateUrl: './program-details-form.component.html',
   host: { class: 'contents' },
 })

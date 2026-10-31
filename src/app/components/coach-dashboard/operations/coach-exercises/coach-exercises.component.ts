@@ -15,7 +15,15 @@ import { Exercise } from '../../../../models/exercise.model';
 import { ExerciseService } from '../../../../services/coach/coach-exercises/coach-exercises.service';
 import { LanguageService } from '../../../../services/shared/language.service';
 
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
+import { AppLoadingComponent } from '../../../shared/components/app-state/app-state.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../shared/components/message/message.component';
+import { AppButtonComponent } from '../../../shared/components/app-button/app-button.component';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
+import { AppCardBannerComponent } from '../../../shared/components/app-card-banner/app-card-banner.component';
 import { TranslateService } from '@ngx-translate/core';
 import { CoachWorkspaceService } from '../../../../services/coach/coach-workspace.service';
 import { codeLabel, humanizeCode } from '../../../coach/coach-ui';
@@ -26,7 +34,21 @@ import { exerciseImageSources, markExerciseImageBroken } from '../../../../const
 @Component({
   selector: 'app-exercise-controller',
   standalone: true,
-  imports: [AppSearchComponent, ...SHARED_IMPORTS, ExerciseSearchFieldComponent, AppCardComponent, PaginationComponent],
+  imports: [
+    AppSearchComponent,
+    AppHeadingDirective,
+    AppLoadingComponent,
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    MessageComponent,
+    AppButtonComponent,
+    AppIconComponent,
+    AppCardBannerComponent,
+    ExerciseSearchFieldComponent,
+    AppCardComponent,
+    PaginationComponent,
+  ],
   templateUrl: './coach-exercises.component.html',
   styleUrls: ['./coach-exercises.component.css'],
 })

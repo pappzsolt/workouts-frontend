@@ -1,6 +1,12 @@
 import { Component, EventEmitter, Input, Output, model } from '@angular/core';
 
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
+import { AppRadioDirective } from '../../../shared/components/form-controls/app-check.directive';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 import type { CoachExerciseSearchItem, CoachWorkoutSummary } from '../../../../models/coach-workspace.model';
 import { ExercisePickerComponent } from '../../exercise-picker/exercise-picker.component';
 
@@ -8,7 +14,16 @@ import { ExercisePickerComponent } from '../../exercise-picker/exercise-picker.c
 @Component({
   selector: 'app-program-empty-day',
   standalone: true,
-  imports: [...SHARED_IMPORTS, ExercisePickerComponent],
+  imports: [
+    AppInputDirective,
+    AppRadioDirective,
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    TranslatePipe,
+    AppIconComponent,
+    ExercisePickerComponent,
+  ],
   templateUrl: './program-empty-day.component.html',
   host: { class: 'contents' },
 })

@@ -21,7 +21,16 @@ import { Role } from '../../../../models/role.model';
 
 import { UserEditService } from '../../../../services/admin/user-edit.service';
 
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppFormValidationDirective } from '../../../shared/components/form-controls/app-form-validation.directive';
+import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
+import { AppTextareaDirective } from '../../../shared/components/form-controls/app-textarea.directive';
+import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
+import { ProfileFieldsComponent } from '../../../shared/components/profile-fields/profile-fields.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { AppButtonComponent } from '../../../shared/components/app-button/app-button.component';
+import { FormFieldComponent } from '../../../shared/components/form-field/form-field.component';
 import type { SelectOption } from '../../../../models/common/select-option.model';
 import {
   GENDER_NOT_SPECIFIED_LABEL,
@@ -33,7 +42,7 @@ import {
   selector: 'app-user-edit',
   standalone: true,
   imports: [
-    ...SHARED_IMPORTS,
+    AppFormValidationDirective, AppInputDirective, AppTextareaDirective, AppHeadingDirective, ProfileFieldsComponent, CommonModule, FormsModule, TranslatePipe, AppButtonComponent, FormFieldComponent,
     UserSelectComponent,
     CoachSelectComponent,
     MessageComponent,

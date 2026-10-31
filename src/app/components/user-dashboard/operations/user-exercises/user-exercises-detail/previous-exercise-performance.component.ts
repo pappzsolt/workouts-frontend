@@ -2,7 +2,9 @@ import { Component, Input, OnChanges, OnDestroy, inject } from '@angular/core';
 import { ReplaySubject, catchError, map, of, startWith, switchMap } from 'rxjs';
 import type { PreviousExercisePerformance } from '../../../../../models/previous-exercise-performance.model';
 import { UserExerciseDetailService } from '../../../../../services/user/user-exercises-detail/user-exercises-detail.service';
-import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
+import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
+import { AppButtonComponent } from '../../../../shared/components/app-button/app-button.component';
 
 type HistoryState =
   | { status: 'loading' | 'error' | 'empty'; data?: never }
@@ -11,7 +13,7 @@ type HistoryState =
 @Component({
   selector: 'app-previous-exercise-performance',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [CommonModule, TranslatePipe, AppButtonComponent],
   templateUrl: './previous-exercise-performance.component.html',
 })
 export class PreviousExercisePerformanceComponent implements OnChanges, OnDestroy {

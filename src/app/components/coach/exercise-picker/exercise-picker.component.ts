@@ -3,7 +3,11 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject, debounceTime, switchMap, catchError, of } from 'rxjs';
 
-import { SHARED_IMPORTS } from '../../shared/shared-imports';
+import { AppInputDirective } from '../../shared/components/form-controls/app-input.directive';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { AppIconComponent } from '../../shared/components/app-icon/app-icon.component';
 import { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import type {
   CoachExercisePage,
@@ -20,7 +24,7 @@ import { codeLabel } from '../coach-ui';
 @Component({
   selector: 'app-exercise-picker',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [AppInputDirective, CommonModule, FormsModule, TranslatePipe, AppIconComponent],
   templateUrl: './exercise-picker.component.html',
 })
 export class ExercisePickerComponent implements OnInit {

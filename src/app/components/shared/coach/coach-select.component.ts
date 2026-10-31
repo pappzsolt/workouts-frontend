@@ -15,12 +15,14 @@ import { CoachNameIdService } from '../../../services/coach/coach-name-id.servic
 import { AppSelectComponent } from '../components/app-select/app-select.component';
 import type { SelectOption } from '../../../models/common/select-option.model';
 
-import { SHARED_IMPORTS } from '../shared-imports';
+import { CommonModule } from '@angular/common';
+import { MessageComponent } from '../components/message/message.component';
+import { FormFieldComponent } from '../components/form-field/form-field.component';
 
 @Component({
   selector: 'app-coach-select',
   standalone: true,
-  imports: [AppSearchComponent, ...SHARED_IMPORTS, AppSelectComponent],
+  imports: [AppSearchComponent, CommonModule, MessageComponent, FormFieldComponent, AppSelectComponent],
   template: `
     <div>
       @if (!searchable) {

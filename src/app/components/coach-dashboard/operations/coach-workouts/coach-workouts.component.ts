@@ -11,7 +11,13 @@ import {
   WorkoutLibrarySort,
 } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { LanguageService } from '../../../../services/shared/language.service';
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
+import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { MessageComponent } from '../../../shared/components/message/message.component';
+import { AppCardBannerComponent } from '../../../shared/components/app-card-banner/app-card-banner.component';
+import { AppCardStatComponent } from '../../../shared/components/app-card-stat/app-card-stat.component';
 import type { WorkoutForm } from '../../../../models/workout/workout-form.model';
 import { WorkoutWithExercises } from '../../../../models/exercise.model';
 import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
@@ -25,7 +31,7 @@ import { AppButtonComponent } from '../../../../components/shared/components/app
   selector: 'app-coach-workouts',
   standalone: true,
   imports: [
-    ...SHARED_IMPORTS,
+    AppHeadingDirective, CommonModule, TranslatePipe, ConfirmDialogComponent, MessageComponent, AppCardBannerComponent, AppCardStatComponent,
     NewWorkoutComponent,
     AppCardComponent,
     AppSearchComponent,

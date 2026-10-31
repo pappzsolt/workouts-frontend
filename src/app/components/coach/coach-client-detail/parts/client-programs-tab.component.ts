@@ -1,7 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import type { CoachClientProgram } from '../../../../models/coach-workspace.model';
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
+import { AppStatusBadgeComponent } from '../../../shared/components/app-status-badge/app-status-badge.component';
 import { percent } from '../../coach-ui';
 import { programState } from '../client-plan';
 
@@ -9,7 +12,7 @@ import { programState } from '../client-plan';
 @Component({
   selector: 'app-client-programs-tab',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [CommonModule, RouterModule, TranslatePipe, AppStatusBadgeComponent],
   templateUrl: './client-programs-tab.component.html',
   host: { class: 'contents' },
 })

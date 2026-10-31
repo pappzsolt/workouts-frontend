@@ -16,14 +16,36 @@ import { AppCardComponent } from '../../../../shared/components/app-card/app-car
 import type { WorkoutForm } from '../../../../../models/workout/workout-form.model';
 import type { WorkoutCatalogItem } from '../../../../../models/workout/workout-catalog-item.model';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
-import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
+import { AppFormValidationDirective } from '../../../../shared/components/form-controls/app-form-validation.directive';
+import { AppInputDirective } from '../../../../shared/components/form-controls/app-input.directive';
+import { AppTextareaDirective } from '../../../../shared/components/form-controls/app-textarea.directive';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../../shared/components/message/message.component';
+import { AppButtonComponent } from '../../../../shared/components/app-button/app-button.component';
+import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
+import { AppIconComponent } from '../../../../shared/components/app-icon/app-icon.component';
 
 @Component({
   selector: 'app-newworkout',
   templateUrl: './new-workout.component.html',
   styleUrls: ['./new-workout.component.css'],
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppCardComponent, AppSelectComponent],
+  imports: [
+    AppFormValidationDirective,
+    AppInputDirective,
+    AppTextareaDirective,
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    MessageComponent,
+    AppButtonComponent,
+    FormFieldComponent,
+    AppIconComponent,
+    AppCardComponent,
+    AppSelectComponent,
+  ],
 })
 export class NewWorkoutComponent implements OnInit, OnDestroy {
   readonly intensityOptions = INTENSITY_OPTIONS;

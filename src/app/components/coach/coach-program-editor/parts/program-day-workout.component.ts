@@ -1,6 +1,11 @@
 import { Component, EventEmitter, Input, Output, model } from '@angular/core';
 
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 import { WORKOUT_PRESCRIPTION_LIMITS } from '../../../../models/workout-prescription-limits';
 import type { CoachClientOverview, CoachProgramWorkout } from '../../../../models/coach-workspace.model';
 import { EditableExercise, isPrescriptionChanged } from '../program-days';
@@ -12,7 +17,7 @@ import { EditableExercise, isPrescriptionChanged } from '../program-days';
 @Component({
   selector: 'app-program-day-workout',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [AppInputDirective, CommonModule, RouterModule, FormsModule, TranslatePipe, AppIconComponent],
   templateUrl: './program-day-workout.component.html',
   host: { class: 'contents' },
 })

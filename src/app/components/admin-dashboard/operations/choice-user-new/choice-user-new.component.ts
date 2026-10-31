@@ -2,12 +2,15 @@ import { DashboardActionComponent } from '../../../shared/components/dashboard-a
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
+import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../shared/components/message/message.component';
 
 @Component({
   selector: 'app-chioice-user-new',
   standalone: true,
-  imports: [...SHARED_IMPORTS, DashboardActionComponent],
+  imports: [AppHeadingDirective, CommonModule, TranslatePipe, MessageComponent, DashboardActionComponent],
   templateUrl: './choice-user-new.component.html',
   styleUrls: ['./choice-user-new.component.css'],
 })

@@ -1,6 +1,12 @@
 import { Component, EventEmitter, Input, Output, model } from '@angular/core';
 
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
+import { AppCheckboxDirective } from '../../../shared/components/form-controls/app-check.directive';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 import type { CoachClientOverview } from '../../../../models/coach-workspace.model';
 import { clientInitials } from '../program-days';
 
@@ -8,7 +14,15 @@ import { clientInitials } from '../program-days';
 @Component({
   selector: 'app-program-clients-panel',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [
+    AppInputDirective,
+    AppCheckboxDirective,
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    TranslatePipe,
+    AppIconComponent,
+  ],
   templateUrl: './program-clients-panel.component.html',
   host: { class: 'contents' },
 })

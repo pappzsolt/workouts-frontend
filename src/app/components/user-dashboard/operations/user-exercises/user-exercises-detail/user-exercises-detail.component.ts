@@ -21,13 +21,36 @@ import { ExerciseSetSaves } from './exercise-set-saves';
 import { PreviousExercisePerformanceComponent } from './previous-exercise-performance.component';
 import { SetRestTimerComponent } from './set-rest-timer.component';
 
-import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
+import { AppInputDirective } from '../../../../shared/components/form-controls/app-input.directive';
+import { AppTextareaDirective } from '../../../../shared/components/form-controls/app-textarea.directive';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../../shared/components/message/message.component';
+import { AppButtonComponent } from '../../../../shared/components/app-button/app-button.component';
+import { AppCardComponent } from '../../../../shared/components/app-card/app-card.component';
+import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
+import { AppIconComponent } from '../../../../shared/components/app-icon/app-icon.component';
 import { exerciseImageSources, markExerciseImageBroken } from '../../../../../constants/exercise-images';
 
 @Component({
   selector: 'app-user-exercise-detail',
   standalone: true,
-  imports: [...SHARED_IMPORTS, SidePaginationComponent, SetRestTimerComponent, PreviousExercisePerformanceComponent],
+  imports: [
+    AppInputDirective,
+    AppTextareaDirective,
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    MessageComponent,
+    AppButtonComponent,
+    AppCardComponent,
+    FormFieldComponent,
+    AppIconComponent,
+    SidePaginationComponent,
+    SetRestTimerComponent,
+    PreviousExercisePerformanceComponent,
+  ],
   templateUrl: './user-exercises-detail.component.html',
   styleUrls: ['./user-exercises-detail.component.css'],
 })

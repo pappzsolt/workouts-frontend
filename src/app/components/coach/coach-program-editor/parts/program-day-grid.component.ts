@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 import { WEEKDAY_KEYS } from '../../coach-ui';
 import { DayCell, dayAriaLabel } from '../program-days';
 
@@ -8,7 +10,7 @@ import { DayCell, dayAriaLabel } from '../program-days';
 @Component({
   selector: 'app-program-day-grid',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [CommonModule, TranslatePipe, AppIconComponent],
   templateUrl: './program-day-grid.component.html',
   host: { class: 'contents' },
 })

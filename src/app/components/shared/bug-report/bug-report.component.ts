@@ -9,7 +9,17 @@ import { errorMessage } from '../../../models/backend-dto/common/api-response-me
 import { BUG_REPORT_LIMITS as L, type BugReportCreated } from '../../../models/backend-dto/bug-report/bug-report';
 import { AuthService } from '../../../services/auth/auth.service';
 import { BugReportService } from '../../../services/bug-report/bug-report.service';
-import { SHARED_IMPORTS } from '../shared-imports';
+import { AppFormValidationDirective } from '../components/form-controls/app-form-validation.directive';
+import { AppInputDirective } from '../components/form-controls/app-input.directive';
+import { AppTextareaDirective } from '../components/form-controls/app-textarea.directive';
+import { AppHeadingDirective } from '../components/app-page-header/app-page-header.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../components/message/message.component';
+import { AppButtonComponent } from '../components/app-button/app-button.component';
+import { FormFieldComponent } from '../components/form-field/form-field.component';
+import { AppIconComponent } from '../components/app-icon/app-icon.component';
 
 /** Alkalmazáson belüli útvonal (ugyanaz a szabály, mint a backendben). */
 export const APP_PATH = /^\/(?!\/)[A-Za-z0-9\-._~/?#[\]@!$&'()*+,;=%:]*$/;
@@ -60,7 +70,20 @@ interface Attachment {
 @Component({
   selector: 'app-bug-report',
   standalone: true,
-  imports: [...SHARED_IMPORTS, ReactiveFormsModule],
+  imports: [
+    AppFormValidationDirective,
+    AppInputDirective,
+    AppTextareaDirective,
+    AppHeadingDirective,
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    MessageComponent,
+    AppButtonComponent,
+    FormFieldComponent,
+    AppIconComponent,
+    ReactiveFormsModule,
+  ],
   templateUrl: './bug-report.component.html',
 })
 export class BugReportComponent implements OnDestroy {

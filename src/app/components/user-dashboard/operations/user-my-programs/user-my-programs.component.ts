@@ -16,12 +16,30 @@ import { ProgramExportService } from '../../../../services/shared/program-export
 import { AuthService } from '../../../../services/auth/auth.service';
 import { downloadBlob, programExportFileName } from '../../../shared/file-download';
 
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../shared/components/message/message.component';
+import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
+import { AppCardBannerComponent } from '../../../shared/components/app-card-banner/app-card-banner.component';
+import { AppStatusBadgeComponent } from '../../../shared/components/app-status-badge/app-status-badge.component';
 
 @Component({
   selector: 'app-user-my-programs',
   standalone: true,
-  imports: [AppSearchComponent, ...SHARED_IMPORTS, SidePaginationComponent],
+  imports: [
+    AppSearchComponent,
+    CommonModule,
+    RouterModule,
+    TranslatePipe,
+    MessageComponent,
+    AppCardComponent,
+    AppIconComponent,
+    AppCardBannerComponent,
+    AppStatusBadgeComponent,
+    SidePaginationComponent,
+  ],
   templateUrl: './user-my-programs.component.html',
   styleUrls: ['./user-my-programs.component.css'],
 })

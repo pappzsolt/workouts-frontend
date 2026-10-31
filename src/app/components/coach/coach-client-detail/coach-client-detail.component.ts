@@ -3,7 +3,16 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, finalize, takeUntil } from 'rxjs';
 
-import { SHARED_IMPORTS } from '../../shared/shared-imports';
+import { AppInputDirective } from '../../shared/components/form-controls/app-input.directive';
+import { AppLoadingComponent } from '../../shared/components/app-state/app-state.component';
+import { AppEmptyStateComponent } from '../../shared/components/app-state/app-state.component';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../shared/components/message/message.component';
+import { AppIconComponent } from '../../shared/components/app-icon/app-icon.component';
+import { AppStatusBadgeComponent } from '../../shared/components/app-status-badge/app-status-badge.component';
 import { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import { toIsoDate } from '../../../shared/local-date';
 import type {
@@ -47,7 +56,7 @@ type PendingNav =
   selector: 'app-coach-client-detail',
   standalone: true,
   imports: [
-    ...SHARED_IMPORTS, ClientWorkoutListComponent, ClientExerciseSetsComponent, ClientProgramsTabComponent,
+    AppInputDirective, AppLoadingComponent, AppEmptyStateComponent, CommonModule, RouterModule, FormsModule, TranslatePipe, MessageComponent, AppIconComponent, AppStatusBadgeComponent, ClientWorkoutListComponent, ClientExerciseSetsComponent, ClientProgramsTabComponent,
     ClientAssignDialogComponent,
   ],
   templateUrl: './coach-client-detail.component.html',

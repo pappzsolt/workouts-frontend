@@ -1,7 +1,13 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { SHARED_IMPORTS } from '../../shared/shared-imports';
+import { AppLoadingComponent } from '../../shared/components/app-state/app-state.component';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../shared/components/message/message.component';
+import { AppIconComponent } from '../../shared/components/app-icon/app-icon.component';
+import { AppStatusBadgeComponent } from '../../shared/components/app-status-badge/app-status-badge.component';
 import { CoachWorkspaceService, workoutStatus } from '../../../services/coach/coach-workspace.service';
 import { addDays, toIsoDate } from '../../../shared/local-date';
 import type {
@@ -42,7 +48,15 @@ interface ProgramRow {
 @Component({
   selector: 'app-coach-home',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [
+    AppLoadingComponent,
+    CommonModule,
+    RouterModule,
+    TranslatePipe,
+    MessageComponent,
+    AppIconComponent,
+    AppStatusBadgeComponent,
+  ],
   templateUrl: './coach-home.component.html',
 })
 export class CoachHomeComponent implements OnInit {

@@ -11,12 +11,29 @@ import {
 } from '../../../../models/user-program-statistics.model';
 import { LanguageService } from '../../../../services/shared/language.service';
 import { UserProgramStatisticsService } from '../../../../services/user/user-program-statistics.service';
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
+import { AppLoadingComponent } from '../../../shared/components/app-state/app-state.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../shared/components/message/message.component';
+import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 
 @Component({
   selector: 'app-user-program-statistics',
   standalone: true,
-  imports: [...SHARED_IMPORTS, ProgramStrengthOverviewComponent],
+  imports: [
+    AppHeadingDirective,
+    AppLoadingComponent,
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    MessageComponent,
+    AppCardComponent,
+    AppIconComponent,
+    ProgramStrengthOverviewComponent,
+  ],
   templateUrl: './program-statistics.component.html',
   styleUrl: './program-statistics.component.css',
 })

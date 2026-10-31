@@ -10,13 +10,26 @@ import { LanguageService } from '../../../../services/shared/language.service';
 
 import { UserWorkoutExerciseDetailDto, ExerciseDetailDto } from '../../../../models/user-workout-exercise-detail.dto';
 import { SidePaginationComponent } from '../../../../components/shared/components/side-pagination/side-pagination.component';
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppLoadingComponent } from '../../../shared/components/app-state/app-state.component';
+import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../shared/components/message/message.component';
+import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 import { exerciseImageSources, markExerciseImageBroken } from '../../../../constants/exercise-images';
 
 @Component({
   standalone: true,
   selector: 'app-user-exercises',
-  imports: [...SHARED_IMPORTS, SidePaginationComponent],
+  imports: [
+    AppLoadingComponent,
+    CommonModule,
+    TranslatePipe,
+    MessageComponent,
+    AppCardComponent,
+    AppIconComponent,
+    SidePaginationComponent,
+  ],
   styleUrl: './user-exercises.component.css',
   templateUrl: './user-exercises.component.html',
 })

@@ -1,13 +1,17 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import type { WorkoutExerciseView } from '../../../../../../models/workout/workout-exercise-view.model';
-import { SHARED_IMPORTS } from '../../../../../shared/shared-imports';
+import { AppHeadingDirective } from '../../../../../shared/components/app-page-header/app-page-header.component';
+import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../../../shared/components/message/message.component';
+import { AppIconComponent } from '../../../../../shared/components/app-icon/app-icon.component';
 
 /** Az edzés jelenlegi gyakorlatai; programon kívüli edzésnél sorrend és eltávolítás. */
 @Component({
   selector: 'app-workout-exercise-list',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [AppHeadingDirective, CommonModule, TranslatePipe, MessageComponent, AppIconComponent],
   templateUrl: './workout-exercise-list.component.html',
   host: { class: 'contents' },
 })

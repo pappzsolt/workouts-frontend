@@ -17,12 +17,34 @@ import { toExercise } from '../../../../../services/shared/exercise-mapping';
 import { AppSelectComponent } from '../../../../shared/components/app-select/app-select.component';
 import type { SelectOption } from '../../../../../models/common/select-option.model';
 import { MessageComponent } from '../../../../shared/components/message/message.component';
-import { SHARED_IMPORTS } from '../../../../shared/shared-imports';
+import { AppFormValidationDirective } from '../../../../shared/components/form-controls/app-form-validation.directive';
+import { AppInputDirective } from '../../../../shared/components/form-controls/app-input.directive';
+import { AppTextareaDirective } from '../../../../shared/components/form-controls/app-textarea.directive';
+import { AppHeadingDirective } from '../../../../shared/components/app-page-header/app-page-header.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { AppButtonComponent } from '../../../../shared/components/app-button/app-button.component';
+import { FormFieldComponent } from '../../../../shared/components/form-field/form-field.component';
+import { AppIconComponent } from '../../../../shared/components/app-icon/app-icon.component';
 
 @Component({
   selector: 'app-coach-exercise-edit',
   standalone: true,
-  imports: [...SHARED_IMPORTS, MessageComponent, AppSelectComponent],
+  imports: [
+    AppFormValidationDirective,
+    AppInputDirective,
+    AppTextareaDirective,
+    AppHeadingDirective,
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    AppButtonComponent,
+    FormFieldComponent,
+    AppIconComponent,
+    MessageComponent,
+    AppSelectComponent,
+  ],
   templateUrl: './coach-exercise-edit.component.html',
   styleUrls: ['./coach-exercise-edit.component.css'],
 })

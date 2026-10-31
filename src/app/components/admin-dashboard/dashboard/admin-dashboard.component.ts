@@ -2,14 +2,25 @@ import { Component, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 
-import { SHARED_IMPORTS } from '../../shared/shared-imports';
+import { AppPageHeaderComponent } from '../../shared/components/app-page-header/app-page-header.component';
+import { AppHeadingDirective } from '../../shared/components/app-page-header/app-page-header.component';
+import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../shared/components/message/message.component';
 import { DashboardActionComponent } from '../../shared/components/dashboard-action/dashboard-action.component';
 import { RegistrationRequestsService } from '../../../services/admin/registration-requests.service';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [...SHARED_IMPORTS, DashboardActionComponent],
+  imports: [
+    AppPageHeaderComponent,
+    AppHeadingDirective,
+    CommonModule,
+    TranslatePipe,
+    MessageComponent,
+    DashboardActionComponent,
+  ],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css'],
 })

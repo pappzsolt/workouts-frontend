@@ -1,7 +1,19 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppCheckboxDirective } from '../../../shared/components/form-controls/app-check.directive';
+import { AppPageHeaderComponent } from '../../../shared/components/app-page-header/app-page-header.component';
+import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
+import { AppLoadingComponent } from '../../../shared/components/app-state/app-state.component';
+import { AppEmptyStateComponent } from '../../../shared/components/app-state/app-state.component';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { MessageComponent } from '../../../shared/components/message/message.component';
+import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
+import { AppCardBannerComponent } from '../../../shared/components/app-card-banner/app-card-banner.component';
 import { AppSearchComponent } from '../../../shared/components/app-search/app-search.component';
 import { matchesSearch } from '../../../shared/components/app-search/search-match';
 import { PersonalProgramService } from '../../../../services/user/personal-program.service';
@@ -11,7 +23,22 @@ import { errorMessage } from '../../../../models/backend-dto/common/api-response
 @Component({
   selector: 'app-workout-templates',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppSearchComponent],
+  imports: [
+    AppCheckboxDirective,
+    AppPageHeaderComponent,
+    AppHeadingDirective,
+    AppLoadingComponent,
+    AppEmptyStateComponent,
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    TranslatePipe,
+    ConfirmDialogComponent,
+    MessageComponent,
+    AppCardComponent,
+    AppCardBannerComponent,
+    AppSearchComponent,
+  ],
   templateUrl: './workout-templates.component.html',
 })
 export class WorkoutTemplatesComponent implements OnInit {

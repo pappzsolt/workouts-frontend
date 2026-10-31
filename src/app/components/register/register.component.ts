@@ -10,7 +10,19 @@ import type { SelectOption } from '../../models/common/select-option.model';
 import { AuthService } from '../../services/auth/auth.service';
 import { AppSelectComponent } from '../shared/components/app-select/app-select.component';
 import { LanguageSelectorComponent } from '../shared/language/language-selector.component';
-import { SHARED_IMPORTS } from '../shared/shared-imports';
+import { AppFormValidationDirective } from '../shared/components/form-controls/app-form-validation.directive';
+import { AppInputDirective } from '../shared/components/form-controls/app-input.directive';
+import { AppTextareaDirective } from '../shared/components/form-controls/app-textarea.directive';
+import { AppRadioDirective } from '../shared/components/form-controls/app-check.directive';
+import { AppHeadingDirective } from '../shared/components/app-page-header/app-page-header.component';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../shared/components/message/message.component';
+import { AppButtonComponent } from '../shared/components/app-button/app-button.component';
+import { FormFieldComponent } from '../shared/components/form-field/form-field.component';
+import { AppIconComponent } from '../shared/components/app-icon/app-icon.component';
 import {
   REGISTRATION_LIMITS as L,
   emailFormat,
@@ -38,7 +50,24 @@ const ERROR_KEYS: Record<string, string> = {
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [...SHARED_IMPORTS, ReactiveFormsModule, LanguageSelectorComponent, AppSelectComponent],
+  imports: [
+    AppFormValidationDirective,
+    AppInputDirective,
+    AppTextareaDirective,
+    AppRadioDirective,
+    AppHeadingDirective,
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    TranslatePipe,
+    MessageComponent,
+    AppButtonComponent,
+    FormFieldComponent,
+    AppIconComponent,
+    ReactiveFormsModule,
+    LanguageSelectorComponent,
+    AppSelectComponent,
+  ],
   templateUrl: './register.component.html',
 })
 export class RegisterComponent {

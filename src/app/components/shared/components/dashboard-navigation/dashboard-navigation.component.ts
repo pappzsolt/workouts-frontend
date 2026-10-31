@@ -2,7 +2,9 @@ import { Component, DestroyRef, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
-import { SHARED_IMPORTS } from '../../shared-imports';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
 
 interface NavigationItem {
   label: string;
@@ -14,7 +16,7 @@ const dashboard = '/coach/dashboard';
 @Component({
   selector: 'app-dashboard-navigation',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [CommonModule, RouterModule, TranslatePipe],
   templateUrl: './dashboard-navigation.component.html',
 })
 export class DashboardNavigationComponent {

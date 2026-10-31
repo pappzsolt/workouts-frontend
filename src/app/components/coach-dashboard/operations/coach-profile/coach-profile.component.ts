@@ -10,14 +10,39 @@ import { CoachProfileService } from '../../../../services/coach/coach-profile.se
 import { USER_MESSAGES } from '../../../../constants/user-messages';
 import { UpdateCoachRequest } from '../../../../models/update-coach-request.model';
 import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppFormValidationDirective } from '../../../shared/components/form-controls/app-form-validation.directive';
+import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
+import { AppTextareaDirective } from '../../../shared/components/form-controls/app-textarea.directive';
+import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
+import { ProfileFieldsComponent } from '../../../shared/components/profile-fields/profile-fields.component';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../shared/components/message/message.component';
+import { AppButtonComponent } from '../../../shared/components/app-button/app-button.component';
+import { FormFieldComponent } from '../../../shared/components/form-field/form-field.component';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 
 import type { CoachProfile } from '../../../../models/coach-profile.model';
 
 @Component({
   selector: 'app-coach-profile',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppCardComponent],
+  imports: [
+    AppFormValidationDirective,
+    AppInputDirective,
+    AppTextareaDirective,
+    AppHeadingDirective,
+    ProfileFieldsComponent,
+    CommonModule,
+    FormsModule,
+    TranslatePipe,
+    MessageComponent,
+    AppButtonComponent,
+    FormFieldComponent,
+    AppIconComponent,
+    AppCardComponent,
+  ],
   templateUrl: './coach-profile.component.html',
   styleUrls: ['./coach-profile.component.css'],
 })

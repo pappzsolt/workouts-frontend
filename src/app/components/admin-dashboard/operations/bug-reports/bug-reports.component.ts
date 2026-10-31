@@ -5,7 +5,13 @@ import { Subject, takeUntil } from 'rxjs';
 import { errorMessage } from '../../../../models/backend-dto/common/api-response-message';
 import type { BugReportDto, BugReportScreenshot } from '../../../../models/backend-dto/bug-report/bug-report';
 import { BugReportService } from '../../../../services/bug-report/bug-report.service';
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppDialogComponent } from '../../../shared/components/app-dialog/app-dialog.component';
+import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
+import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../shared/components/message/message.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 
 interface Preview {
   url: string | null;
@@ -20,7 +26,15 @@ interface Preview {
 @Component({
   selector: 'app-bug-reports',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [
+    AppDialogComponent,
+    AppHeadingDirective,
+    CommonModule,
+    TranslatePipe,
+    MessageComponent,
+    PaginationComponent,
+    AppIconComponent,
+  ],
   templateUrl: './bug-reports.component.html',
 })
 export class BugReportsComponent implements OnDestroy {

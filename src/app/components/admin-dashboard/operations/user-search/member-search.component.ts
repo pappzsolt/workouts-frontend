@@ -8,12 +8,34 @@ import { USER_MESSAGES } from '../../../../constants/user-messages';
 import { MemberSearchResult } from '../../../../models/member-search-model';
 
 import { MessageComponent } from '../../../shared/components/message/message.component';
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppBadgeComponent } from '../../../shared/components/app-badge/app-badge.component';
+import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
+import { AppTableDirective } from '../../../shared/components/app-table/app-table.directive';
+import { AppTableHeaderDirective } from '../../../shared/components/app-table/app-table.directive';
+import { AppTableCellDirective } from '../../../shared/components/app-table/app-table.directive';
+import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { AppButtonComponent } from '../../../shared/components/app-button/app-button.component';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 
 @Component({
   selector: 'app-member-search',
   standalone: true,
-  imports: [AppSearchComponent, ...SHARED_IMPORTS, MessageComponent],
+  imports: [
+    AppSearchComponent,
+    AppBadgeComponent,
+    AppHeadingDirective,
+    AppTableDirective,
+    AppTableHeaderDirective,
+    AppTableCellDirective,
+    CommonModule,
+    TranslatePipe,
+    PaginationComponent,
+    AppButtonComponent,
+    AppIconComponent,
+    MessageComponent,
+  ],
   templateUrl: './member-search.component.html',
   styleUrls: ['./member-search.component.css'],
 })

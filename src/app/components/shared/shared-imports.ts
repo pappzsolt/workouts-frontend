@@ -39,6 +39,7 @@ import { AppCardBannerComponent } from './components/app-card-banner/app-card-ba
 import { AppCardStatComponent } from './components/app-card-stat/app-card-stat.component';
 import { AppStatusBadgeComponent } from './components/app-status-badge/app-status-badge.component';
 
+/** Convenience imports for shared UI test harnesses. Production components use explicit imports. */
 export const SHARED_IMPORTS = [
   AppFormValidationDirective,
   AppInputDirective,

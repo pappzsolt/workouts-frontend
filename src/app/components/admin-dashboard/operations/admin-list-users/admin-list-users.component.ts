@@ -7,12 +7,27 @@ import { AdminListUsersService } from '../../../../services/admin/admin-list-use
 import { User } from '../../../../models/user.model';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
 
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
+import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../shared/components/message/message.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 
 @Component({
   selector: 'app-admin-list-users',
   standalone: true,
-  imports: [AppSearchComponent, ...SHARED_IMPORTS],
+  imports: [
+    AppSearchComponent,
+    AppHeadingDirective,
+    CommonModule,
+    TranslatePipe,
+    MessageComponent,
+    PaginationComponent,
+    AppCardComponent,
+    AppIconComponent,
+  ],
   templateUrl: './admin-list-users.component.html',
   styleUrls: ['./admin-list-users.component.css'],
 })

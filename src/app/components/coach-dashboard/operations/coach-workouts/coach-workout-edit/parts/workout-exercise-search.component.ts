@@ -2,13 +2,28 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import type { Exercise } from '../../../../../../models/exercise.model';
 import { AppSearchComponent } from '../../../../../shared/components/app-search/app-search.component';
-import { SHARED_IMPORTS } from '../../../../../shared/shared-imports';
+import { AppBadgeComponent } from '../../../../../shared/components/app-badge/app-badge.component';
+import { AppLoadingComponent } from '../../../../../shared/components/app-state/app-state.component';
+import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../../../shared/components/message/message.component';
+import { AppButtonComponent } from '../../../../../shared/components/app-button/app-button.component';
+import { AppIconComponent } from '../../../../../shared/components/app-icon/app-icon.component';
 
 /** Gyakorlat keresése, kiválasztása és hozzáadása a programon kívüli edzéshez. */
 @Component({
   selector: 'app-workout-exercise-search',
   standalone: true,
-  imports: [AppSearchComponent, ...SHARED_IMPORTS],
+  imports: [
+    AppSearchComponent,
+    AppBadgeComponent,
+    AppLoadingComponent,
+    CommonModule,
+    TranslatePipe,
+    MessageComponent,
+    AppButtonComponent,
+    AppIconComponent,
+  ],
   templateUrl: './workout-exercise-search.component.html',
   host: { class: 'contents' },
 })

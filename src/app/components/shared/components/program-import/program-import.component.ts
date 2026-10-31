@@ -2,7 +2,15 @@ import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/co
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { SHARED_IMPORTS } from '../../shared-imports';
+import { AppFormValidationDirective } from '../form-controls/app-form-validation.directive';
+import { AppInputDirective } from '../form-controls/app-input.directive';
+import { AppHeadingDirective } from '../app-page-header/app-page-header.component';
+import { AppLoadingComponent } from '../app-state/app-state.component';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../message/message.component';
 import { ExercisePickerComponent } from '../../../coach/exercise-picker/exercise-picker.component';
 import { CoachWorkspaceService } from '../../../../services/coach/coach-workspace.service';
 import { toIsoDate } from '../../../../shared/local-date';
@@ -14,7 +22,18 @@ import { errorMessage } from '../../../../models/backend-dto/common/api-response
 @Component({
   selector: 'app-program-import',
   standalone: true,
-  imports: [...SHARED_IMPORTS, ExercisePickerComponent],
+  imports: [
+    AppFormValidationDirective,
+    AppInputDirective,
+    AppHeadingDirective,
+    AppLoadingComponent,
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    TranslatePipe,
+    MessageComponent,
+    ExercisePickerComponent,
+  ],
   templateUrl: './program-import.component.html',
 })
 export class ProgramImportComponent implements OnInit {

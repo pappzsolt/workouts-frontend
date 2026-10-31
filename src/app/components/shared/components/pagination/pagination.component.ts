@@ -4,7 +4,6 @@ import type { SelectOption } from '../../../../models/common/select-option.model
 import { AppButtonComponent } from '../app-button/app-button.component';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 
 let nextPaginationId = 0;
@@ -12,7 +11,7 @@ let nextPaginationId = 0;
 @Component({
   standalone: true,
   selector: 'app-pagination',
-  imports: [AppSelectComponent, AppButtonComponent, AppIconComponent, CommonModule, FormsModule, TranslatePipe],
+  imports: [AppSelectComponent, AppButtonComponent, AppIconComponent, CommonModule, TranslatePipe],
   templateUrl: './pagination.component.html',
 })
 export class PaginationComponent {

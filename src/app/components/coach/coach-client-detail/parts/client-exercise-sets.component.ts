@@ -1,13 +1,18 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
+import { AppCheckboxDirective } from '../../../shared/components/form-controls/app-check.directive';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 import { type EditableSet, type ExerciseSets, isSetChanged, isSetInvalid } from '../client-plan';
 
 /** Egy gyakorlat sorozatai soronként szerkeszthetően (cél, tényleges, RPE, teljesítés, megjegyzés). */
 @Component({
   selector: 'app-client-exercise-sets',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [AppInputDirective, AppCheckboxDirective, CommonModule, FormsModule, TranslatePipe, AppIconComponent],
   templateUrl: './client-exercise-sets.component.html',
   host: { class: 'contents' },
 })

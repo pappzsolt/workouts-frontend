@@ -2,7 +2,13 @@ import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, forkJoin, takeUntil } from 'rxjs';
-import { SHARED_IMPORTS } from '../../shared/shared-imports';
+import { AppLoadingComponent } from '../../shared/components/app-state/app-state.component';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { TranslatePipe } from '@ngx-translate/core';
+import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { MessageComponent } from '../../shared/components/message/message.component';
+import { AppIconComponent } from '../../shared/components/app-icon/app-icon.component';
 import { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import { toIsoDate } from '../../../shared/local-date';
 import type { CoachProgramDayLink, CoachProgramDetailsInput } from '../../../models/coach-workspace.model';
@@ -32,7 +38,7 @@ import { ProgramCopyEditor } from './program-copy-editor';
   selector: 'app-coach-program-editor',
   standalone: true,
   imports: [
-    ...SHARED_IMPORTS,
+    AppLoadingComponent, CommonModule, RouterModule, TranslatePipe, ConfirmDialogComponent, MessageComponent, AppIconComponent,
     ProgramDetailsFormComponent,
     ProgramDayGridComponent,
     ProgramDayWorkoutComponent,

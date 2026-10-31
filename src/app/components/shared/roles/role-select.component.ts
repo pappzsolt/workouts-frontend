@@ -16,12 +16,14 @@ import type { SelectOption } from '../../../models/common/select-option.model';
 import { Role } from '../../../models/role.model';
 import { RoleService } from '../../../services/roles/role.service';
 
-import { SHARED_IMPORTS } from '../shared-imports';
+import { CommonModule } from '@angular/common';
+import { MessageComponent } from '../components/message/message.component';
+import { FormFieldComponent } from '../components/form-field/form-field.component';
 
 @Component({
   selector: 'app-role-select',
   standalone: true,
-  imports: [...SHARED_IMPORTS, AppSelectComponent],
+  imports: [CommonModule, MessageComponent, FormFieldComponent, AppSelectComponent],
   template: `
     <div class="w-full">
       <app-form-field labelKey="roleSelect.role" [controlId]="controlId">

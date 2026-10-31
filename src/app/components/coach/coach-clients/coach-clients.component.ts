@@ -1,7 +1,15 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { SHARED_IMPORTS } from '../../shared/shared-imports';
+import { AppInputDirective } from '../../shared/components/form-controls/app-input.directive';
+import { AppLoadingComponent } from '../../shared/components/app-state/app-state.component';
+import { AppEmptyStateComponent } from '../../shared/components/app-state/app-state.component';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../shared/components/message/message.component';
+import { AppIconComponent } from '../../shared/components/app-icon/app-icon.component';
 import { CoachWorkspaceService, workoutStatus } from '../../../services/coach/coach-workspace.service';
 import { addDays, startOfWeek, toIsoDate } from '../../../shared/local-date';
 import type { CoachClientOverview } from '../../../models/coach-workspace.model';
@@ -21,7 +29,17 @@ interface ClientRow {
 @Component({
   selector: 'app-coach-clients',
   standalone: true,
-  imports: [...SHARED_IMPORTS],
+  imports: [
+    AppInputDirective,
+    AppLoadingComponent,
+    AppEmptyStateComponent,
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    TranslatePipe,
+    MessageComponent,
+    AppIconComponent,
+  ],
   templateUrl: './coach-clients.component.html',
 })
 export class CoachClientsComponent implements OnInit {

@@ -14,12 +14,35 @@ import type { UserWorkoutOccurrence } from '../../../../models/user-workout-occu
 
 import { LanguageService } from '../../../../services/shared/language.service';
 
-import { SHARED_IMPORTS } from '../../../shared/shared-imports';
+import { AppBadgeComponent } from '../../../shared/components/app-badge/app-badge.component';
+import { AppSectionHeaderComponent } from '../../../shared/components/app-page-header/app-page-header.component';
+import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
+import { AppLoadingComponent } from '../../../shared/components/app-state/app-state.component';
+import { AppTabsComponent } from '../../../shared/components/app-tabs/app-tabs.component';
+import { AppTabDirective } from '../../../shared/components/app-tabs/app-tabs.component';
+import { CommonModule } from '@angular/common';
+import { TranslatePipe } from '@ngx-translate/core';
+import { MessageComponent } from '../../../shared/components/message/message.component';
+import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
+import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 
 @Component({
   standalone: true,
   selector: 'app-workouts',
-  imports: [...SHARED_IMPORTS, SidePaginationComponent],
+  imports: [
+    AppBadgeComponent,
+    AppSectionHeaderComponent,
+    AppHeadingDirective,
+    AppLoadingComponent,
+    AppTabsComponent,
+    AppTabDirective,
+    CommonModule,
+    TranslatePipe,
+    MessageComponent,
+    AppCardComponent,
+    AppIconComponent,
+    SidePaginationComponent,
+  ],
   styleUrl: './workouts.component.css',
   templateUrl: './workouts.component.html',
 })
