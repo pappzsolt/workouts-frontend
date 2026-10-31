@@ -29,7 +29,7 @@ describe('Admin public coach contracts and audit request ordering', () => {
     let coachName: string | undefined;
     TestBed.inject(MemberSearchService).searchMembers('user').subscribe({next: result => { emitted = true; coachName = result.data[0].coach?.usernameOrName; }, error: value => error = value});
     http.expectOne(req => req.url === API_ENDPOINTS.memberSearch).flush({success: true, data: [{id: 1, type: 'user', usernameOrName: 'User', email: 'user@example.com', extraFields: {coach_id: 9}}]});
-    http.expectOne(API_ENDPOINTS.coachById(9)).flush({success: true, data: {id: 9, name: 'Trainer', specialization: null, avatarUrl: null}});
+    http.expectOne(API_ENDPOINTS.coach).flush({success: true, data: [{id: 9, name: 'Trainer', specialization: null, avatarUrl: null}]});
     expect(emitted).toBeTrue();
     expect(coachName).toBe('Trainer');
     expect(error).toBeUndefined();

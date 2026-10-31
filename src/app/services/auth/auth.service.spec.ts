@@ -1,8 +1,11 @@
-import { HttpBackend, HttpClient, provideHttpClient } from '@angular/common/http';
+import { HttpBackend, HttpClient, HttpRequest, HttpResponse, HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed, fakeAsync, flushMicrotasks } from '@angular/core/testing';
 import { API_ENDPOINTS } from '../../api-endpoints';
 import { AuthService } from './auth.service';
+import { AuthInterceptor } from '../../interceptors/auth.interceptor';
+import { Router } from '@angular/router';
+import { of, throwError } from 'rxjs';
 
 describe('AuthService cross-tab refresh', () => {
   let http: HttpTestingController;
@@ -58,4 +61,46 @@ describe('AuthService cross-tab refresh', () => {
     http.expectNone(request => request.url === API_ENDPOINTS.authWebRefresh);
     expect(second.getAccessToken()).toBeNull();
   }));
+  for (const fails of [false, true]) {
+    it(`shares guard and parallel interceptor refresh with ${fails ? 'one failure callback' : 'independent retries'}`, fakeAsync(() => {
+      const router = {navigate: jasmine.createSpy('navigate')};
+      const interceptor = new AuthInterceptor(first, router as unknown as Router);
+      const logout = spyOn(first, 'logout').and.callThrough();
+      let errors = 0;
+      let successes = 0;
+      // A guard can already be restoring the session before API requests return 401.
+      first.refreshAccessToken().subscribe({error: () => errors++});
+      const calls = new Map<string, number>();
+      const handler = {handle: (request: HttpRequest<unknown>) => {
+        const count = (calls.get(request.url) ?? 0) + 1;
+        calls.set(request.url, count);
+        if (count === 1) return throwError(() => new HttpErrorResponse({status: 401}));
+        expect(request.headers.get('Authorization')).toBe('Bearer renewed');
+        return request.url.endsWith('/first')
+          ? throwError(() => new HttpErrorResponse({status: 500}))
+          : of(new HttpResponse({status: 200}));
+      }};
+      for (const suffix of ['first', 'second']) {
+        interceptor.intercept(new HttpRequest('GET', `${API_ENDPOINTS.workouts}/${suffix}`), handler)
+          .subscribe({next: () => successes++, error: () => errors++});
+      }
+      flushMicrotasks();
+      const refresh = http.expectOne(request => request.url === API_ENDPOINTS.authWebRefresh);
+      if (fails) refresh.flush(null, {status: 401, statusText: 'Unauthorized'});
+      else refresh.flush({success: true, data: {accessToken: 'renewed'}});
+      flushMicrotasks();
+      if (fails) {
+        expect(logout).toHaveBeenCalledTimes(1);
+        expect(router.navigate).toHaveBeenCalledOnceWith(['/login']);
+        expect(errors).toBe(3);
+        http.expectOne(request => request.url === API_ENDPOINTS.authWebLogout).flush({success: true});
+      } else {
+        expect(logout).not.toHaveBeenCalled();
+        expect(router.navigate).not.toHaveBeenCalled();
+        expect(successes).toBe(1);
+        expect(errors).toBe(1);
+      }
+    }));
+  }
+
 });

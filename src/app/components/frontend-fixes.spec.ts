@@ -5,7 +5,7 @@ import {
   runInInjectionContext,
 } from '@angular/core';
 import { HttpErrorResponse, HttpRequest, HttpResponse } from '@angular/common/http';
-import { BehaviorSubject, Subject, of, throwError } from 'rxjs';
+import { BehaviorSubject, Subject, of, throwError, catchError, shareReplay } from 'rxjs';
 import { API_ENDPOINTS } from '../api-endpoints';
 import { AuthInterceptor } from '../interceptors/auth.interceptor';
 import { CoachEditService } from '../services/admin/coach-edit.service';
@@ -44,7 +44,11 @@ describe('Frontend fixes', () => {
   function authFixture(refresh: any = of({ accessToken: 'new' })) {
     const auth = {
       getAccessToken: () => 'old',
-      refreshAccessToken: jasmine.createSpy('refresh').and.returnValue(refresh),
+      refreshAccessToken: jasmine.createSpy('refresh').and.callFake((onFailure?: () => void) =>
+        refresh.pipe(catchError((error: unknown) => {
+          onFailure?.();
+          return throwError(() => error);
+        }))),
       logout: jasmine.createSpy('logout'),
     };
     const router = { navigate: jasmine.createSpy('navigate') };
@@ -112,6 +116,8 @@ describe('Frontend fixes', () => {
           : of(new HttpResponse({ status: 200 }));
       },
     };
+    const sharedRefresh = refresh.pipe(shareReplay({bufferSize: 1, refCount: false}));
+    auth.refreshAccessToken.and.returnValue(sharedRefresh);
     let secondSucceeded = false;
     interceptor.intercept(new HttpRequest('GET', `${API_ENDPOINTS.workouts}/first`), next).subscribe({ error() {} });
     interceptor
@@ -119,7 +125,7 @@ describe('Frontend fixes', () => {
       .subscribe(() => (secondSucceeded = true));
     refresh.next({ accessToken: 'new' });
     refresh.complete();
-    expect(auth.refreshAccessToken).toHaveBeenCalledTimes(1);
+    expect(auth.refreshAccessToken).toHaveBeenCalledTimes(2);
     expect(secondSucceeded).toBeTrue();
     expect(auth.logout).not.toHaveBeenCalled();
   });

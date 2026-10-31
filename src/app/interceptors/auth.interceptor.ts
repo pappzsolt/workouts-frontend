@@ -8,13 +8,9 @@ import {
   HttpContextToken,
 } from '@angular/common/http';
 import {
-  BehaviorSubject,
   Observable,
   catchError,
-  filter,
-  finalize,
   switchMap,
-  take,
   throwError,
 } from 'rxjs';
 import { Router } from '@angular/router';
@@ -24,13 +20,8 @@ import { environment } from '../../environments/environment';
 
 const AUTH_RETRY = new HttpContextToken<boolean>(() => false);
 
-type RefreshResult = { accessToken: string } | { error: unknown };
-
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  private isRefreshing = false;
-  private readonly refreshResultSubject = new BehaviorSubject<RefreshResult | null>(null);
-
   constructor(
     private readonly authService: AuthService,
     private readonly router: Router,
@@ -65,38 +56,9 @@ export class AuthInterceptor implements HttpInterceptor {
     req: HttpRequest<unknown>,
     next: HttpHandler,
   ): Observable<HttpEvent<unknown>> {
-    if (this.isRefreshing) {
-      return this.refreshResultSubject.pipe(
-        filter((result): result is RefreshResult => result !== null),
-        take(1),
-        switchMap((result) => {
-          if ('error' in result) {
-            return throwError(() => result.error);
-          }
-
-          return this.retryWithToken(req, next, result.accessToken);
-        }),
-      );
-    }
-
-    this.isRefreshing = true;
-    this.refreshResultSubject.next(null);
-
-    return this.authService.refreshAccessToken().pipe(
-      // Only a failed refresh invalidates the session. A retried API request
-      // can fail independently (validation, permissions, server or network).
-      catchError((refreshError: unknown) => {
-        this.refreshResultSubject.next({ error: refreshError });
-        this.clearSessionAndRedirect();
-        return throwError(() => refreshError);
-      }),
-      finalize(() => {
-        this.isRefreshing = false;
-      }),
-      switchMap((response: import('../models/auth-model').LoginResponse) => {
-        this.refreshResultSubject.next({ accessToken: response.accessToken });
-        return this.retryWithToken(req, next, response.accessToken);
-      }),
+    // AuthService owns the shared refresh and invokes failure handling once.
+    return this.authService.refreshAccessToken(() => this.clearSessionAndRedirect()).pipe(
+      switchMap(response => this.retryWithToken(req, next, response.accessToken)),
     );
   }
 

@@ -6,7 +6,7 @@ import { catchError, switchMap } from 'rxjs/operators';
 
 import { API_ENDPOINTS } from '../../api-endpoints';
 
-import { MemberSearchCoach, MemberSearchResult, SearchResponse } from '../../models/member-search-model';
+import { MemberSearchCoach, SearchResponse } from '../../models/member-search-model';
 import type { ExtraFields } from '../../models/extra-fields.model';
 
 import type { ApiResponse } from '../../models/backend-dto/common/api-response';
@@ -61,42 +61,46 @@ export class MemberSearchService {
             return of(response);
           }
 
-          const coachRequests: Observable<MemberSearchCoach | undefined>[] = coachIds.map((coachId) =>
-            this.http
-              .get<ApiResponse<CoachLookupDto>>(API_ENDPOINTS.coachById(coachId))
-              .pipe(
-                map((coachResponse) => coachResponse.success ? this.mapCoach(coachResponse.data) : undefined),
-                // Coach details are optional; keep the member results if enrichment fails.
-                catchError(() => of(undefined)),
-              ),
-          );
-
-          return forkJoin(coachRequests).pipe(
-            map((coaches) => {
-              const coachMap = new Map<number, MemberSearchCoach>();
-
-              coaches.forEach((coach) => {
-                if (coach) {
-                  coachMap.set(coach.id, coach);
-                }
-              });
-
-              return {
-                ...response,
-                data: response.data.map((member) => {
-                  const coachId = member.extraFields.coach_id;
-
-                  return {
-                    ...member,
-                    coach: coachId != null ? coachMap.get(coachId) : undefined,
-                  };
-                }),
-              };
-            }),
+          return this.loadCoaches(coachIds).pipe(
+            map(coaches => ({
+              ...response,
+              data: response.data.map(member => ({
+                ...member,
+                coach: member.extraFields.coach_id != null ? coaches.get(member.extraFields.coach_id) : undefined,
+              })),
+            })),
           );
         }),
         catchError((error: HttpErrorResponse) => this.handleError(error)),
       );
+  }
+
+  private loadCoaches(ids: number[]): Observable<Map<number, MemberSearchCoach>> {
+    return this.http.get<ApiResponse<CoachLookupDto[]>>(API_ENDPOINTS.coach).pipe(
+      map(response => {
+        if (!response.success || !Array.isArray(response.data)) {
+          throw new Error('Invalid coach list');
+        }
+        return response.data.map(coach => this.mapCoach(coach));
+      }),
+      // Preserve partial enrichment when the list endpoint is unavailable.
+      catchError(() => this.loadCoachesIndividually(ids)),
+      map(coaches => new Map(coaches
+        .filter((coach): coach is MemberSearchCoach => coach != null && ids.includes(coach.id))
+        .map(coach => [coach.id, coach]))),
+    );
+  }
+
+  private loadCoachesIndividually(coachIds: number[]): Observable<(MemberSearchCoach | undefined)[]> {
+    const coachRequests = coachIds.map(coachId =>
+      this.http.get<ApiResponse<CoachLookupDto>>(API_ENDPOINTS.coachById(coachId)).pipe(
+        map(response => response.success ? this.mapCoach(response.data) : undefined),
+        // Coach details are optional; keep the member results if enrichment fails.
+        catchError(() => of(undefined)),
+      ),
+    );
+
+    return forkJoin(coachRequests);
   }
 
   private mapCoach(coach: CoachLookupDto | null): MemberSearchCoach | undefined {

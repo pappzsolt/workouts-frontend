@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { LoggerService } from '../logger.service';
 import { HttpClient, HttpBackend, HttpParams } from '@angular/common/http';
-import { Observable, Subject, defer, finalize, firstValueFrom, map, shareReplay, takeUntil, tap, throwError } from 'rxjs';
+import { Observable, Subject, catchError, defer, finalize, firstValueFrom, map, shareReplay, takeUntil, tap, throwError } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 
 import type { RegistrationPayload, RegistrationResult } from '../../models/backend-dto/registration/registration';
@@ -24,6 +24,7 @@ export class AuthService {
    */
   private accessToken: string | null = null;
 
+  private refreshFailureHandler: (() => void) | null = null;
   private refreshInFlight$: Observable<LoginResponse> | null = null;
   private readonly refreshCancelled$ = new Subject<void>();
   private sessionVersion = 0;
@@ -159,7 +160,10 @@ export class AuthService {
    * Új access token kérése a böngésző által automatikusan küldött
    * HttpOnly refresh cookie-val.
    */
-  refreshAccessToken(): Observable<LoginResponse> {
+  refreshAccessToken(onFailure?: () => void): Observable<LoginResponse> {
+    // Guards and interceptors share one request. The first recovery consumer owns
+    // the failure side effect, so parallel 401 responses redirect only once.
+    if (onFailure && !this.refreshFailureHandler) this.refreshFailureHandler = onFailure;
     if (this.refreshInFlight$) {
       return this.refreshInFlight$;
     }
@@ -201,8 +205,15 @@ export class AuthService {
         tap((response) => {
           this.accessToken = response.accessToken;
         }),
+        catchError((error: unknown) => {
+          const onFailure = this.refreshFailureHandler;
+          this.refreshFailureHandler = null;
+          onFailure?.();
+          return throwError(() => error);
+        }),
         finalize(() => {
           if (this.refreshInFlight$ === request$) {
+            this.refreshFailureHandler = null;
             this.refreshInFlight$ = null;
           }
         }),
@@ -223,6 +234,7 @@ export class AuthService {
     this.accessToken = null;
     this.refreshCancelled$.next();
     this.refreshInFlight$ = null;
+    this.refreshFailureHandler = null;
 
     // Régi deploymentből esetleg visszamaradt storage tokeneket is töröljük.
     localStorage.removeItem('accessToken');
