@@ -1625,5 +1625,26 @@
       "loadError": "A kérelmek betöltése sikertelen. Próbáld meg a frissítést.",
       "saveError": "A lezárás sikertelen. A kérelem időközben már lezárulhatott; frissítsd a listát."
     }
+  },
+  "userDeletion": {
+    "title": "Felhasználó végleges törlése",
+    "action": "Felhasználó törlése",
+    "warning": "A művelet véglegesen törli a felhasználói fiókot, az edzéstörténetet és sorozatokat, a személyes programokat és sablonokat, a bejelentéseket és mellékleteket, a regisztrációs és hitelesítési adatokat. Mások megosztott edzéstervei megmaradnak. A művelet nem vonható vissza.",
+    "notification": "Automatikus e-mail nem kerül kiküldésre. A kérelmező értesítéséről külön gondoskodj; ha szükséges, előtte rögzítsd biztonságosan az elérhetőségét. A kapcsolódó törlési kérelmek szövege és e-mail-címe a törléskor eltávolításra kerül.",
+    "email": "Megerősítéshez írd be a fiók e-mail-címét",
+    "verified": "Ellenőriztem a kérelmező jogosultságát, és megerősítem a fiók és a hozzá kapcsolódó személyes adatok végleges törlését.",
+    "confirm": "Végleges törlés végrehajtása",
+    "deleting": "Törlés folyamatban…",
+    "protected": "Saját vagy ADMIN jogosultságú fiók ezen a felületen nem törölhető.",
+    "loadError": "A törlési előnézet nem tölthető be. Ellenőrizd, hogy létező felhasználói fiókot választottál; ez a művelet edzői fiókot nem töröl.",
+    "deleteError": "A törlés sikertelen. A fiók vagy a kérelem időközben megváltozhatott, vagy védett adatkapcsolat akadályozza a törlést. Frissítsd a listát és kérj új előnézetet.",
+    "success": "A felhasználói fiók és kapcsolódó adatai törölve. A kérelmező értesítéséről külön gondoskodj.",
+    "counts": {
+      "workouts": "Edzésalkalmak",
+      "programAssignments": "Program-hozzárendelések",
+      "personalPrograms": "Személyes programok",
+      "templates": "Edzéssablonok",
+      "reports": "Hibabejelentések"
+    }
   }
 }

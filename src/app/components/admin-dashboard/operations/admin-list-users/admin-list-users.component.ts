@@ -1,3 +1,4 @@
+import { UserDeletionDialogComponent } from '../../../shared/user-deletion-dialog/user-deletion-dialog.component';
 import { matchesSearch } from '../../../shared/components/app-search/search-match';
 import { AppSearchComponent } from '../../../shared/components/app-search/app-search.component';
 import { Component, DestroyRef, inject } from '@angular/core';
@@ -19,6 +20,7 @@ import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.c
   selector: 'app-admin-list-users',
   standalone: true,
   imports: [
+    UserDeletionDialogComponent,
     AppSearchComponent,
     AppHeadingDirective,
     CommonModule,
@@ -35,6 +37,13 @@ export class AdminListUsersComponent {
   private readonly destroyRef = inject(DestroyRef);
 
   users: User[] = [];
+  deletingUserId: number | null = null;
+  onUserDeleted(id: number): void {
+    this.users = this.users.filter(user => !(user.accountType === 'user' && user.id === id));
+    this.deletingUserId = null;
+    this.currentPage = Math.min(this.currentPage, this.totalPages);
+    this.message = 'userDeletion.success'; this.messageType = 'success';
+  }
   searchTerm = "";
 
   message = '';

@@ -1,6 +1,7 @@
 <section class="p-4 md:p-8 space-y-5">
   <h1 class="text-2xl font-bold">{{ 'deleteAccount.admin.title' | translate }}</h1>
   <p>{{ 'deleteAccount.admin.warning' | translate }}</p>
+  <p *ngIf="deletionSuccess" role="status">{{ 'userDeletion.success' | translate }}</p>
   <p *ngIf="error" role="alert" class="text-delete-700">{{ error | translate }}</p>
   <button type="button" class="border rounded-lg px-4 py-2" (click)="load(page)" [disabled]="loading || saving">{{ 'deleteAccount.admin.refresh' | translate }}</button>
   <p *ngIf="loading" role="status">{{ 'deleteAccount.loading' | translate }}</p>
@@ -12,6 +13,8 @@
     <p *ngIf="row.resolvedAt">{{ row.resolvedAt | date:'yyyy-MM-dd HH:mm' }} · {{ row.resolvedBy }}</p>
     <p class="whitespace-pre-wrap">{{ row.resolutionNote }}</p>
     <button *ngIf="row.status === 'PENDING'" type="button" class="border rounded-lg px-4 py-2" (click)="select(row)" [disabled]="saving">{{ 'deleteAccount.admin.resolve' | translate }}</button>
+    <button *ngIf="row.status === 'PENDING'" type="button" class="border border-delete-700 text-delete-700 rounded-lg px-4 py-2"
+      (click)="deleting = row; deletionSuccess = false" [disabled]="saving">{{ 'userDeletion.action' | translate }}</button>
     <form *ngIf="selected?.id === row.id" (ngSubmit)="save()" class="space-y-4 pt-4">
       <fieldset [disabled]="saving" class="space-y-4">
         <legend class="font-semibold">{{ 'deleteAccount.admin.resolutionTitle' | translate }}</legend>
@@ -40,3 +43,6 @@
     <button type="button" class="border rounded-lg px-4 py-2" (click)="load(page + 1)" [disabled]="loading || saving || page + 1 >= totalPages">{{ 'deleteAccount.admin.next' | translate }}</button>
   </nav>
 </section>
+
+<app-user-deletion-dialog *ngIf="deleting as request" [lookup]="{ email: request.email }" [deletionRequestId]="request.id"
+  (closed)="deleting = null" (deleted)="onUserDeleted()" />

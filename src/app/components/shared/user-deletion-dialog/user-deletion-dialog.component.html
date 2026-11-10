@@ -1,0 +1,33 @@
+<app-dialog [ariaLabel]="'userDeletion.title' | translate" [trapFocus]="true" [busy]="saving" [closeOnEscape]="true" (dismissed)="closed.emit()">
+  <div class="overflow-y-auto p-5 space-y-4">
+    <h2 class="text-xl font-bold">{{ 'userDeletion.title' | translate }}</h2>
+    <p *ngIf="loading" role="status">{{ 'deleteAccount.loading' | translate }}</p>
+    <p *ngIf="error" role="alert" class="text-delete-700">{{ error | translate }}</p>
+    <ng-container *ngIf="preview as user">
+      <p class="font-semibold break-words">{{ user.username }} · {{ user.email }} · #{{ user.userId }}</p>
+      <p>{{ 'userDeletion.warning' | translate }}</p>
+      <dl class="grid grid-cols-2 gap-2">
+        <ng-container *ngFor="let key of countKeys">
+          <dt>{{ ('userDeletion.counts.' + key) | translate }}</dt><dd>{{ user.affectedData[key] }}</dd>
+        </ng-container>
+      </dl>
+      <p class="text-sm">{{ 'userDeletion.notification' | translate }}</p>
+      <p *ngIf="!user.deletable" class="text-delete-700">{{ 'userDeletion.protected' | translate }}</p>
+      <form *ngIf="user.deletable" (ngSubmit)="submit()" class="space-y-4">
+        <fieldset [disabled]="saving" class="space-y-4">
+          <label class="block">{{ 'userDeletion.email' | translate }}
+            <input name="confirmationEmail" type="email" [(ngModel)]="email" autocomplete="off" required
+              class="block w-full rounded border border-surface-300 bg-white p-2 text-content-900" />
+          </label>
+          <label class="flex items-start gap-3"><input name="verified" type="checkbox" [(ngModel)]="verified" required />
+            <span>{{ 'userDeletion.verified' | translate }}</span>
+          </label>
+          <button type="submit" [disabled]="!canDelete" class="rounded-lg bg-delete-700 text-white px-4 py-2 disabled:opacity-50">
+            {{ (saving ? 'userDeletion.deleting' : 'userDeletion.confirm') | translate }}
+          </button>
+        </fieldset>
+      </form>
+    </ng-container>
+    <button type="button" [disabled]="saving" class="border rounded-lg px-4 py-2" (click)="closed.emit()">{{ 'deleteAccount.admin.cancel' | translate }}</button>
+  </div>
+</app-dialog>

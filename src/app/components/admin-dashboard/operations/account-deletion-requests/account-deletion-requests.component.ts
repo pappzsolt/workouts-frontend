@@ -1,3 +1,4 @@
+import { UserDeletionDialogComponent } from '../../../shared/user-deletion-dialog/user-deletion-dialog.component';
 import { Component, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -7,13 +8,18 @@ import { AccountDeletionService, DeletionRequest } from '../../../../services/ac
 
 @Component({
   selector: 'app-account-deletion-requests', standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, UserDeletionDialogComponent],
   templateUrl: './account-deletion-requests.component.html',
 })
 export class AccountDeletionRequestsComponent {
   private readonly service = inject(AccountDeletionService);
   private readonly destroyRef = inject(DestroyRef);
   rows: DeletionRequest[] = [];
+  deleting: DeletionRequest | null = null;
+  deletionSuccess = false;
+  onUserDeleted(): void {
+    this.deleting = null; this.selected = null; this.deletionSuccess = true; this.load(this.page);
+  }
   page = 0;
   totalPages = 0;
   loading = false;

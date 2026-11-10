@@ -1625,5 +1625,26 @@
       "loadError": "Could not load requests. Try refreshing.",
       "saveError": "Could not close the request. It may already be closed; refresh the list."
     }
+  },
+  "userDeletion": {
+    "title": "Permanently delete user",
+    "action": "Delete user",
+    "warning": "This permanently deletes the user account, workout history and sets, personal programs and templates, reports and attachments, registration and authentication data. Shared plans belonging to others are preserved. This cannot be undone.",
+    "notification": "No automatic email is sent. Notify the requester separately; securely record their contact details beforehand if needed. The email and text in related deletion requests are removed during deletion.",
+    "email": "Type the account email to confirm",
+    "verified": "I verified the requester’s authority and confirm permanent deletion of the account and associated personal data.",
+    "confirm": "Permanently delete account",
+    "deleting": "Deleting…",
+    "protected": "You cannot delete your own account or an ADMIN account here.",
+    "loadError": "Could not load the deletion preview. Check that the user account exists; this action does not delete coach accounts.",
+    "deleteError": "Deletion failed. The account or request may have changed, or protected data links prevent deletion. Refresh the list and request a new preview.",
+    "success": "The user account and associated data were deleted. Notify the requester separately.",
+    "counts": {
+      "workouts": "Workout sessions",
+      "programAssignments": "Program assignments",
+      "personalPrograms": "Personal programs",
+      "templates": "Workout templates",
+      "reports": "Bug reports"
+    }
   }
 }

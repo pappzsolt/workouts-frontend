@@ -1625,5 +1625,26 @@
       "loadError": "Anfragen konnten nicht geladen werden. Bitte aktualisieren.",
       "saveError": "Abschluss fehlgeschlagen. Die Anfrage wurde möglicherweise bereits abgeschlossen; aktualisiere die Liste."
     }
+  },
+  "userDeletion": {
+    "title": "Benutzer endgültig löschen",
+    "action": "Benutzer löschen",
+    "warning": "Das Benutzerkonto, Trainingsverlauf und Sätze, persönliche Programme und Vorlagen, Meldungen und Anhänge sowie Registrierungs- und Anmeldedaten werden endgültig gelöscht. Geteilte Pläne anderer Personen bleiben erhalten. Dies kann nicht rückgängig gemacht werden.",
+    "notification": "Es wird keine automatische E-Mail gesendet. Benachrichtige die anfragende Person separat und sichere bei Bedarf vorher die Kontaktdaten. E-Mail-Adresse und Text zugehöriger Löschanfragen werden beim Löschen entfernt.",
+    "email": "Zur Bestätigung die E-Mail-Adresse des Kontos eingeben",
+    "verified": "Ich habe die Berechtigung geprüft und bestätige die endgültige Löschung des Kontos und der zugehörigen personenbezogenen Daten.",
+    "confirm": "Konto endgültig löschen",
+    "deleting": "Wird gelöscht…",
+    "protected": "Das eigene Konto und ADMIN-Konten können hier nicht gelöscht werden.",
+    "loadError": "Löschvorschau konnte nicht geladen werden. Prüfe, ob das Benutzerkonto existiert; Trainerkonten werden mit dieser Aktion nicht gelöscht.",
+    "deleteError": "Löschen fehlgeschlagen. Konto oder Anfrage wurden möglicherweise geändert, oder geschützte Datenverknüpfungen verhindern das Löschen. Aktualisiere die Liste und lade eine neue Vorschau.",
+    "success": "Das Benutzerkonto und die zugehörigen Daten wurden gelöscht. Benachrichtige die anfragende Person separat.",
+    "counts": {
+      "workouts": "Trainingseinheiten",
+      "programAssignments": "Programmzuweisungen",
+      "personalPrograms": "Persönliche Programme",
+      "templates": "Trainingsvorlagen",
+      "reports": "Fehlermeldungen"
+    }
   }
 }

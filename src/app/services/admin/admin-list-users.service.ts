@@ -31,6 +31,7 @@ export class AdminListUsersService {
               member.email != null,
           )
           .map((member) => ({
+            accountType: member.type === 'user' ? 'user' as const : member.type === 'coach' ? 'coach' as const : undefined,
             id: member.id,
             username: member.usernameOrName,
             email: member.email,
