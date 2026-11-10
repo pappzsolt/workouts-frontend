@@ -18,6 +18,8 @@ import { AuthService } from '../services/auth/auth.service';
 import { API_ENDPOINTS } from '../api-endpoints';
 import { environment } from '../../environments/environment';
 
+import { PUBLIC_REQUEST } from '../services/account-deletion/account-deletion.service';
+
 const AUTH_RETRY = new HttpContextToken<boolean>(() => false);
 
 @Injectable()
@@ -29,7 +31,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     // A web login/refresh/logout nem függhet access tokentől.
-    if (!this.isApiUrl(req.url) || this.isWebAuthEndpoint(req.url)) {
+    if (req.context.get(PUBLIC_REQUEST) || !this.isApiUrl(req.url) || this.isWebAuthEndpoint(req.url)) {
       return next.handle(req);
     }
 

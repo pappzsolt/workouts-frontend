@@ -31,7 +31,9 @@
     "coachWorkouts": "Trainingsbibliothek",
     "registrations": "Registrierungsanfragen",
     "bugReport": "Fehler melden",
-    "bugReports": "Fehlermeldungen"
+    "bugReports": "Fehlermeldungen",
+    "deleteAccount": "Konto löschen",
+    "accountDeletionRequests": "Kontolöschanfragen"
   },
   "header": {
     "user": "Benutzer",
@@ -1564,5 +1566,64 @@
     "another": "Weitere Datei importieren",
     "failed": "Die Excel-Datei konnte nicht verarbeitet werden.",
     "uncertain": "Das Speichern wurde nicht bestätigt. Prüfe vor einem erneuten Import die Programmliste, um Duplikate zu vermeiden."
+  },
+  "deleteAccount": {
+    "title": "Konto und personenbezogene Daten löschen",
+    "intro": "Hier kannst du die endgültige Löschung deines {{app}}-Kontos und der zugehörigen personenbezogenen Daten beantragen. Eine Anmeldung oder App-Installation ist nicht erforderlich.",
+    "stepsTitle": "So beantragst du die Löschung",
+    "step1": "Gib die E-Mail-Adresse deines Kontos an, bestätige den Löschwunsch, löse das CAPTCHA und sende das Formular ab.",
+    "step2": "Wir bearbeiten die Anfrage manuell und prüfen deine Berechtigung über die beim Konto hinterlegten Kontaktdaten. Wir fragen niemals nach deinem Passwort.",
+    "step3": "Nach der Prüfung löschen wir das Konto und die zugehörigen personenbezogenen Daten und informieren dich per E-Mail. Das Absenden des Formulars löscht dein Konto noch nicht.",
+    "dataTitle": "Welche Daten werden gelöscht?",
+    "deletedData": "Profil- und Kontaktdaten, Körpermaße, Ziele, persönliche Trainingspläne, Trainingsverlauf und Ergebnisse, Kontoverknüpfungen, Zugangsdaten und Sitzungen sowie personenbezogene Daten in Registrierungsanfragen, Meldungen und Protokollen. Persönliche Verknüpfungen zu dir werden aus geteilten Inhalten anderer Personen entfernt.",
+    "retentionTitle": "Aufbewahrung und Fristen",
+    "formTitle": "Löschanfrage",
+    "email": "E-Mail-Adresse des Kontos",
+    "emailHint": "Verwende die bei der Registrierung angegebene E-Mail-Adresse.",
+    "message": "Nachricht (optional)",
+    "messageHint": "Maximal 2000 Zeichen. Bitte keine Passwörter oder sensiblen Gesundheitsdaten angeben.",
+    "confirmation": "Ich beantrage die endgültige Löschung meines Kontos und der zugehörigen personenbezogenen Daten.",
+    "submit": "Löschanfrage senden",
+    "sending": "Wird gesendet…",
+    "loading": "Wird geladen…",
+    "successTitle": "Deine Anfrage wurde erfasst",
+    "success": "Deine Anfrage wartet auf Bearbeitung. Als Nächstes prüfen wir deine Berechtigung über die E-Mail-Adresse des Kontos. Dein Konto wurde noch nicht gelöscht.",
+    "reloadCaptcha": "CAPTCHA neu laden",
+    "retryAfter": "Versuche es frühestens in {{seconds}} Sekunden erneut.",
+    "support": "Kontakt:",
+    "googleNotice": "Dieses Formular wird durch Google reCAPTCHA geschützt. Google:",
+    "privacy": "Datenschutzerklärung",
+    "terms": "Nutzungsbedingungen",
+    "errors": {
+      "configuration": "Das Löschformular ist derzeit nicht verfügbar. Versuche es später erneut oder nutze die angegebene Kontaktadresse.",
+      "captcha": "Das CAPTCHA konnte nicht geladen werden. Prüfe die Verbindung und versuche es erneut.",
+      "validation": "Gib eine gültige E-Mail-Adresse an, bestätige deinen Löschwunsch und löse das CAPTCHA.",
+      "submit": "Die Anfrage konnte nicht gesendet werden. Deine Eingaben bleiben erhalten; löse ein neues CAPTCHA und versuche es erneut.",
+      "rateLimit": "Zu viele Anfragen. Bitte versuche es später erneut."
+    },
+    "status": {
+      "PENDING": "Ausstehend",
+      "COMPLETED": "Löschung abgeschlossen",
+      "REJECTED": "Abgelehnt"
+    },
+    "admin": {
+      "title": "Kontolöschanfragen",
+      "warning": "Die angegebene E-Mail-Adresse ist nicht verifiziert. Prüfe die Berechtigung, führe die tatsächliche Löschung durch und benachrichtige die anfragende Person. Der Abschluss dokumentiert nur das Ergebnis und löscht weder ein Konto noch sendet er E-Mails.",
+      "refresh": "Aktualisieren",
+      "empty": "Keine Löschanfragen.",
+      "resolve": "Ergebnis erfassen",
+      "resolutionTitle": "Ergebnis der manuellen Bearbeitung",
+      "decision": "Ergebnis",
+      "note": "Begründung / ausgeführte Schritte (erforderlich)",
+      "confirmCompleted": "Ich habe die Berechtigung geprüft, das Konto und die zugehörigen Daten tatsächlich gelöscht und die anfragende Person benachrichtigt.",
+      "confirmRejected": "Ich habe den Ablehnungsgrund geprüft und die anfragende Person benachrichtigt.",
+      "save": "Endgültig abschließen",
+      "cancel": "Abbrechen",
+      "previous": "Zurück",
+      "next": "Weiter",
+      "pagination": "Anfragenseiten",
+      "loadError": "Anfragen konnten nicht geladen werden. Bitte aktualisieren.",
+      "saveError": "Abschluss fehlgeschlagen. Die Anfrage wurde möglicherweise bereits abgeschlossen; aktualisiere die Liste."
+    }
   }
 }

@@ -1,0 +1,9 @@
+.deletion-page { min-height: 100vh; padding: 2rem 1rem; background: var(--app-surface-50); color: var(--app-content-900); }
+.deletion-card { max-width: 46rem; margin: auto; padding: clamp(1rem, 4vw, 2.5rem); border-radius: 1rem; background: var(--app-white); }
+input[type=email], textarea { display: block; width: 100%; margin: .4rem 0; padding: .7rem; border: 1px solid var(--app-surface-400); border-radius: .5rem; background: transparent; color: inherit; }
+input[type=checkbox] { margin-top: .3rem; min-width: 1rem; min-height: 1rem; }
+small { display: block; }
+button { padding: .7rem 1rem; border-radius: .5rem; border: 1px solid var(--app-surface-500); }
+.submit-button { background: var(--app-primary-700); color: var(--app-white); border-color: var(--app-primary-700); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+:focus-visible { outline: 3px solid var(--app-primary-600); outline-offset: 3px; }

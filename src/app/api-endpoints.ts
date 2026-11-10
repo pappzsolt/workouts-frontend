@@ -1,6 +1,8 @@
 import { environment } from '../environments/environment';
 
 export const API_ENDPOINTS = {
+  accountDeletion: `${environment.apiUrl}/public/account-deletion-requests`,
+  adminAccountDeletion: `${environment.apiUrl}/admin/account-deletion-requests`,
   // ============================================================
   // AUTHENTICATION
   // ============================================================

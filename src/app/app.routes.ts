@@ -10,6 +10,10 @@ import { LayoutComponent } from './layouts/default-layout/layout.component';
 
 
 export const routes: Routes = [
+  {
+    path: 'delete-account',
+    loadComponent: () => import('./components/delete-account/delete-account.component').then(m => m.DeleteAccountComponent),
+  },
   // ============================================================
   // LOGIN
   // ============================================================
@@ -102,6 +106,10 @@ export const routes: Routes = [
         loadComponent: () => import('./components/admin-dashboard/operations/login-audit-logs/login-audit-logs.component').then(m => m.LoginAuditLogsComponent),
       },
 
+      {
+        path: 'account-deletion-requests',
+        loadComponent: () => import('./components/admin-dashboard/operations/account-deletion-requests/account-deletion-requests.component').then(m => m.AccountDeletionRequestsComponent),
+      },
       {
         path: 'registrations',
         loadComponent: () => import('./components/admin-dashboard/operations/registration-requests/registration-requests.component').then(m => m.RegistrationRequestsComponent),

@@ -1,0 +1,66 @@
+<main class="deletion-page">
+  <div class="deletion-card">
+    <header class="flex items-center justify-between gap-4 mb-6">
+      <a routerLink="/login" class="font-semibold text-primary-600">{{ config?.appName || 'Workouts' }}</a>
+      <app-language-selector />
+    </header>
+    <h1 class="text-2xl font-bold mb-4">{{ 'deleteAccount.title' | translate }}</h1>
+    <p class="mb-5">{{ 'deleteAccount.intro' | translate: { app: config?.appName || 'Workouts' } }}</p>
+    <section aria-labelledby="steps-title">
+      <h2 id="steps-title" class="text-lg font-semibold">{{ 'deleteAccount.stepsTitle' | translate }}</h2>
+      <ol class="list-decimal pl-6 my-3 space-y-2">
+        <li>{{ 'deleteAccount.step1' | translate }}</li>
+        <li>{{ 'deleteAccount.step2' | translate }}</li>
+        <li>{{ 'deleteAccount.step3' | translate }}</li>
+      </ol>
+      <p *ngIf="config?.processingTime" class="mb-4 whitespace-pre-line">{{ config?.processingTime }}</p>
+    </section>
+    <section aria-labelledby="data-title" class="my-5">
+      <h2 id="data-title" class="text-lg font-semibold">{{ 'deleteAccount.dataTitle' | translate }}</h2>
+      <p class="my-2">{{ 'deleteAccount.deletedData' | translate }}</p>
+      <h3 class="font-semibold mt-4">{{ 'deleteAccount.retentionTitle' | translate }}</h3>
+      <p *ngIf="config?.retentionPolicy" class="mt-2 whitespace-pre-line">{{ config?.retentionPolicy }}</p>
+    </section>
+    <p *ngIf="configuring" role="status">{{ 'deleteAccount.loading' | translate }}</p>
+    <div *ngIf="success" role="status" class="rounded-lg bg-surface-100 p-4 my-4">
+      <h2 class="font-semibold">{{ 'deleteAccount.successTitle' | translate }}</h2>
+      <p>{{ 'deleteAccount.success' | translate }}</p>
+    </div>
+    <p *ngIf="error" role="alert" class="my-4 text-delete-700">{{ error | translate }}</p>
+    <p *ngIf="retryAfter">{{ 'deleteAccount.retryAfter' | translate: { seconds: retryAfter } }}</p>
+    <form [formGroup]="form" (ngSubmit)="submit()" [hidden]="success" novalidate>
+      <fieldset [disabled]="loading || configuring" class="space-y-4">
+        <legend class="font-semibold mb-3">{{ 'deleteAccount.formTitle' | translate }}</legend>
+        <div>
+          <label for="deletion-email">{{ 'deleteAccount.email' | translate }}</label>
+          <input id="deletion-email" formControlName="email" type="email" autocomplete="email" maxlength="254" required
+            [attr.aria-invalid]="form.controls.email.touched && form.controls.email.invalid" aria-describedby="email-hint" />
+          <small id="email-hint">{{ 'deleteAccount.emailHint' | translate }}</small>
+        </div>
+        <div>
+          <label for="deletion-message">{{ 'deleteAccount.message' | translate }}</label>
+          <textarea id="deletion-message" formControlName="message" rows="3" maxlength="2000"></textarea>
+          <small>{{ 'deleteAccount.messageHint' | translate }}</small>
+        </div>
+        <label class="flex items-start gap-3">
+          <input type="checkbox" formControlName="confirmation" required />
+          <span>{{ 'deleteAccount.confirmation' | translate }}</span>
+        </label>
+        <div #captchaHost aria-label="reCAPTCHA"></div>
+        <button *ngIf="error === 'deleteAccount.errors.captcha' && widget === undefined" type="button" (click)="loadCaptcha()">
+          {{ 'deleteAccount.reloadCaptcha' | translate }}
+        </button>
+        <button type="submit" [disabled]="loading || !captchaToken || form.invalid" class="submit-button">
+          {{ (loading ? 'deleteAccount.sending' : 'deleteAccount.submit') | translate }}
+        </button>
+      </fieldset>
+    </form>
+    <p *ngIf="config?.supportEmail" class="mt-6">
+      {{ 'deleteAccount.support' | translate }} <a class="underline" [href]="'mailto:' + config?.supportEmail">{{ config?.supportEmail }}</a>
+    </p>
+    <p class="mt-6 text-sm">{{ 'deleteAccount.googleNotice' | translate }}
+      <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" class="underline">{{ 'deleteAccount.privacy' | translate }}</a> ·
+      <a href="https://policies.google.com/terms" target="_blank" rel="noopener noreferrer" class="underline">{{ 'deleteAccount.terms' | translate }}</a>
+    </p>
+  </div>
+</main>

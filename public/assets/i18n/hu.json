@@ -31,7 +31,9 @@
     "coachWorkouts": "Edzéstár",
     "registrations": "Regisztrációs kérelmek",
     "bugReport": "Hibabejelentés",
-    "bugReports": "Hibabejelentések"
+    "bugReports": "Hibabejelentések",
+    "deleteAccount": "Fiók törlése",
+    "accountDeletionRequests": "Fióktörlési kérelmek"
   },
   "header": {
     "user": "Felhasználó",
@@ -1564,5 +1566,64 @@
     "another": "Másik fájl importálása",
     "failed": "Az Excel feldolgozása nem sikerült.",
     "uncertain": "Nem érkezett biztos visszaigazolás a mentésről. Újabb import előtt ellenőrizd a programlistát, hogy elkerüld a duplikálást."
+  },
+  "deleteAccount": {
+    "title": "Fiók és személyes adatok törlése",
+    "intro": "Ezen az oldalon a(z) {{app}} fiókod és a hozzá kapcsolódó személyes adataid végleges törlését kérheted. Ehhez nem kell bejelentkezned vagy telepítened az alkalmazást.",
+    "stepsTitle": "Hogyan kérhető a törlés?",
+    "step1": "Add meg a fiókodhoz tartozó e-mail-címet, erősítsd meg a törlési szándékodat, és küldd el az űrlapot a CAPTCHA kitöltése után.",
+    "step2": "A kérelmet manuálisan dolgozzuk fel. A fiókhoz tartozó elérhetőségen ellenőrizzük, hogy jogosult vagy a törlést kérni. Jelszót nem kérünk.",
+    "step3": "Az ellenőrzés után töröljük a fiókot és a kapcsolódó személyes adatokat, majd az eredményről e-mailben értesítünk. Az űrlap elküldése önmagában még nem törli a fiókot.",
+    "dataTitle": "Milyen adatokat törlünk?",
+    "deletedData": "A fiókhoz kapcsolódó profil- és kapcsolattartási adatokat, testméreteket, célokat, személyes edzésterveket, edzéstörténetet és eredményeket, fiókkapcsolatokat, hitelesítési adatokat és munkameneteket, valamint a regisztrációs kérelmekben, bejelentésekben és naplókban lévő személyes adatokat. A másokhoz tartozó, megosztott tartalmakból a rád mutató személyes kapcsolatot távolítjuk el.",
+    "retentionTitle": "Adatmegőrzés és időtartam",
+    "formTitle": "Törlési kérelem",
+    "email": "A fiók e-mail-címe",
+    "emailHint": "A regisztrációnál használt címet add meg.",
+    "message": "Megjegyzés (nem kötelező)",
+    "messageHint": "Legfeljebb 2000 karakter. Ne írj jelszót vagy érzékeny egészségügyi adatot.",
+    "confirmation": "Kérem a fiókom és a hozzá kapcsolódó személyes adataim végleges törlését.",
+    "submit": "Törlési kérelem elküldése",
+    "sending": "Küldés…",
+    "loading": "Betöltés…",
+    "successTitle": "A kérelmedet rögzítettük",
+    "success": "A kérelmed feldolgozásra vár. A következő lépés a jogosultságod ellenőrzése a fiókhoz tartozó e-mail-címen. A fiókod még nem lett törölve.",
+    "reloadCaptcha": "CAPTCHA újratöltése",
+    "retryAfter": "Újrapróbálás legkorábban {{seconds}} másodperc múlva.",
+    "support": "Kapcsolat:",
+    "googleNotice": "Az űrlapot a Google reCAPTCHA védi. Google:",
+    "privacy": "Adatvédelmi irányelvek",
+    "terms": "Felhasználási feltételek",
+    "errors": {
+      "configuration": "A törlési űrlap jelenleg nem érhető el. Kérjük, próbáld meg később, vagy írj a megadott kapcsolattartási címre.",
+      "captcha": "A CAPTCHA nem tölthető be. Ellenőrizd a kapcsolatot, és próbáld újra.",
+      "validation": "Adj meg érvényes e-mail-címet, erősítsd meg a törlési szándékot, és töltsd ki a CAPTCHA-t.",
+      "submit": "A kérelmet nem sikerült elküldeni. Az adataid megmaradtak az űrlapon; új CAPTCHA kitöltése után újrapróbálhatod.",
+      "rateLimit": "Túl sok kérés érkezett. Kérjük, próbáld később."
+    },
+    "status": {
+      "PENDING": "Feldolgozásra vár",
+      "COMPLETED": "Törlés teljesítve",
+      "REJECTED": "Elutasítva"
+    },
+    "admin": {
+      "title": "Fióktörlési kérelmek",
+      "warning": "A beküldött e-mail-cím nem hitelesített. Előbb ellenőrizd a kérelmező jogosultságát, majd végezd el a tényleges törlést és küldj visszaigazolást. A lezárás gomb kizárólag ezt dokumentálja; fiókot nem töröl és e-mailt nem küld.",
+      "refresh": "Frissítés",
+      "empty": "Nincs törlési kérelem.",
+      "resolve": "Feldolgozás rögzítése",
+      "resolutionTitle": "Kézi feldolgozás eredménye",
+      "decision": "Eredmény",
+      "note": "Indoklás / elvégzett műveletek (kötelező)",
+      "confirmCompleted": "Ellenőriztem a jogosultságot, a fiók és a kapcsolódó adatok tényleges törlése megtörtént, és a kérelmezőt értesítettem.",
+      "confirmRejected": "Az elutasítás indokát ellenőriztem és a kérelmezőt értesítettem.",
+      "save": "Végleges lezárás",
+      "cancel": "Mégse",
+      "previous": "Előző",
+      "next": "Következő",
+      "pagination": "Kérelmek lapozása",
+      "loadError": "A kérelmek betöltése sikertelen. Próbáld meg a frissítést.",
+      "saveError": "A lezárás sikertelen. A kérelem időközben már lezárulhatott; frissítsd a listát."
+    }
   }
 }

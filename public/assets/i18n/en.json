@@ -31,7 +31,9 @@
     "coachWorkouts": "Workout library",
     "registrations": "Registration requests",
     "bugReport": "Report a bug",
-    "bugReports": "Bug reports"
+    "bugReports": "Bug reports",
+    "deleteAccount": "Delete account",
+    "accountDeletionRequests": "Account deletion requests"
   },
   "header": {
     "user": "User",
@@ -1564,5 +1566,64 @@
     "another": "Import another file",
     "failed": "Could not process the Excel file.",
     "uncertain": "Saving was not confirmed. Check your program list before importing again to avoid duplicates."
+  },
+  "deleteAccount": {
+    "title": "Delete your account and personal data",
+    "intro": "Request permanent deletion of your {{app}} account and associated personal data here. You do not need to sign in or install the app.",
+    "stepsTitle": "How to request deletion",
+    "step1": "Enter the email address associated with your account, confirm your request, complete the CAPTCHA and submit the form.",
+    "step2": "Requests are processed manually. We verify your authority using the contact details associated with your account. We never ask for your password.",
+    "step3": "After verification, we delete your account and associated personal data and notify you by email. Submitting this form does not immediately delete your account.",
+    "dataTitle": "What data is deleted?",
+    "deletedData": "Your profile and contact information, body measurements, goals, personal workout plans, workout history and results, account associations, credentials and sessions, and personal data in registration requests, reports and logs. Personal links to you are removed from shared content belonging to others.",
+    "retentionTitle": "Data retention and timeframes",
+    "formTitle": "Deletion request",
+    "email": "Account email address",
+    "emailHint": "Use the email address you registered with.",
+    "message": "Message (optional)",
+    "messageHint": "Up to 2000 characters. Do not include passwords or sensitive health information.",
+    "confirmation": "I request permanent deletion of my account and associated personal data.",
+    "submit": "Send deletion request",
+    "sending": "Sending…",
+    "loading": "Loading…",
+    "successTitle": "Your request has been recorded",
+    "success": "Your request is awaiting processing. The next step is verifying your authority through the email address associated with your account. Your account has not been deleted yet.",
+    "reloadCaptcha": "Reload CAPTCHA",
+    "retryAfter": "Try again in at least {{seconds}} seconds.",
+    "support": "Contact:",
+    "googleNotice": "This form is protected by Google reCAPTCHA. Google:",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "errors": {
+      "configuration": "The deletion form is currently unavailable. Please try again later or use the contact email provided.",
+      "captcha": "The CAPTCHA could not be loaded. Check your connection and try again.",
+      "validation": "Enter a valid email address, confirm your deletion request and complete the CAPTCHA.",
+      "submit": "Your request could not be sent. Your form entries are preserved; complete a new CAPTCHA to try again.",
+      "rateLimit": "Too many requests. Please try again later."
+    },
+    "status": {
+      "PENDING": "Pending",
+      "COMPLETED": "Deletion completed",
+      "REJECTED": "Rejected"
+    },
+    "admin": {
+      "title": "Account deletion requests",
+      "warning": "The submitted email address is unverified. Verify the requester’s authority, perform the actual deletion and notify the requester first. Closing a request only records the outcome; it does not delete an account or send email.",
+      "refresh": "Refresh",
+      "empty": "No deletion requests.",
+      "resolve": "Record outcome",
+      "resolutionTitle": "Manual processing outcome",
+      "decision": "Outcome",
+      "note": "Reason / actions performed (required)",
+      "confirmCompleted": "I verified the requester’s authority, completed actual deletion of the account and associated data, and notified the requester.",
+      "confirmRejected": "I verified the rejection reason and notified the requester.",
+      "save": "Close request permanently",
+      "cancel": "Cancel",
+      "previous": "Previous",
+      "next": "Next",
+      "pagination": "Request pagination",
+      "loadError": "Could not load requests. Try refreshing.",
+      "saveError": "Could not close the request. It may already be closed; refresh the list."
+    }
   }
 }
