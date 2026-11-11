@@ -65,6 +65,7 @@ describe('Client editing workflow behavior', () => {
       targetRepetitions: 12, targetWeightKg: 20, restSeconds: 60, targetRpe: 7.5,
       actualRepetitions: null, actualWeightKg: null, notes: null, completed: false,
     });
+    api.getClientWorkoutSets.and.returnValue(of([set, { ...set, id: 72, setNumber: 2, completed: false }]));
     saved.next();
     expect(component.setEditor.setBusy).toBeFalse();
     expect(entry.exercise.setsTotal).toBe(2);
@@ -80,10 +81,13 @@ describe('Client editing workflow behavior', () => {
     const entry = component.setEditor.exerciseSets[0];
     entry.sets[0].notes = 'unsaved';
     component.setEditor.addSet(entry);
+    api.getClientWorkoutSets.and.returnValue(of([set, { ...set, id: 72, setNumber: 2, completed: false }]));
     save.error(new Error('prefill failed'));
     expect(component.setEditor.setBusy).toBeFalse();
     expect(entry.sets[0].notes).toBe('unsaved');
-    expect(entry.exercise.setsTotal).toBe(1);
+    expect(entry.sets.length).toBe(2);
+    expect(entry.exercise.setsTotal).toBe(2);
+    expect(component.selected?.setsTotal).toBe(2);
     expect(component.message).toBe('prefill failed');
     expect(api.getClientWorkoutSets).toHaveBeenCalledTimes(2);
   });
@@ -149,6 +153,65 @@ describe('Client editing workflow behavior', () => {
     saved.next(); saved.complete();
     expect(component.tab).toBe('programs');
     expect(component.pendingNav).toBeNull();
+  });
+
+
+  it('updates completion flags only after saves are confirmed and can reopen a completed workout', () => {
+    const entry = component.setEditor.exerciseSets[0];
+    const row = entry.sets[0];
+    const saved = new Subject<void>();
+    api.saveClientSet.and.returnValue(saved);
+    row.completed = true;
+    component.setEditor.saveSets();
+    expect(entry.exercise.completed).toBeFalse();
+    expect(component.selected?.completed).toBeFalse();
+    saved.next(); saved.complete();
+    expect(entry.exercise.completed).toBeTrue();
+    expect(component.selected?.completed).toBeTrue();
+    expect(component.counts.done).toBe(1);
+
+    api.saveClientSet.and.returnValue(of(undefined));
+    row.completed = false;
+    component.setEditor.saveSets();
+    expect(entry.exercise.completed).toBeFalse();
+    expect(component.selected?.completed).toBeFalse();
+    expect(component.counts.done).toBe(0);
+  });
+
+  it('keeps completed status on a failed save and does not mark an empty exercise completed', () => {
+    api.getClientWorkoutSets.and.returnValue(of([{ ...set, completed: true }]));
+    component.setEditor.loadWorkout(component.selected);
+    const entry = component.setEditor.exerciseSets[0];
+    expect(component.selected?.completed).toBeTrue();
+    entry.sets[0].completed = false;
+    const failed = new Subject<void>();
+    api.saveClientSet.and.returnValue(failed);
+    component.setEditor.saveSets();
+    failed.error(new Error('save failed'));
+    expect(entry.exercise.completed).toBeTrue();
+    expect(component.selected?.completed).toBeTrue();
+    api.getClientWorkoutSets.and.returnValue(of([]));
+    api.deleteClientSet.and.returnValue(of(undefined));
+    component.setEditor.askDeleteSet(entry.sets[0]);
+    component.setEditor.confirmDeleteSet(entry);
+    expect(entry.exercise.setsTotal).toBe(0);
+    expect(entry.exercise.completed).toBeFalse();
+    expect(component.selected?.completed).toBeFalse();
+  });
+
+  it('keeps a newly created set in totals when prefill and the following reload fail', () => {
+    api.addClientSet.and.returnValue(of(72));
+    const saved = new Subject<void>();
+    api.saveClientSet.and.returnValue(saved);
+    const reloaded = new Subject<ClientWorkoutSet[]>();
+    api.getClientWorkoutSets.and.returnValue(reloaded);
+    const entry = component.setEditor.exerciseSets[0];
+    component.setEditor.addSet(entry);
+    saved.error(new Error('prefill failed'));
+    reloaded.error(new Error('reload failed'));
+    expect(entry.exercise.setsTotal).toBe(2);
+    expect(component.selected?.setsTotal).toBe(2);
+    expect(entry.exercise.completed).toBeFalse();
   });
 
   it('filters assigned programs, sorts by start date, and selects the newest', () => {

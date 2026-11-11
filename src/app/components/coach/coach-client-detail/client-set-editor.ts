@@ -53,6 +53,9 @@ export class ClientSetEditor {
               return edited && this.isChanged(edited) ? edited : toEditable(set);
             });
           entry.loading = false;
+          // Use the server snapshot for totals while keeping unsaved input values intact.
+          this.updateExerciseProgress(entry, sets);
+          this.refreshWorkoutTotals();
         },
         error: (error) => {
           entry.loading = false;
@@ -100,6 +103,12 @@ export class ClientSetEditor {
       .pipe(takeUntil(this.effects.cancelled$), takeUntilDestroyed(this.effects.destroyRef))
       .subscribe({
         next: (setId) => {
+          // Creation has already committed even if the following prefill fails.
+          if (setId) {
+            entry.exercise.setsTotal += 1;
+            entry.exercise.completed = false;
+            this.refreshWorkoutTotals();
+          }
           // Az új sorozat az előző sor cél értékeivel indul (utána szabadon módosítható).
           const save$: Observable<unknown> =
             prefill && setId
@@ -115,8 +124,6 @@ export class ClientSetEditor {
             next: () => {
               this.setBusy = false;
               this.loadSets(entry, true);
-              entry.exercise.setsTotal += 1;
-              this.refreshWorkoutTotals();
             },
             error: (error) => {
               this.setBusy = false;
@@ -143,7 +150,6 @@ export class ClientSetEditor {
   confirmDeleteSet(entry: ExerciseSets): void {
     const id = this.deleteSetId;
     if (id === null || this.setBusy) return;
-    const removed = entry.sets.find((row) => row.id === id);
     this.setBusy = true;
     this.workspace
       .deleteClientSet(id)
@@ -153,8 +159,7 @@ export class ClientSetEditor {
           this.setBusy = false;
           this.deleteSetId = null;
           entry.sets = entry.sets.filter((row) => row.id !== id);
-          entry.exercise.setsTotal = Math.max(0, entry.exercise.setsTotal - 1);
-          if (removed?.original.completed) entry.exercise.setsCompleted = Math.max(0, entry.exercise.setsCompleted - 1);
+          this.updateExerciseProgress(entry);
           this.refreshWorkoutTotals();
           this.effects.showMessage('coachWorkspace.client.setDeleted', 'success');
           this.loadSets(entry, true);
@@ -186,7 +191,8 @@ export class ClientSetEditor {
       // a later failure must not cause an already confirmed row to be sent again.
       tap(() => {
         row.original = { ...values };
-        for (const entry of this.exerciseSets) entry.exercise.setsCompleted = this.completedCount(entry);
+        const entry = this.exerciseSets.find(entry => entry.sets.includes(row));
+        if (entry) this.updateExerciseProgress(entry);
         this.refreshWorkoutTotals();
       }),
     )))
@@ -209,11 +215,21 @@ export class ClientSetEditor {
     for (const entry of this.exerciseSets) entry.sets.forEach(restoreSet);
   }
 
+  private updateExerciseProgress(
+    entry: ExerciseSets,
+    confirmed: readonly { completed: boolean }[] = entry.sets.map(row => row.original),
+  ): void {
+    entry.exercise.setsTotal = confirmed.length;
+    entry.exercise.setsCompleted = confirmed.filter(set => set.completed).length;
+    entry.exercise.completed = confirmed.length > 0 && entry.exercise.setsCompleted === confirmed.length;
+  }
+
   private refreshWorkoutTotals(): void {
     const workout = this.selectedWorkout();
     if (!workout) return;
     workout.setsTotal = workout.exercises.reduce((sum, e) => sum + e.setsTotal, 0);
     workout.setsCompleted = workout.exercises.reduce((sum, e) => sum + e.setsCompleted, 0);
+    workout.completed = workout.exercises.length > 0 && workout.exercises.every(exercise => exercise.completed);
   }
 
   /** A sor értékei mentésre kész formában; érvénytelen értéknél null. */

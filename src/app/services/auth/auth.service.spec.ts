@@ -103,4 +103,64 @@ describe('AuthService cross-tab refresh', () => {
     }));
   }
 
+  it('serializes login behind refresh so an older cookie response cannot overwrite the login', fakeAsync(() => {
+    first.refreshAccessToken().subscribe();
+    flushMicrotasks();
+    const refresh = http.expectOne(request => request.url === API_ENDPOINTS.authWebRefresh);
+    first.login('new-user', 'password').subscribe();
+    flushMicrotasks();
+    http.expectNone(request => request.url === API_ENDPOINTS.authWebLogin);
+    refresh.flush({ success: true, data: { accessToken: 'old-session-token' } });
+    flushMicrotasks();
+    const login = http.expectOne(request => request.url === API_ENDPOINTS.authWebLogin);
+    expect(login.request.withCredentials).toBeTrue();
+    login.flush({ success: true, data: { accessToken: 'new-login-token' } });
+    flushMicrotasks();
+    expect(first.getAccessToken()).toBe('new-login-token');
+  }));
+
+  it('retires a queued refresh from the previous session after login succeeds', fakeAsync(() => {
+    const failure = jasmine.createSpy('refreshFailure');
+    first.login('new-user', 'password').subscribe();
+    flushMicrotasks();
+    const login = http.expectOne(request => request.url === API_ENDPOINTS.authWebLogin);
+    first.refreshAccessToken(failure).subscribe({ error: () => {} });
+    login.flush({ success: true, data: { accessToken: 'new-login-token' } });
+    flushMicrotasks();
+    http.expectNone(request => request.url === API_ENDPOINTS.authWebRefresh);
+    expect(first.getAccessToken()).toBe('new-login-token');
+    expect(failure).not.toHaveBeenCalled();
+    // A fresh request now belongs to the new session and must remain usable.
+    first.refreshAccessToken().subscribe();
+    flushMicrotasks();
+    http.expectOne(request => request.url === API_ENDPOINTS.authWebRefresh)
+      .flush({ success: true, data: { accessToken: 'new-session-refresh' } });
+    flushMicrotasks();
+    expect(first.getAccessToken()).toBe('new-session-refresh');
+  }));
+
+  it('ignores an older in-flight refresh when Web Locks are unavailable', fakeAsync(() => {
+    spyOnProperty(navigator, 'locks', 'get').and.returnValue(undefined as unknown as LockManager);
+    const failure = jasmine.createSpy('refreshFailure');
+    first.refreshAccessToken(failure).subscribe();
+    const refresh = http.expectOne(request => request.url === API_ENDPOINTS.authWebRefresh);
+    first.login('new-user', 'password').subscribe();
+    http.expectOne(request => request.url === API_ENDPOINTS.authWebLogin)
+      .flush({ success: true, data: { accessToken: 'new-login-token' } });
+    expect(refresh.cancelled).toBeTrue();
+    expect(first.getAccessToken()).toBe('new-login-token');
+    expect(failure).not.toHaveBeenCalled();
+  }));
+
+  it('does not accept a login response after logout', fakeAsync(() => {
+    first.login('new-user', 'password').subscribe({ error: () => {} });
+    flushMicrotasks();
+    const login = http.expectOne(request => request.url === API_ENDPOINTS.authWebLogin);
+    first.logout();
+    http.expectOne(request => request.url === API_ENDPOINTS.authWebLogout).flush({ success: true });
+    login.flush({ success: true, data: { accessToken: 'stale-login' } });
+    flushMicrotasks();
+    expect(first.getAccessToken()).toBeNull();
+  }));
+
 });

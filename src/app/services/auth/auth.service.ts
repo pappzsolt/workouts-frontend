@@ -49,27 +49,31 @@ export class AuthService {
    * HttpOnly cookie-ban érkezik, ezért withCredentials szükséges.
    */
   login(username: string, password: string): Observable<LoginResponse> {
-    return this.http
-      .post<ApiResponse<LoginResponse>>(
-        API_ENDPOINTS.authWebLogin,
-        { username, password },
-        {
-          params: this.languageParams(),
-          withCredentials: true,
-        },
-      )
-      .pipe(
-        map((response) => {
-          if (!response.success || !response.data) {
-            throw new Error(response.message ?? 'userMessages.userOrPassFailed');
-          }
-
-          return response.data;
-        }),
-        tap((response) => {
-          this.accessToken = response.accessToken;
-        }),
-      );
+    return defer(() => {
+      const sessionVersion = this.sessionVersion;
+      return this.withSessionLock(() => {
+        if (sessionVersion !== this.sessionVersion) {
+          return throwError(() => new Error('authErrors.sessionEnded'));
+        }
+        return this.http.post<ApiResponse<LoginResponse>>(
+          API_ENDPOINTS.authWebLogin,
+          { username, password },
+          { params: this.languageParams(), withCredentials: true },
+        ).pipe(
+          map(response => {
+            if (!response.success || !response.data) {
+              throw new Error(response.message ?? 'userMessages.userOrPassFailed');
+            }
+            return response.data;
+          }),
+          tap(response => {
+            if (sessionVersion !== this.sessionVersion) throw new Error('authErrors.sessionEnded');
+            this.cancelPendingRefresh();
+            this.accessToken = response.accessToken;
+          }),
+        );
+      });
+    });
   }
 
   /**
@@ -182,14 +186,8 @@ export class AuthService {
           },
         );
     };
-    const request$: Observable<LoginResponse> = defer(() => {
-      // The HttpOnly cookie is shared by all tabs. Hold an origin-wide lock
-      // until the response has rotated it, so another tab cannot replay it.
-      if (typeof navigator !== 'undefined' && navigator.locks) {
-        return navigator.locks.request('workouts-auth-refresh', () => firstValueFrom(refresh()));
-      }
-      return refresh();
-    })
+    // Login uses the same origin-wide lock so cookie responses cannot arrive out of order.
+    const request$: Observable<LoginResponse> = this.withSessionLock(refresh)
       .pipe(
         takeUntil(this.refreshCancelled$),
         map((response) => {
@@ -230,11 +228,8 @@ export class AuthService {
    * visszavonja a HttpOnly refresh tokent és törli a cookie-t.
    */
   logout(): void {
-    this.sessionVersion++;
+    this.cancelPendingRefresh();
     this.accessToken = null;
-    this.refreshCancelled$.next();
-    this.refreshInFlight$ = null;
-    this.refreshFailureHandler = null;
 
     // Régi deploymentből esetleg visszamaradt storage tokeneket is töröljük.
     localStorage.removeItem('accessToken');
@@ -257,6 +252,23 @@ export class AuthService {
           );
         },
       });
+  }
+
+  private withSessionLock<T>(request: () => Observable<T>): Observable<T> {
+    return defer(() => {
+      if (typeof navigator !== 'undefined' && navigator.locks) {
+        return navigator.locks.request('workouts-auth-refresh', () => firstValueFrom(request()));
+      }
+      return request();
+    });
+  }
+
+  /** Retire the previous session before accepting login or logout state. */
+  private cancelPendingRefresh(): void {
+    this.sessionVersion++;
+    this.refreshFailureHandler = null;
+    this.refreshCancelled$.next();
+    this.refreshInFlight$ = null;
   }
 
   private languageParams(): HttpParams {

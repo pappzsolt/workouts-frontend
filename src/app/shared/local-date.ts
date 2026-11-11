@@ -18,6 +18,12 @@ export function addDays(date: Date, days: number): Date {
   return copy;
 }
 
+/** Calendar-day distance, independent of daylight saving and local UTC offsets. */
+export function calendarDaysBetween(from: Date, to: Date): number {
+  const day = (date: Date) => Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
+  return (day(to) - day(from)) / 86400000;
+}
+
 /** A hét hétfője. */
 export function startOfWeek(date: Date): Date {
   const day = (date.getDay() + 6) % 7;

@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { errorMessage } from '../../../models/backend-dto/common/api-response-message';
+import { BugReportAttachments } from './bug-report-attachments';
 import { BUG_REPORT_LIMITS as L, type BugReportCreated } from '../../../models/backend-dto/bug-report/bug-report';
 import { AuthService } from '../../../services/auth/auth.service';
 import { BugReportService } from '../../../services/bug-report/bug-report.service';
@@ -39,27 +40,13 @@ export const appPathValidator: ValidatorFn = (control: AbstractControl): Validat
   return value === '' || APP_PATH.test(value) ? null : { appPath: true };
 };
 
-/** A fájl tartalma alapján: PNG vagy JPEG (a fájlnév és a böngésző által adott típus nem számít). */
-export async function detectImageType(file: Blob): Promise<'image/png' | 'image/jpeg' | null> {
-  const head = new Uint8Array(await file.slice(0, 8).arrayBuffer());
-  const png = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
-  if (head.length >= 8 && png.every((byte, i) => head[i] === byte)) return 'image/png';
-  if (head.length >= 3 && head[0] === 0xff && head[1] === 0xd8 && head[2] === 0xff) return 'image/jpeg';
-  return null;
-}
+export { detectImageType } from './bug-report-attachments';
 
 /** A proxy (nginx) 413-as válasza HTML; azt nem írjuk ki, helyette érthető üzenet jelenik meg. */
 export function submitError(error: unknown): string {
   if (error instanceof HttpErrorResponse && error.status === 413) return 'bugReport.errors.tooLarge';
   if (error instanceof HttpErrorResponse && typeof error.error === 'string') return 'bugReport.errors.submit';
   return errorMessage(error, 'bugReport.errors.submit');
-}
-
-interface Attachment {
-  file: File;
-  url: string;
-  name: string;
-  size: number;
 }
 
 /**
@@ -101,9 +88,10 @@ export class BugReportComponent implements OnDestroy {
     pageUrl: [this.previousPage(), [Validators.maxLength(L.pageUrlMax), appPathValidator]],
   });
 
-  attachments: Attachment[] = [];
-  fileError = '';
-  fileErrorParams: Record<string, unknown> = {};
+  private readonly attachmentStore = new BugReportAttachments();
+  get attachments() { return this.attachmentStore.items; }
+  get fileError(): string { return this.attachmentStore.error; }
+  get fileErrorParams(): Record<string, unknown> { return this.attachmentStore.errorParams; }
   dragging = false;
   submitted = false;
   sending = false;
@@ -112,7 +100,7 @@ export class BugReportComponent implements OnDestroy {
   successMessage = '';
 
   ngOnDestroy(): void {
-    this.clearAttachments();
+    this.attachmentStore.destroy();
   }
 
   get descriptionLength(): number {
@@ -155,31 +143,11 @@ export class BugReportComponent implements OnDestroy {
   }
 
   removeAttachment(index: number): void {
-    const [removed] = this.attachments.splice(index, 1);
-    if (removed) URL.revokeObjectURL(removed.url);
-    this.fileError = '';
+    this.attachmentStore.remove(index);
   }
 
-  async addFiles(files: File[]): Promise<void> {
-    this.fileError = '';
-    for (const file of files) {
-      if (this.attachments.length >= L.maxScreenshots) {
-        this.setFileError('bugReport.errors.tooManyFiles', { max: L.maxScreenshots });
-        return;
-      }
-      if (file.size > L.maxScreenshotBytes) {
-        this.setFileError('bugReport.errors.fileTooLarge', { name: file.name, max: L.maxScreenshotBytes / 1024 / 1024 });
-        continue;
-      }
-      const type = await detectImageType(file);
-      if (!type) {
-        this.setFileError('bugReport.errors.fileType', { name: file.name });
-        continue;
-      }
-      // A megjelenítéshez csak a már ellenőrzött kép kap ideiglenes URL-t.
-      const safe = new File([file], file.name || `screenshot.${type === 'image/png' ? 'png' : 'jpg'}`, { type });
-      this.attachments.push({ file: safe, url: URL.createObjectURL(safe), name: safe.name, size: safe.size });
-    }
+  addFiles(files: File[]): Promise<void> {
+    return this.attachmentStore.add(files);
   }
 
   submit(): void {
@@ -225,14 +193,8 @@ export class BugReportComponent implements OnDestroy {
     return bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
   }
 
-  private setFileError(key: string, params: Record<string, unknown>): void {
-    this.fileError = key;
-    this.fileErrorParams = params;
-  }
-
   private clearAttachments(): void {
-    for (const attachment of this.attachments) URL.revokeObjectURL(attachment.url);
-    this.attachments = [];
+    this.attachmentStore.clear();
   }
 
   /** Az előző oldal az alkalmazásban (ahonnan a bejelentőt megnyitották), ha van. */

@@ -1,4 +1,4 @@
-import { addDays, fromIsoDate, startOfWeek, toIsoDate } from '../../../shared/local-date';
+import { addDays, calendarDaysBetween, fromIsoDate, startOfWeek, toIsoDate } from '../../../shared/local-date';
 import type {
   ClientProgramRow,
   ClientSetValues,
@@ -108,7 +108,7 @@ export function buildWeeks(workouts: ClientWorkoutEntry[], programStart: string 
     const key = toIsoDate(monday);
     if (!groups.has(key)) {
       const number = start
-        ? Math.floor((monday.getTime() - startOfWeek(fromIsoDate(start)).getTime()) / (7 * 86400000)) + 1
+        ? Math.floor(calendarDaysBetween(startOfWeek(fromIsoDate(start)), monday) / 7) + 1
         : groups.size + 1;
       groups.set(key, { label: String(number), from: key, to: toIsoDate(addDays(monday, 6)), workouts: [] });
     }
