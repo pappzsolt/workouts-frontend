@@ -1646,5 +1646,8 @@
       "templates": "Trainingsvorlagen",
       "reports": "Fehlermeldungen"
     }
+  },
+  "seo": {
+    "aboutLink": "Über den Workouts-Trainingsplaner und das Trainingstagebuch"
   }
 }

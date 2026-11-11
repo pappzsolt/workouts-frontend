@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /swagger-ui/
+Disallow: /swagger-two-level/
+Disallow: /v3/api-docs
+
+# Application pages expose noindex in their original HTML, not only after JavaScript.
+# Leave them crawlable so search engines can read that directive.
+Sitemap: https://workouts.hevexora.com/sitemap.xml

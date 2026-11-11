@@ -1646,5 +1646,8 @@
       "templates": "Edzéssablonok",
       "reports": "Hibabejelentések"
     }
+  },
+  "seo": {
+    "aboutLink": "A Workouts edzéstervező és edzésnapló bemutatása"
   }
 }

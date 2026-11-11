@@ -1646,5 +1646,8 @@
       "templates": "Workout templates",
       "reports": "Bug reports"
     }
+  },
+  "seo": {
+    "aboutLink": "About the Workouts planner and training log"
   }
 }

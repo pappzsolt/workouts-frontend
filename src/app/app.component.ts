@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { SeoService } from './services/shared/seo.service';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { BackNavigationService } from './services/shared/back-navigation.service';
@@ -11,5 +12,6 @@ import { BackNavigationService } from './services/shared/back-navigation.service
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
+  private readonly seo = inject(SeoService);
   constructor(private backNavigationService: BackNavigationService) {}
 }
