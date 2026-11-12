@@ -1649,5 +1649,102 @@
   },
   "seo": {
     "aboutLink": "Über den Workouts-Trainingsplaner und das Trainingstagebuch"
+  },
+  "landing": {
+    "pageTitle": "Workouts – Online-Trainingsplaner und Trainingstagebuch",
+    "accessibility": {
+      "skip": "Zum Inhalt springen",
+      "language": "Sprache",
+      "mainNavigation": "Hauptnavigation",
+      "footerNavigation": "Nützliche Links",
+      "brand": "Workouts Vorstellung"
+    },
+    "navigation": {
+      "features": "Funktionen",
+      "coaches": "Für Trainer",
+      "login": "Anmelden",
+      "register": "Registrierung",
+      "deleteAccount": "Konto löschen"
+    },
+    "hero": {
+      "eyebrow": "PLANEN. TRAINIEREN. FORTSCHRITTE VERFOLGEN.",
+      "title": "Online-Trainingsplaner und Trainingstagebuch an einem Ort.",
+      "description": "Workouts hilft dir, dein Trainingsprogramm zu organisieren, deine Sätze zu erfassen und deine Fortschritte zu verfolgen. Nutze es für dein eigenes Training oder für die Zusammenarbeit mit deinem Trainer.",
+      "note": "Die Anwendung ist auf Ungarisch, Englisch und Deutsch verfügbar. Die Registrierung erfordert die Freigabe durch einen Administrator."
+    },
+    "actions": {
+      "register": "Registrierung beantragen",
+      "login": "Ich habe bereits ein Konto"
+    },
+    "features": {
+      "eyebrow": "ÜBERSICHTLICHES TRAINING",
+      "title": "Trainingsplanung von der ersten Übung bis zum letzten Satz",
+      "programs": {
+        "title": "Persönliche Trainingsprogramme",
+        "description": "Erstelle dein eigenes Trainingsprogramm, ordne Übungen nach Tagen und lege geplante Sätze, Wiederholungen, Gewichte und Pausenzeiten fest. Du kannst auch einzelne Trainingseinheiten und wiederverwendbare Trainingsvorlagen verwalten."
+      },
+      "log": {
+        "title": "Trainingstagebuch und Satzerfassung",
+        "description": "Erfasse tatsächliche Wiederholungen und Gewichte, markiere abgeschlossene Sätze und füge Notizen hinzu. Der Pausentimer und die Anzeige früherer Leistungen helfen dir beim Training."
+      },
+      "statistics": {
+        "title": "Trainingskalender und Statistiken",
+        "description": "Sieh dir deine geplanten Trainingseinheiten im Kalender an. Wöchentliche und monatliche Zusammenfassungen, Trainingsvolumen und Leistungsdaten je Übung zeigen deine Trainingsentwicklung."
+      }
+    },
+    "coaches": {
+      "eyebrow": "FÜR PERSONAL TRAINER",
+      "title": "Ein Trainingsplaner für die Arbeit mit deinen Kunden",
+      "description": "Im Trainerbereich findest du deine Kunden, ihre Programme und erfassten Trainingseinheiten an einem Ort. Verfolge abgeschlossene Sätze und vergleiche geplante und tatsächliche Werte.",
+      "programs": "Trainingsprogramme erstellen und Kunden zuweisen.",
+      "exercises": "Übungen, Sätze und Zielwerte bearbeiten.",
+      "calendar": "Trainingskalender und Abschlussstatus für jeden Kunden.",
+      "excel": "Trainingsprogramme im unterstützten Excel-Format importieren und exportieren."
+    },
+    "steps": {
+      "title": "Wie beginnst du mit einem Trainingstagebuch?",
+      "access": {
+        "title": "Zugang beantragen",
+        "beforeLink": "Fülle das",
+        "link": "Registrierungsformular",
+        "afterLink": "als Benutzer oder Trainer aus. Über die Entscheidung zu deinem Antrag wirst du per E-Mail informiert."
+      },
+      "organize": {
+        "title": "Training organisieren",
+        "beforeLink": "Nach der Freigabe kannst du dich",
+        "link": "anmelden",
+        "afterLink": ", dein eigenes Trainingsprogramm erstellen oder den von deinem Trainer zugewiesenen Plan ansehen."
+      },
+      "review": {
+        "title": "Ergebnisse erfassen und auswerten",
+        "description": "Erfasse deine Sätze während des Trainings. Später kannst du deine erfassten Trainingseinheiten im Kalender und in den Statistiken ansehen."
+      }
+    },
+    "faq": {
+      "title": "Häufige Fragen zu Workouts",
+      "withoutCoach": {
+        "question": "Kann ich den Trainingsplaner ohne Trainer nutzen?",
+        "answer": "Ja. Freigeschaltete Benutzer können eigene persönliche Trainingsprogramme, einzelne Trainingseinheiten und Vorlagen erstellen."
+      },
+      "sets": {
+        "question": "Welche Daten kann ich für einen Satz erfassen?",
+        "answer": "Neben den geplanten Werten kannst du tatsächliche Wiederholungen, verwendetes Gewicht, Abschluss, Notizen und Anstrengung erfassen."
+      },
+      "phone": {
+        "question": "Ist das Trainingstagebuch auf dem Smartphone verfügbar?",
+        "answer": "Die Weboberfläche funktioniert im Browser auf Smartphones und Computern. JavaScript und eine Internetverbindung sind erforderlich."
+      },
+      "approval": {
+        "question": "Kann ich mich direkt nach der Registrierung anmelden?",
+        "answer": "Dein Konto wird nach der Freigabe durch einen Administrator erstellt. Die Entscheidung zur Registrierung wird an die angegebene E-Mail-Adresse gesendet."
+      }
+    },
+    "cta": {
+      "title": "Mehr Überblick über dein Training",
+      "description": "Plane voraus, erfasse deine Sätze und verfolge dein absolviertes Training in Workouts."
+    },
+    "footer": {
+      "title": "Workouts – Trainingsplaner und Trainingstagebuch"
+    }
   }
 }

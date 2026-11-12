@@ -1649,5 +1649,102 @@
   },
   "seo": {
     "aboutLink": "About the Workouts planner and training log"
+  },
+  "landing": {
+    "pageTitle": "Workouts – Online workout planner and training log",
+    "accessibility": {
+      "skip": "Skip to content",
+      "language": "Language",
+      "mainNavigation": "Main navigation",
+      "footerNavigation": "Useful links",
+      "brand": "Workouts introduction"
+    },
+    "navigation": {
+      "features": "Features",
+      "coaches": "For coaches",
+      "login": "Sign in",
+      "register": "Registration",
+      "deleteAccount": "Delete account"
+    },
+    "hero": {
+      "eyebrow": "PLAN. TRAIN. TRACK YOUR PROGRESS.",
+      "title": "Online workout planner and training log, all in one place.",
+      "description": "Workouts helps you organize your training program, record your sets and review your progress. Use it for your own workouts or to work together with your coach.",
+      "note": "The application is available in Hungarian, English and German. Registration requires administrator approval."
+    },
+    "actions": {
+      "register": "Request registration",
+      "login": "I already have an account"
+    },
+    "features": {
+      "eyebrow": "ORGANIZED WORKOUTS",
+      "title": "Plan your training from the first exercise to the last set",
+      "programs": {
+        "title": "Personal training programs",
+        "description": "Build your own training program, organize exercises by day and set your planned sets, reps, weights and rest periods. You can also manage individual workouts and reusable workout templates."
+      },
+      "log": {
+        "title": "Training log and set tracking",
+        "description": "Record actual reps and weights, mark completed sets and add notes. The rest timer and previous performance display help you follow your workout."
+      },
+      "statistics": {
+        "title": "Workout calendar and statistics",
+        "description": "View your scheduled workouts in the calendar. Weekly and monthly summaries, training volume and exercise performance data show how your training has developed."
+      }
+    },
+    "coaches": {
+      "eyebrow": "FOR PERSONAL TRAINERS",
+      "title": "A workout planner for working with your clients",
+      "description": "The coaching workspace brings your clients, their programs and recorded workouts together. Track completed sets and compare planned and actual values.",
+      "programs": "Create training programs and assign them to clients.",
+      "exercises": "Edit exercises, sets and target values.",
+      "calendar": "Workout calendars and completion status for each client.",
+      "excel": "Import and export training programs in the supported Excel format."
+    },
+    "steps": {
+      "title": "How can you start keeping a training log?",
+      "access": {
+        "title": "Request access",
+        "beforeLink": "Complete the",
+        "link": "registration form",
+        "afterLink": "as a user or coach. You will receive an email about the decision on your request."
+      },
+      "organize": {
+        "title": "Organize your workouts",
+        "beforeLink": "Once approved,",
+        "link": "sign in",
+        "afterLink": ", create your own training program or view the plan assigned by your coach."
+      },
+      "review": {
+        "title": "Log and review your results",
+        "description": "Record your sets during training. Later, review your recorded workouts in the calendar and statistics."
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions about Workouts",
+      "withoutCoach": {
+        "question": "Can I use the workout planner without a coach?",
+        "answer": "Yes. Approved users can create their own personal training programs, individual workouts and templates."
+      },
+      "sets": {
+        "question": "What can I record for each set?",
+        "answer": "Alongside planned values, you can record actual reps, weight used, completion, notes and effort."
+      },
+      "phone": {
+        "question": "Can I access the training log on my phone?",
+        "answer": "The web interface works in a browser on phones and computers. JavaScript and an internet connection are required."
+      },
+      "approval": {
+        "question": "Can I sign in immediately after registration?",
+        "answer": "Your account is created after administrator approval. A notification about the registration decision is sent to the email address you provided."
+      }
+    },
+    "cta": {
+      "title": "Get a clearer view of your training",
+      "description": "Plan ahead, record your sets and track your completed workouts in Workouts."
+    },
+    "footer": {
+      "title": "Workouts – Workout planner and training log"
+    }
   }
 }

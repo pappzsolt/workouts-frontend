@@ -23,7 +23,7 @@ test('the introduction remains useful HTML without Angular or inline executable 
   assert.ok(nodes(tree, 'h2').length >= 4);
   assert.ok(content(nodes(tree, 'main')[0]).trim().length > 2000);
   assert.equal(nodes(tree, 'app-root').length, 0);
-  assert.ok(nodes(tree, 'script').every(node => attr(node, 'type') === 'application/ld+json' || attr(node, 'src') === '/assets/seo/language.js'));
+  assert.ok(nodes(tree, 'script').every(node => attr(node, 'type') === 'application/ld+json' || attr(node, 'src') === '/assets/seo/language.js?v=2'));
   assert.ok(fs.existsSync(path.join(publicRoot, 'assets/seo/language.js')));
   assert.match(content(nodes(tree, 'main')[0]), /adminisztrátori jóváhagyás/);
 });

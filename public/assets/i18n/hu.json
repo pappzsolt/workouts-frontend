@@ -1649,5 +1649,102 @@
   },
   "seo": {
     "aboutLink": "A Workouts edzéstervező és edzésnapló bemutatása"
+  },
+  "landing": {
+    "pageTitle": "Workouts – Online edzéstervező és edzésnapló",
+    "accessibility": {
+      "skip": "Ugrás a tartalomra",
+      "language": "Nyelv",
+      "mainNavigation": "Fő navigáció",
+      "footerNavigation": "Hasznos hivatkozások",
+      "brand": "Workouts bemutatkozó oldal"
+    },
+    "navigation": {
+      "features": "Funkciók",
+      "coaches": "Edzőknek",
+      "login": "Bejelentkezés",
+      "register": "Regisztráció",
+      "deleteAccount": "Fióktörlés"
+    },
+    "hero": {
+      "eyebrow": "TERVEZZ. EDZZ. KÖVESD A FEJLŐDÉSED.",
+      "title": "Online edzéstervező és edzésnapló, egy helyen.",
+      "description": "A Workouts segít rendszerezni az edzésprogramodat, rögzíteni a sorozataidat és áttekinteni a fejlődésedet. Saját edzéseidhez és az edződdel végzett közös munkához is használhatod.",
+      "note": "Az alkalmazás magyar, angol és német nyelven érhető el. A regisztráció adminisztrátori jóváhagyáshoz kötött."
+    },
+    "actions": {
+      "register": "Regisztráció kérése",
+      "login": "Már van fiókom"
+    },
+    "features": {
+      "eyebrow": "ÁTTEKINTHETŐ EDZÉSEK",
+      "title": "Edzéstervezés az első gyakorlattól az utolsó sorozatig",
+      "programs": {
+        "title": "Személyes edzésprogramok",
+        "description": "Állíts össze saját edzésprogramot, rendezd napokra a gyakorlatokat, és add meg a tervezett sorozatokat, ismétléseket, súlyokat és pihenőidőket. Különálló edzéseket és újra felhasználható edzéssablonokat is kezelhetsz."
+      },
+      "log": {
+        "title": "Edzésnapló és sorozatkövetés",
+        "description": "Rögzítsd a tényleges ismétlésszámot és súlyt, jelöld a teljesített sorozatokat, és adj hozzá megjegyzéseket. A pihenőidőzítő és a korábbi teljesítmény megjelenítése segít követni az edzés menetét."
+      },
+      "statistics": {
+        "title": "Edzésnaptár és statisztikák",
+        "description": "Nézd meg a naptárban az ütemezett edzéseidet. A heti és havi összesítések, az edzésvolumen és a gyakorlatonkénti teljesítményadatok megmutatják, hogyan alakult az edzésmunkád."
+      }
+    },
+    "coaches": {
+      "eyebrow": "SZEMÉLYI EDZŐKNEK",
+      "title": "Edzéstervező az ügyfeleiddel végzett munkához",
+      "description": "Az edzői felületen egy helyen tekintheted át ügyfeleidet, programjaikat és a rögzített edzéseiket. Kövesd a teljesített sorozatokat, és ellenőrizd a tervezett és tényleges értékeket.",
+      "programs": "Edzésprogramok készítése és hozzárendelése az ügyfelekhez.",
+      "exercises": "Gyakorlatok, sorozatok és célértékek szerkesztése.",
+      "calendar": "Ügyfelenkénti edzésnaptár és teljesítési állapotok.",
+      "excel": "Edzésprogramok Excel-importja és -exportja a támogatott formátumban."
+    },
+    "steps": {
+      "title": "Hogyan kezdhetsz edzésnaplót vezetni?",
+      "access": {
+        "title": "Kérj hozzáférést",
+        "beforeLink": "Töltsd ki a",
+        "link": "regisztrációs űrlapot",
+        "afterLink": "felhasználóként vagy edzőként. A kérelem elbírálásáról e-mailben kapsz értesítést."
+      },
+      "organize": {
+        "title": "Rendezd az edzéseidet",
+        "beforeLink": "Jóváhagyás után",
+        "link": "jelentkezz be",
+        "afterLink": ", készíts saját edzésprogramot, vagy nézd meg az edződ által hozzád rendelt tervet."
+      },
+      "review": {
+        "title": "Naplózz és tekintsd át az eredményeket",
+        "description": "Edzés közben rögzítsd a sorozatokat. Később a naptárban és a statisztikákban is áttekintheted a rögzített edzésmunkát."
+      }
+    },
+    "faq": {
+      "title": "Gyakori kérdések a Workouts használatáról",
+      "withoutCoach": {
+        "question": "Edző nélkül is használható az edzéstervező?",
+        "answer": "Igen. A jóváhagyott felhasználók saját személyes edzésprogramokat, különálló edzéseket és sablonokat is készíthetnek."
+      },
+      "sets": {
+        "question": "Milyen adatokat lehet naplózni egy sorozathoz?",
+        "answer": "A tervezett értékek mellett a tényleges ismétlésszám, a használt súly, a teljesítés, a megjegyzés és az erőkifejtés adatai is rögzíthetők."
+      },
+      "phone": {
+        "question": "Telefonon is elérhető az edzésnapló?",
+        "answer": "A webes felület telefonon és számítógépen, böngészőből is használható. Az alkalmazás működéséhez JavaScript és internetkapcsolat szükséges."
+      },
+      "approval": {
+        "question": "A regisztráció után azonnal be lehet lépni?",
+        "answer": "A fiók adminisztrátori jóváhagyás után jön létre. A regisztráció elbírálásáról a megadott e-mail-címre érkezik értesítés."
+      }
+    },
+    "cta": {
+      "title": "Legyen átláthatóbb az edzésmunkád",
+      "description": "Tervezz előre, rögzítsd a sorozatokat, és kövesd az elvégzett munkát a Workoutsban."
+    },
+    "footer": {
+      "title": "Workouts – Edzéstervező és edzésnapló"
+    }
   }
 }

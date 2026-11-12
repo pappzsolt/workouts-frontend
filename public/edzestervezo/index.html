@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Workouts – Online edzéstervező és edzésnapló</title>
+  <title data-i18n="landing.pageTitle">Workouts – Online edzéstervező és edzésnapló</title>
   <meta name="description" content="Tervezd meg és kövesd az edzéseidet a Workouts edzéstervezőben: edzésnapló, sorozatok, súlyok, fejlődési statisztikák és ügyfélkezelés személyi edzőknek." />
   <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
   <link rel="canonical" href="https://workouts.hevexora.com/edzestervezo/" />
@@ -18,7 +18,7 @@
   <meta name="twitter:description" content="Tervezd meg az edzésprogramodat, naplózd a sorozatokat, és kövesd a fejlődésedet a Workouts alkalmazásban." />
   <link rel="stylesheet" href="/assets/seo/workouts.css" />
   <link rel="preload" href="/assets/fonts/inter-variable.woff2" as="font" type="font/woff2" crossorigin />
-  <script src="/assets/seo/language.js" defer></script>
+  <script src="/assets/seo/language.js?v=2" defer></script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -56,52 +56,53 @@
   </script>
 </head>
 <body>
-  <a class="skip-link" href="#tartalom">Ugrás a tartalomra</a>
+  <a class="skip-link" href="#tartalom" data-i18n="landing.accessibility.skip">Ugrás a tartalomra</a>
   <header class="site-header wrapper">
-    <a class="brand" href="/edzestervezo/" aria-label="Workouts bemutatkozó oldal">Workouts<span aria-hidden="true">.</span></a>
-    <nav aria-label="Fő navigáció">
-      <a href="#funkciok">Funkciók</a>
-      <a href="#edzoknek">Edzőknek</a>
-      <a href="/login">Bejelentkezés</a>
-      <select id="landing-language" aria-label="Nyelv"><option value="hu">Magyar</option><option value="en">English</option><option value="de">Deutsch</option></select>
+    <a class="brand" href="/edzestervezo/" aria-label="Workouts bemutatkozó oldal" data-i18n-aria-label="landing.accessibility.brand">Workouts<span aria-hidden="true">.</span></a>
+    <nav aria-label="Fő navigáció" data-i18n-aria-label="landing.accessibility.mainNavigation">
+      <a href="#funkciok" data-i18n="landing.navigation.features">Funkciók</a>
+      <a href="#edzoknek" data-i18n="landing.navigation.coaches">Edzőknek</a>
+      <a href="/login" data-i18n="landing.navigation.login">Bejelentkezés</a>
+      <select id="landing-language" aria-label="Nyelv" data-i18n-aria-label="landing.accessibility.language"><option value="hu">Magyar</option><option value="en">English</option><option value="de">Deutsch</option></select>
     </nav>
   </header>
+  <p id="landing-language-error" class="wrapper" role="status" data-i18n="language.loadError" hidden>A kiválasztott nyelv betöltése sikertelen. Próbáld újra.</p>
   <main id="tartalom">
     <section class="hero wrapper" aria-labelledby="hero-title">
-      <p class="eyebrow">TERVEZZ. EDZZ. KÖVESD A FEJLŐDÉSED.</p>
-      <h1 id="hero-title">Online edzéstervező és edzésnapló, egy helyen.</h1>
-      <p class="lead">A Workouts segít rendszerezni az edzésprogramodat, rögzíteni a sorozataidat és áttekinteni a fejlődésedet. Saját edzéseidhez és az edződdel végzett közös munkához is használhatod.</p>
-      <div class="actions"><a class="button primary" href="/register">Regisztráció kérése</a><a class="button secondary" href="/login">Már van fiókom</a></div>
-      <p class="note">Az alkalmazás magyar, angol és német nyelven érhető el. A regisztráció adminisztrátori jóváhagyáshoz kötött.</p>
+      <p class="eyebrow" data-i18n="landing.hero.eyebrow">TERVEZZ. EDZZ. KÖVESD A FEJLŐDÉSED.</p>
+      <h1 id="hero-title" data-i18n="landing.hero.title">Online edzéstervező és edzésnapló, egy helyen.</h1>
+      <p class="lead" data-i18n="landing.hero.description">A Workouts segít rendszerezni az edzésprogramodat, rögzíteni a sorozataidat és áttekinteni a fejlődésedet. Saját edzéseidhez és az edződdel végzett közös munkához is használhatod.</p>
+      <div class="actions"><a class="button primary" href="/register" data-i18n="landing.actions.register">Regisztráció kérése</a><a class="button secondary" href="/login" data-i18n="landing.actions.login">Már van fiókom</a></div>
+      <p class="note" data-i18n="landing.hero.note">Az alkalmazás magyar, angol és német nyelven érhető el. A regisztráció adminisztrátori jóváhagyáshoz kötött.</p>
     </section>
     <section id="funkciok" class="section wrapper" aria-labelledby="features-title">
-      <p class="eyebrow">ÁTTEKINTHETŐ EDZÉSEK</p>
-      <h2 id="features-title">Edzéstervezés az első gyakorlattól az utolsó sorozatig</h2>
+      <p class="eyebrow" data-i18n="landing.features.eyebrow">ÁTTEKINTHETŐ EDZÉSEK</p>
+      <h2 id="features-title" data-i18n="landing.features.title">Edzéstervezés az első gyakorlattól az utolsó sorozatig</h2>
       <div class="cards">
-        <article><h3>Személyes edzésprogramok</h3><p>Állíts össze saját edzésprogramot, rendezd napokra a gyakorlatokat, és add meg a tervezett sorozatokat, ismétléseket, súlyokat és pihenőidőket. Különálló edzéseket és újra felhasználható edzéssablonokat is kezelhetsz.</p></article>
-        <article><h3>Edzésnapló és sorozatkövetés</h3><p>Rögzítsd a tényleges ismétlésszámot és súlyt, jelöld a teljesített sorozatokat, és adj hozzá megjegyzéseket. A pihenőidőzítő és a korábbi teljesítmény megjelenítése segít követni az edzés menetét.</p></article>
-        <article><h3>Edzésnaptár és statisztikák</h3><p>Nézd meg a naptárban az ütemezett edzéseidet. A heti és havi összesítések, az edzésvolumen és a gyakorlatonkénti teljesítményadatok megmutatják, hogyan alakult az edzésmunkád.</p></article>
+        <article><h3 data-i18n="landing.features.programs.title">Személyes edzésprogramok</h3><p data-i18n="landing.features.programs.description">Állíts össze saját edzésprogramot, rendezd napokra a gyakorlatokat, és add meg a tervezett sorozatokat, ismétléseket, súlyokat és pihenőidőket. Különálló edzéseket és újra felhasználható edzéssablonokat is kezelhetsz.</p></article>
+        <article><h3 data-i18n="landing.features.log.title">Edzésnapló és sorozatkövetés</h3><p data-i18n="landing.features.log.description">Rögzítsd a tényleges ismétlésszámot és súlyt, jelöld a teljesített sorozatokat, és adj hozzá megjegyzéseket. A pihenőidőzítő és a korábbi teljesítmény megjelenítése segít követni az edzés menetét.</p></article>
+        <article><h3 data-i18n="landing.features.statistics.title">Edzésnaptár és statisztikák</h3><p data-i18n="landing.features.statistics.description">Nézd meg a naptárban az ütemezett edzéseidet. A heti és havi összesítések, az edzésvolumen és a gyakorlatonkénti teljesítményadatok megmutatják, hogyan alakult az edzésmunkád.</p></article>
       </div>
     </section>
     <section id="edzoknek" class="section coach-section" aria-labelledby="coach-title">
       <div class="wrapper split">
-        <div><p class="eyebrow">SZEMÉLYI EDZŐKNEK</p><h2 id="coach-title">Edzéstervező az ügyfeleiddel végzett munkához</h2><p>Az edzői felületen egy helyen tekintheted át ügyfeleidet, programjaikat és a rögzített edzéseiket. Kövesd a teljesített sorozatokat, és ellenőrizd a tervezett és tényleges értékeket.</p></div>
-        <ul class="feature-list"><li>Edzésprogramok készítése és hozzárendelése az ügyfelekhez.</li><li>Gyakorlatok, sorozatok és célértékek szerkesztése.</li><li>Ügyfelenkénti edzésnaptár és teljesítési állapotok.</li><li>Edzésprogramok Excel-importja és -exportja a támogatott formátumban.</li></ul>
+        <div><p class="eyebrow" data-i18n="landing.coaches.eyebrow">SZEMÉLYI EDZŐKNEK</p><h2 id="coach-title" data-i18n="landing.coaches.title">Edzéstervező az ügyfeleiddel végzett munkához</h2><p data-i18n="landing.coaches.description">Az edzői felületen egy helyen tekintheted át ügyfeleidet, programjaikat és a rögzített edzéseiket. Kövesd a teljesített sorozatokat, és ellenőrizd a tervezett és tényleges értékeket.</p></div>
+        <ul class="feature-list"><li data-i18n="landing.coaches.programs">Edzésprogramok készítése és hozzárendelése az ügyfelekhez.</li><li data-i18n="landing.coaches.exercises">Gyakorlatok, sorozatok és célértékek szerkesztése.</li><li data-i18n="landing.coaches.calendar">Ügyfelenkénti edzésnaptár és teljesítési állapotok.</li><li data-i18n="landing.coaches.excel">Edzésprogramok Excel-importja és -exportja a támogatott formátumban.</li></ul>
       </div>
     </section>
     <section class="section wrapper" aria-labelledby="steps-title">
-      <h2 id="steps-title">Hogyan kezdhetsz edzésnaplót vezetni?</h2>
-      <ol class="steps"><li><h3>Kérj hozzáférést</h3><p>Töltsd ki a <a href="/register">regisztrációs űrlapot</a> felhasználóként vagy edzőként. A kérelem elbírálásáról e-mailben kapsz értesítést.</p></li><li><h3>Rendezd az edzéseidet</h3><p>Jóváhagyás után <a href="/login">jelentkezz be</a>, készíts saját edzésprogramot, vagy nézd meg az edződ által hozzád rendelt tervet.</p></li><li><h3>Naplózz és tekintsd át az eredményeket</h3><p>Edzés közben rögzítsd a sorozatokat. Később a naptárban és a statisztikákban is áttekintheted a rögzített edzésmunkát.</p></li></ol>
+      <h2 id="steps-title" data-i18n="landing.steps.title">Hogyan kezdhetsz edzésnaplót vezetni?</h2>
+      <ol class="steps"><li><h3 data-i18n="landing.steps.access.title">Kérj hozzáférést</h3><p><span data-i18n="landing.steps.access.beforeLink">Töltsd ki a</span> <a href="/register" data-i18n="landing.steps.access.link">regisztrációs űrlapot</a> <span data-i18n="landing.steps.access.afterLink">felhasználóként vagy edzőként. A kérelem elbírálásáról e-mailben kapsz értesítést.</span></p></li><li><h3 data-i18n="landing.steps.organize.title">Rendezd az edzéseidet</h3><p><span data-i18n="landing.steps.organize.beforeLink">Jóváhagyás után</span> <a href="/login" data-i18n="landing.steps.organize.link">jelentkezz be</a><span data-i18n="landing.steps.organize.afterLink">, készíts saját edzésprogramot, vagy nézd meg az edződ által hozzád rendelt tervet.</span></p></li><li><h3 data-i18n="landing.steps.review.title">Naplózz és tekintsd át az eredményeket</h3><p data-i18n="landing.steps.review.description">Edzés közben rögzítsd a sorozatokat. Később a naptárban és a statisztikákban is áttekintheted a rögzített edzésmunkát.</p></li></ol>
     </section>
     <section id="gyakori-kerdesek" class="section wrapper faq" aria-labelledby="faq-title">
-      <h2 id="faq-title">Gyakori kérdések a Workouts használatáról</h2>
-      <details><summary>Edző nélkül is használható az edzéstervező?</summary><p>Igen. A jóváhagyott felhasználók saját személyes edzésprogramokat, különálló edzéseket és sablonokat is készíthetnek.</p></details>
-      <details><summary>Milyen adatokat lehet naplózni egy sorozathoz?</summary><p>A tervezett értékek mellett a tényleges ismétlésszám, a használt súly, a teljesítés, a megjegyzés és az erőkifejtés adatai is rögzíthetők.</p></details>
-      <details><summary>Telefonon is elérhető az edzésnapló?</summary><p>A webes felület telefonon és számítógépen, böngészőből is használható. Az alkalmazás működéséhez JavaScript és internetkapcsolat szükséges.</p></details>
-      <details><summary>A regisztráció után azonnal be lehet lépni?</summary><p>A fiók adminisztrátori jóváhagyás után jön létre. A regisztráció elbírálásáról a megadott e-mail-címre érkezik értesítés.</p></details>
+      <h2 id="faq-title" data-i18n="landing.faq.title">Gyakori kérdések a Workouts használatáról</h2>
+      <details><summary data-i18n="landing.faq.withoutCoach.question">Edző nélkül is használható az edzéstervező?</summary><p data-i18n="landing.faq.withoutCoach.answer">Igen. A jóváhagyott felhasználók saját személyes edzésprogramokat, különálló edzéseket és sablonokat is készíthetnek.</p></details>
+      <details><summary data-i18n="landing.faq.sets.question">Milyen adatokat lehet naplózni egy sorozathoz?</summary><p data-i18n="landing.faq.sets.answer">A tervezett értékek mellett a tényleges ismétlésszám, a használt súly, a teljesítés, a megjegyzés és az erőkifejtés adatai is rögzíthetők.</p></details>
+      <details><summary data-i18n="landing.faq.phone.question">Telefonon is elérhető az edzésnapló?</summary><p data-i18n="landing.faq.phone.answer">A webes felület telefonon és számítógépen, böngészőből is használható. Az alkalmazás működéséhez JavaScript és internetkapcsolat szükséges.</p></details>
+      <details><summary data-i18n="landing.faq.approval.question">A regisztráció után azonnal be lehet lépni?</summary><p data-i18n="landing.faq.approval.answer">A fiók adminisztrátori jóváhagyás után jön létre. A regisztráció elbírálásáról a megadott e-mail-címre érkezik értesítés.</p></details>
     </section>
-    <section class="section wrapper final-cta" aria-labelledby="cta-title"><h2 id="cta-title">Legyen átláthatóbb az edzésmunkád</h2><p>Tervezz előre, rögzítsd a sorozatokat, és kövesd az elvégzett munkát a Workoutsban.</p><a class="button primary" href="/register">Regisztráció kérése</a></section>
+    <section class="section wrapper final-cta" aria-labelledby="cta-title"><h2 id="cta-title" data-i18n="landing.cta.title">Legyen átláthatóbb az edzésmunkád</h2><p data-i18n="landing.cta.description">Tervezz előre, rögzítsd a sorozatokat, és kövesd az elvégzett munkát a Workoutsban.</p><a class="button primary" href="/register" data-i18n="landing.actions.register">Regisztráció kérése</a></section>
   </main>
-  <footer class="wrapper site-footer"><span>Workouts – Edzéstervező és edzésnapló</span><nav aria-label="Hasznos hivatkozások"><a href="/login">Bejelentkezés</a><a href="/register">Regisztráció</a><a href="/delete-account">Fióktörlés</a></nav></footer>
+  <footer class="wrapper site-footer"><span data-i18n="landing.footer.title">Workouts – Edzéstervező és edzésnapló</span><nav aria-label="Hasznos hivatkozások" data-i18n-aria-label="landing.accessibility.footerNavigation"><a href="/login" data-i18n="landing.navigation.login">Bejelentkezés</a><a href="/register" data-i18n="landing.navigation.register">Regisztráció</a><a href="/delete-account" data-i18n="landing.navigation.deleteAccount">Fióktörlés</a></nav></footer>
 </body>
 </html>
