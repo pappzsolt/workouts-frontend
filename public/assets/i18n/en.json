@@ -1737,7 +1737,8 @@
       "approval": {
         "question": "Can I sign in immediately after registration?",
         "answer": "Your account is created after administrator approval. A notification about the registration decision is sent to the email address you provided."
-      }
+      },
+      "eyebrow": "GOOD TO KNOW"
     },
     "cta": {
       "title": "Get a clearer view of your training",
@@ -1745,6 +1746,20 @@
     },
     "footer": {
       "title": "Workouts – Workout planner and training log"
+    },
+    "preview": {
+      "caption": "A look inside your training log",
+      "sample": "Example",
+      "overview": "YOUR TRAINING. YOUR PACE.",
+      "title": "Every workout counts.",
+      "today": "TODAY’S WORKOUT",
+      "workout": "Full-body strength",
+      "summary": "3 exercises · 9 sets",
+      "squat": "Squat",
+      "press": "Bench press",
+      "row": "Row",
+      "progress": "Progress, one step at a time.",
+      "footnote": "Plan. Log. See your progress."
     }
   }
 }

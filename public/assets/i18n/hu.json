@@ -1737,7 +1737,8 @@
       "approval": {
         "question": "A regisztráció után azonnal be lehet lépni?",
         "answer": "A fiók adminisztrátori jóváhagyás után jön létre. A regisztráció elbírálásáról a megadott e-mail-címre érkezik értesítés."
-      }
+      },
+      "eyebrow": "JÓ TUDNI"
     },
     "cta": {
       "title": "Legyen átláthatóbb az edzésmunkád",
@@ -1745,6 +1746,20 @@
     },
     "footer": {
       "title": "Workouts – Edzéstervező és edzésnapló"
+    },
+    "preview": {
+      "caption": "Ízelítő az edzésnaplódból",
+      "sample": "Minta",
+      "overview": "A TE EDZÉSED. A TE TEMPÓD.",
+      "title": "Minden edzés számít.",
+      "today": "MAI EDZÉS",
+      "workout": "Teljes testes erősítés",
+      "summary": "3 gyakorlat · 9 sorozat",
+      "squat": "Guggolás",
+      "press": "Fekvenyomás",
+      "row": "Evezés",
+      "progress": "Lépésről lépésre előre.",
+      "footnote": "Tervezz. Naplózz. Lásd a fejlődésed."
     }
   }
 }

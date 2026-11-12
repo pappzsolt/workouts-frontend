@@ -1737,7 +1737,8 @@
       "approval": {
         "question": "Kann ich mich direkt nach der Registrierung anmelden?",
         "answer": "Dein Konto wird nach der Freigabe durch einen Administrator erstellt. Die Entscheidung zur Registrierung wird an die angegebene E-Mail-Adresse gesendet."
-      }
+      },
+      "eyebrow": "GUT ZU WISSEN"
     },
     "cta": {
       "title": "Mehr Überblick über dein Training",
@@ -1745,6 +1746,20 @@
     },
     "footer": {
       "title": "Workouts – Trainingsplaner und Trainingstagebuch"
+    },
+    "preview": {
+      "caption": "Ein Blick in dein Trainingstagebuch",
+      "sample": "Beispiel",
+      "overview": "DEIN TRAINING. DEIN TEMPO.",
+      "title": "Jedes Training zählt.",
+      "today": "DEIN TRAINING HEUTE",
+      "workout": "Ganzkörper-Krafttraining",
+      "summary": "3 Übungen · 9 Sätze",
+      "squat": "Kniebeuge",
+      "press": "Bankdrücken",
+      "row": "Rudern",
+      "progress": "Schritt für Schritt voran.",
+      "footnote": "Planen. Erfassen. Fortschritte sehen."
     }
   }
 }

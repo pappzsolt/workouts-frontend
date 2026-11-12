@@ -75,7 +75,7 @@ test('introduction links keep login and registration accessible and its local as
   for (const node of nodes(tree, 'link').filter(node => ['stylesheet', 'preload'].includes(attr(node, 'rel')))) {
     const asset = attr(node, 'href');
     assert.ok(asset.startsWith('/assets/'));
-    assert.ok(fs.existsSync(path.join(publicRoot, asset.slice(1))), asset);
+    assert.ok(fs.existsSync(path.join(publicRoot, asset.split('?')[0].slice(1))), asset);
   }
   // Unknown links must not silently fall through to the Angular wildcard redirect.
   for (const destination of links.filter(link => link.startsWith('#'))) {
