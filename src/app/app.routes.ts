@@ -2,6 +2,7 @@ import type { PersonalProgramEditorComponent } from './components/user-dashboard
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
+import { introductionGuard } from './guards/introduction.guard';
 
 import { LoginComponent } from './components/login/login.component';
 import { LoginLayoutComponent } from './layouts/login-layout/login-layout.component';
@@ -10,6 +11,12 @@ import { LayoutComponent } from './layouts/default-layout/layout.component';
 
 
 export const routes: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    canActivate: [introductionGuard],
+    children: [],
+  },
   {
     path: 'delete-account',
     loadComponent: () => import('./components/delete-account/delete-account.component').then(m => m.DeleteAccountComponent),
@@ -36,11 +43,6 @@ export const routes: Routes = [
       {
         path: 'register',
         loadComponent: () => import('./components/register/register.component').then(m => m.RegisterComponent),
-      },
-      {
-        path: '',
-        redirectTo: 'login',
-        pathMatch: 'full',
       },
     ],
   },
