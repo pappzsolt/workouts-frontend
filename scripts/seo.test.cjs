@@ -16,14 +16,15 @@ const content = node => node.value || (node.childNodes || []).map(content).join(
 const metadata = (name, key = 'name') => attr(nodes(tree, 'meta').find(node => attr(node, key) === name), 'content');
 const canonical = attr(nodes(tree, 'link').find(node => attr(node, 'rel') === 'canonical'), 'href');
 
-test('the introduction is useful HTML without Angular or executable JavaScript', () => {
+test('the introduction remains useful HTML without Angular or inline executable JavaScript', () => {
   assert.equal(attr(nodes(tree, 'html')[0], 'lang'), 'hu');
   assert.equal(nodes(tree, 'h1').length, 1);
   assert.match(content(nodes(tree, 'h1')[0]), /edzéstervező és edzésnapló/i);
   assert.ok(nodes(tree, 'h2').length >= 4);
   assert.ok(content(nodes(tree, 'main')[0]).trim().length > 2000);
   assert.equal(nodes(tree, 'app-root').length, 0);
-  assert.ok(nodes(tree, 'script').every(node => attr(node, 'type') === 'application/ld+json'));
+  assert.ok(nodes(tree, 'script').every(node => attr(node, 'type') === 'application/ld+json' || attr(node, 'src') === '/assets/seo/language.js'));
+  assert.ok(fs.existsSync(path.join(publicRoot, 'assets/seo/language.js')));
   assert.match(content(nodes(tree, 'main')[0]), /adminisztrátori jóváhagyás/);
 });
 
@@ -40,7 +41,7 @@ test('title, canonical, social URL and sitemap describe the same indexable page'
 });
 
 test('structured data is valid JSON and agrees with the visible application and canonical URL', () => {
-  const data = JSON.parse(content(nodes(tree, 'script')[0]));
+  const data = JSON.parse(content(nodes(tree, 'script').find(node => attr(node, 'type') === 'application/ld+json')));
   assert.equal(data['@context'], 'https://schema.org');
   for (const type of ['WebSite', 'WebPage', 'WebApplication']) {
     const entity = data['@graph'].find(entity => entity['@type'] === type);
