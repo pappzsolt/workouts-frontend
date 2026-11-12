@@ -82,7 +82,7 @@ describe('Powerlifting charts and Epley calculator', () => {
     const component = overview();
     expect(component.calculatedEstimate).toBe(140);
     component.calculatorReps = 1;
-    expect(component.calculatedEstimate).toBeCloseTo(124);
+    expect(component.calculatedEstimate).toBe(120);
     for (const value of [0, -1, 2.5, 11, null]) {
       component.calculatorReps = value;
       expect(component.calculatedEstimate).toBeNull();
@@ -115,6 +115,9 @@ describe('Powerlifting charts and Epley calculator', () => {
     expect(element.querySelector('table')).not.toBeNull();
     expect(element.querySelector('[role="progressbar"]')?.getAttribute('aria-valuenow')).toBe('37.5');
     expect(element.textContent).toContain('120 × (1 + 5 / 30) = 140 kg');
+    fixture.componentInstance.calculatorReps = 1;
+    fixture.detectChanges();
+    expect(element.textContent).toContain('120 = 120 kg');
     fixture.destroy();
   });
 });

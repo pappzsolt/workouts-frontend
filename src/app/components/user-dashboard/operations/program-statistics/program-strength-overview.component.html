@@ -123,7 +123,8 @@
   <details class="mt-5 border-t border-surface-200 pt-3">
     <summary class="cursor-pointer text-sm font-semibold text-content-800">{{ 'userProgramStatistics.epleyTitle' | translate }}</summary>
     <p class="mt-2 text-xs text-content-600">{{ 'userProgramStatistics.epleyExplanation' | translate }}</p>
-    <p class="my-3 text-center text-sm font-semibold text-content-800">e1RM = {{ 'userProgramStatistics.calculatorWeight' | translate }} × (1 + {{ 'userProgramStatistics.calculatorReps' | translate }} / 30)</p>
+    <p *ngIf="calculatorReps !== 1" class="my-3 text-center text-sm font-semibold text-content-800">e1RM = {{ 'userProgramStatistics.calculatorWeight' | translate }} × (1 + {{ 'userProgramStatistics.calculatorReps' | translate }} / 30)</p>
+    <p *ngIf="calculatorReps === 1" class="my-3 text-center text-sm font-semibold text-content-800">e1RM = {{ 'userProgramStatistics.calculatorWeight' | translate }}</p>
     <div class="grid grid-cols-2 gap-3">
       <label class="text-xs text-content-700">{{ 'userProgramStatistics.calculatorWeight' | translate }} (kg)
         <input class="mt-1 w-full rounded-lg border border-surface-300 bg-surface-50 p-2" type="number" min="0.01" step="0.5" [(ngModel)]="calculatorWeight">
@@ -132,7 +133,7 @@
         <input class="mt-1 w-full rounded-lg border border-surface-300 bg-surface-50 p-2" type="number" min="1" max="10" step="1" [(ngModel)]="calculatorReps">
       </label>
     </div>
-    <p class="mt-3 text-center text-base font-semibold text-content-800" aria-live="polite">{{ calculatedEstimate !== null ? calculatorWeight + ' × (1 + ' + calculatorReps + ' / 30) = ' + (calculatedEstimate | number:'1.0-2') + ' kg' : ('userProgramStatistics.calculatorInvalid' | translate) }}</p>
+    <p class="mt-3 text-center text-base font-semibold text-content-800" aria-live="polite">{{ calculatedEstimate !== null ? (calculatorReps === 1 ? calculatorWeight + ' = ' + (calculatedEstimate | number:'1.0-2') + ' kg' : calculatorWeight + ' × (1 + ' + calculatorReps + ' / 30) = ' + (calculatedEstimate | number:'1.0-2') + ' kg') : ('userProgramStatistics.calculatorInvalid' | translate) }}</p>
   </details>
   <div class="mt-5 border-t border-surface-200 pt-3">
     <p class="mb-2 flex justify-between text-xs text-content-700"><span>{{ 'userProgramStatistics.dashboardProgress' | translate }}</span><span>{{ progress !== null ? (progress | number:'1.0-1') + '%' : '—' }}</span></p>

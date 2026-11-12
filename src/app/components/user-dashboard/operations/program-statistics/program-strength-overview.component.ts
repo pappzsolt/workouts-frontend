@@ -28,7 +28,7 @@ export class ProgramStrengthOverviewComponent implements OnChanges {
   get calculatedEstimate(): number | null {
     return this.calculatorWeight !== null && Number.isFinite(this.calculatorWeight) && this.calculatorWeight > 0
       && this.calculatorReps !== null && Number.isInteger(this.calculatorReps) && this.calculatorReps >= 1 && this.calculatorReps <= 10
-      ? this.calculatorWeight * (1 + this.calculatorReps / 30) : null;
+      ? (this.calculatorReps === 1 ? this.calculatorWeight : this.calculatorWeight * (1 + this.calculatorReps / 30)) : null;
   }
   weeks: number[] = [];
   series: LiftSeries[] = [];
