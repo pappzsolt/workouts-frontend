@@ -40,6 +40,7 @@ frontend-unit-test:
     - 'apk add --no-cache firefox ttf-dejavu'
     - 'export FIREFOX_BIN="$(command -v firefox)"'
     - 'npm ci --no-audit --no-fund'
+    - 'npm run test:landing'
     - 'set -o pipefail; npx ng test --watch=false --no-progress --browsers=FirefoxHeadless 2>&1 | tee karma.log'
   artifacts:
     when: always
