@@ -207,10 +207,23 @@ describe('Program editor screen bindings', () => {
     expect(fixture.debugElement.query(By.directive(ProgramDayWorkoutComponent))).toBeNull();
     await choose('Bela');
     expect(api.getClientProgramRows).toHaveBeenCalledWith(8, 10);
-    await choose('coachWorkspace.editor.sharedCalendar');
+    button(fixture, 'coachWorkspace.editor.planView').click();
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).querySelector('#program-calendar-client')).toBeNull();
+    const workoutPanel = child(fixture, ProgramDayWorkoutComponent);
+    expect(workoutPanel.selectedDayClients).toEqual([]);
+    expect(fixture.nativeElement.textContent).toContain('Anna');
+    expect(fixture.nativeElement.textContent).toContain('Bela');
     expect(child(fixture, ProgramDayGridComponent).showMultiAdd).toBeTrue();
     expect(fixture.debugElement.query(By.directive(ProgramDayWorkoutComponent))).not.toBeNull();
-    await choose('coachWorkspace.editor.allClientCalendar');
+    button(fixture, 'coachWorkspace.editor.scheduleView').click();
+    fixture.detectChanges();
+    expect(child(fixture, ProgramDayGridComponent).showMultiAdd).toBeFalse();
+    const newSelect = (fixture.nativeElement as HTMLElement).querySelector<HTMLSelectElement>('#program-calendar-client')!;
+    newSelect.value = [...newSelect.options].find(option => option.textContent?.includes('coachWorkspace.editor.allClientCalendar'))!.value;
+    newSelect.dispatchEvent(new Event('change'));
+    await fixture.whenStable();
+    fixture.detectChanges();
     expect(child(fixture, CoachCalendarComponent).programId).toBe(10);
   });
 
