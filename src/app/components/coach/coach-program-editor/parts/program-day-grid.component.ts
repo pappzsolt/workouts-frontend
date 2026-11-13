@@ -23,6 +23,10 @@ export class ProgramDayGridComponent implements OnChanges {
   @Output() readonly daySelected = new EventEmitter<number>();
   @Output() readonly openMulti = new EventEmitter<void>();
 
+  get selectedCell(): DayCell | null {
+    return this.cells.find(cell => cell.day === this.selectedDay) ?? null;
+  }
+
   private monthIndex: number | null = null;
   readonly monthKeys = ['january', 'february', 'march', 'april', 'may', 'june',
     'july', 'august', 'september', 'october', 'november', 'december'];

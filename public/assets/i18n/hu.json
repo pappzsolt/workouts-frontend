@@ -1080,6 +1080,8 @@
       "selectedDay": "Kiválasztott nap",
       "dayLabel": "{{day}}. nap",
       "programDayLabel": "Program {{day}}. napja",
+      "calendarNameHint": "Az edzés teljes nevéhez válassz ki egy napot. A részletek a naptár alatt láthatók.",
+      "noWorkoutOnDay": "Erre a napra nincs edzés.",
       "lockedHint": "A sorozatokat, ismétléseket, súlyokat és pihenőket az ügyfél adott napi edzésénél állíthatod be.",
       "savePrescriptions": "Változások mentése ({{count}})",
       "prescriptionInvalid": "Sorozat: 1–20, ismétlés: 1–200, pihenő: 0–3600 mp.",

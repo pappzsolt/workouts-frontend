@@ -1080,6 +1080,8 @@
       "selectedDay": "Selected day",
       "dayLabel": "Day {{day}}",
       "programDayLabel": "Program day {{day}}",
+      "calendarNameHint": "Select a day to see the full workout name below the calendar.",
+      "noWorkoutOnDay": "No workout scheduled for this day.",
       "lockedHint": "Set sets, repetitions, weights and rest in the client’s workout for the selected date.",
       "savePrescriptions": "Save changes ({{count}})",
       "prescriptionInvalid": "Sets: 1–20, reps: 1–200, rest: 0–3600 s.",

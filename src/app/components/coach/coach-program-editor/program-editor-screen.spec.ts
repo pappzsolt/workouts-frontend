@@ -2,7 +2,7 @@ import type { Type } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
-import { provideTranslateService } from '@ngx-translate/core';
+import { TranslateService, provideTranslateService } from '@ngx-translate/core';
 import { Subject, of } from 'rxjs';
 import type { CoachClientOverview, CoachProgram } from '../../../models/coach-workspace.model';
 import { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
@@ -140,6 +140,45 @@ describe('Program editor screen bindings', () => {
     fixture.detectChanges();
     expect(grid.visibleMonth).toEqual(new Date(2026, 10, 1));
     expect(grid.selectedDay).toBe(1);
+  });
+
+  it('shows the full workout name below the calendar and updates it on day selection', () => {
+    const longName = 'A very long workout name with an unbroken suffix ' + 'Workout'.repeat(20);
+    program.workouts[0].name = longName;
+    const fixture = render();
+    const element = fixture.debugElement.query(By.directive(ProgramDayGridComponent)).nativeElement as HTMLElement;
+    const details = () => element.querySelector('[aria-live="polite"][aria-atomic="true"]')!;
+    expect(details().textContent).toContain(longName);
+    const days = element.querySelectorAll<HTMLButtonElement>('button[aria-pressed]');
+    days[1].click();
+    fixture.detectChanges();
+    expect(details().textContent).not.toContain(longName);
+    expect(details().textContent).toContain('coachWorkspace.editor.noWorkoutOnDay');
+    days[0].click();
+    fixture.detectChanges();
+    expect(details().textContent).toContain(longName);
+  });
+
+  it('keeps day cells equal in height and within a narrow calendar with long names', () => {
+    const translate = TestBed.inject(TranslateService);
+    translate.setTranslation('hu', { coachWorkspace: { editor: {
+      days: 'Napok', multiAdd: 'Több edzés az Edzéstárból', programDayLabel: 'Program {{day}}. napja',
+      calendarNameHint: 'Az edzés teljes nevéhez válassz ki egy napot.',
+    }, weekday: { mon: 'H', tue: 'K', wed: 'SZE', thu: 'CS', fri: 'P', sat: 'SZO', sun: 'V' } }, userWorkoutsCalendar: { october: 'október' } });
+    translate.use('hu');
+    program.workouts[0].name = 'Workout'.repeat(40);
+    const editor = render();
+    const fixture = TestBed.createComponent(ProgramDayGridComponent);
+    fixture.componentRef.setInput('cells', child(editor, ProgramDayGridComponent).cells);
+    fixture.detectChanges();
+    const section = (fixture.nativeElement as HTMLElement).querySelector('section')!;
+    for (const width of [280, 375, 768]) {
+      section.style.width = `${width}px`;
+      const buttons = [...section.querySelectorAll<HTMLButtonElement>('button[aria-pressed]')];
+      expect(buttons.every(button => Math.round(button.getBoundingClientRect().height) === 128)).toBeTrue();
+      expect(section.scrollWidth).toBeLessThanOrEqual(section.clientWidth);
+      expect(buttons.every(button => button.scrollWidth <= button.clientWidth)).toBeTrue();
+    }
   });
 
   it('creates an empty-day workout before saving its exercises and linking the day', () => {
