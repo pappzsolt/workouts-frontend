@@ -25,8 +25,8 @@ export class ProgramDayWorkoutEditor {
   openDay(day: number): void {
     this.confirmRemove = false;
     this.confirmRepeat = false;
-    this.moveDate = this.state.form.startDate ? this.state.dateForDay(day) : '';
-    this.extraDate = this.state.form.startDate ? this.state.dateForDay(Math.min(day + 7, this.state.cells.length || day)) : '';
+    this.moveDate = this.state.planningStartDate ? this.state.dateForDay(day) : '';
+    this.extraDate = this.state.planningStartDate ? this.state.dateForDay(Math.min(day + 7, this.state.cells.length || day)) : '';
     const cell = this.state.selectedCell;
     this.rows = (cell?.workout?.exercises ?? []).map((exercise) => ({
       id: exercise.id,
@@ -52,7 +52,7 @@ export class ProgramDayWorkoutEditor {
 
   savePrescriptions(): void {
     const workout = this.state.selectedCell?.workout;
-    if (!workout || this.state.busy || this.state.savingDetails || this.state.loading) return;
+    if (!workout || this.state.operationPending) return;
     const changed = this.rows.filter((row) => this.isChanged(row));
     if (changed.length === 0) return;
     const invalid = changed.find(
@@ -85,6 +85,7 @@ export class ProgramDayWorkoutEditor {
   }
 
   moveWorkout(): void {
+    if (this.state.operationPending) return;
     const link = this.state.selectedCell?.link;
     const target = this.state.dayForDate(this.moveDate);
     if (!link || !Number.isInteger(target) || target < 1 || target === link.dayIndex) return;
@@ -96,6 +97,7 @@ export class ProgramDayWorkoutEditor {
   }
 
   removeWorkout(): void {
+    if (this.state.operationPending) return;
     const link = this.state.selectedCell?.link;
     if (!link) return;
     this.confirmRemove = false;
@@ -113,7 +115,7 @@ export class ProgramDayWorkoutEditor {
   repeatWeekly(): void {
     const workout = this.state.selectedCell?.workout;
     const days = this.weeklyRepeatDays;
-    if (this.state.programId === null || !workout || days.length === 0 || this.state.busy) return;
+    if (this.state.programId === null || !workout || days.length === 0 || this.state.operationPending) return;
     const programId = this.state.programId;
     this.confirmRepeat = false;
     this.effects.run(
@@ -127,7 +129,7 @@ export class ProgramDayWorkoutEditor {
   addToAnotherDay(): void {
     const workout = this.state.selectedCell?.workout;
     const target = this.state.dayForDate(this.extraDate);
-    if (this.state.programId === null || !workout || this.state.busy) return;
+    if (this.state.programId === null || !workout || this.state.operationPending) return;
     if (!Number.isInteger(target) || target < 1 || target > this.state.cells.length) {
       this.effects.showMessage('coachWorkspace.editor.dayOutOfRange', 'error');
       return;
@@ -146,7 +148,7 @@ export class ProgramDayWorkoutEditor {
 
   applyTemplateToClients(): void {
     const workout = this.state.selectedCell?.workout;
-    if (!workout || this.state.busy) return;
+    if (!workout || this.state.operationPending) return;
     if (this.changedCount > 0) {
       this.effects.showMessage('coachWorkspace.editor.saveBeforeApply', 'error');
       return;
@@ -169,7 +171,7 @@ export class ProgramDayWorkoutEditor {
 
   copyToLibrary(): void {
     const workout = this.state.selectedCell?.workout;
-    if (!workout || this.state.busy) return;
+    if (!workout || this.state.operationPending) return;
     this.state.busy = true;
     this.workspace
       .copyWorkout(workout.workoutId, `${workout.name} (2)`)

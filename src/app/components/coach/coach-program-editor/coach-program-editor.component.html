@@ -19,7 +19,7 @@
           <button type="button" class="btn btn-outline" (click)="editDetails = !editDetails" [attr.aria-expanded]="editDetails" aria-controls="program-details-editor">
             {{ (editDetails ? 'coachWorkspace.editor.closeDetails' : 'coachWorkspace.editor.editDetails') | translate }}
           </button>
-          <button type="button" class="btn btn-neutral" (click)="copy.openCopy()" [disabled]="state.busy">{{ 'coachWorkspace.editor.copyProgram' | translate }}</button>
+          <button type="button" class="btn btn-neutral" (click)="copy.openCopy()" [disabled]="state.operationPending">{{ 'coachWorkspace.editor.copyProgram' | translate }}</button>
         </div>
       }
     </header>
@@ -29,7 +29,7 @@
     <app-message [message]="state.message" [messageParams]="state.messageParams" [type]="state.messageType" role="status" />
     <div id="program-details-editor" [style.display]="state.programId === null || editDetails ? null : 'none'">
       <app-program-details-form [form]="state.form" [isNew]="state.programId === null" [saving]="state.savingDetails"
-        [submitDisabled]="state.savingDetails || state.busy || state.loading || (state.programId !== null && state.program?.programId !== state.programId)"
+        [submitDisabled]="state.operationPending || (state.programId !== null && state.program?.programId !== state.programId)"
         (save)="details.saveDetails()" />
     </div>
     @if (state.programId === null) {
@@ -41,7 +41,7 @@
         @for (tab of programTabs; track tab.id) {
           <button type="button" role="tab" [id]="'program-tab-' + tab.id" [attr.aria-controls]="'program-panel-' + tab.id"
                   [attr.aria-selected]="activeTab === tab.id" [attr.tabindex]="activeTab === tab.id ? 0 : -1"
-                  [disabled]="state.busy || state.loading || state.savingDetails" (click)="selectTab(tab.id)"
+                  [disabled]="state.operationPending" (click)="selectTab(tab.id)"
                   class="min-h-11 min-w-0 rounded-lg px-2 py-3 text-sm font-semibold text-content-700"
                   [class.bg-white]="activeTab === tab.id" [class.text-primary-700]="activeTab === tab.id" [class.shadow-sm]="activeTab === tab.id">
             {{ tab.label | translate }}
@@ -51,7 +51,7 @@
       <section id="program-panel-workouts" role="tabpanel" aria-labelledby="program-tab-workouts" [style.display]="activeTab === 'workouts' ? null : 'none'">
         <p class="mb-4 text-sm text-content-600">{{ 'coachWorkspace.editor.workoutsTabHint' | translate }}</p>
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-5">
-          <app-program-planner [cells]="state.cells" [selectedDay]="state.selectedDay" [busy]="state.busy || state.loading"
+          <app-program-planner [cells]="state.cells" [selectedDay]="state.selectedDay" [busy]="state.operationPending"
                                     (daySelected)="selectDay($event)" (openMulti)="library.openMulti()" />
           <!-- Kiválasztott nap -->
           <section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm lg:col-span-2"
@@ -65,7 +65,7 @@
               @if (cell.workout; as workout) {
                 <app-program-day-workout
                   [workout]="workout" [rows]="workouts.rows" [selectedWorkoutDayCount]="workouts.selectedWorkoutDayCount"
-                  [programId]="state.programId" [busy]="state.busy"
+                  [programId]="state.programId" [busy]="state.operationPending"
                   [weeklyRepeatDays]="workouts.weeklyRepeatDays" [weeklyRepeatSkipped]="workouts.weeklyRepeatSkipped"
                   [firstDate]="state.firstDate" [lastDate]="state.lastDate" [moveTargetIsSameDay]="state.dayForDate(workouts.moveDate) === cell.day"
                   [(confirmRepeat)]="workouts.confirmRepeat" [(confirmRemove)]="workouts.confirmRemove" [(extraDate)]="workouts.extraDate" [(moveDate)]="workouts.moveDate"
@@ -73,7 +73,7 @@
                   (addToAnotherDay)="workouts.addToAnotherDay()" (moveWorkout)="workouts.moveWorkout()" (removeWorkout)="workouts.removeWorkout()" />
               } @else {
                 <app-program-empty-day
-                  [pendingExercises]="library.pendingExercises" [pendingIds]="library.pendingIds" [busy]="state.busy"
+                  [pendingExercises]="library.pendingExercises" [pendingIds]="library.pendingIds" [busy]="state.operationPending"
                   [hasLibrary]="library.myWorkouts.length > 0" [libraryWorkouts]="library.libraryWorkouts" [programWorkoutIds]="library.programWorkoutIds"
                   [copySourceId]="library.copySourceId"
                   [(emptyMode)]="library.emptyMode" [(workoutName)]="library.workoutName" [(libraryFilter)]="library.libraryFilter"
@@ -89,7 +89,7 @@
           <p class="mb-3 rounded-xl bg-info-50 p-3 text-sm text-info-900">{{ 'coachWorkspace.editor.individualSettingsHint' | translate }}</p>
           <label for="program-calendar-client" class="mb-2 block text-sm font-semibold">{{ 'coachWorkspace.editor.scheduleClient' | translate }}</label>
           <select id="program-calendar-client" class="mb-3 min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 sm:max-w-md"
-                  [(ngModel)]="assignments.calendarUserId" [disabled]="state.loading || state.busy">
+                  [(ngModel)]="assignments.calendarUserId" [disabled]="state.operationPending">
             <option [ngValue]="null">{{ 'coachWorkspace.editor.allClientCalendar' | translate }}</option>
             @for (client of assignments.assignedClients; track client.userId) { <option [ngValue]="client.userId">{{ client.username }} ({{ client.email }})</option> }
           </select>
@@ -103,7 +103,7 @@
       <section id="program-panel-clients" role="tabpanel" aria-labelledby="program-tab-clients" [style.display]="activeTab === 'clients' ? null : 'none'">
       <app-program-clients-panel [programId]="state.programId"
         [assignedClients]="assignments.assignedClients" [unassignedClients]="assignments.unassignedClients" [visibleClients]="assignments.filteredUnassignedClients"
-        [toAssign]="assignments.toAssign" [busy]="state.busy" [(clientFilter)]="assignments.clientFilter"
+        [toAssign]="assignments.toAssign" [busy]="state.operationPending" [(clientFilter)]="assignments.clientFilter"
         (askRevoke)="assignments.askRevoke($event)" (selectVisible)="assignments.selectVisibleClients()" (clearSelection)="assignments.clearClientSelection()"
         (toggleAssign)="assignments.toggleAssign($event.userId, $event.checked)" (assignSelected)="assignments.assignSelected()" />
       </section>
@@ -114,20 +114,20 @@
 <!-- Több edzés egyszerre az Edzéstárból -->
 @if (library.multiOpen) {
   <app-program-multi-add-dialog
-    [selectedDay]="state.selectedDay" [workouts]="library.multiWorkouts" [selected]="library.multiSelected" [targetDays]="library.multiTargetDays" [busy]="state.busy"
+    [selectedDay]="state.selectedDay" [workouts]="library.multiWorkouts" [selected]="library.multiSelected" [targetDays]="library.multiTargetDays" [busy]="state.operationPending"
     [(multiFilter)]="library.multiFilter" (toggle)="library.toggleMulti($event.workoutId, $event.checked)"
     (dismissed)="library.multiOpen = false" (confirmed)="library.addMultiple()" />
 }
 
 <!-- Program másolása -->
 @if (copy.copyOpen) {
-  <app-program-copy-dialog [clients]="assignments.clients" [busy]="state.busy" [(copyName)]="copy.copyName" [(copyStart)]="copy.copyStart" [(copyUserId)]="copy.copyUserId"
+  <app-program-copy-dialog [clients]="assignments.clients" [busy]="state.operationPending" [(copyName)]="copy.copyName" [(copyStart)]="copy.copyStart" [(copyUserId)]="copy.copyUserId"
                            (dismissed)="copy.copyOpen = false" (confirmed)="copy.confirmCopy()" />
 }
 
 <app-confirm-dialog
   [open]="assignments.pendingRevokeClient !== null"
-  [busy]="state.busy"
+  [busy]="state.operationPending"
   title="coachWorkspace.editor.revokeTitle"
   message="coachWorkspace.editor.revokeConfirm"
   [messageParams]="{ name: assignments.pendingRevokeClient?.username, program: state.form.programName }"
@@ -139,7 +139,7 @@
 
 <app-confirm-dialog
   [open]="state.pendingDay !== null"
-  [busy]="state.busy || state.loading"
+  [busy]="state.operationPending"
   title="coachWorkspace.editor.unsavedDayTitle"
   message="coachWorkspace.editor.unsavedDayPrompt"
   confirmLabel="coachWorkspace.client.discardAndGo"

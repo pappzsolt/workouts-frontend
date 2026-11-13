@@ -1070,6 +1070,7 @@
       "workouts": "Workouts"
     },
     "editor": {
+      "saveBeforeBulkAdd": "Save the workout draft first, or select another day and discard it. You can then add multiple workouts from the library.",
       "programPlanner": "Program planner",
       "previousWeek": "Previous week",
       "nextWeek": "Next week",

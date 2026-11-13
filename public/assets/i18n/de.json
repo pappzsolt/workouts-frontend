@@ -1070,6 +1070,7 @@
       "workouts": "Trainings"
     },
     "editor": {
+      "saveBeforeBulkAdd": "Speichere zuerst den Trainingsentwurf oder wähle einen anderen Tag und verwirf ihn. Danach kannst du mehrere Trainings aus der Bibliothek hinzufügen.",
       "programPlanner": "Programmplanung",
       "previousWeek": "Vorherige Woche",
       "nextWeek": "Nächste Woche",

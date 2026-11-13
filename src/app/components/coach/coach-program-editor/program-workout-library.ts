@@ -56,7 +56,7 @@ export class ProgramWorkoutLibrary {
   }
 
   createWorkoutForDay(): void {
-    if (this.state.programId === null || this.state.busy) return;
+    if (this.state.programId === null || this.state.operationPending) return;
     const name = this.workoutName.trim();
     if (!name || this.pendingExercises.length === 0) {
       this.effects.showMessage('coachWorkspace.editor.newWorkoutInvalid', 'error');
@@ -110,7 +110,7 @@ export class ProgramWorkoutLibrary {
   }
 
   linkLibraryWorkout(): void {
-    if (this.state.programId === null || this.copySourceId === null || this.state.busy) return;
+    if (this.state.programId === null || this.copySourceId === null || this.state.operationPending) return;
     const day = this.state.selectedDay;
     this.effects.run(
       this.workspace.addWorkoutToDay(this.state.programId, this.copySourceId, day),
@@ -120,7 +120,7 @@ export class ProgramWorkoutLibrary {
   }
 
   copyWorkoutToDay(): void {
-    if (this.state.programId === null || this.state.busy) return;
+    if (this.state.programId === null || this.state.operationPending) return;
     const name = this.workoutName.trim();
     if (this.copySourceId === null || !name) {
       this.effects.showMessage('coachWorkspace.editor.copyInvalid', 'error');
@@ -140,7 +140,19 @@ export class ProgramWorkoutLibrary {
     if (source) this.workoutName = source.name;
   }
 
+  get hasDraft(): boolean {
+    return !!this.state.selectedCell && !this.state.selectedCell.workout
+      && (!!this.workoutName.trim() || this.pendingExercises.length > 0 || this.copySourceId !== null);
+  }
+
+  private blockMultiForDraft(): boolean {
+    if (!this.hasDraft) return false;
+    this.effects.showMessage('coachWorkspace.editor.saveBeforeBulkAdd', 'error');
+    return true;
+  }
+
   openMulti(): void {
+    if (this.state.operationPending || this.blockMultiForDraft()) return;
     this.multiOpen = true;
     this.multiSelected = [];
     this.multiFilter = '';
@@ -163,7 +175,8 @@ export class ProgramWorkoutLibrary {
   }
 
   addMultiple(): void {
-    if (this.state.programId === null || this.state.busy || this.multiSelected.length === 0) return;
+    if (this.state.programId === null || this.state.operationPending || this.multiSelected.length === 0) return;
+    if (this.blockMultiForDraft()) return;
     const days = this.multiTargetDays;
     if (days.length < this.multiSelected.length) {
       this.effects.showMessage('coachWorkspace.editor.notEnoughFreeDays', 'error');

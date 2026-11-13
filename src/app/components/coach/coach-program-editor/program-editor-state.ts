@@ -28,19 +28,29 @@ export class ProgramEditorState {
     return this.cells.find((cell) => cell.day === this.selectedDay) ?? null;
   }
 
+  get operationPending(): boolean {
+    return this.busy || this.savingDetails || this.loading;
+  }
+
+  /** Day operations use the saved schedule, never the metadata form draft. */
+  get planningStartDate(): string {
+    return this.program?.startDate
+      || (this.cells[0]?.date ? toIsoDate(this.cells[0].date) : this.form.startDate);
+  }
+
   dateForDay(day: number): string {
-    return dateForDay(this.form.startDate, day);
+    return dateForDay(this.planningStartDate, day);
   }
 
   get firstDate(): string {
-    return this.form.startDate ? this.dateForDay(1) : '';
+    return this.planningStartDate ? this.dateForDay(1) : '';
   }
 
   get lastDate(): string {
-    return this.form.startDate ? this.dateForDay(this.cells.length || 1) : '';
+    return this.planningStartDate ? this.dateForDay(this.cells.length || 1) : '';
   }
 
   dayForDate(value: string): number {
-    return dayForDate(this.form.startDate, value);
+    return dayForDate(this.planningStartDate, value);
   }
 }

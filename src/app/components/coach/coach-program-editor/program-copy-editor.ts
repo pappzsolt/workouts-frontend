@@ -19,6 +19,7 @@ export class ProgramCopyEditor {
   ) {}
 
   openCopy(): void {
+    if (this.state.operationPending) return;
     this.copyOpen = true;
     this.copyName = `${this.state.form.programName} (2)`;
     this.copyStart = toIsoDate(new Date());
@@ -26,7 +27,7 @@ export class ProgramCopyEditor {
   }
 
   confirmCopy(): void {
-    if (this.state.programId === null || this.state.busy) return;
+    if (this.state.programId === null || this.state.operationPending) return;
     if (!this.copyName.trim() || !this.copyStart) {
       this.effects.showMessage('coachWorkspace.editor.copyProgramInvalid', 'error');
       return;

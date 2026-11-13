@@ -121,18 +121,18 @@ export class ProgramClientAssignments {
   }
 
   askRevoke(client: CoachClientOverview): void {
-    if (this.state.programId === null || this.state.busy || !this.assignedIds.has(client.userId)) return;
+    if (this.state.programId === null || this.state.operationPending || !this.assignedIds.has(client.userId)) return;
     this.pendingRevokeClient = client;
   }
 
   cancelRevoke(): void {
-    if (!this.state.busy) this.pendingRevokeClient = null;
+    if (!this.state.operationPending) this.pendingRevokeClient = null;
   }
 
   confirmRevoke(): void {
     const client = this.pendingRevokeClient;
     const programId = this.state.programId;
-    if (!client || programId === null || this.state.busy || !this.assignedIds.has(client.userId)) return;
+    if (!client || programId === null || this.state.operationPending || !this.assignedIds.has(client.userId)) return;
     this.state.busy = true;
     this.workspace.revokeProgram(programId, client.userId)
       .pipe(takeUntilDestroyed(this.effects.destroyRef))
@@ -158,7 +158,7 @@ export class ProgramClientAssignments {
   }
 
   assignSelected(): void {
-    if (this.state.programId === null || this.toAssign.size === 0 || this.state.busy) return;
+    if (this.state.programId === null || this.toAssign.size === 0 || this.state.operationPending) return;
     const programId = this.state.programId;
     const ids = [...this.toAssign];
     this.state.busy = true;

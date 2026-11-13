@@ -1070,6 +1070,7 @@
       "workouts": "Edzések"
     },
     "editor": {
+      "saveBeforeBulkAdd": "Előbb mentsd el a megkezdett edzést, vagy válassz másik napot és vesd el a piszkozatot. Ezután adhatsz hozzá több edzést az Edzéstárból.",
       "programPlanner": "Programtervező",
       "previousWeek": "Előző hét",
       "nextWeek": "Következő hét",

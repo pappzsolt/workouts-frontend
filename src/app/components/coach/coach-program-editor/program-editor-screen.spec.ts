@@ -126,6 +126,20 @@ describe('Program editor screen bindings', () => {
     expect(api.updatePrescription).not.toHaveBeenCalled();
   });
 
+  it('disables planner and workout actions while program metadata is saving', () => {
+    const saved = new Subject<void>();
+    api.updateProgram.and.returnValue(saved);
+    const fixture = render();
+    child(fixture, ProgramDetailsFormComponent).save.emit(); fixture.detectChanges();
+    expect(child(fixture, ProgramPlannerComponent).busy).toBeTrue();
+    expect(child(fixture, ProgramDayWorkoutComponent).busy).toBeTrue();
+    const panel = fixture.debugElement.query(By.directive(ProgramPlannerComponent)).nativeElement as HTMLElement;
+    expect([...panel.querySelectorAll('button')].every(button => button.disabled)).toBeTrue();
+    saved.next(); saved.complete(); fixture.detectChanges();
+    expect(child(fixture, ProgramPlannerComponent).busy).toBeFalse();
+    expect(child(fixture, ProgramDayWorkoutComponent).busy).toBeFalse();
+  });
+
   it('pages through complete months without adding selectable program days', () => {
     program.startDate = '2026-11-13';
     program.endDate = '2026-12-02';

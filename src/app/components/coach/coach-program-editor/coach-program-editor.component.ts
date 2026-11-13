@@ -76,7 +76,7 @@ export class CoachProgramEditorComponent implements OnInit {
   ] as const;
 
   selectTab(tab: 'workouts' | 'calendar' | 'clients'): void {
-    if (this.state.busy || this.state.loading || this.state.savingDetails) return;
+    if (this.state.operationPending) return;
     this.activeTab = tab;
   }
 
@@ -241,13 +241,13 @@ export class CoachProgramEditorComponent implements OnInit {
   }
 
   private buildCells(links: CoachProgramDayLink[] = []): void {
-    const { cells, leadingBlanks } = buildDayCells(this.state.program, links, this.state.form.durationDays, this.state.form.startDate);
+    const { cells, leadingBlanks } = buildDayCells(this.state.program, links, this.state.program?.durationDays ?? this.state.form.durationDays, this.state.program?.startDate ?? this.state.form.startDate);
     this.state.cells = cells;
     this.state.leadingBlanks = leadingBlanks;
   }
 
   selectDay(day: number): void {
-    if (day === this.state.selectedDay || this.state.busy || this.state.loading || !this.state.cells.some((cell) => cell.day === day)) return;
+    if (day === this.state.selectedDay || this.state.operationPending || !this.state.cells.some((cell) => cell.day === day)) return;
     if (this.hasDayDraft()) {
       this.state.pendingDay = day;
       return;
@@ -260,7 +260,7 @@ export class CoachProgramEditorComponent implements OnInit {
   }
 
   discardAndChangeDay(): void {
-    if (this.state.pendingDay === null || this.state.busy || this.state.loading) return;
+    if (this.state.pendingDay === null || this.state.operationPending) return;
     this.openDay(this.state.pendingDay);
   }
 
@@ -270,6 +270,7 @@ export class CoachProgramEditorComponent implements OnInit {
 
   private run(operation: Observable<unknown>, successKey: string, selectDay: number,
               preserveDrafts = false, onError?: (error: unknown) => boolean): void {
+    if (this.state.operationPending) return;
     this.state.busy = true;
     operation.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => undefined,
@@ -347,8 +348,7 @@ export class CoachProgramEditorComponent implements OnInit {
   }
 
   private hasDayDraft(): boolean {
-    return this.workouts.changedCount > 0 || (!this.state.selectedCell?.workout &&
-      (!!this.library.workoutName.trim() || this.library.pendingExercises.length > 0 || this.library.copySourceId !== null));
+    return this.workouts.changedCount > 0 || this.library.hasDraft;
   }
 
   private openDay(day: number): void {
