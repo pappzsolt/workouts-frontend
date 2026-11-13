@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, OnChanges, SimpleChanges, Input, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -8,7 +8,7 @@ import { Subject, takeUntil } from 'rxjs';
 import { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import type { CoachClientOverview, CoachClientWorkout } from '../../../models/coach-workspace.model';
 import { buildCalendarMonth } from '../../../shared/calendar-month';
-import { toIsoDate } from '../../../shared/local-date';
+import { fromIsoDate, toIsoDate } from '../../../shared/local-date';
 import { WEEKDAY_KEYS } from '../coach-ui';
 import { AppIconComponent } from '../../shared/components/app-icon/app-icon.component';
 import { AppStatusBadgeComponent } from '../../shared/components/app-status-badge/app-status-badge.component';
@@ -22,7 +22,10 @@ interface CalendarEntry { client: CoachClientOverview; workouts: CoachClientWork
   imports: [CommonModule, FormsModule, RouterModule, TranslatePipe, AppIconComponent, AppStatusBadgeComponent],
   templateUrl: './coach-calendar.component.html',
 })
-export class CoachCalendarComponent implements OnInit {
+export class CoachCalendarComponent implements OnInit, OnChanges {
+  @Input() programId: number | null = null;
+  @Input() initialDate: string | null = null;
+  @Input() embedded = false;
   private readonly workspace = inject(CoachWorkspaceService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly cancelled$ = new Subject<void>();
@@ -46,7 +49,25 @@ export class CoachCalendarComponent implements OnInit {
   failed = false;
   private byDate = new Map<string, CalendarEntry[]>();
 
-  ngOnInit(): void { this.load(); }
+  ngOnInit(): void {
+    this.openInitialMonth();
+    this.load();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if ((changes['programId'] && !changes['programId'].firstChange)
+      || (changes['initialDate'] && !changes['initialDate'].firstChange)) {
+      this.openInitialMonth();
+      this.load();
+    }
+  }
+
+  private openInitialMonth(): void {
+    if (!this.initialDate) return;
+    const date = fromIsoDate(this.initialDate);
+    this.month = new Date(date.getFullYear(), date.getMonth(), 1);
+    this.selectedDate = this.initialDate;
+  }
 
   get days() { return buildCalendarMonth(this.month.getFullYear(), this.month.getMonth(), this.today); }
 
@@ -72,7 +93,11 @@ export class CoachCalendarComponent implements OnInit {
       .pipe(takeUntil(this.cancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: overview => {
-          this.clients = [...overview.clients].sort((a, b) => a.userId - b.userId);
+          this.clients = overview.clients
+            .filter(client => this.programId === null || client.programs.some(program => program.programId === this.programId)
+              || client.workouts.some(workout => workout.programId === this.programId))
+            .map(client => ({ ...client, workouts: client.workouts.filter(workout => this.programId === null || workout.programId === this.programId) }))
+            .sort((a, b) => a.userId - b.userId);
           if (this.selectedUserId !== null && !this.clients.some(client => client.userId === this.selectedUserId)) {
             this.selectedUserId = null;
           }

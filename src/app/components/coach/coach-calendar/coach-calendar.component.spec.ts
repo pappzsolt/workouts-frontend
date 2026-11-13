@@ -99,4 +99,20 @@ describe('Coach calendar', () => {
     expect(fixture.componentInstance.failed).toBeFalse();
     expect(fixture.componentInstance.clients).toEqual([]);
   });
+  it('shows a moved workout on its actual day in the program-scoped shared calendar', () => {
+    const andi = client(7, [workout(101, '2026-11-20'), { ...workout(102, '2026-11-13'), programId: 99 }]);
+    const other = client(8, [workout(201, '2026-11-13')]);
+    api.getOverview.and.returnValue(of({ from: '', to: '', clients: [andi, other, client(9, [{ ...workout(301), programId: 99 }])] }));
+    fixture.componentRef.setInput('programId', 29);
+    fixture.componentRef.setInput('initialDate', '2026-11-13');
+    fixture.componentRef.setInput('embedded', true);
+    fixture.detectChanges();
+    const component = fixture.componentInstance;
+    expect(component.entriesFor('2026-11-13').map(entry => entry.client.userId)).toEqual([8]);
+    expect(component.entriesFor('2026-11-20').map(entry => entry.client.userId)).toEqual([7]);
+    expect(component.clients.map(entry => entry.userId)).toEqual([7, 8]);
+    component.selectedDate = '2026-11-20'; fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).querySelector('a[href="/coach/clients/7?workout=101&program=29&date=2026-11-20"]')).not.toBeNull();
+  });
+
 });

@@ -7,6 +7,7 @@ import { Subject, of } from 'rxjs';
 import type { CoachClientOverview, CoachProgram } from '../../../models/coach-workspace.model';
 import { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import { CoachProgramEditorComponent } from './coach-program-editor.component';
+import { CoachCalendarComponent } from '../coach-calendar/coach-calendar.component';
 import { ProgramClientsPanelComponent } from './parts/program-clients-panel.component';
 import { ProgramCopyDialogComponent } from './parts/program-copy-dialog.component';
 import { ProgramDayGridComponent } from './parts/program-day-grid.component';
@@ -199,6 +200,7 @@ describe('Program editor screen bindings', () => {
       await fixture.whenStable();
       fixture.detectChanges();
     }
+    expect(child(fixture, CoachCalendarComponent).programId).toBe(10);
     await choose('Anna');
     expect(api.getClientProgramRows).toHaveBeenCalledWith(7, 10);
     expect(child(fixture, ProgramDayGridComponent).showMultiAdd).toBeFalse();
@@ -208,6 +210,8 @@ describe('Program editor screen bindings', () => {
     await choose('coachWorkspace.editor.sharedCalendar');
     expect(child(fixture, ProgramDayGridComponent).showMultiAdd).toBeTrue();
     expect(fixture.debugElement.query(By.directive(ProgramDayWorkoutComponent))).not.toBeNull();
+    await choose('coachWorkspace.editor.allClientCalendar');
+    expect(child(fixture, CoachCalendarComponent).programId).toBe(10);
   });
 
   it('creates an empty-day workout before saving its exercises and linking the day', () => {

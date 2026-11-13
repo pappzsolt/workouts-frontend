@@ -45,7 +45,8 @@
           </label>
           <select id="program-calendar-client" class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 text-content-900 sm:max-w-md"
                   [(ngModel)]="assignments.calendarUserId" [disabled]="state.loading || state.busy">
-            <option [ngValue]="null">{{ 'coachWorkspace.editor.sharedCalendar' | translate }}</option>
+            <option [ngValue]="null">{{ 'coachWorkspace.editor.allClientCalendar' | translate }}</option>
+            <option [ngValue]="-1">{{ 'coachWorkspace.editor.sharedCalendar' | translate }}</option>
             @for (client of assignments.assignedClients; track client.userId) {
               <option [ngValue]="client.userId">{{ client.username }} ({{ client.email }})</option>
             }
@@ -53,8 +54,10 @@
           <p class="mt-2 text-sm text-content-600">{{ 'coachWorkspace.editor.calendarClientHint' | translate }}</p>
         </div>
       }
-      @if (assignments.calendarClient; as client) {
-        <app-program-client-calendar [client]="client" [programId]="state.programId!"
+      @if (assignments.calendarUserId === null && assignments.assignedClients.length > 0) {
+        <app-coach-calendar [programId]="state.programId" [initialDate]="state.program?.startDate ?? state.form.startDate" [embedded]="true" />
+      } @else if (assignments.calendarClient) {
+        <app-program-client-calendar [client]="assignments.calendarClient!" [programId]="state.programId!"
                                      [startDate]="state.form.startDate" [durationDays]="+state.form.durationDays" />
       } @else {
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
