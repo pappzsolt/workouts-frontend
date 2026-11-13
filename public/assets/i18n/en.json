@@ -872,7 +872,7 @@
   "coachWorkspace": {
     "calendar": {
       "title": "Coach calendar",
-      "hint": "Choose a client or view all clients. Names use different colors; select a day to open each workout separately.",
+      "hint": "Each day is split into colored bands per client, with their name above the workout. Select a day to see full names and all workouts.",
       "client": "Client",
       "allClients": "All clients",
       "today": "Today",

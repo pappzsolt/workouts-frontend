@@ -872,7 +872,7 @@
   "coachWorkspace": {
     "calendar": {
       "title": "Edzői naptár",
-      "hint": "Válassz ügyfelet vagy nézd az összes ügyfél edzéseit. A napcellákban a nevek eltérő színnel látszanak; a napra koppintva minden edzés külön megnyitható.",
+      "hint": "A napcellák ügyfelenként külön színes sávokra oszlanak: felül a név, alatta az edzés látszik. Válassz napot a teljes névhez és az összes edzéshez.",
       "client": "Ügyfél",
       "allClients": "Összes ügyfél",
       "today": "Ma",

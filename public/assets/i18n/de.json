@@ -872,7 +872,7 @@
   "coachWorkspace": {
     "calendar": {
       "title": "Trainerkalender",
-      "hint": "Wähle einen Kunden oder zeige alle Kunden an. Namen erscheinen in verschiedenen Farben; wähle einen Tag, um jedes Training einzeln zu öffnen.",
+      "hint": "Jeder Tag ist in farbige Kundenbereiche aufgeteilt: oben der Name, darunter das Training. Wähle einen Tag für vollständige Namen und alle Trainings.",
       "client": "Kunde",
       "allClients": "Alle Kunden",
       "today": "Heute",

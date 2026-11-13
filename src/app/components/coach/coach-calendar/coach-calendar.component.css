@@ -1,0 +1,6 @@
+/* Client colors identify people rather than workout status. */
+.calendar-client-band {
+  background-color: oklch(0.96 0.04 var(--calendar-client-hue));
+  border-color: oklch(0.68 0.1 var(--calendar-client-hue));
+  color: oklch(0.3 0.055 var(--calendar-client-hue));
+}

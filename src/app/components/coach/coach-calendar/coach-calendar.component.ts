@@ -21,6 +21,7 @@ interface CalendarEntry { client: CoachClientOverview; workouts: CoachClientWork
   standalone: true,
   imports: [CommonModule, FormsModule, RouterModule, TranslatePipe, AppIconComponent, AppStatusBadgeComponent],
   templateUrl: './coach-calendar.component.html',
+  styleUrl: './coach-calendar.component.css',
 })
 export class CoachCalendarComponent implements OnInit, OnChanges {
   @Input() programId: number | null = null;
@@ -34,13 +35,6 @@ export class CoachCalendarComponent implements OnInit, OnChanges {
   readonly weekdayKeys = WEEKDAY_KEYS;
   readonly monthKeys = ['january', 'february', 'march', 'april', 'may', 'june',
     'july', 'august', 'september', 'october', 'november', 'december'];
-  readonly clientColors = [
-    'border-primary-300 bg-primary-50 text-primary-900',
-    'border-info-300 bg-info-50 text-info-900',
-    'border-warning-300 bg-warning-50 text-warning-900',
-    'border-delete-300 bg-delete-50 text-delete-700',
-    'border-surface-300 bg-surface-100 text-content-900',
-  ];
   month = new Date(this.today.getFullYear(), this.today.getMonth(), 1);
   selectedDate = this.todayKey;
   selectedUserId: number | null = null;
@@ -128,9 +122,13 @@ export class CoachCalendarComponent implements OnInit, OnChanges {
   selectDate(date: Date): void { this.selectedDate = toIsoDate(date); }
   dateKey(date: Date): string { return toIsoDate(date); }
   get selectedEntries(): CalendarEntry[] { return this.entriesFor(this.selectedDate); }
-  color(userId: number): string {
-    const index = this.clients.findIndex(client => client.userId === userId);
-    return this.clientColors[Math.max(0, index) % this.clientColors.length];
+  clientHue(userId: number): number {
+    // Stable per client across months, filters and program views; no repeating small palette.
+    return (userId * 137.508) % 360;
+  }
+
+  workoutNames(entry: CalendarEntry): string {
+    return [...new Set(entry.workouts.map(workout => workout.workoutName))].join(' · ');
   }
   status(workout: CoachClientWorkout) { return workoutStatus(workout, this.todayKey); }
 }

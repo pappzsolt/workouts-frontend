@@ -37,7 +37,7 @@ describe('Coach calendar', () => {
     expect(api.getOverview).toHaveBeenCalledOnceWith('2026-10-26', '2026-12-06');
     expect(component.selectedEntries.length).toBe(4);
     expect(component.selectedEntries[0].workouts.length).toBe(2);
-    expect(component.color(7)).not.toBe(component.color(8));
+    expect(component.clientHue(7)).not.toBe(component.clientHue(8));
     const element = fixture.nativeElement as HTMLElement;
     expect(element.querySelectorAll('article').length).toBe(4);
     expect(element.querySelector('a[href="/coach/clients/7?workout=101&program=29&date=2026-11-13"]')).not.toBeNull();
@@ -113,6 +113,32 @@ describe('Coach calendar', () => {
     expect(component.clients.map(entry => entry.userId)).toEqual([7, 8]);
     component.selectedDate = '2026-11-20'; fixture.detectChanges();
     expect((fixture.nativeElement as HTMLElement).querySelector('a[href="/coach/clients/7?workout=101&program=29&date=2026-11-20"]')).not.toBeNull();
+  });
+
+  it('splits a shared workout day into separate named client bands with stable colors', () => {
+    api.getOverview.and.returnValue(of({ from: '', to: '', clients: [
+      client(7, [workout(101)]), client(8, [workout(101)]),
+    ] }));
+    fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
+    const day = element.querySelector<HTMLButtonElement>('button[aria-pressed="true"]')!;
+    const bands = [...day.querySelectorAll<HTMLElement>('[data-calendar-client]')];
+    expect(bands.length).toBe(2);
+    expect(bands[0].textContent).toContain('Client 7');
+    expect(bands[1].textContent).toContain('Client 8');
+    expect(bands.every(band => band.textContent?.includes('Workout 101'))).toBeTrue();
+    expect(getComputedStyle(bands[0]).backgroundColor).not.toBe(getComputedStyle(bands[1]).backgroundColor);
+    const originalHue = fixture.componentInstance.clientHue(7);
+    expect(new Set(Array.from({ length: 20 }, (_, index) => fixture.componentInstance.clientHue(index + 1))).size).toBe(20);
+    for (const width of [280, 375, 768]) {
+      element.querySelector('section')!.style.width = `${width}px`;
+      expect(Math.round(day.getBoundingClientRect().height)).toBe(144);
+      const heights = bands.map(band => band.getBoundingClientRect().height);
+      expect(Math.abs(heights[0] - heights[1])).toBeLessThanOrEqual(1);
+      expect(day.scrollWidth).toBeLessThanOrEqual(day.clientWidth);
+    }
+    fixture.componentInstance.clients.reverse();
+    expect(fixture.componentInstance.clientHue(7)).toBe(originalHue);
   });
 
 });
