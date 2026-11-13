@@ -8,6 +8,21 @@
       {{ 'coachWorkspace.editor.multiAdd' | translate }}
     </button>
   </div>
+  @if (visibleMonth; as month) {
+    <div class="mb-4 flex items-center justify-between gap-2">
+      <button type="button" class="btn btn-ghost btn-icon" (click)="changeMonth(-1)"
+              [disabled]="!canGoBack" [attr.aria-label]="'userWorkoutsCalendar.previousMonth' | translate">
+        <app-icon name="chevron-left" sizeClass="h-5 w-5" />
+      </button>
+      <p aria-live="polite" class="font-semibold text-content-900">
+        {{ month.getFullYear() }}. {{ ('userWorkoutsCalendar.' + monthKeys[month.getMonth()]) | translate }}
+      </p>
+      <button type="button" class="btn btn-ghost btn-icon" (click)="changeMonth(1)"
+              [disabled]="!canGoForward" [attr.aria-label]="'userWorkoutsCalendar.nextMonth' | translate">
+        <app-icon name="chevron-right" sizeClass="h-5 w-5" />
+      </button>
+    </div>
+  }
   <div class="grid grid-cols-7 gap-1 sm:gap-2">
     @for (key of weekdayKeys; track key) {
       <div class="pb-1 text-center text-xs font-semibold uppercase text-content-600">{{ key | translate }}</div>
