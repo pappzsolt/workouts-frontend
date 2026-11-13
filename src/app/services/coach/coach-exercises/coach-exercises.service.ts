@@ -69,6 +69,7 @@ export class ExerciseService {
       .get<ApiResponse<BackendWorkoutDto>>(API_ENDPOINTS.exerciseForWorkout(workoutId), { params })
       .pipe(
         map((response) => {
+          if (!response.success) throw new Error(response.message || 'dataErrors.workoutMissing');
           if (response.data == null) {
             throw new Error('dataErrors.workoutMissing');
           }

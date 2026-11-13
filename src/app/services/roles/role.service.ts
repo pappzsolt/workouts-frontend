@@ -19,13 +19,14 @@ export class RoleService {
 
   getRoles(): Observable<Role[]> {
     return this.http.get<ApiResponse<RoleDto[]>>(this.apiUrl).pipe(
-      map((response) =>
-        (response.data ?? []).flatMap((role) =>
+      map((response) => {
+        if (!response.success) throw new Error(response.message || 'roleSelect.loadError');
+        return (response.data ?? []).flatMap((role) =>
           role.id != null && role.name != null
             ? [{ id: role.id, name: role.name }]
             : [],
-        ),
-      ),
+        );
+      }),
       catchError((error) => {
         this.logger.error('Hiba a role-ok lekérésekor:', error);
         return throwError(() => new Error(error?.message || 'roleSelect.loadError'));

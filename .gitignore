@@ -50,3 +50,15 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Local environment variables, including E2E login and database credentials.
+.env
+.env.*
+!.env.example
+!.env.*.example
+.test.env
+
+# Generated Playwright artifacts and coverage (not project source).
+e2e/*-results/
+e2e/*-report/
+e2e/live-api-coverage/

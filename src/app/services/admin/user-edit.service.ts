@@ -33,7 +33,9 @@ export class UserEditService {
 
   getUsers(): Observable<RawUser[]> {
     return this.http.get<ApiResponse<MemberResponse[]>>(this.usersUrl).pipe(
-      map((response) => (response.data ?? [])
+      map((response) => {
+        if (!response.success) throw new Error(response.message || 'dataErrors.usersLoad');
+        return (response.data ?? [])
         .filter((user): user is MemberResponse & { id: number } => user.id != null)
         .map((user) => ({
           id: user.id,
@@ -49,26 +51,31 @@ export class UserEditService {
             gender: this.getStringExtraField(user.extraFields?.['gender']),
             goals: this.getStringExtraField(user.extraFields?.['goals']),
           },
-        }))),
+        }));
+      }),
     );
   }
 
   getCoaches(): Observable<CoachNameId[]> {
     return this.http.get<ApiResponse<CoachLookupDto[]>>(this.coachesUrl).pipe(
-      map((response) =>
-        (response.data ?? []).filter((coach): coach is CoachLookupDto & { id: number } => coach.id != null).map((coach) => ({
+      map((response) => {
+        if (!response.success) throw new Error(response.message || 'coachSelect.loadError');
+        return (response.data ?? []).filter((coach): coach is CoachLookupDto & { id: number } => coach.id != null).map((coach) => ({
           id: coach.id,
           name: coach.name ?? '',
-        })),
-      ),
+        }));
+      }),
     );
   }
 
   getRoles(): Observable<Role[]> {
     return this.http.get<ApiResponse<RoleDto[]>>(this.rolesUrl).pipe(
-      map((response) => (response.data ?? [])
+      map((response) => {
+        if (!response.success) throw new Error(response.message || 'roleSelect.loadError');
+        return (response.data ?? [])
         .filter((role): role is RoleDto & { id: number } => role.id != null)
-        .map((role) => ({ id: role.id, name: role.name ?? '' }))),
+        .map((role) => ({ id: role.id, name: role.name ?? '' }));
+      }),
     );
   }
 

@@ -20,13 +20,14 @@ export class UserProfilService {
   private readonly coachesUrl = API_ENDPOINTS.allCoaches;
   getCoaches(): Observable<CoachNameId[]> {
     return this.http.get<ApiResponse<CoachDto[]>>(this.coachesUrl).pipe(
-      map((response) =>
-        (response.data ?? []).flatMap((coach) =>
+      map((response) => {
+        if (!response.success) throw new Error(response.message || 'coachSelect.loadError');
+        return (response.data ?? []).flatMap((coach) =>
           coach.id != null && coach.name != null
             ? [{ id: coach.id, name: coach.name }]
             : [],
-        ),
-      ),
+        );
+      }),
     );
   }
 
@@ -35,6 +36,7 @@ export class UserProfilService {
       .get<ApiResponse<MemberResponse>>(API_ENDPOINTS.memberUserById(id))
       .pipe(
         map((response) => {
+          if (!response.success) throw new Error(response.message || 'dataErrors.profileMissing');
           const user = response.data == null ? null : this.toRawUser(response.data);
 
           if (user == null) {

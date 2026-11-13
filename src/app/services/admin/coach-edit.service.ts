@@ -27,6 +27,7 @@ export class CoachEditService {
   getCoaches(): Observable<Coach[]> {
     return this.http.get<ApiResponse<MemberResponse[]>>(this.membersUrl).pipe(
       map((response) => {
+        if (!response.success) throw new Error(response.message || 'coachSelect.loadError');
         if (response.data == null) {
           throw new Error('dataErrors.coachesMissing');
         }
@@ -53,6 +54,7 @@ export class CoachEditService {
       .get<ApiResponse<MemberResponse>>(API_ENDPOINTS.memberCoachById(id))
       .pipe(
         map((response) => {
+          if (!response.success) throw new Error(response.message || 'dataErrors.coachLoad');
           if (response.data == null || !this.isCompleteCoachResponse(response.data)) {
             throw new Error('dataErrors.coachMissing');
           }

@@ -18,8 +18,9 @@ export class AdminListUsersService {
 
   getUsers(): Observable<User[]> {
     return this.http.get<ApiResponse<MemberResponse[]>>(this.apiUrl).pipe(
-      map((response) =>
-        (response.data ?? [])
+      map((response) => {
+        if (!response.success) throw new Error(response.message || 'dataErrors.usersLoad');
+        return (response.data ?? [])
           .filter(
             (member): member is MemberResponse & {
               id: number;
@@ -36,8 +37,8 @@ export class AdminListUsersService {
             username: member.usernameOrName,
             email: member.email,
             roles: member.roles ?? [],
-          })),
-      ),
+          }));
+      }),
       catchError(() =>
         throwError(() => new Error('dataErrors.usersLoad')),
       ),

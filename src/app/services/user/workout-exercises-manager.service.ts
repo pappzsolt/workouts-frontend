@@ -33,7 +33,10 @@ export class WorkoutExercisesManagerService {
           },
         },
       )
-      .pipe(map((response: ApiResponse<UserWorkoutExerciseDto[]>) => response.data ?? []));
+      .pipe(map((response: ApiResponse<UserWorkoutExerciseDto[]>) => {
+        if (!response.success) throw new Error(response.message || 'userWorkouts.loadError');
+        return response.data ?? [];
+      }));
   }
 
   /**
