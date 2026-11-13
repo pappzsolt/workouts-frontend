@@ -1,4 +1,4 @@
-import { addDays, calendarDaysBetween, fromIsoDate, startOfWeek, toIsoDate } from '../../../shared/local-date';
+import { addDays, calendarDaysBetween, fromIsoDate, toIsoDate } from '../../../shared/local-date';
 import type {
   ClientProgramRow,
   ClientSetValues,
@@ -98,23 +98,37 @@ export function workoutStatus(workout: ClientWorkoutEntry, today: string): Coach
   return 'planned';
 }
 
-/** Az edzések naptári hetek szerint; a hét sorszáma a program kezdőhetétől számít. */
+/**
+ * Program weeks match the backend: consecutive seven-day periods starting on
+ * the program's actual start date, not Monday-to-Sunday calendar weeks.
+ * The backend uses the earliest scheduled workout when the start date is absent.
+ */
 export function buildWeeks(workouts: ClientWorkoutEntry[], programStart: string | null): WeekGroup[] {
-  const start = programStart ?? workouts[0]?.date ?? null;
+  const firstScheduledDate = workouts.reduce<string | null>(
+    (first, workout) => workout.date && (!first || workout.date < first) ? workout.date : first,
+    null,
+  );
+  const start = programStart ?? firstScheduledDate;
+  if (!start) return [];
+
+  const startDate = fromIsoDate(start);
   const groups = new Map<string, WeekGroup>();
   for (const workout of workouts) {
     if (!workout.date) continue;
-    const monday = startOfWeek(fromIsoDate(workout.date));
-    const key = toIsoDate(monday);
+    const week = Math.floor(calendarDaysBetween(startDate, fromIsoDate(workout.date)) / 7) + 1;
+    const weekStart = addDays(startDate, (week - 1) * 7);
+    const key = toIsoDate(weekStart);
     if (!groups.has(key)) {
-      const number = start
-        ? Math.floor(calendarDaysBetween(startOfWeek(fromIsoDate(start)), monday) / 7) + 1
-        : groups.size + 1;
-      groups.set(key, { label: String(number), from: key, to: toIsoDate(addDays(monday, 6)), workouts: [] });
+      groups.set(key, {
+        label: String(week),
+        from: key,
+        to: toIsoDate(addDays(weekStart, 6)),
+        workouts: [],
+      });
     }
     groups.get(key)!.workouts.push(workout);
   }
-  return [...groups.values()];
+  return [...groups.values()].sort((a, b) => a.from.localeCompare(b.from));
 }
 
 export function groupWorkouts(rows: ClientProgramRow[]): ClientWorkoutEntry[] {
