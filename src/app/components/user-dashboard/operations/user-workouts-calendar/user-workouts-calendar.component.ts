@@ -152,8 +152,12 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
 
   private loadScheduledWorkouts(): void {
     this.scheduledWorkoutsRequest?.unsubscribe();
+    // Include the previous/next month padding visible in the desktop calendar grid.
+    const visibleDays = buildCalendarMonth(this.currentYear, this.currentMonth, new Date());
+    const from = this.toDateKey(visibleDays[0].date);
+    const to = this.toDateKey(visibleDays[visibleDays.length - 1].date);
     this.scheduledWorkoutsRequest = this.workoutService
-      .getScheduledWorkouts()
+      .getScheduledWorkouts(from, to)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
@@ -190,6 +194,7 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
     }
 
     this.generateCalendar();
+    this.loadScheduledWorkouts();
   }
 
   // =========================================================
@@ -205,6 +210,7 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
     }
 
     this.generateCalendar();
+    this.loadScheduledWorkouts();
   }
 
   // =========================================================

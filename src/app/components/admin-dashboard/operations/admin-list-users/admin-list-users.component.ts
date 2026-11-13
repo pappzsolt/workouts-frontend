@@ -1,3 +1,4 @@
+import { AppButtonComponent } from '../../../shared/components/app-button/app-button.component';
 import { UserDeletionDialogComponent } from '../../../shared/user-deletion-dialog/user-deletion-dialog.component';
 import { matchesSearch } from '../../../shared/components/app-search/search-match';
 import { AppSearchComponent } from '../../../shared/components/app-search/app-search.component';
@@ -21,6 +22,7 @@ import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.c
   standalone: true,
   imports: [
     UserDeletionDialogComponent,
+    AppButtonComponent,
     AppSearchComponent,
     AppHeadingDirective,
     CommonModule,

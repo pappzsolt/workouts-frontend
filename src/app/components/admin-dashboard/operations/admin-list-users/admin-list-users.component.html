@@ -58,10 +58,10 @@
 
               {{ user.roles.join(', ') }}
             </div>
-            <button *ngIf="user.accountType === 'user'" type="button" (click)="deletingUserId = user.id"
-              class="mt-4 rounded-lg border border-delete-700 px-4 py-2 text-delete-700">
+            <app-button *ngIf="user.accountType === 'user'" variant="delete" type="button"
+              buttonClass="mt-4" (buttonClick)="deletingUserId = user.id">
               {{ 'userDeletion.action' | translate }}
-            </button>
+            </app-button>
           </div>
         </app-card>
       </div>

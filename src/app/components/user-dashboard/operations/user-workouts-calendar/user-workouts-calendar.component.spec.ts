@@ -12,6 +12,8 @@ describe('Workout calendar month integration', () => {
   let language: BehaviorSubject<string>;
   let first: Subject<ApiResponse<ScheduledWorkout[]>>;
   let second: Subject<ApiResponse<ScheduledWorkout[]>>;
+  let third: Subject<ApiResponse<ScheduledWorkout[]>>;
+  let getScheduled: jasmine.Spy;
   const workout: ScheduledWorkout = {
     userWorkoutId: 11, programWorkoutId: 21, workoutId: 31, programId: 41,
     scheduledAt: '2026-01-15', workoutName: 'Strength', completed: false,
@@ -23,11 +25,13 @@ describe('Workout calendar month integration', () => {
     language = new BehaviorSubject('hu');
     first = new Subject<ApiResponse<ScheduledWorkout[]>>();
     second = new Subject<ApiResponse<ScheduledWorkout[]>>();
+    third = new Subject<ApiResponse<ScheduledWorkout[]>>();
+    getScheduled = jasmine.createSpy().and.returnValues(first, second, third);
     TestBed.configureTestingModule({ providers: [
       { provide: LoggerService, useValue: { error() {} } },
     ] });
     component = TestBed.runInInjectionContext(() => new UserWorkoutsCalendarComponent({
-      getScheduledWorkouts: jasmine.createSpy().and.returnValues(first, second),
+      getScheduledWorkouts: getScheduled,
       getExercisesForUserWorkout: () => of([]),
     } as unknown as WorkoutExercisesManagerService, {
       language$: language,
@@ -42,6 +46,7 @@ describe('Workout calendar month integration', () => {
 
   it('builds the loaded month and keeps selected workouts and date lookup during month changes', () => {
     expect(component.calendarDays).toEqual([]);
+    expect(getScheduled).toHaveBeenCalledOnceWith('2025-12-29', '2026-02-01');
     first.next({ success: true, message: null, data: [workout] });
     expect(component.currentYear).toBe(2026);
     expect(component.currentMonth).toBe(0);
@@ -49,10 +54,12 @@ describe('Workout calendar month integration', () => {
     expect(component.getWorkoutsForDay(new Date(2026, 0, 15))).toEqual([workout]);
     component.selectWorkout(workout);
     component.nextMonth();
+    expect(getScheduled).toHaveBeenCalledWith('2026-01-26', '2026-03-01');
     expect(component.currentMonth).toBe(1);
     expect(component.calendarDays.filter(day => day.currentMonth).length).toBe(28);
     expect(component.selectedWorkout).toBe(workout);
     component.previousMonth();
+    expect(getScheduled.calls.mostRecent().args).toEqual(['2025-12-29', '2026-02-01']);
     expect(component.getWorkoutsForDay(new Date(2026, 0, 15))).toEqual([workout]);
     expect(component.calendarDays[0].date.getDay()).toBe(1);
   });
@@ -69,10 +76,26 @@ describe('Workout calendar month integration', () => {
     expect(component.currentMonth).toBe(11);
   });
 
+  it('reloads each month and ignores results from an abandoned month', () => {
+    component.nextMonth();
+    expect(first.observed).toBeFalse();
+    expect(getScheduled.calls.mostRecent().args).toEqual(['2026-01-26', '2026-03-01']);
+    first.next({ success: true, message: null, data: [workout] });
+    expect(component.scheduledWorkouts).toEqual([]);
+    const februaryWorkout = { ...workout, userWorkoutId: 12, scheduledAt: '2026-02-10' };
+    second.next({ success: true, message: null, data: [februaryWorkout] });
+    expect(component.getWorkoutsForDay(new Date(2026, 1, 10))).toEqual([februaryWorkout]);
+    component.previousMonth();
+    expect(second.observed).toBeFalse();
+    third.next({ success: true, message: null, data: [workout] });
+    expect(component.getWorkoutsForDay(new Date(2026, 0, 15))).toEqual([workout]);
+  });
+
   it('keeps the last loaded grid and workout index on a failed language reload', () => {
     first.next({ success: true, message: null, data: [workout] });
     const grid = component.calendarDays;
     language.next('en');
+    expect(getScheduled.calls.mostRecent().args).toEqual(['2025-12-29', '2026-02-01']);
     second.error(new Error('offline'));
     expect(component.scheduledWorkoutsError).toBeTrue();
     expect(component.calendarDays).toBe(grid);

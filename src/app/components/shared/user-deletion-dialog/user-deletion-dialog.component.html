@@ -22,12 +22,12 @@
           <label class="flex items-start gap-3"><input name="verified" type="checkbox" [(ngModel)]="verified" required />
             <span>{{ 'userDeletion.verified' | translate }}</span>
           </label>
-          <button type="submit" [disabled]="!canDelete" class="rounded-lg bg-delete-700 text-white px-4 py-2 disabled:opacity-50">
+          <app-button variant="danger" type="submit" [disabled]="!canDelete">
             {{ (saving ? 'userDeletion.deleting' : 'userDeletion.confirm') | translate }}
-          </button>
+          </app-button>
         </fieldset>
       </form>
     </ng-container>
-    <button type="button" [disabled]="saving" class="border rounded-lg px-4 py-2" (click)="closed.emit()">{{ 'deleteAccount.admin.cancel' | translate }}</button>
+    <app-button variant="secondary" type="button" [disabled]="saving" (buttonClick)="closed.emit()">{{ 'deleteAccount.admin.cancel' | translate }}</app-button>
   </div>
 </app-dialog>

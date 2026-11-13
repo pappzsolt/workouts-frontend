@@ -67,15 +67,18 @@ export class WorkoutExercisesManagerService {
   /**
    * A belépett user számára ütemezett workoutok lekérése.
    */
-  getScheduledWorkouts(): Observable<ApiResponse<ScheduledWorkout[]>> {
+  getScheduledWorkouts(from?: string, to?: string): Observable<ApiResponse<ScheduledWorkout[]>> {
+    if ((from == null) !== (to == null)) {
+      throw new Error('The calendar date range requires both from and to');
+    }
+    let params = new HttpParams().set('language', this.languageService.getCurrentLanguage());
+    if (from != null && to != null) {
+      params = params.set('from', from).set('to', to);
+    }
     return this.http
       .get<ApiResponse<ScheduledWorkoutRecord[]>>(
         API_ENDPOINTS.scheduledUserWorkouts,
-        {
-          params: {
-            language: this.languageService.getCurrentLanguage(),
-          },
-        },
+        { params },
       )
       .pipe(
         map((response) => ({

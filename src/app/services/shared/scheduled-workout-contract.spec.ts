@@ -113,3 +113,40 @@ describe('Calendar scheduled workout response envelope', () => {
     http.verify();
   });
 });
+
+
+describe('Calendar scheduled workout date window', () => {
+  it('passes the inclusive visible calendar grid dates without changing language or payload mapping', () => {
+    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting(),
+      { provide: LanguageService, useValue: { getCurrentLanguage: () => 'hu' } },
+    ] });
+    const http = TestBed.inject(HttpTestingController);
+    const service = TestBed.inject(WorkoutExercisesManagerService);
+    service.getScheduledWorkouts('2025-12-29', '2026-02-01').subscribe(response => {
+      expect(response.success).toBeTrue();
+      expect(response.data?.map(row => row.userWorkoutId)).toEqual([11]);
+    });
+    const request = http.expectOne(req => req.url === API_ENDPOINTS.scheduledUserWorkouts);
+    expect(request.request.method).toBe('GET');
+    expect(request.request.params.keys().sort()).toEqual(['from', 'language', 'to']);
+    expect(request.request.params.get('from')).toBe('2025-12-29');
+    expect(request.request.params.get('to')).toBe('2026-02-01');
+    expect(request.request.params.get('language')).toBe('hu');
+    request.flush({ success: true, data: [{
+      user_workout_id: 11, program_workout_id: 21, workout_id: 31,
+      program_id: 41, scheduled_at: '2026-01-15', workout_name: 'Strength', completed: false,
+    }] });
+    http.verify();
+  });
+
+  it('rejects a half-specified window before sending a request', () => {
+    TestBed.configureTestingModule({ providers: [provideHttpClient(), provideHttpClientTesting(),
+      { provide: LanguageService, useValue: { getCurrentLanguage: () => 'hu' } },
+    ] });
+    const http = TestBed.inject(HttpTestingController);
+    const service = TestBed.inject(WorkoutExercisesManagerService);
+    expect(() => service.getScheduledWorkouts('2026-01-01')).toThrowError();
+    http.expectNone(req => req.url === API_ENDPOINTS.scheduledUserWorkouts);
+    http.verify();
+  });
+});

@@ -1,3 +1,4 @@
+import { AppButtonComponent } from '../../../shared/components/app-button/app-button.component';
 import { UserDeletionDialogComponent } from '../../../shared/user-deletion-dialog/user-deletion-dialog.component';
 import { Component, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -8,7 +9,7 @@ import { AccountDeletionService, DeletionRequest } from '../../../../services/ac
 
 @Component({
   selector: 'app-account-deletion-requests', standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, UserDeletionDialogComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, AppButtonComponent, UserDeletionDialogComponent],
   templateUrl: './account-deletion-requests.component.html',
 })
 export class AccountDeletionRequestsComponent {
