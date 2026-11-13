@@ -60,7 +60,6 @@
                 [weeklyRepeatDays]="workouts.weeklyRepeatDays" [weeklyRepeatSkipped]="workouts.weeklyRepeatSkipped"
                 [firstDate]="state.firstDate" [lastDate]="state.lastDate" [moveTargetIsSameDay]="state.dayForDate(workouts.moveDate) === cell.day"
                 [(confirmRepeat)]="workouts.confirmRepeat" [(confirmRemove)]="workouts.confirmRemove" [(extraDate)]="workouts.extraDate" [(moveDate)]="workouts.moveDate"
-                (moveRow)="workouts.moveRow($event.index, $event.direction)"
                 (copyToLibrary)="workouts.copyToLibrary()" (repeatWeekly)="workouts.repeatWeekly()"
                 (addToAnotherDay)="workouts.addToAnotherDay()" (moveWorkout)="workouts.moveWorkout()" (removeWorkout)="workouts.removeWorkout()" />
             } @else {

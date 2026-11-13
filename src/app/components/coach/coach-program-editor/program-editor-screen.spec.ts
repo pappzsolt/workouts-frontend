@@ -86,6 +86,8 @@ describe('Program editor screen bindings', () => {
     const panel = fixture.debugElement.query(By.directive(ProgramDayWorkoutComponent)).nativeElement as HTMLElement;
     expect(panel.textContent).toContain('Squat');
     expect(panel.querySelector('input[type="number"]')).toBeNull();
+    expect(panel.querySelector('app-icon[name="chevron-up"]')).toBeNull();
+    expect(panel.querySelector('app-icon[name="chevron-down"]')).toBeNull();
     expect(panel.textContent).not.toContain('coachWorkspace.editor.savePrescriptions');
     expect(panel.textContent).not.toContain('coachWorkspace.editor.applyTemplate');
     const workoutFixture = TestBed.createComponent(ProgramDayWorkoutComponent);

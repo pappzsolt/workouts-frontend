@@ -144,22 +144,6 @@ export class ProgramDayWorkoutEditor {
     );
   }
 
-  moveRow(index: number, direction: -1 | 1): void {
-    const workout = this.state.selectedCell?.workout;
-    const row = this.rows[index];
-    const target = index + direction;
-    if (!workout || !row || target < 0 || target >= this.rows.length || this.state.busy) return;
-    if (this.changedCount > 0) {
-      this.effects.showMessage('coachWorkspace.editor.saveBeforeReorder', 'error');
-      return;
-    }
-    this.effects.run(
-      this.workspace.moveTemplateExercise(workout.workoutId, row.id, target),
-      'coachWorkspace.editor.reordered',
-      this.state.selectedDay,
-    );
-  }
-
   applyTemplateToClients(): void {
     const workout = this.state.selectedCell?.workout;
     if (!workout || this.state.busy) return;

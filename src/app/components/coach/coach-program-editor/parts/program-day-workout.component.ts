@@ -10,7 +10,7 @@ import type { CoachClientOverview, CoachProgramWorkout } from '../../../../model
 import type { EditableExercise } from '../program-days';
 
 /**
- * A kiválasztott nap gyakorlatlistája, sorrendje és az edzéssel kapcsolatos műveletek.
+ * A kiválasztott nap gyakorlatlistája és az edzéssel kapcsolatos műveletek.
  */
 @Component({
   selector: 'app-program-day-workout',
@@ -37,7 +37,6 @@ export class ProgramDayWorkoutComponent {
   readonly extraDate = model('');
   readonly moveDate = model('');
 
-  @Output() readonly moveRow = new EventEmitter<{ index: number; direction: -1 | 1 }>();
   @Output() readonly copyToLibrary = new EventEmitter<void>();
   @Output() readonly repeatWeekly = new EventEmitter<void>();
   @Output() readonly addToAnotherDay = new EventEmitter<void>();
