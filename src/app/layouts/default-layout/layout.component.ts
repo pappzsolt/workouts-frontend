@@ -53,6 +53,7 @@ export class LayoutComponent implements OnInit {
 
   coachMenuItems: MenuItem[] = [
     { label: 'menu.coachOverview', icon: 'house', path: '/coach/dashboard' },
+    { label: 'coachWorkspace.calendar.title', icon: 'calendar-days', path: '/coach/calendar' },
     { label: 'menu.coachClients', icon: 'users', path: '/coach/clients' },
     { label: 'menu.coachPrograms', icon: 'clipboard-list', path: '/coach/programs' },
     { label: 'menu.coachWorkouts', icon: 'flame', path: '/coach/workouts' },

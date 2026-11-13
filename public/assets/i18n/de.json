@@ -870,6 +870,16 @@
     "step": "Verwende einen Wert entsprechend der Schrittweite {{step}}."
   },
   "coachWorkspace": {
+    "calendar": {
+      "title": "Trainerkalender",
+      "hint": "Wähle einen Kunden oder zeige alle Kunden an. Namen erscheinen in verschiedenen Farben; wähle einen Tag, um jedes Training einzeln zu öffnen.",
+      "client": "Kunde",
+      "allClients": "Alle Kunden",
+      "today": "Heute",
+      "clientCount": "{{count}} Kunden",
+      "more": "+{{count}} Kunden",
+      "empty": "Für diesen Tag gibt es in der gewählten Ansicht kein Training."
+    },
     "loading": "Wird geladen…",
     "loadError": "Die Daten konnten nicht geladen werden.",
     "genericError": "Ein Fehler ist aufgetreten.",

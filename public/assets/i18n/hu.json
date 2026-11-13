@@ -870,6 +870,16 @@
     "step": "Az érték {{step}} lépésköznek megfelelő legyen."
   },
   "coachWorkspace": {
+    "calendar": {
+      "title": "Edzői naptár",
+      "hint": "Válassz ügyfelet vagy nézd az összes ügyfél edzéseit. A napcellákban a nevek eltérő színnel látszanak; a napra koppintva minden edzés külön megnyitható.",
+      "client": "Ügyfél",
+      "allClients": "Összes ügyfél",
+      "today": "Ma",
+      "clientCount": "{{count}} ügyfél",
+      "more": "+{{count}} ügyfél",
+      "empty": "Erre a napra nincs edzés a kiválasztott nézetben."
+    },
     "loading": "Betöltés…",
     "loadError": "Az adatok betöltése nem sikerült.",
     "genericError": "Hiba történt.",

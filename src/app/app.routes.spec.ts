@@ -56,6 +56,7 @@ import { RegistrationRequestsService } from './services/admin/registration-reque
     await expectPage('/admin/dashboard', 'app-admin-dashboard');
     role = 'ROLE_COACH';
     await expectPage('/coach/dashboard', 'app-coach-home');
+    await expectPage('/coach/calendar', 'app-coach-calendar');
     await expectPage('/coach/programs', 'app-coach-programs');
     expect(auth.refreshAccessToken).not.toHaveBeenCalled();
   });

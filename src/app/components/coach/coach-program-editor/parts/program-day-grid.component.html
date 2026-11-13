@@ -46,7 +46,7 @@
                 [class.bg-primary-50]="!!cell.workout"
                 [class.bg-white]="!cell.workout">
           @if (cell.date) {
-            <span class="shrink-0 whitespace-nowrap text-[10px] font-semibold text-content-700">{{ cell.date | date: 'MM.dd' }}</span>
+            <span class="w-full shrink-0 truncate text-[10px] font-semibold tabular-nums text-content-700" [title]="cell.date | date: 'yyyy.MM.dd'">{{ cell.date | date: 'MM.dd' }}</span>
           }
           @if (showProgramDay) {
             <span class="h-10 w-full shrink-0 break-words text-[10px] leading-tight text-content-600">

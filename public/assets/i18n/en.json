@@ -870,6 +870,16 @@
     "step": "Use a value matching the {{step}} increment."
   },
   "coachWorkspace": {
+    "calendar": {
+      "title": "Coach calendar",
+      "hint": "Choose a client or view all clients. Names use different colors; select a day to open each workout separately.",
+      "client": "Client",
+      "allClients": "All clients",
+      "today": "Today",
+      "clientCount": "{{count}} clients",
+      "more": "+{{count}} clients",
+      "empty": "No workouts for this day in the selected view."
+    },
     "loading": "Loading…",
     "loadError": "Could not load the data.",
     "genericError": "Something went wrong.",

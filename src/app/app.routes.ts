@@ -152,6 +152,11 @@ export const routes: Routes = [
       },
 
       {
+        path: 'calendar',
+        loadComponent: () => import('./components/coach/coach-calendar/coach-calendar.component').then(m => m.CoachCalendarComponent),
+      },
+
+      {
         path: 'clients',
         loadComponent: () => import('./components/coach/coach-clients/coach-clients.component').then(m => m.CoachClientsComponent),
       },

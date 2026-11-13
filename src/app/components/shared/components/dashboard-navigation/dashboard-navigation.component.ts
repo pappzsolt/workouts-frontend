@@ -55,6 +55,8 @@ export class DashboardNavigationComponent {
     if (page === 'clients') {
       this.items.push({ label: 'coachWorkspace.clients.title', url: '/coach/clients' });
       if (segments[2]) label = 'coachWorkspace.client.title';
+    } else if (page === 'calendar') {
+      label = 'coachWorkspace.calendar.title';
     } else if (page === 'programs') {
       this.items.push({ label: 'coachWorkspace.programs.title', url: '/coach/programs' });
       if (segments[2] === 'import') label = 'excelImport.title';

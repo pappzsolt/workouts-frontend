@@ -175,9 +175,13 @@ describe('Program editor screen bindings', () => {
     for (const width of [280, 375, 768]) {
       section.style.width = `${width}px`;
       const buttons = [...section.querySelectorAll<HTMLButtonElement>('button[aria-pressed]')];
-      expect(buttons.every(button => Math.round(button.getBoundingClientRect().height) === 128)).toBeTrue();
+      // Wide glyphs exercise the fallback-font layout used by headless Linux browsers.
+      for (const button of buttons) button.style.fontFamily = 'monospace';
+      expect(buttons.every(button => Math.round(button.getBoundingClientRect().height) === 128)).withContext(`Cell height at ${width}px`).toBeTrue();
       expect(section.scrollWidth).toBeLessThanOrEqual(section.clientWidth);
-      expect(buttons.every(button => button.scrollWidth <= button.clientWidth)).toBeTrue();
+      for (const button of buttons) {
+        expect(button.scrollWidth).withContext(`Cell overflow at ${width}px: ${button.textContent}`).toBeLessThanOrEqual(button.clientWidth);
+      }
     }
   });
 
