@@ -51,30 +51,8 @@
       <section id="program-panel-workouts" role="tabpanel" aria-labelledby="program-tab-workouts" [style.display]="activeTab === 'workouts' ? null : 'none'">
         <p class="mb-4 text-sm text-content-600">{{ 'coachWorkspace.editor.workoutsTabHint' | translate }}</p>
         <div class="grid grid-cols-1 gap-4 lg:grid-cols-5">
-          <section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-4 lg:col-span-3">
-            <h2 class="mb-3 text-lg font-bold text-content-900">{{ 'coachWorkspace.editor.workoutsTab' | translate }}</h2>
-            <div class="mb-4 flex flex-col gap-2">
-              @for (workout of sharedWorkouts; track workout.workoutId) {
-                <button type="button" class="min-h-11 rounded-xl border p-3 text-left text-sm text-content-900 [overflow-wrap:anywhere]"
-                        [class.border-primary-700]="state.selectedCell?.workout?.workoutId === workout.workoutId"
-                        [class.bg-primary-50]="state.selectedCell?.workout?.workoutId === workout.workoutId"
-                        [disabled]="state.busy || state.loading" (click)="selectSharedWorkout(workout.workoutId)">
-                  <span class="block font-semibold">{{ workout.name }}</span>
-                  <span class="mt-1 block text-xs text-content-600">{{ 'coachWorkspace.editor.exerciseCount' | translate: { count: workout.exercises.length } }}</span>
-                </button>
-              } @empty {
-                <p class="text-sm text-content-600">{{ 'coachWorkspace.editor.noSharedWorkouts' | translate }}</p>
-              }
-            </div>
-            <label for="program-template-day" class="mb-2 block text-sm font-semibold text-content-900">{{ 'coachWorkspace.editor.baseDay' | translate }}</label>
-            <select id="program-template-day" class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-2 text-sm"
-                    [ngModel]="state.selectedDay" (ngModelChange)="selectDay(+$event)" [disabled]="state.busy || state.loading">
-              @for (cell of state.cells; track cell.day) {
-                <option [ngValue]="cell.day">{{ 'coachWorkspace.editor.programDayLabel' | translate: { day: cell.day } }} · {{ cell.date | date: 'MM.dd' }} · {{ cell.workout?.name || ('coachWorkspace.editor.noWorkoutOnDay' | translate) }}</option>
-              }
-            </select>
-            <button type="button" class="btn btn-neutral mt-3" (click)="library.openMulti()" [disabled]="state.busy || state.loading">{{ 'coachWorkspace.editor.multiAdd' | translate }}</button>
-          </section>
+          <app-program-week-planner [cells]="state.cells" [selectedDay]="state.selectedDay" [busy]="state.busy || state.loading"
+                                    (daySelected)="selectDay($event)" (openMulti)="library.openMulti()" />
           <!-- Kiválasztott nap -->
           <section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm lg:col-span-2"
                    [attr.aria-label]="'coachWorkspace.editor.selectedDay' | translate">

@@ -14,11 +14,12 @@ import { MessageComponent } from '../../shared/components/message/message.compon
 import { AppIconComponent } from '../../shared/components/app-icon/app-icon.component';
 import { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import { toIsoDate } from '../../../shared/local-date';
-import type { CoachProgramDayLink, CoachProgramDetailsInput, CoachProgramWorkout } from '../../../models/coach-workspace.model';
+import type { CoachProgramDayLink, CoachProgramDetailsInput } from '../../../models/coach-workspace.model';
 import { DIFFICULTY_OPTIONS, WEEKDAY_KEYS, errorText } from '../coach-ui';
 import { type DayCell, buildDayCells, dayAriaLabel } from './program-days';
 import { ProgramClientsPanelComponent } from './parts/program-clients-panel.component';
 import { ProgramCopyDialogComponent } from './parts/program-copy-dialog.component';
+import { ProgramWeekPlannerComponent } from './parts/program-week-planner.component';
 import { ProgramDayWorkoutComponent } from './parts/program-day-workout.component';
 import { ProgramDetailsFormComponent } from './parts/program-details-form.component';
 import { ProgramEmptyDayComponent } from './parts/program-empty-day.component';
@@ -42,7 +43,7 @@ import { ProgramCopyEditor } from './program-copy-editor';
   imports: [
     CoachCalendarComponent, FormsModule, ProgramClientCalendarComponent, AppLoadingComponent, CommonModule, RouterModule, TranslatePipe, ConfirmDialogComponent, MessageComponent, AppIconComponent,
     ProgramDetailsFormComponent,
-    ProgramDayWorkoutComponent,
+    ProgramWeekPlannerComponent, ProgramDayWorkoutComponent,
     ProgramEmptyDayComponent,
     ProgramClientsPanelComponent,
     ProgramMultiAddDialogComponent,
@@ -92,17 +93,6 @@ export class CoachProgramEditorComponent implements OnInit {
     const buttons = (event.currentTarget as HTMLElement).querySelectorAll<HTMLButtonElement>('[role="tab"]');
     if (!buttons[next]?.disabled) buttons[next]?.focus();
   }
-
-  get sharedWorkouts(): CoachProgramWorkout[] {
-    return [...new Map((this.state.program?.workouts ?? []).map(workout => [workout.workoutId, workout])).values()];
-  }
-
-  selectSharedWorkout(workoutId: number): void {
-    if (this.state.selectedCell?.workout?.workoutId === workoutId) return;
-    const cell = this.state.cells.find(day => day.workout?.workoutId === workoutId);
-    if (cell) this.selectDay(cell.day);
-  }
-
 
   private detailsBaseline: CoachProgramDetailsInput = { ...this.state.form };
   private leaveResult?: Subject<boolean>;

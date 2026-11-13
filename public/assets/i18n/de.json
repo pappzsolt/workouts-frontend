@@ -1070,6 +1070,12 @@
       "workouts": "Trainings"
     },
     "editor": {
+      "weekPlanner": "Wochenplanung",
+      "previousWeek": "Vorherige Woche",
+      "nextWeek": "Nächste Woche",
+      "programWeek": "Programmwoche {{week}} / {{total}}",
+      "weekPlannerHint": "Wähle einen Tag für Details. Mit + Training an einem freien Tag erstellst du ein Training oder durchsuchst die Bibliothek.",
+      "addWorkout": "Training",
       "individualSettingsHint": "Individuelle Gewichte, Wiederholungen, Pausen und Satzanzahl stellst du im Kundentraining ein. Wähle Kunde und Datum und öffne „Sätze und Gewichte einstellen“.",
       "programTabs": "Programmansichten",
       "workoutsTab": "Trainings",
