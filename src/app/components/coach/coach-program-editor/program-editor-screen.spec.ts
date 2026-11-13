@@ -39,7 +39,7 @@ describe('Program editor screen bindings', () => {
       'getProgram', 'getProgramDays', 'getOverview', 'getAssignedUserIds', 'getMyWorkouts',
       'updateProgram', 'updatePrescription', 'createWorkout', 'addExerciseToWorkout',
       'addWorkoutToDay', 'copyProgram', 'assignProgram', 'createProgram',
-      'browseExercises', 'getExerciseFilterOptions',
+      'browseExercises', 'getExerciseFilterOptions', 'getClientProgramRows',
     ]);
     api.getProgram.and.callFake(() => of(program));
     api.getProgramDays.and.returnValue(of([{ id: 11, programId: 10, workoutId: 20, dayIndex: 1 }]));
@@ -179,6 +179,31 @@ describe('Program editor screen bindings', () => {
       expect(section.scrollWidth).toBeLessThanOrEqual(section.clientWidth);
       expect(buttons.every(button => button.scrollWidth <= button.clientWidth)).toBeTrue();
     }
+  });
+
+  it('switches the calendar between assigned clients and the shared plan using the selector', async () => {
+    const second = { ...client, userId: 8, username: 'Bela', email: 'bela@example.com' };
+    api.getOverview.and.returnValue(of({ from: '', to: '', clients: [client, second] }));
+    api.getAssignedUserIds.and.returnValue(of([7, 8]));
+    api.getClientProgramRows.and.returnValue(of([]));
+    const fixture = render();
+    await fixture.whenStable();
+    const select = (fixture.nativeElement as HTMLElement).querySelector<HTMLSelectElement>('#program-calendar-client')!;
+    async function choose(name: string) {
+      select.value = [...select.options].find(option => option.textContent?.includes(name))!.value;
+      select.dispatchEvent(new Event('change'));
+      await fixture.whenStable();
+      fixture.detectChanges();
+    }
+    await choose('Anna');
+    expect(api.getClientProgramRows).toHaveBeenCalledWith(7, 10);
+    expect(child(fixture, ProgramDayGridComponent).showMultiAdd).toBeFalse();
+    expect(fixture.debugElement.query(By.directive(ProgramDayWorkoutComponent))).toBeNull();
+    await choose('Bela');
+    expect(api.getClientProgramRows).toHaveBeenCalledWith(8, 10);
+    await choose('coachWorkspace.editor.sharedCalendar');
+    expect(child(fixture, ProgramDayGridComponent).showMultiAdd).toBeTrue();
+    expect(fixture.debugElement.query(By.directive(ProgramDayWorkoutComponent))).not.toBeNull();
   });
 
   it('creates an empty-day workout before saving its exercises and linking the day', () => {

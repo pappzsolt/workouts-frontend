@@ -38,42 +38,63 @@
     } @else if (state.loading && !state.program) {
       <app-loading message="coachWorkspace.loading"></app-loading>
     } @else {
-      <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
-
-        <!-- Napok rácsa -->
-        <app-program-day-grid [cells]="state.cells" [leadingBlanks]="state.leadingBlanks" [selectedDay]="state.selectedDay" [busy]="state.busy"
-                              (daySelected)="selectDay($event)" (openMulti)="library.openMulti()" />
-
-        <!-- Kiválasztott nap -->
-        <section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm lg:col-span-2"
-                 [attr.aria-label]="'coachWorkspace.editor.selectedDay' | translate">
-          @if (state.selectedCell; as cell) {
-            <p class="text-sm text-content-600">
-              {{ 'coachWorkspace.editor.dayLabel' | translate: { day: cell.day } }}
-              @if (cell.date) { · {{ cell.date | date: 'yyyy.MM.dd' }} }
-            </p>
-
-            @if (cell.workout; as workout) {
-              <app-program-day-workout
-                [workout]="workout" [rows]="workouts.rows" [selectedWorkoutDayCount]="workouts.selectedWorkoutDayCount" [selectedDayClients]="assignments.selectedDayClients"
-                [programId]="state.programId" [busy]="state.busy"
-                [weeklyRepeatDays]="workouts.weeklyRepeatDays" [weeklyRepeatSkipped]="workouts.weeklyRepeatSkipped"
-                [firstDate]="state.firstDate" [lastDate]="state.lastDate" [moveTargetIsSameDay]="state.dayForDate(workouts.moveDate) === cell.day"
-                [(confirmRepeat)]="workouts.confirmRepeat" [(confirmRemove)]="workouts.confirmRemove" [(extraDate)]="workouts.extraDate" [(moveDate)]="workouts.moveDate"
-                (copyToLibrary)="workouts.copyToLibrary()" (repeatWeekly)="workouts.repeatWeekly()"
-                (addToAnotherDay)="workouts.addToAnotherDay()" (moveWorkout)="workouts.moveWorkout()" (removeWorkout)="workouts.removeWorkout()" />
-            } @else {
-              <app-program-empty-day
-                [pendingExercises]="library.pendingExercises" [pendingIds]="library.pendingIds" [busy]="state.busy"
-                [hasLibrary]="library.myWorkouts.length > 0" [libraryWorkouts]="library.libraryWorkouts" [programWorkoutIds]="library.programWorkoutIds"
-                [copySourceId]="library.copySourceId"
-                [(emptyMode)]="library.emptyMode" [(workoutName)]="library.workoutName" [(libraryFilter)]="library.libraryFilter"
-                (removePending)="library.removePending($event)" (addPending)="library.addPending($event)" (create)="library.createWorkoutForDay()"
-                (copySourceChange)="library.onCopySourceChange($event)" (link)="library.linkLibraryWorkout()" (copyToDay)="library.copyWorkoutToDay()" />
+      @if (assignments.assignedClients.length > 0) {
+        <div class="rounded-2xl border border-surface-200 bg-white p-4">
+          <label for="program-calendar-client" class="mb-2 block text-sm font-semibold text-content-900">
+            {{ 'coachWorkspace.editor.calendarClient' | translate }}
+          </label>
+          <select id="program-calendar-client" class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 text-content-900 sm:max-w-md"
+                  [(ngModel)]="assignments.calendarUserId" [disabled]="state.loading || state.busy">
+            <option [ngValue]="null">{{ 'coachWorkspace.editor.sharedCalendar' | translate }}</option>
+            @for (client of assignments.assignedClients; track client.userId) {
+              <option [ngValue]="client.userId">{{ client.username }} ({{ client.email }})</option>
             }
-          }
-        </section>
-      </div>
+          </select>
+          <p class="mt-2 text-sm text-content-600">{{ 'coachWorkspace.editor.calendarClientHint' | translate }}</p>
+        </div>
+      }
+      @if (assignments.calendarClient; as client) {
+        <app-program-client-calendar [client]="client" [programId]="state.programId!"
+                                     [startDate]="state.form.startDate" [durationDays]="+state.form.durationDays" />
+      } @else {
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
+
+          <!-- Napok rácsa -->
+          <app-program-day-grid [cells]="state.cells" [leadingBlanks]="state.leadingBlanks" [selectedDay]="state.selectedDay" [busy]="state.busy"
+                                (daySelected)="selectDay($event)" (openMulti)="library.openMulti()" />
+
+          <!-- Kiválasztott nap -->
+          <section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm lg:col-span-2"
+                   [attr.aria-label]="'coachWorkspace.editor.selectedDay' | translate">
+            @if (state.selectedCell; as cell) {
+              <p class="text-sm text-content-600">
+                {{ 'coachWorkspace.editor.dayLabel' | translate: { day: cell.day } }}
+                @if (cell.date) { · {{ cell.date | date: 'yyyy.MM.dd' }} }
+              </p>
+
+              @if (cell.workout; as workout) {
+                <app-program-day-workout
+                  [workout]="workout" [rows]="workouts.rows" [selectedWorkoutDayCount]="workouts.selectedWorkoutDayCount" [selectedDayClients]="assignments.selectedDayClients"
+                  [programId]="state.programId" [busy]="state.busy"
+                  [weeklyRepeatDays]="workouts.weeklyRepeatDays" [weeklyRepeatSkipped]="workouts.weeklyRepeatSkipped"
+                  [firstDate]="state.firstDate" [lastDate]="state.lastDate" [moveTargetIsSameDay]="state.dayForDate(workouts.moveDate) === cell.day"
+                  [(confirmRepeat)]="workouts.confirmRepeat" [(confirmRemove)]="workouts.confirmRemove" [(extraDate)]="workouts.extraDate" [(moveDate)]="workouts.moveDate"
+                  (copyToLibrary)="workouts.copyToLibrary()" (repeatWeekly)="workouts.repeatWeekly()"
+                  (addToAnotherDay)="workouts.addToAnotherDay()" (moveWorkout)="workouts.moveWorkout()" (removeWorkout)="workouts.removeWorkout()" />
+              } @else {
+                <app-program-empty-day
+                  [pendingExercises]="library.pendingExercises" [pendingIds]="library.pendingIds" [busy]="state.busy"
+                  [hasLibrary]="library.myWorkouts.length > 0" [libraryWorkouts]="library.libraryWorkouts" [programWorkoutIds]="library.programWorkoutIds"
+                  [copySourceId]="library.copySourceId"
+                  [(emptyMode)]="library.emptyMode" [(workoutName)]="library.workoutName" [(libraryFilter)]="library.libraryFilter"
+                  (removePending)="library.removePending($event)" (addPending)="library.addPending($event)" (create)="library.createWorkoutForDay()"
+                  (copySourceChange)="library.onCopySourceChange($event)" (link)="library.linkLibraryWorkout()" (copyToDay)="library.copyWorkoutToDay()" />
+              }
+            }
+          </section>
+        </div>
+
+      }
 
       <!-- Ügyfelek -->
       <app-program-clients-panel

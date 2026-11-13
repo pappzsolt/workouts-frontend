@@ -13,6 +13,7 @@ export interface DayCell {
   workout: CoachProgramWorkout | null;
   link: CoachProgramDayLink | null;
   label: string;
+  workoutCount?: number;
 }
 
 /** A kiválasztott nap edzésének egy gyakorlata, szerkeszthető előírt értékekkel. */

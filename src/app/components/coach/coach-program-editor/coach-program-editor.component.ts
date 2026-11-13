@@ -3,6 +3,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, forkJoin, takeUntil } from 'rxjs';
 import { AppLoadingComponent } from '../../shared/components/app-state/app-state.component';
+import { FormsModule } from '@angular/forms';
+import { ProgramClientCalendarComponent } from './parts/program-client-calendar.component';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -38,7 +40,7 @@ import { ProgramCopyEditor } from './program-copy-editor';
   selector: 'app-coach-program-editor',
   standalone: true,
   imports: [
-    AppLoadingComponent, CommonModule, RouterModule, TranslatePipe, ConfirmDialogComponent, MessageComponent, AppIconComponent,
+    FormsModule, ProgramClientCalendarComponent, AppLoadingComponent, CommonModule, RouterModule, TranslatePipe, ConfirmDialogComponent, MessageComponent, AppIconComponent,
     ProgramDetailsFormComponent,
     ProgramDayGridComponent,
     ProgramDayWorkoutComponent,

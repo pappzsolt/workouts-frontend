@@ -15,6 +15,12 @@ export class ProgramClientAssignments {
   assignedIds = new Set<number>();
   toAssign = new Set<number>();
   clientFilter = '';
+  calendarUserId: number | null = null;
+
+  get calendarClient(): CoachClientOverview | null {
+    return this.assignedClients.find(client => client.userId === this.calendarUserId) ?? null;
+  }
+
   pendingRevokeClient: CoachClientOverview | null = null;
   constructor(
     private readonly state: ProgramEditorState,
@@ -27,6 +33,7 @@ export class ProgramClientAssignments {
   }
 
   reset(): void {
+    this.calendarUserId = null;
     this.clients = [];
     this.assignedIds = new Set();
     this.toAssign = new Set();

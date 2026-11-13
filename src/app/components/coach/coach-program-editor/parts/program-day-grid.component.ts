@@ -20,6 +20,8 @@ export class ProgramDayGridComponent implements OnChanges {
   @Input() leadingBlanks: number[] = [];
   @Input() selectedDay = 1;
   @Input() busy = false;
+  @Input() showMultiAdd = true;
+  @Input() showProgramDay = true;
   @Output() readonly daySelected = new EventEmitter<number>();
   @Output() readonly openMulti = new EventEmitter<void>();
 
