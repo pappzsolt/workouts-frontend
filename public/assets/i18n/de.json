@@ -1097,7 +1097,7 @@
       "allClientCalendar": "Gemeinsamer Kundenkalender",
       "assignedPeople": "Diesem Programm zugewiesene Kunden",
       "scheduleView": "Trainingsplan der Sportler",
-      "planView": "Trainingstage des Programms",
+      "planView": "Trainings und Teilnehmer des Programms",
       "partialAssignment": "Das Programm wurde erstellt, aber die Zuweisung zum Sportler ist fehlgeschlagen. Du kannst das Programm im Editor erneut zuweisen.",
       "partialMultiAdded": "Die Aktion schlug fehl, nachdem {{count}} von {{total}} Trainings hinzugefügt worden sein könnten. Prüfe die Tage vor erneutem Versuch.",
       "partialWorkoutCreated": "Das Training kann bereits in der Bibliothek angelegt worden sein, aber das Hinzufügen wurde unterbrochen ({{count}}/{{total}} Übungen gespeichert). Prüfe Bibliothek und Tag vor erneutem Versuch.",

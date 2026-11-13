@@ -1097,7 +1097,7 @@
       "allClientCalendar": "All clients’ calendar",
       "assignedPeople": "Clients assigned to this program",
       "scheduleView": "Athlete schedules",
-      "planView": "Program training days",
+      "planView": "Program workouts and participants",
       "partialAssignment": "The program was created, but assigning it to the athlete failed. You can assign it again from the program editor.",
       "partialMultiAdded": "The operation failed after {{count}} of {{total}} workouts may have been added. Review the days before trying again.",
       "partialWorkoutCreated": "The workout may already exist in the library, but adding it failed ({{count}}/{{total}} exercises saved). Check the library and selected day before retrying.",

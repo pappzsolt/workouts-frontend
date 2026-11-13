@@ -1097,7 +1097,7 @@
       "allClientCalendar": "Ügyfelek közös naptára",
       "assignedPeople": "A programhoz rendelt ügyfelek",
       "scheduleView": "Sportolók ütemezése",
-      "planView": "Program edzésnapjai",
+      "planView": "Program edzései és résztvevői",
       "partialAssignment": "A program létrejött, de a sportolóhoz rendelés nem sikerült. A program megnyílik; innen újra kioszthatod.",
       "partialMultiAdded": "A művelet közben hiba történt: {{count}}/{{total}} edzés már a programba kerülhetett. Ellenőrizd a napokat, mielőtt újra hozzáadod őket.",
       "partialWorkoutCreated": "Az edzés már létrejöhetett az Edzéstárban, de a hozzáadás megszakadt ({{count}}/{{total}} gyakorlat rögzítve). Ellenőrizd az Edzéstárat és a kiválasztott napot, mielőtt újrapróbálod.",
