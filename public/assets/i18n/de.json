@@ -1079,6 +1079,7 @@
       "days": "Tage",
       "selectedDay": "Ausgewählter Tag",
       "dayLabel": "Tag {{day}}",
+      "programDayLabel": "Tag {{day}} im Programm",
       "lockedHint": "Sätze, Wiederholungen, Gewichte und Pausen stellst du im Kundentraining für den jeweiligen Tag ein.",
       "savePrescriptions": "Änderungen speichern ({{count}})",
       "prescriptionInvalid": "Sätze: 1–20, Wiederholungen: 1–200, Pause: 0–3600 s.",

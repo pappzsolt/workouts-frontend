@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
 import { WEEKDAY_KEYS } from '../../coach-ui';
-import { DayCell, dayAriaLabel } from '../program-days';
+import { DayCell } from '../program-days';
 
 /** A program napjainak heti rácsa. */
 @Component({
@@ -92,7 +92,4 @@ export class ProgramDayGridComponent implements OnChanges {
     return Array.from({ length: offset }, (_, index) => index);
   }
 
-  dayAriaLabel(cell: DayCell): string {
-    return dayAriaLabel(cell);
-  }
 }
