@@ -185,6 +185,7 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   // =========================================================
 
   previousMonth(): void {
+    this.closeWorkoutDetails();
     if (this.currentMonth === 0) {
       this.currentMonth = 11;
       this.currentYear--;
@@ -201,6 +202,7 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   // =========================================================
 
   nextMonth(): void {
+    this.closeWorkoutDetails();
     if (this.currentMonth === 11) {
       this.currentMonth = 0;
       this.currentYear++;

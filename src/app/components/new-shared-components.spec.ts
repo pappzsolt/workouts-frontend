@@ -472,6 +472,8 @@ describe('Migrated business screens use the same parent actions', () => {
     TestBed.overrideProvider(UserWorkoutsService, { useValue: { getWorkoutsByProgram: load } });
     TestBed.overrideProvider(ActivatedRoute, {
       useValue: {
+        paramMap: of(convertToParamMap({ id: '5' })),
+        queryParamMap: of(convertToParamMap({ programName: 'Program' })),
         snapshot: {
           paramMap: convertToParamMap({ id: '5' }),
           queryParamMap: convertToParamMap({ programName: 'Program' }),

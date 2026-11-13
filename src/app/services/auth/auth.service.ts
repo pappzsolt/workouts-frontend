@@ -9,6 +9,7 @@ import { API_ENDPOINTS } from '../../api-endpoints';
 
 import { LoginResponse, TokenPayload } from '../../models/auth-model';
 import { ApiResponse } from '../../models/backend-dto/common/api-response';
+import { safeStorageGet, safeStorageRemove } from '../../shared/safe-storage';
 
 @Injectable({
   providedIn: 'root',
@@ -38,8 +39,8 @@ export class AuthService {
 
     // Korábbi verzióból visszamaradt tokeneket eltávolítjuk. A továbbiakban
     // sem access, sem refresh token nem kerül tartós browser storage-ba.
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    safeStorageRemove('accessToken');
+    safeStorageRemove('refreshToken');
   }
 
   /**
@@ -232,8 +233,8 @@ export class AuthService {
     this.accessToken = null;
 
     // Régi deploymentből esetleg visszamaradt storage tokeneket is töröljük.
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
+    safeStorageRemove('accessToken');
+    safeStorageRemove('refreshToken');
 
     this.rawHttp
       .post<ApiResponse<null>>(
@@ -272,7 +273,7 @@ export class AuthService {
   }
 
   private languageParams(): HttpParams {
-    const savedLanguage = localStorage.getItem('language');
+    const savedLanguage = safeStorageGet('language');
     const language =
       savedLanguage === 'en' || savedLanguage === 'de' || savedLanguage === 'hu'
         ? savedLanguage

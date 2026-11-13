@@ -1217,7 +1217,8 @@
       "revokeConfirm": "Revoke the program “{{program}}” from {{name}}? The client’s workouts and sets for this program, including completed workout data, may also be deleted.",
       "unsavedDayTitle": "Unsaved changes",
       "unsavedDayPrompt": "Changes to the selected day have not been saved. Discard them and switch days? To keep them, stay on this day and save your changes.",
-      "saveBeforeShortening": "Save or discard changes to the selected day before shortening the program."
+      "saveBeforeShortening": "Save or discard changes to the selected day before shortening the program.",
+      "assignmentPartial": "Program assigned to {{count}} of {{total}} athletes. Remaining selections are kept; check the result before retrying."
     },
     "picker": {
       "search": "Search (name, muscle, synonym, description)",

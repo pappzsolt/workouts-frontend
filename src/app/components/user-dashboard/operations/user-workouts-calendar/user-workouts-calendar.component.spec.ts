@@ -57,7 +57,8 @@ describe('Workout calendar month integration', () => {
     expect(getScheduled).toHaveBeenCalledWith('2026-01-26', '2026-03-01');
     expect(component.currentMonth).toBe(1);
     expect(component.calendarDays.filter(day => day.currentMonth).length).toBe(28);
-    expect(component.selectedWorkout).toBe(workout);
+    expect(component.selectedWorkout).toBeNull();
+    expect(component.selectedExercises).toEqual([]);
     component.previousMonth();
     expect(getScheduled.calls.mostRecent().args).toEqual(['2025-12-29', '2026-02-01']);
     expect(component.getWorkoutsForDay(new Date(2026, 0, 15))).toEqual([workout]);

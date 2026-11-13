@@ -4,7 +4,7 @@ import { intensityLabelKey } from '../../../../constants/intensity';
 import { LoggerService } from '../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { Subject, Subscription, takeUntil } from 'rxjs';
+import { Subject, Subscription, combineLatest, takeUntil } from 'rxjs';
 
 import { TranslateService } from '@ngx-translate/core';
 import { SidePaginationComponent } from '../../../../components/shared/components/side-pagination/side-pagination.component';
@@ -57,6 +57,7 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
   programNameMissing = false;
 
   private loadRequest?: Subscription;
+  private nameLoadRequest?: Subscription;
   workouts: UserWorkoutOccurrence[] = [];
   loading = false;
   loaded = false;
@@ -154,33 +155,53 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
   // ============================================================
 
   ngOnInit(): void {
-    this.programId = Number(this.route.snapshot.paramMap.get('id'));
-
-    if (Number.isNaN(this.programId) || this.programId <= 0) {
-      this.message = 'userWorkouts.loadError'; this.messageType = 'error';
-      return;
-    }
-
-    const programName = this.route.snapshot.queryParamMap.get('programName');
-
-    // ==========================================================
-    // NYELVVÁLTÁS FIGYELÉSE
-    // ==========================================================
-
-    this.languageService.language$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+    // The router can reuse this component when /programs/:id/workouts changes.
+    // Keep the program identity, its title and its list in sync with the URL.
+    combineLatest([
+      this.route.paramMap,
+      this.route.queryParamMap,
+      this.languageService.language$,
+    ]).pipe(takeUntil(this.destroy$)).subscribe(([params, queryParams]) => {
+      this.loadRequest?.unsubscribe();
+      this.nameLoadRequest?.unsubscribe();
+      const nextId = Number(params.get('id'));
+      if (!Number.isInteger(nextId) || nextId <= 0) {
+        this.programId = 0;
+        this.resetProgramView();
+        this.message = 'userWorkouts.loadError'; this.messageType = 'error';
+        return;
+      }
+      if (this.programId !== nextId) {
+        this.resetProgramView();
+        this.programId = nextId;
+      }
+      const programName = queryParams.get('programName');
       if (programName) {
         this.programName = programName;
+        this.programNameMissing = false;
       } else {
+        this.programName = null;
         this.loadProgramName();
       }
-
       this.loadWorkouts();
     });
   }
 
+  private resetProgramView(): void {
+    this.workouts = [];
+    this.pendingWorkouts = [];
+    this.completedWorkouts = [];
+    this.programName = null;
+    this.programNameMissing = false;
+    this.loaded = false;
+    this.loading = false;
+    this.pendingCurrentPage = 1;
+    this.completedCurrentPage = 1;
+  }
+
   /** Ha a link nem hozza a program nevét (pl. visszalépés, újratöltés), a felhasználó programjai közül. */
   private loadProgramName(): void {
-    this.myProgramsService
+    this.nameLoadRequest = this.myProgramsService
       .getPrograms()
       .pipe(takeUntil(this.destroy$))
       .subscribe({

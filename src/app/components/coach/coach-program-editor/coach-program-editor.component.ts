@@ -157,10 +157,14 @@ export class CoachProgramEditorComponent implements OnInit {
             ? { workoutName: this.library.workoutName, pendingExercises: [...this.library.pendingExercises],
                 copySourceId: this.library.copySourceId, emptyMode: this.library.emptyMode, libraryFilter: this.library.libraryFilter }
             : null;
+          // A daily action can reload the program while its metadata is still being edited.
+          // Only keep fields changed since the last successful baseline (or since a
+          // submitted save), never carry another program's draft into this program.
           const metadataDraft: Partial<CoachProgramDetailsInput> = {};
-          if (submittedForm) {
-            for (const key of Object.keys(submittedForm) as (keyof CoachProgramDetailsInput)[]) {
-              if (this.state.form[key] !== submittedForm[key]) {
+          if (this.state.program?.programId === programId) {
+            const baseline = submittedForm ?? this.detailsBaseline;
+            for (const key of Object.keys(baseline) as (keyof CoachProgramDetailsInput)[]) {
+              if (this.state.form[key] !== baseline[key]) {
                 Object.assign(metadataDraft, { [key]: this.state.form[key] });
               }
             }

@@ -5,6 +5,7 @@ import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/c
 import { Observable } from 'rxjs';
 
 import { environment } from '../../environments/environment';
+import { safeStorageGet } from '../shared/safe-storage';
 
 @Injectable()
 export class LanguageInterceptor implements HttpInterceptor {
@@ -35,7 +36,8 @@ export class LanguageInterceptor implements HttpInterceptor {
       return next.handle(request);
     }
 
-    const language = localStorage.getItem('language') || this.defaultLanguage;
+    const stored = safeStorageGet('language');
+    const language = stored === 'en' || stored === 'de' || stored === 'hu' ? stored : this.defaultLanguage;
 
     const languageRequest = request.clone({
       params: request.params.set('language', language),

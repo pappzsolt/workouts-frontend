@@ -1,4 +1,5 @@
 import { AppButtonComponent } from '../components/app-button/app-button.component';
+import { AppInputDirective } from '../components/form-controls/app-input.directive';
 import { Component, DestroyRef, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +10,7 @@ import { AdminUserDeletionService, UserDeletionPreview } from '../../../services
 
 @Component({
   selector: 'app-user-deletion-dialog', standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe, AppDialogComponent, AppButtonComponent],
+  imports: [CommonModule, FormsModule, TranslatePipe, AppDialogComponent, AppButtonComponent, AppInputDirective],
   templateUrl: './user-deletion-dialog.component.html',
 })
 export class UserDeletionDialogComponent implements OnInit {

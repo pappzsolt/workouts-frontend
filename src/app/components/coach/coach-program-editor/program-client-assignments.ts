@@ -2,7 +2,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import type { ProgramEditorState } from './program-editor-state';
 import type { ProgramEditorEffects } from './program-editor-effects';
-import { Subject, concat, forkJoin, takeUntil, toArray } from 'rxjs';
+import { Subject, concat, forkJoin, takeUntil, tap } from 'rxjs';
 import type { CoachClientOverview } from '../../../models/coach-workspace.model';
 import { toIsoDate } from '../../../shared/local-date';
 import { matchesSearch } from '../../shared/components/app-search/search-match';
@@ -57,11 +57,15 @@ export class ProgramClientAssignments {
           if (this.state.programId !== programId) return;
           this.clients = overview.clients;
           this.assignedIds = new Set(assigned);
-          this.toAssign = new Set();
+          // A day editor's background reload must not erase pending selections.
+          // Remove only athletes who are no longer available or are now assigned.
+          const available = new Set(overview.clients.map((client) => client.userId));
+          this.toAssign = new Set([...this.toAssign].filter((id) => available.has(id) && !this.assignedIds.has(id)));
         },
         error: () => {
           if (this.state.programId !== programId) return;
-          this.clients = [];
+          // Retain the last successful client list and pending selections when
+          // a background refresh fails; a new program still calls reset().
         },
       });
   }
@@ -159,17 +163,28 @@ export class ProgramClientAssignments {
     const programId = this.state.programId;
     const ids = [...this.toAssign];
     this.state.busy = true;
-    concat(...ids.map((userId) => this.workspace.assignProgram(userId, programId)))
-      .pipe(toArray(), takeUntilDestroyed(this.effects.destroyRef))
+    const succeeded = new Set<number>();
+    concat(...ids.map((userId) => this.workspace.assignProgram(userId, programId).pipe(
+      tap(() => succeeded.add(userId)),
+    )))
+      .pipe(takeUntilDestroyed(this.effects.destroyRef))
       .subscribe({
-        next: () => {
+        complete: () => {
           this.state.busy = false;
+          this.toAssign = new Set();
           this.effects.showMessage('coachWorkspace.editor.assigned', 'success');
           this.loadAssignment();
         },
         error: (error) => {
           this.state.busy = false;
-          this.effects.showError(error, 'coachWorkspace.client.assignError');
+          this.toAssign = new Set(ids.filter((id) => !succeeded.has(id)));
+          if (succeeded.size > 0) {
+            this.effects.showMessage('coachWorkspace.editor.assignmentPartial', 'error', {
+              count: succeeded.size, total: ids.length,
+            });
+          } else {
+            this.effects.showError(error, 'coachWorkspace.client.assignError');
+          }
           this.loadAssignment();
         },
       });

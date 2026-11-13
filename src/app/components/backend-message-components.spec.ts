@@ -83,7 +83,7 @@ describe('Backend messages presented by coach and user components', () => {
   });
 
   it('loads the program name when the link does not carry it (back navigation, reload)', () => {
-    const route = { snapshot: { paramMap: convertToParamMap({ id: '7' }), queryParamMap: convertToParamMap({}) } };
+    const route = { paramMap: of(convertToParamMap({ id: '7' })), queryParamMap: of(convertToParamMap({})), snapshot: { paramMap: convertToParamMap({ id: '7' }), queryParamMap: convertToParamMap({}) } };
     const api = { getWorkoutsByProgram: () => of({ success: true, data: [], message: null }) };
     TestBed.overrideProvider(UserMyProgramsService, { useValue: { getPrograms: () => of({ success: true, message: null,
       data: [{ id: 3, name: 'Other' }, { id: 7, name: 'Erő program' }] }) } });
@@ -94,7 +94,7 @@ describe('Backend messages presented by coach and user components', () => {
   });
 
   it('shows workout HTTP errors and leaves the successful empty-state view disabled', () => {
-    const route = { snapshot: { paramMap: convertToParamMap({ id: '7' }), queryParamMap: convertToParamMap({ programName: 'Program' }) } };
+    const route = { paramMap: of(convertToParamMap({ id: '7' })), queryParamMap: of(convertToParamMap({ programName: 'Program' })), snapshot: { paramMap: convertToParamMap({ id: '7' }), queryParamMap: convertToParamMap({ programName: 'Program' }) } };
     const api = { getWorkoutsByProgram: () => throwError(() => new HttpErrorResponse({ status: 403, error: { message: 'Workouts denied' } })) };
     const component = TestBed.runInInjectionContext(() => new WorkoutsComponent(route as any, {} as any, api as any, {} as any, language as any));
     component.ngOnInit();

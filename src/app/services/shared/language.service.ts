@@ -2,6 +2,7 @@ import { DestroyRef, Injectable, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
 import { BehaviorSubject, Observable, take } from 'rxjs';
+import { safeStorageGet, safeStorageSet } from '../../shared/safe-storage';
 
 @Injectable({ providedIn: 'root' })
 export class LanguageService {
@@ -17,12 +18,12 @@ export class LanguageService {
     // is also the synchronous source for every API request's language.
     this.translate.onLangChange.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(({ lang }) => {
       if (!isLanguageCode(lang)) return;
-      localStorage.setItem('language', lang);
+      safeStorageSet('language', lang);
       this.loadFailed = false;
       if (this.languageSubject.value !== lang) this.languageSubject.next(lang);
     });
     this.translate.setFallbackLang(this.defaultLanguage);
-    const savedLanguage = localStorage.getItem('language');
+    const savedLanguage = safeStorageGet('language');
     this.setLanguage(isLanguageCode(savedLanguage) ? savedLanguage : this.defaultLanguage);
   }
 

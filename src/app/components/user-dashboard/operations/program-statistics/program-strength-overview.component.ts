@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
+import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
 import { ProgramExerciseStatistics, ProgramStatisticsProgram } from '../../../../models/user-program-statistics.model';
 
 interface LiftSeries {
@@ -15,7 +16,7 @@ interface LiftSeries {
 @Component({
   selector: 'app-program-strength-overview',
   standalone: true,
-  imports: [CommonModule, FormsModule, TranslatePipe],
+  imports: [CommonModule, FormsModule, TranslatePipe, AppInputDirective],
   templateUrl: './program-strength-overview.component.html',
   styleUrl: './program-strength-overview.component.css',
 })

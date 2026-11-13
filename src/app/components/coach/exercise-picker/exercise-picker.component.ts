@@ -1,7 +1,7 @@
 import { Component, DestroyRef, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslateService } from '@ngx-translate/core';
-import { Subject, debounceTime, switchMap, catchError, of } from 'rxjs';
+import { Subject, switchMap, catchError, of, timer } from 'rxjs';
 
 import { AppInputDirective } from '../../shared/components/form-controls/app-input.directive';
 import { CommonModule } from '@angular/common';
@@ -53,16 +53,18 @@ export class ExercisePickerComponent implements OnInit {
     this.query.size = this.pageSize;
     this.load$
       .pipe(
-        debounceTime(0),
         switchMap(({ debounce }) => {
           this.loading = true;
-          const request = this.workspace.browseExercises({ ...this.query }).pipe(
+          const query = { ...this.query };
+          // Unlike of(null).pipe(debounceTime(300)), timer actually delays
+          // subscription and cancels superseded searches.
+          return (debounce ? timer(300) : of(0)).pipe(
+            switchMap(() => this.workspace.browseExercises(query)),
             catchError(() => {
               this.failed = true;
               return of<CoachExercisePage>({ items: [], totalElements: 0, totalPages: 1 });
             }),
           );
-          return debounce ? of(null).pipe(debounceTime(300), switchMap(() => request)) : request;
         }),
         takeUntilDestroyed(this.destroyRef),
       )
