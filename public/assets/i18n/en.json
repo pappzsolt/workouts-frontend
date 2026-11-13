@@ -1144,7 +1144,7 @@
       "libraryHint": "You can also create and edit workouts independently of programs here:",
       "browseExercises": "Browse exercises",
       "perClientHint": "Configure each client’s sets for the selected date:",
-      "editClientSets": "Sets and weights of {{name}}",
+      "editClientSets": "Configure sets and weights",
       "applyTemplate": "Apply to client workouts not yet started",
       "copyConfirm": "Copy",
       "copyForClient": "Client (optional)",

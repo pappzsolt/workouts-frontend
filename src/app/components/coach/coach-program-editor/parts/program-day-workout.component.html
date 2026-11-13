@@ -16,10 +16,12 @@
         <li>
           <a [routerLink]="['/coach/clients', entry.client.userId]"
              [queryParams]="{ program: programId, date: entry.date }"
-             class="inline-flex min-h-11 items-center gap-2 font-semibold text-primary-700 underline hover:text-primary-800">
+             class="inline-flex min-h-11 items-center gap-2 text-primary-700 hover:text-primary-800">
             <app-icon name="user-round" sizeClass="h-4 w-4" />
-            {{ 'coachWorkspace.editor.editClientSets' | translate: { name: entry.client.username } }}
-            <span class="font-normal text-content-600">({{ entry.date | date: 'yyyy.MM.dd' }})</span>
+            <span class="flex min-w-0 flex-col gap-1">
+              <span class="font-semibold underline">{{ 'coachWorkspace.editor.editClientSets' | translate }}</span>
+              <span class="text-content-600">{{ entry.client.username }} · {{ workout.name }} · {{ entry.date | date: 'yyyy.MM.dd' }}</span>
+            </span>
           </a>
         </li>
       }

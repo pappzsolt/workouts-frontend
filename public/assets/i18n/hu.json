@@ -1144,7 +1144,7 @@
       "libraryHint": "Edzéseket programtól függetlenül itt is létrehozhatsz és szerkeszthetsz:",
       "browseExercises": "Gyakorlatok böngészése",
       "perClientHint": "Az ügyfelek adott napi sorozatainak beállítása:",
-      "editClientSets": "{{name}} sorozatai és súlyai",
+      "editClientSets": "Sorozatok és súlyok beállítása",
       "applyTemplate": "Alkalmazás a még el nem kezdett ügyfél-edzésekre",
       "copyConfirm": "Másolás",
       "copyForClient": "Ügyfél (opcionális)",

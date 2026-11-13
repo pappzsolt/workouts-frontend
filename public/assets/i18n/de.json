@@ -1144,7 +1144,7 @@
       "libraryHint": "Trainings kannst du auch unabhängig von Programmen hier anlegen und bearbeiten:",
       "browseExercises": "Übungen durchsuchen",
       "perClientHint": "Sätze der Kunden für den jeweiligen Tag einstellen:",
-      "editClientSets": "Sätze und Gewichte von {{name}}",
+      "editClientSets": "Sätze und Gewichte einstellen",
       "applyTemplate": "Auf noch nicht begonnene Kundentrainings anwenden",
       "copyConfirm": "Kopieren",
       "copyForClient": "Kunde (optional)",
