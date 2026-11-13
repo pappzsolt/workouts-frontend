@@ -106,7 +106,7 @@
         </div>
       }
       @if (assignments.calendarView === 'schedule' && assignments.calendarUserId === null && assignments.assignedClients.length > 0) {
-        <app-coach-calendar [programId]="state.programId" [initialDate]="state.program?.startDate ?? state.form.startDate" [embedded]="true" />
+        <app-coach-calendar [programId]="state.programId" [assignedUserIds]="assignments.assignedIds" [initialDate]="state.program?.startDate ?? state.form.startDate" [embedded]="true" />
       } @else if (assignments.calendarView === 'schedule' && assignments.calendarClient) {
         <app-program-client-calendar [client]="assignments.calendarClient!" [programId]="state.programId!"
                                      [startDate]="state.form.startDate" [durationDays]="+state.form.durationDays" />
@@ -153,7 +153,7 @@
         </div>
         </section>
         @if (assignments.assignedClients.length > 0) {
-          <app-coach-calendar [programId]="state.programId" [initialDate]="state.program?.startDate ?? state.form.startDate" [embedded]="true"
+          <app-coach-calendar [programId]="state.programId" [assignedUserIds]="assignments.assignedIds" [initialDate]="state.program?.startDate ?? state.form.startDate" [embedded]="true"
                               [programWorkouts]="state.program?.workouts ?? []" [showProgramStructure]="true" />
         }
 

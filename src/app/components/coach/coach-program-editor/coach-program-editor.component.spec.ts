@@ -44,6 +44,7 @@ describe('Program editor assignment revocation', () => {
 
   it('revokes only the selected assignment and makes the client available for reassignment', () => {
     component.assignments.toAssign = new Set([3]);
+    component.assignments.calendarUserId = 1;
     component.assignments.askRevoke(component.assignments.clients[0]);
     component.assignments.confirmRevoke();
     expect(revoke).toHaveBeenCalledOnceWith(10, 1);
@@ -58,6 +59,7 @@ describe('Program editor assignment revocation', () => {
     expect(component.state.busy).toBeFalse();
     expect(component.assignments.pendingRevokeClient).toBeNull();
     expect(component.assignments.assignedClients.map(item => item.userId)).toEqual([2]);
+    expect(component.assignments.calendarUserId).toBeNull();
     expect(component.assignments.unassignedClients.map(item => item.userId)).toEqual([1, 3]);
     expect(component.assignments.clients[0].programs).toEqual([]);
     expect(component.assignments.clients[1].programs.length).toBe(1);

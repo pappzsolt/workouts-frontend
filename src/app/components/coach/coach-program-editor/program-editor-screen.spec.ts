@@ -199,6 +199,7 @@ describe('Program editor screen bindings', () => {
     expect((fixture.nativeElement as HTMLElement).querySelector('details')).toBeNull();
     expect((fixture.nativeElement as HTMLElement).querySelector('section[aria-label="coachWorkspace.editor.editBaseSchedule"]')).not.toBeNull();
     expect(child(fixture, CoachCalendarComponent).programId).toBe(10);
+    expect([...child(fixture, CoachCalendarComponent).assignedUserIds!]).toEqual([7, 8]);
     button(fixture, 'coachWorkspace.editor.scheduleView').click();
     fixture.detectChanges();
     const select = (fixture.nativeElement as HTMLElement).querySelector<HTMLSelectElement>('#program-calendar-client')!;
@@ -235,6 +236,7 @@ describe('Program editor screen bindings', () => {
     await fixture.whenStable();
     fixture.detectChanges();
     expect(child(fixture, CoachCalendarComponent).programId).toBe(10);
+    expect([...child(fixture, CoachCalendarComponent).assignedUserIds!]).toEqual([7, 8]);
   });
 
   it('creates an empty-day workout before saving its exercises and linking the day', () => {

@@ -28,6 +28,8 @@ export class CoachCalendarComponent implements OnInit, OnChanges {
   @Input() initialDate: string | null = null;
   @Input() embedded = false;
   @Input() programWorkouts: CoachProgramWorkout[] = [];
+  /** Authoritative active assignments for a program editor; historical workouts may remain after revocation. */
+  @Input() assignedUserIds: ReadonlySet<number> | null = null;
   @Input() showProgramStructure = false;
   private readonly workspace = inject(CoachWorkspaceService);
   private readonly destroyRef = inject(DestroyRef);
@@ -53,7 +55,8 @@ export class CoachCalendarComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['programId'] && !changes['programId'].firstChange)
       || (changes['initialDate'] && !changes['initialDate'].firstChange)
-      || (changes['programWorkouts'] && !changes['programWorkouts'].firstChange)) {
+      || (changes['programWorkouts'] && !changes['programWorkouts'].firstChange)
+      || (this.programId !== null && changes['assignedUserIds'] && !changes['assignedUserIds'].firstChange)) {
       this.openInitialMonth();
       this.load();
     }
@@ -91,8 +94,10 @@ export class CoachCalendarComponent implements OnInit, OnChanges {
       .subscribe({
         next: overview => {
           this.clients = overview.clients
-            .filter(client => this.programId === null || client.programs.some(program => program.programId === this.programId)
-              || client.workouts.some(workout => workout.programId === this.programId))
+            .filter(client => this.programId === null
+              || (this.assignedUserIds !== null
+                ? this.assignedUserIds.has(client.userId)
+                : client.programs.some(program => program.programId === this.programId)))
             .map(client => ({ ...client, workouts: client.workouts.filter(workout => this.programId === null || workout.programId === this.programId) }))
             .sort((a, b) => a.userId - b.userId);
           if (this.selectedUserId !== null && !this.clients.some(client => client.userId === this.selectedUserId)) {

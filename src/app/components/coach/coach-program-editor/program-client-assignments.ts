@@ -143,6 +143,7 @@ export class ProgramClientAssignments {
           this.state.busy = false;
           this.pendingRevokeClient = null;
           this.assignedIds = new Set([...this.assignedIds].filter((id) => id !== client.userId));
+          if (this.calendarUserId === client.userId) this.calendarUserId = null;
           this.clients = this.clients.map((item) => item.userId === client.userId ? {
             ...item,
             programs: item.programs.filter((program) => program.programId !== programId),

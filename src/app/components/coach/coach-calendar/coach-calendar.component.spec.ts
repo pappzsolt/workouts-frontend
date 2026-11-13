@@ -104,6 +104,7 @@ describe('Coach calendar', () => {
     const other = client(8, [workout(201, '2026-11-13')]);
     api.getOverview.and.returnValue(of({ from: '', to: '', clients: [andi, other, client(9, [{ ...workout(301), programId: 99 }])] }));
     fixture.componentRef.setInput('programId', 29);
+    fixture.componentRef.setInput('assignedUserIds', new Set([7, 8]));
     fixture.componentRef.setInput('initialDate', '2026-11-13');
     fixture.componentRef.setInput('embedded', true);
     fixture.detectChanges();
@@ -113,6 +114,49 @@ describe('Coach calendar', () => {
     expect(component.clients.map(entry => entry.userId)).toEqual([7, 8]);
     component.selectedDate = '2026-11-20'; fixture.detectChanges();
     expect((fixture.nativeElement as HTMLElement).querySelector('a[href="/coach/clients/7?workout=101&program=29&date=2026-11-20"]')).not.toBeNull();
+  });
+
+  it('does not show historical workouts after a program assignment has been revoked', () => {
+    const active = client(7, [workout(101)]);
+    const revoked = client(8, [workout(201)]);
+    // The overview API intentionally retains old user_workouts after revocation.
+    api.getOverview.and.returnValue(of({ from: '', to: '', clients: [active, revoked] }));
+    fixture.componentRef.setInput('programId', 29);
+    fixture.componentRef.setInput('assignedUserIds', new Set([7]));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.clients.map(item => item.userId)).toEqual([7]);
+    expect(fixture.componentInstance.selectedEntries.map(entry => entry.client.userId)).toEqual([7]);
+    expect((fixture.nativeElement as HTMLElement).querySelector('[data-calendar-client="8"]')).toBeNull();
+  });
+
+  it('removes a revoked user from the open calendar when active assignments change', () => {
+    // Even a delayed/stale overview response must not reintroduce a revoked user.
+    api.getOverview.and.returnValue(of({ from: '', to: '', clients: [
+      client(7, [workout(101)]), client(8, [workout(201)]),
+    ] }));
+    fixture.componentRef.setInput('programId', 29);
+    fixture.componentRef.setInput('assignedUserIds', new Set([7, 8]));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selectedEntries.map(entry => entry.client.userId)).toEqual([7, 8]);
+    fixture.componentInstance.selectedUserId = 8;
+    fixture.componentRef.setInput('assignedUserIds', new Set([7]));
+    fixture.detectChanges();
+    expect(fixture.componentInstance.clients.map(item => item.userId)).toEqual([7]);
+    expect(fixture.componentInstance.selectedUserId).toBeNull();
+    expect(fixture.componentInstance.selectedEntries.map(entry => entry.client.userId)).toEqual([7]);
+    expect(api.getOverview).toHaveBeenCalledTimes(2);
+  });
+
+  it('uses only active program relationships when assignment ids are not supplied', () => {
+    const active = { ...client(7, [workout(101)]), programs: [{
+      programId: 29, name: 'Program', startDate: null, endDate: null,
+      totalWorkouts: 1, completedWorkouts: 0,
+    }] };
+    const revoked = client(8, [workout(201)]);
+    api.getOverview.and.returnValue(of({ from: '', to: '', clients: [active, revoked] }));
+    fixture.componentRef.setInput('programId', 29);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selectedEntries.map(entry => entry.client.userId)).toEqual([7]);
   });
 
   it('splits a shared workout day into separate named client bands with stable colors', () => {
@@ -147,6 +191,7 @@ describe('Coach calendar', () => {
       client(7, [{ ...shared, userWorkoutId: 201, scheduledAt: '2026-11-14' }]), client(8, [shared]),
     ] }));
     fixture.componentRef.setInput('programId', 29);
+    fixture.componentRef.setInput('assignedUserIds', new Set([7, 8]));
     fixture.componentRef.setInput('showProgramStructure', true);
     fixture.componentRef.setInput('programWorkouts', [{
       programWorkoutId: 11, workoutId: 50, name: 'Shared workout', description: null,
