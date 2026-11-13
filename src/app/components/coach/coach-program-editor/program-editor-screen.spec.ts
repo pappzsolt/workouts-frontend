@@ -10,7 +10,7 @@ import { CoachProgramEditorComponent } from './coach-program-editor.component';
 import { CoachCalendarComponent } from '../coach-calendar/coach-calendar.component';
 import { ProgramClientsPanelComponent } from './parts/program-clients-panel.component';
 import { ProgramCopyDialogComponent } from './parts/program-copy-dialog.component';
-import { ProgramWeekPlannerComponent } from './parts/program-week-planner.component';
+import { ProgramPlannerComponent } from './parts/program-planner.component';
 import { ProgramDayGridComponent } from './parts/program-day-grid.component';
 import { ProgramDayWorkoutComponent } from './parts/program-day-workout.component';
 import { ProgramDetailsFormComponent } from './parts/program-details-form.component';
@@ -264,26 +264,27 @@ describe('Program editor screen bindings', () => {
     expect(fixture.componentInstance.activeTab).toBe('clients');
   });
 
-  it('selects empty days directly in the weekly planner and preserves drafts while paging', () => {
+  it('selects empty program days in the monthly planner and protects drafts', () => {
     program.durationDays = 16;
     const fixture = render();
     const element = fixture.nativeElement as HTMLElement;
     expect(element.querySelector('#program-template-day')).toBeNull();
-    expect(element.querySelectorAll('[data-program-day]').length).toBe(7);
+    expect(element.querySelectorAll('[data-program-day]').length).toBe(9);
     element.querySelector<HTMLButtonElement>('[data-program-day="2"]')!.click(); fixture.detectChanges();
     expect(fixture.componentInstance.state.selectedDay).toBe(2);
     const empty = child(fixture, ProgramEmptyDayComponent);
     empty.workoutName.set('Draft workout');
-    const planner = child(fixture, ProgramWeekPlannerComponent);
-    planner.changeWeek(1); fixture.detectChanges();
+    const planner = child(fixture, ProgramPlannerComponent);
+    planner.changeMonth(1); fixture.detectChanges();
     expect(empty.workoutName()).toBe('Draft workout');
     expect(fixture.componentInstance.state.selectedDay).toBe(2);
+    planner.changeMonth(-1); fixture.detectChanges();
     element.querySelector<HTMLButtonElement>('[data-program-day="9"]')!.click(); fixture.detectChanges();
     expect(fixture.componentInstance.state.pendingDay).toBe(9);
     expect(fixture.componentInstance.state.selectedDay).toBe(2);
     fixture.componentInstance.discardAndChangeDay(); fixture.detectChanges();
     expect(fixture.componentInstance.state.selectedDay).toBe(9);
-    expect(planner.weekIndex).toBe(1);
+    expect(planner.visibleMonth).toEqual(new Date(2026, 9, 1));
   });
 
   it('creates an empty-day workout before saving its exercises and linking the day', () => {

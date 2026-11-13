@@ -19,7 +19,7 @@ import { DIFFICULTY_OPTIONS, WEEKDAY_KEYS, errorText } from '../coach-ui';
 import { type DayCell, buildDayCells, dayAriaLabel } from './program-days';
 import { ProgramClientsPanelComponent } from './parts/program-clients-panel.component';
 import { ProgramCopyDialogComponent } from './parts/program-copy-dialog.component';
-import { ProgramWeekPlannerComponent } from './parts/program-week-planner.component';
+import { ProgramPlannerComponent } from './parts/program-planner.component';
 import { ProgramDayWorkoutComponent } from './parts/program-day-workout.component';
 import { ProgramDetailsFormComponent } from './parts/program-details-form.component';
 import { ProgramEmptyDayComponent } from './parts/program-empty-day.component';
@@ -43,7 +43,7 @@ import { ProgramCopyEditor } from './program-copy-editor';
   imports: [
     CoachCalendarComponent, FormsModule, ProgramClientCalendarComponent, AppLoadingComponent, CommonModule, RouterModule, TranslatePipe, ConfirmDialogComponent, MessageComponent, AppIconComponent,
     ProgramDetailsFormComponent,
-    ProgramWeekPlannerComponent, ProgramDayWorkoutComponent,
+    ProgramPlannerComponent, ProgramDayWorkoutComponent,
     ProgramEmptyDayComponent,
     ProgramClientsPanelComponent,
     ProgramMultiAddDialogComponent,

@@ -1070,11 +1070,11 @@
       "workouts": "Edzések"
     },
     "editor": {
-      "weekPlanner": "Heti programtervező",
+      "programPlanner": "Programtervező",
       "previousWeek": "Előző hét",
       "nextWeek": "Következő hét",
       "programWeek": "Program {{week}}. hete / {{total}}",
-      "weekPlannerHint": "Válassz napot a részletekhez. Üres napon a + Edzés gombbal új edzést készíthetsz vagy kereshetsz az Edzéstárban.",
+      "programPlannerHint": "Válassz napot a részletekhez. Üres programnapon a + Edzés gombbal új edzést készíthetsz vagy kereshetsz az Edzéstárban. A halvány napok a program időtartamán kívül esnek.",
       "addWorkout": "Edzés",
       "individualSettingsHint": "Az egyéni súlyokat, ismétléseket, pihenőket és a sorozatok számát az adott ügyfél edzésénél állíthatod be. Válassz ügyfelet és napot, majd nyisd meg a „Sorozatok és súlyok beállítása” hivatkozást.",
       "programTabs": "Program nézetei",

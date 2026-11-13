@@ -1070,11 +1070,11 @@
       "workouts": "Workouts"
     },
     "editor": {
-      "weekPlanner": "Weekly program planner",
+      "programPlanner": "Program planner",
       "previousWeek": "Previous week",
       "nextWeek": "Next week",
       "programWeek": "Program week {{week}} / {{total}}",
-      "weekPlannerHint": "Select a day for details. On an empty day, use + Workout to create a workout or search the library.",
+      "programPlannerHint": "Select a day for details. Use + Workout on an empty program day to create a workout or search the library. Faded dates are outside the program period.",
       "addWorkout": "Workout",
       "individualSettingsHint": "Set individual weights, repetitions, rest and the number of sets in the client’s workout. Choose a client and date, then open “Configure sets and weights”.",
       "programTabs": "Program views",
