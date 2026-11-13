@@ -31,7 +31,6 @@ import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.c
     AppIconComponent,
   ],
   templateUrl: './user-workouts-calendar.component.html',
-  styleUrls: ['./user-workouts-calendar.component.css'],
 })
 export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   private readonly logger = inject(LoggerService);

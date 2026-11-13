@@ -36,7 +36,6 @@ import { FormFieldComponent } from '../../../shared/components/form-field/form-f
     FormFieldComponent,
   ],
   templateUrl: './coach-new.component.html',
-  styleUrls: ['./coach-new.component.css'],
 })
 export class CoachNewComponent {
   private readonly validateInputs = createInputValidationGuard();

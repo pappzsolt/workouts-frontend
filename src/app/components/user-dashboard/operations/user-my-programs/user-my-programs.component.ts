@@ -41,7 +41,6 @@ import { AppStatusBadgeComponent } from '../../../shared/components/app-status-b
     SidePaginationComponent,
   ],
   templateUrl: './user-my-programs.component.html',
-  styleUrls: ['./user-my-programs.component.css'],
 })
 export class UserMyProgramsComponent implements OnInit, OnDestroy {
   private readonly destroy$ = new Subject<void>();

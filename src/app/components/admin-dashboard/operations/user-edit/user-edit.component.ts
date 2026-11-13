@@ -51,7 +51,6 @@ import {
     MatSelectModule,
     MatInputModule,
   ],
-  styleUrl: './user-edit.component.css',
   templateUrl: './user-edit.component.html',
 })
 export class UserEditComponent implements OnInit {

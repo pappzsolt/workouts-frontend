@@ -35,7 +35,6 @@ import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.c
     ProgramStrengthOverviewComponent,
   ],
   templateUrl: './program-statistics.component.html',
-  styleUrl: './program-statistics.component.css',
 })
 export class UserProgramStatisticsComponent implements OnInit, OnDestroy {
   private readonly logger = inject(LoggerService);

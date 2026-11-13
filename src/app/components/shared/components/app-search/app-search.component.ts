@@ -20,7 +20,6 @@ import { AppIconComponent } from '../app-icon/app-icon.component';
   standalone: true,
   imports: [AppButtonComponent, FormsModule, TranslatePipe, AppIconComponent],
   templateUrl: './app-search.component.html',
-  styleUrl: './app-search.component.css',
 })
 export class AppSearchComponent {
   private readonly destroyRef = inject(DestroyRef);

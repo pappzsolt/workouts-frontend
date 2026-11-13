@@ -12,7 +12,6 @@ import { DashboardActionComponent } from '../../shared/components/dashboard-acti
   standalone: true,
   imports: [AppPageHeaderComponent, AppHeadingDirective, CommonModule, TranslatePipe, DashboardActionComponent],
   templateUrl: './user-dashboard.component.html',
-  styleUrls: ['./user-dashboard.component.css'],
 })
 export class UserDashboardComponent {
   constructor(private router: Router) {}

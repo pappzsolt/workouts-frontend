@@ -51,7 +51,6 @@ import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.c
     MatInputModule,
   ],
   templateUrl: './user-profile.component.html',
-  styleUrl: './user-profile.component.css',
 })
 export class UserProfileComponent implements OnInit, OnDestroy {
   private readonly validateInputs = createInputValidationGuard();
@@ -176,33 +175,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
           this.messageType = 'error';
         },
       });
-  }
-
-  private patchUserFromRaw(raw: RawUser): void {
-    this.roles = raw.roles || [];
-
-    this.selectedUser = {
-      id: raw.id,
-      username: raw.usernameOrName || '',
-      email: raw.email || '',
-      password: '',
-      currentPassword: '',
-      avatarUrl: raw.avatarUrl || '',
-      age: raw.extraFields?.age,
-      weight: raw.extraFields?.weight,
-      height: raw.extraFields?.height,
-      gender: raw.extraFields?.gender || '',
-      goals: raw.extraFields?.goals || '',
-      coachId: raw.extraFields?.coach_id,
-      roleName: undefined,
-      roleIds: [],
-    };
-
-    this.selectedCoach = this.coaches.find((c) => c.id === this.selectedUser.coachId);
-
-    this.coachName = this.selectedCoach ? this.selectedCoach.name : '';
-
-    this.cdr.detectChanges();
   }
 
   onCoachSelected(coach: CoachNameId): void {

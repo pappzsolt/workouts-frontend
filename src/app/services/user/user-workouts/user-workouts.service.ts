@@ -18,7 +18,6 @@ import { ApiResponse } from '../../../models/backend-dto/common/api-response';
 export class UserWorkoutsService {
   private readonly http = inject(HttpClient);
   private readonly languageService = inject(LanguageService);
-  private readonly apiUrl = API_ENDPOINTS.workouts;
 
   /** Backend hívás – Workouts by program */
   getWorkoutsByProgram(programId: number): Observable<ApiResponse<UserWorkoutOccurrence[]>> {

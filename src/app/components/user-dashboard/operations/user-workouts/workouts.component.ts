@@ -43,7 +43,6 @@ import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.c
     AppIconComponent,
     SidePaginationComponent,
   ],
-  styleUrl: './workouts.component.css',
   templateUrl: './workouts.component.html',
 })
 export class WorkoutsComponent implements OnInit, OnDestroy {

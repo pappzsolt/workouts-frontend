@@ -9,7 +9,6 @@ import { BackNavigationService } from './services/shared/back-navigation.service
   standalone: true,
   imports: [CommonModule, RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
   private readonly seo = inject(SeoService);

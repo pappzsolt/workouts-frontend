@@ -6,7 +6,6 @@ import { Subject, takeUntil } from 'rxjs';
   selector: 'app-message',
   standalone: true,
   templateUrl: './message.component.html',
-  styleUrls: ['./message.component.css'],
 })
 export class MessageComponent implements OnDestroy {
   private readonly destroy$ = new Subject<void>();

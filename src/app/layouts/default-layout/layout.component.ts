@@ -26,7 +26,6 @@ import type { MenuItem } from '../../models/common/menu-item.model';
     DashboardNavigationComponent,
   ],
   templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.css'],
 })
 export class LayoutComponent implements OnInit {
   username: string | null = null;

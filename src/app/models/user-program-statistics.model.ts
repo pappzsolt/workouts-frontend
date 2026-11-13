@@ -1,8 +1,6 @@
 import type {
-  ProgramExercisePlanWeekDto,
   ProgramExerciseStatisticsDto,
   ProgramExerciseWeekMetricsDto,
-  ProgramExerciseWeeklyVolumeDto,
   ProgramStatisticsStatus,
   ProgramWeeklyVolumeDto,
 } from './backend-dto/userprogramstatistics/program-statistics-dto';
@@ -35,6 +33,4 @@ export interface ProgramStatisticsProgram {
 
 export type ProgramWeeklyVolume = ProgramWeeklyVolumeDto;
 export type ProgramExerciseStatistics = ProgramExerciseStatisticsDto;
-export type ProgramExerciseWeek = ProgramExerciseWeeklyVolumeDto;
 export type ProgramExerciseWeekMetrics = ProgramExerciseWeekMetricsDto;
-export type ProgramExercisePlanWeek = ProgramExercisePlanWeekDto;

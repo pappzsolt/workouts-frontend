@@ -50,7 +50,6 @@ import { FormFieldComponent } from '../../../shared/components/form-field/form-f
     MessageComponent,
   ],
   templateUrl: './user-new.component.html',
-  styleUrls: ['./user-new.component.css'],
 })
 export class UserNewComponent {
   private readonly validateInputs = createInputValidationGuard();

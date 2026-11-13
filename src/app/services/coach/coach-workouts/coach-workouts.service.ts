@@ -22,7 +22,6 @@ export class CoachWorkoutsService {
   private readonly http = inject(HttpClient);
   private readonly languageService = inject(LanguageService);
 
-  private readonly apiUrl = API_ENDPOINTS.workouts;
 
   /**
    * A bejelentkezett coach által létrehozott

@@ -12,7 +12,6 @@ import { MessageComponent } from '../../../shared/components/message/message.com
   standalone: true,
   imports: [AppHeadingDirective, CommonModule, TranslatePipe, MessageComponent, DashboardActionComponent],
   templateUrl: './choice-user-edit.component.html',
-  styleUrls: ['./choice-user-edit.component.css'],
 })
 export class ChoiceUserEditComponent {
   message = '';

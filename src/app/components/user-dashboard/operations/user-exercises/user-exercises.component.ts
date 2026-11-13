@@ -1,6 +1,5 @@
 import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { LoggerService } from '../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { EMPTY, Subject, catchError, combineLatest, distinctUntilChanged, map, switchMap, takeUntil } from 'rxjs';
@@ -30,11 +29,9 @@ import { exerciseImageSources, markExerciseImageBroken } from '../../../../const
     AppIconComponent,
     SidePaginationComponent,
   ],
-  styleUrl: './user-exercises.component.css',
   templateUrl: './user-exercises.component.html',
 })
 export class UserExercisesComponent implements OnInit, OnDestroy {
-  private readonly logger = inject(LoggerService);
 
   private readonly destroy$ = new Subject<void>();
 

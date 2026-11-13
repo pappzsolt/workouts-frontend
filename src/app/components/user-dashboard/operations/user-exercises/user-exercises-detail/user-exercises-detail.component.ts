@@ -1,9 +1,7 @@
 import { createInputValidationGuard } from '../../../../shared/components/form-controls/app-input.directive';
 import { errorMessage, responseMessage } from '../../../../../models/backend-dto/common/api-response-message';
 import type { ApiResponse } from '../../../../../models/backend-dto/common/api-response';
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
-import { LoggerService } from '../../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { EMPTY, Subject, catchError, combineLatest, distinctUntilChanged, map, switchMap, takeUntil } from 'rxjs';
@@ -52,11 +50,9 @@ import { exerciseImageSources, markExerciseImageBroken } from '../../../../../co
     PreviousExercisePerformanceComponent,
   ],
   templateUrl: './user-exercises-detail.component.html',
-  styleUrls: ['./user-exercises-detail.component.css'],
 })
 export class UserExerciseDetailComponent implements OnInit, OnDestroy {
   private readonly validateInputs = createInputValidationGuard();
-  private readonly logger = inject(LoggerService);
 
   private readonly destroy$ = new Subject<void>();
   private readonly router = inject(Router, { optional: true });

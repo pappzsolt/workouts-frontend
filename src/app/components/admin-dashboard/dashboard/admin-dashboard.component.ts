@@ -22,7 +22,6 @@ import { RegistrationRequestsService } from '../../../services/admin/registratio
     DashboardActionComponent,
   ],
   templateUrl: './admin-dashboard.component.html',
-  styleUrls: ['./admin-dashboard.component.css'],
 })
 export class AdminDashboardComponent {
   message = '';

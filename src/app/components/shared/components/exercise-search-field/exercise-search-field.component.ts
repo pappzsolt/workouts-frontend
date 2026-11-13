@@ -7,7 +7,6 @@ import { AppSelectComponent } from '../app-select/app-select.component';
   standalone: true,
   imports: [AppSelectComponent],
   templateUrl: './exercise-search-field.component.html',
-  styleUrls: ['./exercise-search-field.component.css'],
 })
 export class ExerciseSearchFieldComponent {
   @Input() value = '';

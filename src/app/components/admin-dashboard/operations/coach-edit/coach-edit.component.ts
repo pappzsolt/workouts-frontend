@@ -26,7 +26,6 @@ import { FormFieldComponent } from '../../../shared/components/form-field/form-f
   selector: 'app-coach-edit',
   standalone: true,
   templateUrl: './coach-edit.component.html',
-  styleUrls: ['./coach-edit.component.css'],
   imports: [
     AppFormValidationDirective,
     AppInputDirective,

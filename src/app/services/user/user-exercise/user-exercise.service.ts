@@ -1,7 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { LanguageService } from '../../shared/language.service';
 import { API_ENDPOINTS } from '../../../api-endpoints';
 import { UserWorkoutDetailDto } from '../../../models/user-workout-exercise-detail.dto';
 import { ApiResponse } from '../../../models/backend-dto/common/api-response';
@@ -12,7 +11,6 @@ import { ApiResponse } from '../../../models/backend-dto/common/api-response';
 export class UserExerciseService {
   private readonly http = inject(HttpClient);
 
-  private readonly baseUrl = API_ENDPOINTS.exercises;
 
   /**
    * Lekéri a konkrét USER_WORKOUT execution exercise-eit.

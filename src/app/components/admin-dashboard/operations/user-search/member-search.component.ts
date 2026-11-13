@@ -37,7 +37,6 @@ import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.c
     MessageComponent,
   ],
   templateUrl: './member-search.component.html',
-  styleUrls: ['./member-search.component.css'],
 })
 export class MemberSearchComponent {
   private readonly destroyRef = inject(DestroyRef);

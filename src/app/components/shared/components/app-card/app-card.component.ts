@@ -9,7 +9,6 @@ export type AppCardVariant = 'default' | 'outlined';
   standalone: true,
   imports: [CommonModule, RouterLink],
   templateUrl: './app-card.component.html',
-  styleUrl: './app-card.component.css',
 })
 export class AppCardComponent {
   @Input() routerLink: string | any[] | null = null;

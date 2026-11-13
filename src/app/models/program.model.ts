@@ -1,15 +1,3 @@
-export interface Program {
-  id?: number;
-
-  programName?: string;
-  programDescription?: string;
-  startDate?: string;
-  endDate?: string;
-  durationDays?: number;
-  difficultyLevel?: string;
-  workoutCount?: number;
-}
-
 export interface UserProgram {
   id: number;
   name: string | null;

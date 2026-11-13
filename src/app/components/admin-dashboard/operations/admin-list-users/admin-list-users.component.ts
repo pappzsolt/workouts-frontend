@@ -33,7 +33,6 @@ import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.c
     AppIconComponent,
   ],
   templateUrl: './admin-list-users.component.html',
-  styleUrls: ['./admin-list-users.component.css'],
 })
 export class AdminListUsersComponent {
   private readonly destroyRef = inject(DestroyRef);

@@ -50,7 +50,6 @@ import { exerciseImageSources, markExerciseImageBroken } from '../../../../const
     PaginationComponent,
   ],
   templateUrl: './coach-exercises.component.html',
-  styleUrls: ['./coach-exercises.component.css'],
 })
 export class ExerciseControllerComponent implements OnInit, OnDestroy {
   private readonly logger = inject(LoggerService);
