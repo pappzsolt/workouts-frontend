@@ -81,6 +81,13 @@
         <app-program-client-calendar [client]="assignments.calendarClient!" [programId]="state.programId!"
                                      [startDate]="state.form.startDate" [durationDays]="+state.form.durationDays" />
       } @else {
+        @if (assignments.assignedClients.length > 0) {
+          <app-coach-calendar [programId]="state.programId" [initialDate]="state.program?.startDate ?? state.form.startDate" [embedded]="true"
+                              [programWorkouts]="state.program?.workouts ?? []" [showProgramStructure]="true" />
+        }
+        <details [open]="assignments.assignedClients.length === 0" class="min-w-0 rounded-2xl border border-surface-200 bg-white p-3">
+          <summary class="min-h-11 cursor-pointer py-3 font-semibold text-content-900">{{ 'coachWorkspace.editor.editBaseSchedule' | translate }}</summary>
+          <p class="mb-4 text-sm text-content-600">{{ 'coachWorkspace.editor.baseScheduleHint' | translate }}</p>
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
 
           <!-- Napok rácsa -->
@@ -117,6 +124,7 @@
             }
           </section>
         </div>
+        </details>
 
       }
 

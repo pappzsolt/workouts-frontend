@@ -6,7 +6,7 @@ import { RouterModule } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { Subject, takeUntil } from 'rxjs';
 import { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
-import type { CoachClientOverview, CoachClientWorkout } from '../../../models/coach-workspace.model';
+import type { CoachClientOverview, CoachClientWorkout, CoachProgramWorkout } from '../../../models/coach-workspace.model';
 import { buildCalendarMonth } from '../../../shared/calendar-month';
 import { fromIsoDate, toIsoDate } from '../../../shared/local-date';
 import { WEEKDAY_KEYS } from '../coach-ui';
@@ -27,6 +27,8 @@ export class CoachCalendarComponent implements OnInit, OnChanges {
   @Input() programId: number | null = null;
   @Input() initialDate: string | null = null;
   @Input() embedded = false;
+  @Input() programWorkouts: CoachProgramWorkout[] = [];
+  @Input() showProgramStructure = false;
   private readonly workspace = inject(CoachWorkspaceService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly cancelled$ = new Subject<void>();
@@ -50,7 +52,8 @@ export class CoachCalendarComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['programId'] && !changes['programId'].firstChange)
-      || (changes['initialDate'] && !changes['initialDate'].firstChange)) {
+      || (changes['initialDate'] && !changes['initialDate'].firstChange)
+      || (changes['programWorkouts'] && !changes['programWorkouts'].firstChange)) {
       this.openInitialMonth();
       this.load();
     }
@@ -122,6 +125,15 @@ export class CoachCalendarComponent implements OnInit, OnChanges {
   selectDate(date: Date): void { this.selectedDate = toIsoDate(date); }
   dateKey(date: Date): string { return toIsoDate(date); }
   get selectedEntries(): CalendarEntry[] { return this.entriesFor(this.selectedDate); }
+  get selectedProgramWorkouts(): CoachProgramWorkout[] {
+    const ids = new Set(this.selectedEntries.flatMap(entry => entry.workouts.map(workout => workout.workoutId)));
+    const unique = new Map<number, CoachProgramWorkout>();
+    for (const workout of this.programWorkouts) {
+      if (ids.has(workout.workoutId)) unique.set(workout.workoutId, workout);
+    }
+    return [...unique.values()];
+  }
+
   clientHue(userId: number): number {
     // Stable per client across months, filters and program views; no repeating small palette.
     return (userId * 137.508) % 360;

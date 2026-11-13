@@ -141,4 +141,23 @@ describe('Coach calendar', () => {
     expect(fixture.componentInstance.clientHue(7)).toBe(originalHue);
   });
 
+  it('follows different client dates while keeping one shared workout exercise list', () => {
+    const shared = { ...workout(101), workoutId: 50, scheduledAt: '2026-11-13' };
+    api.getOverview.and.returnValue(of({ from: '', to: '', clients: [
+      client(7, [{ ...shared, userWorkoutId: 201, scheduledAt: '2026-11-14' }]), client(8, [shared]),
+    ] }));
+    fixture.componentRef.setInput('programId', 29);
+    fixture.componentRef.setInput('showProgramStructure', true);
+    fixture.componentRef.setInput('programWorkouts', [{
+      programWorkoutId: 11, workoutId: 50, name: 'Shared workout', description: null,
+      exercises: [{ id: 1, name: 'Shared squat', description: null, sets: 3, repetitions: 10, restSeconds: 60, notes: null }],
+    }]);
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selectedEntries.map(entry => entry.client.userId)).toEqual([8]);
+    expect((fixture.nativeElement as HTMLElement).querySelector('[data-shared-workout]')!.textContent).toContain('Shared squat');
+    fixture.componentInstance.selectDate(new Date(2026, 10, 14)); fixture.detectChanges();
+    expect(fixture.componentInstance.selectedEntries.map(entry => entry.client.userId)).toEqual([7]);
+    expect((fixture.nativeElement as HTMLElement).querySelector('[data-shared-workout]')!.textContent).toContain('Shared squat');
+  });
+
 });

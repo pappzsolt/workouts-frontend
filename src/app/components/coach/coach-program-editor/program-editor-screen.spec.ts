@@ -210,6 +210,9 @@ describe('Program editor screen bindings', () => {
     button(fixture, 'coachWorkspace.editor.planView').click();
     fixture.detectChanges();
     expect((fixture.nativeElement as HTMLElement).querySelector('#program-calendar-client')).toBeNull();
+    expect(child(fixture, CoachCalendarComponent).showProgramStructure).toBeTrue();
+    expect(child(fixture, CoachCalendarComponent).programWorkouts).toEqual(program.workouts);
+    expect((fixture.nativeElement as HTMLElement).querySelector('details')!.open).toBeFalse();
     const workoutPanel = child(fixture, ProgramDayWorkoutComponent);
     expect(workoutPanel.selectedDayClients).toEqual([]);
     expect(fixture.nativeElement.textContent).toContain('Anna');
