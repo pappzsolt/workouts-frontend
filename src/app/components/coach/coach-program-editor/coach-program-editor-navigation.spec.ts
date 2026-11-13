@@ -84,7 +84,7 @@ describe('Coach program editor unsaved navigation protection', () => {
 
   it('protects browser reload when dirty', () => {
     const { component } = create();
-    const event = { preventDefault: jasmine.createSpy('preventDefault'), returnValue: undefined };
+    const event = { preventDefault: jasmine.createSpy('preventDefault'), returnValue: undefined as string | undefined };
     component.beforeUnload(event as unknown as BeforeUnloadEvent);
     expect(event.preventDefault).not.toHaveBeenCalled();
     component.state.form.programDescription = 'Changed';
