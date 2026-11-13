@@ -54,7 +54,7 @@ describe('Program operation safety', () => {
     expect(api.createWorkout).toHaveBeenCalledOnceWith('New workout','2026-11-14');
   });
 
-  for (const pending of ['savingDetails','loading'] as const) {
+  for (const pending of ['savingDetails','savingClientWorkout','loading'] as const) {
     it(`blocks all program mutations during ${pending}`, () => {
       component.state[pending]=true;
       component.workouts.moveDate='2026-11-20'; component.workouts.extraDate='2026-11-21';

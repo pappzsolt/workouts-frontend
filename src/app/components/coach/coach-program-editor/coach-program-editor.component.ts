@@ -322,7 +322,7 @@ export class CoachProgramEditorComponent implements OnInit {
 
   canLeave(): boolean | Observable<boolean> {
     if (this.allowNavigationAfterCreate) return true;
-    if (this.state.busy || this.state.savingDetails) return false;
+    if (this.state.busy || this.state.savingDetails || this.state.savingClientWorkout) return false;
     if (!this.hasUnsavedChanges) return true;
     this.leaveConfirmationOpen = true;
     this.leaveResult ??= new Subject<boolean>();
@@ -331,7 +331,7 @@ export class CoachProgramEditorComponent implements OnInit {
 
   @HostListener('window:beforeunload', ['$event'])
   beforeUnload(event: BeforeUnloadEvent): void {
-    if (this.hasUnsavedChanges || this.state.busy || this.state.savingDetails) {
+    if (this.hasUnsavedChanges || this.state.busy || this.state.savingDetails || this.state.savingClientWorkout) {
       event.preventDefault();
       event.returnValue = '';
     }

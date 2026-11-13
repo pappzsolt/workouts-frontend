@@ -7,7 +7,7 @@
   </div>
 } @else {
   <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
-    <app-program-day-grid [cells]="cells" [selectedDay]="selectedDay" [showMultiAdd]="false" [showProgramDay]="false"
+    <app-program-day-grid [cells]="cells" [selectedDay]="selectedDay" [showMultiAdd]="false" [showProgramDay]="false" [busy]="busy || movingWorkoutId !== null"
                           (daySelected)="selectedDay = $event" />
     <section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-4 lg:col-span-2">
       <h2 class="break-words text-lg font-bold text-content-900">{{ client.username }}</h2>
@@ -29,7 +29,7 @@
                 </label>
                 <input appInput="compact" type="date" [id]="'move-client-workout-' + workout.userWorkoutId"
                        [name]="'moveClientWorkout' + workout.userWorkoutId" [min]="minDate" [max]="maxDate"
-                       [(ngModel)]="moveDates[workout.userWorkoutId]" [disabled]="movingWorkoutId !== null" class="min-w-0 w-full" />
+                       [(ngModel)]="moveDates[workout.userWorkoutId]" [disabled]="busy || movingWorkoutId !== null" class="min-w-0 w-full" />
                 <p class="text-xs text-content-600">{{ 'coachWorkspace.editor.moveClientOnly' | translate: { name: client.username } }}</p>
                 <button type="button" class="btn btn-neutral" (click)="moveWorkout(workout)" [disabled]="!canMove(workout)">
                   {{ 'coachWorkspace.client.move' | translate }}

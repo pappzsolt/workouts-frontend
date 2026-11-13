@@ -1070,6 +1070,9 @@
       "workouts": "Workouts"
     },
     "editor": {
+      "assignmentLoadError": "Client assignments could not be loaded or refreshed.",
+      "assignmentStaleHint": "The last known data is shown, including confirmed assignments. Reload the list before assigning more clients.",
+      "retryAssignments": "Reload client list",
       "saveBeforeBulkAdd": "Save the workout draft first, or select another day and discard it. You can then add multiple workouts from the library.",
       "programPlanner": "Program planner",
       "previousWeek": "Previous week",

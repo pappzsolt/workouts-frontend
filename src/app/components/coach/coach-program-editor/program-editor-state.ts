@@ -7,6 +7,7 @@ export class ProgramEditorState {
   programId: number | null = null;
   loading = false;
   savingDetails = false;
+  savingClientWorkout = false;
   busy = false;
   message = '';
   messageType: 'success' | 'error' | 'info' = 'info';
@@ -29,7 +30,7 @@ export class ProgramEditorState {
   }
 
   get operationPending(): boolean {
-    return this.busy || this.savingDetails || this.loading;
+    return this.busy || this.savingDetails || this.savingClientWorkout || this.loading;
   }
 
   /** Day operations use the saved schedule, never the metadata form draft. */

@@ -12,6 +12,9 @@ import { clientInitials } from './program-days';
 export class ProgramClientAssignments {
   private readonly cancelled$ = new Subject<void>();
   clients: CoachClientOverview[] = [];
+  loading = false;
+  loaded = false;
+  loadFailed = false;
   assignedIds = new Set<number>();
   toAssign = new Set<number>();
   clientFilter = '';
@@ -30,9 +33,14 @@ export class ProgramClientAssignments {
 
   cancelLoad(): void {
     this.cancelled$.next();
+    this.loading = false;
   }
 
   reset(): void {
+    this.cancelLoad();
+    this.loading = false;
+    this.loaded = false;
+    this.loadFailed = false;
     this.calendarUserId = null;
     this.clients = [];
     this.assignedIds = new Set();
@@ -44,6 +52,8 @@ export class ProgramClientAssignments {
     if (this.state.programId === null) return;
     this.cancelled$.next();
     const programId = this.state.programId;
+    this.loading = true;
+    this.loadFailed = false;
     const today = toIsoDate(new Date());
     forkJoin({
       overview: this.workspace.getOverview(today, today),
@@ -53,6 +63,9 @@ export class ProgramClientAssignments {
       .subscribe({
         next: ({ overview, assigned }) => {
           if (this.state.programId !== programId) return;
+          this.loading = false;
+          this.loaded = true;
+          this.loadFailed = false;
           this.clients = overview.clients;
           this.assignedIds = new Set(assigned);
           // A day editor's background reload must not erase pending selections.
@@ -62,6 +75,8 @@ export class ProgramClientAssignments {
         },
         error: () => {
           if (this.state.programId !== programId) return;
+          this.loading = false;
+          this.loadFailed = true;
           // Retain the last successful client list and pending selections when
           // a background refresh fails; a new program still calls reset().
         },
@@ -121,7 +136,7 @@ export class ProgramClientAssignments {
   }
 
   askRevoke(client: CoachClientOverview): void {
-    if (this.state.programId === null || this.state.operationPending || !this.assignedIds.has(client.userId)) return;
+    if (this.state.programId === null || this.state.operationPending || this.loading || this.loadFailed || !this.assignedIds.has(client.userId)) return;
     this.pendingRevokeClient = client;
   }
 
@@ -132,7 +147,7 @@ export class ProgramClientAssignments {
   confirmRevoke(): void {
     const client = this.pendingRevokeClient;
     const programId = this.state.programId;
-    if (!client || programId === null || this.state.operationPending || !this.assignedIds.has(client.userId)) return;
+    if (!client || programId === null || this.state.operationPending || this.loading || this.loadFailed || !this.assignedIds.has(client.userId)) return;
     this.state.busy = true;
     this.workspace.revokeProgram(programId, client.userId)
       .pipe(takeUntilDestroyed(this.effects.destroyRef))
@@ -158,13 +173,18 @@ export class ProgramClientAssignments {
   }
 
   assignSelected(): void {
-    if (this.state.programId === null || this.toAssign.size === 0 || this.state.operationPending) return;
+    if (this.state.programId === null || this.toAssign.size === 0 || this.state.operationPending || this.loading || this.loadFailed) return;
     const programId = this.state.programId;
     const ids = [...this.toAssign];
     this.state.busy = true;
     const succeeded = new Set<number>();
     concat(...ids.map((userId) => this.workspace.assignProgram(userId, programId).pipe(
-      tap(() => succeeded.add(userId)),
+      tap(() => {
+        succeeded.add(userId);
+        // Reflect confirmed writes immediately, even if the following refresh fails.
+        this.assignedIds = new Set([...this.assignedIds, userId]);
+        this.toAssign = new Set([...this.toAssign].filter(id => id !== userId));
+      }),
     )))
       .pipe(takeUntilDestroyed(this.effects.destroyRef))
       .subscribe({

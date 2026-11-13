@@ -17,7 +17,7 @@ export class ProgramDetailsEditor {
   ) {}
 
   saveDetails(): void {
-    if (this.state.savingDetails || this.state.busy || this.state.loading ||
+    if (this.state.operationPending ||
         (this.state.programId !== null && this.state.program?.programId !== this.state.programId)) return;
     const name = this.state.form.programName.trim();
     const duration = Number(this.state.form.durationDays);

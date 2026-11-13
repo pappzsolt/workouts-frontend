@@ -1070,6 +1070,9 @@
       "workouts": "Edzések"
     },
     "editor": {
+      "assignmentLoadError": "Az ügyfél-hozzárendeléseket nem sikerült betölteni vagy frissíteni.",
+      "assignmentStaleHint": "A legutóbbi ismert adatok láthatók, a sikeresen mentett kiosztásokkal együtt. A további kiosztáshoz töltsd újra a listát.",
+      "retryAssignments": "Ügyféllista újratöltése",
       "saveBeforeBulkAdd": "Előbb mentsd el a megkezdett edzést, vagy válassz másik napot és vesd el a piszkozatot. Ezután adhatsz hozzá több edzést az Edzéstárból.",
       "programPlanner": "Programtervező",
       "previousWeek": "Előző hét",

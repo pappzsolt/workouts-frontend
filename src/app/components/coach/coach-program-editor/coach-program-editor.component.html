@@ -11,7 +11,9 @@
             {{ program.startDate | date: 'yyyy.MM.dd' }} – {{ program.endDate | date: 'yyyy.MM.dd' }}
             · {{ 'coachWorkspace.editor.summaryDuration' | translate: { count: program.durationDays } }}
           </p>
-          <p class="mt-1 text-sm text-content-600">{{ 'coachWorkspace.home.clientCount' | translate: { count: assignments.assignedClients.length } }}</p>
+          @if (assignments.loaded) {
+            <p class="mt-1 text-sm text-content-600">{{ 'coachWorkspace.home.clientCount' | translate: { count: assignments.assignedClients.length } }}</p>
+          }
         }
       </div>
       @if (state.programId !== null) {
@@ -37,6 +39,15 @@
     } @else if (state.loading && !state.program) {
       <app-loading message="coachWorkspace.loading" />
     } @else {
+      @if (assignments.loadFailed) {
+        <div role="alert" class="rounded-xl border border-warning-300 bg-warning-50 p-3 text-sm text-warning-900">
+          <p>{{ 'coachWorkspace.editor.assignmentLoadError' | translate }}</p>
+          @if (assignments.loaded) { <p class="mt-1">{{ 'coachWorkspace.editor.assignmentStaleHint' | translate }}</p> }
+          <button type="button" class="btn btn-neutral mt-2" (click)="assignments.loadAssignment()" [disabled]="state.operationPending || assignments.loading">{{ 'coachWorkspace.editor.retryAssignments' | translate }}</button>
+        </div>
+      } @else if (assignments.loading) {
+        <p role="status" class="text-sm text-content-600">{{ 'coachWorkspace.loading' | translate }}</p>
+      }
       <nav role="tablist" [attr.aria-label]="'coachWorkspace.editor.programTabs' | translate" class="grid grid-cols-3 gap-1 rounded-xl bg-surface-100 p-1" (keydown)="onTabKeydown($event)">
         @for (tab of programTabs; track tab.id) {
           <button type="button" role="tab" [id]="'program-tab-' + tab.id" [attr.aria-controls]="'program-panel-' + tab.id"
@@ -84,28 +95,30 @@
           </section>
         </div>
       </section>
-      @if (activeTab === 'calendar') {
+      @if (activeTab === 'calendar' && assignments.loaded) {
         <section id="program-panel-calendar" role="tabpanel" aria-labelledby="program-tab-calendar" class="min-w-0">
           <p class="mb-3 rounded-xl bg-info-50 p-3 text-sm text-info-900">{{ 'coachWorkspace.editor.individualSettingsHint' | translate }}</p>
           <label for="program-calendar-client" class="mb-2 block text-sm font-semibold">{{ 'coachWorkspace.editor.scheduleClient' | translate }}</label>
           <select id="program-calendar-client" class="mb-3 min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3 sm:max-w-md"
-                  [(ngModel)]="assignments.calendarUserId" [disabled]="state.operationPending">
+                  [(ngModel)]="assignments.calendarUserId" [disabled]="state.operationPending || assignments.loading || assignments.loadFailed">
             <option [ngValue]="null">{{ 'coachWorkspace.editor.allClientCalendar' | translate }}</option>
             @for (client of assignments.assignedClients; track client.userId) { <option [ngValue]="client.userId">{{ client.username }} ({{ client.email }})</option> }
           </select>
           @if (assignments.calendarClient) {
-            <app-program-client-calendar [client]="assignments.calendarClient!" [programId]="state.programId!" [startDate]="state.program?.startDate ?? state.form.startDate" [durationDays]="state.program?.durationDays ?? +state.form.durationDays" />
+            <app-program-client-calendar [busy]="state.operationPending || assignments.loading || assignments.loadFailed" (savingChange)="state.savingClientWorkout = $event" [client]="assignments.calendarClient!" [programId]="state.programId!" [startDate]="state.program?.startDate ?? state.form.startDate" [durationDays]="state.program?.durationDays ?? +state.form.durationDays" />
           } @else {
             <app-coach-calendar [programId]="state.programId" [assignedUserIds]="assignments.assignedIds" [initialDate]="state.program?.startDate ?? state.form.startDate" [embedded]="true" [programWorkouts]="state.program?.workouts ?? []" [showProgramStructure]="true" />
           }
         </section>
       }
       <section id="program-panel-clients" role="tabpanel" aria-labelledby="program-tab-clients" [style.display]="activeTab === 'clients' ? null : 'none'">
+      @if (assignments.loaded) {
       <app-program-clients-panel [programId]="state.programId"
         [assignedClients]="assignments.assignedClients" [unassignedClients]="assignments.unassignedClients" [visibleClients]="assignments.filteredUnassignedClients"
-        [toAssign]="assignments.toAssign" [busy]="state.operationPending" [(clientFilter)]="assignments.clientFilter"
+        [toAssign]="assignments.toAssign" [busy]="state.operationPending || assignments.loading || assignments.loadFailed" [(clientFilter)]="assignments.clientFilter"
         (askRevoke)="assignments.askRevoke($event)" (selectVisible)="assignments.selectVisibleClients()" (clearSelection)="assignments.clearClientSelection()"
         (toggleAssign)="assignments.toggleAssign($event.userId, $event.checked)" (assignSelected)="assignments.assignSelected()" />
+      }
       </section>
     }
   </div>
@@ -150,7 +163,7 @@
 
 <app-confirm-dialog
   [open]="leaveConfirmationOpen"
-  [busy]="state.busy || state.savingDetails"
+  [busy]="state.busy || state.savingDetails || state.savingClientWorkout"
   title="coachWorkspace.editor.unsavedLeaveTitle"
   message="coachWorkspace.editor.unsavedLeavePrompt"
   confirmLabel="coachWorkspace.editor.leaveWithoutSaving"

@@ -73,6 +73,7 @@ export class ProgramDayGridComponent implements OnChanges {
   }
 
   changeMonth(direction: -1 | 1): void {
+    if (this.busy) return;
     if ((direction === -1 && !this.canGoBack) || (direction === 1 && !this.canGoForward)) return;
     this.monthIndex = this.indexOf(this.visibleMonth!) + direction;
   }

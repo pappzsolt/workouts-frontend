@@ -13,14 +13,14 @@
   @if (visibleMonth; as month) {
     <div class="mb-4 flex items-center justify-between gap-2">
       <button type="button" class="btn btn-ghost btn-icon" (click)="changeMonth(-1)"
-              [disabled]="!canGoBack" [attr.aria-label]="'userWorkoutsCalendar.previousMonth' | translate">
+              [disabled]="busy || !canGoBack" [attr.aria-label]="'userWorkoutsCalendar.previousMonth' | translate">
         <app-icon name="chevron-left" sizeClass="h-5 w-5" />
       </button>
       <p aria-live="polite" class="font-semibold text-content-900">
         {{ month.getFullYear() }}. {{ ('userWorkoutsCalendar.' + monthKeys[month.getMonth()]) | translate }}
       </p>
       <button type="button" class="btn btn-ghost btn-icon" (click)="changeMonth(1)"
-              [disabled]="!canGoForward" [attr.aria-label]="'userWorkoutsCalendar.nextMonth' | translate">
+              [disabled]="busy || !canGoForward" [attr.aria-label]="'userWorkoutsCalendar.nextMonth' | translate">
         <app-icon name="chevron-right" sizeClass="h-5 w-5" />
       </button>
     </div>
@@ -35,7 +35,7 @@
     }
     @for (day of calendarDays; track $index) {
       @if (day.cell; as cell) {
-        <button type="button" (click)="daySelected.emit(cell.day)"
+        <button type="button" (click)="daySelected.emit(cell.day)" [disabled]="busy"
                 [attr.aria-pressed]="cell.day === selectedDay"
                 [attr.aria-label]="(cell.date ? (cell.date | date: 'yyyy.MM.dd') + ' · ' : '') + (showProgramDay ? ('coachWorkspace.editor.programDayLabel' | translate: { day: cell.day }) : '') + (cell.workout ? ' · ' + cell.workout.name : '')"
                 class="flex h-32 min-w-0 flex-col items-start gap-1 overflow-hidden rounded-xl border p-1 text-left text-xs"

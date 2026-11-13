@@ -1070,6 +1070,9 @@
       "workouts": "Trainings"
     },
     "editor": {
+      "assignmentLoadError": "Die Kundenzuweisungen konnten nicht geladen oder aktualisiert werden.",
+      "assignmentStaleHint": "Die zuletzt bekannten Daten einschließlich bestätigter Zuweisungen werden angezeigt. Lade die Liste vor weiteren Zuweisungen neu.",
+      "retryAssignments": "Kundenliste neu laden",
       "saveBeforeBulkAdd": "Speichere zuerst den Trainingsentwurf oder wähle einen anderen Tag und verwirf ihn. Danach kannst du mehrere Trainings aus der Bibliothek hinzufügen.",
       "programPlanner": "Programmplanung",
       "previousWeek": "Vorherige Woche",
