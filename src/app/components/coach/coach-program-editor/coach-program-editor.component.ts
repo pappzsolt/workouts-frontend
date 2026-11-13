@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject, forkJoin, takeUntil } from 'rxjs';
@@ -69,24 +69,31 @@ export class CoachProgramEditorComponent implements OnInit {
 
   readonly state = new ProgramEditorState();
 
+  private detailsBaseline: CoachProgramDetailsInput = { ...this.state.form };
+  private leaveResult?: Subject<boolean>;
+  leaveConfirmationOpen = false;
+  private allowNavigationAfterCreate = false;
+
   private readonly effects: ProgramEditorEffects = {
     destroyRef: this.destroyRef,
     showMessage: (key, type, params) => this.showMessage(key, type, params),
     showError: (error, fallbackKey) => this.showError(error, fallbackKey),
     reload: (day, preserveDrafts, submittedForm) => this.loadProgram(day, preserveDrafts, submittedForm),
-    run: (operation, key, day, preserveDrafts) => this.run(operation, key, day, preserveDrafts),
+    run: (operation, key, day, preserveDrafts, onError) => this.run(operation, key, day, preserveDrafts, onError),
   };
 
   readonly workouts = new ProgramDayWorkoutEditor(this.state, this.workspace, this.effects, this.router);
   readonly library = new ProgramWorkoutLibrary(this.state, this.workspace, this.effects);
   readonly assignments = new ProgramClientAssignments(this.state, this.workspace, this.effects);
   readonly details = new ProgramDetailsEditor(
-    this.state, this.workspace, this.effects, this.router,
+    this.state, this.workspace, this.effects,
     () => this.hasDayDraft(), () => this.assignments.newForUserName,
+    (details) => this.markDetailsSaved(details), (id) => this.navigateToCreatedProgram(id),
   );
   readonly copy = new ProgramCopyEditor(this.state, this.workspace, this.effects, this.router);
 
   ngOnInit(): void {
+    this.destroyRef.onDestroy(() => this.resolveLeave(false));
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
       this.programLoadCancelled$.next();
       this.assignments.cancelLoad();
@@ -105,6 +112,7 @@ export class CoachProgramEditorComponent implements OnInit {
         const forUser = Number(this.route.snapshot.queryParamMap.get('userId'));
         this.state.newForUserId = Number.isInteger(forUser) && forUser > 0 ? forUser : null;
         if (this.state.newForUserId !== null) this.assignments.loadClientsOnly();
+        this.detailsBaseline = { ...this.state.form };
         this.buildCells();
         return;
       }
@@ -158,6 +166,13 @@ export class CoachProgramEditorComponent implements OnInit {
             }
           }
           this.state.program = program;
+          this.detailsBaseline = {
+            programName: program.programName ?? '',
+            programDescription: program.programDescription ?? '',
+            durationDays: program.durationDays ?? 28,
+            difficultyLevel: program.difficultyLevel ?? 'BEGINNER',
+            startDate: program.startDate ?? toIsoDate(new Date()),
+          };
           this.state.form = {
             programName: program.programName ?? '',
             programDescription: program.programDescription ?? '',
@@ -220,13 +235,14 @@ export class CoachProgramEditorComponent implements OnInit {
     return dayAriaLabel(cell);
   }
 
-  private run(operation: Observable<unknown>, successKey: string, selectDay: number, preserveDrafts = false): void {
+  private run(operation: Observable<unknown>, successKey: string, selectDay: number,
+              preserveDrafts = false, onError?: (error: unknown) => boolean): void {
     this.state.busy = true;
     operation.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => undefined,
       error: (error) => {
         this.state.busy = false;
-        this.showError(error, 'coachWorkspace.editor.actionError');
+        if (!onError?.(error)) this.showError(error, 'coachWorkspace.editor.actionError');
         this.loadProgram(this.state.selectedDay, preserveDrafts);
       },
       complete: () => {
@@ -246,6 +262,55 @@ export class CoachProgramEditorComponent implements OnInit {
 
   private showError(error: unknown, fallbackKey: string): void {
     this.showMessage(errorText(error, fallbackKey), 'error');
+  }
+
+  /** Baseline used only for navigation protection; never changes request payloads. */
+  markDetailsSaved(details: CoachProgramDetailsInput): void {
+    this.detailsBaseline = { ...details };
+  }
+
+  /** Newly created programs navigate to their editor without an unnecessary warning. */
+  navigateToCreatedProgram(id: number): void {
+    this.allowNavigationAfterCreate = true;
+    void this.router.navigate(['/coach/programs', id], { replaceUrl: true })
+      .then(() => { this.allowNavigationAfterCreate = false; })
+      .catch(() => { this.allowNavigationAfterCreate = false; });
+  }
+
+  private hasUnsavedDetails(): boolean {
+    return (Object.keys(this.detailsBaseline) as (keyof CoachProgramDetailsInput)[])
+      .some((key) => String(this.state.form[key] ?? '') !== String(this.detailsBaseline[key] ?? ''));
+  }
+
+  get hasUnsavedChanges(): boolean {
+    return this.hasUnsavedDetails() || this.hasDayDraft() || this.assignments.toAssign.size > 0;
+  }
+
+  canLeave(): boolean | Observable<boolean> {
+    if (this.allowNavigationAfterCreate) return true;
+    if (this.state.busy || this.state.savingDetails) return false;
+    if (!this.hasUnsavedChanges) return true;
+    this.leaveConfirmationOpen = true;
+    this.leaveResult ??= new Subject<boolean>();
+    return this.leaveResult.asObservable();
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  beforeUnload(event: BeforeUnloadEvent): void {
+    if (this.hasUnsavedChanges || this.state.busy || this.state.savingDetails) {
+      event.preventDefault();
+      event.returnValue = '';
+    }
+  }
+
+  confirmLeave(): void { this.resolveLeave(true); }
+  cancelLeave(): void { this.resolveLeave(false); }
+
+  private resolveLeave(leave: boolean): void {
+    this.leaveConfirmationOpen = false;
+    this.leaveResult?.next(leave);
+    this.leaveResult?.complete();
+    this.leaveResult = undefined;
   }
 
   private hasDayDraft(): boolean {

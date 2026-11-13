@@ -1,5 +1,6 @@
 import type { PersonalProgramEditorComponent } from './components/user-dashboard/operations/personal-programs/personal-program-editor.component';
 import { Routes } from '@angular/router';
+import type { Observable } from 'rxjs';
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
 import { introductionGuard } from './guards/introduction.guard';
@@ -173,6 +174,7 @@ export const routes: Routes = [
 
       {
         path: 'programs/new',
+        canDeactivate: [(component: { canLeave(): boolean | Observable<boolean> }) => component.canLeave()],
         loadComponent: () => import('./components/coach/coach-program-editor/coach-program-editor.component').then(m => m.CoachProgramEditorComponent),
       },
 
@@ -185,6 +187,7 @@ export const routes: Routes = [
 
       {
         path: 'programs/:id',
+        canDeactivate: [(component: { canLeave(): boolean | Observable<boolean> }) => component.canLeave()],
         loadComponent: () => import('./components/coach/coach-program-editor/coach-program-editor.component').then(m => m.CoachProgramEditorComponent),
       },
 

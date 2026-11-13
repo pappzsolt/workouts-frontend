@@ -8,5 +8,6 @@ export interface ProgramEditorEffects {
   showMessage(key: string, type: 'success' | 'error' | 'info', params?: Record<string, unknown>): void;
   showError(error: unknown, fallbackKey: string): void;
   reload(selectDay: number | null, preserveDrafts?: boolean, submittedForm?: CoachProgramDetailsInput): void;
-  run(operation: Observable<unknown>, successKey: string, selectDay: number, preserveDrafts?: boolean): void;
+  run(operation: Observable<unknown>, successKey: string, selectDay: number,
+      preserveDrafts?: boolean, onError?: (error: unknown) => boolean): void;
 }

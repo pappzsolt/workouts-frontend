@@ -2,7 +2,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import type { ProgramEditorState } from './program-editor-state';
 import type { ProgramEditorEffects } from './program-editor-effects';
-import type { Router } from '@angular/router';
 import type { CoachProgramDetailsInput } from '../../../models/coach-workspace.model';
 
 /** Program metadata saves, including immediate assignment for a new client program. */
@@ -11,9 +10,10 @@ export class ProgramDetailsEditor {
     private readonly state: ProgramEditorState,
     private readonly workspace: CoachWorkspaceService,
     private readonly effects: ProgramEditorEffects,
-    private readonly router: Router,
     private readonly hasDayDraft: () => boolean,
     private readonly newForUserName: () => string,
+    private readonly markSaved: (details: CoachProgramDetailsInput) => void,
+    private readonly navigateToCreatedProgram: (id: number) => void,
   ) {}
 
   saveDetails(): void {
@@ -48,8 +48,9 @@ export class ProgramDetailsEditor {
             const userId = this.state.newForUserId;
             if (userId === null) {
               this.state.savingDetails = false;
+              this.markSaved(details);
               this.effects.showMessage('coachWorkspace.editor.created', 'success');
-              void this.router.navigate(['/coach/programs', id], { replaceUrl: true });
+              this.navigateToCreatedProgram(id);
               return;
             }
             // Ügyfélnek készülő program: azonnal az ügyfélé lesz.
@@ -59,13 +60,15 @@ export class ProgramDetailsEditor {
               .subscribe({
                 next: () => {
                   this.state.savingDetails = false;
+                  this.markSaved(details);
                   this.effects.showMessage('coachWorkspace.editor.createdForClient', 'success', { name: this.newForUserName() });
-                  void this.router.navigate(['/coach/programs', id], { replaceUrl: true });
+                  this.navigateToCreatedProgram(id);
                 },
-                error: (error) => {
+                error: () => {
                   this.state.savingDetails = false;
-                  this.effects.showError(error, 'coachWorkspace.client.assignError');
-                  void this.router.navigate(['/coach/programs', id], { replaceUrl: true });
+                  this.markSaved(details);
+                  this.effects.showMessage('coachWorkspace.editor.partialAssignment', 'error');
+                  this.navigateToCreatedProgram(id);
                 },
               });
           },
@@ -83,6 +86,7 @@ export class ProgramDetailsEditor {
       .subscribe({
         next: () => {
           this.state.savingDetails = false;
+          this.markSaved(details);
           this.effects.showMessage('coachWorkspace.editor.saved', 'success');
           this.effects.reload(this.state.selectedDay, true, submittedForm);
         },

@@ -3,7 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
 import { TranslateService, provideTranslateService } from '@ngx-translate/core';
-import { Subject, of } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 import type { CoachClientOverview, CoachProgram } from '../../../models/coach-workspace.model';
 import { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import { CoachProgramEditorComponent } from './coach-program-editor.component';
@@ -193,6 +193,14 @@ describe('Program editor screen bindings', () => {
     api.getClientProgramRows.and.returnValue(of([]));
     const fixture = render();
     await fixture.whenStable();
+    expect(fixture.componentInstance.assignments.calendarView).toBe('plan');
+    expect(child(fixture, ProgramDayGridComponent).showMultiAdd).toBeTrue();
+    expect(fixture.debugElement.query(By.directive(ProgramDayWorkoutComponent))).not.toBeNull();
+    expect((fixture.nativeElement as HTMLElement).querySelector('details')).toBeNull();
+    expect((fixture.nativeElement as HTMLElement).querySelector('section[aria-label="coachWorkspace.editor.editBaseSchedule"]')).not.toBeNull();
+    expect(child(fixture, CoachCalendarComponent).programId).toBe(10);
+    button(fixture, 'coachWorkspace.editor.scheduleView').click();
+    fixture.detectChanges();
     const select = (fixture.nativeElement as HTMLElement).querySelector<HTMLSelectElement>('#program-calendar-client')!;
     async function choose(name: string) {
       select.value = [...select.options].find(option => option.textContent?.includes(name))!.value;
@@ -200,7 +208,6 @@ describe('Program editor screen bindings', () => {
       await fixture.whenStable();
       fixture.detectChanges();
     }
-    expect(child(fixture, CoachCalendarComponent).programId).toBe(10);
     await choose('Anna');
     expect(api.getClientProgramRows).toHaveBeenCalledWith(7, 10);
     expect(child(fixture, ProgramDayGridComponent).showMultiAdd).toBeFalse();
@@ -212,7 +219,7 @@ describe('Program editor screen bindings', () => {
     expect((fixture.nativeElement as HTMLElement).querySelector('#program-calendar-client')).toBeNull();
     expect(child(fixture, CoachCalendarComponent).showProgramStructure).toBeTrue();
     expect(child(fixture, CoachCalendarComponent).programWorkouts).toEqual(program.workouts);
-    expect((fixture.nativeElement as HTMLElement).querySelector('details')!.open).toBeFalse();
+    expect((fixture.nativeElement as HTMLElement).querySelector('details')).toBeNull();
     const workoutPanel = child(fixture, ProgramDayWorkoutComponent);
     expect(workoutPanel.selectedDayClients).toEqual([]);
     expect(fixture.nativeElement.textContent).toContain('Anna');
@@ -328,6 +335,20 @@ describe('Program editor screen bindings', () => {
     expect(panel.busy).toBeFalse();
     expect(panel.assignedClients).toEqual([client]);
     expect(panel.toAssign.size).toBe(0);
+  });
+
+  it('shows a partial-success warning if creation succeeds but client assignment fails', () => {
+    routeId = 'new';
+    api.createProgram.and.returnValue(of(90));
+    api.assignProgram.and.returnValue(throwError(() => new Error('offline')));
+    const navigate = spyOn(TestBed.inject(Router), 'navigate').and.resolveTo(true);
+    const fixture = render();
+    const details = child(fixture, ProgramDetailsFormComponent);
+    details.form.programName = 'New program';
+    details.save.emit();
+    expect(fixture.componentInstance.state.message).toBe('coachWorkspace.editor.partialAssignment');
+    expect(fixture.componentInstance.state.messageType).toBe('error');
+    expect(navigate).toHaveBeenCalledOnceWith(['/coach/programs', 90], { replaceUrl: true });
   });
 
   it('assigns a newly created client program before navigating to it', () => {

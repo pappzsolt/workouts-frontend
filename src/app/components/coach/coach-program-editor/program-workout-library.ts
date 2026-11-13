@@ -2,7 +2,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import type { ProgramEditorState } from './program-editor-state';
 import type { ProgramEditorEffects } from './program-editor-effects';
-import { concat, last, switchMap, toArray } from 'rxjs';
+import { concat, last, switchMap, tap, toArray } from 'rxjs';
 import type { CoachExerciseSearchItem, CoachWorkoutSummary } from '../../../models/coach-workspace.model';
 import { freeDaysFrom } from './program-days';
 
@@ -65,17 +65,27 @@ export class ProgramWorkoutLibrary {
     const programId = this.state.programId;
     const day = this.state.selectedDay;
     const exercises = [...this.pendingExercises];
+    let workoutCreated = false;
+    let addedExercises = 0;
     this.effects.run(
       this.workspace.createWorkout(name, this.state.dateForDay(day)).pipe(
+        tap(() => { workoutCreated = true; }),
         switchMap((workoutId) =>
           concat(
-            ...exercises.map((exercise) => this.workspace.addExerciseToWorkout(workoutId, exercise.id)),
+            ...exercises.map((exercise) => this.workspace.addExerciseToWorkout(workoutId, exercise.id)
+              .pipe(tap(() => { addedExercises++; }))),
             this.workspace.addWorkoutToDay(programId, workoutId, day),
           ).pipe(last()),
         ),
       ),
       'coachWorkspace.editor.workoutCreated',
-      day,
+      day, false,
+      () => {
+        if (!workoutCreated) return false;
+        this.effects.showMessage('coachWorkspace.editor.partialWorkoutCreated', 'error',
+          { count: addedExercises, total: exercises.length });
+        return true;
+      },
     );
   }
 
@@ -162,10 +172,18 @@ export class ProgramWorkoutLibrary {
     const programId = this.state.programId;
     const pairs = this.multiSelected.map((workoutId, i) => ({ workoutId, day: days[i] }));
     this.multiOpen = false;
+    let addedCount = 0;
     this.effects.run(
-      concat(...pairs.map((pair) => this.workspace.addWorkoutToDay(programId, pair.workoutId, pair.day))).pipe(toArray()),
+      concat(...pairs.map((pair) => this.workspace.addWorkoutToDay(programId, pair.workoutId, pair.day)
+        .pipe(tap(() => { addedCount++; })))).pipe(toArray()),
       'coachWorkspace.editor.multiAdded',
-      pairs[0].day,
+      pairs[0].day, false,
+      () => {
+        if (addedCount === 0) return false;
+        this.effects.showMessage('coachWorkspace.editor.partialMultiAdded', 'error',
+          { count: addedCount, total: pairs.length });
+        return true;
+      },
     );
   }
 }

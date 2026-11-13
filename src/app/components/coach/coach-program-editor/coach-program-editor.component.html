@@ -28,6 +28,36 @@
 
     <app-message [message]="state.message" [messageParams]="state.messageParams" [type]="state.messageType" role="status"></app-message>
 
+    <!-- Áttekinthető, háromlépéses szerkesztési folyamat; a mentés és a kiosztás logikája változatlan. -->
+    <nav [attr.aria-label]="'coachWorkspace.editor.workflowTitle' | translate">
+      <ol class="grid grid-cols-1 gap-2 sm:grid-cols-3">
+        <li class="rounded-xl border px-3 py-3 text-sm"
+            [class.border-primary-300]="state.programId === null"
+            [class.bg-primary-50]="state.programId === null"
+            [class.border-surface-200]="state.programId !== null"
+            [attr.aria-current]="state.programId === null ? 'step' : null">
+          <span class="font-bold text-content-900">1. {{ 'coachWorkspace.editor.workflowDetails' | translate }}</span>
+          <p class="mt-1 text-xs text-content-600">{{ 'coachWorkspace.editor.workflowDetailsHint' | translate }}</p>
+        </li>
+        <li class="rounded-xl border px-3 py-3 text-sm"
+            [class.border-primary-300]="state.programId !== null && assignments.calendarView === 'plan'"
+            [class.bg-primary-50]="state.programId !== null && assignments.calendarView === 'plan'"
+            [class.border-surface-200]="state.programId === null || assignments.calendarView !== 'plan'"
+            [attr.aria-current]="state.programId !== null && assignments.calendarView === 'plan' ? 'step' : null">
+          <span class="font-bold text-content-900">2. {{ 'coachWorkspace.editor.workflowDays' | translate }}</span>
+          <p class="mt-1 text-xs text-content-600">{{ 'coachWorkspace.editor.workflowDaysHint' | translate }}</p>
+        </li>
+        <li class="rounded-xl border px-3 py-3 text-sm"
+            [class.border-primary-300]="state.programId !== null && assignments.calendarView === 'schedule'"
+            [class.bg-primary-50]="state.programId !== null && assignments.calendarView === 'schedule'"
+            [class.border-surface-200]="state.programId === null || assignments.calendarView !== 'schedule'"
+            [attr.aria-current]="state.programId !== null && assignments.calendarView === 'schedule' ? 'step' : null">
+          <span class="font-bold text-content-900">3. {{ 'coachWorkspace.editor.workflowClients' | translate }}</span>
+          <p class="mt-1 text-xs text-content-600">{{ 'coachWorkspace.editor.workflowClientsHint' | translate }}</p>
+        </li>
+      </ol>
+    </nav>
+
     <!-- Program adatai -->
     <app-program-details-form [form]="state.form" [isNew]="state.programId === null" [saving]="state.savingDetails"
                               [submitDisabled]="state.savingDetails || state.busy || state.loading || (state.programId !== null && state.program?.programId !== state.programId)"
@@ -81,12 +111,9 @@
         <app-program-client-calendar [client]="assignments.calendarClient!" [programId]="state.programId!"
                                      [startDate]="state.form.startDate" [durationDays]="+state.form.durationDays" />
       } @else {
-        @if (assignments.assignedClients.length > 0) {
-          <app-coach-calendar [programId]="state.programId" [initialDate]="state.program?.startDate ?? state.form.startDate" [embedded]="true"
-                              [programWorkouts]="state.program?.workouts ?? []" [showProgramStructure]="true" />
-        }
-        <details [open]="assignments.assignedClients.length === 0" class="min-w-0 rounded-2xl border border-surface-200 bg-white p-3">
-          <summary class="min-h-11 cursor-pointer py-3 font-semibold text-content-900">{{ 'coachWorkspace.editor.editBaseSchedule' | translate }}</summary>
+        <section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-3"
+                 [attr.aria-label]="'coachWorkspace.editor.editBaseSchedule' | translate">
+          <h2 class="py-3 text-lg font-semibold text-content-900">{{ 'coachWorkspace.editor.editBaseSchedule' | translate }}</h2>
           <p class="mb-4 text-sm text-content-600">{{ 'coachWorkspace.editor.baseScheduleHint' | translate }}</p>
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
 
@@ -124,7 +151,11 @@
             }
           </section>
         </div>
-        </details>
+        </section>
+        @if (assignments.assignedClients.length > 0) {
+          <app-coach-calendar [programId]="state.programId" [initialDate]="state.program?.startDate ?? state.form.startDate" [embedded]="true"
+                              [programWorkouts]="state.program?.workouts ?? []" [showProgramStructure]="true" />
+        }
 
       }
 
@@ -173,4 +204,15 @@
   cancelLabel="coachWorkspace.client.stay"
   (confirmed)="discardAndChangeDay()"
   (cancelled)="cancelDayChange()"
+></app-confirm-dialog>
+
+<app-confirm-dialog
+  [open]="leaveConfirmationOpen"
+  [busy]="state.busy || state.savingDetails"
+  title="coachWorkspace.editor.unsavedLeaveTitle"
+  message="coachWorkspace.editor.unsavedLeavePrompt"
+  confirmLabel="coachWorkspace.editor.leaveWithoutSaving"
+  cancelLabel="coachWorkspace.client.stay"
+  (confirmed)="confirmLeave()"
+  (cancelled)="cancelLeave()"
 ></app-confirm-dialog>

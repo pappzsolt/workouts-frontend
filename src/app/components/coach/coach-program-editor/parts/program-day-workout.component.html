@@ -1,5 +1,6 @@
 <h2 class="mb-1 text-xl font-bold text-content-900">{{ workout.name }}</h2>
 <p class="mb-1 text-xs text-content-600">{{ 'coachWorkspace.editor.lockedHint' | translate }}</p>
+<p class="mb-3 text-sm text-content-600">{{ 'coachWorkspace.editor.prescriptionEditLocation' | translate }}</p>
 @if (selectedWorkoutDayCount > 1) {
   <p class="mb-4 rounded-lg bg-info-50 px-2 py-1 text-xs text-info-800">
     {{ 'coachWorkspace.editor.sharedHint' | translate: { count: selectedWorkoutDayCount } }}
