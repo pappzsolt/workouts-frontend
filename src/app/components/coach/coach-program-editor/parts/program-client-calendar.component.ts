@@ -1,5 +1,9 @@
 import { Component, DestroyRef, Input, OnChanges, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormsModule } from '@angular/forms';
+import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
+import { MessageComponent } from '../../../shared/components/message/message.component';
+import { errorText } from '../../coach-ui';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -15,7 +19,7 @@ import { ProgramDayGridComponent } from './program-day-grid.component';
 @Component({
   selector: 'app-program-client-calendar',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslatePipe, ProgramDayGridComponent],
+  imports: [FormsModule, AppInputDirective, MessageComponent, CommonModule, RouterModule, TranslatePipe, ProgramDayGridComponent],
   templateUrl: './program-client-calendar.component.html',
 })
 export class ProgramClientCalendarComponent implements OnChanges {
@@ -31,11 +35,59 @@ export class ProgramClientCalendarComponent implements OnChanges {
   cells: DayCell[] = [];
   selectedDay = 1;
   workouts: ClientWorkoutEntry[] = [];
+  moveDates: Record<number, string> = {};
+  movingWorkoutId: number | null = null;
+  message = '';
+  messageType: 'success' | 'error' = 'success';
+
+  get minDate(): string {
+    return this.client.programs.find(program => program.programId === this.programId)?.startDate ?? this.startDate;
+  }
+
+  get maxDate(): string {
+    return this.client.programs.find(program => program.programId === this.programId)?.endDate
+      ?? (this.minDate ? toIsoDate(addDays(fromIsoDate(this.minDate), Math.max(1, this.durationDays) - 1)) : '');
+  }
+
+  canMove(workout: ClientWorkoutEntry): boolean {
+    const date = this.moveDates[workout.userWorkoutId];
+    return !this.loading && !this.failed && this.movingWorkoutId === null
+      && this.workouts.includes(workout) && !workout.completed && !workout.startedAt
+      && !!date && /^\d{4}-\d{2}-\d{2}$/.test(date) && toIsoDate(fromIsoDate(date)) === date
+      && date !== workout.date && (!this.minDate || date >= this.minDate) && (!this.maxDate || date <= this.maxDate);
+  }
+
+  moveWorkout(workout: ClientWorkoutEntry): void {
+    if (!this.canMove(workout)) return;
+    const id = workout.userWorkoutId;
+    const date = this.moveDates[id];
+    this.movingWorkoutId = id;
+    this.message = '';
+    this.workspace.rescheduleWorkout(id, date)
+      .pipe(takeUntil(this.cancelled$), takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.movingWorkoutId = null;
+          this.workouts = this.workouts.map(entry => entry.userWorkoutId === id ? { ...entry, date } : entry);
+          this.buildCells(date);
+          this.messageType = 'success';
+          this.message = 'coachWorkspace.client.rescheduled';
+        },
+        error: error => {
+          this.movingWorkoutId = null;
+          this.messageType = 'error';
+          this.message = errorText(error, 'coachWorkspace.client.rescheduleError');
+        },
+      });
+  }
 
   ngOnChanges(): void { this.load(); }
 
   load(): void {
     this.cancelled$.next();
+    this.movingWorkoutId = null;
+    this.moveDates = {};
+    this.message = '';
     this.loading = true;
     this.failed = false;
     this.cells = [];
@@ -46,6 +98,7 @@ export class ProgramClientCalendarComponent implements OnChanges {
       .subscribe({
         next: rows => {
           this.workouts = groupWorkouts(rows);
+          this.moveDates = Object.fromEntries(this.workouts.map(workout => [workout.userWorkoutId, workout.date ?? '']));
           this.buildCells();
           this.loading = false;
         },
@@ -53,7 +106,7 @@ export class ProgramClientCalendarComponent implements OnChanges {
       });
   }
 
-  private buildCells(): void {
+  private buildCells(selectDate?: string): void {
     const dates = this.workouts.map(workout => workout.date).filter((date): date is string => !!date).sort();
     const programStart = this.startDate || dates[0] || toIsoDate(new Date());
     const programEnd = toIsoDate(addDays(fromIsoDate(programStart), Math.max(1, this.durationDays) - 1));
@@ -75,7 +128,8 @@ export class ProgramClientCalendarComponent implements OnChanges {
         } : null,
       };
     });
-    this.selectedDay = this.cells.find(cell => cell.workout)?.day ?? 1;
+    this.selectedDay = (selectDate ? this.cells.find(cell => cell.date && toIsoDate(cell.date) === selectDate)?.day : undefined)
+      ?? this.cells.find(cell => cell.workout)?.day ?? 1;
   }
 
   get selectedDate(): string | null {

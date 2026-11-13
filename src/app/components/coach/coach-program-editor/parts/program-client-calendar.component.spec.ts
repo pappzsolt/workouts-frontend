@@ -23,7 +23,7 @@ const client = (userId: number): CoachClientOverview => ({
 describe('Client program calendar', () => {
   let api: jasmine.SpyObj<CoachWorkspaceService>;
   beforeEach(() => {
-    api = jasmine.createSpyObj('workspace', ['getClientProgramRows']);
+    api = jasmine.createSpyObj('workspace', ['getClientProgramRows', 'rescheduleWorkout']);
     TestBed.configureTestingModule({
       imports: [ProgramClientCalendarComponent],
       providers: [provideRouter([]), provideTranslateService(), { provide: CoachWorkspaceService, useValue: api }],
@@ -96,4 +96,78 @@ describe('Client program calendar', () => {
     expect(fixture.componentInstance.failed).toBeFalse();
     expect(fixture.componentInstance.selectedWorkouts).toEqual([]);
   });
+  it('moves only the selected workout after confirmation and preserves its exercises', async () => {
+    const saved = new Subject<void>();
+    api.getClientProgramRows.and.returnValue(of([row(101, 'Andi workout'), row(102, 'Other workout')]));
+    api.rescheduleWorkout.and.returnValue(saved);
+    const fixture = render();
+    const component = fixture.componentInstance;
+    const source = component.workouts[0];
+    const exercises = source.exercises;
+    await fixture.whenStable();
+    const input = (fixture.nativeElement as HTMLElement).querySelector<HTMLInputElement>('#move-client-workout-101')!;
+    input.value = '2026-11-25';
+    input.dispatchEvent(new Event('input'));
+    await fixture.whenStable(); fixture.detectChanges();
+    const button = input.parentElement!.querySelector('button')!;
+    expect(button.disabled).toBeFalse();
+    button.click(); fixture.detectChanges();
+    expect(api.rescheduleWorkout).toHaveBeenCalledOnceWith(101, '2026-11-25');
+    expect(source.date).toBe('2026-11-13');
+    component.moveWorkout(source);
+    expect(api.rescheduleWorkout).toHaveBeenCalledTimes(1);
+    saved.next(); saved.complete(); fixture.detectChanges();
+    expect(component.selectedDate).toBe('2026-11-25');
+    expect(component.selectedWorkouts[0].userWorkoutId).toBe(101);
+    expect(component.selectedWorkouts[0].exercises).toBe(exercises);
+    expect(component.workouts.find(workout => workout.userWorkoutId === 102)?.date).toBe('2026-11-13');
+    expect(api.getClientProgramRows).toHaveBeenCalledTimes(1);
+    expect(component.message).toBe('coachWorkspace.client.rescheduled');
+  });
+
+  it('blocks unchanged, invalid, out-of-program, started and completed dates', () => {
+    api.getClientProgramRows.and.returnValue(of([row(101, 'Workout')]));
+    const fixture = render();
+    const component = fixture.componentInstance;
+    const source = component.workouts[0];
+    for (const date of ['', '2026-11-13', '2026-11-12', '2026-12-03', '2026-11-31', 'invalid']) {
+      component.moveDates[101] = date;
+      component.moveWorkout(source);
+    }
+    component.moveDates[101] = '2026-11-25';
+    source.startedAt = '2026-11-13T10:00:00';
+    component.moveWorkout(source);
+    source.startedAt = null; source.completed = true;
+    component.moveWorkout(source);
+    expect(api.rescheduleWorkout).not.toHaveBeenCalled();
+  });
+
+  it('keeps the original schedule and edited target date on failure', () => {
+    api.getClientProgramRows.and.returnValue(of([row(101, 'Workout')]));
+    api.rescheduleWorkout.and.returnValue(throwError(() => new Error('Conflict')));
+    const component = render().componentInstance;
+    component.moveDates[101] = '2026-11-25';
+    component.moveWorkout(component.workouts[0]);
+    expect(component.workouts[0].date).toBe('2026-11-13');
+    expect(component.moveDates[101]).toBe('2026-11-25');
+    expect(component.movingWorkoutId).toBeNull();
+    expect(component.messageType).toBe('error');
+  });
+
+  it('does not apply a pending move response to the next client', () => {
+    const saved = new Subject<void>();
+    api.getClientProgramRows.and.callFake(userId => of([row(userId === 7 ? 101 : 201, 'Workout')]));
+    api.rescheduleWorkout.and.returnValue(saved);
+    const fixture = render();
+    const component = fixture.componentInstance;
+    component.moveDates[101] = '2026-11-25';
+    component.moveWorkout(component.workouts[0]);
+    fixture.componentRef.setInput('client', client(8)); fixture.detectChanges();
+    expect(saved.observed).toBeFalse();
+    saved.next();
+    expect(component.workouts[0].userWorkoutId).toBe(201);
+    expect(component.workouts[0].date).toBe('2026-11-13');
+    expect(component.message).toBe('');
+  });
+
 });
