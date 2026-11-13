@@ -23,6 +23,26 @@ export class ProgramDayGridComponent {
   @Output() readonly daySelected = new EventEmitter<number>();
   @Output() readonly openMulti = new EventEmitter<void>();
 
+  get calendarDays(): { date: Date | null; cell: DayCell | null }[] {
+    const first = this.cells[0]?.date;
+    const last = this.cells[this.cells.length - 1]?.date;
+    if (!first || !last) return this.cells.map(cell => ({ date: cell.date, cell }));
+    const byDate = new Map(this.cells.map(cell => [cell.date?.getTime(), cell]));
+    const end = new Date(last.getFullYear(), last.getMonth() + 1, 0);
+    const days: { date: Date; cell: DayCell | null }[] = [];
+    for (const date = new Date(first.getFullYear(), first.getMonth(), 1); date <= end; date.setDate(date.getDate() + 1)) {
+      days.push({ date: new Date(date), cell: byDate.get(date.getTime()) ?? null });
+    }
+    return days;
+  }
+
+  get calendarLeadingBlanks(): number[] {
+    const first = this.cells[0]?.date;
+    if (!first) return this.leadingBlanks;
+    const offset = (new Date(first.getFullYear(), first.getMonth(), 1).getDay() + 6) % 7;
+    return Array.from({ length: offset }, (_, index) => index);
+  }
+
   dayAriaLabel(cell: DayCell): string {
     return dayAriaLabel(cell);
   }

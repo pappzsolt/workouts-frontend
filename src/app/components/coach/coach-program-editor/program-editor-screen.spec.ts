@@ -108,6 +108,25 @@ describe('Program editor screen bindings', () => {
     expect(api.updatePrescription).not.toHaveBeenCalled();
   });
 
+  it('shows complete months around program dates without adding selectable program days', () => {
+    program.startDate = '2026-11-13';
+    program.endDate = '2026-12-02';
+    program.durationDays = 20;
+    const fixture = render();
+    const grid = child(fixture, ProgramDayGridComponent);
+    expect(grid.calendarDays.length).toBe(61);
+    expect(grid.calendarDays[0].date).toEqual(new Date(2026, 10, 1));
+    expect(grid.calendarDays[60].date).toEqual(new Date(2026, 11, 31));
+    expect(grid.calendarLeadingBlanks.length).toBe(6);
+    expect(grid.calendarDays.filter(day => day.cell !== null).length).toBe(20);
+    expect(grid.calendarDays[12].cell?.day).toBe(1);
+    expect(grid.calendarDays[31].cell?.day).toBe(20);
+    const element = fixture.debugElement.query(By.directive(ProgramDayGridComponent)).nativeElement as HTMLElement;
+    expect(element.textContent).toContain('11.01');
+    expect(element.textContent).toContain('12.31');
+    expect(element.querySelectorAll('button[aria-pressed]').length).toBe(20);
+  });
+
   it('creates an empty-day workout before saving its exercises and linking the day', () => {
     const created = new Subject<number>();
     const exerciseSaved = new Subject<void>();
