@@ -6,13 +6,11 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
-import { WORKOUT_PRESCRIPTION_LIMITS } from '../../../../models/workout-prescription-limits';
 import type { CoachClientOverview, CoachProgramWorkout } from '../../../../models/coach-workspace.model';
-import { EditableExercise, isPrescriptionChanged } from '../program-days';
+import type { EditableExercise } from '../program-days';
 
 /**
- * A kiválasztott nap edzése: előírt értékek szerkesztése, sorrend, mentés, és a nap
- * edzésével kapcsolatos műveletek. A sorok objektumait a szülő birtokolja.
+ * A kiválasztott nap gyakorlatlistája, sorrendje és az edzéssel kapcsolatos műveletek.
  */
 @Component({
   selector: 'app-program-day-workout',
@@ -22,15 +20,12 @@ import { EditableExercise, isPrescriptionChanged } from '../program-days';
   host: { class: 'contents' },
 })
 export class ProgramDayWorkoutComponent {
-  readonly prescriptionLimits = WORKOUT_PRESCRIPTION_LIMITS;
   @Input({ required: true }) workout!: CoachProgramWorkout;
   @Input() rows: EditableExercise[] = [];
   @Input() selectedWorkoutDayCount = 0;
   @Input() selectedDayClients: { client: CoachClientOverview; date: string }[] = [];
   @Input() programId: number | null = null;
   @Input() busy = false;
-  @Input() changedCount = 0;
-  @Input() saveDisabled = false;
   @Input() weeklyRepeatDays: number[] = [];
   @Input() weeklyRepeatSkipped = 0;
   @Input() firstDate = '';
@@ -43,15 +38,9 @@ export class ProgramDayWorkoutComponent {
   readonly moveDate = model('');
 
   @Output() readonly moveRow = new EventEmitter<{ index: number; direction: -1 | 1 }>();
-  @Output() readonly applyTemplate = new EventEmitter<void>();
-  @Output() readonly savePrescriptions = new EventEmitter<void>();
   @Output() readonly copyToLibrary = new EventEmitter<void>();
   @Output() readonly repeatWeekly = new EventEmitter<void>();
   @Output() readonly addToAnotherDay = new EventEmitter<void>();
   @Output() readonly moveWorkout = new EventEmitter<void>();
   @Output() readonly removeWorkout = new EventEmitter<void>();
-
-  isChanged(row: EditableExercise): boolean {
-    return isPrescriptionChanged(row);
-  }
 }

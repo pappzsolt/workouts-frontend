@@ -56,13 +56,12 @@
             @if (cell.workout; as workout) {
               <app-program-day-workout
                 [workout]="workout" [rows]="workouts.rows" [selectedWorkoutDayCount]="workouts.selectedWorkoutDayCount" [selectedDayClients]="assignments.selectedDayClients"
-                [programId]="state.programId" [busy]="state.busy" [changedCount]="workouts.changedCount"
-                [saveDisabled]="state.busy || state.savingDetails || state.loading || workouts.changedCount === 0"
+                [programId]="state.programId" [busy]="state.busy"
                 [weeklyRepeatDays]="workouts.weeklyRepeatDays" [weeklyRepeatSkipped]="workouts.weeklyRepeatSkipped"
                 [firstDate]="state.firstDate" [lastDate]="state.lastDate" [moveTargetIsSameDay]="state.dayForDate(workouts.moveDate) === cell.day"
                 [(confirmRepeat)]="workouts.confirmRepeat" [(confirmRemove)]="workouts.confirmRemove" [(extraDate)]="workouts.extraDate" [(moveDate)]="workouts.moveDate"
-                (moveRow)="workouts.moveRow($event.index, $event.direction)" (applyTemplate)="workouts.applyTemplateToClients()"
-                (savePrescriptions)="workouts.savePrescriptions()" (copyToLibrary)="workouts.copyToLibrary()" (repeatWeekly)="workouts.repeatWeekly()"
+                (moveRow)="workouts.moveRow($event.index, $event.direction)"
+                (copyToLibrary)="workouts.copyToLibrary()" (repeatWeekly)="workouts.repeatWeekly()"
                 (addToAnotherDay)="workouts.addToAnotherDay()" (moveWorkout)="workouts.moveWorkout()" (removeWorkout)="workouts.removeWorkout()" />
             } @else {
               <app-program-empty-day

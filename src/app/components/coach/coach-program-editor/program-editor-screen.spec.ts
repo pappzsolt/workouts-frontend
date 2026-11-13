@@ -78,28 +78,32 @@ describe('Program editor screen bindings', () => {
     return [...element.querySelectorAll('button')].find(item => item.textContent?.includes(key))!;
   }
 
-  it('connects metadata and prescription saves to the shared busy state', () => {
+  it('shows exercises without template prescription controls and saves metadata', () => {
     const save = new Subject<void>();
     api.updateProgram.and.returnValue(save);
-    api.updatePrescription.and.returnValue(of(undefined));
     const fixture = render();
     const details = child(fixture, ProgramDetailsFormComponent);
-    const workout = child(fixture, ProgramDayWorkoutComponent);
+    const panel = fixture.debugElement.query(By.directive(ProgramDayWorkoutComponent)).nativeElement as HTMLElement;
+    expect(panel.textContent).toContain('Squat');
+    expect(panel.querySelector('input[type="number"]')).toBeNull();
+    expect(panel.textContent).not.toContain('coachWorkspace.editor.savePrescriptions');
+    expect(panel.textContent).not.toContain('coachWorkspace.editor.applyTemplate');
+    const workoutFixture = TestBed.createComponent(ProgramDayWorkoutComponent);
+    workoutFixture.componentRef.setInput('workout', program.workouts[0]);
+    workoutFixture.componentRef.setInput('programId', 10);
+    workoutFixture.componentRef.setInput('selectedDayClients', [{ client, date: '2026-10-23' }]);
+    workoutFixture.detectChanges();
+    const clientLink = (workoutFixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>('a[href*="/coach/clients/7"]');
+    expect(clientLink?.getAttribute('href')).toBe('/coach/clients/7?program=10&date=2026-10-23');
     details.form.programName = 'Renamed';
-    workout.rows[0].sets = 5;
     details.save.emit();
     fixture.detectChanges();
     expect(api.updateProgram).toHaveBeenCalledOnceWith(10, jasmine.objectContaining({ programName: 'Renamed' }));
-    expect(workout.saveDisabled).toBeTrue();
-    workout.savePrescriptions.emit();
-    expect(api.updatePrescription).not.toHaveBeenCalled();
-    program.programName = 'Renamed';
+    expect(details.saving).toBeTrue();
     save.next(); save.complete();
     fixture.detectChanges();
     expect(details.saving).toBeFalse();
-    expect(workout.rows[0].sets).toBe(5);
-    workout.savePrescriptions.emit();
-    expect(api.updatePrescription).toHaveBeenCalledOnceWith(20, 30, { sets: 5, repetitions: 10, restSeconds: 60 });
+    expect(api.updatePrescription).not.toHaveBeenCalled();
   });
 
   it('creates an empty-day workout before saving its exercises and linking the day', () => {
