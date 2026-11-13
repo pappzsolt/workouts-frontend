@@ -107,6 +107,14 @@
           (menuNavigate)="closeMobileMenu()"
         ></app-dynamic-menu>
       </ng-container>
+      @if (guideRole) {
+        <div class="border-t border-surface-200 px-2 py-2">
+          <button type="button" class="menu-item" data-tour-reopen (click)="openGuide()">
+            <app-icon name="book-open" sizeClass="h-[18px] w-[18px]" />
+            {{ guideRole === 'coach' ? guidedTour.labels.helpCoach : guidedTour.labels.helpUser }}
+          </button>
+        </div>
+      }
     </aside>
 
     <!-- ===================================================== -->
@@ -146,3 +154,6 @@
     </div>
   </footer>
 </div>
+
+<!-- Az útmutató a teljes alkalmazás felett jelenik meg, a tényleges oldal elemeit kiemelve. -->
+<app-guided-tour></app-guided-tour>

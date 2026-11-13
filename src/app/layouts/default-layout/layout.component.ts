@@ -1,5 +1,7 @@
 import { DashboardNavigationComponent } from '../../components/shared/components/dashboard-navigation/dashboard-navigation.component';
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, inject } from '@angular/core';
+import { GuidedTourComponent } from '../../components/shared/guided-tour/guided-tour.component';
+import { GuidedTourService, type GuideRole } from '../../services/shared/guided-tour.service';
 import { Router } from '@angular/router';
 import { DynamicMenuComponent } from '../../components/dynamic-menu/dynamic-menu.component';
 import { LanguageSelectorComponent } from '../../components/shared/language/language-selector.component';
@@ -24,10 +26,13 @@ import type { MenuItem } from '../../models/common/menu-item.model';
     DynamicMenuComponent,
     LanguageSelectorComponent,
     DashboardNavigationComponent,
+    GuidedTourComponent,
   ],
   templateUrl: './layout.component.html',
 })
 export class LayoutComponent implements OnInit {
+  readonly guidedTour = inject(GuidedTourService);
+  guideRole: GuideRole | null = null;
   username: string | null = null;
   role: string | null = null;
   currentYear: number = new Date().getFullYear();
@@ -73,6 +78,9 @@ export class LayoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.username = this.authService.getUserName();
+    this.guideRole = this.authService.isCoach() ? 'coach'
+      : this.authService.isUser() ? 'user' : null;
+    if (this.guideRole) this.guidedTour.offerFirstVisit(this.guideRole, this.authService.getUserId());
     this.role = this.authService.getUserRole()
       ?.split(',')
       .map(role => role.trim().replace(/^ROLE_/i, ''))
@@ -80,7 +88,14 @@ export class LayoutComponent implements OnInit {
 
   }
 
+  openGuide(): void {
+    if (!this.guideRole) return;
+    this.closeMobileMenu();
+    this.guidedTour.start(this.guideRole, this.authService.getUserId());
+  }
+
   onLogout(): void {
+    this.guidedTour.resetOnLogout();
     this.authService.logout();
     this.router.navigate(['/login']);
   }

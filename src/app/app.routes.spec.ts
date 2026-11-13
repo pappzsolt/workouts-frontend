@@ -1,3 +1,4 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -5,6 +6,7 @@ import { provideTranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
 import { routes } from './app.routes';
 import { AuthService } from './services/auth/auth.service';
+import { GuidedTourService } from './services/shared/guided-tour.service';
 import { CoachWorkspaceService } from './services/coach/coach-workspace.service';
 import { RegistrationRequestsService } from './services/admin/registration-requests.service';
 
@@ -15,6 +17,7 @@ import { RegistrationRequestsService } from './services/admin/registration-reque
       hasValidAccessToken: () => true,
       getUserRole: () => role,
       getUserName: () => 'Tester',
+      getUserId: () => 90304,
       isAdmin: () => role === 'ROLE_ADMIN',
       isCoach: () => role === 'ROLE_COACH',
       isUser: () => role === 'ROLE_USER',
@@ -23,6 +26,15 @@ import { RegistrationRequestsService } from './services/admin/registration-reque
     TestBed.configureTestingModule({providers: [
       provideRouter(routes), provideTranslateService(),
       {provide: AuthService, useValue: auth},
+      // Route tests should not start a tour that navigates independently.
+      // The onboarding behavior is covered by its dedicated service/component specs.
+      {provide: GuidedTourService, useValue: {
+        active: signal(null),
+        labels: { helpUser: 'User guide', helpCoach: 'Coach guide' },
+        offerFirstVisit: () => {},
+        start: () => {},
+        resetOnLogout: () => {},
+      }},
       {provide: RegistrationRequestsService, useValue: {pendingCount: () => of(0)}},
       {provide: CoachWorkspaceService, useValue: {
         getOverview: () => of({clients: []}),
