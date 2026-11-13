@@ -1070,6 +1070,18 @@
       "workouts": "Edzések"
     },
     "editor": {
+      "individualSettingsHint": "Az egyéni súlyokat, ismétléseket, pihenőket és a sorozatok számát az adott ügyfél edzésénél állíthatod be. Válassz ügyfelet és napot, majd nyisd meg a „Sorozatok és súlyok beállítása” hivatkozást.",
+      "programTabs": "Program nézetei",
+      "workoutsTab": "Edzések",
+      "calendarTab": "Naptár",
+      "clientsTab": "Ügyfelek",
+      "editDetails": "Programadatok szerkesztése",
+      "closeDetails": "Adatlap bezárása",
+      "summaryDuration": "{{count}} nap",
+      "workoutsTabHint": "A gyakorlatlisták minden ügyfélnél közösek. Itt a program edzéseit és alapbeosztását szerkesztheted; az egyéni időpontokat a Naptár fül mutatja.",
+      "exerciseCount": "{{count}} gyakorlat",
+      "noSharedWorkouts": "A programhoz még nincs edzés hozzáadva.",
+      "baseDay": "Programnap kiválasztása az alapbeosztásban",
       "title": "Program szerkesztése",
       "newTitle": "Új program",
       "back": "Vissza a programokhoz",

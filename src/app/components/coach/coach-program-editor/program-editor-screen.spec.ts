@@ -70,6 +70,22 @@ describe('Program editor screen bindings', () => {
     return fixture;
   }
 
+  function renderDayGrid(): ComponentFixture<ProgramDayGridComponent> {
+    const editor = render();
+    const fixture = TestBed.createComponent(ProgramDayGridComponent);
+    fixture.componentRef.setInput('cells', editor.componentInstance.state.cells);
+    fixture.componentRef.setInput('leadingBlanks', editor.componentInstance.state.leadingBlanks);
+    fixture.componentRef.setInput('selectedDay', editor.componentInstance.state.selectedDay);
+    fixture.componentInstance.daySelected.subscribe(day => {
+      editor.componentInstance.selectDay(day);
+      editor.detectChanges();
+      fixture.componentRef.setInput('selectedDay', editor.componentInstance.state.selectedDay);
+      fixture.detectChanges();
+    });
+    fixture.detectChanges();
+    return fixture;
+  }
+
   function child<T>(fixture: ComponentFixture<CoachProgramEditorComponent>, type: Type<T>): T {
     return fixture.debugElement.query(By.directive(type)).componentInstance as T;
   }
@@ -113,8 +129,8 @@ describe('Program editor screen bindings', () => {
     program.startDate = '2026-11-13';
     program.endDate = '2026-12-02';
     program.durationDays = 20;
-    const fixture = render();
-    const grid = child(fixture, ProgramDayGridComponent);
+    const fixture = renderDayGrid();
+    const grid = fixture.componentInstance;
     expect(grid.calendarDays.length).toBe(30);
     expect(grid.calendarDays[0].date).toEqual(new Date(2026, 10, 1));
     expect(grid.calendarLeadingBlanks.length).toBe(6);
@@ -122,7 +138,7 @@ describe('Program editor screen bindings', () => {
     expect(grid.calendarDays[12].cell?.day).toBe(1);
     expect(grid.canGoBack).toBeFalse();
     expect(grid.canGoForward).toBeTrue();
-    const element = fixture.debugElement.query(By.directive(ProgramDayGridComponent)).nativeElement as HTMLElement;
+    const element = fixture.nativeElement as HTMLElement;
     expect(element.textContent).toContain('11.01');
     expect(element.textContent).not.toContain('12.31');
     const next = element.querySelector<HTMLButtonElement>('button[aria-label="userWorkoutsCalendar.nextMonth"]')!;
@@ -146,8 +162,8 @@ describe('Program editor screen bindings', () => {
   it('shows the full workout name below the calendar and updates it on day selection', () => {
     const longName = 'A very long workout name with an unbroken suffix ' + 'Workout'.repeat(20);
     program.workouts[0].name = longName;
-    const fixture = render();
-    const element = fixture.debugElement.query(By.directive(ProgramDayGridComponent)).nativeElement as HTMLElement;
+    const fixture = renderDayGrid();
+    const element = fixture.nativeElement as HTMLElement;
     const details = () => element.querySelector('[aria-live="polite"][aria-atomic="true"]')!;
     expect(details().textContent).toContain(longName);
     const days = element.querySelectorAll<HTMLButtonElement>('button[aria-pressed]');
@@ -170,7 +186,7 @@ describe('Program editor screen bindings', () => {
     program.workouts[0].name = 'Workout'.repeat(40);
     const editor = render();
     const fixture = TestBed.createComponent(ProgramDayGridComponent);
-    fixture.componentRef.setInput('cells', child(editor, ProgramDayGridComponent).cells);
+    fixture.componentRef.setInput('cells', editor.componentInstance.state.cells);
     fixture.detectChanges();
     const section = (fixture.nativeElement as HTMLElement).querySelector('section')!;
     for (const width of [280, 375, 768]) {
@@ -186,57 +202,65 @@ describe('Program editor screen bindings', () => {
     }
   });
 
-  it('switches the calendar between assigned clients and the shared plan using the selector', async () => {
+  it('uses three working tabs and only mounts an actual calendar in the Calendar tab', async () => {
     const second = { ...client, userId: 8, username: 'Bela', email: 'bela@example.com' };
     api.getOverview.and.returnValue(of({ from: '', to: '', clients: [client, second] }));
     api.getAssignedUserIds.and.returnValue(of([7, 8]));
     api.getClientProgramRows.and.returnValue(of([]));
     const fixture = render();
-    await fixture.whenStable();
-    expect(fixture.componentInstance.assignments.calendarView).toBe('plan');
-    expect(child(fixture, ProgramDayGridComponent).showMultiAdd).toBeTrue();
-    expect(fixture.debugElement.query(By.directive(ProgramDayWorkoutComponent))).not.toBeNull();
-    expect((fixture.nativeElement as HTMLElement).querySelector('details')).toBeNull();
-    expect((fixture.nativeElement as HTMLElement).querySelector('section[aria-label="coachWorkspace.editor.editBaseSchedule"]')).not.toBeNull();
+    const element = fixture.nativeElement as HTMLElement;
+    expect(element.querySelectorAll('[role="tab"]').length).toBe(3);
+    expect(fixture.componentInstance.activeTab).toBe('workouts');
+    expect(fixture.debugElement.query(By.directive(CoachCalendarComponent))).toBeNull();
+    expect(fixture.debugElement.query(By.directive(ProgramDayGridComponent))).toBeNull();
+    expect(element.querySelector<HTMLElement>('#program-panel-clients')!.style.display).toBe('none');
+    button(fixture, 'coachWorkspace.editor.calendarTab').click(); fixture.detectChanges();
     expect(child(fixture, CoachCalendarComponent).programId).toBe(10);
     expect([...child(fixture, CoachCalendarComponent).assignedUserIds!]).toEqual([7, 8]);
-    button(fixture, 'coachWorkspace.editor.scheduleView').click();
-    fixture.detectChanges();
-    const select = (fixture.nativeElement as HTMLElement).querySelector<HTMLSelectElement>('#program-calendar-client')!;
-    async function choose(name: string) {
-      select.value = [...select.options].find(option => option.textContent?.includes(name))!.value;
-      select.dispatchEvent(new Event('change'));
-      await fixture.whenStable();
-      fixture.detectChanges();
-    }
-    await choose('Anna');
+    expect(element.querySelector<HTMLElement>('#program-panel-workouts')!.style.display).toBe('none');
+    await fixture.whenStable();
+    const select = element.querySelector<HTMLSelectElement>('#program-calendar-client')!;
+    select.value = [...select.options].find(option => option.textContent?.includes('Anna'))!.value;
+    select.dispatchEvent(new Event('change'));
+    await fixture.whenStable(); fixture.detectChanges();
     expect(api.getClientProgramRows).toHaveBeenCalledWith(7, 10);
-    expect(child(fixture, ProgramDayGridComponent).showMultiAdd).toBeFalse();
-    expect(fixture.debugElement.query(By.directive(ProgramDayWorkoutComponent))).toBeNull();
-    await choose('Bela');
-    expect(api.getClientProgramRows).toHaveBeenCalledWith(8, 10);
-    button(fixture, 'coachWorkspace.editor.planView').click();
+    expect(fixture.debugElement.query(By.directive(CoachCalendarComponent))).toBeNull();
+    button(fixture, 'coachWorkspace.editor.clientsTab').click(); fixture.detectChanges();
+    expect(element.querySelector<HTMLElement>('#program-panel-clients')!.style.display).toBe('');
+    expect(element.querySelector('#program-panel-clients a[href="/coach/clients/7?program=10"]')).not.toBeNull();
+    expect(element.querySelector('#program-panel-calendar')).toBeNull();
+    button(fixture, 'coachWorkspace.editor.workoutsTab').click(); fixture.detectChanges();
+    expect(element.querySelector<HTMLElement>('#program-panel-workouts')!.style.display).toBe('');
+  });
+
+  it('keeps metadata and empty-day drafts when switching tabs and closing details', () => {
+    const fixture = render();
+    const element = fixture.nativeElement as HTMLElement;
+    expect(element.querySelector<HTMLElement>('#program-details-editor')!.style.display).toBe('none');
+    button(fixture, 'coachWorkspace.editor.editDetails').click(); fixture.detectChanges();
+    const form = child(fixture, ProgramDetailsFormComponent);
+    form.form.programName = 'Unsaved name';
+    button(fixture, 'coachWorkspace.editor.closeDetails').click(); fixture.detectChanges();
+    fixture.componentInstance.selectDay(2); fixture.detectChanges();
+    const empty = child(fixture, ProgramEmptyDayComponent);
+    empty.workoutName.set('Unsaved workout');
+    button(fixture, 'coachWorkspace.editor.clientsTab').click(); fixture.detectChanges();
+    button(fixture, 'coachWorkspace.editor.workoutsTab').click(); fixture.detectChanges();
+    expect(child(fixture, ProgramEmptyDayComponent).workoutName()).toBe('Unsaved workout');
+    expect(form.form.programName).toBe('Unsaved name');
+    expect(fixture.componentInstance.hasUnsavedChanges).toBeTrue();
+  });
+
+  it('supports keyboard navigation between tabs', () => {
+    const fixture = render();
+    const tabs = [...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    tabs[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
     fixture.detectChanges();
-    expect((fixture.nativeElement as HTMLElement).querySelector('#program-calendar-client')).toBeNull();
-    expect(child(fixture, CoachCalendarComponent).showProgramStructure).toBeTrue();
-    expect(child(fixture, CoachCalendarComponent).programWorkouts).toEqual(program.workouts);
-    expect((fixture.nativeElement as HTMLElement).querySelector('details')).toBeNull();
-    const workoutPanel = child(fixture, ProgramDayWorkoutComponent);
-    expect(workoutPanel.selectedDayClients).toEqual([]);
-    expect(fixture.nativeElement.textContent).toContain('Anna');
-    expect(fixture.nativeElement.textContent).toContain('Bela');
-    expect(child(fixture, ProgramDayGridComponent).showMultiAdd).toBeTrue();
-    expect(fixture.debugElement.query(By.directive(ProgramDayWorkoutComponent))).not.toBeNull();
-    button(fixture, 'coachWorkspace.editor.scheduleView').click();
+    expect(fixture.componentInstance.activeTab).toBe('calendar');
+    expect(tabs[1].getAttribute('aria-selected')).toBe('true');
+    tabs[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
     fixture.detectChanges();
-    expect(child(fixture, ProgramDayGridComponent).showMultiAdd).toBeFalse();
-    const newSelect = (fixture.nativeElement as HTMLElement).querySelector<HTMLSelectElement>('#program-calendar-client')!;
-    newSelect.value = [...newSelect.options].find(option => option.textContent?.includes('coachWorkspace.editor.allClientCalendar'))!.value;
-    newSelect.dispatchEvent(new Event('change'));
-    await fixture.whenStable();
-    fixture.detectChanges();
-    expect(child(fixture, CoachCalendarComponent).programId).toBe(10);
-    expect([...child(fixture, CoachCalendarComponent).assignedUserIds!]).toEqual([7, 8]);
+    expect(fixture.componentInstance.activeTab).toBe('clients');
   });
 
   it('creates an empty-day workout before saving its exercises and linking the day', () => {
@@ -247,7 +271,7 @@ describe('Program editor screen bindings', () => {
     api.addExerciseToWorkout.and.returnValue(exerciseSaved);
     api.addWorkoutToDay.and.returnValue(linked);
     const fixture = render();
-    child(fixture, ProgramDayGridComponent).daySelected.emit(2);
+    fixture.componentInstance.selectDay(2);
     fixture.detectChanges();
     const empty = child(fixture, ProgramEmptyDayComponent);
     empty.workoutName.set('New workout');
@@ -272,7 +296,7 @@ describe('Program editor screen bindings', () => {
     const second = new Subject<void>();
     api.addWorkoutToDay.and.returnValues(first, second);
     const fixture = render();
-    child(fixture, ProgramDayGridComponent).openMulti.emit();
+    fixture.componentInstance.library.openMulti();
     fixture.detectChanges();
     const dialog = child(fixture, ProgramMultiAddDialogComponent);
     dialog.toggle.emit({ workoutId: 50, checked: true });

@@ -14,12 +14,11 @@ import { MessageComponent } from '../../shared/components/message/message.compon
 import { AppIconComponent } from '../../shared/components/app-icon/app-icon.component';
 import { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import { toIsoDate } from '../../../shared/local-date';
-import type { CoachProgramDayLink, CoachProgramDetailsInput } from '../../../models/coach-workspace.model';
+import type { CoachProgramDayLink, CoachProgramDetailsInput, CoachProgramWorkout } from '../../../models/coach-workspace.model';
 import { DIFFICULTY_OPTIONS, WEEKDAY_KEYS, errorText } from '../coach-ui';
 import { type DayCell, buildDayCells, dayAriaLabel } from './program-days';
 import { ProgramClientsPanelComponent } from './parts/program-clients-panel.component';
 import { ProgramCopyDialogComponent } from './parts/program-copy-dialog.component';
-import { ProgramDayGridComponent } from './parts/program-day-grid.component';
 import { ProgramDayWorkoutComponent } from './parts/program-day-workout.component';
 import { ProgramDetailsFormComponent } from './parts/program-details-form.component';
 import { ProgramEmptyDayComponent } from './parts/program-empty-day.component';
@@ -43,7 +42,6 @@ import { ProgramCopyEditor } from './program-copy-editor';
   imports: [
     CoachCalendarComponent, FormsModule, ProgramClientCalendarComponent, AppLoadingComponent, CommonModule, RouterModule, TranslatePipe, ConfirmDialogComponent, MessageComponent, AppIconComponent,
     ProgramDetailsFormComponent,
-    ProgramDayGridComponent,
     ProgramDayWorkoutComponent,
     ProgramEmptyDayComponent,
     ProgramClientsPanelComponent,
@@ -68,6 +66,43 @@ export class CoachProgramEditorComponent implements OnInit {
   readonly difficultyOptions = DIFFICULTY_OPTIONS;
 
   readonly state = new ProgramEditorState();
+  activeTab: 'workouts' | 'calendar' | 'clients' = 'workouts';
+  editDetails = false;
+  readonly programTabs = [
+    { id: 'workouts', label: 'coachWorkspace.editor.workoutsTab' },
+    { id: 'calendar', label: 'coachWorkspace.editor.calendarTab' },
+    { id: 'clients', label: 'coachWorkspace.editor.clientsTab' },
+  ] as const;
+
+  selectTab(tab: 'workouts' | 'calendar' | 'clients'): void {
+    if (this.state.busy || this.state.loading || this.state.savingDetails) return;
+    this.activeTab = tab;
+  }
+
+  onTabKeydown(event: KeyboardEvent): void {
+    const index = this.programTabs.findIndex(tab => tab.id === this.activeTab);
+    let next = index;
+    if (event.key === 'ArrowRight') next = (index + 1) % this.programTabs.length;
+    else if (event.key === 'ArrowLeft') next = (index + this.programTabs.length - 1) % this.programTabs.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = this.programTabs.length - 1;
+    else return;
+    event.preventDefault();
+    this.selectTab(this.programTabs[next].id);
+    const buttons = (event.currentTarget as HTMLElement).querySelectorAll<HTMLButtonElement>('[role="tab"]');
+    if (!buttons[next]?.disabled) buttons[next]?.focus();
+  }
+
+  get sharedWorkouts(): CoachProgramWorkout[] {
+    return [...new Map((this.state.program?.workouts ?? []).map(workout => [workout.workoutId, workout])).values()];
+  }
+
+  selectSharedWorkout(workoutId: number): void {
+    if (this.state.selectedCell?.workout?.workoutId === workoutId) return;
+    const cell = this.state.cells.find(day => day.workout?.workoutId === workoutId);
+    if (cell) this.selectDay(cell.day);
+  }
+
 
   private detailsBaseline: CoachProgramDetailsInput = { ...this.state.form };
   private leaveResult?: Subject<boolean>;
@@ -105,6 +140,8 @@ export class CoachProgramEditorComponent implements OnInit {
         this.state.program = null;
         this.workouts.rows = [];
         this.assignments.reset();
+        this.activeTab = 'workouts';
+        this.editDetails = false;
         this.state.form = {
           programName: '', programDescription: '', durationDays: 28,
           difficultyLevel: 'BEGINNER', startDate: toIsoDate(new Date()),
@@ -126,6 +163,8 @@ export class CoachProgramEditorComponent implements OnInit {
         this.state.cells = [];
         this.workouts.rows = [];
         this.assignments.reset();
+        this.activeTab = 'workouts';
+        this.editDetails = false;
       }
       this.state.programId = id;
       this.loadProgram(null);

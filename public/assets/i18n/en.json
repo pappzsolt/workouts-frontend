@@ -1070,6 +1070,18 @@
       "workouts": "Workouts"
     },
     "editor": {
+      "individualSettingsHint": "Set individual weights, repetitions, rest and the number of sets in the client’s workout. Choose a client and date, then open “Configure sets and weights”.",
+      "programTabs": "Program views",
+      "workoutsTab": "Workouts",
+      "calendarTab": "Calendar",
+      "clientsTab": "Clients",
+      "editDetails": "Edit program details",
+      "closeDetails": "Close details",
+      "summaryDuration": "{{count}} days",
+      "workoutsTabHint": "Exercise lists are shared by all clients. Manage workouts and the base schedule here; individual dates appear in Calendar.",
+      "exerciseCount": "{{count}} exercises",
+      "noSharedWorkouts": "No workouts have been added to this program.",
+      "baseDay": "Select a program day in the base schedule",
       "title": "Edit program",
       "newTitle": "New program",
       "back": "Back to programs",

@@ -16,7 +16,6 @@ export class ProgramClientAssignments {
   toAssign = new Set<number>();
   clientFilter = '';
   calendarUserId: number | null = null;
-  calendarView: 'schedule' | 'plan' = 'plan';
 
   get calendarClient(): CoachClientOverview | null {
     return this.assignedClients.find(client => client.userId === this.calendarUserId) ?? null;
@@ -35,7 +34,6 @@ export class ProgramClientAssignments {
 
   reset(): void {
     this.calendarUserId = null;
-    this.calendarView = 'plan';
     this.clients = [];
     this.assignedIds = new Set();
     this.toAssign = new Set();

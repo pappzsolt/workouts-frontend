@@ -27,6 +27,7 @@ import { clientInitials } from '../program-days';
   host: { class: 'contents' },
 })
 export class ProgramClientsPanelComponent {
+  @Input() programId: number | null = null;
   @Input() assignedClients: CoachClientOverview[] = [];
   @Input() unassignedClients: CoachClientOverview[] = [];
   @Input() visibleClients: CoachClientOverview[] = [];

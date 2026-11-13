@@ -1070,6 +1070,18 @@
       "workouts": "Trainings"
     },
     "editor": {
+      "individualSettingsHint": "Individuelle Gewichte, Wiederholungen, Pausen und Satzanzahl stellst du im Kundentraining ein. Wähle Kunde und Datum und öffne „Sätze und Gewichte einstellen“.",
+      "programTabs": "Programmansichten",
+      "workoutsTab": "Trainings",
+      "calendarTab": "Kalender",
+      "clientsTab": "Kunden",
+      "editDetails": "Programmdaten bearbeiten",
+      "closeDetails": "Details schließen",
+      "summaryDuration": "{{count}} Tage",
+      "workoutsTabHint": "Die Übungslisten sind für alle Kunden gemeinsam. Hier bearbeitest du Trainings und Grundplanung; individuelle Termine stehen im Kalender.",
+      "exerciseCount": "{{count}} Übungen",
+      "noSharedWorkouts": "Diesem Programm wurden noch keine Trainings hinzugefügt.",
+      "baseDay": "Programmtag in der Grundplanung auswählen",
       "title": "Programm bearbeiten",
       "newTitle": "Neues Programm",
       "back": "Zurück zu den Programmen",
