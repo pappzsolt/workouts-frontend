@@ -357,14 +357,6 @@
             >
               {{ state.label('start') | translate }}
             </button>
-            <button
-              type="button"
-              class="btn btn-delete"
-              (click)="actions.ask('delete')"
-              [disabled]="state.busy"
-            >
-              {{ 'personalPrograms.delete' | translate }}
-            </button>
           } @else {
             <a
               [routerLink]="['/user/programs', state.id, 'workouts']"
@@ -373,6 +365,14 @@
               >{{ 'personalPrograms.workouts' | translate }}</a
             >
           }
+          <button
+            type="button"
+            class="btn btn-delete"
+            (click)="actions.ask('delete')"
+            [disabled]="state.busy || state.loading"
+          >
+            {{ (state.standaloneMode ? 'personalWorkouts.delete' : 'personalPrograms.delete') | translate }}
+          </button>
           @if (state.standaloneMode) {
             <button
               type="button"

@@ -1574,7 +1574,7 @@
     "saving": "Saving…",
     "catalogueError": "Unable to load exercise names. Your saved exercises are preserved.",
     "start": "Start program",
-    "delete": "Delete draft",
+    "delete": "Delete program",
     "copy": "Create copy",
     "startHint": "Save your changes before starting. Include at least one training day and at least one exercise in every workout. Check set targets on the other days too.",
     "noFreeDay": "No free days left. Increase the program duration.",
@@ -1595,7 +1595,10 @@
     "editDraft": "Edit",
     "editCopy": "Editable copy",
     "deleteListConfirm": "Delete your personal program draft “{{name}}” and its workout days? This cannot be undone.",
-    "deleteSuccess": "Personal program draft deleted."
+    "deleteSuccess": "Personal program draft deleted.",
+    "archiveTitle": "Remove started program",
+    "archiveConfirm": "Remove this started program from your personal programs? Its active assignment will be revoked, but workout history and existing execution records will be preserved. This cannot be undone in the interface.",
+    "archiveSuccess": "Program removed from your personal programs. Workout history was preserved."
   },
   "personalWorkouts": {
     "create": "Create standalone workout",
@@ -1623,9 +1626,12 @@
     "draft": "Workout draft",
     "editDraft": "Edit workout",
     "editCopy": "New editable session",
-    "delete": "Delete workout draft",
+    "delete": "Delete workout",
     "deleteListConfirm": "Delete your standalone workout draft “{{name}}”? This cannot be undone.",
-    "deleteSuccess": "Standalone workout draft deleted."
+    "deleteSuccess": "Standalone workout draft deleted.",
+    "archiveTitle": "Remove started workout",
+    "archiveConfirm": "Remove this started standalone workout? Its active assignment will be revoked, but workout history and existing execution records will be preserved. This cannot be undone in the interface.",
+    "archiveSuccess": "Standalone workout removed. Previous results were preserved."
   },
   "previousPerformance": {
     "title": "Last time",

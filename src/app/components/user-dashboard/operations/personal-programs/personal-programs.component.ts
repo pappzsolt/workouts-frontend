@@ -104,7 +104,7 @@ export class PersonalProgramsComponent implements OnInit {
   }
 
   askDelete(program: PersonalProgramSummary): void {
-    if (this.busy || this.loading || this.pendingDelete || program.startedAt) return;
+    if (this.busy || this.loading || this.pendingDelete) return;
     this.pendingDelete = program;
   }
 
@@ -114,7 +114,7 @@ export class PersonalProgramsComponent implements OnInit {
 
   confirmDelete(): void {
     const program = this.pendingDelete;
-    if (this.busy || this.loading || !program || program.startedAt) return;
+    if (this.busy || this.loading || !program) return;
     this.busy = true;
     this.message = '';
     this.successMessage = '';
@@ -122,9 +122,9 @@ export class PersonalProgramsComponent implements OnInit {
       next: () => {
         this.busy = false;
         this.pendingDelete = null;
-        this.successMessage = program.standalone
-          ? 'personalWorkouts.deleteSuccess'
-          : 'personalPrograms.deleteSuccess';
+        this.successMessage = program.startedAt
+          ? program.standalone ? 'personalWorkouts.archiveSuccess' : 'personalPrograms.archiveSuccess'
+          : program.standalone ? 'personalWorkouts.deleteSuccess' : 'personalPrograms.deleteSuccess';
         // The last item on a page can leave that page empty after deletion.
         if (this.page > 0 && this.programs.length === 1) this.page--;
         this.reload$.next();

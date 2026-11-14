@@ -138,7 +138,6 @@ export class PersonalProgramActions {
     if (this.state.busy || this.state.id == null || this.state.loading || this.state.loadFailed)
       return;
     if (action === 'start' && !this.state.canStart) return;
-    if (action === 'delete' && this.state.started) return;
     if (action === 'copy' && this.state.dirty) return;
     if (
       action === 'repeat' &&
@@ -206,12 +205,16 @@ export class PersonalProgramActions {
   get confirmationTitle(): string {
     return this.state.action === 'leave'
       ? 'personalPrograms.leaveTitle'
-      : this.state.label(`${this.state.action}Title`);
+      : this.state.action === 'delete' && this.state.started
+        ? this.state.label('archiveTitle')
+        : this.state.label(`${this.state.action}Title`);
   }
 
   get confirmationMessage(): string {
     return this.state.action === 'leave'
       ? 'personalPrograms.leaveConfirm'
-      : this.state.label(`${this.state.action}Confirm`);
+      : this.state.action === 'delete' && this.state.started
+        ? this.state.label('archiveConfirm')
+        : this.state.label(`${this.state.action}Confirm`);
   }
 }

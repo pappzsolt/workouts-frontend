@@ -93,12 +93,7 @@
                   >{{ (program.startedAt ? 'personalPrograms.open' :
                     program.standalone ? 'personalWorkouts.editDraft' : 'personalPrograms.editDraft') | translate }}</a
                 >
-                @if (!program.startedAt) {
-                  <button type="button" class="btn btn-delete" [disabled]="busy || loading"
-                          (click)="askDelete(program)">
-                    {{ (program.standalone ? 'personalWorkouts.delete' : 'personalPrograms.delete') | translate }}
-                  </button>
-                } @else {
+                @if (program.startedAt) {
                   <button type="button" class="btn btn-neutral" [disabled]="busy || loading"
                           (click)="editCopy(program)">
                     {{ (program.standalone ? 'personalWorkouts.editCopy' : 'personalPrograms.editCopy') | translate }}
@@ -113,6 +108,10 @@
                     {{ (program.standalone ? 'personalWorkouts.locked' : 'personalPrograms.locked') | translate }}
                   </p>
                 }
+                <button type="button" class="btn btn-delete" [disabled]="busy || loading"
+                        (click)="askDelete(program)">
+                  {{ (program.standalone ? 'personalWorkouts.delete' : 'personalPrograms.delete') | translate }}
+                </button>
               </div>
             </div>
           </app-card>
@@ -129,8 +128,12 @@
     <app-confirm-dialog
       [open]="pendingDelete !== null"
       [busy]="busy"
-      [title]="pendingDelete?.standalone ? 'personalWorkouts.deleteTitle' : 'personalPrograms.deleteTitle'"
-      [message]="pendingDelete?.standalone ? 'personalWorkouts.deleteListConfirm' : 'personalPrograms.deleteListConfirm'"
+      [title]="pendingDelete?.startedAt
+        ? (pendingDelete?.standalone ? 'personalWorkouts.archiveTitle' : 'personalPrograms.archiveTitle')
+        : (pendingDelete?.standalone ? 'personalWorkouts.deleteTitle' : 'personalPrograms.deleteTitle')"
+      [message]="pendingDelete?.startedAt
+        ? (pendingDelete?.standalone ? 'personalWorkouts.archiveConfirm' : 'personalPrograms.archiveConfirm')
+        : (pendingDelete?.standalone ? 'personalWorkouts.deleteListConfirm' : 'personalPrograms.deleteListConfirm')"
       [messageParams]="{ name: pendingDelete?.name }"
       confirmLabel="personalPrograms.confirm"
       cancelLabel="personalPrograms.cancel"

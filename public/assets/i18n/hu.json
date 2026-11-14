@@ -1574,7 +1574,7 @@
     "saving": "Mentés…",
     "catalogueError": "A gyakorlatneveket nem sikerült betölteni. A mentett gyakorlatok megmaradtak.",
     "start": "Program indítása",
-    "delete": "Piszkozat törlése",
+    "delete": "Program törlése",
     "copy": "Másolat készítése",
     "startHint": "Indítás előtt mentsd a változásokat. Legalább egy edzésnap és minden edzésen legalább egy gyakorlat szükséges. Ellenőrizd a többi nap sorozatcéljait is.",
     "noFreeDay": "Nincs több szabad nap. Növeld a program időtartamát.",
@@ -1595,7 +1595,10 @@
     "editDraft": "Szerkesztés",
     "editCopy": "Szerkeszthető másolat",
     "deleteListConfirm": "Biztosan törlöd ezt a saját programpiszkozatot: „{{name}}”? Az edzésnapjai is törlődnek. A művelet nem vonható vissza.",
-    "deleteSuccess": "A saját programpiszkozat törölve."
+    "deleteSuccess": "A saját programpiszkozat törölve.",
+    "archiveTitle": "Elindított program eltávolítása",
+    "archiveConfirm": "Eltávolítod ezt az elindított programot a saját programjaid közül? Az aktív hozzárendelése megszűnik, de a korábbi edzéseredmények és a már létrehozott edzésadatok megmaradnak. A művelet nem vonható vissza a felületen.",
+    "archiveSuccess": "A program eltávolítva a saját programjaid közül. Az edzéstörténet megmaradt."
   },
   "personalWorkouts": {
     "create": "Önálló edzés létrehozása",
@@ -1623,9 +1626,12 @@
     "draft": "Edzéspiszkozat",
     "editDraft": "Edzés szerkesztése",
     "editCopy": "Új, szerkeszthető alkalom",
-    "delete": "Edzéspiszkozat törlése",
+    "delete": "Edzés törlése",
     "deleteListConfirm": "Biztosan törlöd ezt az önálló edzéspiszkozatot: „{{name}}”? A művelet nem vonható vissza.",
-    "deleteSuccess": "Az önálló edzéspiszkozat törölve."
+    "deleteSuccess": "Az önálló edzéspiszkozat törölve.",
+    "archiveTitle": "Elindított edzés eltávolítása",
+    "archiveConfirm": "Eltávolítod ezt az elindított önálló edzést a saját edzéseid közül? Az aktív hozzárendelése megszűnik, de a rögzített eredmények és az edzéselőzmények megmaradnak. A művelet nem vonható vissza a felületen.",
+    "archiveSuccess": "Az önálló edzés eltávolítva. A korábbi eredmények megmaradtak."
   },
   "previousPerformance": {
     "title": "Legutóbb",

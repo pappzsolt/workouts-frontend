@@ -15,7 +15,7 @@ const draftWorkout: PersonalProgramSummary = {
 const startedProgram: PersonalProgramSummary = { ...draftProgram, id: 12, startedAt: '2026-11-14T09:00:00' };
 const startedWorkout: PersonalProgramSummary = { ...draftWorkout, id: 13, startedAt: '2026-11-14T09:00:00' };
 
-/** The existing backend only permits changes to drafts; started executions are immutable. */
+/** Drafts are deleted; started personal programs are archived without erasing history. */
 describe('PersonalProgramsComponent pagination and personal actions', () => {
   let component: PersonalProgramsComponent;
   let api: jasmine.SpyObj<PersonalProgramService>;
@@ -87,14 +87,21 @@ describe('PersonalProgramsComponent pagination and personal actions', () => {
     expect(component.page).toBe(1);
     expect(api.listPage).toHaveBeenCalledWith(1, 12, null, '');
   });
-  it('never requests deletion of a started program or standalone workout', () => {
+  it('allows removal of started programs and reports archival instead of hard deletion', () => {
+    api.delete.and.returnValue(of(startedProgram.id));
     component.askDelete(startedProgram);
-    expect(component.pendingDelete).toBeNull();
-    component.askDelete(startedWorkout);
-    expect(component.pendingDelete).toBeNull();
-    component.pendingDelete = startedProgram;
+    expect(component.pendingDelete).toBe(startedProgram);
     component.confirmDelete();
-    expect(api.delete).not.toHaveBeenCalled();
+    expect(api.delete).toHaveBeenCalledOnceWith(startedProgram.id);
+    expect(component.successMessage).toBe('personalPrograms.archiveSuccess');
+  });
+  it('allows removal of started standalone workouts while retaining their history', () => {
+    api.delete.and.returnValue(of(startedWorkout.id));
+    component.askDelete(startedWorkout);
+    expect(component.pendingDelete).toBe(startedWorkout);
+    component.confirmDelete();
+    expect(api.delete).toHaveBeenCalledOnceWith(startedWorkout.id);
+    expect(component.successMessage).toBe('personalWorkouts.archiveSuccess');
   });
   it('blocks duplicate delete requests while the first request is pending', () => {
     const pending$ = new Subject<number>();

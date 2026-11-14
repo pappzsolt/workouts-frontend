@@ -115,7 +115,20 @@ describe('PersonalProgramEditorComponent', () => {
     component.actions.save(form);
     expect(api.save).not.toHaveBeenCalled();
     component.actions.ask('delete');
-    expect(component.state.action).toBeNull();
+    expect(component.state.action).toBe('delete');
+    expect(component.actions.confirmationTitle).toBe('personalPrograms.archiveTitle');
+    expect(component.actions.confirmationMessage).toBe('personalPrograms.archiveConfirm');
+  });
+  it('can remove started standalone workouts using the archive confirmation', () => {
+    component.state.standaloneMode = true;
+    component.state.started = true;
+    api.delete.and.returnValue(of(9));
+    component.actions.ask('delete');
+    expect(component.actions.confirmationTitle).toBe('personalWorkouts.archiveTitle');
+    expect(component.actions.confirmationMessage).toBe('personalWorkouts.archiveConfirm');
+    component.actions.confirm();
+    expect(api.delete).toHaveBeenCalledOnceWith(9);
+    expect(router.navigate).toHaveBeenCalledWith(['/user/personal-programs']);
   });
   it('builds an ISO business date even when the formatter uses month/day/year order', () => {
     const original = Intl.DateTimeFormat;

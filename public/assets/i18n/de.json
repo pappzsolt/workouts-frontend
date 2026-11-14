@@ -1574,7 +1574,7 @@
     "saving": "Speichern…",
     "catalogueError": "Übungsnamen konnten nicht geladen werden. Deine gespeicherten Übungen bleiben erhalten.",
     "start": "Programm starten",
-    "delete": "Entwurf löschen",
+    "delete": "Programm löschen",
     "copy": "Kopie erstellen",
     "startHint": "Speichere Änderungen vor dem Start. Mindestens ein Trainingstag und eine Übung pro Training sind erforderlich. Prüfe auch die Satzziele der anderen Tage.",
     "noFreeDay": "Keine freien Tage mehr. Verlängere die Programmdauer.",
@@ -1595,7 +1595,10 @@
     "editDraft": "Bearbeiten",
     "editCopy": "Bearbeitbare Kopie",
     "deleteListConfirm": "Möchtest du deinen Programmentwurf „{{name}}“ samt Trainingstagen wirklich löschen? Dies kann nicht rückgängig gemacht werden.",
-    "deleteSuccess": "Eigener Programmentwurf gelöscht."
+    "deleteSuccess": "Eigener Programmentwurf gelöscht.",
+    "archiveTitle": "Gestartetes Programm entfernen",
+    "archiveConfirm": "Möchtest du dieses gestartete Programm aus deinen eigenen Programmen entfernen? Die aktive Zuweisung wird widerrufen; Trainingshistorie und bestehende Ausführungsdaten bleiben erhalten. Dies kann in der Oberfläche nicht rückgängig gemacht werden.",
+    "archiveSuccess": "Programm aus deinen eigenen Programmen entfernt. Die Trainingshistorie bleibt erhalten."
   },
   "personalWorkouts": {
     "create": "Einzeltraining erstellen",
@@ -1623,9 +1626,12 @@
     "draft": "Trainingsentwurf",
     "editDraft": "Training bearbeiten",
     "editCopy": "Neue bearbeitbare Einheit",
-    "delete": "Trainingsentwurf löschen",
+    "delete": "Training löschen",
     "deleteListConfirm": "Möchtest du den Einzeltrainingsentwurf „{{name}}“ wirklich löschen? Dies kann nicht rückgängig gemacht werden.",
-    "deleteSuccess": "Einzeltrainingsentwurf gelöscht."
+    "deleteSuccess": "Einzeltrainingsentwurf gelöscht.",
+    "archiveTitle": "Gestartetes Training entfernen",
+    "archiveConfirm": "Möchtest du dieses gestartete Einzeltraining entfernen? Die aktive Zuweisung wird widerrufen; Trainingshistorie und bestehende Ausführungsdaten bleiben erhalten. Dies kann in der Oberfläche nicht rückgängig gemacht werden.",
+    "archiveSuccess": "Einzeltraining entfernt. Bisherige Ergebnisse bleiben erhalten."
   },
   "previousPerformance": {
     "title": "Beim letzten Mal",
