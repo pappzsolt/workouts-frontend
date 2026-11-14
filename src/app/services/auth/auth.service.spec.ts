@@ -55,11 +55,13 @@ describe('AuthService cross-tab refresh', () => {
     flushMicrotasks();
     const initial = http.expectOne(request => request.url === API_ENDPOINTS.authWebRefresh);
     second.logout();
-    http.expectOne(request => request.url === API_ENDPOINTS.authWebLogout).flush({ success: true });
+    http.expectNone(request => request.url === API_ENDPOINTS.authWebLogout);
     initial.flush({ success: true, data: { accessToken: 'first-token' } });
     flushMicrotasks();
     http.expectNone(request => request.url === API_ENDPOINTS.authWebRefresh);
     expect(second.getAccessToken()).toBeNull();
+    http.expectOne(request => request.url === API_ENDPOINTS.authWebLogout).flush({ success: true });
+    flushMicrotasks();
   }));
   for (const fails of [false, true]) {
     it(`shares guard and parallel interceptor refresh with ${fails ? 'one failure callback' : 'independent retries'}`, fakeAsync(() => {
@@ -139,17 +141,16 @@ describe('AuthService cross-tab refresh', () => {
     expect(first.getAccessToken()).toBe('new-session-refresh');
   }));
 
-  it('ignores an older in-flight refresh when Web Locks are unavailable', fakeAsync(() => {
+  it('serializes refresh and login when Web Locks are unavailable', fakeAsync(() => {
     spyOnProperty(navigator, 'locks', 'get').and.returnValue(undefined as unknown as LockManager);
-    const failure = jasmine.createSpy('refreshFailure');
-    first.refreshAccessToken(failure).subscribe();
+    first.refreshAccessToken().subscribe(); flushMicrotasks();
     const refresh = http.expectOne(request => request.url === API_ENDPOINTS.authWebRefresh);
-    first.login('new-user', 'password').subscribe();
+    first.login('new-user', 'password').subscribe(); flushMicrotasks();
+    http.expectNone(request => request.url === API_ENDPOINTS.authWebLogin);
+    refresh.flush({ success: true, data: { accessToken: 'old-token' } }); flushMicrotasks();
     http.expectOne(request => request.url === API_ENDPOINTS.authWebLogin)
-      .flush({ success: true, data: { accessToken: 'new-login-token' } });
-    expect(refresh.cancelled).toBeTrue();
-    expect(first.getAccessToken()).toBe('new-login-token');
-    expect(failure).not.toHaveBeenCalled();
+      .flush({ success: true, data: { accessToken: 'new-token' } }); flushMicrotasks();
+    expect(first.getAccessToken()).toBe('new-token');
   }));
 
   it('does not accept a login response after logout', fakeAsync(() => {
@@ -157,10 +158,42 @@ describe('AuthService cross-tab refresh', () => {
     flushMicrotasks();
     const login = http.expectOne(request => request.url === API_ENDPOINTS.authWebLogin);
     first.logout();
-    http.expectOne(request => request.url === API_ENDPOINTS.authWebLogout).flush({ success: true });
+    http.expectNone(request => request.url === API_ENDPOINTS.authWebLogout);
     login.flush({ success: true, data: { accessToken: 'stale-login' } });
     flushMicrotasks();
     expect(first.getAccessToken()).toBeNull();
+    http.expectOne(request => request.url === API_ENDPOINTS.authWebLogout).flush({ success: true });
+    flushMicrotasks();
+  }));
+
+  for (const available of [true, false]) {
+    for (const fails of [false, true]) {
+      it(`waits for ${fails ? 'failed' : 'successful'} logout before login with Web Locks=${available}`, fakeAsync(() => {
+        if (!available) spyOnProperty(navigator, 'locks', 'get').and.returnValue(undefined as unknown as LockManager);
+        first.logout(); flushMicrotasks();
+        const logout = http.expectOne(request => request.url === API_ENDPOINTS.authWebLogout);
+        first.login('new-user', 'password').subscribe(); flushMicrotasks();
+        http.expectNone(request => request.url === API_ENDPOINTS.authWebLogin);
+        if (fails) logout.flush(null, {status: 503, statusText: 'Unavailable'});
+        else logout.flush({success: true});
+        flushMicrotasks();
+        http.expectOne(request => request.url === API_ENDPOINTS.authWebLogin)
+          .flush({success: true, data: {accessToken: 'new-token'}});
+        flushMicrotasks();
+        expect(first.getAccessToken()).toBe('new-token');
+      }));
+    }
+  }
+  it('serializes logout and login across tabs', fakeAsync(() => {
+    first.logout(); flushMicrotasks();
+    const logout = http.expectOne(request => request.url === API_ENDPOINTS.authWebLogout);
+    second.login('other-tab', 'password').subscribe(); flushMicrotasks();
+    http.expectNone(request => request.url === API_ENDPOINTS.authWebLogin);
+    logout.flush({success: true}); flushMicrotasks();
+    http.expectOne(request => request.url === API_ENDPOINTS.authWebLogin)
+      .flush({success: true, data: {accessToken: 'other-tab-token'}});
+    flushMicrotasks();
+    expect(second.getAccessToken()).toBe('other-tab-token');
   }));
 
 });

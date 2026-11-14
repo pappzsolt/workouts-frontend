@@ -236,7 +236,7 @@ export class AuthService {
     safeStorageRemove('accessToken');
     safeStorageRemove('refreshToken');
 
-    this.rawHttp
+    this.withSessionLock(() => this.rawHttp
       .post<ApiResponse<null>>(
         API_ENDPOINTS.authWebLogout,
         {},
@@ -244,7 +244,7 @@ export class AuthService {
           params: this.languageParams(),
           withCredentials: true,
         },
-      )
+      ))
       .subscribe({
         error: (error) => {
           this.logger.warn(
@@ -255,12 +255,17 @@ export class AuthService {
       });
   }
 
+  private sessionQueue: Promise<unknown> = Promise.resolve();
+
   private withSessionLock<T>(request: () => Observable<T>): Observable<T> {
     return defer(() => {
       if (typeof navigator !== 'undefined' && navigator.locks) {
         return navigator.locks.request('workouts-auth-refresh', () => firstValueFrom(request()));
       }
-      return request();
+      // Browsers without Web Locks still serialize operations within this tab.
+      const result = this.sessionQueue.then(() => firstValueFrom(request()));
+      this.sessionQueue = result.then(() => undefined, () => undefined);
+      return result;
     });
   }
 
