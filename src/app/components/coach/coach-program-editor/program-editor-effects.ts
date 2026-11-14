@@ -7,7 +7,7 @@ export interface ProgramEditorEffects {
   readonly destroyRef: DestroyRef;
   showMessage(key: string, type: 'success' | 'error' | 'info', params?: Record<string, unknown>): void;
   showError(error: unknown, fallbackKey: string): void;
-  reload(selectDay: number | null, preserveDrafts?: boolean, submittedForm?: CoachProgramDetailsInput): void;
+  reload(selectDay: number | null, preserveDrafts?: boolean, submittedForm?: CoachProgramDetailsInput, submittedLanguage?: string): void;
   run(operation: Observable<unknown>, successKey: string, selectDay: number,
       preserveDrafts?: boolean, onError?: (error: unknown) => boolean): void;
 }

@@ -970,6 +970,7 @@
       "nextWeek": "Next week",
       "restDay": "Rest day",
       "selectedWorkout": "Selected workout",
+      "requestedWorkoutUnavailable": "The requested workout is no longer available in this program. Choose another workout.",
       "selectHint": "Pick a workout in the calendar to see its details.",
       "personalizeHint": "Values set here apply only to this client's workout.",
       "doneHint": "This workout is completed and read-only.",

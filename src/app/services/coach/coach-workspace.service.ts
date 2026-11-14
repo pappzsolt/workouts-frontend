@@ -80,16 +80,16 @@ export class CoachWorkspaceService {
     return this.programs.getCoachPrograms();
   }
 
-  getProgram(programId: number): Observable<CoachProgram> {
-    return this.programs.getProgram(programId);
+  getProgram(programId: number, language?: string): Observable<CoachProgram> {
+    return this.programs.getProgram(programId, language);
   }
 
-  createProgram(details: CoachProgramDetailsInput): Observable<number> {
-    return this.programs.createProgram(details);
+  createProgram(details: CoachProgramDetailsInput, language?: string): Observable<number> {
+    return this.programs.createProgram(details, language);
   }
 
-  updateProgram(programId: number, details: CoachProgramDetailsInput): Observable<void> {
-    return this.programs.updateProgram(programId, details);
+  updateProgram(programId: number, details: CoachProgramDetailsInput, language?: string): Observable<void> {
+    return this.programs.updateProgram(programId, details, language);
   }
 
   deleteProgram(programId: number): Observable<void> {

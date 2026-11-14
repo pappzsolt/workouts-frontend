@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../services/shared/language.service';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { of, Subject } from 'rxjs';
@@ -21,7 +22,7 @@ describe('Coach program partial save notifications', () => {
       addExerciseToWorkout: jasmine.createSpy().and.returnValue(attached),
       addWorkoutToDay: jasmine.createSpy().and.returnValue(of(undefined)),
     };
-    TestBed.configureTestingModule({ providers: [
+    TestBed.configureTestingModule({ providers: [{ provide: LanguageService, useValue: { getCurrentLanguage: () => 'hu', language$: of('hu') } },
       { provide: CoachWorkspaceService, useValue: workspace },
       { provide: ActivatedRoute, useValue: {
         paramMap: of(convertToParamMap({ id: '10' })), snapshot: { queryParamMap: convertToParamMap({}) },
@@ -44,7 +45,7 @@ describe('Coach program partial save notifications', () => {
     const first = new Subject<void>();
     const second = new Subject<void>();
     const add = jasmine.createSpy('addWorkoutToDay').and.returnValues(first, second);
-    TestBed.configureTestingModule({ providers: [
+    TestBed.configureTestingModule({ providers: [{ provide: LanguageService, useValue: { getCurrentLanguage: () => 'hu', language$: of('hu') } },
       { provide: CoachWorkspaceService, useValue: {
         getProgram: () => of(program), getProgramDays: () => of([]),
         getOverview: () => of({ clients: [] }), getAssignedUserIds: () => of([]), getMyWorkouts: () => of([]),

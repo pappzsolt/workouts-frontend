@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../services/shared/language.service';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { of, Subject } from 'rxjs';
@@ -21,7 +22,7 @@ describe('Program operation safety', () => {
     api.getProgramDays.and.returnValue(of([{id:11,programId:10,workoutId:20,dayIndex:1}]));
     api.getOverview.and.returnValue(of({from:'',to:'',clients:[]}));
     api.getAssignedUserIds.and.returnValue(of([])); api.getMyWorkouts.and.returnValue(of([]));
-    TestBed.configureTestingModule({providers:[
+    TestBed.configureTestingModule({providers: [{ provide: LanguageService, useValue: { getCurrentLanguage: () => 'hu', language$: of('hu') } },
       {provide:CoachWorkspaceService,useValue:api},
       {provide:ActivatedRoute,useValue:{paramMap:of(convertToParamMap({id:'10'})),snapshot:{queryParamMap:convertToParamMap({})}}},
       {provide:Router,useValue:{}},

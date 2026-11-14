@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../services/shared/language.service';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, ParamMap, Router, convertToParamMap } from '@angular/router';
 import { EMPTY, Subject, of } from 'rxjs';
@@ -36,7 +37,7 @@ describe('Program editor loading regressions', () => {
       getMyWorkouts: jasmine.createSpy().and.returnValue(of([])),
       updateProgram: jasmine.createSpy().and.returnValue(EMPTY),
     };
-    TestBed.configureTestingModule({ providers: [
+    TestBed.configureTestingModule({ providers: [{ provide: LanguageService, useValue: { getCurrentLanguage: () => 'hu', language$: of('hu') } },
       { provide: CoachWorkspaceService, useValue: workspace },
       { provide: ActivatedRoute, useValue: { paramMap: route, snapshot: { queryParamMap: convertToParamMap({}) } } },
       { provide: Router, useValue: { navigate: jasmine.createSpy() } },
@@ -57,7 +58,7 @@ describe('Program editor loading regressions', () => {
     expect(workspace.getAssignedUserIds).toHaveBeenCalledOnceWith(2);
     component.state.form.programName = 'Edited program 2';
     component.details.saveDetails();
-    expect(workspace.updateProgram).toHaveBeenCalledOnceWith(2, jasmine.objectContaining({ programName: 'Edited program 2' }));
+    expect(workspace.updateProgram).toHaveBeenCalledOnceWith(2, jasmine.objectContaining({ programName: 'Edited program 2' }), 'hu');
   });
 
   it('ignores an old error without ending the latest loading state', () => {

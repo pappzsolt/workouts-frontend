@@ -31,7 +31,7 @@
     <app-message [message]="state.message" [messageParams]="state.messageParams" [type]="state.messageType" role="status" />
     <div id="program-details-editor" [style.display]="state.programId === null || editDetails ? null : 'none'">
       <app-program-details-form [form]="state.form" [isNew]="state.programId === null" [saving]="state.savingDetails"
-        [submitDisabled]="state.operationPending || (state.programId !== null && state.program?.programId !== state.programId)"
+        [submitDisabled]="state.operationPending || (state.programId !== null && (state.program?.programId !== state.programId || state.detailsLanguage !== state.languageCode))"
         (save)="details.saveDetails()" />
     </div>
     @if (state.programId === null) {

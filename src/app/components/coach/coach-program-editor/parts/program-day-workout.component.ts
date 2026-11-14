@@ -23,7 +23,7 @@ export class ProgramDayWorkoutComponent {
   @Input({ required: true }) workout!: CoachProgramWorkout;
   @Input() rows: EditableExercise[] = [];
   @Input() selectedWorkoutDayCount = 0;
-  @Input() selectedDayClients: { client: CoachClientOverview; date: string }[] = [];
+  @Input() selectedDayClients: { client: CoachClientOverview; programWorkoutId: number }[] = [];
   @Input() programId: number | null = null;
   @Input() busy = false;
   @Input() weeklyRepeatDays: number[] = [];

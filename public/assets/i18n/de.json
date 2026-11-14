@@ -970,6 +970,7 @@
       "nextWeek": "Nächste Woche",
       "restDay": "Ruhetag",
       "selectedWorkout": "Ausgewähltes Training",
+      "requestedWorkoutUnavailable": "Das angeforderte Training ist in diesem Programm nicht mehr verfügbar. Wähle ein anderes Training.",
       "selectHint": "Wähle ein Training im Kalender, um Details zu sehen.",
       "personalizeHint": "Die hier eingestellten Werte gelten nur für das Training dieses Kunden.",
       "doneHint": "Dieses Training ist erledigt und nur lesbar.",

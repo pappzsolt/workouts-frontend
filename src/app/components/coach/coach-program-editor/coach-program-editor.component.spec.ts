@@ -1,6 +1,7 @@
+import { LanguageService } from '../../../services/shared/language.service';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import type { CoachClientOverview } from '../../../models/coach-workspace.model';
 import { CoachProgramEditorComponent } from './coach-program-editor.component';
@@ -20,7 +21,7 @@ describe('Program editor assignment revocation', () => {
   beforeEach(() => {
     request = new Subject<void>();
     revoke = jasmine.createSpy('revokeProgram').and.returnValue(request);
-    TestBed.configureTestingModule({ providers: [
+    TestBed.configureTestingModule({ providers: [{ provide: LanguageService, useValue: { getCurrentLanguage: () => 'hu', language$: of('hu') } },
       { provide: CoachWorkspaceService, useValue: { revokeProgram: revoke } },
       { provide: ActivatedRoute, useValue: {} },
       { provide: Router, useValue: {} },

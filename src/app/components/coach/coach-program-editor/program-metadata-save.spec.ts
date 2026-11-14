@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../services/shared/language.service';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of, Subject } from 'rxjs';
@@ -15,7 +16,7 @@ describe('Program metadata save', () => {
       const reload = new Subject<CoachProgram>();
       const request = new Subject<void>();
       const update = jasmine.createSpy('updateProgram').and.returnValue(request);
-      TestBed.configureTestingModule({providers: [
+      TestBed.configureTestingModule({providers: [{ provide: LanguageService, useValue: { getCurrentLanguage: () => 'hu', language$: of('hu') } },
         {provide: CoachWorkspaceService, useValue: {
           getMyWorkouts: () => of([]), updateProgram: update, getProgram: () => reload, getProgramDays: () => of([]),
           getOverview: () => of({clients: []}), getAssignedUserIds: () => of([]),
@@ -25,6 +26,7 @@ describe('Program metadata save', () => {
       const component = TestBed.runInInjectionContext(() => new CoachProgramEditorComponent());
       component.state.programId = 10;
       component.state.program = saved;
+      component.state.detailsLanguage = 'hu';
       component.state.loading = false;
       component.state.form = {
         programName: 'Submitted name', programDescription: 'Submitted description', durationDays: 28,

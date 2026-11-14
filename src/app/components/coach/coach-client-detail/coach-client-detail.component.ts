@@ -123,6 +123,7 @@ export class CoachClientDetailComponent implements OnInit {
 
   private requestedWorkoutId: number | null = null;
   private requestedDate: string | null = null;
+  private requestedProgramWorkoutId: number | null = null;
 
   ngOnInit(): void {
     this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
@@ -136,6 +137,8 @@ export class CoachClientDetailComponent implements OnInit {
       const query = this.route.snapshot.queryParamMap;
       const workout = Number(query.get('workout'));
       this.requestedWorkoutId = Number.isInteger(workout) && workout > 0 ? workout : null;
+      const programWorkout = Number(query.get('programWorkout'));
+      this.requestedProgramWorkoutId = Number.isSafeInteger(programWorkout) && programWorkout > 0 ? programWorkout : null;
       const date = query.get('date');
       this.requestedDate = date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : null;
       const program = Number(query.get('program'));
@@ -168,6 +171,7 @@ export class CoachClientDetailComponent implements OnInit {
     this.exporting = false;
     this.requestedWorkoutId = null;
     this.requestedDate = null;
+    this.requestedProgramWorkoutId = null;
     this.message = '';
     this.messageType = 'info';
     this.messageParams = {};
@@ -263,12 +267,22 @@ export class CoachClientDetailComponent implements OnInit {
       .subscribe({
         next: (rows) => {
           if (this.programId !== programId) return;
+          const requestedProgramWorkoutId = this.requestedProgramWorkoutId;
+          this.requestedProgramWorkoutId = null;
+          const requestedOccurrence = requestedProgramWorkoutId === null ? null
+            : rows.find(row => row.program_workout_id === requestedProgramWorkoutId);
           this.requestedWorkoutId = null;
           this.workouts = groupWorkouts(rows);
           this.weeks = this.buildWeeks();
           this.programLoading = false;
           this.selectedIndex = -1;
-          let index = keep === null ? -1 : this.workouts.findIndex((w) => w.userWorkoutId === keep);
+          if (requestedProgramWorkoutId !== null && !requestedOccurrence) {
+            this.requestedDate = null;
+            this.showMessage('coachWorkspace.client.requestedWorkoutUnavailable', 'error');
+            return;
+          }
+          const selectedWorkoutId = requestedOccurrence?.user_workout_id ?? keep;
+          let index = selectedWorkoutId === null ? -1 : this.workouts.findIndex((w) => w.userWorkoutId === selectedWorkoutId);
           if (index < 0 && this.requestedDate) index = this.workouts.findIndex((w) => w.date === this.requestedDate);
           this.requestedDate = null;
           if (index < 0) index = this.defaultWorkoutIndex();

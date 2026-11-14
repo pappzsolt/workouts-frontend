@@ -12,13 +12,13 @@ export class ProgramDetailsEditor {
     private readonly effects: ProgramEditorEffects,
     private readonly hasDayDraft: () => boolean,
     private readonly newForUserName: () => string,
-    private readonly markSaved: (details: CoachProgramDetailsInput) => void,
+    private readonly markSaved: (details: CoachProgramDetailsInput, language: string, submittedForm: CoachProgramDetailsInput) => void,
     private readonly navigateToCreatedProgram: (id: number) => void,
   ) {}
 
   saveDetails(): void {
     if (this.state.operationPending ||
-        (this.state.programId !== null && this.state.program?.programId !== this.state.programId)) return;
+        (this.state.programId !== null && (this.state.program?.programId !== this.state.programId || this.state.detailsLanguage !== this.state.languageCode))) return;
     const name = this.state.form.programName.trim();
     const duration = Number(this.state.form.durationDays);
     if (!name || !Number.isInteger(duration) || duration < 1 || duration > 365 || !this.state.form.startDate) {
@@ -29,6 +29,7 @@ export class ProgramDetailsEditor {
       this.effects.showMessage('coachWorkspace.editor.saveBeforeShortening', 'error');
       return;
     }
+    const language = this.state.languageCode;
     const submittedForm = { ...this.state.form };
     const details: CoachProgramDetailsInput = {
       programName: name,
@@ -41,14 +42,14 @@ export class ProgramDetailsEditor {
 
     if (this.state.programId === null) {
       this.workspace
-        .createProgram(details)
+        .createProgram(details, language)
         .pipe(takeUntilDestroyed(this.effects.destroyRef))
         .subscribe({
           next: (id) => {
             const userId = this.state.newForUserId;
             if (userId === null) {
               this.state.savingDetails = false;
-              this.markSaved(details);
+              this.markSaved(details, language, submittedForm);
               this.effects.showMessage('coachWorkspace.editor.created', 'success');
               this.navigateToCreatedProgram(id);
               return;
@@ -60,13 +61,13 @@ export class ProgramDetailsEditor {
               .subscribe({
                 next: () => {
                   this.state.savingDetails = false;
-                  this.markSaved(details);
+                  this.markSaved(details, language, submittedForm);
                   this.effects.showMessage('coachWorkspace.editor.createdForClient', 'success', { name: this.newForUserName() });
                   this.navigateToCreatedProgram(id);
                 },
                 error: () => {
                   this.state.savingDetails = false;
-                  this.markSaved(details);
+                  this.markSaved(details, language, submittedForm);
                   this.effects.showMessage('coachWorkspace.editor.partialAssignment', 'error');
                   this.navigateToCreatedProgram(id);
                 },
@@ -81,14 +82,14 @@ export class ProgramDetailsEditor {
     }
 
     this.workspace
-      .updateProgram(this.state.programId, details)
+      .updateProgram(this.state.programId, details, language)
       .pipe(takeUntilDestroyed(this.effects.destroyRef))
       .subscribe({
         next: () => {
           this.state.savingDetails = false;
-          this.markSaved(details);
+          this.markSaved(details, language, submittedForm);
           this.effects.showMessage('coachWorkspace.editor.saved', 'success');
-          this.effects.reload(this.state.selectedDay, true, submittedForm);
+          this.effects.reload(this.state.selectedDay, true, submittedForm, language);
         },
         error: (error) => {
           this.state.savingDetails = false;

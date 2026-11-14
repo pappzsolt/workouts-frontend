@@ -38,10 +38,10 @@ test('editor: existing metadata saves, reloads and error preserves fields', asyn
   await expect(root.locator('app-message[role=status]')).toContainText('Contract failure');
   await expect(root.locator('[name=programName]')).toHaveValue('Retry name');
 });
-test('editor: day selection and library links use occurrence date', async ({ page, api }) => {
+test('editor: day selection links identify the program occurrence', async ({ page, api }) => {
   await page.goto('/coach/programs/1'); const root = editor(page);
   await expect(root.getByRole('button', { name: /Program 1\. napja · Workout\ A$/ })).toHaveAttribute('aria-pressed', 'true');
-  await expect(selected(page).locator('a[href="/coach/clients/7?program=1&date=2030-04-15"]')).toBeVisible();
+  await expect(selected(page).locator('a[href="/coach/clients/7?program=1&programWorkout=100"]')).toBeVisible();
   await root.getByRole('button', { name: /Program 8\. napja · Workout\ B$/ }).click();
   await expect(selected(page).getByRole('heading', { name: 'Workout B', exact: true })).toBeVisible();
   await expect(selected(page).getByRole('link', { name: 'Edzés megnyitása az Edzéstárban' })).toHaveAttribute('href', '/coach/workouts/20/edit');

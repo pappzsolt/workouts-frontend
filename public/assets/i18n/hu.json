@@ -970,6 +970,7 @@
       "nextWeek": "Következő hét",
       "restDay": "Pihenőnap",
       "selectedWorkout": "Kiválasztott edzés",
+      "requestedWorkoutUnavailable": "A kért edzés már nem érhető el ebben a programban. Válassz másik edzést.",
       "selectHint": "Válassz egy edzést a naptárból a részletekhez.",
       "personalizeHint": "Az itt megadott értékek csak ennek az ügyfélnek az edzésére vonatkoznak.",
       "doneHint": "Ez az edzés már kész, csak megtekinthető.",

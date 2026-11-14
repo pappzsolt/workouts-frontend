@@ -83,10 +83,10 @@ export class ProgramClientAssignments {
       });
   }
 
-  get selectedDayClients(): { client: CoachClientOverview; date: string }[] {
-    if (!this.state.form.startDate) return [];
-    const date = this.state.dateForDay(this.state.selectedDay);
-    return this.assignedClients.map((client) => ({ client, date }));
+  get selectedDayClients(): { client: CoachClientOverview; programWorkoutId: number }[] {
+    const programWorkoutId = this.state.selectedCell?.link?.id;
+    if (programWorkoutId == null) return [];
+    return this.assignedClients.map(client => ({ client, programWorkoutId }));
   }
 
   get newForUserName(): string {

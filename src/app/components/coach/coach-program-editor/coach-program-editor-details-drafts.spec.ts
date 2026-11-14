@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../services/shared/language.service';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { Subject, of } from 'rxjs';
@@ -20,7 +21,7 @@ describe('Program details save preserves day drafts', () => {
       ] };
     save = new Subject<void>(); refresh = new Subject<CoachProgram>();
     update = jasmine.createSpy().and.returnValue(save);
-    TestBed.configureTestingModule({ providers: [
+    TestBed.configureTestingModule({ providers: [{ provide: LanguageService, useValue: { getCurrentLanguage: () => 'hu', language$: of('hu') } },
       { provide: CoachWorkspaceService, useValue: {
         getProgram: jasmine.createSpy().and.returnValues(of(program), refresh),
         getProgramDays: () => of([{ id: 10, programId: 1, workoutId: 20, dayIndex: 1 }]),

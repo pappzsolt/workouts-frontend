@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../services/shared/language.service';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { of, Subject } from 'rxjs';
@@ -17,7 +18,7 @@ describe('Coach program editor unsaved navigation protection', () => {
   function create(id: 'new' | '10' = '10') {
     const save = new Subject<void>();
     const loaded = { ...program };
-    TestBed.configureTestingModule({ providers: [
+    TestBed.configureTestingModule({ providers: [{ provide: LanguageService, useValue: { getCurrentLanguage: () => 'hu', language$: of('hu') } },
       { provide: CoachWorkspaceService, useValue: {
         getProgram: () => of(loaded),
         getProgramDays: () => of([{ id: 30, programId: 10, workoutId: 20, dayIndex: 1 }]),

@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../services/shared/language.service';
 import type { Type } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
@@ -54,7 +55,7 @@ describe('Program editor screen bindings', () => {
     api.getExerciseFilterOptions.and.returnValue(of({ bodyParts: [], equipment: [] }));
     TestBed.configureTestingModule({
       imports: [CoachProgramEditorComponent],
-      providers: [
+      providers: [{ provide: LanguageService, useValue: { getCurrentLanguage: () => 'hu', language$: of('hu') } },
         provideRouter([]), provideTranslateService(),
         { provide: CoachWorkspaceService, useValue: api },
         { provide: ActivatedRoute, useFactory: () => ({
@@ -111,14 +112,14 @@ describe('Program editor screen bindings', () => {
     const workoutFixture = TestBed.createComponent(ProgramDayWorkoutComponent);
     workoutFixture.componentRef.setInput('workout', program.workouts[0]);
     workoutFixture.componentRef.setInput('programId', 10);
-    workoutFixture.componentRef.setInput('selectedDayClients', [{ client, date: '2026-10-23' }]);
+    workoutFixture.componentRef.setInput('selectedDayClients', [{ client, programWorkoutId: 11 }]);
     workoutFixture.detectChanges();
     const clientLink = (workoutFixture.nativeElement as HTMLElement).querySelector<HTMLAnchorElement>('a[href*="/coach/clients/7"]');
-    expect(clientLink?.getAttribute('href')).toBe('/coach/clients/7?program=10&date=2026-10-23');
+    expect(clientLink?.getAttribute('href')).toBe('/coach/clients/7?program=10&programWorkout=11');
     details.form.programName = 'Renamed';
     details.save.emit();
     fixture.detectChanges();
-    expect(api.updateProgram).toHaveBeenCalledOnceWith(10, jasmine.objectContaining({ programName: 'Renamed' }));
+    expect(api.updateProgram).toHaveBeenCalledOnceWith(10, jasmine.objectContaining({ programName: 'Renamed' }), 'hu');
     expect(details.saving).toBeTrue();
     save.next(); save.complete();
     fixture.detectChanges();

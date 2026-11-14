@@ -45,25 +45,25 @@ export class CoachProgramsApiService {
       .pipe(map((response) => unwrap(response) ?? []));
   }
 
-  getProgram(programId: number): Observable<CoachProgram> {
-    const params = new HttpParams().set('language', this.language());
+  getProgram(programId: number, language = this.language()): Observable<CoachProgram> {
+    const params = new HttpParams().set('language', language);
     return this.http
       .get<ApiResponse<CoachProgram>>(API_ENDPOINTS.programById(programId), { params })
       .pipe(map(unwrap));
   }
 
-  createProgram(details: CoachProgramDetailsInput): Observable<number> {
+  createProgram(details: CoachProgramDetailsInput, language = this.language()): Observable<number> {
     return this.http
       .post<ApiResponse<number>>(API_ENDPOINTS.createProgram, {
         ...details,
-        languageCode: this.language(),
+        languageCode: language,
         workouts: [],
       })
       .pipe(map(unwrap));
   }
 
-  updateProgram(programId: number, details: CoachProgramDetailsInput): Observable<void> {
-    const params = new HttpParams().set('language', this.language());
+  updateProgram(programId: number, details: CoachProgramDetailsInput, language = this.language()): Observable<void> {
+    const params = new HttpParams().set('language', language);
     return this.http
       .put<ApiResponse<unknown>>(API_ENDPOINTS.programById(programId), details, { params })
       .pipe(map((response) => { unwrap(response); }));

@@ -1,7 +1,8 @@
+import { LanguageService } from '../../../services/shared/language.service';
 import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subject, forkJoin, takeUntil } from 'rxjs';
+import { Observable, Subject, distinctUntilChanged, forkJoin, takeUntil } from 'rxjs';
 import { AppLoadingComponent } from '../../shared/components/app-state/app-state.component';
 import { CoachCalendarComponent } from '../coach-calendar/coach-calendar.component';
 import { FormsModule } from '@angular/forms';
@@ -52,6 +53,8 @@ import { ProgramCopyEditor } from './program-copy-editor';
   templateUrl: './coach-program-editor.component.html',
 })
 export class CoachProgramEditorComponent implements OnInit {
+  private readonly language = inject(LanguageService);
+
   private readonly workspace = inject(CoachWorkspaceService);
 
   private readonly route = inject(ActivatedRoute);
@@ -66,7 +69,7 @@ export class CoachProgramEditorComponent implements OnInit {
 
   readonly difficultyOptions = DIFFICULTY_OPTIONS;
 
-  readonly state = new ProgramEditorState();
+  readonly state = Object.assign(new ProgramEditorState(), { languageCode: this.language.getCurrentLanguage() });
   activeTab: 'workouts' | 'calendar' | 'clients' = 'workouts';
   editDetails = false;
   readonly programTabs = [
@@ -94,6 +97,7 @@ export class CoachProgramEditorComponent implements OnInit {
     if (!buttons[next]?.disabled) buttons[next]?.focus();
   }
 
+  private readonly detailsDrafts = new Map<string, Partial<CoachProgramDetailsInput>>();
   private detailsBaseline: CoachProgramDetailsInput = { ...this.state.form };
   private leaveResult?: Subject<boolean>;
   leaveConfirmationOpen = false;
@@ -103,7 +107,7 @@ export class CoachProgramEditorComponent implements OnInit {
     destroyRef: this.destroyRef,
     showMessage: (key, type, params) => this.showMessage(key, type, params),
     showError: (error, fallbackKey) => this.showError(error, fallbackKey),
-    reload: (day, preserveDrafts, submittedForm) => this.loadProgram(day, preserveDrafts, submittedForm),
+    reload: (day, preserveDrafts, submittedForm, submittedLanguage) => this.loadProgram(day, preserveDrafts, submittedForm, submittedLanguage),
     run: (operation, key, day, preserveDrafts, onError) => this.run(operation, key, day, preserveDrafts, onError),
   };
 
@@ -113,7 +117,7 @@ export class CoachProgramEditorComponent implements OnInit {
   readonly details = new ProgramDetailsEditor(
     this.state, this.workspace, this.effects,
     () => this.hasDayDraft(), () => this.assignments.newForUserName,
-    (details) => this.markDetailsSaved(details), (id) => this.navigateToCreatedProgram(id),
+    (details, language, submittedForm) => this.markDetailsSaved(details, language, submittedForm), (id) => this.navigateToCreatedProgram(id),
   );
   readonly copy = new ProgramCopyEditor(this.state, this.workspace, this.effects, this.router);
 
@@ -128,6 +132,8 @@ export class CoachProgramEditorComponent implements OnInit {
       if (raw === null || raw === 'new') {
         this.state.programId = null;
         this.state.program = null;
+        this.state.detailsLanguage = null;
+        this.detailsDrafts.clear();
         this.workouts.rows = [];
         this.assignments.reset();
         this.activeTab = 'workouts';
@@ -150,6 +156,8 @@ export class CoachProgramEditorComponent implements OnInit {
       }
       if (this.state.programId !== id) {
         this.state.program = null;
+        this.state.detailsLanguage = null;
+        this.detailsDrafts.clear();
         this.state.cells = [];
         this.workouts.rows = [];
         this.assignments.reset();
@@ -159,26 +167,33 @@ export class CoachProgramEditorComponent implements OnInit {
       this.state.programId = id;
       this.loadProgram(null);
     });
+    this.language.language$.pipe(distinctUntilChanged(), takeUntilDestroyed(this.destroyRef)).subscribe(language => {
+      if (language === this.state.languageCode) return;
+      this.state.languageCode = language;
+      if (this.state.programId !== null) this.loadProgram(this.state.selectedDay, true);
+    });
   }
 
   private loadProgram(
     selectDay: number | null,
     preserveDrafts = false,
     submittedForm?: CoachProgramDetailsInput,
+    submittedLanguage?: string,
   ): void {
     if (this.state.programId === null) return;
     this.programLoadCancelled$.next();
     this.assignments.cancelLoad();
     const programId = this.state.programId;
+    const language = this.state.languageCode;
     this.state.loading = true;
     forkJoin({
-      program: this.workspace.getProgram(programId),
+      program: this.workspace.getProgram(programId, language),
       links: this.workspace.getProgramDays(programId),
     })
       .pipe(takeUntil(this.programLoadCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: ({ program, links }) => {
-          if (this.state.programId !== programId) return;
+          if (this.state.programId !== programId || this.state.languageCode !== language) return;
           // Read drafts when the response arrives, including edits made while loading.
           const draftWorkoutId = preserveDrafts ? this.state.selectedCell?.workout?.workoutId : undefined;
           const draftRows = preserveDrafts ? this.workouts.rows.filter((row) => this.workouts.isChanged(row)) : [];
@@ -191,12 +206,15 @@ export class CoachProgramEditorComponent implements OnInit {
           // submitted save), never carry another program's draft into this program.
           const metadataDraft: Partial<CoachProgramDetailsInput> = {};
           if (this.state.program?.programId === programId) {
-            const baseline = submittedForm ?? this.detailsBaseline;
+            const baseline = submittedForm && submittedLanguage === this.state.detailsLanguage ? submittedForm : this.detailsBaseline;
+            // Text belongs to its loaded language; dates, duration and difficulty are shared.
+            const localizedDraft: Partial<CoachProgramDetailsInput> = {};
             for (const key of Object.keys(baseline) as (keyof CoachProgramDetailsInput)[]) {
-              if (this.state.form[key] !== baseline[key]) {
-                Object.assign(metadataDraft, { [key]: this.state.form[key] });
+              if (String(this.state.form[key] ?? '') !== String(baseline[key] ?? '')) {
+                Object.assign(key === 'programName' || key === 'programDescription' ? localizedDraft : metadataDraft, { [key]: this.state.form[key] });
               }
             }
+            if (this.state.detailsLanguage !== null) this.detailsDrafts.set(this.state.detailsLanguage, localizedDraft);
           }
           this.state.program = program;
           this.detailsBaseline = {
@@ -213,7 +231,9 @@ export class CoachProgramEditorComponent implements OnInit {
             difficultyLevel: program.difficultyLevel ?? 'BEGINNER',
             startDate: program.startDate ?? toIsoDate(new Date()),
             ...metadataDraft,
+            ...this.detailsDrafts.get(language),
           };
+          this.state.detailsLanguage = language;
           this.buildCells(links);
           this.assignments.loadAssignment();
           const firstWorkoutDay = this.state.cells.find((cell) => cell.workout)?.day ?? 1;
@@ -233,7 +253,7 @@ export class CoachProgramEditorComponent implements OnInit {
           this.state.loading = false;
         },
         error: (error) => {
-          if (this.state.programId !== programId) return;
+          if (this.state.programId !== programId || this.state.languageCode !== language) return;
           this.state.loading = false;
           this.showError(error, 'coachWorkspace.loadError');
         },
@@ -299,8 +319,15 @@ export class CoachProgramEditorComponent implements OnInit {
   }
 
   /** Baseline used only for navigation protection; never changes request payloads. */
-  markDetailsSaved(details: CoachProgramDetailsInput): void {
-    this.detailsBaseline = { ...details };
+  markDetailsSaved(details: CoachProgramDetailsInput, language = this.state.detailsLanguage, submittedForm = details): void {
+    if (language === this.state.detailsLanguage) this.detailsBaseline = { ...details };
+    if (language === null) return;
+    // A save may complete while another language is displayed. Keep only newer edits.
+    const draft = this.detailsDrafts.get(language);
+    if (!draft) return;
+    for (const key of ['programName', 'programDescription'] as const) {
+      if (draft[key] === submittedForm[key] || draft[key] === details[key]) delete draft[key];
+    }
   }
 
   /** Newly created programs navigate to their editor without an unnecessary warning. */
@@ -313,7 +340,8 @@ export class CoachProgramEditorComponent implements OnInit {
 
   private hasUnsavedDetails(): boolean {
     return (Object.keys(this.detailsBaseline) as (keyof CoachProgramDetailsInput)[])
-      .some((key) => String(this.state.form[key] ?? '') !== String(this.detailsBaseline[key] ?? ''));
+      .some((key) => String(this.state.form[key] ?? '') !== String(this.detailsBaseline[key] ?? ''))
+      || [...this.detailsDrafts].some(([language, draft]) => language !== this.state.detailsLanguage && Object.keys(draft).length > 0);
   }
 
   get hasUnsavedChanges(): boolean {

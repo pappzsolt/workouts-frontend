@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../services/shared/language.service';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { Observable, of, Subject } from 'rxjs';
@@ -23,7 +24,7 @@ describe('Coach program background refresh and assignment consistency', () => {
   beforeEach(() => {
     assigned = [];
     assignProgram = jasmine.createSpy('assignProgram');
-    TestBed.configureTestingModule({ providers: [
+    TestBed.configureTestingModule({ providers: [{ provide: LanguageService, useValue: { getCurrentLanguage: () => 'hu', language$: of('hu') } },
       { provide: CoachWorkspaceService, useValue: {
         getProgram: () => of(program), getProgramDays: () => of([]),
         getOverview: () => of({ clients: [athlete(7), athlete(8)] }),

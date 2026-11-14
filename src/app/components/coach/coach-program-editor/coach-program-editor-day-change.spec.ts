@@ -1,3 +1,4 @@
+import { LanguageService } from '../../../services/shared/language.service';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { of } from 'rxjs';
@@ -17,7 +18,7 @@ describe('Program editor day change protection', () => {
   let update: jasmine.Spy;
   beforeEach(() => {
     update = jasmine.createSpy().and.returnValue(of(undefined));
-    TestBed.configureTestingModule({ providers: [
+    TestBed.configureTestingModule({ providers: [{ provide: LanguageService, useValue: { getCurrentLanguage: () => 'hu', language$: of('hu') } },
       { provide: CoachWorkspaceService, useValue: {
         getProgram: () => of(program), getProgramDays: () => of([{ id: 10, programId: 1, workoutId: 20, dayIndex: 1 }]),
         getOverview: () => of({ clients: [] }), getAssignedUserIds: () => of([]), getMyWorkouts: () => of([]),

@@ -5,6 +5,8 @@ import { type DayCell, dateForDay, dayForDate } from './program-days';
 /** Shared program context and request status for one editor instance. */
 export class ProgramEditorState {
   programId: number | null = null;
+  languageCode = 'hu';
+  detailsLanguage: string | null = null;
   loading = false;
   savingDetails = false;
   savingClientWorkout = false;
