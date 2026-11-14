@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { GuidedTourComponent } from './guided-tour.component';
-import { GuidedTourService } from '../../../services/shared/guided-tour.service';
+import { GuidedTourService, GUIDE_STEPS } from '../../../services/shared/guided-tour.service';
 import { LanguageService } from '../../../services/shared/language.service';
 
 describe('GuidedTourComponent', () => {
@@ -46,6 +46,7 @@ describe('GuidedTourComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('[role="dialog"]')).not.toBeNull();
     expect(fixture.nativeElement.textContent).toContain('Itt kezdődik az edzésed');
+    expect(fixture.nativeElement.querySelectorAll('.h-1\\.5').length).toBe(GUIDE_STEPS.user.length);
     tour.next();
     fixture.detectChanges();
     expect(fixture.nativeElement.textContent).toContain('Edzésprogramjaid');

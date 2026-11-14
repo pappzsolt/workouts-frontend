@@ -31,9 +31,13 @@ export class GuidedTourComponent {
     return this.step?.text[this.tour.languageCode] ?? null;
   }
 
-  get total(): number {
+  get steps() {
     const state = this.tour.active();
-    return state ? GUIDE_STEPS[state.role].length : 0;
+    return state ? GUIDE_STEPS[state.role] : [];
+  }
+
+  get total(): number {
+    return this.steps.length;
   }
 
   constructor() {
