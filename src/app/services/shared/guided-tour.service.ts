@@ -112,7 +112,7 @@ export const GUIDE_STEPS: Record<GuideRole, readonly GuideStep[]> = {
     },
     {
       route: '/user/personal-programs/new',
-      target: 'app-personal-program-editor app-program-planner > section',
+      target: 'app-personal-program-editor app-personal-program-calendar > section',
       text: {
         hu: {
           title: 'Naptáras tervezés és heti ismétlés',

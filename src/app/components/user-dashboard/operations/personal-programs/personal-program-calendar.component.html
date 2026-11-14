@@ -1,0 +1,73 @@
+<section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-3 shadow-sm sm:p-5"
+         [attr.aria-label]="'personalPrograms.flow.calendar' | translate">
+  <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <h3 class="text-lg font-bold text-content-900">{{ 'personalPrograms.flow.calendar' | translate }}</h3>
+      <p class="text-xs text-content-600">{{ 'personalPrograms.flow.calendarHelp' | translate }}</p>
+    </div>
+    <div class="inline-flex rounded-xl border border-surface-200 bg-surface-50 p-1" role="group"
+         [attr.aria-label]="'personalPrograms.flow.calendarMode' | translate">
+      <button type="button" class="rounded-lg px-3 py-2 text-xs font-semibold"
+              [class.bg-white]="mode === 'week'" [class.shadow-sm]="mode === 'week'"
+              [attr.aria-pressed]="mode === 'week'" (click)="changeMode('week')">
+        {{ 'personalPrograms.flow.week' | translate }}
+      </button>
+      <button type="button" class="rounded-lg px-3 py-2 text-xs font-semibold"
+              [class.bg-white]="mode === 'month'" [class.shadow-sm]="mode === 'month'"
+              [attr.aria-pressed]="mode === 'month'" (click)="changeMode('month')">
+        {{ 'personalPrograms.flow.month' | translate }}
+      </button>
+    </div>
+  </div>
+  <div class="mb-3 flex items-center justify-between gap-2">
+    <button type="button" class="btn btn-ghost btn-icon" (click)="changePage(-1)" [disabled]="busy || !canBack"
+            [attr.aria-label]="'personalPrograms.flow.previousPeriod' | translate">‹</button>
+    <p class="text-center text-sm font-semibold text-content-800" aria-live="polite">
+      @if (dated && mode === 'month') {
+        @if (visibleMonth; as month) {
+          {{ month.getFullYear() }}. {{ ('userWorkoutsCalendar.' + months[month.getMonth()]) | translate }}
+        }
+      } @else {
+        {{ 'personalPrograms.flow.dayRange' | translate: { from: pageStart + 1, to: pageEnd } }}
+      }
+    </p>
+    <button type="button" class="btn btn-ghost btn-icon" (click)="changePage(1)" [disabled]="busy || !canForward"
+            [attr.aria-label]="'personalPrograms.flow.nextPeriod' | translate">›</button>
+  </div>
+  @if (dated && mode === 'month') {
+    <div class="mb-1 grid grid-cols-7 gap-1">
+      @for (label of weekdays; track label) {
+        <span class="text-center text-[10px] font-semibold text-content-600">{{ ('personalPrograms.flow.weekday.' + label) | translate }}</span>
+      }
+    </div>
+  }
+  <div class="grid grid-cols-7 gap-1 sm:gap-1.5">
+    @for (day of calendarDays; track $index) {
+      @if (day.cell; as cell) {
+        <button type="button" class="flex min-h-14 min-w-0 flex-col rounded-lg border p-1 text-left transition sm:min-h-20 sm:p-2"
+                (click)="daySelected.emit(cell.day)" [disabled]="busy"
+                [attr.data-personal-program-day]="cell.day"
+                [attr.aria-pressed]="cell.day === selectedDay"
+                [attr.aria-label]="('personalPrograms.dayNumber' | translate: { number: cell.day }) + (cell.workout ? ' · ' + cell.workout.name : '')"
+                [class.border-primary-700]="cell.day === selectedDay"
+                [class.ring-2]="cell.day === selectedDay"
+                [class.ring-primary-200]="cell.day === selectedDay"
+                [class.border-surface-200]="cell.day !== selectedDay"
+                [class.bg-primary-50]="!!cell.workout" [class.bg-white]="!cell.workout">
+          <span class="text-xs font-bold text-content-800">{{ cell.date ? (cell.date | date: 'd') : cell.day }}</span>
+          @if (cell.workout) {
+            <span class="mt-1 h-1.5 w-1.5 rounded-full bg-primary-700 sm:hidden"></span>
+            <span class="mt-1 hidden break-words text-xs font-semibold leading-tight text-content-800 sm:line-clamp-2"
+                  [title]="cell.workout.name">{{ cell.workout.name }}</span>
+          } @else {
+            <span class="mt-auto hidden text-[10px] text-content-500 sm:block">{{ 'personalPrograms.flow.rest' | translate }}</span>
+          }
+        </button>
+      } @else {
+        <div aria-hidden="true" class="min-h-14 rounded-lg bg-surface-50 p-1 text-xs text-content-400 sm:min-h-20">
+          {{ day.date ? (day.date | date: 'd') : '' }}
+        </div>
+      }
+    }
+  </div>
+</section>

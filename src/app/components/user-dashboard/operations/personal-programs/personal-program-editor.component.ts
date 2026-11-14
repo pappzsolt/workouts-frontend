@@ -1,5 +1,6 @@
 import { ProgramPlannerComponent } from '../../../coach/coach-program-editor/parts/program-planner.component';
 import { PersonalExerciseTargetsComponent } from './personal-exercise-targets.component';
+import { PersonalProgramFlowComponent } from './personal-program-flow.component';
 import { preparePersonalPrescriptions } from './personal-prescriptions';
 import { WORKOUT_PRESCRIPTION_LIMITS } from '../../../../models/workout-prescription-limits';
 import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
@@ -34,6 +35,7 @@ import { PersonalProgramNavigation } from './personal-program-navigation';
   imports: [
     ProgramPlannerComponent,
     PersonalExerciseTargetsComponent,
+    PersonalProgramFlowComponent,
     AppFormValidationDirective,
     AppInputDirective,
     AppTextareaDirective,

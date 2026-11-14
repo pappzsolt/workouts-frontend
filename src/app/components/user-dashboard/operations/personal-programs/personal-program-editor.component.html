@@ -19,6 +19,7 @@
         [message]="state.standaloneMode ? 'personalWorkouts.limit' : 'personalPrograms.sizeLimit'"
         type="info"
       />
+      @if (state.standaloneMode) {
       <form
         #programForm="ngForm"
         (ngSubmit)="actions.save(programForm)"
@@ -339,6 +340,9 @@
           </button>
         }
       </form>
+      } @else {
+        <app-personal-program-flow [state]="state" [days]="days" [actions]="actions" />
+      }
       @if (days.catalogueFailed) {
         <app-message message="personalPrograms.catalogueError" type="error" />
       }
