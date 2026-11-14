@@ -1,7 +1,9 @@
+import { returningAccount } from './onboarding-fixture';
 import { test, expect, type Page } from '@playwright/test';
 
 const detailUrl = '/user/workouts/5/exercises/6?programId=7&userWorkoutId=10&programWorkoutId=20';
 async function install(page: Page, mode: 'ready' | 'empty' | 'error' = 'ready') {
+  await returningAccount(page, 'user', 42);
   const token = [
     Buffer.from(JSON.stringify({ alg: 'none' })).toString('base64url'),
     Buffer.from(

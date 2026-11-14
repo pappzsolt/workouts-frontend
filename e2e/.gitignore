@@ -16,3 +16,8 @@ live-api-coverage/
 personal-program-contract-results/
 workout-editor-results/
 workout-editor-report/
+
+# Generated reports from every Playwright configuration.
+*-results/
+*-report/
+playwright-report-*/

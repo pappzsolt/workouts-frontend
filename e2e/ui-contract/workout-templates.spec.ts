@@ -1,3 +1,4 @@
+import { returningAccount } from './onboarding-fixture';
 import { test, expect, type Page } from '@playwright/test';
 
 const ROOT = '/api/me/workout-templates';
@@ -19,6 +20,7 @@ const program = () => ({
   ],
 });
 async function install(page: Page) {
+  await returningAccount(page, 'user', 42);
   const state = {
     templates: [] as any[],
     failFavorite: false,

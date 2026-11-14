@@ -1,9 +1,11 @@
+import { returningAccount } from './onboarding-fixture';
 import { test, expect, type Page } from '@playwright/test';
 
 const preview = { programId: null, programName: 'Importált terv', startDate: '2026-11-02', endDate: '2026-12-06',
   workouts: 20, exercises: 100, sets: 215, warnings: ['Pihenőtartomány: az eredeti megjegyzés megmaradt.'], unresolvedExercises: [] };
 
 async function install(page: Page, coach: boolean) {
+  await returningAccount(page, coach ? 'coach' : 'user', coach ? 5 : 42);
   const state = { calls: [] as { path: string; body: string }[], unexpected: [] as string[], failImport: false };
   const token = [Buffer.from(JSON.stringify({ alg: 'none' })).toString('base64url'),
     Buffer.from(JSON.stringify({ sub: 'teszt', id: coach ? 5 : 42, roles: coach ? 'ROLE_COACH' : 'ROLE_USER', exp: Math.floor(Date.now()/1000)+3600 })).toString('base64url'), 'signature'].join('.');

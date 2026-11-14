@@ -45,13 +45,16 @@ Az alkalmazás időzített átirányításait a Playwright órájával ellenőrz
 ## Meglévő regressziók
 
 A csomag a `workout-edit.spec.ts`, `workspace-editor.spec.ts` és
-`workspace-editor-more.spec.ts` meglévő 48 esetét is futtatja mindkét nézetben.
+`workspace-editor-more.spec.ts` eseteit is futtatja mindkét nézetben.
 Ezek lefedik a gyakorlatok hozzáadását, sorrendjét és eltávolítását,
 a programhoz kötött edzés zárolását és másolását, a programadatok mentését,
-a napi előírásokat, az ismétlést, az ügyfélkiosztást és a mentetlen napi
+a csak olvasható közös gyakorlatlistát, az ismétlést, az ügyfélkiosztást és a mentetlen napi
 módosítások elhagyásának megerősítését.
 
-Összesen 62 eset, két nézetben 124 ellenőrzés.
+Az aktuális esetlistát a `npx playwright test -c playwright.workout-editor.config.ts --list` paranccsal kérdezheted le.
+
+A fixture az első belépési útmutatót a felület Kihagyás gombjával zárja be;
+a további navigációk ugyanazt az azonosított edzői munkamenetet használják.
 
 A HTML-riport a `workout-editor-report/`, a JSON-eredmény és a hibákhoz
 tartozó nyomkövetés/képernyőkép a `workout-editor-results/` könyvtárba kerül.

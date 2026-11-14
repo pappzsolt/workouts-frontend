@@ -181,3 +181,18 @@ A helyi Angular-kiszolgáló automatikusan indul a 4321-es porton; backend és
 valódi fiók nem szükséges. Az API-válaszok rögzített tesztadatokból származnak.
 Az új 68 teszt teljes név szerinti listája, leírása és a riportok:
 [kibővített frontendteszt-útmutató](README_FRONTEND_CONTRACT.md).
+
+## Helyi UI contract tesztek
+
+`npm run test:contract` saját Angular szervert indít a projekt gyökeréből,
+a `http://127.0.0.1:4200` címen. Meglévő szerver használatához állítsd be
+az `E2E_CONTRACT_BASE_URL` változót. Ezek a tesztek a HTTP-határon rögzített
+API-válaszokat használnak; a valódi API/DB csomagokat külön kell futtatni.
+
+Az első belépési útmutatót a workspace fixture és a valódi belépési helper
+az útmutató saját gombjával zárja be. A személyes funkciók contract fixture-jei
+visszatérő fiókot modelleznek. Az első látogatást és az útmutató újranyitását
+az `ui-contract/onboarding.spec.ts` külön ellenőrzi.
+
+A generált riportok, eredmények és lefedettségi fájlok nem forrásfájlok;
+a `.gitignore` kizárja őket a verziókezelésből.

@@ -1,3 +1,4 @@
+import { returningAccount } from './onboarding-fixture';
 import { test, expect, Page } from '@playwright/test';
 
 // Hibabejelentés (felhasználó, edző) és megtekintése (admin) – mockolt API-val.
@@ -10,6 +11,7 @@ const PNG = Buffer.from(
 );
 
 async function mockApi(page: Page, role: Role, handler: (c: Call) => { status?: number; json?: unknown; body?: Buffer; type?: string } | null) {
+  if (role !== 'ROLE_ADMIN') await returningAccount(page, role === 'ROLE_COACH' ? 'coach' : 'user', 316);
   const calls: Call[] = [];
   await page.addInitScript(() => { localStorage.setItem('language', 'hu'); localStorage.setItem('lang', 'hu'); });
   await page.route('**/api/**', async (route) => {
@@ -18,7 +20,7 @@ async function mockApi(page: Page, role: Role, handler: (c: Call) => { status?: 
     const c: Call = { method: request.method(), path: url.pathname, body: request.postData(), contentType: request.headers()['content-type'] ?? '' };
     calls.push(c);
     if (c.path === '/api/auth/web/refresh') {
-      const payload = Buffer.from(JSON.stringify({ sub: 'kiss.anna', roles: role, exp: 4102444800 })).toString('base64url');
+      const payload = Buffer.from(JSON.stringify({ id: 316, sub: 'kiss.anna', roles: role, exp: 4102444800 })).toString('base64url');
       return route.fulfill({ json: { success: true, data: { accessToken: `eyJhbGciOiJIUzI1NiJ9.${payload}.contract` }, message: null } });
     }
     const result = handler(c);

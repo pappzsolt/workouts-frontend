@@ -1,3 +1,4 @@
+import { returningAccount } from './onboarding-fixture';
 import { test, expect, type Page } from '@playwright/test';
 
 const ROOT = '/api/me/personal-programs';
@@ -6,6 +7,7 @@ const draft = () => ({ name: 'Saját terv', description: null, durationDays: 7, 
     exercises: [{ exerciseId: 11, sets: 3, repetitions: 10, restSeconds: 60, notes: null }] }] });
 
 async function install(page: Page) {
+  await returningAccount(page, 'user', 42);
   const state = { program: draft(), id: 7, started: false, standalone: false, failSave: false, failList: false,
     calls: [] as { method: string; path: string; body: any }[], unexpected: [] as string[] };
   const token = [Buffer.from(JSON.stringify({ alg: 'none' })).toString('base64url'),

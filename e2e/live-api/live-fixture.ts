@@ -1,3 +1,4 @@
+import { finishFirstVisit } from '../tests/helpers/onboarding';
 import { test as base, expect, request, type APIRequestContext, type Page } from '@playwright/test';
 import { readFileSync, existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -25,6 +26,7 @@ export async function login(page: Page, role: string) {
   await expect(page).toHaveURL(new RegExp(`/${role === 'otherCoach' ? 'coach' : role}/dashboard$`));
   expect((await page.context().cookies()).find(cookie => cookie.name === 'workouts_refresh')?.httpOnly).toBe(true);
   expect(await page.evaluate(() => [localStorage.getItem('accessToken'), localStorage.getItem('refreshToken')])).toEqual([null, null]);
+  await finishFirstVisit(page, role === 'otherCoach' ? 'coach' : role, account.id!);
   return body.data.accessToken as string;
 }
 export async function apiFor(role: string) {

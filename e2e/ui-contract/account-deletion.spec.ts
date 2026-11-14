@@ -44,7 +44,7 @@ async function prepare(page: Page, status = 202) {
     const req = route.request();
     if (req.url().includes('/public/account-deletion-requests')) {
       writes.push({ body: req.postDataJSON(), authorization: req.headers()['authorization'] });
-      return route.fulfill({ status, headers: status === 429 ? { 'Retry-After': '60' } : {}, json: { success: status === 202, data: null } });
+      return route.fulfill({ status, headers: status === 429 ? { 'Retry-After': '60', 'Access-Control-Expose-Headers': 'Retry-After' } : {}, json: { success: status === 202, data: null } });
     }
     authCalls.push(req.url());
     return route.fulfill({ status: 401, json: { success: false, data: null } });

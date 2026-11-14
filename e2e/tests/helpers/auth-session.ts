@@ -1,3 +1,4 @@
+import { finishFirstVisit } from './onboarding';
 import { expect, type Page, type Response } from '@playwright/test';
 
 export type E2ERole = 'admin' | 'coach' | 'user';
@@ -112,6 +113,7 @@ export async function authenticate(page: Page, role: E2ERole): Promise<void> {
   expect(refresh!.httpOnly).toBe(true);
   expect(refresh!.path).toBe('/api/auth/web');
   await expect(page).toHaveURL(new RegExp(`${dashboard}$`));
+  await finishFirstVisit(page, role, Number(payload.id));
   expect(await page.evaluate(() => ({
     localAccess: localStorage.getItem('accessToken'),
     localRefresh: localStorage.getItem('refreshToken'),

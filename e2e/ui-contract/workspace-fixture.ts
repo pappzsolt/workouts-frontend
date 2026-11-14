@@ -1,3 +1,4 @@
+import { finishFirstVisit } from '../tests/helpers/onboarding';
 import { test as base, expect, type Page } from '@playwright/test';
 
 // UI contract suite ONLY: no real backend/database, no credentials, no production writes.
@@ -81,7 +82,7 @@ export class WorkspaceApi {
           headers: { 'access-control-expose-headers': 'Content-Disposition' }, body: Buffer.from('PK contract xlsx') });
       }
       if (c.path === '/api/auth/web/refresh') {
-        const payload = Buffer.from(JSON.stringify({ sub: 'contract-coach', roles: 'ROLE_COACH', exp: 4102444800 })).toString('base64url');
+        const payload = Buffer.from(JSON.stringify({ id: 6, sub: 'contract-coach', roles: 'ROLE_COACH', exp: 4102444800 })).toString('base64url');
         data = { accessToken: `eyJhbGciOiJIUzI1NiJ9.${payload}.contract` };
       } else if (match('GET', '/api/coach/overview')) {
         data = { from: c.query.get('from'), to: c.query.get('to'), clients: s.clients.filter(u => !c.query.has('userId') || u.userId === Number(c.query.get('userId'))).map(u => ({ ...u, workouts: u.workouts.filter(w => w.scheduledAt >= c.query.get('from')! && w.scheduledAt <= c.query.get('to')!) })) };
@@ -174,7 +175,13 @@ export class WorkspaceApi {
 }
 export const test = base.extend<{ api: WorkspaceApi }>({
   api: async ({ page }, use) => {
-    const api = new WorkspaceApi(); await api.install(page); await use(api);
+    const api = new WorkspaceApi();
+    await api.install(page);
+    // Complete first-visit onboarding through the UI before testing workspace flows.
+    await page.goto('/coach/dashboard');
+    await finishFirstVisit(page, 'coach', 6);
+    api.calls = [];
+    await use(api);
     expect(api.unknown, 'Unexpected API calls in UI contract suite').toEqual([]);
   },
 });

@@ -1,3 +1,4 @@
+import { resolve } from 'node:path';
 import { defineConfig } from '@playwright/test';
 import contract from './playwright.contract.config';
 
@@ -12,7 +13,8 @@ export default defineConfig({
     ['json', { outputFile: 'workout-editor-results/results.json' }],
   ],
   webServer: {
-    command: 'node ../node_modules/@angular/cli/bin/ng.js serve --host 127.0.0.1 --port 4322',
+    cwd: resolve(__dirname, '..'),
+    command: 'node node_modules/@angular/cli/bin/ng.js serve --host 127.0.0.1 --port 4322',
     url: 'http://127.0.0.1:4322/login',
     reuseExistingServer: false,
     timeout: 120000,

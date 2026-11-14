@@ -1,7 +1,7 @@
 import { test, expect } from './workspace-fixture';
 test('picker: pagination, search/filter reset, details and duplicate selection', async ({ page, api }) => {
   await page.goto('/coach/programs/1'); const editor = page.locator('app-coach-program-editor');
-  await editor.getByRole('button', { name: '2', exact: true }).click(); const picker = page.locator('app-exercise-picker');
+  await editor.getByRole('button', { name: /Program 2\. napja$/ }).click(); const picker = page.locator('app-exercise-picker');
   await expect(picker.locator('li')).toHaveCount(10);
   await picker.getByRole('button', { name: 'Következő oldal' }).click(); await expect(picker.locator('li')).toHaveCount(5);
   await picker.locator('[name=pickerBodyPart]').selectOption('back'); await expect(picker.locator('li')).toHaveCount(8);
@@ -20,17 +20,17 @@ test('picker: pagination, search/filter reset, details and duplicate selection',
 });
 test('picker: create workout and assigns exercises before linking occurrence', async ({ page, api }) => {
   await page.goto('/coach/programs/1'); const editor = page.locator('app-coach-program-editor');
-  await editor.getByRole('button', { name: '2', exact: true }).click();
+  await editor.getByRole('button', { name: /Program 2\. napja$/ }).click();
   const create = editor.getByRole('button', { name: 'Edzés létrehozása erre a napra' }); await expect(create).toBeDisabled();
   await editor.locator('[name=workoutName]').fill('New workout');
   await page.locator('app-exercise-picker').getByRole('button', { name: 'Hozzáadás: Exercise 01', exact: true }).click();
-  await create.click(); await expect(editor.getByRole('button', { name: '2: New workout', exact: true })).toBeVisible();
+  await create.click(); await expect(editor.getByRole('button', { name: /Program 2\. napja · New workout$/ })).toBeVisible();
   expect(api.writes().map(c => c.path)).toEqual(['/api/workouts', '/api/workout-exercises', '/api/program-workouts']);
   expect(api.writes()[0].body).toEqual({ name: 'New workout', workoutDate: '2030-04-16' });
   expect(api.writes()[1].query.get('exerciseId')).toBe('1');
 });
 test('picker: empty search and API failure show usable states', async ({ page, api }) => {
-  await page.goto('/coach/programs/1'); await page.locator('app-coach-program-editor').getByRole('button', { name: '2', exact: true }).click();
+  await page.goto('/coach/programs/1'); await page.locator('app-coach-program-editor').getByRole('button', { name: /Program 2\. napja$/ }).click();
   const picker = page.locator('app-exercise-picker'); await picker.locator('[name=pickerSearch]').fill('missing');
   await expect(picker).toContainText('Nincs találat.');
   api.fail('GET', '/api/exercises/search'); await picker.locator('[name=pickerSearch]').fill('Exercise');
