@@ -1,0 +1,167 @@
+<fieldset [disabled]="locked" class="min-w-0">
+  <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+    <p class="text-sm font-semibold text-content-700">
+      {{ 'personalPrograms.setTargets' | translate }}
+    </p>
+    @if (!locked) {
+      <div class="flex flex-wrap gap-2">
+        <button
+          type="button"
+          class="btn btn-neutral"
+          (click)="fillDown()"
+          [disabled]="exercise.sets < 2"
+        >
+          {{ 'coachWorkspace.client.fillDown' | translate }}
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="addSet()"
+          [disabled]="exercise.sets >= limits.maxSets"
+        >
+          {{ 'coachWorkspace.client.addSet' | translate }}
+        </button>
+      </div>
+    }
+  </div>
+  <div class="relative overflow-x-auto rounded-xl border border-surface-200">
+    <table class="w-full min-w-[760px] text-sm">
+      <thead class="bg-surface-50 text-left text-xs text-content-600">
+        <tr>
+          <th scope="col" class="p-2">#</th>
+          <th scope="col" class="p-2">{{ 'coachWorkspace.client.targetReps' | translate }}</th>
+          <th scope="col" class="p-2">{{ 'coachWorkspace.client.targetWeight' | translate }}</th>
+          <th scope="col" class="p-2">{{ 'personalPrograms.rest' | translate }}</th>
+          <th scope="col" class="p-2">{{ 'setEffort.targetRpe' | translate }}</th>
+          <th scope="col" class="p-2">{{ 'personalPrograms.notes' | translate }}</th>
+          <th scope="col" class="p-2">
+            <span class="sr-only">{{ 'coachWorkspace.delete' | translate }}</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of exercise.setTargets; track row; let index = $index) {
+          <tr class="border-t border-surface-200">
+            <th scope="row" class="p-2">{{ index + 1 }}.</th>
+            <td class="p-2">
+              <span class="target-field-label mb-1 text-xs font-semibold text-content-600">{{
+                'coachWorkspace.client.targetReps' | translate
+              }}</span>
+              <input
+                appInput="compact"
+                type="number"
+                min="1"
+                [max]="limits.maxRepetitions"
+                step="1"
+                required
+                [(ngModel)]="row.targetRepetitions"
+                [ngModelOptions]="standalone"
+                (ngModelChange)="update()"
+                [attr.aria-label]="
+                  exerciseName +
+                  ' ' +
+                  (index + 1) +
+                  '. ' +
+                  ('coachWorkspace.client.targetReps' | translate)
+                "
+              />
+            </td>
+            <td class="p-2">
+              <span class="target-field-label mb-1 text-xs font-semibold text-content-600">{{
+                'coachWorkspace.client.targetWeight' | translate
+              }}</span>
+              <input
+                appInput="compact"
+                type="number"
+                min="0"
+                max="9999.99"
+                step="0.01"
+                [(ngModel)]="row.targetWeightKg"
+                [ngModelOptions]="standalone"
+                (ngModelChange)="update()"
+                [attr.aria-label]="
+                  exerciseName +
+                  ' ' +
+                  (index + 1) +
+                  '. ' +
+                  ('coachWorkspace.client.targetWeight' | translate)
+                "
+              />
+            </td>
+            <td class="p-2">
+              <span class="target-field-label mb-1 text-xs font-semibold text-content-600">{{
+                'personalPrograms.rest' | translate
+              }}</span>
+              <input
+                appInput="compact"
+                type="number"
+                min="0"
+                [max]="limits.maxRestSeconds"
+                step="1"
+                required
+                [(ngModel)]="row.restSeconds"
+                [ngModelOptions]="standalone"
+                (ngModelChange)="update()"
+                [attr.aria-label]="
+                  exerciseName + ' ' + (index + 1) + '. ' + ('personalPrograms.rest' | translate)
+                "
+              />
+            </td>
+            <td class="p-2">
+              <span class="target-field-label mb-1 text-xs font-semibold text-content-600">{{
+                'setEffort.targetRpe' | translate
+              }}</span>
+              <input
+                appInput="compact"
+                type="number"
+                min="0"
+                max="10"
+                step="0.5"
+                [(ngModel)]="row.targetRpe"
+                [ngModelOptions]="standalone"
+                (ngModelChange)="update()"
+                [attr.aria-label]="
+                  exerciseName + ' ' + (index + 1) + '. ' + ('setEffort.targetRpe' | translate)
+                "
+              />
+            </td>
+            <td class="p-2">
+              <span class="target-field-label mb-1 text-xs font-semibold text-content-600">{{
+                'personalPrograms.notes' | translate
+              }}</span>
+              <input
+                appInput="compact"
+                type="text"
+                maxlength="255"
+                [(ngModel)]="row.notes"
+                [ngModelOptions]="standalone"
+                (ngModelChange)="update()"
+                [attr.aria-label]="
+                  exerciseName + ' ' + (index + 1) + '. ' + ('personalPrograms.notes' | translate)
+                "
+              />
+            </td>
+            <td class="p-2">
+              @if (!locked) {
+                <button
+                  type="button"
+                  class="btn btn-delete"
+                  (click)="removeSet(index)"
+                  [disabled]="exercise.sets <= 1"
+                  [attr.aria-label]="
+                    ('personalPrograms.removeSet' | translate: { number: index + 1 }) +
+                    ': ' +
+                    exerciseName
+                  "
+                >
+                  {{ 'coachWorkspace.delete' | translate }}
+                </button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <p class="mt-2 text-xs text-content-600">{{ 'personalPrograms.weightHint' | translate }}</p>
+</fieldset>

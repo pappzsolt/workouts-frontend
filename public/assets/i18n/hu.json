@@ -1479,6 +1479,13 @@
     }
   },
   "personalPrograms": {
+    "calendarHint": "Válassz egy napot az edzés és a sorozatcélok megtekintéséhez. Az üres napok pihenőnapok; piszkozatban saját edzést adhatsz hozzájuk.",
+    "setTargets": "Sorozatonkénti célértékek",
+    "removeSet": "{{number}}. sorozat törlése",
+    "weightHint": "A súly kilogrammban értendő. Hagyd üresen, ha nem tervezel külső súlyt. Minden sorozathoz külön ismétlést, súlyt, pihenőt és RPE-t adhatsz meg.",
+    "plannerHint": "Válassz egy napot a naptárban, majd állítsd össze az edzést és a sorozatok célértékeit. A kihagyott napok pihenőnapok. Az értékek csak a saját programodra vonatkoznak.",
+    "restDayHint": "Erre a napra még nincs edzés: pihenőnapként hagyhatod, vagy hozzáadhatsz egy saját edzést.",
+    "invalidTargets": "Ellenőrizd az összes edzés nevét és sorozatait, a többi napon is. Ismétlés: 1–200; súly: 0–9999,99 kg; pihenő: 0–3600 mp; RPE: 0–10, félpontos lépésekben.",
     "kindFilter": "Típus",
     "allKinds": "Összes típus",
     "title": "Saját készítésű programok",

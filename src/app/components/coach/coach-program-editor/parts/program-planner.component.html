@@ -2,9 +2,11 @@
          [attr.aria-label]="'coachWorkspace.editor.programPlanner' | translate">
   <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
     <h2 class="text-lg font-bold text-content-900">{{ 'coachWorkspace.editor.programPlanner' | translate }}</h2>
-    <button type="button" class="btn btn-neutral" (click)="openMulti.emit()" [disabled]="busy">
-      <app-icon name="plus" sizeClass="h-4 w-4" />{{ 'coachWorkspace.editor.multiAdd' | translate }}
-    </button>
+    @if (showMultiAdd) {
+      <button type="button" class="btn btn-neutral" (click)="openMulti.emit()" [disabled]="busy">
+        <app-icon name="plus" sizeClass="h-4 w-4" />{{ 'coachWorkspace.editor.multiAdd' | translate }}
+      </button>
+    }
   </div>
   <div class="mb-3 flex items-center justify-between gap-2">
     <button type="button" class="btn btn-ghost btn-icon" (click)="changeMonth(-1)" [disabled]="busy || !canGoBack"
@@ -21,7 +23,7 @@
       <app-icon name="chevron-right" sizeClass="h-5 w-5" />
     </button>
   </div>
-  <p class="mb-3 text-xs text-content-600">{{ 'coachWorkspace.editor.programPlannerHint' | translate }}</p>
+  <p class="mb-3 text-xs text-content-600">{{ hintKey | translate }}</p>
   <div class="grid grid-cols-7 gap-0.5">
     @for (key of weekdayKeys; track key) {
       <div class="min-w-0 truncate pb-2 text-center text-[10px] font-semibold text-content-600">{{ key | translate }}</div>
@@ -42,7 +44,11 @@
             <span class="mt-auto w-full shrink-0 text-[10px] leading-tight text-content-600 [overflow-wrap:anywhere]">{{ 'coachWorkspace.editor.exerciseCount' | translate: { count: cell.workout.exercises.length } }}</span>
           } @else {
             <span class="mt-auto flex flex-wrap items-center gap-0.5 text-xs font-semibold text-primary-700 [overflow-wrap:anywhere]">
-              <app-icon name="plus" sizeClass="h-3 w-3" />{{ 'coachWorkspace.editor.addWorkout' | translate }}
+              @if (!readonlyPlan) {
+                <app-icon name="plus" sizeClass="h-3 w-3" />{{ 'coachWorkspace.editor.addWorkout' | translate }}
+              } @else {
+                {{ 'coachWorkspace.client.restDay' | translate }}
+              }
             </span>
           }
         </button>

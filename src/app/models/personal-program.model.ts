@@ -1,5 +1,13 @@
+export interface PersonalSetTarget {
+  targetRepetitions: number;
+  targetWeightKg: number | null;
+  restSeconds: number;
+  targetRpe: number | null;
+  notes: string | null;
+}
 export interface PersonalProgramExercise {
   exerciseId: number;
+  setTargets?: PersonalSetTarget[] | null;
   sets: number;
   repetitions: number;
   restSeconds: number;

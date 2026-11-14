@@ -1479,6 +1479,13 @@
     }
   },
   "personalPrograms": {
+    "calendarHint": "Choose a day to view its workout and set targets. Empty days are rest days; while drafting, you can add your own workout.",
+    "setTargets": "Targets for each set",
+    "removeSet": "Remove set {{number}}",
+    "weightHint": "Weight is in kilograms. Leave it blank if no external weight is planned. Each set can have its own repetitions, weight, rest and RPE.",
+    "plannerHint": "Choose a calendar day, build its workout and set the targets for each set. Days without workouts are rest days. These targets apply only to your own program.",
+    "restDayHint": "No workout is planned for this day. Leave it as a rest day or add your own workout.",
+    "invalidTargets": "Check the workout names and sets on every day. Repetitions: 1–200; weight: 0–9999.99 kg; rest: 0–3600 sec; RPE: 0–10 in half-point steps.",
     "kindFilter": "Type",
     "allKinds": "All types",
     "title": "Self-created programs",

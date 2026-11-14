@@ -75,17 +75,17 @@ export const GUIDE_STEPS: Record<GuideRole, readonly GuideStep[]> = {
         hu: {
           title: 'Saját programok: tervből edzés',
           description:
-            'Itt a saját terveidet és önálló edzéseidet kezelheted; a típusválasztóval külön is szűrheted őket. Új programnál add meg az időtartamot, az edzésnapokat és a gyakorlatokat. A mentés piszkozatot őriz meg, az indítás hozza létre a végezhető edzéseket. Az elindított terv szerkezete zárolt; új változathoz készíts másolatot, így a korábbi eredmények megmaradnak.',
+            'Itt a saját terveidet és önálló edzéseidet kezelheted; a típusválasztóval külön is szűrheted őket. Új programnál add meg az időtartamot, a naptárban válassz edzésnapot, majd adj hozzá gyakorlatokat. Sorozatonként külön ismétlést, súlyt, pihenőt és tervezett RPE-t állíthatsz be; az első sor értékeit a többi sorra is másolhatod. Az edzés hetente ismételhető a még üres napokra. A mentés piszkozatot őriz meg, az indítás hozza létre a végezhető edzéseket. Az elindított terv szerkezete zárolt; új változathoz készíts másolatot, így a korábbi eredmények megmaradnak.',
         },
         en: {
           title: 'Personal programs: from plan to training',
           description:
-            'Manage your own plans and standalone workouts here, using the type filter to separate them. A new program needs its duration, training days and exercises. Saving keeps a draft; starting creates sessions you can perform. A started plan has a locked structure. Copy it for a new version while keeping earlier results.',
+            'Manage your own plans and standalone workouts here, using the type filter to separate them. Set the duration, choose training days in the calendar and add exercises. Each set can have its own repetitions, weight, rest and target RPE; copy the first set to the others when needed. Repeat a workout weekly into empty days. Saving keeps a draft; starting creates sessions you can perform. A started plan has a locked structure. Copy it for a new version while keeping earlier results.',
         },
         de: {
           title: 'Eigene Programme: vom Plan zum Training',
           description:
-            'Hier verwaltest du eigene Pläne und Einzeltrainings und filterst nach Typ. Lege für ein Programm Dauer, Trainingstage und Übungen fest. Speichern bewahrt den Entwurf; Starten erzeugt ausführbare Trainings. Die Struktur gestarteter Pläne ist gesperrt. Erstelle für Änderungen eine Kopie, damit bisherige Ergebnisse erhalten bleiben.',
+            'Hier verwaltest du eigene Pläne und Einzeltrainings und filterst nach Typ. Lege die Dauer fest, wähle Trainingstage im Kalender und füge Übungen hinzu. Jeder Satz kann eigene Wiederholungen, Gewicht, Pause und Ziel-RPE haben; kopiere bei Bedarf die Werte des ersten Satzes. Wiederhole ein Training wöchentlich an noch freien Tagen. Speichern bewahrt den Entwurf; Starten erzeugt ausführbare Trainings. Die Struktur gestarteter Pläne ist gesperrt. Erstelle für Änderungen eine Kopie, damit bisherige Ergebnisse erhalten bleiben.',
         },
       },
     },
@@ -96,17 +96,17 @@ export const GUIDE_STEPS: Record<GuideRole, readonly GuideStep[]> = {
         hu: {
           title: 'Új önálló edzés',
           description:
-            'Egyetlen edzéshez nem kell többnapos programot összeállítanod. Adj nevet, válassz dátumot és gyakorlatokat, majd állítsd be a sorozatokat, ismétléseket és pihenőt. Előbb mentsd el, utána indítsd el. Egy már elindított önálló edzés új alkalma külön eredményeket kap: a következő edzés nem írja felül az előző teljesítését.',
+            'Egyetlen edzéshez nem kell többnapos programot összeállítanod. Adj nevet, válassz dátumot és gyakorlatokat, majd sorozatonként állítsd be az ismétlést, súlyt, pihenőt és az opcionális tervezett RPE-t. Előbb mentsd el, utána indítsd el. Egy már elindított önálló edzés új alkalma külön eredményeket kap: a következő edzés nem írja felül az előző teljesítését.',
         },
         en: {
           title: 'Create a standalone workout',
           description:
-            'You do not need a multi-day program for one workout. Enter a name, choose a date and exercises, and set the sets, repetitions and rest. Save before starting it. A new occurrence of a started standalone workout has separate results, so the next session does not overwrite the previous performance.',
+            'You do not need a multi-day program for one workout. Enter a name, choose a date and exercises, and set repetitions, weight, rest and optional target RPE for each set. Save before starting it. A new occurrence of a started standalone workout has separate results, so the next session does not overwrite the previous performance.',
         },
         de: {
           title: 'Ein neues Einzeltraining',
           description:
-            'Für ein einzelnes Training brauchst du keinen mehrtägigen Plan. Gib einen Namen ein, wähle Datum und Übungen und lege Sätze, Wiederholungen und Pausen fest. Speichere vor dem Start. Ein neuer Termin eines gestarteten Einzeltrainings erhält eigene Ergebnisse und überschreibt die vorherige Leistung nicht.',
+            'Für ein einzelnes Training brauchst du keinen mehrtägigen Plan. Gib einen Namen ein, wähle Datum und Übungen und lege Wiederholungen, Gewicht, Pause und optionales Ziel-RPE pro Satz fest. Speichere vor dem Start. Ein neuer Termin eines gestarteten Einzeltrainings erhält eigene Ergebnisse und überschreibt die vorherige Leistung nicht.',
         },
       },
     },

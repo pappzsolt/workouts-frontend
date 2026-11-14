@@ -108,7 +108,7 @@
             <h2 class="text-xl font-bold text-content-800">
               {{ state.label('days') | translate }}
             </h2>
-            @if (!state.started && !state.standaloneMode) {
+            @if (!state.started && !state.standaloneMode && days.visibleDays.length > 0) {
               <button
                 type="button"
                 class="btn btn-primary"
@@ -122,186 +122,212 @@
           @if (!state.standaloneMode) {
             <p class="text-sm text-content-600">{{ 'personalPrograms.daysHint' | translate }}</p>
           }
-          @for (day of state.model.workouts; track day; let d = $index) {
-            <fieldset
-              [disabled]="state.locked"
-              class="flex min-w-0 flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-6"
+          @if (!state.standaloneMode) {
+            <p class="text-sm text-content-600">{{ 'personalPrograms.plannerHint' | translate }}</p>
+          }
+          <div
+            class="grid min-w-0 grid-cols-1 items-start gap-4"
+            [ngClass]="state.standaloneMode ? '' : 'lg:grid-cols-5'"
+          >
+            @if (!state.standaloneMode) {
+              <app-program-planner
+                [cells]="days.cells"
+                [selectedDay]="days.selectedDay"
+                [busy]="state.busy"
+                [showMultiAdd]="false"
+                hintKey="personalPrograms.calendarHint"
+                [readonlyPlan]="state.started"
+                (daySelected)="days.selectDay($event)"
+              />
+            }
+            <section
+              class="min-w-0 space-y-4"
+              [ngClass]="state.standaloneMode ? '' : 'lg:col-span-2'"
             >
-              <legend class="px-2 font-semibold text-content-800">
-                {{
-                  state.standaloneMode
-                    ? ('personalWorkouts.days' | translate)
-                    : ('personalPrograms.dayNumber' | translate: { number: day.dayIndex })
-                }}
-              </legend>
               @if (!state.standaloneMode) {
-                <div class="grid grid-cols-1 items-end gap-3 sm:grid-cols-3">
-                  <label class="flex flex-col gap-1 text-sm font-semibold text-content-800"
-                    >{{ 'personalPrograms.dayIndex' | translate }}
-                    <input
-                      appInput="default"
-                      type="number"
-                      [name]="'dayIndex' + d"
-                      [(ngModel)]="day.dayIndex"
-                      (ngModelChange)="state.changed()"
-                      min="1"
-                      [max]="state.model.durationDays"
-                      step="1"
-                      required
-                    />
-                  </label>
-                  <label
-                    class="flex flex-col gap-1 text-sm font-semibold text-content-800 sm:col-span-2"
-                    >{{ 'personalPrograms.dayName' | translate }}
-                    <input
-                      appInput="default"
-                      [name]="'dayName' + d"
-                      [(ngModel)]="day.name"
-                      (ngModelChange)="state.changed()"
-                      maxlength="255"
-                      pattern=".*\S.*"
-                      required
-                    />
-                  </label>
-                  <label
-                    class="flex flex-col gap-1 text-sm font-semibold text-content-800 sm:col-span-3"
-                    >{{ 'personalPrograms.description' | translate }}
-                    <textarea
-                      appTextarea="default"
-                      [name]="'dayDescription' + d"
-                      [(ngModel)]="day.description"
-                      (ngModelChange)="state.changed()"
-                      maxlength="10000"
-                      rows="2"
-                    ></textarea>
-                  </label>
-                </div>
-              }
-              @for (exercise of day.exercises; track exercise; let e = $index) {
-                <div class="flex min-w-0 flex-col gap-3 rounded-xl border border-surface-200 p-3">
-                  <h3 class="break-words font-semibold text-content-800">
-                    {{
-                      days.names[exercise.exerciseId] ||
-                        ('personalPrograms.exerciseFallback'
-                          | translate: { id: exercise.exerciseId })
-                    }}
-                  </h3>
-                  <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                    <label class="flex flex-col gap-1 text-sm text-content-700"
-                      >{{ 'personalPrograms.sets' | translate }}
-                      <input
-                        appInput="compact"
-                        type="number"
-                        [name]="'sets' + d + '_' + e"
-                        [(ngModel)]="exercise.sets"
-                        (ngModelChange)="state.changed()"
-                        min="1"
-                        [max]="prescriptionLimits.maxSets"
-                        step="1"
-                        required
-                      />
-                    </label>
-                    <label class="flex flex-col gap-1 text-sm text-content-700"
-                      >{{ 'personalPrograms.repetitions' | translate }}
-                      <input
-                        appInput="compact"
-                        type="number"
-                        [name]="'reps' + d + '_' + e"
-                        [(ngModel)]="exercise.repetitions"
-                        (ngModelChange)="state.changed()"
-                        min="1"
-                        [max]="prescriptionLimits.maxRepetitions"
-                        step="1"
-                        required
-                      />
-                    </label>
-                    <label class="flex flex-col gap-1 text-sm text-content-700"
-                      >{{ 'personalPrograms.rest' | translate }}
-                      <input
-                        appInput="compact"
-                        type="number"
-                        [name]="'rest' + d + '_' + e"
-                        [(ngModel)]="exercise.restSeconds"
-                        (ngModelChange)="state.changed()"
-                        min="0"
-                        [max]="prescriptionLimits.maxRestSeconds"
-                        step="1"
-                        required
-                      />
-                    </label>
-                    <label class="flex flex-col gap-1 text-sm text-content-700 sm:col-span-3"
-                      >{{ 'personalPrograms.notes' | translate }}
-                      <input
-                        appInput="compact"
-                        [name]="'notes' + d + '_' + e"
-                        [(ngModel)]="exercise.notes"
-                        (ngModelChange)="state.changed()"
-                        maxlength="255"
-                      />
-                    </label>
+                <h3 class="text-lg font-semibold text-content-900">
+                  {{ 'personalPrograms.dayNumber' | translate: { number: days.selectedDay } }}
+                </h3>
+                @if (!days.visibleDays.length) {
+                  <div class="rounded-2xl border border-dashed border-surface-300 bg-white p-5">
+                    <p class="mb-3 text-sm text-content-600">
+                      {{
+                        (state.started
+                          ? 'coachWorkspace.client.restDay'
+                          : 'personalPrograms.restDayHint'
+                        ) | translate
+                      }}
+                    </p>
+                    @if (!state.started) {
+                      <button
+                        type="button"
+                        class="btn btn-primary"
+                        (click)="days.addSelectedDay()"
+                        [disabled]="state.locked"
+                      >
+                        {{ 'personalPrograms.addDay' | translate }}
+                      </button>
+                    }
                   </div>
+                }
+              }
+              @for (day of days.visibleDays; track day; let d = $index) {
+                <fieldset
+                  [disabled]="state.locked"
+                  class="flex min-w-0 flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-6"
+                >
+                  <legend class="px-2 font-semibold text-content-800">
+                    {{
+                      state.standaloneMode
+                        ? ('personalWorkouts.days' | translate)
+                        : ('personalPrograms.dayNumber' | translate: { number: day.dayIndex })
+                    }}
+                  </legend>
+                  @if (!state.standaloneMode) {
+                    <div class="grid grid-cols-1 items-end gap-3 sm:grid-cols-3">
+                      <label class="flex flex-col gap-1 text-sm font-semibold text-content-800"
+                        >{{ 'personalPrograms.dayIndex' | translate }}
+                        <input
+                          appInput="default"
+                          type="number"
+                          [name]="'dayIndex' + days.key(day)"
+                          [(ngModel)]="day.dayIndex"
+                          (ngModelChange)="state.changed(); days.selectedDay = day.dayIndex"
+                          min="1"
+                          [max]="state.model.durationDays"
+                          step="1"
+                          required
+                        />
+                      </label>
+                      <label
+                        class="flex flex-col gap-1 text-sm font-semibold text-content-800 sm:col-span-2"
+                        >{{ 'personalPrograms.dayName' | translate }}
+                        <input
+                          appInput="default"
+                          [name]="'dayName' + days.key(day)"
+                          [(ngModel)]="day.name"
+                          (ngModelChange)="state.changed()"
+                          maxlength="255"
+                          pattern=".*\S.*"
+                          required
+                        />
+                      </label>
+                      <label
+                        class="flex flex-col gap-1 text-sm font-semibold text-content-800 sm:col-span-3"
+                        >{{ 'personalPrograms.description' | translate }}
+                        <textarea
+                          appTextarea="default"
+                          [name]="'dayDescription' + days.key(day)"
+                          [(ngModel)]="day.description"
+                          (ngModelChange)="state.changed()"
+                          maxlength="10000"
+                          rows="2"
+                        ></textarea>
+                      </label>
+                    </div>
+                  }
+                  @for (exercise of day.exercises; track exercise; let e = $index) {
+                    <div
+                      class="flex min-w-0 flex-col gap-3 rounded-xl border border-surface-200 p-3"
+                    >
+                      <h3 class="break-words font-semibold text-content-800">
+                        {{
+                          days.names[exercise.exerciseId] ||
+                            ('personalPrograms.exerciseFallback'
+                              | translate: { id: exercise.exerciseId })
+                        }}
+                      </h3>
+                      <app-personal-exercise-targets
+                        [exercise]="exercise"
+                        [exerciseName]="
+                          days.names[exercise.exerciseId] ||
+                          ('personalPrograms.exerciseFallback'
+                            | translate: { id: exercise.exerciseId })
+                        "
+                        [locked]="state.locked"
+                        (changed)="state.changed()"
+                      />
+                      @if (!state.started) {
+                        <div class="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            class="btn btn-neutral"
+                            [disabled]="state.locked || e === 0"
+                            (click)="days.moveExercise(day, e, -1)"
+                            [attr.aria-label]="
+                              ('personalPrograms.up' | translate) +
+                              ': ' +
+                              days.names[exercise.exerciseId]
+                            "
+                          >
+                            {{ 'personalPrograms.up' | translate }}
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-neutral"
+                            [disabled]="state.locked || e === day.exercises.length - 1"
+                            (click)="days.moveExercise(day, e, 1)"
+                            [attr.aria-label]="
+                              ('personalPrograms.down' | translate) +
+                              ': ' +
+                              days.names[exercise.exerciseId]
+                            "
+                          >
+                            {{ 'personalPrograms.down' | translate }}
+                          </button>
+                          <button
+                            type="button"
+                            class="btn btn-delete"
+                            (click)="days.removeExercise(day, e)"
+                          >
+                            {{ 'personalPrograms.removeExercise' | translate }}
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  } @empty {
+                    <app-empty-state message="personalPrograms.noExercises" />
+                  }
                   @if (!state.started) {
                     <div class="flex flex-wrap gap-2">
                       <button
                         type="button"
-                        class="btn btn-neutral"
-                        [disabled]="state.locked || e === 0"
-                        (click)="days.moveExercise(day, e, -1)"
-                        [attr.aria-label]="
-                          ('personalPrograms.up' | translate) + ': ' + days.names[exercise.exerciseId]
-                        "
+                        class="btn btn-primary"
+                        (click)="days.pickerDay = days.pickerDay === day ? null : day"
+                        [disabled]="state.locked || day.exercises.length >= 100"
                       >
-                        {{ 'personalPrograms.up' | translate }}
+                        {{
+                          (days.pickerDay === day
+                            ? 'personalPrograms.closePicker'
+                            : 'personalPrograms.addExercise'
+                          ) | translate
+                        }}
                       </button>
-                      <button
-                        type="button"
-                        class="btn btn-neutral"
-                        [disabled]="state.locked || e === day.exercises.length - 1"
-                        (click)="days.moveExercise(day, e, 1)"
-                        [attr.aria-label]="
-                          ('personalPrograms.down' | translate) + ': ' + days.names[exercise.exerciseId]
-                        "
-                      >
-                        {{ 'personalPrograms.down' | translate }}
-                      </button>
-                      <button type="button" class="btn btn-delete" (click)="days.removeExercise(day, e)">
-                        {{ 'personalPrograms.removeExercise' | translate }}
-                      </button>
+                      @if (!state.standaloneMode) {
+                        <button
+                          type="button"
+                          class="btn btn-neutral"
+                          (click)="days.repeatWeekly(day)"
+                          [disabled]="state.locked || day.dayIndex + 7 > state.model.durationDays"
+                        >
+                          {{ 'coachWorkspace.editor.repeatWeekly' | translate }}
+                        </button>
+                        <button type="button" class="btn btn-delete" (click)="days.removeDay(day)">
+                          {{ 'personalPrograms.removeDay' | translate }}
+                        </button>
+                      }
                     </div>
+                    @if (days.pickerDay === day) {
+                      <app-exercise-picker
+                        [chosenIds]="days.chosenIds"
+                        (picked)="days.addExercise($event)"
+                      />
+                    }
                   }
-                </div>
-              } @empty {
-                <app-empty-state message="personalPrograms.noExercises" />
+                </fieldset>
               }
-              @if (!state.started) {
-                <div class="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    class="btn btn-primary"
-                    (click)="days.pickerDay = days.pickerDay === day ? null : day"
-                    [disabled]="state.locked || day.exercises.length >= 100"
-                  >
-                    {{
-                      (days.pickerDay === day
-                        ? 'personalPrograms.closePicker'
-                        : 'personalPrograms.addExercise'
-                      ) | translate
-                    }}
-                  </button>
-                  @if (!state.standaloneMode) {
-                    <button type="button" class="btn btn-delete" (click)="days.removeDay(day)">
-                      {{ 'personalPrograms.removeDay' | translate }}
-                    </button>
-                  }
-                </div>
-                @if (days.pickerDay === day) {
-                  <app-exercise-picker [chosenIds]="days.chosenIds" (picked)="days.addExercise($event)" />
-                }
-              }
-            </fieldset>
-          } @empty {
-            <app-empty-state message="personalPrograms.noDays" />
-          }
+            </section>
+          </div>
         </section>
         @if (!state.started) {
           <button
@@ -327,7 +353,12 @@
             >
               {{ state.label('start') | translate }}
             </button>
-            <button type="button" class="btn btn-delete" (click)="actions.ask('delete')" [disabled]="state.busy">
+            <button
+              type="button"
+              class="btn btn-delete"
+              (click)="actions.ask('delete')"
+              [disabled]="state.busy"
+            >
               {{ 'personalPrograms.delete' | translate }}
             </button>
           } @else {

@@ -1,3 +1,4 @@
+import { validPersonalPrescriptions, preparePersonalPrescriptions } from './personal-prescriptions';
 import type { DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { NgForm } from '@angular/forms';
@@ -26,13 +27,30 @@ export class PersonalProgramActions {
       return;
     }
     const days = this.state.model.workouts.map((day) => day.dayIndex);
-    if (new Set(days).size !== days.length || days.some((day) => day > this.state.model.durationDays)) {
+    if (
+      new Set(days).size !== days.length ||
+      days.some((day) => !Number.isInteger(day) || day < 1 || day > this.state.model.durationDays)
+    ) {
       this.state.message = 'personalPrograms.invalidDays';
       this.state.messageType = 'error';
       return;
     }
     if (!this.state.withinLimits) {
       this.state.message = 'personalPrograms.sizeLimit';
+      this.state.messageType = 'error';
+      return;
+    }
+    const validationModel = this.state.standaloneMode
+      ? {
+          ...this.state.model,
+          workouts: this.state.model.workouts.map((day) => ({
+            ...day,
+            name: this.state.model.name,
+          })),
+        }
+      : this.state.model;
+    if (!validPersonalPrescriptions(validationModel)) {
+      this.state.message = 'personalPrograms.invalidTargets';
       this.state.messageType = 'error';
       return;
     }
@@ -75,6 +93,7 @@ export class PersonalProgramActions {
             );
           else if (typeof result !== 'number') {
             this.state.model = result.program;
+            preparePersonalPrescriptions(this.state.model);
             this.state.started = result.startedAt != null;
             this.days.pickerDay = null;
           }
@@ -116,11 +135,16 @@ export class PersonalProgramActions {
   }
 
   ask(action: 'start' | 'delete' | 'copy' | 'repeat'): void {
-    if (this.state.busy || this.state.id == null || this.state.loading || this.state.loadFailed) return;
+    if (this.state.busy || this.state.id == null || this.state.loading || this.state.loadFailed)
+      return;
     if (action === 'start' && !this.state.canStart) return;
     if (action === 'delete' && this.state.started) return;
     if (action === 'copy' && this.state.dirty) return;
-    if (action === 'repeat' && (!this.state.standaloneMode || !this.state.started || this.state.dirty)) return;
+    if (
+      action === 'repeat' &&
+      (!this.state.standaloneMode || !this.state.started || this.state.dirty)
+    )
+      return;
     this.state.action = action;
   }
 
@@ -152,6 +176,7 @@ export class PersonalProgramActions {
         this.state.dirty = false;
         if (action === 'start' && typeof result !== 'number') {
           this.state.model = result.program;
+          preparePersonalPrescriptions(this.state.model);
           this.state.started = result.startedAt != null;
           this.days.pickerDay = null;
           this.state.message = this.state.label('startSuccess');
@@ -162,7 +187,9 @@ export class PersonalProgramActions {
               ? ['/user/personal-workouts', result.id]
               : action === 'copy'
                 ? [
-                    this.state.standaloneMode ? '/user/personal-workouts' : '/user/personal-programs',
+                    this.state.standaloneMode
+                      ? '/user/personal-workouts'
+                      : '/user/personal-programs',
                     result,
                   ]
                 : ['/user/personal-programs'],

@@ -1,3 +1,6 @@
+import { ProgramPlannerComponent } from '../../../coach/coach-program-editor/parts/program-planner.component';
+import { PersonalExerciseTargetsComponent } from './personal-exercise-targets.component';
+import { preparePersonalPrescriptions } from './personal-prescriptions';
 import { WORKOUT_PRESCRIPTION_LIMITS } from '../../../../models/workout-prescription-limits';
 import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -29,6 +32,8 @@ import { PersonalProgramNavigation } from './personal-program-navigation';
   selector: 'app-personal-program-editor',
   standalone: true,
   imports: [
+    ProgramPlannerComponent,
+    PersonalExerciseTargetsComponent,
     AppFormValidationDirective,
     AppInputDirective,
     AppTextareaDirective,
@@ -62,12 +67,18 @@ export class PersonalProgramEditorComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly state = new PersonalProgramState(
-    !!this.route.snapshot?.data?.['standalone'], this.language.getCurrentLanguage(),
+    !!this.route.snapshot?.data?.['standalone'],
+    this.language.getCurrentLanguage(),
   );
   readonly days = new PersonalProgramDays(this.state);
   readonly navigation = new PersonalProgramNavigation(this.state);
   readonly actions = new PersonalProgramActions(
-    this.state, this.days, this.navigation, this.service, this.router, this.destroyRef,
+    this.state,
+    this.days,
+    this.navigation,
+    this.service,
+    this.router,
+    this.destroyRef,
   );
 
   ngOnInit(): void {
@@ -94,6 +105,7 @@ export class PersonalProgramEditorComponent implements OnInit {
           this.state.dirty = false;
           this.state.started = false;
           this.days.pickerDay = null;
+          this.days.selectedDay = 1;
           this.state.loadFailed = false;
           this.state.message = '';
           this.state.loading = true;
@@ -116,8 +128,11 @@ export class PersonalProgramEditorComponent implements OnInit {
         if (detail) {
           this.state.standaloneMode = !!detail.standalone;
           this.state.model = detail.program;
+          preparePersonalPrescriptions(this.state.model);
+          this.days.selectedDay = this.state.model.workouts[0]?.dayIndex ?? 1;
           this.state.started = detail.startedAt != null;
-        } else if (!this.state.loadFailed) this.state.model = this.state.empty(this.language.getCurrentLanguage());
+        } else if (!this.state.loadFailed)
+          this.state.model = this.state.empty(this.language.getCurrentLanguage());
       });
     this.destroyRef.onDestroy(() => {
       this.navigation.destroy();
@@ -132,5 +147,4 @@ export class PersonalProgramEditorComponent implements OnInit {
   beforeUnload(event: BeforeUnloadEvent): void {
     this.navigation.beforeUnload(event);
   }
-
 }

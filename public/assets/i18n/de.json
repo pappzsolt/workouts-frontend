@@ -1479,6 +1479,13 @@
     }
   },
   "personalPrograms": {
+    "calendarHint": "Wähle einen Tag, um Training und Satzziele zu sehen. Leere Tage sind Ruhetage; im Entwurf kannst du ein eigenes Training hinzufügen.",
+    "setTargets": "Zielwerte pro Satz",
+    "removeSet": "Satz {{number}} entfernen",
+    "weightHint": "Das Gewicht wird in Kilogramm angegeben. Ohne geplantes Zusatzgewicht bleibt das Feld leer. Jeder Satz kann eigene Wiederholungen, Gewicht, Pause und RPE haben.",
+    "plannerHint": "Wähle einen Kalendertag, erstelle das Training und lege die Zielwerte pro Satz fest. Tage ohne Training sind Ruhetage. Die Zielwerte gelten nur für dein eigenes Programm.",
+    "restDayHint": "Für diesen Tag ist kein Training geplant. Du kannst ihn als Ruhetag lassen oder ein eigenes Training hinzufügen.",
+    "invalidTargets": "Prüfe die Trainingsnamen und Sätze aller Tage. Wiederholungen: 1–200; Gewicht: 0–9999,99 kg; Pause: 0–3600 Sek.; RPE: 0–10 in Halbpunktschritten.",
     "kindFilter": "Typ",
     "allKinds": "Alle Typen",
     "title": "Selbst erstellte Programme",

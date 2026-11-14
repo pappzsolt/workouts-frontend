@@ -19,6 +19,9 @@ export class ProgramPlannerComponent implements OnChanges {
   @Input() cells: DayCell[] = [];
   @Input() selectedDay = 1;
   @Input() busy = false;
+  @Input() showMultiAdd = true;
+  @Input() hintKey = 'coachWorkspace.editor.programPlannerHint';
+  @Input() readonlyPlan = false;
   @Output() readonly daySelected = new EventEmitter<number>();
   @Output() readonly openMulti = new EventEmitter<void>();
   readonly weekdayKeys = WEEKDAY_KEYS;
