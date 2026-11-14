@@ -1,6 +1,6 @@
 import type { DestroyRef } from '@angular/core';
 import type { Router } from '@angular/router';
-import { finalize, takeUntil, timer } from 'rxjs';
+import { Subject, finalize, takeUntil, timer } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { CoachWorkoutsService } from '../../../../../services/coach/coach-workouts/coach-workouts.service';
 import type { LanguageService } from '../../../../../services/shared/language.service';
@@ -14,6 +14,7 @@ import type { WorkoutEditorEffects } from './workout-editor-effects';
 
 /** Loads and saves metadata, including language-scoped drafts. */
 export class WorkoutMetadataEditor {
+  private readonly saveStarted$ = new Subject<void>();
   constructor(
     private readonly state: WorkoutEditorState,
     private readonly coachWorkoutsService: CoachWorkoutsService,
@@ -68,6 +69,7 @@ export class WorkoutMetadataEditor {
     const context = this.state.drafts.context;
     const language = this.languageService.getCurrentLanguage();
     const unchangedContext = () => this.state.drafts.context === context && this.languageService.getCurrentLanguage() === language;
+    this.saveStarted$.next();
     this.state.savingWorkout = true;
     this.coachWorkoutsService.updateWorkout(this.state.workoutId, payload, language).pipe(
       takeUntil(this.state.contextCancelled$),
@@ -79,9 +81,13 @@ export class WorkoutMetadataEditor {
         if (res.success && res.data?.status === 'ok') {
           this.effects.setMessage('coachWorkoutEdit.updateSuccess', 'success');
           timer(1500)
-            .pipe(takeUntil(this.state.contextCancelled$), takeUntilDestroyed(this.destroyRef))
+            .pipe(takeUntil(this.saveStarted$), takeUntil(this.state.contextCancelled$), takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
-              if (unchangedContext()) void this.router.navigate(['/coach/workouts']);
+              const unchangedForm = (Object.keys(payload) as (keyof WorkoutForm)[])
+                .every(key => this.state.workout[key] === payload[key]);
+              if (unchangedContext() && unchangedForm && !this.state.savingWorkout) {
+                void this.router.navigate(['/coach/workouts']);
+              }
             });
         } else {
           this.effects.setMessage(res.data?.message || res.message || 'coachWorkoutEdit.updateError', 'error');

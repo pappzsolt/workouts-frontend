@@ -148,7 +148,12 @@ export class WorkoutExerciseEditor {
     const workoutId = this.state.workoutId;
     this.state.addingExercise = true;
     this.workoutExerciseService.assignExerciseToWorkout(workoutId, exerciseId).pipe(takeUntil(this.state.contextCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => {
+      next: (response) => {
+        if (!response.success) {
+          this.state.addingExercise = false;
+          this.effects.setMessage(response.message || 'coachWorkoutEdit.addError', 'error');
+          return;
+        }
         const addedExercise = this.state.exercises.find((exercise) => Number(exercise.id) === Number(exerciseId));
         // A backend nem küldi vissza az új kapcsolatot: a listába a szükséges adatok kerülnek.
         if (addedExercise && !this.isExerciseAlreadyAdded(exerciseId)) {

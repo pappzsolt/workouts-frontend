@@ -2,7 +2,7 @@ import { createInputValidationGuard } from '../../../shared/components/form-cont
 import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 
-import { Subject, finalize, forkJoin, take, takeUntil } from 'rxjs';
+import { Subject, catchError, finalize, forkJoin, of, take, takeUntil } from 'rxjs';
 
 import { AuthService } from '../../../../services/auth/auth.service';
 
@@ -76,6 +76,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   };
 
   coaches: CoachNameId[] = [];
+  coachesLoadFailed = false;
 
   /**
    * A felhasználó meglévő role-jai.
@@ -128,7 +129,12 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     }
 
     forkJoin({
-      coaches: this.userService.getCoaches(),
+      coaches: this.userService.getCoaches().pipe(
+        catchError(() => {
+          this.coachesLoadFailed = true;
+          return of<CoachNameId[]>([]);
+        }),
+      ),
       profile: this.userService.getMemberById(userId),
     })
       .pipe(takeUntil(this.destroy$))

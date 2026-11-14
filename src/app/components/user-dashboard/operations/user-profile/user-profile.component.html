@@ -188,7 +188,7 @@
               <div
                 class="flex min-h-10 items-center rounded-xl border border-surface-200 bg-surface-50 px-3 py-2 text-sm font-medium text-content-700"
               >
-                {{ coachName }}
+                {{ coachesLoadFailed ? ('coachSelect.loadError' | translate) : coachName }}
               </div>
             </app-form-field>
 
