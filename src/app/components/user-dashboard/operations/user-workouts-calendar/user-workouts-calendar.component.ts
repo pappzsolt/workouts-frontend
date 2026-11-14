@@ -62,6 +62,8 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   selectedWorkout: ScheduledWorkout | null = null;
 
   selectedExercises: UserWorkoutExerciseDto[] = [];
+  exercisesLoading = false;
+  exercisesError = false;
 
   // =========================================================
   // Naptár adatok
@@ -117,20 +119,25 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
       this.languageService.language$,
     ])
       .pipe(
-        switchMap(([userWorkoutId]) =>
-          userWorkoutId == null
+        switchMap(([userWorkoutId]) => {
+          this.selectedExercises = [];
+          this.exercisesError = false;
+          this.exercisesLoading = userWorkoutId != null;
+          return userWorkoutId == null
             ? of([])
             : this.workoutService.getExercisesForUserWorkout(userWorkoutId).pipe(
                 catchError((err) => {
                   this.logger.error('Hiba a workout exercise-ok lekérésekor:', err);
+                  this.exercisesError = true;
                   return of([]);
                 }),
-              ),
-        ),
+              );
+        }),
         takeUntil(this.destroy$),
       )
       .subscribe({
         next: (exercises) => {
+          this.exercisesLoading = false;
           this.selectedExercises = exercises ?? [];
         },
       });
@@ -302,6 +309,12 @@ export class UserWorkoutsCalendarComponent implements OnInit, OnDestroy {
   // =========================================================
   // WORKOUT RÉSZLETEK BEZÁRÁSA
   // =========================================================
+
+  retryExercises(): void {
+    if (!this.exercisesLoading && this.selectedWorkout) {
+      this.selectedWorkoutId$.next(this.selectedWorkout.userWorkoutId ?? null);
+    }
+  }
 
   closeWorkoutDetails(): void {
     this.selectedWorkout = null;

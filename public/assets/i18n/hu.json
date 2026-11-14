@@ -472,6 +472,9 @@
     "totalHours": "Összes óra"
   },
   "userWorkoutsCalendar": {
+    "exercisesLoading": "Gyakorlatok betöltése…",
+    "exercisesError": "A gyakorlatokat nem sikerült betölteni.",
+    "retryExercises": "Újrapróbálás",
     "january": "Január",
     "february": "Február",
     "march": "Március",

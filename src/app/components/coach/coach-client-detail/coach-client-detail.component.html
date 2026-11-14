@@ -57,10 +57,10 @@
       @if (pendingNav) {
         <div role="alertdialog" aria-live="assertive" class="flex flex-wrap items-center gap-3 rounded-2xl border border-warning-300 bg-warning-50 p-4 text-sm text-warning-800">
           <span class="flex-[1_1_240px] font-semibold">{{ 'coachWorkspace.client.unsavedPrompt' | translate: { count: setEditor.changedRows.length } }}</span>
-          <button type="button" (click)="resolvePending('cancel')" class="btn btn-neutral">
+          <button type="button" (click)="resolvePending('cancel')" [disabled]="setEditor.saving" class="btn btn-neutral">
             {{ 'coachWorkspace.client.stay' | translate }}
           </button>
-          <button type="button" (click)="resolvePending('discard')" class="btn btn-delete">
+          <button type="button" (click)="resolvePending('discard')" [disabled]="setEditor.saving" class="btn btn-delete">
             {{ 'coachWorkspace.client.discardAndGo' | translate }}
           </button>
           <button type="button" (click)="resolvePending('save')" [disabled]="setEditor.saving" class="btn btn-primary">
@@ -157,7 +157,7 @@
                       <input appInput="compact" type="date" name="rescheduleDate" [(ngModel)]="schedule.rescheduleDate" class="w-44"
                              [attr.min]="selectedProgram?.startDate || null" [attr.max]="selectedProgram?.endDate || null" />
                     </label>
-                    <button type="button" (click)="schedule.reschedule(selected)" [disabled]="!schedule.rescheduleDate || schedule.rescheduleDate === workout.date"
+                    <button type="button" (click)="rescheduleWorkout()" [disabled]="setEditor.saving || schedule.saving || !schedule.rescheduleDate || schedule.rescheduleDate === workout.date"
                             class="btn btn-neutral">
                       {{ 'coachWorkspace.client.saveDate' | translate }}
                     </button>
@@ -170,31 +170,33 @@
 
                   <p class="text-xs text-content-600">{{ 'coachWorkspace.client.restHint' | translate }}</p>
 
-                  @for (entry of setEditor.exerciseSets; track entry.exercise.userWorkoutExerciseId; let e = $index) {
-                    <app-client-exercise-sets [entry]="entry" [index]="e" [setBusy]="setEditor.setBusy" [deleteSetId]="setEditor.deleteSetId"
-                                              (fillDown)="setEditor.fillDown(entry)" (addSet)="setEditor.addSet(entry)"
-                                              (askDelete)="setEditor.askDeleteSet($event)" (cancelDelete)="setEditor.cancelDeleteSet()"
-                                              (confirmDelete)="setEditor.confirmDeleteSet(entry)" />
-                  } @empty {
-                    <p class="text-sm text-content-600">{{ 'coachWorkspace.client.noExercises' | translate }}</p>
-                  }
-
-                  <div class="sticky bottom-0 flex flex-wrap items-center justify-end gap-3 border-t border-surface-200 bg-white pt-3">
-                    @if (setEditor.dirty) {
-                      <span class="mr-auto text-sm font-semibold text-warning-800">
-                        {{ 'coachWorkspace.client.unsavedCount' | translate: { count: setEditor.changedRows.length } }}
-                      </span>
-                      <button type="button" (click)="setEditor.discardChanges()" [disabled]="setEditor.saving"
-                              class="btn btn-neutral">
-                        {{ 'coachWorkspace.client.discard' | translate }}
-                      </button>
+                  <fieldset [disabled]="schedule.saving" class="min-w-0 space-y-4">
+                    @for (entry of setEditor.exerciseSets; track entry.exercise.userWorkoutExerciseId; let e = $index) {
+                      <app-client-exercise-sets [entry]="entry" [index]="e" [setBusy]="setEditor.setBusy" [deleteSetId]="setEditor.deleteSetId"
+                                                (fillDown)="setEditor.fillDown(entry)" (addSet)="setEditor.addSet(entry)"
+                                                (askDelete)="setEditor.askDeleteSet($event)" (cancelDelete)="setEditor.cancelDeleteSet()"
+                                                (confirmDelete)="setEditor.confirmDeleteSet(entry)" />
+                    } @empty {
+                      <p class="text-sm text-content-600">{{ 'coachWorkspace.client.noExercises' | translate }}</p>
                     }
-                    <button type="button" (click)="setEditor.saveSets()" [disabled]="setEditor.saving || !setEditor.dirty"
-                            class="btn btn-primary px-5">
-                      <app-icon name="save" sizeClass="h-4 w-4" />
-                      {{ (setEditor.saving ? 'coachWorkspace.saving' : 'coachWorkspace.client.saveChanges') | translate: { count: setEditor.changedRows.length } }}
-                    </button>
-                  </div>
+
+                    <div class="sticky bottom-0 flex flex-wrap items-center justify-end gap-3 border-t border-surface-200 bg-white pt-3">
+                      @if (setEditor.dirty) {
+                        <span class="mr-auto text-sm font-semibold text-warning-800">
+                          {{ 'coachWorkspace.client.unsavedCount' | translate: { count: setEditor.changedRows.length } }}
+                        </span>
+                        <button type="button" (click)="setEditor.discardChanges()" [disabled]="setEditor.saving"
+                                class="btn btn-neutral">
+                          {{ 'coachWorkspace.client.discard' | translate }}
+                        </button>
+                      }
+                      <button type="button" (click)="setEditor.saveSets()" [disabled]="setEditor.saving || !setEditor.dirty"
+                              class="btn btn-primary px-5">
+                        <app-icon name="save" sizeClass="h-4 w-4" />
+                        {{ (setEditor.saving ? 'coachWorkspace.saving' : 'coachWorkspace.client.saveChanges') | translate: { count: setEditor.changedRows.length } }}
+                      </button>
+                    </div>
+                  </fieldset>
                 </section>
               }
             </div>

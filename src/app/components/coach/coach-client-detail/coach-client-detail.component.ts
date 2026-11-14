@@ -1,7 +1,7 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, finalize, takeUntil } from 'rxjs';
+import { Observable, Subject, finalize, takeUntil } from 'rxjs';
 
 import { AppInputDirective } from '../../shared/components/form-controls/app-input.directive';
 import { AppLoadingComponent } from '../../shared/components/app-state/app-state.component';
@@ -41,6 +41,8 @@ import { ClientProgramAssignments } from './client-program-assignments';
 import { ClientWorkoutSchedule } from './client-workout-schedule';
 
 type PendingNav =
+  | { kind: 'route' }
+  | { kind: 'reschedule'; date: string }
   | { kind: 'workout'; index: number }
   | { kind: 'program'; programId: number }
   | { kind: 'tab'; tab: 'plan' | 'programs' };
@@ -117,6 +119,40 @@ export class CoachClientDetailComponent implements OnInit {
   selectedIndex = -1;
 
   pendingNav: PendingNav | null = null;
+  private leaveResult?: Subject<boolean>;
+
+  canLeave(): boolean | Observable<boolean> {
+    if (this.setEditor.saving || this.schedule.saving) return false;
+    if (!this.setEditor.dirty) return true;
+    this.pendingNav = { kind: 'route' };
+    this.leaveResult ??= new Subject<boolean>();
+    return this.leaveResult.asObservable();
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  beforeUnload(event: BeforeUnloadEvent): void {
+    if (this.setEditor.dirty || this.setEditor.saving || this.schedule.saving) {
+      event.preventDefault();
+      event.returnValue = '';
+    }
+  }
+
+  rescheduleWorkout(): void {
+    if (this.setEditor.saving || this.schedule.saving || !this.selected ||
+        !this.schedule.rescheduleDate || this.schedule.rescheduleDate === this.selected.date) return;
+    if (this.setEditor.dirty) {
+      this.pendingNav = { kind: 'reschedule', date: this.schedule.rescheduleDate };
+      return;
+    }
+    this.schedule.reschedule(this.selected);
+  }
+
+  private resolveLeave(leave: boolean): void {
+    const result = this.leaveResult;
+    this.leaveResult = undefined;
+    result?.next(leave);
+    result?.complete();
+  }
 
   // Excel-export
   exporting = false;
@@ -232,6 +268,7 @@ export class CoachClientDetailComponent implements OnInit {
   // ----------------------------------------------------------
 
   selectProgram(programId: number | string): void {
+    if (this.schedule.saving || this.pendingNav?.kind === 'route') return;
     const id = Number(programId);
     if (id === this.programId) return;
     if (this.setEditor.dirty) {
@@ -351,6 +388,7 @@ export class CoachClientDetailComponent implements OnInit {
   }
 
   selectWorkout(index: number): void {
+    if (this.schedule.saving || this.pendingNav?.kind === 'route') return;
     if (index < 0 || index >= this.workouts.length || index === this.selectedIndex) return;
     if (this.setEditor.dirty) {
       this.pendingNav = { kind: 'workout', index };
@@ -375,13 +413,19 @@ export class CoachClientDetailComponent implements OnInit {
   resolvePending(action: 'save' | 'discard' | 'cancel'): void {
     const nav = this.pendingNav;
     if (!nav) return;
+    if (this.setEditor.saving || this.schedule.saving) return;
     if (action === 'cancel') {
       this.pendingNav = null;
+      if (nav.kind === 'route') this.resolveLeave(false);
       return;
     }
     const go = () => {
       this.pendingNav = null;
-      if (nav.kind === 'workout') this.openWorkout(nav.index);
+      if (nav.kind === 'route') this.resolveLeave(true);
+      else if (nav.kind === 'reschedule') {
+        this.schedule.rescheduleDate = nav.date;
+        this.schedule.reschedule(this.selected);
+      } else if (nav.kind === 'workout') this.openWorkout(nav.index);
       else if (nav.kind === 'program') this.loadProgram(nav.programId);
       else this.tab = nav.tab;
     };
@@ -394,6 +438,7 @@ export class CoachClientDetailComponent implements OnInit {
   }
 
   setTab(tab: 'plan' | 'programs'): void {
+    if (this.schedule.saving || this.pendingNav?.kind === 'route') return;
     if (tab === this.tab) return;
     if (this.setEditor.dirty && tab !== 'plan') {
       this.pendingNav = { kind: 'tab', tab };

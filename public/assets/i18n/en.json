@@ -472,6 +472,9 @@
     "totalHours": "Total Hours"
   },
   "userWorkoutsCalendar": {
+    "exercisesLoading": "Loading exercises…",
+    "exercisesError": "Could not load exercises.",
+    "retryExercises": "Try again",
     "january": "January",
     "february": "February",
     "march": "March",

@@ -1,5 +1,5 @@
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { takeUntil } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs';
 import type { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import type { ClientDetailEffects } from './client-detail-effects';
 import type { ClientWorkoutEntry } from './client-plan';
@@ -7,6 +7,7 @@ import type { ClientWorkoutEntry } from './client-plan';
 /** Owns the edited workout date and its rescheduling request. */
 export class ClientWorkoutSchedule {
   rescheduleDate = '';
+  saving = false;
 
   constructor(
     private readonly workspace: Pick<CoachWorkspaceService, 'rescheduleWorkout'>,
@@ -19,11 +20,12 @@ export class ClientWorkoutSchedule {
   }
 
   reschedule(workout: ClientWorkoutEntry | null): void {
-    if (!workout || !this.rescheduleDate || this.rescheduleDate === workout.date) return;
+    if (this.saving || !workout || !this.rescheduleDate || this.rescheduleDate === workout.date) return;
     const id = workout.userWorkoutId;
+    this.saving = true;
     this.workspace
       .rescheduleWorkout(id, this.rescheduleDate)
-      .pipe(takeUntil(this.effects.cancelled$), takeUntilDestroyed(this.effects.destroyRef))
+      .pipe(takeUntil(this.effects.cancelled$), takeUntilDestroyed(this.effects.destroyRef), finalize(() => this.saving = false))
       .subscribe({
         next: () => {
           this.effects.showMessage('coachWorkspace.client.rescheduled', 'success');

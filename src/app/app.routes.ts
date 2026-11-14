@@ -164,6 +164,7 @@ export const routes: Routes = [
 
       {
         path: 'clients/:userId',
+        canDeactivate: [(component: { canLeave(): boolean | Observable<boolean> }) => component.canLeave()],
         loadComponent: () => import('./components/coach/coach-client-detail/coach-client-detail.component').then(m => m.CoachClientDetailComponent),
       },
 

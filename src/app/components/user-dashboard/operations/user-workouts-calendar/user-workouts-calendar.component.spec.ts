@@ -14,6 +14,7 @@ describe('Workout calendar month integration', () => {
   let second: Subject<ApiResponse<ScheduledWorkout[]>>;
   let third: Subject<ApiResponse<ScheduledWorkout[]>>;
   let getScheduled: jasmine.Spy;
+  let getExercises: jasmine.Spy;
   const workout: ScheduledWorkout = {
     userWorkoutId: 11, programWorkoutId: 21, workoutId: 31, programId: 41,
     scheduledAt: '2026-01-15', workoutName: 'Strength', completed: false,
@@ -26,13 +27,14 @@ describe('Workout calendar month integration', () => {
     first = new Subject<ApiResponse<ScheduledWorkout[]>>();
     second = new Subject<ApiResponse<ScheduledWorkout[]>>();
     third = new Subject<ApiResponse<ScheduledWorkout[]>>();
+    getExercises = jasmine.createSpy().and.returnValue(of([]));
     getScheduled = jasmine.createSpy().and.returnValues(first, second, third);
     TestBed.configureTestingModule({ providers: [
       { provide: LoggerService, useValue: { error() {} } },
     ] });
     component = TestBed.runInInjectionContext(() => new UserWorkoutsCalendarComponent({
       getScheduledWorkouts: getScheduled,
-      getExercisesForUserWorkout: () => of([]),
+      getExercisesForUserWorkout: getExercises,
     } as unknown as WorkoutExercisesManagerService, {
       language$: language,
     } as unknown as LanguageService));
@@ -111,4 +113,37 @@ describe('Workout calendar month integration', () => {
     expect(component.getWorkoutsForDay(new Date(2026, 0, 15))).toEqual([translated]);
     expect(component.calendarDays.filter(day => day.isToday).length).toBe(1);
   });
+  it('distinguishes pending, failed and successfully empty exercise lists and retries', () => {
+    const failed = new Subject<any[]>();
+    const retry = new Subject<any[]>();
+    getExercises.and.returnValues(failed, retry);
+    component.selectWorkout(workout);
+    expect(component.exercisesLoading).toBeTrue();
+    expect(component.exercisesError).toBeFalse();
+    failed.error(new Error('offline'));
+    expect(component.exercisesLoading).toBeFalse();
+    expect(component.exercisesError).toBeTrue();
+    component.retryExercises();
+    expect(component.exercisesLoading).toBeTrue();
+    expect(component.exercisesError).toBeFalse();
+    retry.next([]);
+    expect(component.exercisesLoading).toBeFalse();
+    expect(component.exercisesError).toBeFalse();
+    expect(component.selectedExercises).toEqual([]);
+    expect(getExercises).toHaveBeenCalledTimes(2);
+  });
+
+  it('ignores a failed request for an abandoned workout', () => {
+    const abandoned = new Subject<any[]>();
+    getExercises.and.returnValues(abandoned, of([]));
+    component.selectWorkout(workout);
+    component.selectWorkout({ ...workout, userWorkoutId: 12 });
+    expect(abandoned.observed).toBeFalse();
+    abandoned.error(new Error('late failure'));
+    expect(component.exercisesError).toBeFalse();
+    component.closeWorkoutDetails();
+    expect(component.exercisesLoading).toBeFalse();
+    expect(component.exercisesError).toBeFalse();
+  });
+
 });

@@ -283,9 +283,18 @@
           {{ 'userWorkoutsCalendar.exercises' | translate }}
         </h4>
 
+        @if (exercisesLoading) {
+          <p role="status">{{ 'userWorkoutsCalendar.exercisesLoading' | translate }}</p>
+        }
+        @if (exercisesError) {
+          <app-message [message]="'userWorkoutsCalendar.exercisesError'" type="error" />
+          <button type="button" class="btn btn-neutral" (click)="retryExercises()">
+            {{ 'userWorkoutsCalendar.retryExercises' | translate }}
+          </button>
+        }
         <!-- Nincs exercise -->
         <app-message
-          *ngIf="selectedExercises.length === 0"
+          *ngIf="!exercisesLoading && !exercisesError && selectedExercises.length === 0"
           [message]="'userWorkoutsCalendar.noExercises'"
           type="info"
         ></app-message>
