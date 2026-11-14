@@ -75,17 +75,101 @@ export const GUIDE_STEPS: Record<GuideRole, readonly GuideStep[]> = {
         hu: {
           title: 'Saját programok: tervből edzés',
           description:
-            'Itt a saját terveidet és önálló edzéseidet kezelheted; a típusválasztóval külön is szűrheted őket. Új programnál add meg az időtartamot, a naptárban válassz edzésnapot, majd adj hozzá gyakorlatokat. Sorozatonként külön ismétlést, súlyt, pihenőt és tervezett RPE-t állíthatsz be; az első sor értékeit a többi sorra is másolhatod. Az edzés hetente ismételhető a még üres napokra. A mentés piszkozatot őriz meg, az indítás hozza létre a végezhető edzéseket. Az elindított terv szerkezete zárolt; új változathoz készíts másolatot, így a korábbi eredmények megmaradnak.',
+            'Itt a saját terveidet és önálló edzéseidet kezelheted. Keress név szerint, vagy szűrj típusra. Az Új saját program többnapos tervet, az Önálló edzés létrehozása egyetlen alkalmat készít. A Megnyitás a tervhez, az Edzések megnyitása az elindított alkalmakhoz vezet. A következő lépésekben megismered a naptáras szerkesztést, a sorozatcélokat és a mentés–indítás különbségét.',
         },
         en: {
           title: 'Personal programs: from plan to training',
           description:
-            'Manage your own plans and standalone workouts here, using the type filter to separate them. Set the duration, choose training days in the calendar and add exercises. Each set can have its own repetitions, weight, rest and target RPE; copy the first set to the others when needed. Repeat a workout weekly into empty days. Saving keeps a draft; starting creates sessions you can perform. A started plan has a locked structure. Copy it for a new version while keeping earlier results.',
+            'Manage your own plans and standalone workouts here. Search by name or filter by type. New personal program creates a multi-day plan; Create standalone workout creates one session. Open takes you to the plan, while Open workouts takes you to started sessions. The next steps explain calendar editing, set targets and the difference between saving and starting.',
         },
         de: {
           title: 'Eigene Programme: vom Plan zum Training',
           description:
-            'Hier verwaltest du eigene Pläne und Einzeltrainings und filterst nach Typ. Lege die Dauer fest, wähle Trainingstage im Kalender und füge Übungen hinzu. Jeder Satz kann eigene Wiederholungen, Gewicht, Pause und Ziel-RPE haben; kopiere bei Bedarf die Werte des ersten Satzes. Wiederhole ein Training wöchentlich an noch freien Tagen. Speichern bewahrt den Entwurf; Starten erzeugt ausführbare Trainings. Die Struktur gestarteter Pläne ist gesperrt. Erstelle für Änderungen eine Kopie, damit bisherige Ergebnisse erhalten bleiben.',
+            'Hier verwaltest du eigene Pläne und Einzeltrainings. Suche nach Namen oder filtere nach Typ. Neues eigenes Programm erstellt einen mehrtägigen Plan; Einzeltraining erstellen einen einzelnen Termin. Öffnen führt zum Plan, Trainings öffnen zu gestarteten Einheiten. Die nächsten Schritte erklären Kalenderplanung, Satzziele sowie Speichern und Starten.',
+        },
+      },
+    },
+    {
+      route: '/user/personal-programs/new',
+      target: 'app-personal-program-editor form > fieldset',
+      text: {
+        hu: {
+          title: 'Saját program: adatok és kezdőnap',
+          description:
+            'Adj nevet a programnak, majd add meg az időtartamát napokban. Az 1. programnap a kezdőnapra esik, nem feltétlenül hétfőre. Ha nem választasz kezdőnapot, indításkor az aznapi dátum lesz az alap. A nehézség és a leírás segít később felismerni a tervet. Ezt a programot saját magadnak készíted; a mentéshez és indításhoz nem kell coach-kiosztás.',
+        },
+        en: {
+          title: 'Personal program: details and start date',
+          description:
+            'Name the program and set its duration in days. Program day 1 falls on the start date, which need not be a Monday. Without a chosen date, starting uses that day as the start date. Difficulty and description help identify the plan later. This program is for you: saving and starting do not require a coach assignment.',
+        },
+        de: {
+          title: 'Eigenes Programm: Daten und Starttag',
+          description:
+            'Benenne das Programm und lege die Dauer in Tagen fest. Programmtag 1 fällt auf den Starttag, nicht zwingend auf einen Montag. Ohne gewähltes Datum gilt beim Start der aktuelle Tag. Schwierigkeit und Beschreibung helfen beim Wiedererkennen. Du erstellst den Plan für dich; Speichern und Starten erfordern keine Trainerzuweisung.',
+        },
+      },
+    },
+    {
+      route: '/user/personal-programs/new',
+      target: 'app-personal-program-editor app-program-planner > section',
+      text: {
+        hu: {
+          title: 'Naptáras tervezés és heti ismétlés',
+          description:
+            'Válassz napot a naptárban, majd az Edzésnap hozzáadása gombbal készíts rá edzést. Adj nevet, és válassz gyakorlatokat. Az üres nap pihenőnap marad. Megadott kezdőnapnál a hosszabb program hónapjai között a nyilakkal válthatsz. Az Ismétlés hetente a következő hetek még üres megfelelő napjaira másolja az edzést és a sorozatcélokat; a már foglalt napokat kihagyja. A másolatok később külön szerkeszthetők. Napváltás után is mentsd el a programot.',
+        },
+        en: {
+          title: 'Calendar planning and weekly repetition',
+          description:
+            'Choose a calendar day, then use Add workout day to create its workout. Name it and choose exercises. An empty day remains a rest day. With a start date set, use the arrows to change months in longer programs. Repeat weekly copies the workout and set targets to the matching empty days in later weeks, skipping occupied days. Each copy can be edited independently. Changing days does not replace saving the program.',
+        },
+        de: {
+          title: 'Kalenderplanung und wöchentliche Wiederholung',
+          description:
+            'Wähle einen Kalendertag und erstelle über Trainingstag hinzufügen ein Training mit Namen und Übungen. Leere Tage bleiben Ruhetage. Bei längeren Plänen mit Startdatum wechselst du den Monat mit den Pfeilen. Wöchentlich wiederholen kopiert Training und Satzziele auf passende freie Tage späterer Wochen; belegte Tage bleiben erhalten. Kopien sind unabhängig bearbeitbar. Speichere den Plan auch nach einem Tagwechsel.',
+        },
+      },
+    },
+    {
+      route: '/user/personal-programs/new',
+      target: 'app-personal-program-editor form',
+      text: {
+        hu: {
+          title: 'Sorozatonkénti súly, ismétlés és RPE',
+          description:
+            'Gyakorlat hozzáadása után minden sor egy tervezett sorozat. Külön célismétlést, kilogrammban megadott súlyt, másodpercben megadott pihenőt, tervezett RPE-t és megjegyzést adhatsz meg. A súly és az RPE üresen is maradhat. Az RPE a sorozat végére várt erőkifejtés 0–10-es jelzése, félpontos lépésekben. A Sorozat hozzáadása az utolsó sor értékeit másolja. Az Első sorozat értékei mindre az összes többi sor teljes célértékeit felülírja, ezért utána állítsd be az eltérő sorozatokat.',
+        },
+        en: {
+          title: 'Weight, repetitions and RPE for each set',
+          description:
+            'After adding an exercise, each row is a planned set. Enter its target repetitions, weight in kilograms, rest in seconds, target RPE and notes. Weight and RPE may remain blank. RPE describes the expected effort at the end of the set on a 0–10 scale in half-point steps. Add set copies the last row. Copying the first set to all rows overwrites all targets in the other rows, so adjust differing sets afterwards.',
+        },
+        de: {
+          title: 'Gewicht, Wiederholungen und RPE pro Satz',
+          description:
+            'Nach dem Hinzufügen einer Übung steht jede Zeile für einen geplanten Satz. Erfasse Zielwiederholungen, Gewicht in Kilogramm, Pause in Sekunden, Ziel-RPE und Notizen. Gewicht und RPE dürfen leer bleiben. RPE beschreibt die erwartete Anstrengung am Satzende auf einer Skala von 0–10 in Halbpunktschritten. Satz hinzufügen kopiert die letzte Zeile. Das Übertragen des ersten Satzes auf alle Zeilen überschreibt deren sämtliche Zielwerte; passe abweichende Sätze danach an.',
+        },
+      },
+    },
+    {
+      route: '/user/personal-programs/new',
+      target: 'app-personal-program-editor button[type="submit"]',
+      text: {
+        hu: {
+          title: 'Piszkozat mentése, majd programindítás',
+          description:
+            'A Piszkozat mentése a teljes tervet őrzi meg, az összes nap sorozatcéljaival együtt. A Program indítása csak mentett, legalább egy edzésnapot és minden edzésen legalább egy gyakorlatot tartalmazó tervnél érhető el. Indításkor létrejönnek a dátumhoz kötött edzések a megadott célértékekkel, eredmények nélkül. Ezekhez az Edzések megnyitása gomb vezet. Az elindított terv zárolt; új változathoz készíts másolatot. Mentési hiba esetén a szerkesztés megmarad: javítsd a jelzett adatokat, és próbáld újra.',
+        },
+        en: {
+          title: 'Save the draft, then start the program',
+          description:
+            'Save draft stores the whole plan, including set targets on every day. Start program requires a saved plan with at least one training day and at least one exercise in every workout. Starting creates dated sessions with the planned targets and no performance results. Use Open workouts to train. A started plan is locked; make a copy for a new version. If saving fails, your edits remain: correct the reported fields and try again.',
+        },
+        de: {
+          title: 'Entwurf speichern, dann Programm starten',
+          description:
+            'Entwurf speichern sichert den ganzen Plan einschließlich der Satzziele aller Tage. Zum Starten muss der Plan gespeichert sein und mindestens einen Trainingstag sowie eine Übung pro Training enthalten. Beim Start entstehen datierte Einheiten mit den Zielwerten, ohne Leistungsergebnisse. Über Trainings öffnen beginnst du das Training. Ein gestarteter Plan ist gesperrt; erstelle für Änderungen eine Kopie. Bei Speicherfehlern bleiben Eingaben erhalten: korrigiere die gemeldeten Felder und versuche es erneut.',
         },
       },
     },
@@ -96,17 +180,17 @@ export const GUIDE_STEPS: Record<GuideRole, readonly GuideStep[]> = {
         hu: {
           title: 'Új önálló edzés',
           description:
-            'Egyetlen edzéshez nem kell többnapos programot összeállítanod. Adj nevet, válassz dátumot és gyakorlatokat, majd sorozatonként állítsd be az ismétlést, súlyt, pihenőt és az opcionális tervezett RPE-t. Előbb mentsd el, utána indítsd el. Egy már elindított önálló edzés új alkalma külön eredményeket kap: a következő edzés nem írja felül az előző teljesítését.',
+            'Egyetlen edzéshez adj nevet, opcionálisan dátumot, majd válassz gyakorlatokat és add meg a sorozatok célértékeit. Itt nincs többnapos naptár. Előbb mentsd, utána indítsd el az edzést. A korábbi alkalom megismétléséhez az Új alkalom megtartja a gyakorlatokat és sorozatcélokat, de új, üres dátumú piszkozatot készít: válassz napot, ellenőrizd a célokat, majd indítsd el. A korábbi tényleges eredmények nem kerülnek át.',
         },
         en: {
           title: 'Create a standalone workout',
           description:
-            'You do not need a multi-day program for one workout. Enter a name, choose a date and exercises, and set repetitions, weight, rest and optional target RPE for each set. Save before starting it. A new occurrence of a started standalone workout has separate results, so the next session does not overwrite the previous performance.',
+            'For one workout, enter a name and optional date, choose exercises and set each set target. There is no multi-day calendar here. Save before starting. New session retains the exercises and set targets of a started workout but creates a new draft with no date: choose a day, review the targets and start it. Previous actual performance is not copied.',
         },
         de: {
           title: 'Ein neues Einzeltraining',
           description:
-            'Für ein einzelnes Training brauchst du keinen mehrtägigen Plan. Gib einen Namen ein, wähle Datum und Übungen und lege Wiederholungen, Gewicht, Pause und optionales Ziel-RPE pro Satz fest. Speichere vor dem Start. Ein neuer Termin eines gestarteten Einzeltrainings erhält eigene Ergebnisse und überschreibt die vorherige Leistung nicht.',
+            'Für ein Training gibst du einen Namen und optional ein Datum an, wählst Übungen und legst Satzziele fest. Hier gibt es keinen mehrtägigen Kalender. Speichere vor dem Start. Neue Einheit übernimmt Übungen und Satzziele eines gestarteten Trainings, erstellt aber einen Entwurf ohne Datum: wähle einen Tag, prüfe die Ziele und starte ihn. Frühere Ist-Leistungen werden nicht kopiert.',
         },
       },
     },
@@ -117,17 +201,17 @@ export const GUIDE_STEPS: Record<GuideRole, readonly GuideStep[]> = {
         hu: {
           title: 'Edzéssablonok és kedvencek',
           description:
-            'A sablon újra felhasználható edzésterv, nem egy korábbi edzés eredménylapja. Az elmentett önálló edzésből készíthetsz sablont; itt keresheted és kedvencnek jelölheted. Felhasználásakor új önálló edzés készül, amelynek dátumát beállíthatod és elindíthatod. A sablon törlése a sablont távolítja el, nem a belőle korábban elvégzett edzések eredményeit.',
+            'A sablon a bevált önálló edzés gyakorlat- és sorozattervét őrzi, a célsúlyokkal, ismétlésekkel, pihenőkkel és RPE-vel együtt. Az edzés módosításait előbb mentsd, majd válaszd a Mentés edzéssablonként gombot. Az Új edzésalkalom ebből külön piszkozatot készít: a dátumot és a célokat ellenőrizd, mentsd a változásokat, majd indítsd el. Tényleges eredmény, teljesítési állapot és időzítő nem másolódik. A sablon törlése a korábbi edzéseket nem törli.',
         },
         en: {
           title: 'Workout templates and favorites',
           description:
-            'A template is a reusable workout plan, not a past session’s result sheet. Save a standalone workout as a template, then search or favorite it here. Using it creates a new standalone workout whose date you can set before starting. Deleting a template removes the template, not results from sessions already performed.',
+            'A template stores the exercise and set plan of a standalone workout, including target weights, repetitions, rest and RPE. Save workout changes before selecting Save as workout template. New workout session creates a separate draft: review its date and targets, save any changes and start it. Actual results, completion states and timers are not copied. Deleting a template does not delete earlier sessions.',
         },
         de: {
           title: 'Trainingsvorlagen und Favoriten',
           description:
-            'Eine Vorlage ist ein wiederverwendbarer Trainingsplan, kein Ergebnisblatt eines früheren Trainings. Speichere ein Einzeltraining als Vorlage und suche oder favorisiere es hier. Die Verwendung erstellt ein neues Einzeltraining mit eigenem Datum und Start. Das Löschen einer Vorlage entfernt keine Ergebnisse bereits absolvierter Trainings.',
+            'Eine Vorlage speichert den Übungs- und Satzplan eines Einzeltrainings einschließlich Zielgewichten, Wiederholungen, Pausen und RPE. Speichere Änderungen vor Als Trainingsvorlage speichern. Neue Trainingseinheit erstellt einen eigenen Entwurf: prüfe Datum und Ziele, speichere Änderungen und starte ihn. Ist-Ergebnisse, Abschlussstatus und Timer werden nicht kopiert. Das Löschen einer Vorlage löscht keine früheren Einheiten.',
         },
       },
     },
@@ -138,17 +222,17 @@ export const GUIDE_STEPS: Record<GuideRole, readonly GuideStep[]> = {
         hu: {
           title: 'Program importálása Excelből',
           description:
-            'Az importálás egy fájlból hoz létre saját programot. Válassz .xlsx fájlt, és először futtasd az előellenőrzést. Nézd át a figyelmeztetéseket, az ismeretlen vagy többféleképpen azonosítható gyakorlatokat pedig párosítsd a gyakorlatkönyvtárral. Az előnézet még nem végleges mentés: az ellenőrzés után külön importálj, majd a létrejött tervet ellenőrizd és indítsd el.',
+            'Válassz .xlsx fájlt, futtasd az előellenőrzést, és nézd át a figyelmeztetéseket. Az ismeretlen vagy többértelmű gyakorlatneveket párosítsd a katalógussal, majd ellenőrizd újra. Az előnézet még nem mentés. Az Új program létrehozása már az ütemezett edzéseket is létrehozza; az importált saját program ezért elindított, zárolt tervként nyílhat meg. Ellenőrizd az import eredményét és a megfelelő edzésalkalmat. Ugyanaz a fájl ismételt importálása új programot készít.',
         },
         en: {
           title: 'Import a program from Excel',
           description:
-            'Import creates a personal program from a file. Choose an .xlsx file and run the preview first. Review warnings and match unknown or ambiguous exercise names to the exercise library. Previewing does not save the final program. Import after checking, then review and start the resulting plan.',
+            'Choose an .xlsx file, run the preview and review its warnings. Match unknown or ambiguous exercise names to the catalogue and check again. Previewing does not save. Create new program also creates scheduled sessions, so an imported personal program may open as a started, locked plan. Review the import result and the correct session. Importing the same file again creates another program.',
         },
         de: {
           title: 'Ein Programm aus Excel importieren',
           description:
-            'Der Import erstellt ein eigenes Programm aus einer Datei. Wähle eine .xlsx-Datei und prüfe zuerst die Vorschau. Beachte Warnungen und ordne unbekannte oder mehrdeutige Übungsnamen der Bibliothek zu. Die Vorschau speichert noch kein endgültiges Programm. Importiere nach der Prüfung und kontrolliere und starte anschließend den Plan.',
+            'Wähle eine .xlsx-Datei, prüfe die Vorschau und ihre Warnungen. Ordne unbekannte oder mehrdeutige Übungsnamen dem Katalog zu und prüfe erneut. Die Vorschau speichert noch nichts. Neues Programm erstellen erzeugt auch geplante Einheiten; ein importiertes eigenes Programm kann daher als gestarteter, gesperrter Plan erscheinen. Prüfe Importergebnis und Trainingstermin. Ein erneuter Import derselben Datei erstellt ein weiteres Programm.',
         },
       },
     },
