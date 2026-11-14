@@ -1591,7 +1591,11 @@
     "leaveConfirm": "Elhagyod az oldalt? A nem mentett változások elvesznek.",
     "confirm": "Megerősítés",
     "cancel": "Mégse",
-    "sizeLimit": "A saját program legfeljebb 1000 gyakorlatot és 5000 sorozatot tartalmazhat."
+    "sizeLimit": "A saját program legfeljebb 1000 gyakorlatot és 5000 sorozatot tartalmazhat.",
+    "editDraft": "Szerkesztés",
+    "editCopy": "Szerkeszthető másolat",
+    "deleteListConfirm": "Biztosan törlöd ezt a saját programpiszkozatot: „{{name}}”? Az edzésnapjai is törlődnek. A művelet nem vonható vissza.",
+    "deleteSuccess": "A saját programpiszkozat törölve."
   },
   "personalWorkouts": {
     "create": "Önálló edzés létrehozása",
@@ -1616,7 +1620,12 @@
     "saved": "Az edzést mentettük.",
     "startSuccess": "Az edzés elindult. Az Edzések megnyitása gombbal kezdhetsz edzeni.",
     "started": "Elindított edzés",
-    "draft": "Edzéspiszkozat"
+    "draft": "Edzéspiszkozat",
+    "editDraft": "Edzés szerkesztése",
+    "editCopy": "Új, szerkeszthető alkalom",
+    "delete": "Edzéspiszkozat törlése",
+    "deleteListConfirm": "Biztosan törlöd ezt az önálló edzéspiszkozatot: „{{name}}”? A művelet nem vonható vissza.",
+    "deleteSuccess": "Az önálló edzéspiszkozat törölve."
   },
   "previousPerformance": {
     "title": "Legutóbb",

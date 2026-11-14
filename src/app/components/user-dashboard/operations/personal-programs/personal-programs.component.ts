@@ -1,6 +1,7 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Subject, catchError, merge, of, switchMap, tap } from 'rxjs';
+import { Subject, catchError, map, merge, of, switchMap, tap } from 'rxjs';
+import { Router } from '@angular/router';
 import { AppPageHeaderComponent } from '../../../shared/components/app-page-header/app-page-header.component';
 import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
 import { AppLoadingComponent } from '../../../shared/components/app-state/app-state.component';
@@ -16,6 +17,7 @@ import { AppCardBannerComponent } from '../../../shared/components/app-card-bann
 import { AppCardStatComponent } from '../../../shared/components/app-card-stat/app-card-stat.component';
 import { AppSearchComponent } from '../../../shared/components/app-search/app-search.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { PersonalProgramService } from '../../../../services/user/personal-program.service';
 import { LanguageService } from '../../../../services/shared/language.service';
 import { PersonalProgramSummary } from '../../../../models/personal-program.model';
@@ -40,12 +42,14 @@ import { errorMessage } from '../../../../models/backend-dto/common/api-response
     AppCardStatComponent,
     AppSearchComponent,
     PaginationComponent,
+    ConfirmDialogComponent,
   ],
   templateUrl: './personal-programs.component.html',
 })
 export class PersonalProgramsComponent implements OnInit {
   private readonly service = inject(PersonalProgramService);
   private readonly language = inject(LanguageService);
+  private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
   programs: PersonalProgramSummary[] = [];
   private readonly reload$ = new Subject<void>();
@@ -56,6 +60,9 @@ export class PersonalProgramsComponent implements OnInit {
   kind = 'all';
   loading = false;
   message = '';
+  successMessage = '';
+  busy = false;
+  pendingDelete: PersonalProgramSummary | null = null;
   get filtered(): PersonalProgramSummary[] {
     return this.programs;
   }
@@ -83,14 +90,76 @@ export class PersonalProgramsComponent implements OnInit {
       });
   }
   filtersChanged(): void {
+    this.successMessage = '';
     this.page = 0;
     this.reload$.next();
   }
   changePage(page: number): void {
+    this.successMessage = '';
     this.page = page - 1;
     this.reload$.next();
   }
   reload(): void {
-    if (!this.loading) this.reload$.next();
+    if (!this.loading && !this.busy) this.reload$.next();
+  }
+
+  askDelete(program: PersonalProgramSummary): void {
+    if (this.busy || this.loading || this.pendingDelete || program.startedAt) return;
+    this.pendingDelete = program;
+  }
+
+  cancelDelete(): void {
+    if (!this.busy) this.pendingDelete = null;
+  }
+
+  confirmDelete(): void {
+    const program = this.pendingDelete;
+    if (this.busy || this.loading || !program || program.startedAt) return;
+    this.busy = true;
+    this.message = '';
+    this.successMessage = '';
+    this.service.delete(program.id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.busy = false;
+        this.pendingDelete = null;
+        this.successMessage = program.standalone
+          ? 'personalWorkouts.deleteSuccess'
+          : 'personalPrograms.deleteSuccess';
+        // The last item on a page can leave that page empty after deletion.
+        if (this.page > 0 && this.programs.length === 1) this.page--;
+        this.reload$.next();
+      },
+      error: (error) => {
+        this.busy = false;
+        this.pendingDelete = null;
+        this.message = errorMessage(error, 'personalPrograms.actionError');
+      },
+    });
+  }
+
+  editCopy(program: PersonalProgramSummary): void {
+    if (this.busy || this.loading || this.pendingDelete || !program.startedAt) return;
+    this.busy = true;
+    this.message = '';
+    this.successMessage = '';
+    const request = program.standalone
+      ? this.service.repeat(program.id).pipe(map((detail) => detail.id))
+      : this.service.copy(program.id);
+    request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (id) => {
+        const path = program.standalone ? '/user/personal-workouts' : '/user/personal-programs';
+        void this.router.navigate([path, id]).then(
+          () => { this.busy = false; },
+          (error) => {
+            this.busy = false;
+            this.message = errorMessage(error, 'personalPrograms.actionError');
+          },
+        );
+      },
+      error: (error) => {
+        this.busy = false;
+        this.message = errorMessage(error, 'personalPrograms.actionError');
+      },
+    });
   }
 }

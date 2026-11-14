@@ -1591,7 +1591,11 @@
     "leaveConfirm": "Leave this page? Unsaved changes will be lost.",
     "confirm": "Confirm",
     "cancel": "Cancel",
-    "sizeLimit": "A personal program can contain at most 1000 exercise entries and 5000 sets."
+    "sizeLimit": "A personal program can contain at most 1000 exercise entries and 5000 sets.",
+    "editDraft": "Edit",
+    "editCopy": "Editable copy",
+    "deleteListConfirm": "Delete your personal program draft “{{name}}” and its workout days? This cannot be undone.",
+    "deleteSuccess": "Personal program draft deleted."
   },
   "personalWorkouts": {
     "create": "Create standalone workout",
@@ -1616,7 +1620,12 @@
     "saved": "Your workout was saved.",
     "startSuccess": "Your workout has started. Select Open workouts to begin training.",
     "started": "Started workout",
-    "draft": "Workout draft"
+    "draft": "Workout draft",
+    "editDraft": "Edit workout",
+    "editCopy": "New editable session",
+    "delete": "Delete workout draft",
+    "deleteListConfirm": "Delete your standalone workout draft “{{name}}”? This cannot be undone.",
+    "deleteSuccess": "Standalone workout draft deleted."
   },
   "previousPerformance": {
     "title": "Last time",

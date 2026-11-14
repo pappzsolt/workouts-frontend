@@ -1591,7 +1591,11 @@
     "leaveConfirm": "Seite verlassen? Ungespeicherte Änderungen gehen verloren.",
     "confirm": "Bestätigen",
     "cancel": "Abbrechen",
-    "sizeLimit": "Ein eigenes Programm darf höchstens 1000 Übungseinträge und 5000 Sätze enthalten."
+    "sizeLimit": "Ein eigenes Programm darf höchstens 1000 Übungseinträge und 5000 Sätze enthalten.",
+    "editDraft": "Bearbeiten",
+    "editCopy": "Bearbeitbare Kopie",
+    "deleteListConfirm": "Möchtest du deinen Programmentwurf „{{name}}“ samt Trainingstagen wirklich löschen? Dies kann nicht rückgängig gemacht werden.",
+    "deleteSuccess": "Eigener Programmentwurf gelöscht."
   },
   "personalWorkouts": {
     "create": "Einzeltraining erstellen",
@@ -1616,7 +1620,12 @@
     "saved": "Dein Training wurde gespeichert.",
     "startSuccess": "Dein Training wurde gestartet. Öffne die Trainingseinheiten, um zu beginnen.",
     "started": "Gestartetes Training",
-    "draft": "Trainingsentwurf"
+    "draft": "Trainingsentwurf",
+    "editDraft": "Training bearbeiten",
+    "editCopy": "Neue bearbeitbare Einheit",
+    "delete": "Trainingsentwurf löschen",
+    "deleteListConfirm": "Möchtest du den Einzeltrainingsentwurf „{{name}}“ wirklich löschen? Dies kann nicht rückgängig gemacht werden.",
+    "deleteSuccess": "Einzeltrainingsentwurf gelöscht."
   },
   "previousPerformance": {
     "title": "Beim letzten Mal",

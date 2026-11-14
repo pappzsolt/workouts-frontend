@@ -1,18 +1,34 @@
 import { TestBed } from '@angular/core/testing';
-import { BehaviorSubject, of } from 'rxjs';
+import { Router } from '@angular/router';
+import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
 import { PersonalProgramsComponent } from './personal-programs.component';
 import { PersonalProgramService } from '../../../../services/user/personal-program.service';
 import { LanguageService } from '../../../../services/shared/language.service';
+import type { PersonalProgramSummary, PersonalProgramRequest } from '../../../../models/personal-program.model';
 
-describe('PersonalProgramsComponent pagination', () => {
+const draftProgram: PersonalProgramSummary = {
+  id: 10, name: 'Strength plan', startDate: null, durationDays: 7, startedAt: null, standalone: false,
+};
+const draftWorkout: PersonalProgramSummary = {
+  id: 11, name: 'Solo workout', startDate: null, durationDays: 1, startedAt: null, standalone: true,
+};
+const startedProgram: PersonalProgramSummary = { ...draftProgram, id: 12, startedAt: '2026-11-14T09:00:00' };
+const startedWorkout: PersonalProgramSummary = { ...draftWorkout, id: 13, startedAt: '2026-11-14T09:00:00' };
+
+/** The existing backend only permits changes to drafts; started executions are immutable. */
+describe('PersonalProgramsComponent pagination and personal actions', () => {
   let component: PersonalProgramsComponent;
   let api: jasmine.SpyObj<PersonalProgramService>;
+  let router: jasmine.SpyObj<Router>;
   beforeEach(() => {
-    api = jasmine.createSpyObj('PersonalProgramService', ['listPage']);
+    api = jasmine.createSpyObj('PersonalProgramService', ['listPage', 'delete', 'copy', 'repeat']);
     api.listPage.and.returnValue(of({ content: [], page: 0, size: 12, totalElements: 30, totalPages: 3 }));
+    router = jasmine.createSpyObj('Router', ['navigate']);
+    router.navigate.and.returnValue(Promise.resolve(true));
     TestBed.configureTestingModule({ providers: [
       { provide: PersonalProgramService, useValue: api },
       { provide: LanguageService, useValue: { language$: new BehaviorSubject('hu') } },
+      { provide: Router, useValue: router },
     ] });
     component = TestBed.runInInjectionContext(() => new PersonalProgramsComponent());
     component.ngOnInit();
@@ -35,5 +51,90 @@ describe('PersonalProgramsComponent pagination', () => {
     component.kind = 'program';
     component.filtersChanged();
     expect(api.listPage).toHaveBeenCalledWith(0, 12, false, '%_');
+  });
+  it('opens a confirmation without deleting until confirmed and supports cancellation', () => {
+    component.askDelete(draftProgram);
+    expect(component.pendingDelete).toBe(draftProgram);
+    expect(api.delete).not.toHaveBeenCalled();
+    component.cancelDelete();
+    expect(component.pendingDelete).toBeNull();
+    expect(api.delete).not.toHaveBeenCalled();
+  });
+  it('deletes a personal program draft and reloads the list', () => {
+    api.delete.and.returnValue(of(draftProgram.id));
+    component.programs = [draftProgram];
+    component.askDelete(draftProgram);
+    component.confirmDelete();
+    expect(api.delete).toHaveBeenCalledOnceWith(10);
+    expect(component.pendingDelete).toBeNull();
+    expect(component.successMessage).toBe('personalPrograms.deleteSuccess');
+    expect(api.listPage).toHaveBeenCalledTimes(2);
+  });
+  it('deletes a standalone workout draft using the same existing endpoint', () => {
+    api.delete.and.returnValue(of(draftWorkout.id));
+    component.programs = [draftWorkout];
+    component.askDelete(draftWorkout);
+    component.confirmDelete();
+    expect(api.delete).toHaveBeenCalledOnceWith(11);
+    expect(component.successMessage).toBe('personalWorkouts.deleteSuccess');
+  });
+  it('goes back a page if the last draft on the page is deleted', () => {
+    api.delete.and.returnValue(of(draftProgram.id));
+    component.page = 2;
+    component.programs = [draftProgram];
+    component.askDelete(draftProgram);
+    component.confirmDelete();
+    expect(component.page).toBe(1);
+    expect(api.listPage).toHaveBeenCalledWith(1, 12, null, '');
+  });
+  it('never requests deletion of a started program or standalone workout', () => {
+    component.askDelete(startedProgram);
+    expect(component.pendingDelete).toBeNull();
+    component.askDelete(startedWorkout);
+    expect(component.pendingDelete).toBeNull();
+    component.pendingDelete = startedProgram;
+    component.confirmDelete();
+    expect(api.delete).not.toHaveBeenCalled();
+  });
+  it('blocks duplicate delete requests while the first request is pending', () => {
+    const pending$ = new Subject<number>();
+    api.delete.and.returnValue(pending$.asObservable());
+    component.askDelete(draftProgram);
+    component.confirmDelete();
+    component.confirmDelete();
+    expect(api.delete).toHaveBeenCalledTimes(1);
+    expect(component.busy).toBeTrue();
+    expect(component.pendingDelete).toBe(draftProgram);
+    pending$.next(10);
+    pending$.complete();
+    expect(component.busy).toBeFalse();
+  });
+  it('displays backend failures without removing the draft from the list', () => {
+    api.delete.and.returnValue(throwError(() => new Error('Delete denied')));
+    component.programs = [draftProgram];
+    component.askDelete(draftProgram);
+    component.confirmDelete();
+    expect(component.message).toBe('Delete denied');
+    expect(component.programs).toEqual([draftProgram]);
+    expect(component.pendingDelete).toBeNull();
+  });
+  it('makes an editable copy of a started personal program', () => {
+    api.copy.and.returnValue(of(44));
+    component.editCopy(startedProgram);
+    expect(api.copy).toHaveBeenCalledOnceWith(12);
+    expect(router.navigate).toHaveBeenCalledWith(['/user/personal-programs', 44]);
+  });
+  it('repeats a started standalone workout into an editable draft', () => {
+    api.repeat.and.returnValue(of({ id: 45, startedAt: null, standalone: true,
+      program: {} as PersonalProgramRequest }));
+    component.editCopy(startedWorkout);
+    expect(api.repeat).toHaveBeenCalledOnceWith(13);
+    expect(router.navigate).toHaveBeenCalledWith(['/user/personal-workouts', 45]);
+  });
+  it('does not make a copy when a draft is already directly editable', () => {
+    component.editCopy(draftWorkout);
+    component.editCopy(draftProgram);
+    expect(api.copy).not.toHaveBeenCalled();
+    expect(api.repeat).not.toHaveBeenCalled();
   });
 });
