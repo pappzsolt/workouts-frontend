@@ -4,7 +4,7 @@ import contract from './playwright.contract.config';
 
 export default defineConfig({
   ...contract,
-  testMatch: /(?:workout-(?:edit|drafts|model)|workspace-editor(?:-more|-regressions)?)\.spec\.ts/,
+  testMatch: /(?:workout-(?:edit|drafts|model)|workspace-editor(?:-more|-regressions|-recovery)?)\.spec\.ts/,
   use: { ...contract.use, baseURL: 'http://127.0.0.1:4322' },
   outputDir: 'workout-editor-results',
   reporter: [

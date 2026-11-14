@@ -1,3 +1,4 @@
+import { catchError, concatMap, finalize, map, of } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import type { ProgramEditorState } from './program-editor-state';
@@ -41,43 +42,28 @@ export class ProgramDetailsEditor {
     this.state.savingDetails = true;
 
     if (this.state.programId === null) {
-      this.workspace
-        .createProgram(details, language)
-        .pipe(takeUntilDestroyed(this.effects.destroyRef))
-        .subscribe({
-          next: (id) => {
-            const userId = this.state.newForUserId;
-            if (userId === null) {
-              this.state.savingDetails = false;
-              this.markSaved(details, language, submittedForm);
-              this.effects.showMessage('coachWorkspace.editor.created', 'success');
-              this.navigateToCreatedProgram(id);
-              return;
-            }
-            // Ügyfélnek készülő program: azonnal az ügyfélé lesz.
-            this.workspace
-              .assignProgram(userId, id)
-              .pipe(takeUntilDestroyed(this.effects.destroyRef))
-              .subscribe({
-                next: () => {
-                  this.state.savingDetails = false;
-                  this.markSaved(details, language, submittedForm);
-                  this.effects.showMessage('coachWorkspace.editor.createdForClient', 'success', { name: this.newForUserName() });
-                  this.navigateToCreatedProgram(id);
-                },
-                error: () => {
-                  this.state.savingDetails = false;
-                  this.markSaved(details, language, submittedForm);
-                  this.effects.showMessage('coachWorkspace.editor.partialAssignment', 'error');
-                  this.navigateToCreatedProgram(id);
-                },
-              });
-          },
-          error: (error) => {
-            this.state.savingDetails = false;
-            this.effects.showError(error, 'coachWorkspace.editor.saveError');
-          },
-        });
+      const userId = this.state.newForUserId;
+      const userName = this.newForUserName();
+      this.workspace.createProgram(details, language).pipe(
+        concatMap(id => userId === null
+          ? of({ id, assignment: 'notRequested' as const })
+          : this.workspace.assignProgram(userId, id).pipe(
+              map(() => ({ id, assignment: 'assigned' as const })),
+              catchError(() => of({ id, assignment: 'failed' as const })),
+            )),
+        takeUntilDestroyed(this.effects.destroyRef),
+        finalize(() => { this.state.savingDetails = false; }),
+      ).subscribe({
+        next: result => {
+          this.state.savingDetails = false;
+          this.markSaved(details, language, submittedForm);
+          if (result.assignment === 'failed') this.effects.showMessage('coachWorkspace.editor.partialAssignment', 'error');
+          else if (result.assignment === 'assigned') this.effects.showMessage('coachWorkspace.editor.createdForClient', 'success', { name: userName });
+          else this.effects.showMessage('coachWorkspace.editor.created', 'success');
+          this.navigateToCreatedProgram(result.id);
+        },
+        error: error => { this.effects.showError(error, 'coachWorkspace.editor.saveError'); },
+      });
       return;
     }
 

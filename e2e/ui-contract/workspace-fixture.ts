@@ -129,6 +129,10 @@ export class WorkspaceApi {
         w.exercises.splice(Number(c.query.get('orderIndex')), 0, w.exercises.splice(index, 1)[0]); data = null;
       } else if (c.method === 'POST' && /\/apply-template$/.test(c.path)) data = { userWorkouts: 1, setsUpdated: 3, setsAdded: 0, setsRemoved: 0 };
       else if (match('POST', '/api/workouts')) { data = { id: this.nextId++ }; s.workouts.push({ id: data.id, name: c.body.name, exercises: [] }); }
+      else if (match('PUT', '/api/workout-exercises/membership')) {
+        const workout = s.workouts.find(w => w.id === Number(c.query.get('workoutId')))!;
+        workout.exercises = c.body.map((id: number) => ({ ...s.exercises.find(e => e.id === id)! })); data = null;
+      }
       else if (match('POST', '/api/workout-exercises')) { s.workouts.find(w => w.id === Number(c.query.get('workoutId')))!.exercises.push({ ...s.exercises.find(e => e.id === Number(c.query.get('exerciseId')))! }); data = null; }
       else if (match('POST', '/api/workout-copy')) {
         data = this.nextId++; const source = s.workouts.find(w => w.id === c.body.sourceWorkoutId)!;

@@ -40,7 +40,7 @@ describe('Program editor screen bindings', () => {
     };
     api = jasmine.createSpyObj<CoachWorkspaceService>('workspace', [
       'getProgram', 'getProgramDays', 'getOverview', 'getAssignedUserIds', 'getMyWorkouts',
-      'updateProgram', 'updatePrescription', 'createWorkout', 'addExerciseToWorkout',
+      'updateProgram', 'updatePrescription', 'createWorkout', 'replaceWorkoutExercises',
       'addWorkoutToDay', 'copyProgram', 'assignProgram', 'createProgram',
       'browseExercises', 'getExerciseFilterOptions', 'getClientProgramRows',
     ]);
@@ -307,7 +307,7 @@ describe('Program editor screen bindings', () => {
     const exerciseSaved = new Subject<void>();
     const linked = new Subject<void>();
     api.createWorkout.and.returnValue(created);
-    api.addExerciseToWorkout.and.returnValue(exerciseSaved);
+    api.replaceWorkoutExercises.and.returnValue(exerciseSaved);
     api.addWorkoutToDay.and.returnValue(linked);
     const fixture = render();
     fixture.componentInstance.selectDay(2);
@@ -317,9 +317,9 @@ describe('Program editor screen bindings', () => {
     empty.addPending.emit({ id: 60, name: 'Press', muscleGroup: null, equipment: null });
     empty.create.emit();
     expect(api.createWorkout).toHaveBeenCalledOnceWith('New workout', '2026-10-24');
-    expect(api.addExerciseToWorkout).not.toHaveBeenCalled();
+    expect(api.replaceWorkoutExercises).not.toHaveBeenCalled();
     created.next(70); created.complete();
-    expect(api.addExerciseToWorkout).toHaveBeenCalledOnceWith(70, 60);
+    expect(api.replaceWorkoutExercises).toHaveBeenCalledOnceWith(70, [60]);
     expect(exerciseSaved.observed).toBeTrue();
     expect(linked.observed).toBeFalse();
     exerciseSaved.next(); exerciseSaved.complete();

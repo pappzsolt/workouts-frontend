@@ -1,3 +1,12 @@
+@if (recoveryWorkout; as recovery) {
+  <h2 class="mb-3 text-xl font-bold text-content-900">{{ recovery.name }}</h2>
+  <p class="mb-4 text-sm text-content-600">{{ 'coachWorkspace.editor.recoveryHint' | translate }}</p>
+  <div class="flex flex-wrap gap-2">
+    <button type="button" class="btn btn-primary" [disabled]="busy" (click)="create.emit()">{{ 'coachWorkspace.editor.resumeCreation' | translate }}</button>
+    <a class="btn btn-neutral" [routerLink]="['/coach/workouts', recovery.id, 'edit']">{{ 'coachWorkspace.editor.openInLibrary' | translate }}</a>
+  </div>
+} @else {
+<fieldset [disabled]="busy" class="contents">
 <h2 class="mb-3 text-xl font-bold text-content-900">{{ 'coachWorkspace.client.restDay' | translate }}</h2>
 <p class="mb-4 text-sm text-content-600">{{ 'coachWorkspace.editor.emptyDayHint' | translate }}</p>
 
@@ -99,4 +108,7 @@
     {{ 'coachWorkspace.editor.libraryHint' | translate }}
     <a routerLink="/coach/workouts" class="font-semibold text-primary-700 underline">{{ 'menu.coachWorkouts' | translate }}</a>
   </p>
+}
+
+</fieldset>
 }

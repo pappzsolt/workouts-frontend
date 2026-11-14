@@ -61,12 +61,13 @@ describe('Coach program editor unsaved navigation protection', () => {
     component.cancelLeave();
   });
 
-  it('protects unsaved day prescriptions and selected athletes', () => {
+  it('protects unsaved workout drafts and selected athletes', () => {
     const { component } = create();
-    component.workouts.rows[0].sets = 4;
+    component.selectDay(2);
+    component.library.workoutName = 'Unsaved workout';
     expect(component.canLeave()).not.toBeTrue();
     component.cancelLeave();
-    component.workouts.rows[0].sets = 3;
+    component.library.workoutName = '';
     component.assignments.toAssign.add(7);
     expect(component.canLeave()).not.toBeTrue();
     component.cancelLeave();

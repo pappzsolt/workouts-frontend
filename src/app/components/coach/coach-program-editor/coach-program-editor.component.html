@@ -84,7 +84,7 @@
                   (addToAnotherDay)="workouts.addToAnotherDay()" (moveWorkout)="workouts.moveWorkout()" (removeWorkout)="workouts.removeWorkout()" />
               } @else {
                 <app-program-empty-day
-                  [pendingExercises]="library.pendingExercises" [pendingIds]="library.pendingIds" [busy]="state.operationPending"
+                  [recoveryWorkout]="library.recoveryWorkout" [pendingExercises]="library.pendingExercises" [pendingIds]="library.pendingIds" [busy]="state.operationPending"
                   [hasLibrary]="library.myWorkouts.length > 0" [libraryWorkouts]="library.libraryWorkouts" [programWorkoutIds]="library.programWorkoutIds"
                   [copySourceId]="library.copySourceId"
                   [(emptyMode)]="library.emptyMode" [(workoutName)]="library.workoutName" [(libraryFilter)]="library.libraryFilter"

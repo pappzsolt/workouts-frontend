@@ -25,9 +25,9 @@ test('picker: create workout and assigns exercises before linking occurrence', a
   await editor.locator('[name=workoutName]').fill('New workout');
   await page.locator('app-exercise-picker').getByRole('button', { name: 'Hozzáadás: Exercise 01', exact: true }).click();
   await create.click(); await expect(editor.getByRole('button', { name: /Program 2\. napja · New workout$/ })).toBeVisible();
-  expect(api.writes().map(c => c.path)).toEqual(['/api/workouts', '/api/workout-exercises', '/api/program-workouts']);
+  expect(api.writes().map(c => c.path)).toEqual(['/api/workouts', '/api/workout-exercises/membership', '/api/program-workouts']);
   expect(api.writes()[0].body).toEqual({ name: 'New workout', workoutDate: '2030-04-16' });
-  expect(api.writes()[1].query.get('exerciseId')).toBe('1');
+  expect(api.writes()[1].body).toEqual([1]);
 });
 test('picker: empty search and API failure show usable states', async ({ page, api }) => {
   await page.goto('/coach/programs/1'); await page.locator('app-coach-program-editor').getByRole('button', { name: /Program 2\. napja$/ }).click();

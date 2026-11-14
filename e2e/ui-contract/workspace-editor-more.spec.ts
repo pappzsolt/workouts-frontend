@@ -65,9 +65,10 @@ test('editor more: new workout for an empty day from chosen exercises', async ({
   await expect(r.getByRole('button', { name: /Program 2\. napja · Leg\ day$/ })).toBeVisible();
   await expect(status(page)).toContainText('Az edzés létrejött és a naphoz került.');
   expect(api.writes().map(c => [c.method, c.path])).toEqual([
-    ['POST', '/api/workouts'], ['POST', '/api/workout-exercises'], ['POST', '/api/workout-exercises'], ['POST', '/api/program-workouts']]);
+    ['POST', '/api/workouts'], ['PUT', '/api/workout-exercises/membership'], ['POST', '/api/program-workouts']]);
   expect(api.writes('/api/workouts')[0].body).toEqual({ name: 'Leg day', workoutDate: '2030-04-16' });
-  expect(api.writes('/api/workout-exercises').map(c => [c.query.get('workoutId'), c.query.get('exerciseId')])).toEqual([['200', '1'], ['200', '2']]);
+  expect(api.writes('/api/workout-exercises/membership')[0].body).toEqual([1, 2]);
+  expect(api.writes('/api/workout-exercises/membership')[0].query.get('workoutId')).toBe('200');
   expect(api.writes('/api/program-workouts')[0].body).toEqual({ programId: 1, workoutId: 200, dayIndex: 2 });
 });
 

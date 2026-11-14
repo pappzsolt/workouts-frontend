@@ -31,6 +31,7 @@ export class ProgramEmptyDayComponent {
   @Input() pendingExercises: CoachExerciseSearchItem[] = [];
   @Input() pendingIds: number[] = [];
   @Input() busy = false;
+  @Input() recoveryWorkout: { id: number; name: string } | null = null;
   @Input() hasLibrary = false;
   @Input() libraryWorkouts: CoachWorkoutSummary[] = [];
   @Input() programWorkoutIds: ReadonlySet<number> = new Set();

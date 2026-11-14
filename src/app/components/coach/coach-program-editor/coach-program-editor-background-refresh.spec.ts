@@ -1,7 +1,7 @@
 import { LanguageService } from '../../../services/shared/language.service';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
-import { Observable, of, Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import type { CoachProgram, CoachClientOverview } from '../../../models/coach-workspace.model';
 import { CoachProgramEditorComponent } from './coach-program-editor.component';
@@ -29,7 +29,7 @@ describe('Coach program background refresh and assignment consistency', () => {
         getProgram: () => of(program), getProgramDays: () => of([]),
         getOverview: () => of({ clients: [athlete(7), athlete(8)] }),
         getAssignedUserIds: () => of(assigned),
-        getMyWorkouts: () => of([]), assignProgram,
+        getMyWorkouts: () => of([]), addWorkoutToDay: () => of(undefined), assignProgram,
       } },
       { provide: ActivatedRoute, useValue: {
         paramMap: of(convertToParamMap({ id: '10' })),
@@ -45,9 +45,8 @@ describe('Coach program background refresh and assignment consistency', () => {
     component.state.form.programName = 'Unsaved title';
     component.state.form.programDescription = 'Unsaved notes';
     component.assignments.toggleAssign(7, true);
-    // The existing day-operation refresh path must not reset independent drafts.
-    (component as unknown as { run(operation: Observable<unknown>, key: string, day: number): void })
-      .run(of(undefined), 'coachWorkspace.editor.saved', 1);
+    component.library.copySourceId = 41;
+    component.library.linkLibraryWorkout();
     expect(component.state.form.programName).toBe('Unsaved title');
     expect(component.state.form.programDescription).toBe('Unsaved notes');
     expect([...component.assignments.toAssign]).toEqual([7]);

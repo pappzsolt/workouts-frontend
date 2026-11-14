@@ -16,16 +16,6 @@ export interface DayCell {
   workoutCount?: number;
 }
 
-/** A kiválasztott nap edzésének egy gyakorlata, szerkeszthető előírt értékekkel. */
-export interface EditableExercise {
-  id: number;
-  name: string;
-  sets: number;
-  repetitions: number;
-  restSeconds: number;
-  original: { sets: number; repetitions: number; restSeconds: number };
-}
-
 /**
  * A program napjai (1-től az időtartamig) a hozzájuk tartozó edzéssel, és a rács elején
  * a kezdőnap előtti üres helyek (a rács hétfővel kezdődik).
@@ -76,14 +66,6 @@ export function dayForDate(startDate: string, value: string): number {
   const [sy, sm, sd] = startDate.split('-').map(Number);
   const [y, m, d] = value.split('-').map(Number);
   return Math.round((Date.UTC(y, m - 1, d) - Date.UTC(sy, sm - 1, sd)) / 86_400_000) + 1;
-}
-
-export function isPrescriptionChanged(row: EditableExercise): boolean {
-  return (
-    Number(row.sets) !== row.original.sets ||
-    Number(row.repetitions) !== row.original.repetitions ||
-    Number(row.restSeconds) !== row.original.restSeconds
-  );
 }
 
 /** A nap után hetente ugyanarra a hétnapra eső napok: a még üresek és a kimaradók száma. */

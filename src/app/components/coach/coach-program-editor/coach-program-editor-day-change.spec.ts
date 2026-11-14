@@ -31,36 +31,11 @@ describe('Program editor day change protection', () => {
     component.ngOnInit();
   });
 
-  it('preserves unsaved prescriptions when clicking the selected day', () => {
-    component.workouts.rows[0].sets = 5;
-    component.selectDay(1);
-    expect(component.workouts.rows[0].sets).toBe(5);
-    expect(component.workouts.changedCount).toBe(1);
-    expect(component.state.pendingDay).toBeNull();
-  });
 
-  it('waits for confirmation and preserves edits when the coach stays', () => {
-    component.workouts.rows[0].sets = 5;
-    component.selectDay(2);
-    expect(component.state.selectedDay).toBe(1);
-    expect(component.state.pendingDay).toBe(2);
-    expect(component.workouts.rows[0].sets).toBe(5);
-    component.cancelDayChange();
-    expect(component.state.selectedDay).toBe(1);
-    expect(component.workouts.rows[0].sets).toBe(5);
-    expect(component.state.pendingDay).toBeNull();
-  });
 
-  it('discards only after explicit confirmation', () => {
-    component.workouts.rows[0].sets = 5;
-    component.selectDay(2);
-    component.discardAndChangeDay();
-    expect(component.state.selectedDay).toBe(2);
-    expect(component.workouts.rows).toEqual([]);
-    expect(update).not.toHaveBeenCalled();
-    component.selectDay(1);
-    expect(component.workouts.rows[0].sets).toBe(3);
-  });
+
+
+
 
   it('protects an unfinished new workout when leaving an empty day', () => {
     component.selectDay(2);

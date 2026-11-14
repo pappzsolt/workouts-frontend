@@ -1,3 +1,4 @@
+import { ProgramOperationRunner } from './program-operation-runner';
 import { LanguageService } from '../../../services/shared/language.service';
 import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -25,7 +26,7 @@ import { ProgramDayWorkoutComponent } from './parts/program-day-workout.componen
 import { ProgramDetailsFormComponent } from './parts/program-details-form.component';
 import { ProgramEmptyDayComponent } from './parts/program-empty-day.component';
 import { ProgramMultiAddDialogComponent } from './parts/program-multi-add-dialog.component';
-import { ProgramEditorState } from './program-editor-state';
+import { ProgramEditorState, programDetails } from './program-editor-state';
 import type { ProgramEditorEffects } from './program-editor-effects';
 import { ProgramDayWorkoutEditor } from './program-day-workout-editor';
 import { ProgramWorkoutLibrary } from './program-workout-library';
@@ -103,12 +104,14 @@ export class CoachProgramEditorComponent implements OnInit {
   leaveConfirmationOpen = false;
   private allowNavigationAfterCreate = false;
 
+  private readonly operations = new ProgramOperationRunner(this.state, this.destroyRef);
+
   private readonly effects: ProgramEditorEffects = {
     destroyRef: this.destroyRef,
     showMessage: (key, type, params) => this.showMessage(key, type, params),
     showError: (error, fallbackKey) => this.showError(error, fallbackKey),
     reload: (day, preserveDrafts, submittedForm, submittedLanguage) => this.loadProgram(day, preserveDrafts, submittedForm, submittedLanguage),
-    run: (operation, key, day, preserveDrafts, onError) => this.run(operation, key, day, preserveDrafts, onError),
+    run: (operation, outcomes) => this.operations.run(operation, outcomes),
   };
 
   readonly workouts = new ProgramDayWorkoutEditor(this.state, this.workspace, this.effects, this.router);
@@ -134,7 +137,6 @@ export class CoachProgramEditorComponent implements OnInit {
         this.state.program = null;
         this.state.detailsLanguage = null;
         this.detailsDrafts.clear();
-        this.workouts.rows = [];
         this.assignments.reset();
         this.activeTab = 'workouts';
         this.editDetails = false;
@@ -159,7 +161,6 @@ export class CoachProgramEditorComponent implements OnInit {
         this.state.detailsLanguage = null;
         this.detailsDrafts.clear();
         this.state.cells = [];
-        this.workouts.rows = [];
         this.assignments.reset();
         this.activeTab = 'workouts';
         this.editDetails = false;
@@ -195,12 +196,7 @@ export class CoachProgramEditorComponent implements OnInit {
         next: ({ program, links }) => {
           if (this.state.programId !== programId || this.state.languageCode !== language) return;
           // Read drafts when the response arrives, including edits made while loading.
-          const draftWorkoutId = preserveDrafts ? this.state.selectedCell?.workout?.workoutId : undefined;
-          const draftRows = preserveDrafts ? this.workouts.rows.filter((row) => this.workouts.isChanged(row)) : [];
-          const emptyDraft = preserveDrafts && this.state.selectedCell && !this.state.selectedCell.workout
-            ? { workoutName: this.library.workoutName, pendingExercises: [...this.library.pendingExercises],
-                copySourceId: this.library.copySourceId, emptyMode: this.library.emptyMode, libraryFilter: this.library.libraryFilter }
-            : null;
+          const emptyDraft = preserveDrafts ? this.library.captureDraft() : null;
           // A daily action can reload the program while its metadata is still being edited.
           // Only keep fields changed since the last successful baseline (or since a
           // submitted save), never carry another program's draft into this program.
@@ -217,39 +213,14 @@ export class CoachProgramEditorComponent implements OnInit {
             if (this.state.detailsLanguage !== null) this.detailsDrafts.set(this.state.detailsLanguage, localizedDraft);
           }
           this.state.program = program;
-          this.detailsBaseline = {
-            programName: program.programName ?? '',
-            programDescription: program.programDescription ?? '',
-            durationDays: program.durationDays ?? 28,
-            difficultyLevel: program.difficultyLevel ?? 'BEGINNER',
-            startDate: program.startDate ?? toIsoDate(new Date()),
-          };
-          this.state.form = {
-            programName: program.programName ?? '',
-            programDescription: program.programDescription ?? '',
-            durationDays: program.durationDays ?? 28,
-            difficultyLevel: program.difficultyLevel ?? 'BEGINNER',
-            startDate: program.startDate ?? toIsoDate(new Date()),
-            ...metadataDraft,
-            ...this.detailsDrafts.get(language),
-          };
+          this.detailsBaseline = programDetails(program);
+          this.state.form = { ...this.detailsBaseline, ...metadataDraft, ...this.detailsDrafts.get(language) };
           this.state.detailsLanguage = language;
           this.buildCells(links);
           this.assignments.loadAssignment();
           const firstWorkoutDay = this.state.cells.find((cell) => cell.workout)?.day ?? 1;
           this.openDay(selectDay ?? (this.state.cells.some((c) => c.day === this.state.selectedDay) ? this.state.selectedDay : firstWorkoutDay));
-          if (draftWorkoutId !== undefined && this.state.selectedCell?.workout?.workoutId === draftWorkoutId) {
-            for (const row of this.workouts.rows) {
-              const draft = draftRows.find((item) => item.id === row.id);
-              if (draft) {
-                for (const key of ['sets', 'repetitions', 'restSeconds'] as const) {
-                  if (Number(draft[key]) !== Number(draft.original[key])) row[key] = draft[key];
-                }
-              }
-            }
-          } else if (emptyDraft && this.state.selectedCell && !this.state.selectedCell.workout) {
-            Object.assign(this.library, emptyDraft);
-          }
+          if (emptyDraft && this.state.selectedCell && !this.state.selectedCell.workout) this.library.restoreDraft(emptyDraft);
           this.state.loading = false;
         },
         error: (error) => {
@@ -286,26 +257,6 @@ export class CoachProgramEditorComponent implements OnInit {
 
   dayAriaLabel(cell: DayCell): string {
     return dayAriaLabel(cell);
-  }
-
-  private run(operation: Observable<unknown>, successKey: string, selectDay: number,
-              preserveDrafts = false, onError?: (error: unknown) => boolean): void {
-    if (this.state.operationPending) return;
-    this.state.busy = true;
-    operation.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: () => undefined,
-      error: (error) => {
-        this.state.busy = false;
-        if (!onError?.(error)) this.showError(error, 'coachWorkspace.editor.actionError');
-        this.loadProgram(this.state.selectedDay, preserveDrafts);
-      },
-      complete: () => {
-        this.state.busy = false;
-        this.library.myWorkouts = [];
-        this.showMessage(successKey, 'success');
-        this.loadProgram(selectDay, preserveDrafts);
-      },
-    });
   }
 
   private showMessage(key: string, type: 'success' | 'error' | 'info', params: Record<string, unknown> = {}): void {
@@ -376,7 +327,7 @@ export class CoachProgramEditorComponent implements OnInit {
   }
 
   private hasDayDraft(): boolean {
-    return this.workouts.changedCount > 0 || this.library.hasDraft;
+    return this.library.hasDraft;
   }
 
   private openDay(day: number): void {

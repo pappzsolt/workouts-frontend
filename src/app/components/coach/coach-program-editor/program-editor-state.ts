@@ -57,3 +57,12 @@ export class ProgramEditorState {
     return dayForDate(this.planningStartDate, value);
   }
 }
+
+/** Saved metadata is mapped identically for the editable form and its baseline. */
+export function programDetails(program: CoachProgram): CoachProgramDetailsInput {
+  return {
+    programName: program.programName ?? '', programDescription: program.programDescription ?? '',
+    durationDays: program.durationDays ?? 28, difficultyLevel: program.difficultyLevel ?? 'BEGINNER',
+    startDate: program.startDate ?? toIsoDate(new Date()),
+  };
+}

@@ -12,14 +12,14 @@ const program: CoachProgram = {
 };
 
 describe('Coach program partial save notifications', () => {
-  it('warns if workout creation succeeded but adding exercises failed', () => {
+  it('warns if workout creation succeeded but replacing exercises failed', () => {
     const created = new Subject<number>();
     const attached = new Subject<void>();
     const workspace = {
       getProgram: () => of(program), getProgramDays: () => of([]),
       getOverview: () => of({ clients: [] }), getAssignedUserIds: () => of([]), getMyWorkouts: () => of([]),
       createWorkout: jasmine.createSpy().and.returnValue(created),
-      addExerciseToWorkout: jasmine.createSpy().and.returnValue(attached),
+      replaceWorkoutExercises: jasmine.createSpy().and.returnValue(attached),
       addWorkoutToDay: jasmine.createSpy().and.returnValue(of(undefined)),
     };
     TestBed.configureTestingModule({ providers: [{ provide: LanguageService, useValue: { getCurrentLanguage: () => 'hu', language$: of('hu') } },
@@ -38,7 +38,7 @@ describe('Coach program partial save notifications', () => {
     attached.error(new Error('Request rejected'));
     expect(component.state.messageType).toBe('error');
     expect(component.state.message).toBe('coachWorkspace.editor.partialWorkoutCreated');
-    expect(component.state.messageParams).toEqual({ count: 0, total: 1 });
+    expect(component.state.messageParams).toEqual({});
     expect(component.state.busy).toBeFalse();
   });
   it('shows the number already added when a later multi-add request fails', () => {

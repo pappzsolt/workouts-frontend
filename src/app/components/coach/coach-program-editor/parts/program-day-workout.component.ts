@@ -6,8 +6,8 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
-import type { CoachClientOverview, CoachProgramWorkout } from '../../../../models/coach-workspace.model';
-import type { EditableExercise } from '../program-days';
+import type { CoachClientOverview, CoachProgramWorkout, CoachProgramExercise } from '../../../../models/coach-workspace.model';
+
 
 /**
  * A kiválasztott nap gyakorlatlistája és az edzéssel kapcsolatos műveletek.
@@ -21,7 +21,7 @@ import type { EditableExercise } from '../program-days';
 })
 export class ProgramDayWorkoutComponent {
   @Input({ required: true }) workout!: CoachProgramWorkout;
-  @Input() rows: EditableExercise[] = [];
+  @Input() rows: Pick<CoachProgramExercise, 'id' | 'name'>[] = [];
   @Input() selectedWorkoutDayCount = 0;
   @Input() selectedDayClients: { client: CoachClientOverview; programWorkoutId: number }[] = [];
   @Input() programId: number | null = null;

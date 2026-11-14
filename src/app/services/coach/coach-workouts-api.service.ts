@@ -65,6 +65,10 @@ export class CoachWorkoutTemplatesApiService {
       .pipe(map(unwrap));
   }
 
+  replaceWorkoutExercises(workoutId: number, exerciseIds: number[]): Observable<void> {
+    return this.workoutExercises.replaceWorkoutExercises(workoutId, exerciseIds).pipe(map(unwrap));
+  }
+
   updatePrescription(
     workoutId: number,
     exerciseId: number,

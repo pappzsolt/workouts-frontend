@@ -134,6 +134,10 @@ export class CoachWorkspaceService {
     return this.workouts.addExerciseToWorkout(workoutId, exerciseId);
   }
 
+  replaceWorkoutExercises(workoutId: number, exerciseIds: number[]): Observable<void> {
+    return this.workouts.replaceWorkoutExercises(workoutId, exerciseIds);
+  }
+
   updatePrescription(
     workoutId: number,
     exerciseId: number,

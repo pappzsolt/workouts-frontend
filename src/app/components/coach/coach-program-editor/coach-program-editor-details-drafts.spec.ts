@@ -38,27 +38,9 @@ describe('Program details save preserves day drafts', () => {
     refresh.next({ ...program, programName: 'Renamed' }); refresh.complete();
   }
 
-  it('keeps unsaved prescriptions after the program name is saved', () => {
-    component.workouts.rows[0].sets = 5;
-    component.state.form.programName = 'Renamed';
-    component.details.saveDetails(); save.next(); save.complete(); finish();
-    expect(component.state.form.programName).toBe('Renamed');
-    expect(component.workouts.rows[0].sets).toBe(5);
-    expect(component.workouts.rows[0].original.sets).toBe(3);
-    expect(component.workouts.changedCount).toBe(1);
-  });
 
-  it('includes edits entered during the save and the subsequent reload', () => {
-    component.state.form.programName = 'Renamed';
-    component.details.saveDetails();
-    component.workouts.rows[0].repetitions = 15;
-    save.next(); save.complete();
-    component.workouts.rows[0].restSeconds = 90;
-    finish();
-    expect(component.workouts.rows[0].repetitions).toBe(15);
-    expect(component.workouts.rows[0].restSeconds).toBe(90);
-    expect(component.workouts.changedCount).toBe(1);
-  });
+
+
 
   it('keeps an unfinished new workout on an empty day', () => {
     component.selectDay(2);
@@ -81,11 +63,5 @@ describe('Program details save preserves day drafts', () => {
     expect(component.library.workoutName).toBe('Draft workout');
   });
 
-  it('keeps prescriptions if saving program details fails', () => {
-    component.workouts.rows[0].sets = 5;
-    component.details.saveDetails(); save.error(new Error('offline'));
-    expect(component.workouts.rows[0].sets).toBe(5);
-    expect(component.workouts.changedCount).toBe(1);
-    expect(component.state.savingDetails).toBeFalse();
-  });
+
 });

@@ -1,5 +1,6 @@
 import type { DestroyRef } from '@angular/core';
 import type { Observable } from 'rxjs';
+import type { ProgramOperationOutcomes } from './program-operation-runner';
 import type { CoachProgramDetailsInput } from '../../../models/coach-workspace.model';
 
 /** Screen notifications, request lifetime and reload coordination. */
@@ -8,6 +9,5 @@ export interface ProgramEditorEffects {
   showMessage(key: string, type: 'success' | 'error' | 'info', params?: Record<string, unknown>): void;
   showError(error: unknown, fallbackKey: string): void;
   reload(selectDay: number | null, preserveDrafts?: boolean, submittedForm?: CoachProgramDetailsInput, submittedLanguage?: string): void;
-  run(operation: Observable<unknown>, successKey: string, selectDay: number,
-      preserveDrafts?: boolean, onError?: (error: unknown) => boolean): void;
+  run(operation: Observable<unknown>, outcomes: ProgramOperationOutcomes): void;
 }

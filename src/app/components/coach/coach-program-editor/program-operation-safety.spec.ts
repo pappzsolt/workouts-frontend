@@ -17,7 +17,7 @@ describe('Program operation safety', () => {
   beforeEach(() => {
     api = jasmine.createSpyObj('workspace', ['getProgram','getProgramDays','getOverview','getAssignedUserIds','getMyWorkouts',
       'updateProgram','moveWorkoutToDay','addWorkoutToDay','removeWorkoutFromDay','createWorkout','copyWorkoutToDay',
-      'copyWorkout','copyProgram','applyTemplate','assignProgram','revokeProgram']);
+      'copyWorkout','copyProgram','assignProgram','revokeProgram']);
     api.getProgram.and.returnValue(of(program));
     api.getProgramDays.and.returnValue(of([{id:11,programId:10,workoutId:20,dayIndex:1}]));
     api.getOverview.and.returnValue(of({from:'',to:'',clients:[]}));
@@ -61,7 +61,7 @@ describe('Program operation safety', () => {
       component.workouts.moveDate='2026-11-20'; component.workouts.extraDate='2026-11-21';
       component.workouts.moveWorkout(); component.workouts.removeWorkout();
       component.workouts.repeatWeekly(); component.workouts.addToAnotherDay();
-      component.workouts.copyToLibrary(); component.workouts.applyTemplateToClients();
+      component.workouts.copyToLibrary();
       component.library.workoutName='Draft';
       component.library.pendingExercises=[{id:99,name:'Squat',muscleGroup:null,equipment:null}];
       component.library.copySourceId=20; component.library.multiSelected=[20];
@@ -70,7 +70,7 @@ describe('Program operation safety', () => {
       component.copy.copyName='Copy'; component.copy.copyStart='2026-11-20'; component.copy.confirmCopy();
       expect(component.library.multiOpen).toBeFalse();
       for (const method of ['moveWorkoutToDay','removeWorkoutFromDay','addWorkoutToDay','createWorkout',
-        'copyWorkoutToDay','copyWorkout','copyProgram','applyTemplate'] as const) {
+        'copyWorkoutToDay','copyWorkout','copyProgram'] as const) {
         expect(api[method]).withContext(method).not.toHaveBeenCalled();
       }
     });

@@ -2,9 +2,17 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import type { ProgramEditorState } from './program-editor-state';
 import type { ProgramEditorEffects } from './program-editor-effects';
-import { concat, last, switchMap, tap, toArray } from 'rxjs';
+import { concat, concatMap, map, of, throwError, tap, toArray, type Observable } from 'rxjs';
 import type { CoachExerciseSearchItem, CoachWorkoutSummary } from '../../../models/coach-workspace.model';
 import { freeDaysFrom } from './program-days';
+
+interface PendingWorkout {
+  id: number;
+  name: string;
+  programId: number;
+  day: number;
+  exerciseIds: number[];
+}
 
 /** Empty-day drafts, library selection and adding several workouts. */
 export class ProgramWorkoutLibrary {
@@ -17,6 +25,9 @@ export class ProgramWorkoutLibrary {
   copySourceId: number | null = null;
   workoutName = '';
   pendingExercises: CoachExerciseSearchItem[] = [];
+  private pendingWorkout: PendingWorkout | null = null;
+
+  get recoveryWorkout(): { id: number; name: string } | null { return this.pendingWorkout; }
   constructor(
     private readonly state: ProgramEditorState,
     private readonly workspace: CoachWorkspaceService,
@@ -24,6 +35,7 @@ export class ProgramWorkoutLibrary {
   ) {}
 
   openDay(): void {
+    this.pendingWorkout = null;
     const cell = this.state.selectedCell;
     if (cell && !cell.workout) {
       this.workoutName = '';
@@ -55,38 +67,65 @@ export class ProgramWorkoutLibrary {
     return this.pendingExercises.some((item) => item.id === exerciseId);
   }
 
+  captureDraft() {
+    if (!this.hasDraft) return null;
+    return { workoutName: this.workoutName, pendingExercises: [...this.pendingExercises], copySourceId: this.copySourceId,
+      emptyMode: this.emptyMode, libraryFilter: this.libraryFilter, pendingWorkout: this.pendingWorkout };
+  }
+
+  restoreDraft(draft: NonNullable<ReturnType<ProgramWorkoutLibrary['captureDraft']>>): void {
+    Object.assign(this, draft);
+  }
+
   createWorkoutForDay(): void {
     if (this.state.programId === null || this.state.operationPending) return;
     const name = this.workoutName.trim();
-    if (!name || this.pendingExercises.length === 0) {
+    if (!this.pendingWorkout && (!name || this.pendingExercises.length === 0)) {
       this.effects.showMessage('coachWorkspace.editor.newWorkoutInvalid', 'error');
       return;
     }
     const programId = this.state.programId;
     const day = this.state.selectedDay;
-    const exercises = [...this.pendingExercises];
-    let workoutCreated = false;
-    let addedExercises = 0;
-    this.effects.run(
-      this.workspace.createWorkout(name, this.state.dateForDay(day)).pipe(
-        tap(() => { workoutCreated = true; }),
-        switchMap((workoutId) =>
-          concat(
-            ...exercises.map((exercise) => this.workspace.addExerciseToWorkout(workoutId, exercise.id)
-              .pipe(tap(() => { addedExercises++; }))),
-            this.workspace.addWorkoutToDay(programId, workoutId, day),
-          ).pipe(last()),
-        ),
-      ),
-      'coachWorkspace.editor.workoutCreated',
-      day, false,
-      () => {
-        if (!workoutCreated) return false;
-        this.effects.showMessage('coachWorkspace.editor.partialWorkoutCreated', 'error',
-          { count: addedExercises, total: exercises.length });
-        return true;
-      },
+    const exerciseIds = this.pendingExercises.map(exercise => exercise.id);
+    const recovery = this.pendingWorkout;
+    const context = recovery ? of(recovery) : this.workspace.createWorkout(name, this.state.dateForDay(day)).pipe(
+      map(id => this.pendingWorkout = { id, name, programId, day, exerciseIds }),
     );
+    this.effects.run(context.pipe(concatMap(workout => {
+      const finish = () => this.workspace.replaceWorkoutExercises(workout.id, workout.exerciseIds).pipe(
+        concatMap(() => this.workspace.addWorkoutToDay(workout.programId, workout.id, workout.day)),
+      );
+      if (!recovery) return finish();
+      // A previous link request may have succeeded before its response was lost.
+      return this.workspace.getProgramDays(workout.programId).pipe(concatMap(links => {
+        const existing = links.find(link => link.dayIndex === workout.day);
+        if (existing?.workoutId === workout.id) return of(undefined);
+        if (existing) return throwError(() => new Error('coachWorkspace.editor.dayTaken'));
+        // Membership replacement is atomic and safe to repeat after an uncertain response.
+        return finish();
+      }));
+    })), {
+      success: () => {
+        this.pendingWorkout = null;
+        this.myWorkouts = [];
+        this.effects.showMessage('coachWorkspace.editor.workoutCreated', 'success');
+        this.effects.reload(day);
+      },
+      failure: error => {
+        if (this.pendingWorkout) {
+          this.myWorkouts = [];
+          this.effects.showMessage('coachWorkspace.editor.partialWorkoutCreated', 'error');
+        } else this.effects.showError(error, 'coachWorkspace.editor.actionError');
+        // Keep the draft intact. A known created workout is resumed, never created again.
+      },
+    });
+  }
+
+  private runLibraryAction(operation: Observable<unknown>, message: string, day: number): void {
+    this.effects.run(operation, {
+      success: () => { this.myWorkouts = []; this.effects.showMessage(message, 'success'); this.effects.reload(day); },
+      failure: error => { this.effects.showError(error, 'coachWorkspace.editor.actionError'); this.effects.reload(day, true); },
+    });
   }
 
   get pendingIds(): number[] {
@@ -112,7 +151,7 @@ export class ProgramWorkoutLibrary {
   linkLibraryWorkout(): void {
     if (this.state.programId === null || this.copySourceId === null || this.state.operationPending) return;
     const day = this.state.selectedDay;
-    this.effects.run(
+    this.runLibraryAction(
       this.workspace.addWorkoutToDay(this.state.programId, this.copySourceId, day),
       'coachWorkspace.editor.workoutLinked',
       day,
@@ -127,7 +166,7 @@ export class ProgramWorkoutLibrary {
       return;
     }
     const day = this.state.selectedDay;
-    this.effects.run(
+    this.runLibraryAction(
       this.workspace.copyWorkoutToDay(this.copySourceId, this.state.programId, name, this.state.dateForDay(day), day),
       'coachWorkspace.editor.workoutCopied',
       day,
@@ -142,7 +181,7 @@ export class ProgramWorkoutLibrary {
 
   get hasDraft(): boolean {
     return !!this.state.selectedCell && !this.state.selectedCell.workout
-      && (!!this.workoutName.trim() || this.pendingExercises.length > 0 || this.copySourceId !== null);
+      && (!!this.pendingWorkout || !!this.workoutName.trim() || this.pendingExercises.length > 0 || this.copySourceId !== null);
   }
 
   private blockMultiForDraft(): boolean {
@@ -187,15 +226,14 @@ export class ProgramWorkoutLibrary {
     this.multiOpen = false;
     let addedCount = 0;
     this.effects.run(
-      concat(...pairs.map((pair) => this.workspace.addWorkoutToDay(programId, pair.workoutId, pair.day)
-        .pipe(tap(() => { addedCount++; })))).pipe(toArray()),
-      'coachWorkspace.editor.multiAdded',
-      pairs[0].day, false,
-      () => {
-        if (addedCount === 0) return false;
-        this.effects.showMessage('coachWorkspace.editor.partialMultiAdded', 'error',
-          { count: addedCount, total: pairs.length });
-        return true;
+      concat(...pairs.map(pair => this.workspace.addWorkoutToDay(programId, pair.workoutId, pair.day)
+        .pipe(tap(() => { addedCount++; })))).pipe(toArray()), {
+        success: () => { this.effects.showMessage('coachWorkspace.editor.multiAdded', 'success'); this.effects.reload(pairs[0].day); },
+        failure: error => {
+          if (addedCount) this.effects.showMessage('coachWorkspace.editor.partialMultiAdded', 'error', { count: addedCount, total: pairs.length });
+          else this.effects.showError(error, 'coachWorkspace.editor.actionError');
+          this.effects.reload(this.state.selectedDay, true);
+        },
       },
     );
   }
