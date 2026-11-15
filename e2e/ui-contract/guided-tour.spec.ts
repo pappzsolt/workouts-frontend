@@ -8,7 +8,7 @@ const destinations = {
     ['/user/my-programs', '[data-guide="user-programs"]'],
     ['/user/personal-programs', 'app-personal-programs h1'],
     ['/user/personal-programs/new', 'app-personal-program-editor form > fieldset'],
-    ['/user/personal-programs/new', 'app-personal-program-editor app-program-planner > section'],
+    ['/user/personal-programs/new', 'app-personal-program-editor app-personal-program-calendar > section'],
     ['/user/personal-programs/new', 'app-personal-program-editor form'],
     ['/user/personal-programs/new', 'app-personal-program-editor button[type="submit"]'],
     ['/user/personal-workouts/new', 'app-personal-program-editor form'],

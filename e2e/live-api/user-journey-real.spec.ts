@@ -69,12 +69,13 @@ test('Saját program: létrehozás, mentés, kétablakos verzióütközés, ind�
   const created = response(page, 'POST', '/api/me/personal-programs'); await root.getByRole('button', { name: 'Piszkozat mentése', exact: true }).click();
   const r = await created; expect(r.status()).toBe(200); const id = (await r.json()).data; await expect(page).toHaveURL(new RegExp(`/personal-programs/${id}$`));
   const other = await context.newPage(); await other.goto(`/user/personal-programs/${id}`); await expect(other.locator('[name=name]')).toHaveValue(name);
+  await root.getByRole('button', { name: '1. Naptár és programadatok', exact: true }).click();
   await root.locator('[name=name]').fill(`${name} első`); let saved = response(page, 'PUT', `/api/me/personal-programs/${id}`); await root.getByRole('button', { name: 'Piszkozat mentése', exact: true }).click(); expect((await saved).status()).toBe(200);
   await other.locator('[name=name]').fill(`${name} második`); const stale = response(other, 'PUT', `/api/me/personal-programs/${id}`); await other.getByRole('button', { name: 'Piszkozat mentése', exact: true }).click(); expect((await stale).status()).toBe(409); await expect(other.locator('[name=name]')).toHaveValue(`${name} második`); await other.close();
   await root.getByRole('button', { name: 'Program indítása', exact: true }).click(); await page.getByRole('alertdialog').getByRole('button', { name: 'Megerősítés', exact: true }).click();
   await expect(root.getByRole('link', { name: 'Edzések megnyitása', exact: true })).toBeVisible(); await page.reload(); await expect(root.locator('[name=name]')).toBeDisabled();
   await root.getByRole('button', { name: 'Másolat készítése', exact: true }).click(); await page.getByRole('alertdialog').getByRole('button', { name: 'Megerősítés', exact: true }).click();
-  await expect(root.locator('[name=name]')).toBeEnabled(); await root.getByRole('button', { name: 'Piszkozat törlése', exact: true }).click(); await page.getByRole('alertdialog').getByRole('button', { name: 'Megerősítés', exact: true }).click(); await expect(page).toHaveURL(/\/personal-programs$/);
+  await expect(root.locator('[name=name]')).toBeEnabled(); await root.getByRole('button', { name: 'Program törlése', exact: true }).click(); await page.getByRole('alertdialog').getByRole('button', { name: 'Megerősítés', exact: true }).click(); await expect(page).toHaveURL(/\/personal-programs$/);
 });
 
 test('Önálló edzés és sablon: indítás, teljesítés, ismétlés, kedvenc és új alkalom', async ({ page, actors: a }) => {
