@@ -11,6 +11,7 @@ import {
   PersonalProgramSummary,
   PersonalDayTargets,
   PersonalDayTargetsUpdate,
+  PersonalWorkoutSchedule,
 } from '../../models/personal-program.model';
 import { LanguageService } from '../shared/language.service';
 
@@ -84,6 +85,15 @@ export class PersonalProgramService {
     return this.http
       .put<ApiResponse<PersonalDayTargets>>(`${this.url}/${id}/days/${dayIndex}/targets`, update)
       .pipe(map((response) => this.unwrap(response)));
+  }
+  schedule(id: number) {
+    return this.http.get<ApiResponse<PersonalWorkoutSchedule[]>>(`${this.url}/${id}/schedule`)
+      .pipe(map((response) => this.unwrap(response)));
+  }
+  moveDay(id: number, sourceDayIndex: number, scheduledAt: string, expectedVersion: number) {
+    return this.http.put<ApiResponse<PersonalWorkoutSchedule[]>>(
+      `${this.url}/${id}/days/${sourceDayIndex}/schedule`, { scheduledAt, expectedVersion },
+    ).pipe(map((response) => this.unwrap(response)));
   }
   listTemplates() {
     return this.http

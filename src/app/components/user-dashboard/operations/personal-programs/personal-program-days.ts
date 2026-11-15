@@ -1,6 +1,7 @@
-import { addDays, fromIsoDate } from '../../../../shared/local-date';
+import { addDays, fromIsoDate, calendarDaysBetween } from '../../../../shared/local-date';
 import type { DayCell } from '../../../coach/coach-program-editor/program-days';
 import { initialSetTargets } from './personal-prescriptions';
+import type { PersonalWorkoutSchedule } from '../../../../models/personal-program.model';
 import type { PersonalProgramDay } from '../../../../models/personal-program.model';
 import type { CoachExerciseSearchItem } from '../../../../models/coach-workspace.model';
 import type { PersonalProgramState } from './personal-program-state';
@@ -17,12 +18,25 @@ export class PersonalProgramDays {
   }
 
   selectedDay = 1;
+  /** Populated only for an already started personal program. */
+  schedules: PersonalWorkoutSchedule[] | null = null;
+
+  /** Translate a stable template day index to the actual execution's date in this plan. */
+  displayIndexFor(sourceDayIndex: number): number {
+    const start = this.state.model.startDate;
+    const scheduled = this.schedules?.find(row => row.dayIndex === sourceDayIndex);
+    if (!this.state.started || !start || !scheduled?.scheduledAt) return sourceDayIndex;
+    const movedIndex = calendarDaysBetween(fromIsoDate(start), fromIsoDate(scheduled.scheduledAt));
+    return movedIndex < 0 || movedIndex >= this.state.model.durationDays
+      ? sourceDayIndex : movedIndex + 1;
+  }
+
   pickerDay: PersonalProgramDay | null = null;
 
   get visibleDays(): PersonalProgramDay[] {
     return this.state.standaloneMode
       ? this.state.model.workouts
-      : this.state.model.workouts.filter((day) => day.dayIndex === this.selectedDay);
+      : this.state.model.workouts.filter((day) => this.displayIndexFor(day.dayIndex) === this.selectedDay);
   }
 
   get cells(): DayCell[] {
@@ -33,7 +47,7 @@ export class PersonalProgramDays {
     );
     return Array.from({ length: count }, (_, index) => {
       const day = index + 1;
-      const workout = this.state.model.workouts.find((item) => item.dayIndex === day);
+      const workout = this.state.model.workouts.find((item) => this.displayIndexFor(item.dayIndex) === day);
       return {
         day,
         date: start ? addDays(start, index) : null,
@@ -41,8 +55,8 @@ export class PersonalProgramDays {
         label: workout?.name ?? '',
         workout: workout
           ? {
-              programWorkoutId: day,
-              workoutId: day,
+              programWorkoutId: workout.dayIndex,
+              workoutId: workout.dayIndex,
               name: workout.name,
               description: workout.description,
               exercises: workout.exercises.map((exercise) => ({
@@ -116,7 +130,7 @@ export class PersonalProgramDays {
   }
 
   get freeDays(): number[] {
-    const used = new Set(this.state.model.workouts.map(day => day.dayIndex));
+    const used = new Set(this.state.model.workouts.map(day => this.displayIndexFor(day.dayIndex)));
     const count = Math.min(366, Math.max(0, Math.floor(this.state.model.durationDays) || 0));
     return Array.from({ length: count }, (_, index) => index + 1)
       .filter(day => !used.has(day));

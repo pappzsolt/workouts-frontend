@@ -56,3 +56,11 @@ export interface PersonalDayTargetsUpdate {
   expectedVersion: number;
   exercises: PersonalDayTargets['exercises'];
 }
+
+/** Current execution dates of a started personal program, independent of the immutable draft day index. */
+export interface PersonalWorkoutSchedule {
+  dayIndex: number;
+  scheduledAt: string | null;
+  version: number;
+  editable: boolean;
+}

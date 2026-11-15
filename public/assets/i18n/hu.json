@@ -1923,6 +1923,15 @@
     "saved": "Az edzésterv mentve. Indítás előtt ellenőrizd a dátumot és a célokat."
   },
   "personalEditorUi": {
+    "moveDayTitle": "Edzés áthelyezése",
+    "moveDayHint": "Csak még meg nem kezdett edzést helyezhetsz át szabad, jövőbeli programnapra. A gyakorlatok, sorozatcélok és edzéstörténet megmaradnak.",
+    "moveDestination": "Új nap",
+    "moveDay": "Áthelyezés",
+    "moveLocked": "A már megkezdett vagy teljesített edzés nem helyezhető át.",
+    "moveSuccess": "Az edzés átkerült a kiválasztott napra.",
+    "scheduleLoading": "Edzésnapok aktuális dátumainak betöltése…",
+    "scheduleLoadFailed": "Nem sikerült betölteni az aktuális edzésdátumokat. Próbáld újra.",
+    "startedPlanHint": "A tervben megtekintheted és áthelyezheted a még el nem kezdett edzéseket. Az új változatot külön másolatként szerkesztheted.",
     "discardTargets": "Célérték-módosítások elvetése",
     "editDayTargets": "Sorozatcélok módosítása",
     "weeklyConfirm": "Edzés másolása a következő {{count}} szabad programnapra ({{days}}). A foglalt napokat nem írja felül.",

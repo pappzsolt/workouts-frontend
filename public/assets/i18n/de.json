@@ -1923,6 +1923,15 @@
     "saved": "Trainingsplan gespeichert. Prüfe vor dem Start das Datum und die Ziele."
   },
   "personalEditorUi": {
+    "moveDayTitle": "Training verschieben",
+    "moveDayHint": "Nur ein noch nicht begonnenes Training kann auf einen freien zukünftigen Programmtag verschoben werden. Übungen, Ziele und Trainingsverlauf bleiben erhalten.",
+    "moveDestination": "Neuer Tag",
+    "moveDay": "Verschieben",
+    "moveLocked": "Begonnene oder abgeschlossene Trainings können nicht verschoben werden.",
+    "moveSuccess": "Das Training wurde auf den ausgewählten Tag verschoben.",
+    "scheduleLoading": "Aktuelle Trainingstermine werden geladen…",
+    "scheduleLoadFailed": "Trainingstermine konnten nicht geladen werden. Bitte erneut versuchen.",
+    "startedPlanHint": "Im Trainingsplan kannst du noch nicht begonnene Trainings verschieben. Für strukturelle Änderungen erstelle eine separate bearbeitbare Kopie.",
     "discardTargets": "Änderungen an Zielwerten verwerfen",
     "editDayTargets": "Satzvorgaben bearbeiten",
     "weeklyConfirm": "Training auf {{count}} freie Wochentage ({{days}}) kopieren. Belegte Tage werden nicht überschrieben.",

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, Input, inject } from '@angular/core';
+import { Component, DestroyRef, Input, OnChanges, SimpleChanges, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule, NgForm } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -16,6 +16,7 @@ import type { PersonalProgramState } from './personal-program-state';
 import type { PersonalProgramDays } from './personal-program-days';
 import type { PersonalProgramActions } from './personal-program-actions';
 import { validPersonalPrescriptions } from './personal-prescriptions';
+import { addDays, fromIsoDate, toIsoDate } from '../../../../shared/local-date';
 
 /** Shared personal program and standalone workout presentation; all mutations and persistence remain in existing handlers. */
 @Component({
@@ -26,14 +27,19 @@ import { validPersonalPrescriptions } from './personal-prescriptions';
     PersonalProgramCalendarComponent],
   templateUrl: './personal-program-flow.component.html',
 })
-export class PersonalProgramFlowComponent {
+export class PersonalProgramFlowComponent implements OnChanges {
   @Input({ required: true }) state!: PersonalProgramState;
   @Input({ required: true }) days!: PersonalProgramDays;
   @Input({ required: true }) actions!: PersonalProgramActions;
+  @Input() scheduleProgramId: number | null = null;
+  @Input() scheduleStarted = false;
 
   private readonly service = inject(PersonalProgramService);
   private readonly destroyRef = inject(DestroyRef);
 
+  scheduleLoading = false;
+  scheduleFailed = false;
+  moveDestination: number | null = null;
   confirmWeekly = false;
   copyDestination: number | null = null;
   copySource: number | null = null;
@@ -47,6 +53,86 @@ export class PersonalProgramFlowComponent {
 
   view: 'calendar' | 'day' | 'exercise' = 'calendar';
   exerciseIndex = 0;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes['scheduleProgramId'] && !changes['scheduleStarted']) return;
+    this.days.schedules = null;
+    this.moveDestination = null;
+    if (this.scheduleStarted && !this.state.standaloneMode && this.scheduleProgramId != null) {
+      this.loadSchedules();
+    }
+  }
+
+  loadSchedules(): void {
+    const id = this.scheduleProgramId;
+    if (id == null || !this.scheduleStarted || this.state.standaloneMode) return;
+    this.scheduleLoading = true;
+    this.scheduleFailed = false;
+    this.service.schedule(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: schedules => {
+        if (this.scheduleProgramId !== id) return;
+        const previouslySelectedDay = this.days.selectedDay;
+        const firstLoad = this.days.schedules == null;
+        this.days.schedules = schedules;
+        // Keep the initially selected workout visible if it was moved before this page opened.
+        if (firstLoad && !this.days.visibleDays.length &&
+            this.state.model.workouts.some(day => day.dayIndex === previouslySelectedDay)) {
+          this.days.selectedDay = this.days.displayIndexFor(previouslySelectedDay);
+        }
+        this.scheduleLoading = false;
+      },
+      error: () => {
+        if (this.scheduleProgramId !== id) return;
+        this.scheduleLoading = false;
+        this.scheduleFailed = true;
+      },
+    });
+  }
+
+  get selectedExecutionSchedule() {
+    const day = this.activeDay;
+    return day ? this.days.schedules?.find(item => item.dayIndex === day.dayIndex) ?? null : null;
+  }
+
+  get availableMoveDays(): number[] {
+    return this.days.freeDays.filter(index => {
+      const date = this.state.model.startDate
+        ? toIsoDate(addDays(fromIsoDate(this.state.model.startDate), index - 1)) : null;
+      return date != null && date >= this.state.minimumStartDate;
+    });
+  }
+
+  moveSelectedDay(): void {
+    const id = this.scheduleProgramId;
+    const source = this.activeDay;
+    const execution = this.selectedExecutionSchedule;
+    const destination = this.moveDestination;
+    if (id == null || !this.state.started || this.state.standaloneMode ||
+        this.state.busy || this.targetDirty || !source || !execution?.editable ||
+        destination == null || !this.availableMoveDays.includes(destination) ||
+        !this.state.model.startDate) return;
+    const scheduledAt = toIsoDate(addDays(fromIsoDate(this.state.model.startDate), destination - 1));
+    this.state.busy = true;
+    this.service.moveDay(id, source.dayIndex, scheduledAt, execution.version)
+      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: schedules => {
+          this.state.busy = false;
+          this.days.schedules = schedules;
+          this.days.selectedDay = destination;
+          this.moveDestination = null;
+          this.targetSession = null;
+          this.targetDay = null;
+          this.state.message = 'personalEditorUi.moveSuccess';
+          this.state.messageType = 'success';
+        },
+        error: error => {
+          this.state.busy = false;
+          this.state.fail(error);
+          // Another tab may have moved this day. Refresh rather than guessing its location.
+          this.loadSchedules();
+        },
+      });
+  }
 
   private editingDay: PersonalProgramDay | null = null;
 
@@ -94,7 +180,7 @@ export class PersonalProgramFlowComponent {
     const dayIndex = day.dayIndex;
     this.service.dayTargets(id, dayIndex).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
-        if (this.state.id !== id || this.days.selectedDay !== dayIndex) return;
+        if (this.state.id !== id || this.activeDay?.dayIndex !== dayIndex) return;
         this.targetLoading = false;
         const copy = structuredClone(day);
         // Each exercise is mapped only by its validated server-side order index.
@@ -222,6 +308,7 @@ export class PersonalProgramFlowComponent {
     this.confirmWeekly = false;
     this.copyDestination = null;
     this.copySource = null;
+    this.moveDestination = null;
   }
 
   openDay(): void {

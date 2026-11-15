@@ -1923,6 +1923,15 @@
     "saved": "Workout plan saved. Check the date and targets before starting."
   },
   "personalEditorUi": {
+    "moveDayTitle": "Reschedule workout",
+    "moveDayHint": "Only an unstarted workout can be moved to a free future day within this program. Exercises, targets and workout history remain unchanged.",
+    "moveDestination": "New day",
+    "moveDay": "Reschedule",
+    "moveLocked": "Started or completed workouts cannot be moved.",
+    "moveSuccess": "Workout moved to the selected day.",
+    "scheduleLoading": "Loading current workout dates…",
+    "scheduleLoadFailed": "Could not load workout dates. Please retry.",
+    "startedPlanHint": "View the plan to reschedule unstarted workouts. Create a separate editable copy for structural changes.",
     "discardTargets": "Discard target changes",
     "editDayTargets": "Edit set targets",
     "weeklyConfirm": "Copy this workout into {{count}} available weekly days ({{days}}). Existing days will not be overwritten.",
