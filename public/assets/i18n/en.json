@@ -1921,5 +1921,23 @@
     "backExercises": "Back to exercises",
     "unsaved": "Your changes have not been saved yet.",
     "saved": "Workout plan saved. Check the date and targets before starting."
+  },
+  "personalEditorUi": {
+    "viewPlan": "View plan",
+    "targetsStep": "3. Set targets",
+    "variedSets": "{{sets}} sets · individual targets",
+    "calendarHelp": "Choose a day, add a workout, then select its exercises. Empty days are rest days.",
+    "doneWithTargets": "Done, back to exercises",
+    "weeklyCopied": "The workout was copied to matching free days in the following weeks. Save your changes to keep them.",
+    "noWeeklySlots": "There are no matching free days in the following weeks. Existing workouts were kept.",
+    "limits": "Plan size limits",
+    "startedTitle": "Open workouts",
+    "startTitle": "Next step",
+    "otherActions": "Other actions",
+    "archiveProgram": "Archive program",
+    "addExercisesFirst": "To start, add at least one workout and at least one exercise to every workout.",
+    "saveFirst": "First save your changes using the save button below. You can then start the saved plan.",
+    "chooseDate": "The start date is in the past. Choose today or a later date in step 1, then save the plan.",
+    "readyToStart": "Your plan is saved and ready to start. After starting, record your results in the workouts."
   }
 }

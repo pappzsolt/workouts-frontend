@@ -1921,5 +1921,23 @@
     "backExercises": "Zurück zu den Übungen",
     "unsaved": "Deine Änderungen sind noch nicht gespeichert.",
     "saved": "Trainingsplan gespeichert. Prüfe vor dem Start das Datum und die Ziele."
+  },
+  "personalEditorUi": {
+    "viewPlan": "Plan ansehen",
+    "targetsStep": "3. Satzziele",
+    "variedSets": "{{sets}} Sätze · individuelle Ziele",
+    "calendarHelp": "Wähle einen Tag, füge ein Training hinzu und wähle seine Übungen. Leere Tage sind Ruhetage.",
+    "doneWithTargets": "Fertig, zurück zu den Übungen",
+    "weeklyCopied": "Das Training wurde auf passende freie Tage der folgenden Wochen kopiert. Speichere die Änderungen noch.",
+    "noWeeklySlots": "In den folgenden Wochen gibt es keine passenden freien Tage. Bestehende Trainings bleiben erhalten.",
+    "limits": "Größenlimits des Plans",
+    "startedTitle": "Trainings öffnen",
+    "startTitle": "Nächster Schritt",
+    "otherActions": "Weitere Aktionen",
+    "archiveProgram": "Programm archivieren",
+    "addExercisesFirst": "Füge zum Start mindestens ein Training und jedem Training mindestens eine Übung hinzu.",
+    "saveFirst": "Speichere zuerst die Änderungen mit der Schaltfläche unten. Anschließend kannst du den gespeicherten Plan starten.",
+    "chooseDate": "Das Startdatum liegt in der Vergangenheit. Wähle in Schritt 1 heute oder ein späteres Datum und speichere den Plan.",
+    "readyToStart": "Dein Plan ist gespeichert und startbereit. Nach dem Start kannst du deine Ergebnisse in den Trainings erfassen."
   }
 }

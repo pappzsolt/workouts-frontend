@@ -83,8 +83,8 @@
                     program.standalone ? '/user/personal-workouts' : '/user/personal-programs',
                     program.id,
                   ]"
-                  class="btn btn-primary"
-                  >{{ (program.startedAt ? 'personalPrograms.open' :
+                  class="btn" [class.btn-primary]="!program.startedAt" [class.btn-neutral]="!!program.startedAt"
+                  >{{ (program.startedAt ? 'personalEditorUi.viewPlan' :
                     program.standalone ? 'personalWorkouts.editDraft' : 'personalPrograms.editDraft') | translate }}</a
                 >
                 @if (program.startedAt) {
@@ -95,7 +95,7 @@
                   <a
                     [routerLink]="['/user/programs', program.id, 'workouts']"
                     [queryParams]="{ programName: program.name }"
-                    class="btn btn-neutral"
+                    class="btn btn-primary"
                     >{{ 'personalPrograms.workouts' | translate }}</a
                   >
                   <p class="w-full text-xs text-content-600">
@@ -104,7 +104,7 @@
                 }
                 <button type="button" class="btn btn-delete" [disabled]="busy || loading"
                         (click)="askDelete(program)">
-                  {{ (program.standalone ? program.startedAt ? 'personalLibrary.archiveWorkout' : 'personalWorkouts.delete' : 'personalPrograms.delete') | translate }}
+                  {{ (program.standalone ? program.startedAt ? 'personalLibrary.archiveWorkout' : 'personalWorkouts.delete' : program.startedAt ? 'personalEditorUi.archiveProgram' : 'personalPrograms.delete') | translate }}
                 </button>
               </div>
             </div>

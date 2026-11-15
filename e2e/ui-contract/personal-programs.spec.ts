@@ -93,7 +93,7 @@ test('Saját program: létrehozás, gyakorlatválasztás, indítás, másolás �
   await expect(editor(page).getByRole('link', { name: 'Edzések megnyitása', exact: true })).toBeVisible();
   await expect(editor(page).locator('input[name=name]')).toBeDisabled();
   await expect(editor(page).locator('input[name=startDate]')).toHaveValue('2026-10-25');
-  await expect(editor(page).getByRole('button', { name: 'Program törlése', exact: true })).toBeVisible();
+  await expect(editor(page).getByRole('button', { name: 'Program archiválása', exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await openProgramExercise(page);
   await expect(editor(page).getByLabel('Guggolás 1. Cél súly (kg)', {exact:true})).toBeDisabled();
@@ -376,6 +376,7 @@ test('Saját program: heti ismétlés önálló sorozatokkal és sorozatkezelés
   await expect(r.getByLabel('Guggolás 4. Cél súly (kg)', {exact:true})).toHaveCount(0);
   await r.getByRole('button', {name:'2. Edzésnap',exact:true}).click();
   await r.getByRole('button', {name:'Ismétlés hetente',exact:true}).click();
+  await expect(r).toContainText('Az edzést átmásoltuk');
   await selectProgramDay(page, 8);
   await openProgramExercise(page);
   await r.getByLabel('Guggolás 1. Cél súly (kg)', {exact:true}).fill('50');
@@ -455,7 +456,7 @@ test('Önálló edzés: saját listáról archiválható, és a szerkesztő is u
   await list.getByRole('button', { name: 'Edzés archiválása', exact: true }).click();
   expect(api.calls.filter(call => call.method === 'DELETE')).toHaveLength(0);
   await page.getByRole('alertdialog').getByRole('button', { name: 'Mégse', exact: true }).click();
-  await list.getByRole('link', { name: 'Megnyitás', exact: true }).click();
+  await list.getByRole('link', { name: 'Terv megtekintése', exact: true }).click();
   await editor(page).getByRole('button', { name: 'Edzés archiválása', exact: true }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Megerősítés', exact: true }).click();
   await expect(page).toHaveURL(/\/personal-workouts$/);
@@ -625,4 +626,55 @@ test('Saját program: heti ismétlés hibás időtartammal és napsorszámmal ne
   expect(api.program.workouts.map(day => day.dayIndex)).toEqual([1, 8, 15]);
   expect(api.calls.filter(call => call.method === 'PUT')).toHaveLength(1);
   expect(api.unexpected).toEqual([]);
+});
+
+for (const standalone of [false, true]) {
+  test(`${standalone ? 'Önálló edzés' : 'Saját program'}: egyszerű útmutatás és valós összegzés az eltérő sorozatcélokról`, async ({ page }, info) => {
+    const api = await install(page);
+    api.standalone = standalone;
+    if (standalone) api.program.durationDays = 1;
+    (api.program.workouts[0].exercises[0] as any).setTargets = [12, 8, 10].map((reps, index) => ({
+      targetRepetitions: reps, targetWeightKg: 40 + index * 5, restSeconds: 60, targetRpe: null, notes: null,
+    }));
+    await page.goto(standalone ? '/user/personal-workouts/7' : '/user/personal-programs/7');
+    const root = editor(page);
+    const limits = root.locator('details').filter({ hasText: 'Terv méretkorlátai' });
+    await expect(limits.locator('p')).toBeHidden();
+    await limits.locator('summary').click();
+    await expect(limits.locator('p')).toBeVisible();
+    await limits.locator('summary').click();
+    await expect(root.getByRole('heading', { name: 'Következő lépés', exact: true })).toBeVisible();
+    await expect(root).toContainText('A terv mentve és indítható');
+    await expect(root.getByRole('heading', { name: 'További műveletek', exact: true })).toBeVisible();
+    await expect(root.getByRole('button', { name: standalone ? 'Edzés törlése' : 'Program törlése', exact: true })).toBeVisible();
+    await expect(root.getByRole('button', { name: standalone ? 'Mentés edzéssablonként' : 'Másolat készítése', exact: true })).toBeVisible();
+    await root.getByRole('button', { name: standalone ? '2. Gyakorlatok' : '2. Edzésnap', exact: true }).click();
+    const exercise = root.getByRole('button', { name: 'Gyakorlat szerkesztése: Guggolás', exact: true });
+    await expect(exercise).toContainText('3 sorozat · eltérő célértékek');
+    await expect(exercise).not.toContainText('40 kg');
+    await exercise.click();
+    await expect(root.getByLabel('Guggolás 1. Cél ism.', { exact: true })).toHaveValue('12');
+    await expect(root.getByLabel('Guggolás 2. Cél ism.', { exact: true })).toHaveValue('8');
+    await root.getByRole('button', { name: 'Kész, vissza a gyakorlatokhoz', exact: true }).click();
+    await expect(exercise).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    await page.screenshot({ path: `/tmp/personal-simplified-${standalone ? 'workout' : 'program'}-${info.project.name}.png`, fullPage: true });
+    expect(api.calls.filter(call => call.method === 'PUT' || call.path.endsWith('/start'))).toHaveLength(0);
+    expect(api.unexpected).toEqual([]);
+  });
+}
+
+test('Saját program: a foglalt heti napok ismétlése visszajelez és nem módosítja a mentett tervet', async ({ page }) => {
+  const api = await install(page);
+  api.program.durationDays = 21;
+  const original = structuredClone(api.program.workouts[0]);
+  api.program.workouts = [1, 8, 15].map(dayIndex => ({ ...structuredClone(original), dayIndex }));
+  await page.goto('/user/personal-programs/7');
+  const root = editor(page);
+  await root.getByRole('button', { name: '2. Edzésnap', exact: true }).click();
+  await root.getByRole('button', { name: 'Ismétlés hetente', exact: true }).click();
+  await expect(root).toContainText('Nincs szabad megfelelő nap');
+  await expect(root.getByRole('button', { name: 'Piszkozat mentése', exact: true })).toBeDisabled();
+  expect(api.program.workouts.map(day => day.dayIndex)).toEqual([1, 8, 15]);
+  expect(api.calls.filter(call => call.method === 'PUT')).toHaveLength(0);
 });

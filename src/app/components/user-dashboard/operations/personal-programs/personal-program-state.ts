@@ -73,6 +73,15 @@ export class PersonalProgramState {
     );
   }
 
+  get nextStepKey(): string {
+    if (!this.model.workouts.length || this.model.workouts.some(day => !day.exercises.length))
+      return 'personalEditorUi.addExercisesFirst';
+    if (this.dirty) return 'personalEditorUi.saveFirst';
+    if (this.model.startDate && this.model.startDate < this.minimumStartDate)
+      return 'personalEditorUi.chooseDate';
+    return 'personalEditorUi.readyToStart';
+  }
+
   get withinLimits(): boolean {
     const exercises = this.model.workouts.flatMap((day) => day.exercises);
     return (

@@ -59,6 +59,15 @@ export class PersonalProgramFlowComponent {
   get activeExercise(): PersonalProgramExercise | null {
     return this.activeDay?.exercises[this.exerciseIndex] ?? null;
   }
+  hasDifferentTargets(exercise: PersonalProgramExercise): boolean {
+    const targets = exercise.setTargets;
+    const first = targets?.[0];
+    return !!first && targets!.some(row =>
+      row.targetRepetitions !== first.targetRepetitions || row.targetWeightKg !== first.targetWeightKg ||
+      row.restSeconds !== first.restSeconds || row.targetRpe !== first.targetRpe || row.notes !== first.notes,
+    );
+  }
+
   get selectedDate(): Date | null {
     return this.days.cells.find(cell => cell.day === this.days.selectedDay)?.date ?? null;
   }

@@ -156,4 +156,19 @@ describe('Personal program editor handlers', () => {
     expect(state.message).toBe('personalPrograms.invalidDays');
   });
 
+  it('explains a weekly repeat with no free days without changing the saved plan', () => {
+    state.model.durationDays = 21;
+    const day = state.model.workouts[0];
+    days.repeatWeekly(day);
+    expect(state.model.workouts.map(item => item.dayIndex)).toEqual([1, 8, 15]);
+    expect(state.message).toBe('personalEditorUi.weeklyCopied');
+    state.dirty = false;
+    const saved = structuredClone(state.model);
+    days.repeatWeekly(day);
+    expect(state.model).toEqual(saved);
+    expect(state.dirty).toBeFalse();
+    expect(state.message).toBe('personalEditorUi.noWeeklySlots');
+    expect(state.messageType).toBe('info');
+  });
+
 });

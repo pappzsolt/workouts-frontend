@@ -1921,5 +1921,23 @@
     "backExercises": "Vissza a gyakorlatokhoz",
     "unsaved": "A módosítások még nincsenek elmentve.",
     "saved": "Az edzésterv mentve. Indítás előtt ellenőrizd a dátumot és a célokat."
+  },
+  "personalEditorUi": {
+    "viewPlan": "Terv megtekintése",
+    "targetsStep": "3. Sorozatcélok",
+    "variedSets": "{{sets}} sorozat · eltérő célértékek",
+    "calendarHelp": "Válassz egy napot, adj hozzá edzést, majd állítsd össze a gyakorlatait. Az üres napok pihenőnapok.",
+    "doneWithTargets": "Kész, vissza a gyakorlatokhoz",
+    "weeklyCopied": "Az edzést átmásoltuk a következő hetek szabad megfelelő napjaira. A változtatásokat még mentsd el.",
+    "noWeeklySlots": "Nincs szabad megfelelő nap a következő hetekben. A meglévő edzéseket nem írtuk felül.",
+    "limits": "Terv méretkorlátai",
+    "startedTitle": "Edzések megnyitása",
+    "startTitle": "Következő lépés",
+    "otherActions": "További műveletek",
+    "archiveProgram": "Program archiválása",
+    "addExercisesFirst": "Indításhoz adj hozzá legalább egy edzést, és minden edzéshez legalább egy gyakorlatot.",
+    "saveFirst": "Először mentsd a változtatásokat az alul látható mentés gombbal. Ezután indíthatod a mentett tervet.",
+    "chooseDate": "Az indulás dátuma már elmúlt. Az 1. lépésben válassz mai vagy későbbi dátumot, majd mentsd a tervet.",
+    "readyToStart": "A terv mentve és indítható. Indítás után az edzéseknél rögzítheted az eredményeidet."
   }
 }

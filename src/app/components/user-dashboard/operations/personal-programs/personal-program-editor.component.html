@@ -21,16 +21,21 @@
       @if (state.started) {
         <app-message [message]="state.label('locked')" type="info" />
       }
-      <app-message
-        [message]="state.standaloneMode ? 'personalWorkouts.limit' : 'personalPrograms.sizeLimit'"
-        type="info"
-      />
+      <details class="rounded-xl border border-surface-200 bg-white px-4 py-3 text-sm text-content-600">
+        <summary class="cursor-pointer font-semibold">{{ 'personalEditorUi.limits' | translate }}</summary>
+        <p class="mt-2 leading-relaxed">{{ (state.standaloneMode ? 'personalWorkouts.limit' : 'personalPrograms.sizeLimit') | translate }}</p>
+      </details>
       <app-personal-program-flow [state]="state" [days]="days" [actions]="actions" />
       @if (days.catalogueFailed) {
         <app-message message="personalPrograms.catalogueError" type="error" />
       }
       @if (state.id) {
-        <div class="flex flex-wrap gap-3 rounded-2xl border border-surface-200 bg-white p-4">
+        <section class="rounded-2xl border border-surface-200 bg-white p-4 sm:p-5">
+          <h2 class="mb-2 text-lg font-bold text-content-800">{{ (state.started ? 'personalEditorUi.startedTitle' : 'personalEditorUi.startTitle') | translate }}</h2>
+          @if (!state.started) {
+            <p class="mb-4 text-sm leading-relaxed text-content-600" role="status">{{ state.nextStepKey | translate }}</p>
+          }
+          <div class="flex flex-wrap gap-3">
           @if (!state.started) {
             <button
               type="button"
@@ -48,14 +53,11 @@
               >{{ 'personalPrograms.workouts' | translate }}</a
             >
           }
-          <button
-            type="button"
-            class="btn btn-delete"
-            (click)="actions.ask('delete')"
-            [disabled]="state.busy || state.loading"
-          >
-            {{ (state.standaloneMode ? state.started ? 'personalLibrary.archiveWorkout' : 'personalWorkouts.delete' : 'personalPrograms.delete') | translate }}
-          </button>
+          </div>
+          <div class="mt-5 border-t border-surface-200 pt-4">
+            <h3 class="mb-3 text-sm font-semibold text-content-700">{{ 'personalEditorUi.otherActions' | translate }}</h3>
+            <div class="flex flex-wrap gap-3">
+
           @if (state.standaloneMode) {
             <button
               type="button"
@@ -100,10 +102,17 @@
               {{ 'personalPrograms.copy' | translate }}
             </button>
           }
-        </div>
-        @if (!state.started && (state.dirty || !state.canStart)) {
-          <p class="text-sm text-content-600">{{ state.label('startHint') | translate }}</p>
-        }
+          <button
+            type="button"
+            class="btn btn-delete"
+            (click)="actions.ask('delete')"
+            [disabled]="state.busy || state.loading"
+          >
+            {{ (state.standaloneMode ? state.started ? 'personalLibrary.archiveWorkout' : 'personalWorkouts.delete' : state.started ? 'personalEditorUi.archiveProgram' : 'personalPrograms.delete') | translate }}
+          </button>
+            </div>
+          </div>
+        </section>
       }
     }
     <app-confirm-dialog

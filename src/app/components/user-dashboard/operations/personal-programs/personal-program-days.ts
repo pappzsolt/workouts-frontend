@@ -126,6 +126,8 @@ export class PersonalProgramDays {
     for (const dayIndex of targets)
       this.state.model.workouts.push(structuredClone({ ...day, dayIndex }));
     if (targets.length) this.state.changed();
+    this.state.message = targets.length ? 'personalEditorUi.weeklyCopied' : 'personalEditorUi.noWeeklySlots';
+    this.state.messageType = 'info';
   }
 
   names: Record<number, string> = {};
