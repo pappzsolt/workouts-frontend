@@ -145,16 +145,13 @@
               <p class="mb-2 text-sm font-semibold text-content-800">{{ 'personalEditorUi.moveDayTitle' | translate }}</p>
               <p class="mb-3 text-xs text-content-600">{{ 'personalEditorUi.moveDayHint' | translate }}</p>
               <div class="flex flex-wrap items-end gap-2">
-                <label class="min-w-0 flex-1 text-sm font-medium text-content-700">
-                  {{ 'personalEditorUi.moveDestination' | translate }}
-                  <select class="mt-1 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5"
-                          [(ngModel)]="moveDestination" [ngModelOptions]="{standalone: true}">
-                    <option [ngValue]="null">{{ 'personalEditorUi.selectDay' | translate }}</option>
-                    @for (index of availableMoveDays; track index) {
-                      <option [ngValue]="index">{{ 'personalPrograms.dayNumber' | translate: { number: index } }} – {{ days.cells[index - 1].date | date: 'yyyy. MM. dd.' }}</option>
-                    }
-                  </select>
-                </label>
+                <div class="min-w-0 flex-1 text-sm font-medium text-content-700">
+                  <p>{{ 'personalEditorUi.moveDestination' | translate }}</p>
+                  <app-personal-move-date-picker class="mt-1 block"
+                    [options]="availableMoveDates" [selectedDay]="moveDestination"
+                    [contextDay]="days.selectedDay" [disabled]="state.busy"
+                    (selectedDayChange)="moveDestination = $event" />
+                </div>
                 <button type="button" class="btn btn-neutral" [disabled]="moveDestination == null || state.busy"
                         (click)="moveSelectedDay()">{{ 'personalEditorUi.moveDay' | translate }}</button>
               </div>

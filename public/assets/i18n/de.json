@@ -1479,6 +1479,7 @@
     }
   },
   "personalPrograms": {
+    "cardActionsTitle": "Programmaktionen",
     "flow": {
         "calendar": "Programmkalender",
         "calendarHelp": "Wähle einen Tag und öffne das Training.",
@@ -1601,6 +1602,7 @@
     "archiveSuccess": "Programm aus deinen eigenen Programmen entfernt. Die Trainingshistorie bleibt erhalten."
   },
   "personalWorkouts": {
+    "cardActionsTitle": "Trainingsaktionen",
     "create": "Einzeltraining erstellen",
     "editor": "Mein Training",
     "type": "Einzeltraining",
@@ -1923,6 +1925,8 @@
     "saved": "Trainingsplan gespeichert. Prüfe vor dem Start das Datum und die Ziele."
   },
   "personalEditorUi": {
+    "actionAppliesTo": "Ausgewählter Eintrag:",
+    "moveDatePickerHint": "Markierte Tage sind verfügbar; andere Tage sind nicht auswählbar.",
     "moveDayTitle": "Training verschieben",
     "moveDayHint": "Nur ein noch nicht begonnenes Training kann auf einen freien zukünftigen Programmtag verschoben werden. Übungen, Ziele und Trainingsverlauf bleiben erhalten.",
     "moveDestination": "Neuer Tag",

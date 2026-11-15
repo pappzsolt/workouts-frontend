@@ -12,6 +12,7 @@ import type { PersonalProgramDay, PersonalProgramExercise, PersonalDayTargets } 
 import { PersonalProgramService } from '../../../../services/user/personal-program.service';
 import { PersonalExerciseTargetsComponent } from './personal-exercise-targets.component';
 import { PersonalProgramCalendarComponent } from './personal-program-calendar.component';
+import { PersonalMoveDatePickerComponent, PersonalMoveDateOption } from './personal-move-date-picker.component';
 import type { PersonalProgramState } from './personal-program-state';
 import type { PersonalProgramDays } from './personal-program-days';
 import type { PersonalProgramActions } from './personal-program-actions';
@@ -24,7 +25,7 @@ import { addDays, fromIsoDate, toIsoDate } from '../../../../shared/local-date';
   standalone: true,
   imports: [CommonModule, FormsModule, TranslatePipe, AppInputDirective, AppTextareaDirective,
     AppEmptyStateComponent, ExercisePickerComponent, PersonalExerciseTargetsComponent,
-    PersonalProgramCalendarComponent],
+    PersonalProgramCalendarComponent, PersonalMoveDatePickerComponent],
   templateUrl: './personal-program-flow.component.html',
 })
 export class PersonalProgramFlowComponent implements OnChanges {
@@ -100,6 +101,13 @@ export class PersonalProgramFlowComponent implements OnChanges {
         ? toIsoDate(addDays(fromIsoDate(this.state.model.startDate), index - 1)) : null;
       return date != null && date >= this.state.minimumStartDate;
     });
+  }
+
+  get availableMoveDates(): PersonalMoveDateOption[] {
+    const start = this.state.model.startDate;
+    if (!start) return [];
+    const firstDay = fromIsoDate(start);
+    return this.availableMoveDays.map(dayIndex => ({ dayIndex, date: addDays(firstDay, dayIndex - 1) }));
   }
 
   moveSelectedDay(): void {

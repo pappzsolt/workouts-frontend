@@ -1479,6 +1479,7 @@
     }
   },
   "personalPrograms": {
+    "cardActionsTitle": "Program actions",
     "flow": {
         "calendar": "Program calendar",
         "calendarHelp": "Select a day and open its workout.",
@@ -1601,6 +1602,7 @@
     "archiveSuccess": "Program removed from your personal programs. Workout history was preserved."
   },
   "personalWorkouts": {
+    "cardActionsTitle": "Workout actions",
     "create": "Create standalone workout",
     "editor": "My workout",
     "type": "Standalone workout",
@@ -1923,6 +1925,8 @@
     "saved": "Workout plan saved. Check the date and targets before starting."
   },
   "personalEditorUi": {
+    "actionAppliesTo": "Selected item:",
+    "moveDatePickerHint": "Colored dates are available; other dates cannot be selected.",
     "moveDayTitle": "Reschedule workout",
     "moveDayHint": "Only an unstarted workout can be moved to a free future day within this program. Exercises, targets and workout history remain unchanged.",
     "moveDestination": "New day",

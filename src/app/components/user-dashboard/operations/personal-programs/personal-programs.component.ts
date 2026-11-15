@@ -13,8 +13,6 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from '../../../shared/components/message/message.component';
 import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
 import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
-import { AppCardBannerComponent } from '../../../shared/components/app-card-banner/app-card-banner.component';
-import { AppCardStatComponent } from '../../../shared/components/app-card-stat/app-card-stat.component';
 import { AppSearchComponent } from '../../../shared/components/app-search/app-search.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
@@ -38,8 +36,6 @@ import { errorMessage } from '../../../../models/backend-dto/common/api-response
     MessageComponent,
     AppCardComponent,
     AppIconComponent,
-    AppCardBannerComponent,
-    AppCardStatComponent,
     AppSearchComponent,
     PaginationComponent,
     ConfirmDialogComponent,
