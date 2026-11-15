@@ -128,7 +128,7 @@ describe('PersonalProgramEditorComponent', () => {
     expect(component.actions.confirmationMessage).toBe('personalWorkouts.archiveConfirm');
     component.actions.confirm();
     expect(api.delete).toHaveBeenCalledOnceWith(9);
-    expect(router.navigate).toHaveBeenCalledWith(['/user/personal-programs']);
+    expect(router.navigate).toHaveBeenCalledWith(['/user/personal-workouts']);
   });
   it('builds an ISO business date even when the formatter uses month/day/year order', () => {
     const original = Intl.DateTimeFormat;
