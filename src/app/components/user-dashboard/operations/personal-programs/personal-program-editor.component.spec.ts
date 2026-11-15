@@ -392,4 +392,75 @@ describe('PersonalProgramEditorComponent', () => {
     expect(component.state.model.name).toBe('Local changes');
   });
 
+  for (const standalone of [false, true]) {
+    it(`blocks duplicate creates while the saved ${standalone ? 'workout' : 'program'} is opening`, async () => {
+      component.state.standaloneMode = standalone;
+      component.state.id = null;
+      component.state.dirty = true;
+      api.save.and.returnValue(of(55));
+      let open!: (opened: boolean) => void;
+      router.navigate.and.returnValue(new Promise<boolean>(resolve => { open = resolve; }));
+      component.actions.save(form);
+      expect(component.state.navigationPending).toBeTrue();
+      expect(component.state.locked).toBeTrue();
+      expect(component.canLeave()).toBeTrue(); // Internal navigation must pass the leave guard.
+      component.actions.save(form);
+      component.actions.ask('copy');
+      expect(api.save).toHaveBeenCalledTimes(1);
+      expect(component.state.action).toBeNull();
+      expect(router.navigate).toHaveBeenCalledWith([
+        standalone ? '/user/personal-workouts' : '/user/personal-programs', 55,
+      ], { replaceUrl: true });
+      open(false);
+      await Promise.resolve();
+      expect(component.state.message).toBe('personalNavigation.openFailed');
+      component.actions.save(form);
+      expect(api.save).toHaveBeenCalledTimes(1);
+      router.navigate.and.resolveTo(true);
+      component.actions.retryNavigation();
+      await Promise.resolve();
+      expect(router.navigate).toHaveBeenCalledTimes(2);
+      expect(api.save).toHaveBeenCalledTimes(1);
+      expect(component.state.navigationPending).toBeFalse();
+    });
+  }
+
+  it('retries opening an already-created copy after a rejected navigation without copying again', async () => {
+    router.navigate.and.rejectWith(new Error('chunk load failed'));
+    component.actions.ask('copy');
+    component.actions.confirm();
+    await Promise.resolve();
+    expect(api.copy).toHaveBeenCalledOnceWith(9);
+    expect(component.state.message).toBe('personalNavigation.openFailed');
+    component.actions.ask('copy');
+    component.actions.confirm();
+    expect(api.copy).toHaveBeenCalledTimes(1);
+    router.navigate.and.resolveTo(true);
+    component.actions.retryNavigation();
+    await Promise.resolve();
+    expect(router.navigate).toHaveBeenCalledWith(['/user/personal-programs', 10]);
+    expect(component.state.navigationPending).toBeFalse();
+    expect(api.copy).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps a repeated workout locked until opening it succeeds and retries only the navigation', async () => {
+    component.state.standaloneMode = true;
+    component.state.started = true;
+    api.repeat.and.returnValue(of({ id: 77, standalone: true, startedAt: null, program: draft() }));
+    router.navigate.and.resolveTo(false);
+    component.actions.ask('repeat');
+    component.actions.confirm();
+    await Promise.resolve();
+    expect(component.state.navigationPending).toBeTrue();
+    component.actions.ask('repeat');
+    component.actions.confirm();
+    expect(api.repeat).toHaveBeenCalledOnceWith(9);
+    router.navigate.and.resolveTo(true);
+    component.actions.retryNavigation();
+    await Promise.resolve();
+    expect(router.navigate).toHaveBeenCalledWith(['/user/personal-workouts', 77]);
+    expect(component.state.navigationPending).toBeFalse();
+    expect(api.repeat).toHaveBeenCalledTimes(1);
+  });
+
 });

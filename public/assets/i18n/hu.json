@@ -1939,5 +1939,9 @@
     "saveFirst": "Először mentsd a változtatásokat az alul látható mentés gombbal. Ezután indíthatod a mentett tervet.",
     "chooseDate": "Az indulás dátuma már elmúlt. Az 1. lépésben válassz mai vagy későbbi dátumot, majd mentsd a tervet.",
     "readyToStart": "A terv mentve és indítható. Indítás után az edzéseknél rögzítheted az eredményeidet."
+  },
+  "personalNavigation": {
+    "openFailed": "A művelet sikerült, de az oldal nem nyílt meg. Próbáld újra a megnyitást; a mentést vagy másolást nem kell megismételned.",
+    "retryOpen": "Megnyitás újrapróbálása"
   }
 }

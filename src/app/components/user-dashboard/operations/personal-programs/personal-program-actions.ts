@@ -2,7 +2,7 @@ import { validPersonalPrescriptions, preparePersonalPrescriptions } from './pers
 import type { DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { NgForm } from '@angular/forms';
-import type { Router } from '@angular/router';
+import type { NavigationExtras, Router } from '@angular/router';
 import type { Observable } from 'rxjs';
 import type { PersonalProgramDetail } from '../../../../models/personal-program.model';
 import type { PersonalProgramService } from '../../../../services/user/personal-program.service';
@@ -84,7 +84,7 @@ export class PersonalProgramActions {
           this.state.message = this.state.label('saved');
           this.state.messageType = 'success';
           if (this.state.id == null)
-            void this.router.navigate(
+            this.navigateTo(
               [
                 this.state.standaloneMode ? '/user/personal-workouts' : '/user/personal-programs',
                 typeof result === 'number' ? result : result.id,
@@ -110,6 +110,7 @@ export class PersonalProgramActions {
       this.state.id == null ||
       !this.state.standaloneMode ||
       this.state.busy ||
+      this.state.navigationPending ||
       this.state.loading ||
       this.state.loadFailed ||
       this.state.dirty ||
@@ -135,7 +136,7 @@ export class PersonalProgramActions {
   }
 
   ask(action: 'start' | 'delete' | 'copy' | 'repeat'): void {
-    if (this.state.busy || this.state.id == null || this.state.loading || this.state.loadFailed)
+    if (this.state.busy || this.state.navigationPending || this.state.id == null || this.state.loading || this.state.loadFailed)
       return;
     if (action === 'start' && !this.state.canStart) return;
     if (action === 'copy' && this.state.dirty) return;
@@ -153,7 +154,7 @@ export class PersonalProgramActions {
       this.navigation.finishLeave(true);
       return;
     }
-    if (this.state.id == null || this.state.busy || this.state.action == null) return;
+    if (this.state.id == null || this.state.busy || this.state.navigationPending || this.state.action == null) return;
     const action = this.state.action;
     if (action === 'start' && !this.state.canStart) {
       this.state.action = null;
@@ -181,7 +182,7 @@ export class PersonalProgramActions {
           this.state.message = this.state.label('startSuccess');
           this.state.messageType = 'success';
         } else
-          void this.router.navigate(
+          this.navigateTo(
             action === 'repeat' && typeof result !== 'number'
               ? ['/user/personal-workouts', result.id]
               : action === 'copy'
@@ -189,7 +190,7 @@ export class PersonalProgramActions {
                     this.state.standaloneMode
                       ? '/user/personal-workouts'
                       : '/user/personal-programs',
-                    result,
+                    typeof result === 'number' ? result : result.id,
                   ]
                 : [this.state.standaloneMode ? '/user/personal-workouts' : '/user/personal-programs'],
           );
@@ -200,6 +201,34 @@ export class PersonalProgramActions {
         this.state.fail(error);
       },
     });
+  }
+
+  private pendingNavigation: { commands: (string | number)[]; extras?: NavigationExtras } | null = null;
+
+  private navigateTo(commands: (string | number)[], extras?: NavigationExtras): void {
+    this.pendingNavigation = { commands, extras };
+    this.state.navigationPending = true;
+    this.retryNavigation();
+  }
+
+  retryNavigation(): void {
+    if (!this.pendingNavigation || this.state.navigating) return;
+    const { commands, extras } = this.pendingNavigation;
+    this.state.navigating = true;
+    this.state.message = '';
+    const finished = (opened: boolean) => {
+      this.state.navigating = false;
+      if (opened) {
+        this.pendingNavigation = null;
+        this.state.navigationPending = false;
+      } else {
+        this.state.message = 'personalNavigation.openFailed';
+        this.state.messageType = 'error';
+      }
+    };
+    // Retrying opens the already-created destination; it never repeats the write.
+    const navigation = extras ? this.router.navigate(commands, extras) : this.router.navigate(commands);
+    void navigation.then(finished, () => finished(false));
   }
 
   get confirmationTitle(): string {

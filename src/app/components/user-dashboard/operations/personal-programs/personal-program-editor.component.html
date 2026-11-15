@@ -9,6 +9,11 @@
       }}</a>
     </div>
     <app-message [message]="state.message" [type]="state.messageType" role="status" />
+    @if (state.navigationPending && !state.navigating) {
+      <button type="button" class="btn btn-neutral self-start" (click)="actions.retryNavigation()">
+        {{ 'personalNavigation.retryOpen' | translate }}
+      </button>
+    }
     @if (state.loadFailed) {
       <button type="button" class="btn btn-neutral self-start" (click)="retryLoad()"
               [disabled]="state.loading || state.busy">
@@ -65,6 +70,7 @@
               (click)="actions.saveTemplate()"
               [disabled]="
                 state.busy ||
+                state.navigationPending ||
                 state.dirty ||
                 state.loading ||
                 state.loadFailed ||
@@ -88,7 +94,7 @@
               type="button"
               class="btn btn-neutral"
               (click)="actions.ask('repeat')"
-              [disabled]="state.busy || state.dirty"
+              [disabled]="state.busy || state.dirty || state.navigationPending"
             >
               {{ 'personalWorkouts.repeat' | translate }}
             </button>
@@ -97,7 +103,7 @@
               type="button"
               class="btn btn-neutral"
               (click)="actions.ask('copy')"
-              [disabled]="state.busy || state.dirty"
+              [disabled]="state.busy || state.dirty || state.navigationPending"
             >
               {{ 'personalPrograms.copy' | translate }}
             </button>
@@ -106,7 +112,7 @@
             type="button"
             class="btn btn-delete"
             (click)="actions.ask('delete')"
-            [disabled]="state.busy || state.loading"
+            [disabled]="state.busy || state.loading || state.navigationPending"
           >
             {{ (state.standaloneMode ? state.started ? 'personalLibrary.archiveWorkout' : 'personalWorkouts.delete' : state.started ? 'personalEditorUi.archiveProgram' : 'personalPrograms.delete') | translate }}
           </button>

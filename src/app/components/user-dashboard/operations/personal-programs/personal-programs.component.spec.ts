@@ -152,4 +152,28 @@ describe('PersonalProgramsComponent pagination and personal actions', () => {
     expect(api.copy).not.toHaveBeenCalled();
     expect(api.repeat).not.toHaveBeenCalled();
   });
+  for (const standalone of [false, true]) {
+    it(`retries only navigation after the list creates a ${standalone ? 'workout' : 'program'} copy`, async () => {
+      api.copy.and.returnValue(of(44));
+      api.repeat.and.returnValue(of({ id: 45, standalone: true, startedAt: null, program: {} as PersonalProgramRequest }));
+      router.navigate.and.resolveTo(false);
+      const source = standalone ? startedWorkout : startedProgram;
+      component.editCopy(source);
+      await Promise.resolve();
+      expect(component.hasPendingCopy).toBeTrue();
+      expect(component.message).toBe('personalNavigation.openFailed');
+      component.editCopy(source);
+      const write = standalone ? api.repeat : api.copy;
+      expect(write).toHaveBeenCalledTimes(1);
+      router.navigate.and.resolveTo(true);
+      component.retryOpenCopy();
+      await Promise.resolve();
+      expect(component.hasPendingCopy).toBeFalse();
+      expect(router.navigate).toHaveBeenCalledWith([
+        standalone ? '/user/personal-workouts' : '/user/personal-programs', standalone ? 45 : 44,
+      ]);
+      expect(write).toHaveBeenCalledTimes(1);
+    });
+  }
+
 });

@@ -678,3 +678,20 @@ test('Saját program: a foglalt heti napok ismétlése visszajelez és nem módo
   expect(api.program.workouts.map(day => day.dayIndex)).toEqual([1, 8, 15]);
   expect(api.calls.filter(call => call.method === 'PUT')).toHaveLength(0);
 });
+
+for (const standalone of [false, true]) {
+  test(`${standalone ? 'Önálló edzés' : 'Saját program'}: a listáról készített másolat egyszer jön létre és megnyílik`, async ({ page }) => {
+    const api = await install(page);
+    api.standalone = standalone;
+    api.started = true;
+    if (standalone) api.program.durationDays = 1;
+    await page.goto(standalone ? '/user/personal-workouts' : '/user/personal-programs');
+    await page.locator('app-personal-programs').getByRole('button', {
+      name: standalone ? 'Új, szerkeszthető alkalom' : 'Szerkeszthető másolat', exact: true,
+    }).click();
+    await expect(page).toHaveURL(standalone ? /\/personal-workouts\/8$/ : /\/personal-programs\/8$/);
+    await expect(editor(page).getByLabel(standalone ? 'Edzés neve' : 'Program neve', { exact: true })).toBeEditable();
+    expect(api.calls.filter(call => call.path.endsWith(standalone ? '/repeat' : '/copy'))).toHaveLength(1);
+    expect(api.unexpected).toEqual([]);
+  });
+}

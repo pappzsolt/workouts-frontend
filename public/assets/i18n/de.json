@@ -1939,5 +1939,9 @@
     "saveFirst": "Speichere zuerst die Änderungen mit der Schaltfläche unten. Anschließend kannst du den gespeicherten Plan starten.",
     "chooseDate": "Das Startdatum liegt in der Vergangenheit. Wähle in Schritt 1 heute oder ein späteres Datum und speichere den Plan.",
     "readyToStart": "Dein Plan ist gespeichert und startbereit. Nach dem Start kannst du deine Ergebnisse in den Trainings erfassen."
+  },
+  "personalNavigation": {
+    "openFailed": "Die Aktion war erfolgreich, aber die Seite wurde nicht geöffnet. Versuche sie erneut zu öffnen; Speichern oder Kopieren ist nicht nochmals nötig.",
+    "retryOpen": "Öffnen erneut versuchen"
   }
 }

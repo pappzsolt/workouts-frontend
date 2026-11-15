@@ -137,8 +137,29 @@ export class PersonalProgramsComponent implements OnInit {
     });
   }
 
+  private pendingCopy: { path: string; id: number } | null = null;
+  get hasPendingCopy(): boolean { return this.pendingCopy !== null; }
+
+  retryOpenCopy(): void {
+    if (this.busy || !this.pendingCopy) return;
+    this.busy = true;
+    this.message = '';
+    this.openPendingCopy();
+  }
+
+  private openPendingCopy(): void {
+    const pending = this.pendingCopy;
+    if (!pending) return;
+    const finished = (opened: boolean) => {
+      this.busy = false;
+      if (opened) this.pendingCopy = null;
+      else this.message = 'personalNavigation.openFailed';
+    };
+    void this.router.navigate([pending.path, pending.id]).then(finished, () => finished(false));
+  }
+
   editCopy(program: PersonalProgramSummary): void {
-    if (this.busy || this.loading || this.pendingDelete || !program.startedAt) return;
+    if (this.busy || this.loading || this.pendingDelete || this.pendingCopy || !program.startedAt) return;
     this.busy = true;
     this.message = '';
     this.successMessage = '';
@@ -147,14 +168,10 @@ export class PersonalProgramsComponent implements OnInit {
       : this.service.copy(program.id);
     request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (id) => {
-        const path = program.standalone ? '/user/personal-workouts' : '/user/personal-programs';
-        void this.router.navigate([path, id]).then(
-          () => { this.busy = false; },
-          (error) => {
-            this.busy = false;
-            this.message = errorMessage(error, 'personalPrograms.actionError');
-          },
-        );
+        this.pendingCopy = {
+          path: program.standalone ? '/user/personal-workouts' : '/user/personal-programs', id,
+        };
+        this.openPendingCopy();
       },
       error: (error) => {
         this.busy = false;

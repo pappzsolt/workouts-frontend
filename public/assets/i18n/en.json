@@ -1939,5 +1939,9 @@
     "saveFirst": "First save your changes using the save button below. You can then start the saved plan.",
     "chooseDate": "The start date is in the past. Choose today or a later date in step 1, then save the plan.",
     "readyToStart": "Your plan is saved and ready to start. After starting, record your results in the workouts."
+  },
+  "personalNavigation": {
+    "openFailed": "The operation succeeded, but the page did not open. Retry opening it; you do not need to save or create another copy.",
+    "retryOpen": "Retry opening"
   }
 }

@@ -15,6 +15,9 @@ export class PersonalProgramState {
 
   dirty = false;
 
+  navigationPending = false;
+  navigating = false;
+
   message = '';
 
   messageType: 'success' | 'error' | 'info' = 'info';
@@ -44,7 +47,7 @@ export class PersonalProgramState {
   }
 
   get locked(): boolean {
-    return this.busy || this.started || this.loading || this.loadFailed;
+    return this.busy || this.started || this.loading || this.loadFailed || this.navigationPending;
   }
 
   get minimumStartDate(): string {
