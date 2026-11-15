@@ -4,7 +4,7 @@ import { WORKOUT_PRESCRIPTION_LIMITS } from '../../../../models/workout-prescrip
 import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, catchError, of, switchMap, tap } from 'rxjs';
+import { Observable, Subject, catchError, combineLatest, of, startWith, switchMap, tap } from 'rxjs';
 import { AppPageHeaderComponent } from '../../../shared/components/app-page-header/app-page-header.component';
 import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
 import { AppLoadingComponent } from '../../../shared/components/app-state/app-state.component';
@@ -67,6 +67,13 @@ export class PersonalProgramEditorComponent implements OnInit {
     this.destroyRef,
   );
 
+  private readonly reload$ = new Subject<void>();
+
+  retryLoad(): void {
+    if (this.state.loadFailed && !this.state.loading && !this.state.busy && !this.state.dirty)
+      this.reload$.next();
+  }
+
   ngOnInit(): void {
     this.language.language$
       .pipe(
@@ -83,9 +90,9 @@ export class PersonalProgramEditorComponent implements OnInit {
             (response.data ?? []).filter((e) => e.id != null).map((e) => [e.id!, e.name]),
           );
       });
-    this.route.paramMap
+    combineLatest([this.route.paramMap, this.reload$.pipe(startWith(undefined))])
       .pipe(
-        tap((params) => {
+        tap(([params]) => {
           const value = params.get('id');
           this.state.id = value == null ? null : Number(value);
           this.state.dirty = false;

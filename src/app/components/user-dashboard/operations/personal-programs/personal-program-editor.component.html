@@ -9,6 +9,12 @@
       }}</a>
     </div>
     <app-message [message]="state.message" [type]="state.messageType" role="status" />
+    @if (state.loadFailed) {
+      <button type="button" class="btn btn-neutral self-start" (click)="retryLoad()"
+              [disabled]="state.loading || state.busy">
+        {{ 'personalPrograms.retry' | translate }}
+      </button>
+    }
     @if (state.loading) {
       <app-loading message="personalPrograms.loading" />
     } @else if (!state.loadFailed) {

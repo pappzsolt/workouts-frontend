@@ -358,4 +358,38 @@ describe('PersonalProgramEditorComponent', () => {
     expect(fresh.state.model.workouts.length).toBe(1);
     expect(fresh.state.model.workouts[0].dayIndex).toBe(1);
   });
+  it('retries a failed editor load once and keeps the editor locked until it succeeds', () => {
+    api.get.and.returnValue(throwError(() => new Error('offline')));
+    // The route stream remains subscribed after an individual HTTP failure.
+    const editor = TestBed.runInInjectionContext(() => new PersonalProgramEditorComponent());
+    editor.ngOnInit();
+    expect(editor.state.loadFailed).toBeTrue();
+    expect(editor.state.locked).toBeTrue();
+    const pending = new Subject<PersonalProgramDetail>();
+    api.get.and.returnValue(pending);
+    const calls = api.get.calls.count();
+    editor.retryLoad();
+    editor.retryLoad();
+    expect(api.get.calls.count()).toBe(calls + 1);
+    expect(editor.state.loading).toBeTrue();
+    pending.next({ id: 9, standalone: true, startedAt: null, program: draft() });
+    pending.complete();
+    expect(editor.state.loadFailed).toBeFalse();
+    expect(editor.state.loading).toBeFalse();
+    expect(editor.state.standaloneMode).toBeTrue();
+    expect(editor.state.model.expectedVersion).toBe(1);
+    expect(editor.state.locked).toBeFalse();
+  });
+
+  it('does not reload a healthy or locally edited draft through the retry action', () => {
+    const calls = api.get.calls.count();
+    component.retryLoad();
+    component.state.loadFailed = true;
+    component.state.dirty = true;
+    component.state.model.name = 'Local changes';
+    component.retryLoad();
+    expect(api.get.calls.count()).toBe(calls);
+    expect(component.state.model.name).toBe('Local changes');
+  });
+
 });

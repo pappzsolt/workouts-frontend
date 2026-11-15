@@ -86,6 +86,22 @@ export class PersonalProgramDays {
 
   repeatWeekly(day: PersonalProgramDay): void {
     if (this.state.locked || this.state.standaloneMode) return;
+    // Validate before building target days: an invalid, very large duration must
+    // never turn a draft input into an unbounded synchronous loop.
+    if (!Number.isInteger(this.state.model.durationDays) ||
+        this.state.model.durationDays < 1 || this.state.model.durationDays > 366) {
+      this.state.message = 'personalPrograms.flow.checkFields';
+      this.state.messageType = 'error';
+      return;
+    }
+    if (!Number.isInteger(day.dayIndex) || day.dayIndex < 1 ||
+        day.dayIndex > this.state.model.durationDays ||
+        !this.state.model.workouts.includes(day) ||
+        this.state.model.workouts.some(other => other !== day && other.dayIndex === day.dayIndex)) {
+      this.state.message = 'personalPrograms.invalidDays';
+      this.state.messageType = 'error';
+      return;
+    }
     const used = new Set(this.state.model.workouts.map((item) => item.dayIndex));
     const targets: number[] = [];
     for (let index = day.dayIndex + 7; index <= this.state.model.durationDays; index += 7) {

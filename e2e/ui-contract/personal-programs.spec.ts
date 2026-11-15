@@ -574,3 +574,55 @@ test('Saját program: rövidítés után a naptárból kilógó edzés javíthat
   expect(api.program.workouts.map(day => day.dayIndex)).toEqual([1, 3]);
   expect(api.unexpected).toEqual([]);
 });
+
+for (const standalone of [false, true]) {
+  test(`${standalone ? 'Önálló edzés' : 'Saját program'}: sikertelen szerkesztőbetöltés helyben újrapróbálható`, async ({ page }) => {
+    const api = await install(page);
+    api.standalone = standalone;
+    if (standalone) api.program.durationDays = 1;
+    let failing = true;
+    await page.route('**/api/me/personal-programs/7*', async route => {
+      const request = route.request();
+      if (new URL(request.url()).pathname === `${ROOT}/7` && request.method() === 'GET' && failing)
+        return route.fulfill({ status: 503, json: { success: false, message: 'Átmeneti szerkesztőbetöltési hiba' } });
+      await route.fallback();
+    });
+    const path = standalone ? '/user/personal-workouts/7' : '/user/personal-programs/7';
+    await page.goto(path);
+    const root = editor(page);
+    await expect(root).toContainText('Átmeneti szerkesztőbetöltési hiba');
+    await expect(root.locator('form')).toHaveCount(0);
+    await expect(root.getByRole('button', { name: standalone ? 'Edzés indítása' : 'Program indítása', exact: true })).toHaveCount(0);
+    failing = false;
+    await root.getByRole('button', { name: 'Újrapróbálás', exact: true }).click();
+    await expect(root.getByLabel(standalone ? 'Edzés neve' : 'Program neve', { exact: true })).toHaveValue('Saját terv');
+    await expect(root.getByRole('button', { name: 'Újrapróbálás', exact: true })).toHaveCount(0);
+    await expect(page).toHaveURL(path);
+    expect(api.calls.filter(call => call.method !== 'GET' && !call.path.endsWith('/refresh'))).toHaveLength(0);
+    expect(api.unexpected).toEqual([]);
+  });
+}
+
+test('Saját program: heti ismétlés hibás időtartammal és napsorszámmal nem készít másolatokat', async ({ page }) => {
+  const api = await install(page);
+  await page.goto('/user/personal-programs/7');
+  const root = editor(page);
+  await root.locator('input[name=durationDays]').fill('1000000000');
+  await root.getByRole('button', { name: '2. Edzésnap', exact: true }).click();
+  await root.getByRole('button', { name: 'Ismétlés hetente', exact: true }).click();
+  await expect(root).toContainText('Ellenőrizd a kötelező és hibás mezőket');
+  await root.getByRole('button', { name: '1. Naptár és programadatok', exact: true }).click();
+  await expect(root).toContainText('1 edzésnap');
+  await root.locator('input[name=durationDays]').fill('21');
+  await root.getByRole('button', { name: '2. Edzésnap', exact: true }).click();
+  await root.getByRole('spinbutton', { name: /^Nap sorszáma/ }).fill('');
+  await root.getByRole('button', { name: 'Ismétlés hetente', exact: true }).click();
+  await expect(root).toContainText('Minden edzésnap sorszáma legyen egyedi');
+  await root.getByRole('spinbutton', { name: /^Nap sorszáma/ }).fill('1');
+  await root.getByRole('button', { name: 'Ismétlés hetente', exact: true }).click();
+  await root.getByRole('button', { name: 'Piszkozat mentése', exact: true }).click();
+  await expect(root).toContainText('A saját programot mentettük.');
+  expect(api.program.workouts.map(day => day.dayIndex)).toEqual([1, 8, 15]);
+  expect(api.calls.filter(call => call.method === 'PUT')).toHaveLength(1);
+  expect(api.unexpected).toEqual([]);
+});

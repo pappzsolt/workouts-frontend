@@ -127,4 +127,33 @@ describe('Personal program editor handlers', () => {
     response.next({ id: 9, standalone: true, startedAt: null, program: { ...state.model, expectedVersion: 2 } });
     expect(state.model.expectedVersion).toBe(2);
   });
+  it('rejects invalid durations before calculating weekly copies', () => {
+    for (const duration of [null, 0, -1, 1.5, 367, 1_000_000_000, Infinity, NaN]) {
+      state.model.durationDays = duration as number;
+      const original = structuredClone(state.model.workouts);
+      days.repeatWeekly(state.model.workouts[0]);
+      expect(state.model.workouts).toEqual(original);
+      expect(state.dirty).toBeFalse();
+      expect(state.message).toBe('personalPrograms.flow.checkFields');
+    }
+  });
+
+  it('does not spread invalid or conflicting day numbers across subsequent weeks', () => {
+    state.model.durationDays = 21;
+    const day = state.model.workouts[0];
+    for (const index of [null, 0, -1, 1.5, 22, NaN]) {
+      day.dayIndex = index as number;
+      days.repeatWeekly(day);
+      expect(state.model.workouts.length).toBe(1);
+      expect(state.dirty).toBeFalse();
+      expect(state.message).toBe('personalPrograms.invalidDays');
+    }
+    day.dayIndex = 1;
+    state.model.workouts.push({ ...structuredClone(day), name: 'Conflicting day' });
+    days.repeatWeekly(day);
+    expect(state.model.workouts.length).toBe(2);
+    expect(state.dirty).toBeFalse();
+    expect(state.message).toBe('personalPrograms.invalidDays');
+  });
+
 });
