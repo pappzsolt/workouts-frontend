@@ -28,6 +28,21 @@ describe('Personal multi-day program flow', () => {
     flow.actions = { save: jasmine.createSpy('save') } as never;
   });
 
+  it('offers free program dates before and after a workout without a today cutoff', () => {
+    // An already started program may have past but still empty dates.
+    state.started = true;
+    state.model.startDate = '2020-01-01';
+    state.model.durationDays = 35;
+    state.model.workouts[0].dayIndex = 16;
+    days.selectedDay = 16;
+    days.schedules = [{ dayIndex: 16, scheduledAt: '2020-01-16', version: 1, editable: true }];
+    expect(flow.availableMoveDays).toContain(14);
+    expect(flow.availableMoveDays).toContain(15);
+    expect(flow.availableMoveDays).toContain(17);
+    expect(flow.availableMoveDays).not.toContain(16);
+    expect(flow.moveContextDate?.getDate()).toBe(16);
+  });
+
   it('copies a complete independent week and never replaces occupied days', () => {
     state.model.durationDays = 21;
     state.model.workouts[0].exercises[0].setTargets = [{ targetRepetitions: 6,

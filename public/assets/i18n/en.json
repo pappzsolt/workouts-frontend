@@ -1928,7 +1928,7 @@
     "actionAppliesTo": "Selected item:",
     "moveDatePickerHint": "Colored dates are available; other dates cannot be selected.",
     "moveDayTitle": "Reschedule workout",
-    "moveDayHint": "Only an unstarted workout can be moved to a free future day within this program. Exercises, targets and workout history remain unchanged.",
+    "moveDayHint": "An unstarted workout can be moved to any free day within this program, earlier or later. Exercises, targets and workout history remain unchanged.",
     "moveDestination": "New day",
     "moveDay": "Reschedule",
     "moveLocked": "Started or completed workouts cannot be moved.",

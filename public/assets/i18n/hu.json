@@ -1928,7 +1928,7 @@
     "actionAppliesTo": "Kiválasztott elem:",
     "moveDatePickerHint": "A színezett dátumok szabadok és kiválaszthatók; a többi nap nem választható.",
     "moveDayTitle": "Edzés áthelyezése",
-    "moveDayHint": "Csak még meg nem kezdett edzést helyezhetsz át szabad, jövőbeli programnapra. A gyakorlatok, sorozatcélok és edzéstörténet megmaradnak.",
+    "moveDayHint": "Csak még meg nem kezdett edzést helyezhetsz át a program bármelyik szabad napjára, korábbi vagy későbbi dátumra is. A gyakorlatok, sorozatcélok és edzéstörténet megmaradnak.",
     "moveDestination": "Új nap",
     "moveDay": "Áthelyezés",
     "moveLocked": "A már megkezdett vagy teljesített edzés nem helyezhető át.",

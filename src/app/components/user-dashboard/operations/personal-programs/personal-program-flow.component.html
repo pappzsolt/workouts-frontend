@@ -149,7 +149,7 @@
                   <p>{{ 'personalEditorUi.moveDestination' | translate }}</p>
                   <app-personal-move-date-picker class="mt-1 block"
                     [options]="availableMoveDates" [selectedDay]="moveDestination"
-                    [contextDay]="days.selectedDay" [disabled]="state.busy"
+                    [contextDay]="days.selectedDay" [contextDate]="moveContextDate" [disabled]="state.busy"
                     (selectedDayChange)="moveDestination = $event" />
                 </div>
                 <button type="button" class="btn btn-neutral" [disabled]="moveDestination == null || state.busy"

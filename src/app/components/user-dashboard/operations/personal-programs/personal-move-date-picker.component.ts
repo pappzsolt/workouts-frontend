@@ -21,6 +21,7 @@ export class PersonalMoveDatePickerComponent implements OnChanges {
   @Input() selectedDay: number | null = null;
   @Input() disabled = false;
   @Input() contextDay: number | null = null;
+  @Input() contextDate: Date | null = null;
   @Output() readonly selectedDayChange = new EventEmitter<number>();
 
   expanded = false;
@@ -67,7 +68,10 @@ export class PersonalMoveDatePickerComponent implements OnChanges {
     if (this.disabled || !this.options.length) return;
     this.expanded = !this.expanded;
     if (this.expanded) {
-      this.displayedMonth = this.monthOf(this.selectedOption?.date ?? this.options[0].date);
+      // The first free day might be in a different month from the workout being moved.
+      // Start close to the workout, but clamp to months containing allowed dates.
+      const month = this.monthOf(this.selectedOption?.date ?? this.contextDate ?? this.options[0].date);
+      this.displayedMonth = Math.max(this.firstMonth!, Math.min(this.lastMonth!, month));
     }
   }
   close(): void { this.expanded = false; }

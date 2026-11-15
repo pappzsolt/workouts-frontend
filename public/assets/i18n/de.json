@@ -1928,7 +1928,7 @@
     "actionAppliesTo": "Ausgewählter Eintrag:",
     "moveDatePickerHint": "Markierte Tage sind verfügbar; andere Tage sind nicht auswählbar.",
     "moveDayTitle": "Training verschieben",
-    "moveDayHint": "Nur ein noch nicht begonnenes Training kann auf einen freien zukünftigen Programmtag verschoben werden. Übungen, Ziele und Trainingsverlauf bleiben erhalten.",
+    "moveDayHint": "Ein noch nicht begonnenes Training kann auf jeden freien Tag innerhalb dieses Programms verschoben werden, auch auf einen früheren oder späteren Tag. Übungen, Ziele und Trainingsverlauf bleiben erhalten.",
     "moveDestination": "Neuer Tag",
     "moveDay": "Verschieben",
     "moveLocked": "Begonnene oder abgeschlossene Trainings können nicht verschoben werden.",

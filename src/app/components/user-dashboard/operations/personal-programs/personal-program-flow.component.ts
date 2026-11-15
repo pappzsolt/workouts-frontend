@@ -95,12 +95,15 @@ export class PersonalProgramFlowComponent implements OnChanges {
     return day ? this.days.schedules?.find(item => item.dayIndex === day.dayIndex) ?? null : null;
   }
 
+  /** All empty days inside this program are valid, including earlier or past days. */
   get availableMoveDays(): number[] {
-    return this.days.freeDays.filter(index => {
-      const date = this.state.model.startDate
-        ? toIsoDate(addDays(fromIsoDate(this.state.model.startDate), index - 1)) : null;
-      return date != null && date >= this.state.minimumStartDate;
-    });
+    return this.days.freeDays;
+  }
+
+  /** Open the picker on the currently selected workout's month. */
+  get moveContextDate(): Date | null {
+    const start = this.state.model.startDate;
+    return start ? addDays(fromIsoDate(start), this.days.selectedDay - 1) : null;
   }
 
   get availableMoveDates(): PersonalMoveDateOption[] {

@@ -30,6 +30,30 @@ describe('Personal move date picker', () => {
     expect(picker.expanded).toBeFalse();
   });
 
+  it('opens at the selected workout month and enables earlier free dates', () => {
+    // December 16 is being moved. The very first free day happens to be in November.
+    picker.options = [
+      { dayIndex: 3, date: new Date(2026, 10, 20) },
+      { dayIndex: 27, date: new Date(2026, 11, 14) },
+      { dayIndex: 28, date: new Date(2026, 11, 15) },
+      { dayIndex: 31, date: new Date(2026, 11, 18) },
+    ];
+    picker.contextDate = new Date(2026, 11, 16);
+    picker.toggle();
+    expect(picker.visibleMonth?.getMonth()).toBe(11);
+    const inDecember = (dayOfMonth: number) => picker.calendarDays.find(
+      item => item.currentMonth && item.date.getDate() === dayOfMonth);
+    expect(inDecember(14)?.dayIndex).toBe(27);
+    expect(inDecember(15)?.dayIndex).toBe(28);
+    expect(inDecember(16)?.dayIndex).toBeNull(); // Occupied by the source workout.
+    const selected = jasmine.createSpy('selected');
+    picker.selectedDayChange.subscribe(selected);
+    picker.select(inDecember(16)?.dayIndex ?? null);
+    expect(selected).not.toHaveBeenCalled();
+    picker.select(inDecember(14)?.dayIndex ?? null);
+    expect(selected).toHaveBeenCalledOnceWith(27);
+  });
+
   it('navigates between available months without leaving the allowed range', () => {
     picker.toggle();
     expect(picker.canPrevious).toBeFalse();
