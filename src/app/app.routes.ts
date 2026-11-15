@@ -282,6 +282,11 @@ export const routes: Routes = [
         loadComponent: () => import('./components/user-dashboard/operations/personal-programs/workout-templates.component').then(m => m.WorkoutTemplatesComponent),
       },
       {
+        path: 'personal-workouts',
+        data: { standalone: true },
+        loadComponent: () => import('./components/user-dashboard/operations/personal-programs/personal-programs.component').then(m => m.PersonalProgramsComponent),
+      },
+      {
         path: 'personal-workouts/new',
         data: { standalone: true },
         loadComponent: () => import('./components/user-dashboard/operations/personal-programs/personal-program-editor.component').then(m => m.PersonalProgramEditorComponent),

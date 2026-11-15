@@ -1,8 +1,12 @@
 # Saját készítésű programok: naptár, sorozatcélok és indítás
 
 A dashboard **Saját készítésű programok** kártyája a `/user/personal-programs`
-oldalt nyitja meg. Innen többnapos program, önálló edzés, edzéssablon és Excel-import
-is elérhető. A saját programot a felhasználó saját magának készíti, coach-kiosztás nélkül.
+oldalt nyitja meg. Itt kizárólag többnapos saját programok jelennek meg.
+Az **Önálló edzéseim** külön oldal (`/user/personal-workouts`), saját kereséssel,
+lapozással, létrehozással és kártyaműveletekkel. A két lista szerveroldalon
+elkülönítve kérhető le (`standalone=false`, illetve `standalone=true`); nincs kevert lista.
+A három saját tervezési oldal között mobilon egymás alá rendeződő navigáció segít.
+Az edzéssablonok és az Excel-import továbbra is elérhetők. A saját programot a felhasználó saját magának készíti, coach-kiosztás nélkül.
 A coach által kiosztott programok továbbra is az **Edzésprogramjaim** oldalon érhetők el.
 
 ## 1. Programadatok megadása
@@ -81,10 +85,14 @@ A korábbi edzések eredményei megmaradnak.
 
 ## Önálló edzés, sablon és import
 
-Az **Önálló edzés létrehozása** egyetlen alkalomhoz készült: nincs többnapos naptár,
+Az **Önálló edzéseim** oldal **Önálló edzés létrehozása** gombja egyetlen alkalomhoz készült: nincs többnapos naptár,
 időtartam vagy nap-sorszám. A sorozatcélok szerkesztése és a mentés–indítás sorrendje
 ugyanaz. Az elindított edzés **Új alkalom** gombja új, dátum nélküli piszkozatot ad,
 a gyakorlatokkal és sorozatcélokkal, a korábbi eredmények nélkül.
+
+Az önálló edzés szerkesztőjéből a visszalépés és törlés/archiválás után is az
+önálló edzések listájára jutunk. A piszkozat szerkeszthető és törölhető;
+az elindított edzés megnyitható, ismételhető és archiválható a korábbi eredmények megőrzésével.
 
 A már mentett önálló edzésből sablon készíthető. A sablon és az új alkalom is megőrzi
 a sorozatcélokat; részletek: [Saját edzéssablonok és kedvencek](workout-templates.md).

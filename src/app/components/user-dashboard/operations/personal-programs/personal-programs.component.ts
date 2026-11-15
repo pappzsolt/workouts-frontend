@@ -1,7 +1,7 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, catchError, map, merge, of, switchMap, tap } from 'rxjs';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AppPageHeaderComponent } from '../../../shared/components/app-page-header/app-page-header.component';
 import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
 import { AppLoadingComponent } from '../../../shared/components/app-state/app-state.component';
@@ -57,7 +57,7 @@ export class PersonalProgramsComponent implements OnInit {
   page = 0;
   readonly pageSize = 12;
   totalItems = 0;
-  kind = 'all';
+  readonly standalone = inject(ActivatedRoute).snapshot.data['standalone'] === true;
   loading = false;
   message = '';
   successMessage = '';
@@ -74,7 +74,7 @@ export class PersonalProgramsComponent implements OnInit {
           this.message = '';
         }),
         switchMap(() =>
-          this.service.listPage(this.page, this.pageSize, this.kind === 'all' ? null : this.kind === 'standalone', this.search).pipe(
+          this.service.listPage(this.page, this.pageSize, this.standalone, this.search).pipe(
             catchError((error) => {
               this.message = errorMessage(error, 'personalPrograms.loadError');
               return of({ content: [], totalElements: 0 });

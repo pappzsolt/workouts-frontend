@@ -1892,5 +1892,21 @@
       "progress": "Schritt für Schritt voran.",
       "footnote": "Planen. Erfassen. Fortschritte sehen."
     }
+  },
+  "personalLibrary": {
+    "archiveWorkout": "Training archivieren",
+    "navigation": "Eigene Trainingspläne",
+    "workoutsTitle": "Meine einzelnen Trainings",
+    "programsIntro": "Erstelle ein Trainingsprogramm für mehrere Tage oder Wochen.",
+    "programsSteps": "Benenne dein Programm, plane Trainingstage und Satzziele, speichere es und starte es anschließend.",
+    "workoutsIntro": "Hier findest du deine einzelnen Trainings unabhängig von mehrtägigen Programmen.",
+    "workoutsSteps": "Erstelle ein Training, füge Übungen und Satzziele hinzu, speichere es und starte es. Beim Wiederholen entsteht ein neues, separat bearbeitbares Training.",
+    "workoutsSearch": "Trainings suchen",
+    "workoutsPlaceholder": "Name oder Beschreibung des Trainings…",
+    "workoutsEmpty": "Noch keine einzelnen Trainings. Erstelle dein erstes mit Einzelnes Training erstellen.",
+    "backToWorkouts": "Zurück zu meinen einzelnen Trainings",
+    "templatesIntro": "Eine Vorlage ist ein wiederverwendbarer Trainingsplan mit Übungen und Satzzielen.",
+    "templatesSteps": "Erstelle eine Vorlage aus einem gespeicherten einzelnen Training über Als Trainingsvorlage speichern. Neue Trainings daraus lassen sich separat bearbeiten, speichern und starten.",
+    "templatesExample": "Beispiel: Speichere eine Ganzkörpertraining-Vorlage und erstelle daraus für jeden Trainingstag ein neues Training. Jedes Training behält seine eigenen Ergebnisse."
   }
 }

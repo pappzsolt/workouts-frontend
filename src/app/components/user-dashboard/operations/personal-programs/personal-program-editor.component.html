@@ -4,8 +4,8 @@
       <h1 appHeading="page">
         {{ state.label(state.id ? 'editor' : 'create') | translate }}
       </h1>
-      <a routerLink="/user/personal-programs" class="btn btn-neutral">{{
-        'personalPrograms.back' | translate
+      <a [routerLink]="state.standaloneMode ? '/user/personal-workouts' : '/user/personal-programs'" class="btn btn-neutral">{{
+        (state.standaloneMode ? 'personalLibrary.backToWorkouts' : 'personalPrograms.back') | translate
       }}</a>
     </div>
     <app-message [message]="state.message" [type]="state.messageType" role="status" />
@@ -371,7 +371,7 @@
             (click)="actions.ask('delete')"
             [disabled]="state.busy || state.loading"
           >
-            {{ (state.standaloneMode ? 'personalWorkouts.delete' : 'personalPrograms.delete') | translate }}
+            {{ (state.standaloneMode ? state.started ? 'personalLibrary.archiveWorkout' : 'personalWorkouts.delete' : 'personalPrograms.delete') | translate }}
           </button>
           @if (state.standaloneMode) {
             <button

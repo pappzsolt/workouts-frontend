@@ -1892,5 +1892,21 @@
       "progress": "Progress, one step at a time.",
       "footnote": "Plan. Log. See your progress."
     }
+  },
+  "personalLibrary": {
+    "archiveWorkout": "Archive workout",
+    "navigation": "Personal training plans",
+    "workoutsTitle": "My standalone workouts",
+    "programsIntro": "Build a training program spanning several days or weeks.",
+    "programsSteps": "Name your program, plan training days and set targets, then save and start it.",
+    "workoutsIntro": "Find your individual workouts here, independently of multi-day programs.",
+    "workoutsSteps": "Create a workout, add exercises and set targets, then save and start it. Repeating creates a new workout you can edit separately.",
+    "workoutsSearch": "Search workouts",
+    "workoutsPlaceholder": "Workout name or description…",
+    "workoutsEmpty": "No standalone workouts yet. Use Create standalone workout to build your first one.",
+    "backToWorkouts": "Back to my standalone workouts",
+    "templatesIntro": "A template is a reusable workout plan that stores exercises and set targets.",
+    "templatesSteps": "Save a template from a saved standalone workout using Save as workout template. Each new workout created from it can be edited, saved and started separately.",
+    "templatesExample": "Example: save a Full body workout template, then create a new workout for each training day. Each workout keeps its own results."
   }
 }

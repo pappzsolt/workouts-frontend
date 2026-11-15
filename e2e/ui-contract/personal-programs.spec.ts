@@ -379,3 +379,55 @@ test('Saját program: másik napra váltva sem menthető hibás sorozatcél', as
   await expect(r).toContainText('A saját programot mentettük.');
   expect(api.unexpected).toEqual([]);
 });
+
+test('Külön listák: az önálló edzések és programok lekérése, navigációja és mobilnézete elkülönül', async ({ page }, info) => {
+  const api = await install(page);
+  api.standalone = true;
+  api.program.durationDays = 1;
+  api.program.name = 'Külön önálló edzés';
+  const queries: string[] = [];
+  page.on('request', request => {
+    const url = new URL(request.url());
+    if (url.pathname === `${ROOT}/page`) queries.push(url.searchParams.get('standalone') ?? 'missing');
+  });
+  await page.goto('/user/personal-workouts');
+  const list = page.locator('app-personal-programs');
+  await expect(list.getByRole('heading', { name: 'Önálló edzéseim', exact: true })).toBeVisible();
+  await expect(list.getByRole('heading', { name: api.program.name, exact: true })).toBeVisible();
+  await expect(list.locator('select[name=kind]')).toHaveCount(0);
+  expect(queries.at(-1)).toBe('true');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: `/tmp/separate-workouts-${info.project.name}.png`, fullPage: true });
+  await list.getByRole('link', { name: 'Saját készítésű programok', exact: true }).click();
+  await expect(page).toHaveURL(/\/personal-programs$/);
+  await expect(list.getByRole('heading', { name: 'Saját készítésű programok', exact: true })).toBeVisible();
+  await expect(list.getByRole('heading', { name: api.program.name, exact: true })).toHaveCount(0);
+  await expect(list.getByRole('link', { name: 'Önálló edzés létrehozása', exact: true })).toHaveCount(0);
+  expect(queries.at(-1)).toBe('false');
+  await list.getByRole('link', { name: 'Önálló edzéseim', exact: true }).click();
+  await expect(list.getByRole('heading', { name: api.program.name, exact: true })).toBeVisible();
+  await list.getByRole('link', { name: 'Edzés szerkesztése', exact: true }).click();
+  await expect(page).toHaveURL(/\/personal-workouts\/7$/);
+  await editor(page).getByRole('link', { name: 'Vissza az önálló edzéseimhez', exact: true }).click();
+  await expect(page).toHaveURL(/\/personal-workouts$/);
+  expect(queries.every(value => value === 'true' || value === 'false')).toBe(true);
+  expect(api.unexpected).toEqual([]);
+});
+
+test('Önálló edzés: saját listáról archiválható, és a szerkesztő is ugyanoda tér vissza', async ({ page }) => {
+  const api = await install(page);
+  api.standalone = true;
+  api.started = true;
+  api.program.durationDays = 1;
+  await page.goto('/user/personal-workouts');
+  const list = page.locator('app-personal-programs');
+  await list.getByRole('button', { name: 'Edzés archiválása', exact: true }).click();
+  expect(api.calls.filter(call => call.method === 'DELETE')).toHaveLength(0);
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Mégse', exact: true }).click();
+  await list.getByRole('link', { name: 'Megnyitás', exact: true }).click();
+  await editor(page).getByRole('button', { name: 'Edzés archiválása', exact: true }).click();
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Megerősítés', exact: true }).click();
+  await expect(page).toHaveURL(/\/personal-workouts$/);
+  expect(api.calls.filter(call => call.method === 'DELETE' && call.path === `${ROOT}/7`)).toHaveLength(1);
+  expect(api.unexpected).toEqual([]);
+});

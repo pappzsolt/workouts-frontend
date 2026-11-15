@@ -1892,5 +1892,21 @@
       "progress": "Lépésről lépésre előre.",
       "footnote": "Tervezz. Naplózz. Lásd a fejlődésed."
     }
+  },
+  "personalLibrary": {
+    "archiveWorkout": "Edzés archiválása",
+    "navigation": "Saját edzéstervek",
+    "workoutsTitle": "Önálló edzéseim",
+    "programsIntro": "Több napra vagy hétre szóló edzésprogramot állíthatsz össze.",
+    "programsSteps": "Adj nevet a programnak, tervezd meg az edzésnapokat és a sorozatcélokat, majd mentsd és indítsd el.",
+    "workoutsIntro": "Itt a programtól független, egy alkalomra összeállított edzéseidet találod.",
+    "workoutsSteps": "Hozz létre egy edzést, add hozzá a gyakorlatokat és a sorozatcélokat, majd mentsd és indítsd el. Az ismétlés új, külön szerkeszthető alkalmat készít.",
+    "workoutsSearch": "Edzések keresése",
+    "workoutsPlaceholder": "Edzés neve vagy leírása…",
+    "workoutsEmpty": "Még nincs önálló edzésed. Az Önálló edzés létrehozása gombbal állíthatod össze az elsőt.",
+    "backToWorkouts": "Vissza az önálló edzéseimhez",
+    "templatesIntro": "A sablon egy újra felhasználható edzésterv: a gyakorlatokat és a sorozatcélokat őrzi.",
+    "templatesSteps": "Sablont egy mentett önálló edzésből készíthetsz a Mentés edzéssablonként gombbal. A sablonból létrehozott új edzést külön szerkesztheted, mentheted és indíthatod el.",
+    "templatesExample": "Példa: ments el egy Teljes testes edzés sablont, majd készíts belőle új alkalmat minden edzésnapra. Az egyes alkalmak eredményei külön maradnak."
   }
 }

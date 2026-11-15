@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
 import { PersonalProgramsComponent } from './personal-programs.component';
 import { PersonalProgramService } from '../../../../services/user/personal-program.service';
@@ -29,28 +29,36 @@ describe('PersonalProgramsComponent pagination and personal actions', () => {
       { provide: PersonalProgramService, useValue: api },
       { provide: LanguageService, useValue: { language$: new BehaviorSubject('hu') } },
       { provide: Router, useValue: router },
+      { provide: ActivatedRoute, useValue: { snapshot: { data: {} } } },
     ] });
     component = TestBed.runInInjectionContext(() => new PersonalProgramsComponent());
     component.ngOnInit();
   });
   it('loads one bounded page and uses server totals', () => {
-    expect(api.listPage).toHaveBeenCalledOnceWith(0, 12, null, '');
+    expect(api.listPage).toHaveBeenCalledOnceWith(0, 12, false, '');
     expect(component.totalItems).toBe(30);
   });
   it('converts pagination controls to zero-based API pages', () => {
     component.changePage(3);
-    expect(api.listPage).toHaveBeenCalledWith(2, 12, null, '');
+    expect(api.listPage).toHaveBeenCalledWith(2, 12, false, '');
   });
-  it('resets the page and sends type and search filters to the server', () => {
+  it('keeps program queries separate when searching', () => {
     component.changePage(3);
-    component.kind = 'standalone';
     component.search = '%_';
     component.filtersChanged();
     expect(component.page).toBe(0);
-    expect(api.listPage).toHaveBeenCalledWith(0, 12, true, '%_');
-    component.kind = 'program';
-    component.filtersChanged();
     expect(api.listPage).toHaveBeenCalledWith(0, 12, false, '%_');
+  });
+  it('requests only standalone workouts on the standalone route, including pagination and search', () => {
+    TestBed.inject(ActivatedRoute).snapshot.data['standalone'] = true;
+    const workouts = TestBed.runInInjectionContext(() => new PersonalProgramsComponent());
+    workouts.ngOnInit();
+    expect(api.listPage).toHaveBeenCalledWith(0, 12, true, '');
+    workouts.changePage(2);
+    expect(api.listPage).toHaveBeenCalledWith(1, 12, true, '');
+    workouts.search = 'Solo';
+    workouts.filtersChanged();
+    expect(api.listPage).toHaveBeenCalledWith(0, 12, true, 'Solo');
   });
   it('opens a confirmation without deleting until confirmed and supports cancellation', () => {
     component.askDelete(draftProgram);
@@ -85,7 +93,7 @@ describe('PersonalProgramsComponent pagination and personal actions', () => {
     component.askDelete(draftProgram);
     component.confirmDelete();
     expect(component.page).toBe(1);
-    expect(api.listPage).toHaveBeenCalledWith(1, 12, null, '');
+    expect(api.listPage).toHaveBeenCalledWith(1, 12, false, '');
   });
   it('allows removal of started programs and reports archival instead of hard deletion', () => {
     api.delete.and.returnValue(of(startedProgram.id));

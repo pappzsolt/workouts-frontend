@@ -191,7 +191,7 @@ export class PersonalProgramActions {
                       : '/user/personal-programs',
                     result,
                   ]
-                : ['/user/personal-programs'],
+                : [this.state.standaloneMode ? '/user/personal-workouts' : '/user/personal-programs'],
           );
       },
       error: (error) => {
