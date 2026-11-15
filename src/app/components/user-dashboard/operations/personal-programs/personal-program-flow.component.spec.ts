@@ -71,4 +71,55 @@ describe('Personal multi-day program flow', () => {
     expect(touched).toHaveBeenCalledTimes(1);
     expect(flow.actions.save).not.toHaveBeenCalled();
   });
+  it('keeps the edited day when its number duplicates another day or is cleared', () => {
+    const first = state.model.workouts[0];
+    const second = { ...structuredClone(first), dayIndex: 2, name: 'Második nap' };
+    state.model.workouts.push(second);
+    flow.selectDay(2);
+    flow.openDay();
+    second.dayIndex = 1;
+    days.selectedDay = 1;
+    expect(flow.activeDay).toBe(second);
+    expect(flow.invalidDays).toEqual([first, second]);
+    second.dayIndex = null as unknown as number;
+    days.selectedDay = second.dayIndex;
+    expect(flow.activeDay).toBe(second);
+    second.dayIndex = 3;
+    expect(flow.activeDay?.name).toBe('Második nap');
+    expect(first.name).toBe('Guggolás');
+  });
+
+  it('keeps days outside a shortened program accessible for editing without deleting them', () => {
+    const last = { ...structuredClone(state.model.workouts[0]), dayIndex: 7, name: 'Utolsó nap' };
+    state.model.workouts.push(last);
+    state.model.durationDays = 3;
+    expect(flow.invalidDays).toEqual([last]);
+    flow.editInvalidDay(last);
+    expect(flow.view).toBe('day');
+    expect(flow.activeDay).toBe(last);
+    last.dayIndex = 3;
+    expect(flow.invalidDays).toEqual([]);
+    expect(state.model.workouts).toContain(last);
+  });
+
+  it('opens the offending exercise when invalid set targets are on another day', () => {
+    const invalid = { ...structuredClone(state.model.workouts[0]), dayIndex: 2 };
+    invalid.exercises[1].repetitions = 0;
+    state.model.workouts.push(invalid);
+    flow.save({ invalid: false } as NgForm);
+    expect(flow.view).toBe('exercise');
+    expect(flow.activeDay).toBe(invalid);
+    expect(flow.exerciseIndex).toBe(1);
+    expect(state.message).toBe('personalPrograms.invalidTargets');
+    expect(flow.actions.save).not.toHaveBeenCalled();
+  });
+
+  it('opens an unnamed day instead of its exercise when saving from another screen', () => {
+    state.model.workouts[0].name = '';
+    flow.save({ invalid: false } as NgForm);
+    expect(flow.view).toBe('day');
+    expect(flow.activeDay?.name).toBe('');
+    expect(flow.actions.save).not.toHaveBeenCalled();
+  });
+
 });

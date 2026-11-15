@@ -399,6 +399,8 @@ test('Saját program: másik napra váltva sem menthető hibás sorozatcél', as
   await selectProgramDay(page, 2);
   await r.getByRole('button', {name:'Piszkozat mentése',exact:true}).click();
   await expect(r).toContainText('Ellenőrizd az összes edzés nevét és sorozatait');
+  await expect(r.getByLabel('Guggolás 2. Cél ism.', {exact:true})).toBeVisible();
+  await expect(r.getByLabel('Guggolás 2. Cél ism.', {exact:true})).toHaveValue('0');
   expect(api.calls.filter(c => c.method === 'PUT')).toHaveLength(0);
   await selectProgramDay(page, 1);
   await openProgramExercise(page);
@@ -530,5 +532,45 @@ test('Önálló edzés: a dashboard a saját listára vezet, onnan nyílik az ú
   await expect(breadcrumb.getByRole('link', { name: 'Saját készítésű programok', exact: true })).toHaveCount(0);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: `/tmp/standalone-new-editor-${info.project.name}.png`, fullPage: true });
+  expect(api.unexpected).toEqual([]);
+});
+
+test('Saját program: ütköző napsorszámnál ugyanaz az edzés marad szerkeszthető', async ({ page }) => {
+  const api = await install(page);
+  api.program.workouts.push({ ...structuredClone(api.program.workouts[0]), dayIndex: 2, name: 'Második nap' });
+  await page.goto('/user/personal-programs/7');
+  await selectProgramDay(page, 2);
+  const root = editor(page);
+  await root.getByRole('button', { name: 'Edzés szerkesztése', exact: true }).click();
+  await root.getByLabel('Nap sorszáma', { exact: true }).fill('1');
+  await expect(root.getByLabel('Edzés neve', { exact: true })).toHaveValue('Második nap');
+  await root.getByRole('button', { name: 'Piszkozat mentése', exact: true }).click();
+  await expect(root).toContainText('Minden edzésnap sorszáma legyen egyedi');
+  expect(api.calls.filter(call => call.method === 'PUT')).toHaveLength(0);
+  // A user can leave this screen and still recover either conflicting draft.
+  await root.getByRole('button', { name: '1. Naptár és programadatok', exact: true }).click();
+  await root.getByRole('button', { name: 'Edzés szerkesztése: Második nap', exact: true }).click();
+  await expect(root.getByLabel('Edzés neve', { exact: true })).toHaveValue('Második nap');
+  await root.getByLabel('Nap sorszáma', { exact: true }).fill('3');
+  await root.getByRole('button', { name: 'Piszkozat mentése', exact: true }).click();
+  await expect(root).toContainText('A saját programot mentettük.');
+  expect(api.program.workouts.map(day => [day.dayIndex, day.name])).toEqual([[1, 'Első nap'], [3, 'Második nap']]);
+  expect(api.unexpected).toEqual([]);
+});
+
+test('Saját program: rövidítés után a naptárból kilógó edzés javítható és menthető', async ({ page }) => {
+  const api = await install(page);
+  api.program.workouts.push({ ...structuredClone(api.program.workouts[0]), dayIndex: 7, name: 'Hetedik nap' });
+  await page.goto('/user/personal-programs/7');
+  const root = editor(page);
+  await root.getByLabel('Időtartam (nap)', { exact: true }).fill('3');
+  await expect(root.locator('[data-personal-program-day="7"]')).toHaveCount(0);
+  await root.getByRole('button', { name: 'Edzés szerkesztése: Hetedik nap', exact: true }).click();
+  await expect(root.getByLabel('Edzés neve', { exact: true })).toHaveValue('Hetedik nap');
+  await root.getByLabel('Nap sorszáma', { exact: true }).fill('3');
+  await root.getByRole('button', { name: 'Piszkozat mentése', exact: true }).click();
+  await expect(root).toContainText('A saját programot mentettük.');
+  expect(api.program.durationDays).toBe(3);
+  expect(api.program.workouts.map(day => day.dayIndex)).toEqual([1, 3]);
   expect(api.unexpected).toEqual([]);
 });

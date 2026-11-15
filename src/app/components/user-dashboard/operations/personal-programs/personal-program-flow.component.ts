@@ -13,6 +13,7 @@ import { PersonalProgramCalendarComponent } from './personal-program-calendar.co
 import type { PersonalProgramState } from './personal-program-state';
 import type { PersonalProgramDays } from './personal-program-days';
 import type { PersonalProgramActions } from './personal-program-actions';
+import { validPersonalPrescriptions } from './personal-prescriptions';
 
 /** Shared personal program and standalone workout presentation; all mutations and persistence remain in existing handlers. */
 @Component({
@@ -31,7 +32,30 @@ export class PersonalProgramFlowComponent {
   view: 'calendar' | 'day' | 'exercise' = 'calendar';
   exerciseIndex = 0;
 
-  get activeDay(): PersonalProgramDay | null { return this.days.visibleDays[0] ?? null; }
+  private editingDay: PersonalProgramDay | null = null;
+
+  get activeDay(): PersonalProgramDay | null {
+    // Keep the same draft open while its day number is temporarily invalid or duplicated.
+    if (this.view !== 'calendar' && this.editingDay && this.state.model.workouts.includes(this.editingDay))
+      return this.editingDay;
+    return this.days.visibleDays[0] ?? null;
+  }
+
+  get invalidDays(): PersonalProgramDay[] {
+    if (this.state.standaloneMode) return [];
+    return this.state.model.workouts.filter(day =>
+      !Number.isInteger(day.dayIndex) || day.dayIndex < 1 || day.dayIndex > this.state.model.durationDays ||
+      this.state.model.workouts.some(other => other !== day && other.dayIndex === day.dayIndex),
+    );
+  }
+
+  editInvalidDay(day: PersonalProgramDay): void {
+    if (this.state.busy || !this.state.model.workouts.includes(day)) return;
+    this.editingDay = day;
+    this.days.selectedDay = day.dayIndex;
+    this.days.pickerDay = null;
+    this.view = 'day';
+  }
   get activeExercise(): PersonalProgramExercise | null {
     return this.activeDay?.exercises[this.exerciseIndex] ?? null;
   }
@@ -41,9 +65,13 @@ export class PersonalProgramFlowComponent {
   get plannedDays(): number { return this.state.model.workouts.length; }
   get restDays(): number { return Math.max(0, this.state.model.durationDays - this.plannedDays); }
 
-  selectDay(day: number): void { this.days.selectDay(day); }
+  selectDay(day: number): void {
+    this.days.selectDay(day);
+    this.editingDay = null;
+  }
 
   openDay(): void {
+    this.editingDay = this.activeDay;
     this.days.pickerDay = null;
     this.view = 'day';
   }
@@ -64,6 +92,7 @@ export class PersonalProgramFlowComponent {
   nextExercise(direction: -1 | 1): void { this.openExercise(this.exerciseIndex + direction); }
 
   backToCalendar(): void {
+    this.editingDay = null;
     this.days.pickerDay = null;
     this.view = 'calendar';
   }
@@ -98,6 +127,23 @@ export class PersonalProgramFlowComponent {
         this.backToDay();
       }
       this.state.message = 'personalPrograms.flow.checkFields';
+      this.state.messageType = 'error';
+      return;
+    }
+    // Set target controls are local to each exercise screen; validate the entire draft,
+    // then open the offending day/exercise instead of leaving the user on an unrelated day.
+    for (const day of this.state.model.workouts) {
+      const validateDay = this.state.standaloneMode ? { ...day, name: this.state.model.name } : day;
+      if (validPersonalPrescriptions({ ...this.state.model, workouts: [validateDay] })) continue;
+      this.editInvalidDay(day);
+      const index = day.exercises.findIndex(exercise =>
+        !validPersonalPrescriptions({
+          ...this.state.model,
+          workouts: [{ ...validateDay, name: 'validation', exercises: [exercise] }],
+        }),
+      );
+      if (validateDay.name.trim() && index >= 0) this.openExercise(index);
+      this.state.message = 'personalPrograms.invalidTargets';
       this.state.messageType = 'error';
       return;
     }
