@@ -1908,5 +1908,18 @@
     "templatesIntro": "A template is a reusable workout plan that stores exercises and set targets.",
     "templatesSteps": "Save a template from a saved standalone workout using Save as workout template. Each new workout created from it can be edited, saved and started separately.",
     "templatesExample": "Example: save a Full body workout template, then create a new workout for each training day. Each workout keeps its own results."
+  },
+  "personalWorkoutFlow": {
+    "details": "1. Workout details",
+    "exercises": "2. Exercises",
+    "intro": "Build your standalone workout",
+    "hint": "Name your workout and optionally choose a date. Then select exercises and set their individual targets. After saving, start the workout separately.",
+    "next": "Continue to exercises",
+    "viewExercises": "View exercises",
+    "exerciseHint": "Add exercises, then open each one to set its sets, weights and repetitions. Use the arrows to change their order.",
+    "backDetails": "Back to workout details",
+    "backExercises": "Back to exercises",
+    "unsaved": "Your changes have not been saved yet.",
+    "saved": "Workout plan saved. Check the date and targets before starting."
   }
 }

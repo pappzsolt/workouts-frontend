@@ -116,12 +116,13 @@ export class DashboardNavigationComponent {
       'my-programs': 'userMyPrograms.title',
       'workout-templates': 'workoutTemplates.title',
       'personal-programs': 'personalPrograms.title',
+      'personal-workouts': 'personalLibrary.workoutsTitle',
       'program-statistics': 'userProgramStatistics.title',
       workouts: 'userDashboard.myWorkouts',
       'bug-report': 'bugReport.title',
     };
     if (page === 'personal-workouts' && segments[2]) {
-      this.items.push({ label: 'personalPrograms.title', url: '/user/personal-programs' });
+      this.items.push({ label: 'personalLibrary.workoutsTitle', url: '/user/personal-workouts' });
       this.items.push({ label: segments[2] === 'new' ? 'personalWorkouts.create' : 'personalWorkouts.editor', url: this.router.url });
       return;
     }

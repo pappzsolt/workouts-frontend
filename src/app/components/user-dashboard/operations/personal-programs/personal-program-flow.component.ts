@@ -14,7 +14,7 @@ import type { PersonalProgramState } from './personal-program-state';
 import type { PersonalProgramDays } from './personal-program-days';
 import type { PersonalProgramActions } from './personal-program-actions';
 
-/** Personal multi-day program presentation only; all mutations and persistence remain in existing handlers. */
+/** Shared personal program and standalone workout presentation; all mutations and persistence remain in existing handlers. */
 @Component({
   selector: 'app-personal-program-flow',
   standalone: true,

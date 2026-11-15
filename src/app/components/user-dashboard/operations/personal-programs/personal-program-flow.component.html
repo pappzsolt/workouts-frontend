@@ -4,13 +4,13 @@
       <button type="button" class="rounded-lg px-3 py-2 font-semibold"
               [class.bg-primary-50]="view === 'calendar'" [class.text-primary-800]="view === 'calendar'"
               (click)="backToCalendar()" [attr.aria-current]="view === 'calendar' ? 'step' : null">
-        {{ 'personalPrograms.flow.stepCalendar' | translate }}
+        {{ (state.standaloneMode ? 'personalWorkoutFlow.details' : 'personalPrograms.flow.stepCalendar') | translate }}
       </button>
       <span class="text-content-400" aria-hidden="true">›</span>
       <button type="button" class="rounded-lg px-3 py-2 font-semibold"
               [class.bg-primary-50]="view === 'day'" [class.text-primary-800]="view === 'day'"
               (click)="openDay()" [attr.aria-current]="view === 'day' ? 'step' : null">
-        {{ 'personalPrograms.flow.stepDay' | translate }}
+        {{ (state.standaloneMode ? 'personalWorkoutFlow.exercises' : 'personalPrograms.flow.stepDay') | translate }}
       </button>
       <span class="text-content-400" aria-hidden="true">›</span>
       <span class="rounded-lg px-3 py-2 font-semibold" [class.bg-primary-50]="view === 'exercise'"
@@ -26,10 +26,10 @@
   <!-- Keep the metadata controls mounted in the single ngForm on all three screens. -->
   <fieldset [disabled]="state.locked" [class.hidden]="view !== 'calendar'"
             class="min-w-0 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-6">
-    <legend class="px-2 font-bold text-content-800">{{ 'personalPrograms.details' | translate }}</legend>
+    <legend class="px-2 font-bold text-content-800">{{ state.label('details') | translate }}</legend>
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
       <label class="flex flex-col gap-1 text-sm font-semibold text-content-800 sm:col-span-2">
-        {{ 'personalPrograms.name' | translate }}
+        {{ state.label('name') | translate }}
         <input appInput="default" name="name" [(ngModel)]="state.model.name" (ngModelChange)="state.changed()"
                required maxlength="255" pattern=".*\S.*" />
       </label>
@@ -38,17 +38,20 @@
         <textarea appTextarea="default" name="description" [(ngModel)]="state.model.description"
                   (ngModelChange)="state.changed()" maxlength="10000" rows="2"></textarea>
       </label>
+      @if (!state.standaloneMode) {
       <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
         {{ 'personalPrograms.duration' | translate }}
         <input appInput="default" type="number" name="durationDays" [(ngModel)]="state.model.durationDays"
                (ngModelChange)="state.changed()" required min="1" max="366" step="1" />
       </label>
+      }
       <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
-        {{ 'personalPrograms.startDate' | translate }}
+        {{ state.label('startDate') | translate }}
         <input appInput="default" type="date" name="startDate" [min]="state.minimumStartDate"
                [(ngModel)]="state.model.startDate" (ngModelChange)="state.changed()" />
         <span class="text-xs font-normal text-content-600">{{ 'personalPrograms.dateHint' | translate }}</span>
       </label>
+      @if (!state.standaloneMode) {
       <label class="flex flex-col gap-1 text-sm font-semibold text-content-800 sm:col-span-2">
         {{ 'personalPrograms.difficulty' | translate }}
         <select name="difficulty" [(ngModel)]="state.model.difficultyLevel" (ngModelChange)="state.changed()"
@@ -59,13 +62,23 @@
           }
         </select>
       </label>
+      }
     </div>
   </fieldset>
 
-  @if (view === 'calendar') {
+  @if (view === 'calendar' && state.standaloneMode) {
+    <section class="rounded-2xl border border-primary-100 bg-white p-4 sm:p-6">
+      <h2 class="text-lg font-bold text-content-900">{{ 'personalWorkoutFlow.intro' | translate }}</h2>
+      <p class="mt-2 text-sm leading-relaxed text-content-600">{{ 'personalWorkoutFlow.hint' | translate }}</p>
+      <p class="mt-3 text-sm font-semibold text-content-700">{{ 'personalPrograms.flow.exerciseCount' | translate: { count: activeDay?.exercises?.length ?? 0 } }}</p>
+      <button type="button" class="btn btn-primary mt-4 w-full justify-center sm:w-auto" (click)="openDay()">
+        {{ (state.started ? 'personalWorkoutFlow.viewExercises' : 'personalWorkoutFlow.next') | translate }} <span aria-hidden="true">→</span>
+      </button>
+    </section>
+  } @else if (view === 'calendar') {
     <div class="flex flex-wrap items-center justify-between gap-3">
       <div>
-        <h2 class="text-xl font-bold text-content-900">{{ 'personalPrograms.flow.stepCalendar' | translate }}</h2>
+        <h2 class="text-xl font-bold text-content-900">{{ (state.standaloneMode ? 'personalWorkoutFlow.details' : 'personalPrograms.flow.stepCalendar') | translate }}</h2>
         <p class="text-sm text-content-600">{{ 'personalPrograms.plannerHint' | translate }}</p>
       </div>
       <span class="text-sm text-content-600">
@@ -119,9 +132,10 @@
   } @else if (view === 'day') {
     <section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-6">
       <button type="button" class="mb-4 text-sm font-semibold text-primary-700 hover:underline"
-              (click)="backToCalendar()">← {{ 'personalPrograms.flow.backCalendar' | translate }}</button>
+              (click)="backToCalendar()">← {{ (state.standaloneMode ? 'personalWorkoutFlow.backDetails' : 'personalPrograms.flow.backCalendar') | translate }}</button>
       <div class="mb-5 flex flex-wrap items-start justify-between gap-3">
         <div>
+          @if (!state.standaloneMode) {
           <p class="text-xs font-semibold uppercase tracking-wider text-content-500">
             {{ 'personalPrograms.dayNumber' | translate: { number: days.selectedDay } }}
           </p>
@@ -129,9 +143,14 @@
             {{ activeDay?.name || ('personalPrograms.flow.rest' | translate) }}
           </h2>
           @if (selectedDate; as date) { <p class="text-sm text-content-600">{{ date | date: 'yyyy. MM. dd.' }}</p> }
+          } @else {
+            <h2 class="break-words text-xl font-bold text-content-900">{{ state.model.name || ('personalWorkouts.days' | translate) }}</h2>
+            <p class="mt-2 text-sm leading-relaxed text-content-600">{{ 'personalWorkoutFlow.exerciseHint' | translate }}</p>
+          }
         </div>
       </div>
       @if (activeDay; as day) {
+        @if (!state.standaloneMode) {
         <fieldset [disabled]="state.locked" class="min-w-0">
           <div class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
             <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
@@ -153,6 +172,7 @@
             </label>
           </div>
         </fieldset>
+        }
         <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
           <h3 class="text-lg font-bold text-content-900">
             {{ 'personalPrograms.flow.exercises' | translate }}
@@ -204,7 +224,7 @@
             </div>
           } @empty { <app-empty-state message="personalPrograms.noExercises" /> }
         </div>
-        @if (!state.started) {
+        @if (!state.started && !state.standaloneMode) {
           <div class="mt-5 flex flex-wrap gap-2 border-t border-surface-200 pt-4">
             <button type="button" class="btn btn-neutral" (click)="days.repeatWeekly(day)"
                     [disabled]="state.locked || day.dayIndex + 7 > state.model.durationDays">
@@ -230,7 +250,7 @@
     @if (activeExercise; as exercise) {
       <section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-6">
         <button type="button" class="mb-4 text-sm font-semibold text-primary-700 hover:underline"
-                (click)="backToDay()">← {{ 'personalPrograms.flow.backDay' | translate }}</button>
+                (click)="backToDay()">← {{ (state.standaloneMode ? 'personalWorkoutFlow.backExercises' : 'personalPrograms.flow.backDay') | translate }}</button>
         <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>
             <p class="text-xs font-semibold uppercase tracking-wider text-content-500">
@@ -256,7 +276,7 @@
       </section>
     } @else {
       <button type="button" class="btn btn-neutral self-start" (click)="backToDay()">
-        ← {{ 'personalPrograms.flow.backDay' | translate }}
+        ← {{ (state.standaloneMode ? 'personalWorkoutFlow.backExercises' : 'personalPrograms.flow.backDay') | translate }}
       </button>
     }
   }
@@ -264,10 +284,10 @@
   @if (!state.started) {
     <div class="sticky bottom-3 z-20 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-surface-300 bg-white/95 p-3 shadow-lg backdrop-blur sm:px-5">
       <span class="text-xs text-content-600" role="status">
-        {{ (state.dirty || state.id === null ? 'personalPrograms.flow.unsavedHint' : 'personalPrograms.flow.savedHint') | translate }}
+        {{ (state.standaloneMode ? (state.dirty || state.id === null ? 'personalWorkoutFlow.unsaved' : 'personalWorkoutFlow.saved') : (state.dirty || state.id === null ? 'personalPrograms.flow.unsavedHint' : 'personalPrograms.flow.savedHint')) | translate }}
       </span>
-      <button type="submit" class="btn btn-primary" [disabled]="state.locked || (state.id !== null && !state.dirty)">
-        {{ (state.busy ? 'personalPrograms.saving' : 'personalPrograms.save') | translate }}
+      <button type="submit" class="btn btn-primary" [disabled]="state.locked || (state.standaloneMode && programForm.invalid) || (state.id !== null && !state.dirty)">
+        {{ (state.busy ? 'personalPrograms.saving' : state.label('save')) | translate }}
       </button>
     </div>
   }

@@ -204,6 +204,7 @@ test('Önálló edzés: egyszerű létrehozás és új alkalom külön eredmény
   await expect(editor(page).locator('input[name=durationDays]')).toHaveCount(0);
   await expect(editor(page).getByRole('button',{name:'Edzésnap hozzáadása',exact:true})).toHaveCount(0);
   await editor(page).getByLabel('Edzés neve',{exact:true}).fill('Gyors erősítés');
+  await editor(page).getByRole('button', {name:'Tovább a gyakorlatokhoz',exact:true}).click();
   await editor(page).getByRole('button',{name:'Gyakorlat hozzáadása',exact:true}).click();
   await page.locator('app-exercise-picker').getByRole('button',{name:'Hozzáadás: Guggolás',exact:true}).click();
   await editor(page).getByRole('button',{name:'Edzés mentése',exact:true}).click();
@@ -457,5 +458,77 @@ test('Önálló edzés: saját listáról archiválható, és a szerkesztő is u
   await page.getByRole('alertdialog').getByRole('button', { name: 'Megerősítés', exact: true }).click();
   await expect(page).toHaveURL(/\/personal-workouts$/);
   expect(api.calls.filter(call => call.method === 'DELETE' && call.path === `${ROOT}/7`)).toHaveLength(1);
+  expect(api.unexpected).toEqual([]);
+});
+
+test('Önálló edzés: a programokkal egyező lépések megőrzik az adatokat és a sorozatcélokat', async ({ page }, info) => {
+  const api = await install(page);
+  await page.goto('/user/personal-workouts/new');
+  const root = editor(page);
+  await expect(root.getByRole('button', { name: '1. Edzésadatok', exact: true })).toHaveAttribute('aria-current', 'step');
+  await expect(root.getByRole('button', { name: 'Gyakorlat hozzáadása', exact: true })).toHaveCount(0);
+  await expect(root.locator('app-personal-program-calendar')).toHaveCount(0);
+  await root.getByLabel('Edzés neve', { exact: true }).fill('Önálló lábnap');
+  await root.getByRole('button', { name: 'Tovább a gyakorlatokhoz', exact: true }).click();
+  await expect(root.getByRole('button', { name: '2. Gyakorlatok', exact: true })).toHaveAttribute('aria-current', 'step');
+  await expect(root.getByLabel('Edzés neve', { exact: true })).toBeHidden();
+  await root.getByRole('button', { name: 'Gyakorlat hozzáadása', exact: true }).click();
+  await page.locator('app-exercise-picker').getByRole('button', { name: 'Hozzáadás: Guggolás', exact: true }).click();
+  const weight = root.getByLabel('Guggolás 1. Cél súly (kg)', { exact: true });
+  await weight.fill('42.5');
+  await root.getByLabel('Guggolás 1. Cél ism.', { exact: true }).fill('12');
+  await expect(root.getByRole('heading', { name: 'Guggolás', exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: info.outputPath('standalone-exercise-targets.png'), fullPage: true });
+  await root.getByRole('button', { name: '1. Edzésadatok', exact: true }).click();
+  await expect(root.getByLabel('Edzés neve', { exact: true })).toHaveValue('Önálló lábnap');
+  await expect(weight).toHaveCount(0);
+  await root.getByRole('button', { name: '2. Gyakorlatok', exact: true }).click();
+  await expect(root.getByRole('button', { name: 'Gyakorlat szerkesztése: Guggolás', exact: true })).toBeVisible();
+  await root.getByRole('button', { name: 'Gyakorlat szerkesztése: Guggolás', exact: true }).click();
+  await expect(weight).toHaveValue('42.5');
+  await root.getByRole('button', { name: 'Edzés mentése', exact: true }).click();
+  await expect(page).toHaveURL(/\/personal-workouts\/7$/);
+  expect(api.program.workouts[0].exercises[0]).toMatchObject({
+    setTargets: [
+      { targetRepetitions: 12, targetWeightKg: 42.5 },
+      { targetRepetitions: 10, targetWeightKg: null },
+      { targetRepetitions: 10, targetWeightKg: null },
+    ],
+  });
+  await root.getByRole('button', { name: '2. Gyakorlatok', exact: true }).click();
+  await root.getByRole('button', { name: 'Gyakorlat szerkesztése: Guggolás', exact: true }).click();
+  await expect(weight).toHaveValue('42.5');
+  expect(api.calls.filter(call => call.path.endsWith('/start'))).toHaveLength(0);
+  expect(api.unexpected).toEqual([]);
+});
+
+test('Önálló edzés: az elindított terv ugyanazokon a lépéseken olvasható, céljai zároltak', async ({ page }) => {
+  const api = await openStartedStandalone(page);
+  const root = editor(page);
+  await root.getByRole('button', { name: 'Gyakorlatok megtekintése', exact: true }).click();
+  await expect(root.getByRole('button', { name: 'Gyakorlat hozzáadása', exact: true })).toHaveCount(0);
+  await root.getByRole('button', { name: 'Gyakorlat szerkesztése: Guggolás', exact: true }).click();
+  await expect(root.getByLabel('Guggolás 1. Cél súly (kg)', { exact: true })).toBeDisabled();
+  await expect(root.getByRole('button', { name: 'Edzés mentése', exact: true })).toHaveCount(0);
+  expect(api.calls.filter(call => call.method === 'PUT' || call.method === 'DELETE')).toHaveLength(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test('Önálló edzés: a dashboard a saját listára vezet, onnan nyílik az új szerkesztő', async ({ page }, info) => {
+  const api = await install(page);
+  await page.goto('/user/dashboard');
+  await page.locator('app-user-dashboard').getByRole('button', { name: 'Önálló edzéseim', exact: true }).click();
+  await expect(page).toHaveURL(/\/personal-workouts$/);
+  await page.locator('app-personal-programs').getByRole('link', { name: 'Önálló edzés létrehozása', exact: true }).click();
+  const root = editor(page);
+  await expect(root.getByRole('button', { name: '1. Edzésadatok', exact: true })).toBeVisible();
+  await expect(root.getByRole('button', { name: 'Tovább a gyakorlatokhoz', exact: true })).toBeVisible();
+  await expect(root.getByRole('link', { name: 'Vissza az önálló edzéseimhez', exact: true })).toBeVisible();
+  const breadcrumb = page.getByRole('navigation', { name: 'Navigációs útvonal', exact: true });
+  await expect(breadcrumb.getByRole('link', { name: 'Önálló edzéseim', exact: true })).toHaveAttribute('href', '/user/personal-workouts');
+  await expect(breadcrumb.getByRole('link', { name: 'Saját készítésű programok', exact: true })).toHaveCount(0);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: `/tmp/standalone-new-editor-${info.project.name}.png`, fullPage: true });
   expect(api.unexpected).toEqual([]);
 });

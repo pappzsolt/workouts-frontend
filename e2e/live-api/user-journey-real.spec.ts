@@ -81,7 +81,7 @@ test('Saját program: létrehozás, mentés, kétablakos verzióütközés, ind�
 test('Önálló edzés és sablon: indítás, teljesítés, ismétlés, kedvenc és új alkalom', async ({ page, actors: a }) => {
   const p = await plan(a.coach, a.user, { days: [1], exercises: 1, sets: 1 });
   await signIn(page, a.user); await page.goto('/user/personal-workouts/new'); const root = page.locator('app-personal-program-editor');
-  await root.locator('[name=name]').fill(unique('Önálló')); await root.getByRole('button', { name: 'Gyakorlat hozzáadása', exact: true }).click();
+  await root.locator('[name=name]').fill(unique('Önálló')); await root.getByRole('button', { name: 'Tovább a gyakorlatokhoz', exact: true }).click(); await root.getByRole('button', { name: 'Gyakorlat hozzáadása', exact: true }).click();
   const picker = page.locator('app-exercise-picker'); await picker.locator('input[type=search]').fill(p.exercises[0].name); await picker.getByRole('button', { name: `Hozzáadás: ${p.exercises[0].name}`, exact: true }).click();
   await root.getByRole('spinbutton', { name: 'Sorozatok', exact: true }).fill('1'); await root.getByRole('spinbutton', { name: 'Pihenő (másodperc)', exact: true }).fill('0');
   const created = response(page, 'POST', '/api/me/personal-programs/standalone'); await root.getByRole('button', { name: 'Edzés mentése', exact: true }).click(); const createdResponse = await created; expect(createdResponse.status()).toBe(200); const id = (await createdResponse.json()).data; await expect(page).toHaveURL(new RegExp(`/personal-workouts/${id}$`));

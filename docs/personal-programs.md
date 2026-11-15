@@ -87,7 +87,12 @@ A korábbi edzések eredményei megmaradnak.
 
 Az **Önálló edzéseim** oldal **Önálló edzés létrehozása** gombja egyetlen alkalomhoz készült: nincs többnapos naptár,
 időtartam vagy nap-sorszám. A sorozatcélok szerkesztése és a mentés–indítás sorrendje
-ugyanaz. Az elindított edzés **Új alkalom** gombja új, dátum nélküli piszkozatot ad,
+ugyanaz. A dashboard **Önálló edzéseim** kártyája a külön listát nyitja meg.
+A létrehozás és szerkesztés a programokkal közös, háromlépéses felületet használja:
+**Edzésadatok → Gyakorlatok → Gyakorlat**. A sorozatcélokat gyakorlatonként
+külön képernyőn állíthatod be; a lépések közötti váltás megőrzi a helyi szerkesztést.
+A rögzített mentősáv az edzés mentését végzi, az indítás továbbra is külön művelet.
+Az elindított edzés **Új alkalom** gombja új, dátum nélküli piszkozatot ad,
 a gyakorlatokkal és sorozatcélokkal, a korábbi eredmények nélkül.
 
 Az önálló edzés szerkesztőjéből a visszalépés és törlés/archiválás után is az
