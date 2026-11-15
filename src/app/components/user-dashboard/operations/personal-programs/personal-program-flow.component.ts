@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, DestroyRef, Input, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule, NgForm } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
@@ -7,7 +8,8 @@ import { AppTextareaDirective } from '../../../shared/components/form-controls/a
 import { AppEmptyStateComponent } from '../../../shared/components/app-state/app-state.component';
 import { ExercisePickerComponent } from '../../../coach/exercise-picker/exercise-picker.component';
 import type { CoachExerciseSearchItem } from '../../../../models/coach-workspace.model';
-import type { PersonalProgramDay, PersonalProgramExercise } from '../../../../models/personal-program.model';
+import type { PersonalProgramDay, PersonalProgramExercise, PersonalDayTargets } from '../../../../models/personal-program.model';
+import { PersonalProgramService } from '../../../../services/user/personal-program.service';
 import { PersonalExerciseTargetsComponent } from './personal-exercise-targets.component';
 import { PersonalProgramCalendarComponent } from './personal-program-calendar.component';
 import type { PersonalProgramState } from './personal-program-state';
@@ -28,6 +30,20 @@ export class PersonalProgramFlowComponent {
   @Input({ required: true }) state!: PersonalProgramState;
   @Input({ required: true }) days!: PersonalProgramDays;
   @Input({ required: true }) actions!: PersonalProgramActions;
+
+  private readonly service = inject(PersonalProgramService);
+  private readonly destroyRef = inject(DestroyRef);
+
+  confirmWeekly = false;
+  copyDestination: number | null = null;
+  copySource: number | null = null;
+
+  /** Started program: separate execution data, never mutate the immutable template. */
+  targetSession: PersonalDayTargets | null = null;
+  targetDay: PersonalProgramDay | null = null;
+  targetLoading = false;
+  targetDirty = false;
+
 
   view: 'calendar' | 'day' | 'exercise' = 'calendar';
   exerciseIndex = 0;
@@ -57,8 +73,127 @@ export class PersonalProgramFlowComponent {
     this.view = 'day';
   }
   get activeExercise(): PersonalProgramExercise | null {
-    return this.activeDay?.exercises[this.exerciseIndex] ?? null;
+    return (this.state.started && !this.state.standaloneMode
+      ? this.targetDay?.exercises : this.activeDay?.exercises)?.[this.exerciseIndex] ?? null;
   }
+
+  get dayForDisplay(): PersonalProgramDay | null {
+    return this.state.started && !this.state.standaloneMode ? this.targetDay : this.activeDay;
+  }
+
+  get availableSources(): PersonalProgramDay[] {
+    return this.state.model.workouts.filter(day => day.dayIndex !== this.days.selectedDay);
+  }
+
+  private loadStartedTargets(day: PersonalProgramDay): void {
+    const id = this.state.id;
+    if (id == null) return;
+    this.targetSession = null;
+    this.targetDay = null;
+    this.targetLoading = true;
+    const dayIndex = day.dayIndex;
+    this.service.dayTargets(id, dayIndex).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (result) => {
+        if (this.state.id !== id || this.days.selectedDay !== dayIndex) return;
+        this.targetLoading = false;
+        const copy = structuredClone(day);
+        // Each exercise is mapped only by its validated server-side order index.
+        if (result.exercises.length !== copy.exercises.length ||
+            result.exercises.some(exercise => exercise.exerciseIndex < 0 ||
+              exercise.exerciseIndex >= copy.exercises.length ||
+              exercise.sets.length !== copy.exercises[exercise.exerciseIndex].sets) ||
+            new Set(result.exercises.map(exercise => exercise.exerciseIndex)).size !== result.exercises.length) {
+          this.state.message = 'personalEditorUi.targetsLoadFailed';
+          this.state.messageType = 'error';
+          return;
+        }
+        for (const exercise of result.exercises) {
+          const target = copy.exercises[exercise.exerciseIndex];
+          const existing = target.setTargets ?? [];
+          target.setTargets = exercise.sets.map((set, index) => ({
+            ...set, notes: existing[index]?.notes ?? target.notes,
+          }));
+        }
+        this.targetDay = copy;
+        this.targetSession = result;
+        this.targetDirty = false;
+      },
+      error: (error: unknown) => {
+        this.targetLoading = false;
+        this.state.fail(error);
+      },
+    });
+  }
+
+  discardTargets(): void {
+    if (this.state.busy || !this.state.started || !this.targetDay) return;
+    this.targetDirty = false;
+    this.state.dirty = false;
+    const source = this.activeDay;
+    if (source) this.loadStartedTargets(source);
+  }
+
+  targetChanged(): void {
+    if (!this.targetSession?.editable || !this.targetDay || this.state.busy) return;
+    this.targetDirty = true;
+    this.state.message = '';
+  }
+
+  saveTargets(): void {
+    const id = this.state.id;
+    const target = this.targetDay;
+    const session = this.targetSession;
+    if (id == null || !target || !session || !session.editable || !this.targetDirty || this.state.busy) return;
+    if (!validPersonalPrescriptions({ ...this.state.model, workouts: [target] })) {
+      this.state.message = 'personalPrograms.invalidTargets';
+      this.state.messageType = 'error';
+      return;
+    }
+    this.state.busy = true;
+    this.service.updateDayTargets(id, session.dayIndex, {
+      expectedVersion: session.version,
+      exercises: target.exercises.map((exercise, exerciseIndex) => ({
+        exerciseIndex,
+        sets: (exercise.setTargets ?? []).map(row => ({
+          targetRepetitions: row.targetRepetitions,
+          targetWeightKg: row.targetWeightKg,
+          restSeconds: row.restSeconds,
+          targetRpe: row.targetRpe,
+        })),
+      })),
+    }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (saved) => {
+        this.state.busy = false;
+        this.targetSession = saved;
+        this.targetDirty = false;
+        this.state.message = 'personalEditorUi.targetsSaved';
+        this.state.messageType = 'success';
+      },
+      error: (error: unknown) => {
+        this.state.busy = false;
+        this.state.fail(error);
+      },
+    });
+  }
+
+  copyWeekly(day: PersonalProgramDay): void {
+    this.days.repeatWeekly(day);
+    this.confirmWeekly = false;
+  }
+
+  copyToChosenDay(day: PersonalProgramDay): void {
+    if (this.copyDestination != null && this.days.copyDay(day, this.copyDestination))
+      this.copyDestination = null;
+  }
+
+  copyIntoSelectedDay(): void {
+    const source = this.state.model.workouts.find(day => day.dayIndex === this.copySource);
+    if (source && this.days.copyDay(source, this.days.selectedDay)) {
+      this.copySource = null;
+      this.openDay();
+    }
+  }
+
   hasDifferentTargets(exercise: PersonalProgramExercise): boolean {
     const targets = exercise.setTargets;
     const first = targets?.[0];
@@ -75,14 +210,26 @@ export class PersonalProgramFlowComponent {
   get restDays(): number { return Math.max(0, this.state.model.durationDays - this.plannedDays); }
 
   selectDay(day: number): void {
+    if (this.state.started && this.targetDirty) {
+      this.state.message = 'personalEditorUi.saveTargetsFirst';
+      this.state.messageType = 'error';
+      return;
+    }
     this.days.selectDay(day);
     this.editingDay = null;
+    this.targetDay = null;
+    this.targetSession = null;
+    this.confirmWeekly = false;
+    this.copyDestination = null;
+    this.copySource = null;
   }
 
   openDay(): void {
     this.editingDay = this.activeDay;
     this.days.pickerDay = null;
     this.view = 'day';
+    if (this.state.started && !this.state.standaloneMode && this.editingDay)
+      this.loadStartedTargets(this.editingDay);
   }
 
   createDay(): void {
@@ -92,7 +239,8 @@ export class PersonalProgramFlowComponent {
   }
 
   openExercise(index: number): void {
-    if (!this.activeDay || index < 0 || index >= this.activeDay.exercises.length) return;
+    if (!this.dayForDisplay || index < 0 || index >= this.dayForDisplay.exercises.length ||
+        (this.state.started && !this.state.standaloneMode && !this.targetSession)) return;
     this.days.pickerDay = null;
     this.exerciseIndex = index;
     this.view = 'exercise';
@@ -101,6 +249,11 @@ export class PersonalProgramFlowComponent {
   nextExercise(direction: -1 | 1): void { this.openExercise(this.exerciseIndex + direction); }
 
   backToCalendar(): void {
+    if (this.targetDirty) {
+      this.state.message = 'personalEditorUi.saveTargetsFirst';
+      this.state.messageType = 'error';
+      return;
+    }
     this.editingDay = null;
     this.days.pickerDay = null;
     this.view = 'calendar';

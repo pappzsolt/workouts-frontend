@@ -13,6 +13,7 @@
         >
           {{ 'coachWorkspace.client.fillDown' | translate }}
         </button>
+        @if (!targetOnly) {
         <button
           type="button"
           class="btn btn-primary"
@@ -21,6 +22,7 @@
         >
           {{ 'coachWorkspace.client.addSet' | translate }}
         </button>
+        }
       </div>
     }
   </div>
@@ -33,10 +35,10 @@
           <th scope="col" class="p-2">{{ 'coachWorkspace.client.targetWeight' | translate }}</th>
           <th scope="col" class="p-2">{{ 'personalPrograms.rest' | translate }}</th>
           <th scope="col" class="p-2">{{ 'setEffort.targetRpe' | translate }}</th>
-          <th scope="col" class="p-2">{{ 'personalPrograms.notes' | translate }}</th>
-          <th scope="col" class="p-2">
+          @if (!targetOnly) { <th scope="col" class="p-2">{{ 'personalPrograms.notes' | translate }}</th> }
+          @if (!targetOnly) { <th scope="col" class="p-2">
             <span class="sr-only">{{ 'coachWorkspace.delete' | translate }}</span>
-          </th>
+          </th> }
         </tr>
       </thead>
       <tbody>
@@ -125,6 +127,7 @@
                 "
               />
             </td>
+            @if (!targetOnly) {
             <td class="p-2">
               <span class="target-field-label mb-1 text-xs font-semibold text-content-600">{{
                 'personalPrograms.notes' | translate
@@ -141,6 +144,8 @@
                 "
               />
             </td>
+            }
+            @if (!targetOnly) {
             <td class="p-2">
               @if (!locked) {
                 <button
@@ -158,6 +163,7 @@
                 </button>
               }
             </td>
+            }
           </tr>
         }
       </tbody>

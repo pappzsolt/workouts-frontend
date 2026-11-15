@@ -1,3 +1,5 @@
+import { TestBed } from '@angular/core/testing';
+import { PersonalProgramService } from '../../../../services/user/personal-program.service';
 import { NgForm } from '@angular/forms';
 import { PersonalProgramDays } from './personal-program-days';
 import { PersonalProgramFlowComponent } from './personal-program-flow.component';
@@ -19,10 +21,37 @@ describe('Personal multi-day program flow', () => {
       ],
     }];
     days = new PersonalProgramDays(state);
-    flow = new PersonalProgramFlowComponent();
+    TestBed.configureTestingModule({ providers: [{ provide: PersonalProgramService, useValue: {} }] });
+    flow = TestBed.runInInjectionContext(() => new PersonalProgramFlowComponent());
     flow.state = state;
     flow.days = days;
     flow.actions = { save: jasmine.createSpy('save') } as never;
+  });
+
+  it('copies a complete independent week and never replaces occupied days', () => {
+    state.model.durationDays = 21;
+    state.model.workouts[0].exercises[0].setTargets = [{ targetRepetitions: 6,
+      targetWeightKg: 80, restSeconds: 120, targetRpe: 8, notes: 'test' },
+      { targetRepetitions: 5, targetWeightKg: 85, restSeconds: 150, targetRpe: 8.5, notes: 'test' },
+      { targetRepetitions: 4, targetWeightKg: 90, restSeconds: 180, targetRpe: 9, notes: 'test' }];
+    const original = structuredClone(state.model.workouts[0]);
+    days.repeatWeekly(state.model.workouts[0]);
+    expect(state.model.workouts.map(day => day.dayIndex).sort((a,b)=>a-b)).toEqual([1, 8, 15]);
+    expect(state.model.workouts[1].exercises).toEqual(original.exercises);
+    state.model.workouts[1].exercises[0].setTargets![0].targetWeightKg = 95;
+    expect(state.model.workouts[0].exercises[0].setTargets![0].targetWeightKg).toBe(80);
+    days.repeatWeekly(state.model.workouts[0]);
+    expect(state.model.workouts.length).toBe(3);
+  });
+
+  it('copies a day into an empty chosen day without overwriting', () => {
+    state.model.durationDays = 14;
+    flow.copyDestination = 5;
+    flow.copyToChosenDay(state.model.workouts[0]);
+    expect(state.model.workouts.map(day => day.dayIndex)).toEqual([1, 5]);
+    flow.copyDestination = 5;
+    flow.copyToChosenDay(state.model.workouts[0]);
+    expect(state.model.workouts.length).toBe(2);
   });
 
   it('navigates calendar → day → exercise → day → calendar without changing draft or dirty state', () => {

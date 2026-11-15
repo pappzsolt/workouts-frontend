@@ -84,6 +84,64 @@ export class PersonalProgramDays {
     this.state.changed();
   }
 
+  /** Safe for every draft: the destination must be empty, and the copy is independent. */
+  copyDay(source: PersonalProgramDay, dayIndex: number): boolean {
+    if (this.state.locked || this.state.standaloneMode ||
+        !Number.isInteger(this.state.model.durationDays) ||
+        this.state.model.durationDays < 1 || this.state.model.durationDays > 366 ||
+        !this.state.model.workouts.includes(source) ||
+        !Number.isInteger(source.dayIndex) || source.dayIndex < 1 ||
+        source.dayIndex > this.state.model.durationDays ||
+        this.state.model.workouts.some(day => day !== source && day.dayIndex === source.dayIndex) ||
+        !Number.isInteger(dayIndex) || dayIndex < 1 || dayIndex > this.state.model.durationDays ||
+        this.state.model.workouts.some(day => day.dayIndex === dayIndex)) {
+      this.state.message = 'personalEditorUi.copyInvalidDay';
+      this.state.messageType = 'error';
+      return false;
+    }
+    const exercises = this.state.model.workouts.reduce((sum, day) => sum + day.exercises.length, 0);
+    const sets = this.state.model.workouts.flatMap(day => day.exercises)
+      .reduce((sum, exercise) => sum + exercise.sets, 0);
+    if (exercises + source.exercises.length > 1000 ||
+        sets + source.exercises.reduce((sum, exercise) => sum + exercise.sets, 0) > 5000) {
+      this.state.message = 'personalPrograms.sizeLimit';
+      this.state.messageType = 'error';
+      return false;
+    }
+    this.state.model.workouts.push(structuredClone({ ...source, dayIndex }));
+    this.state.changed();
+    this.state.message = 'personalEditorUi.dayCopied';
+    this.state.messageType = 'info';
+    return true;
+  }
+
+  get freeDays(): number[] {
+    const used = new Set(this.state.model.workouts.map(day => day.dayIndex));
+    const count = Math.min(366, Math.max(0, Math.floor(this.state.model.durationDays) || 0));
+    return Array.from({ length: count }, (_, index) => index + 1)
+      .filter(day => !used.has(day));
+  }
+
+  get weeklyAvailable(): number[] {
+    const source = this.state.model.workouts.find(day => day.dayIndex === this.selectedDay);
+    if (!source) return [];
+    const occupied = new Set(this.state.model.workouts.map(day => day.dayIndex));
+    const result: number[] = [];
+    for (let day = source.dayIndex + 7; day <= this.state.model.durationDays && day <= 366; day += 7)
+      if (!occupied.has(day)) result.push(day);
+    return result;
+  }
+
+  get weeklySkipped(): number {
+    const source = this.state.model.workouts.find(day => day.dayIndex === this.selectedDay);
+    if (!source) return 0;
+    const occupied = new Set(this.state.model.workouts.map(day => day.dayIndex));
+    let skipped = 0;
+    for (let day = source.dayIndex + 7; day <= this.state.model.durationDays && day <= 366; day += 7)
+      if (occupied.has(day)) skipped++;
+    return skipped;
+  }
+
   repeatWeekly(day: PersonalProgramDay): void {
     if (this.state.locked || this.state.standaloneMode) return;
     // Validate before building target days: an invalid, very large duration must

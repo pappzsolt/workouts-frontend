@@ -43,3 +43,16 @@ export interface PersonalProgramDetail {
   startedAt: string | null;
   program: PersonalProgramRequest;
 }
+
+/** Live targets on a started personal program day (never the frozen template). */
+export interface PersonalDayTargets {
+  dayIndex: number;
+  version: number;
+  editable: boolean;
+  exercises: { exerciseIndex: number; sets: Pick<PersonalSetTarget,
+    'targetRepetitions' | 'targetWeightKg' | 'restSeconds' | 'targetRpe'>[] }[];
+}
+export interface PersonalDayTargetsUpdate {
+  expectedVersion: number;
+  exercises: PersonalDayTargets['exercises'];
+}

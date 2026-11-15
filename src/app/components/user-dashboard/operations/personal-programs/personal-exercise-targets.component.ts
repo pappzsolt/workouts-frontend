@@ -58,18 +58,20 @@ export class PersonalExerciseTargetsComponent {
   @Input({ required: true }) exercise!: PersonalProgramExercise;
   @Input({ required: true }) exerciseName = '';
   @Input() locked = false;
+  /** Started executions allow target changes, never structural or performance changes. */
+  @Input() targetOnly = false;
   @Output() readonly changed = new EventEmitter<void>();
   readonly limits = WORKOUT_PRESCRIPTION_LIMITS;
   readonly standalone = { standalone: true };
 
   update(): void {
     if (this.locked) return;
-    syncExercisePrescription(this.exercise);
+    if (!this.targetOnly) syncExercisePrescription(this.exercise);
     this.changed.emit();
   }
 
   addSet(): void {
-    if (this.locked || this.exercise.sets >= this.limits.maxSets) return;
+    if (this.locked || this.targetOnly || this.exercise.sets >= this.limits.maxSets) return;
     this.exercise.setTargets ??= initialSetTargets(this.exercise);
     const last = this.exercise.setTargets.at(-1)!;
     this.exercise.setTargets.push({ ...last });
@@ -77,7 +79,7 @@ export class PersonalExerciseTargetsComponent {
   }
 
   removeSet(index: number): void {
-    if (this.locked || !this.exercise.setTargets || this.exercise.setTargets.length <= 1) return;
+    if (this.locked || this.targetOnly || !this.exercise.setTargets || this.exercise.setTargets.length <= 1) return;
     this.exercise.setTargets.splice(index, 1);
     this.update();
   }
@@ -85,7 +87,9 @@ export class PersonalExerciseTargetsComponent {
   fillDown(): void {
     if (this.locked || !this.exercise.setTargets?.length) return;
     const first = this.exercise.setTargets[0];
-    this.exercise.setTargets = this.exercise.setTargets.map(() => ({ ...first }));
+    this.exercise.setTargets = this.exercise.setTargets.map((row) =>
+      this.targetOnly ? { ...row, targetRepetitions: first.targetRepetitions,
+        targetWeightKg: first.targetWeightKg, restSeconds: first.restSeconds, targetRpe: first.targetRpe } : { ...first });
     this.update();
   }
 }

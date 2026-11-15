@@ -128,9 +128,43 @@
               <li class="px-3 py-3 text-sm text-content-600">{{ 'personalPrograms.noExercises' | translate }}</li>
             }
           </ul>
-          <button type="button" class="btn btn-primary w-full justify-center" (click)="openDay()">
-            {{ (state.started ? 'personalPrograms.flow.viewDay' : 'personalPrograms.flow.editDay') | translate }}
+          <button type="button" class="btn btn-primary w-full justify-center" (click)="openDay()" [disabled]="state.busy">
+            {{ (state.started ? 'personalEditorUi.editDayTargets' : 'personalPrograms.flow.editDay') | translate }}
           </button>
+          @if (!state.started && days.weeklyAvailable.length) {
+            <div class="mt-3 space-y-2 rounded-xl border border-surface-200 p-3">
+              @if (confirmWeekly) {
+                <p class="text-sm text-content-700">{{ 'personalEditorUi.weeklyConfirm' | translate: { days: days.weeklyAvailable.join(', '), count: days.weeklyAvailable.length } }}</p>
+                @if (days.weeklySkipped) {
+                  <p class="text-xs text-content-600">{{ 'personalEditorUi.weeklySkipped' | translate: { count: days.weeklySkipped } }}</p>
+                }
+                <div class="flex flex-wrap gap-2">
+                  <button type="button" class="btn btn-neutral" (click)="confirmWeekly = false">{{ 'coachWorkspace.cancel' | translate }}</button>
+                  <button type="button" class="btn btn-primary" (click)="copyWeekly(day)" [disabled]="state.locked">{{ 'personalEditorUi.confirmCopy' | translate }}</button>
+                </div>
+              } @else {
+                <button type="button" class="btn btn-outline w-full justify-center" (click)="confirmWeekly = true" [disabled]="state.locked">
+                  {{ 'coachWorkspace.editor.repeatWeekly' | translate }}
+                </button>
+              }
+            </div>
+          }
+          @if (!state.started && days.freeDays.length) {
+            <div class="mt-3 flex flex-wrap items-end gap-2">
+              <label class="min-w-0 flex-1 text-sm font-semibold text-content-700">
+                {{ 'personalEditorUi.otherDay' | translate }}
+                <select class="mt-1 w-full rounded-xl border border-surface-300 bg-white p-2" [(ngModel)]="copyDestination" [ngModelOptions]="{standalone: true}">
+                  <option [ngValue]="null">{{ 'personalEditorUi.selectDay' | translate }}</option>
+                  @for (index of days.freeDays; track index) {
+                    <option [ngValue]="index">{{ 'personalPrograms.dayNumber' | translate: { number: index } }}</option>
+                  }
+                </select>
+              </label>
+              <button type="button" class="btn btn-outline" [disabled]="copyDestination == null || state.locked" (click)="copyToChosenDay(day)">
+                {{ 'personalEditorUi.copyToDay' | translate }}
+              </button>
+            </div>
+          }
         } @else {
           <div class="mb-4 rounded-xl bg-surface-50 p-4 text-sm text-content-600">
             {{ 'personalPrograms.restDayHint' | translate }}
@@ -139,6 +173,22 @@
             <button type="button" class="btn btn-primary w-full justify-center" (click)="createDay()" [disabled]="state.locked">
               {{ 'personalPrograms.addDay' | translate }}
             </button>
+          }
+          @if (!state.started && availableSources.length) {
+            <div class="mt-3 flex flex-col gap-2">
+              <label class="text-sm font-semibold text-content-700">
+                {{ 'personalEditorUi.sameOnThisDay' | translate }}
+                <select class="mt-1 w-full rounded-xl border border-surface-300 bg-white p-2" [(ngModel)]="copySource" [ngModelOptions]="{standalone: true}">
+                  <option [ngValue]="null">{{ 'personalEditorUi.selectSource' | translate }}</option>
+                  @for (source of availableSources; track source.dayIndex) {
+                    <option [ngValue]="source.dayIndex">{{ source.dayIndex }}. {{ source.name }}</option>
+                  }
+                </select>
+              </label>
+              <button type="button" class="btn btn-outline" [disabled]="copySource == null || state.locked" (click)="copyIntoSelectedDay()">
+                {{ 'personalEditorUi.copyToDay' | translate }}
+              </button>
+            </div>
           }
         }
       </section>
@@ -163,7 +213,14 @@
           }
         </div>
       </div>
-      @if (activeDay; as day) {
+      @if (state.started && !state.standaloneMode && targetLoading) {
+        <p class="mb-3 text-sm text-content-600" role="status">{{ 'personalEditorUi.targetsLoading' | translate }}</p>
+      }
+      @if (state.started && !state.standaloneMode && !targetLoading && !targetSession) {
+        <p class="mb-3 text-sm text-red-700" role="alert">{{ 'personalEditorUi.targetsLoadFailed' | translate }}</p>
+        <button type="button" class="btn btn-neutral mb-3" (click)="openDay()">{{ 'personalEditorUi.retry' | translate }}</button>
+      }
+      @if (dayForDisplay; as day) {
         @if (!state.standaloneMode) {
         <fieldset [disabled]="state.locked" class="min-w-0">
           <div class="mb-5 grid grid-cols-1 gap-3 sm:grid-cols-3">
@@ -186,6 +243,9 @@
             </label>
           </div>
         </fieldset>
+        }
+        @if (state.started && !state.standaloneMode && targetSession && !targetSession.editable) {
+          <p class="mb-3 rounded-xl bg-surface-50 p-3 text-sm text-content-600">{{ 'personalEditorUi.startedDayLocked' | translate }}</p>
         }
         <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
           <h3 class="text-lg font-bold text-content-900">
@@ -216,7 +276,7 @@
                   <span class="block break-words font-semibold text-content-900">{{ days.names[exercise.exerciseId] ||
                     ('personalPrograms.exerciseFallback' | translate: { id: exercise.exerciseId }) }}</span>
                   <span class="block text-xs text-content-600">
-                    {{ (hasDifferentTargets(exercise) ? 'personalEditorUi.variedSets' : 'personalPrograms.flow.setSummary') | translate: { sets: exercise.sets, reps: exercise.repetitions } }}
+                    {{ (hasDifferentTargets(exercise) ? 'personalEditorUi.variedSets' : 'personalPrograms.flow.setSummary') | translate: { sets: exercise.sets, reps: state.started && !state.standaloneMode ? (exercise.setTargets?.[0]?.targetRepetitions ?? exercise.repetitions) : exercise.repetitions } }}
                     @if (!hasDifferentTargets(exercise) && exercise.setTargets?.[0]?.targetWeightKg != null) { · {{ exercise.setTargets?.[0]?.targetWeightKg }} kg }
                   </span>
                 </span>
@@ -240,13 +300,34 @@
         </div>
         @if (!state.started && !state.standaloneMode) {
           <div class="mt-5 flex flex-wrap gap-2 border-t border-surface-200 pt-4">
-            <button type="button" class="btn btn-neutral" (click)="days.repeatWeekly(day)"
-                    [disabled]="state.locked || day.dayIndex + 7 > state.model.durationDays">
-              {{ 'coachWorkspace.editor.repeatWeekly' | translate }}
-            </button>
+            @if (days.weeklyAvailable.length) {
+              <button type="button" class="btn btn-neutral" (click)="confirmWeekly = !confirmWeekly" [disabled]="state.locked">
+                {{ 'coachWorkspace.editor.repeatWeekly' | translate }}
+              </button>
+              @if (confirmWeekly) {
+                <div class="w-full rounded-xl border border-primary-200 bg-primary-50 p-3 text-sm">
+                  <p>{{ 'personalEditorUi.weeklyConfirm' | translate: { days: days.weeklyAvailable.join(', '), count: days.weeklyAvailable.length } }}</p>
+                  @if (days.weeklySkipped) { <p>{{ 'personalEditorUi.weeklySkipped' | translate: { count: days.weeklySkipped } }}</p> }
+                  <button type="button" class="btn btn-primary mt-2" (click)="copyWeekly(day)" [disabled]="state.locked">{{ 'personalEditorUi.confirmCopy' | translate }}</button>
+                </div>
+              }
+            }
             <button type="button" class="btn btn-delete" (click)="removeDay(day)" [disabled]="state.locked">
               {{ 'personalPrograms.removeDay' | translate }}
             </button>
+          </div>
+        }
+        @if (state.started && !state.standaloneMode && targetSession?.editable) {
+          <div class="mt-5 flex items-center justify-between gap-3 border-t border-surface-200 pt-4">
+            <p class="text-xs text-content-600">{{ 'personalEditorUi.startedTargetHint' | translate }}</p>
+            <div class="flex flex-wrap gap-2">
+              @if (targetDirty) {
+                <button type="button" class="btn btn-neutral" [disabled]="state.busy" (click)="discardTargets()">{{ 'personalEditorUi.discardTargets' | translate }}</button>
+              }
+              <button type="button" class="btn btn-primary" [disabled]="!targetDirty || state.busy" (click)="saveTargets()">
+                {{ 'personalEditorUi.saveTargets' | translate }}
+              </button>
+            </div>
           </div>
         }
       } @else {
@@ -277,7 +358,19 @@
         </div>
         <app-personal-exercise-targets [exercise]="exercise"
           [exerciseName]="days.names[exercise.exerciseId] || ('personalPrograms.exerciseFallback' | translate: { id: exercise.exerciseId })"
-          [locked]="state.locked" (changed)="state.changed()" />
+          [locked]="state.started && !state.standaloneMode ? (!targetSession?.editable || state.busy) : state.locked"
+          [targetOnly]="state.started && !state.standaloneMode"
+          (changed)="state.started && !state.standaloneMode ? targetChanged() : state.changed()" />
+        @if (state.started && !state.standaloneMode && targetSession?.editable) {
+          <div class="mt-4 flex justify-end">
+            @if (targetDirty) {
+              <button type="button" class="btn btn-neutral mr-2" [disabled]="state.busy" (click)="discardTargets()">{{ 'personalEditorUi.discardTargets' | translate }}</button>
+            }
+            <button type="button" class="btn btn-primary" [disabled]="!targetDirty || state.busy" (click)="saveTargets()">
+              {{ 'personalEditorUi.saveTargets' | translate }}
+            </button>
+          </div>
+        }
         <div class="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-surface-200 pt-4">
           <button type="button" class="btn btn-neutral" (click)="nextExercise(-1)" [disabled]="exerciseIndex === 0">
             ← {{ 'personalPrograms.flow.previousExercise' | translate }}

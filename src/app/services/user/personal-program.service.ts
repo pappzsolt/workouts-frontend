@@ -9,6 +9,8 @@ import {
   PersonalProgramDetail,
   PersonalProgramRequest,
   PersonalProgramSummary,
+  PersonalDayTargets,
+  PersonalDayTargetsUpdate,
 } from '../../models/personal-program.model';
 import { LanguageService } from '../shared/language.service';
 
@@ -71,6 +73,16 @@ export class PersonalProgramService {
         {},
         { params: this.params() },
       )
+      .pipe(map((response) => this.unwrap(response)));
+  }
+  dayTargets(id: number, dayIndex: number) {
+    return this.http
+      .get<ApiResponse<PersonalDayTargets>>(`${this.url}/${id}/days/${dayIndex}/targets`)
+      .pipe(map((response) => this.unwrap(response)));
+  }
+  updateDayTargets(id: number, dayIndex: number, update: PersonalDayTargetsUpdate) {
+    return this.http
+      .put<ApiResponse<PersonalDayTargets>>(`${this.url}/${id}/days/${dayIndex}/targets`, update)
       .pipe(map((response) => this.unwrap(response)));
   }
   listTemplates() {
