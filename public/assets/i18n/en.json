@@ -193,6 +193,7 @@
     "title": "Exercises",
     "search": "Search exercises",
     "searchPlaceholder": "Exercise name...",
+    "searchIn": "Search in",
     "searchFields": {
       "all": "All fields",
       "name": "Name",
@@ -200,6 +201,7 @@
       "primaryMuscles": "Primary muscle",
       "secondaryMuscles": "Secondary muscle"
     },
+    "filterLoadError": "Could not load body part and equipment filters.",
     "sortByName": "Exercise name",
     "noSearchResults": "No exercises match the search.",
     "noExercises": "No exercises found.",

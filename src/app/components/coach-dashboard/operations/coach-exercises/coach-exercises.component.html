@@ -23,7 +23,6 @@
 
     <app-loading *ngIf="loading" message="common.loading" class="block mb-4"></app-loading>
 
-    <ng-container *ngIf="!loading">
       <!-- ====================================================
            KERESÉS ÉS RENDEZÉS
            ==================================================== -->
@@ -45,14 +44,21 @@
               label="coachExercises.search"
               placeholder="coachExercises.searchPlaceholder"
               [showClearButton]="true"
-              (searchTermChange)="searchTerm = $event"
+              (searchTermChange)="onSearchTermChange($event)"
+              (keydown.enter)="search()"
               [debounceMs]="0"
             ></app-search>
 
             <!-- KERESÉSI MEZŐ -->
 
-            <app-exercise-search-field [(value)]="searchField" [options]="searchFieldOptions">
-            </app-exercise-search-field>
+            <div class="flex min-w-0 flex-col gap-2">
+              <span class="text-sm font-semibold text-content-700">{{ 'coachExercises.searchIn' | translate }}</span>
+              <app-exercise-search-field
+                [value]="searchField"
+                (valueChange)="onSearchFieldChange($event)"
+                [options]="searchFieldOptions"
+              ></app-exercise-search-field>
+            </div>
 
             <!-- KERESÉS GOMB -->
 
@@ -98,6 +104,9 @@
         ></app-button>
       </div>
 
+      <app-message [message]="filterOptionsError" type="error"></app-message>
+
+      <ng-container *ngIf="!loading">
       <!-- ======================================================
            GYAKORLATOK
            ====================================================== -->
@@ -197,7 +206,7 @@
     <ng-template #noExercises>
       <app-message
         *ngIf="messageType !== 'error'"
-        [message]="searchTerm ? 'coachExercises.noSearchResults' : 'coachExercises.noExercises'"
+        [message]="hasActiveSearch ? 'coachExercises.noSearchResults' : 'coachExercises.noExercises'"
         type="info"
       >
       </app-message>

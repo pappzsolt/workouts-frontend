@@ -193,6 +193,7 @@
     "title": "Gyakorlatok",
     "search": "Gyakorlat keresése",
     "searchPlaceholder": "Gyakorlat neve...",
+    "searchIn": "Keresés mezője",
     "searchFields": {
       "all": "Minden mező",
       "name": "Név",
@@ -200,6 +201,7 @@
       "primaryMuscles": "Elsődleges izom",
       "secondaryMuscles": "Másodlagos izom"
     },
+    "filterLoadError": "Nem sikerült betölteni a testrész- és eszközszűrőket.",
     "sortByName": "Gyakorlat neve",
     "noSearchResults": "Nincs a keresésnek megfelelő gyakorlat.",
     "noExercises": "Nincsenek gyakorlatok.",

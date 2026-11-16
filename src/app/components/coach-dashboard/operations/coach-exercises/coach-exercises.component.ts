@@ -73,6 +73,7 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   equipmentFilter = '';
   bodyPartOptions: string[] = [];
   equipmentOptions: string[] = [];
+  filterOptionsError = '';
 
   onFilterChange(): void {
     this.currentPage = 0;
@@ -88,6 +89,7 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   }
 
   private loadFilterOptions(): void {
+    this.filterOptionsError = '';
     this.workspace
       ?.getExerciseFilterOptions()
       .pipe(takeUntil(this.destroy$))
@@ -95,8 +97,12 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
         next: (options) => {
           this.bodyPartOptions = options.bodyParts;
           this.equipmentOptions = options.equipment;
+          this.filterOptionsError = '';
         },
-        error: () => undefined,
+        error: (error) => {
+          this.logger.error('[CoachExercises] Hiba a szűrőopciók betöltésekor:', error);
+          this.filterOptionsError = 'coachExercises.filterLoadError';
+        },
       });
   }
 
@@ -133,6 +139,7 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   // ==========================================================
 
   searchTerm = '';
+  private appliedSearchTerm = '';
 
   searchField = 'all';
 
@@ -202,7 +209,7 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
 
     this.searchRequest = this.exerciseService
       .searchExercises(
-        this.searchTerm,
+        this.resolvedSearchTerm(),
         this.searchField,
         this.currentPage,
         this.itemsPerPage,
@@ -256,9 +263,38 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   // KERESÉS
   // ==========================================================
 
+  /** The search button/Enter applies the draft; other filters keep the last submitted term. */
   search(): void {
+    this.appliedSearchTerm = this.searchTerm.trim();
     this.currentPage = 0;
     this.loadExercises();
+  }
+
+  /** Clearing the shared input must also clear the backend search immediately. */
+  onSearchTermChange(term: string): void {
+    this.searchTerm = term;
+    if (!term) this.search();
+  }
+
+  onSearchFieldChange(field: string): void {
+    this.searchField = field;
+    this.onFilterChange();
+  }
+
+  get hasActiveSearch(): boolean {
+    return !!(this.appliedSearchTerm || this.bodyPartFilter || this.equipmentFilter);
+  }
+
+  /** Resolve a translated body-part label to the stable code used in the database. */
+  private resolvedSearchTerm(): string {
+    if (this.searchField !== 'bodyPart' || !this.appliedSearchTerm) return this.appliedSearchTerm;
+    const requested = this.appliedSearchTerm.toLocaleLowerCase();
+    const codes = this.bodyPartOptions.filter((code) =>
+      code.toLocaleLowerCase().includes(requested)
+      || this.bodyPartLabel(code).toLocaleLowerCase().includes(requested),
+    );
+    // Ambiguous labels remain free text rather than arbitrarily selecting a code.
+    return codes.length === 1 ? codes[0] : this.appliedSearchTerm;
   }
 
   // ==========================================================

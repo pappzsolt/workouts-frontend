@@ -193,6 +193,7 @@
     "title": "Übungen",
     "search": "Übungen suchen",
     "searchPlaceholder": "Übungsname...",
+    "searchIn": "Suchfeld",
     "searchFields": {
       "all": "Alle Felder",
       "name": "Name",
@@ -200,6 +201,7 @@
       "primaryMuscles": "Primärer Muskel",
       "secondaryMuscles": "Sekundärer Muskel"
     },
+    "filterLoadError": "Körperteil- und Gerätefilter konnten nicht geladen werden.",
     "sortByName": "Übungsname",
     "noSearchResults": "Keine Übungen entsprechen der Suche.",
     "noExercises": "Keine Übungen gefunden.",
