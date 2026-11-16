@@ -1,0 +1,118 @@
+<div class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8">
+  <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
+    <h2 appHeading="page" class="text-center">{{ 'userExerciseLibrary.title' | translate }}</h2>
+
+    <p class="text-center text-sm text-content-600">{{ 'userExerciseLibrary.intro' | translate }}</p>
+    <div class="flex flex-wrap justify-center gap-3">
+      <a routerLink="/user/personal-programs/new" class="btn btn-neutral">{{ 'userExerciseLibrary.createProgram' | translate }}</a>
+      <a routerLink="/user/personal-workouts/new" class="btn btn-neutral">{{ 'userExerciseLibrary.createWorkout' | translate }}</a>
+    </div>
+
+    <app-message [message]="message" type="error"></app-message>
+    <app-loading *ngIf="loading" message="common.loading" class="block"></app-loading>
+
+    <div class="flex min-w-0 flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5 lg:flex-row lg:items-end">
+      <div class="flex min-w-0 flex-1 flex-col gap-2">
+        <div class="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_180px_auto] sm:items-end">
+          <app-search
+            inputId="userExerciseLibrarySearch"
+            [searchTerm]="searchTerm"
+            label="userExerciseLibrary.search"
+            placeholder="userExerciseLibrary.searchPlaceholder"
+            [showClearButton]="true"
+            [debounceMs]="0"
+            (searchTermChange)="onSearchTermChange($event)"
+            (keydown.enter)="search()"
+          ></app-search>
+          <div class="flex min-w-0 flex-col gap-2">
+            <span class="text-sm font-semibold text-content-700">{{ 'userExerciseLibrary.searchIn' | translate }}</span>
+            <app-exercise-search-field
+              [value]="searchField"
+              [options]="searchFieldOptions"
+              (valueChange)="searchField = $event; onFilterChange()"
+            ></app-exercise-search-field>
+          </div>
+          <app-button variant="search" type="button" [label]="'common.search' | translate"
+                      (buttonClick)="search()"></app-button>
+        </div>
+        <div class="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
+          <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+            {{ 'userExerciseLibrary.bodyPart' | translate }}
+            <select name="userLibraryBodyPart" [(ngModel)]="bodyPartFilter" (ngModelChange)="onFilterChange()"
+                    class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm font-normal text-content-800 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10">
+              <option value="">{{ 'userExerciseLibrary.all' | translate }}</option>
+              @for (code of bodyPartOptions; track code) {
+                <option [value]="code">{{ bodyPartLabel(code) }}</option>
+              }
+            </select>
+          </label>
+          <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+            {{ 'userExerciseLibrary.equipment' | translate }}
+            <select name="userLibraryEquipment" [(ngModel)]="equipmentFilter" (ngModelChange)="onFilterChange()"
+                    class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm font-normal text-content-800 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10">
+              <option value="">{{ 'userExerciseLibrary.all' | translate }}</option>
+              @for (code of equipmentOptions; track code) {
+                <option [value]="code">{{ equipmentLabel(code) }}</option>
+              }
+            </select>
+          </label>
+        </div>
+      </div>
+      <app-button variant="sort" [label]="'userExerciseLibrary.sortByName' | translate"
+                  [lucideIcon]="sortDirection === 'asc' ? 'arrow-up-narrow-wide' : 'arrow-down-wide-narrow'"
+                  (buttonClick)="toggleSort()"></app-button>
+    </div>
+    <app-message [message]="filterOptionsError" type="error"></app-message>
+
+    @if (!loading) {
+      @if (exercises.length) {
+        <div class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <app-card *ngFor="let ex of exercises; trackBy: trackByExercise" class="group flex min-w-0 flex-col overflow-hidden" [hover]="false">
+            <app-card-banner icon="dumbbell"></app-card-banner>
+            <div class="flex h-[180px] items-center justify-center overflow-hidden border-b border-surface-100 bg-surface-50">
+              <ng-container *ngIf="getExerciseImages(ex).length; else noImage">
+                <img *ngFor="let img of getExerciseImages(ex); trackBy: trackByImage"
+                     [src]="img" (error)="onExerciseImageError(img)" [alt]="ex.name"
+                     class="h-full w-full object-contain" loading="lazy" />
+              </ng-container>
+              <ng-template #noImage><app-icon name="dumbbell" sizeClass="h-8 w-8"></app-icon></ng-template>
+            </div>
+            <div class="flex min-w-0 flex-1 flex-col p-5">
+              <h3 class="mb-2 break-words text-lg font-bold text-content-800">{{ ex.name }}</h3>
+              <p *ngIf="ex.description" class="mb-4 break-words text-sm leading-6 text-content-600">{{ ex.description }}</p>
+              <div class="mt-auto pt-4">
+                <app-button variant="secondary" appearance="outline" [fullWidth]="true"
+                            [ariaExpanded]="expandedExerciseId === ex.id"
+                            [ariaControls]="'user-exercise-detail-' + ex.id"
+                            (buttonClick)="toggleDetails(ex.id)">
+                  <app-icon name="eye" sizeClass="h-5 w-5"></app-icon>
+                  {{ (expandedExerciseId === ex.id ? 'userExerciseLibrary.hideDetails' : 'userExerciseLibrary.viewDetails') | translate }}
+                </app-button>
+              </div>
+              @if (expandedExerciseId === ex.id) {
+                <section [id]="'user-exercise-detail-' + ex.id"
+                         class="mt-4 space-y-3 border-t border-surface-200 pt-4 text-sm text-content-700">
+                  @if (ex.bodyPart) { <p><strong>{{ 'userExerciseLibrary.bodyPart' | translate }}:</strong> {{ bodyPartLabel(ex.bodyPart) }}</p> }
+                  @if (ex.equipment) { <p><strong>{{ 'userExerciseLibrary.equipment' | translate }}:</strong> {{ equipmentLabel(ex.equipment) }}</p> }
+                  @if (ex.primaryMuscles) { <p><strong>{{ 'userExerciseLibrary.primaryMuscles' | translate }}:</strong> {{ ex.primaryMuscles }}</p> }
+                  @if (ex.secondaryMuscles) { <p><strong>{{ 'userExerciseLibrary.secondaryMuscles' | translate }}:</strong> {{ ex.secondaryMuscles }}</p> }
+                  @if (ex.instructions) { <p class="whitespace-pre-line break-words"><strong>{{ 'userExerciseLibrary.instructions' | translate }}:</strong> {{ ex.instructions }}</p> }
+                  @if (ex.tips) { <p class="whitespace-pre-line break-words"><strong>{{ 'userExerciseLibrary.tips' | translate }}:</strong> {{ ex.tips }}</p> }
+                  @if (ex.synonyms) { <p class="break-words"><strong>{{ 'userExerciseLibrary.synonyms' | translate }}:</strong> {{ ex.synonyms }}</p> }
+                  @if (!ex.bodyPart && !ex.equipment && !ex.primaryMuscles && !ex.secondaryMuscles && !ex.instructions && !ex.tips && !ex.synonyms) {
+                    <p>{{ 'userExerciseLibrary.noDetails' | translate }}</p>
+                  }
+                </section>
+              }
+            </div>
+          </app-card>
+        </div>
+        <app-pagination [totalItems]="totalElements" [pageSize]="itemsPerPage"
+                        [currentPage]="currentPage + 1" [showPageSize]="false" [showInfo]="true"
+                        (pageChange)="onPageChange($event)"></app-pagination>
+      } @else if (!message) {
+        <app-message [message]="hasActiveSearch ? 'userExerciseLibrary.noSearchResults' : 'userExerciseLibrary.noExercises'" type="info"></app-message>
+      }
+    }
+  </div>
+</div>

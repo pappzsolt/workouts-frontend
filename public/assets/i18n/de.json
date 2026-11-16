@@ -1,4 +1,36 @@
 {
+  "userExerciseLibrary": {
+    "title": "Übungsbibliothek",
+    "intro": "Sieh dir Übungen und ihre Ausführung an. Beim Erstellen eines eigenen Programms oder Einzeltrainings kannst du Übungen auswählen.",
+    "createProgram": "Eigenes Programm erstellen",
+    "createWorkout": "Einzeltraining erstellen",
+    "viewDetails": "Details anzeigen",
+    "hideDetails": "Details schließen",
+    "bodyPart": "Körperbereich",
+    "equipment": "Gerät",
+    "primaryMuscles": "Primäre Muskeln",
+    "secondaryMuscles": "Sekundäre Muskeln",
+    "instructions": "Ausführung",
+    "tips": "Tipps",
+    "synonyms": "Andere Bezeichnungen",
+    "noDetails": "Keine weiteren Details vorhanden.",
+    "search": "Übungen suchen",
+    "searchPlaceholder": "Übungsname...",
+    "searchIn": "Suchfeld",
+    "searchFields": {
+      "all": "Alle Felder",
+      "name": "Name",
+      "bodyPart": "Körperbereich",
+      "primaryMuscles": "Primärer Muskel",
+      "secondaryMuscles": "Sekundärer Muskel"
+    },
+    "sortByName": "Übungsname",
+    "noSearchResults": "Keine Übungen entsprechen der Suche.",
+    "noExercises": "Keine Übungen gefunden.",
+    "loadError": "Die Übungen konnten nicht geladen werden.",
+    "filterLoadError": "Körperteil- und Gerätefilter konnten nicht geladen werden.",
+    "all": "Alle"
+  },
   "setEffort": {
     "title": "Satzanstrengung",
     "targetRpe": "Geplantes RPE",

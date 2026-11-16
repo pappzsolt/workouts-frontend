@@ -21,6 +21,11 @@
       ></app-dashboard-action>
       <app-dashboard-action icon="barbell" [label]="'personalLibrary.workoutsTitle' | translate" (activated)="navigateTo('user/personal-workouts')" />
       <app-dashboard-action
+        icon="clipboard-list"
+        [label]="'userExerciseLibrary.title' | translate"
+        (activated)="navigateTo('user/exercise-library')"
+      ></app-dashboard-action>
+      <app-dashboard-action
         icon="pencil-simple"
         [label]="'personalPrograms.title' | translate"
         (activated)="navigateTo('user/personal-programs')"

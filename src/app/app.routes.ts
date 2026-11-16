@@ -278,6 +278,11 @@ export const routes: Routes = [
       },
 
       {
+        path: 'exercise-library',
+        loadComponent: () => import('./components/user-dashboard/operations/user-exercise-library/user-exercise-library.component').then(m => m.UserExerciseLibraryComponent),
+      },
+
+      {
         path: 'workout-templates',
         loadComponent: () => import('./components/user-dashboard/operations/personal-programs/workout-templates.component').then(m => m.WorkoutTemplatesComponent),
       },

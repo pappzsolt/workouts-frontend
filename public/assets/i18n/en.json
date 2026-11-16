@@ -1,4 +1,36 @@
 {
+  "userExerciseLibrary": {
+    "title": "Exercise library",
+    "intro": "Browse exercises and learn how to perform them. Select exercises when building a personal program or a standalone workout.",
+    "createProgram": "Create a personal program",
+    "createWorkout": "Create a standalone workout",
+    "viewDetails": "View details",
+    "hideDetails": "Hide details",
+    "bodyPart": "Body part",
+    "equipment": "Equipment",
+    "primaryMuscles": "Primary muscles",
+    "secondaryMuscles": "Secondary muscles",
+    "instructions": "Instructions",
+    "tips": "Tips",
+    "synonyms": "Also known as",
+    "noDetails": "No further details available.",
+    "search": "Search exercises",
+    "searchPlaceholder": "Exercise name...",
+    "searchIn": "Search in",
+    "searchFields": {
+      "all": "All fields",
+      "name": "Name",
+      "bodyPart": "Body part",
+      "primaryMuscles": "Primary muscle",
+      "secondaryMuscles": "Secondary muscle"
+    },
+    "sortByName": "Exercise name",
+    "noSearchResults": "No exercises match the search.",
+    "noExercises": "No exercises found.",
+    "loadError": "Failed to load exercises.",
+    "filterLoadError": "Could not load body part and equipment filters.",
+    "all": "All"
+  },
   "setEffort": {
     "title": "Set effort",
     "targetRpe": "Target RPE",

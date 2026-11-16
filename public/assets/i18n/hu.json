@@ -1,4 +1,36 @@
 {
+  "userExerciseLibrary": {
+    "title": "Gyakorlattár",
+    "intro": "Böngészd a gyakorlatokat és nézd meg a végrehajtásukat. A gyakorlatokat saját program vagy önálló edzés készítésekor választhatod ki.",
+    "createProgram": "Saját program összeállítása",
+    "createWorkout": "Önálló edzés összeállítása",
+    "viewDetails": "Részletek megtekintése",
+    "hideDetails": "Részletek bezárása",
+    "bodyPart": "Testrész",
+    "equipment": "Eszköz",
+    "primaryMuscles": "Elsődleges izmok",
+    "secondaryMuscles": "Másodlagos izmok",
+    "instructions": "Végrehajtás",
+    "tips": "Tippek",
+    "synonyms": "Más elnevezések",
+    "noDetails": "Nincs további részletes információ.",
+    "search": "Gyakorlat keresése",
+    "searchPlaceholder": "Gyakorlat neve...",
+    "searchIn": "Keresés mezője",
+    "searchFields": {
+      "all": "Minden mező",
+      "name": "Név",
+      "bodyPart": "Testrész",
+      "primaryMuscles": "Elsődleges izom",
+      "secondaryMuscles": "Másodlagos izom"
+    },
+    "sortByName": "Gyakorlat neve",
+    "noSearchResults": "Nincs a keresésnek megfelelő gyakorlat.",
+    "noExercises": "Nincsenek gyakorlatok.",
+    "loadError": "Nem sikerült betölteni a gyakorlatokat.",
+    "filterLoadError": "Nem sikerült betölteni a testrész- és eszközszűrőket.",
+    "all": "Mind"
+  },
   "setEffort": {
     "title": "Sorozat nehézsége",
     "targetRpe": "Tervezett RPE",
