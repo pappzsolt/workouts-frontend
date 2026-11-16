@@ -10,6 +10,8 @@ import { UserMyProgramsService } from '../../../../services/user/user-my-program
 
 import { ApiResponse } from '../../../../models/backend-dto/common/api-response';
 import { UserProgram, ProgramProgress } from '../../../../models/program.model';
+import { toIsoDate } from '../../../../shared/local-date';
+import { selectCurrentUserPrograms } from './user-program-list';
 import { SidePaginationComponent } from '../../../shared/components/side-pagination/side-pagination.component';
 import { LanguageService } from '../../../../services/shared/language.service';
 import { ProgramExportService } from '../../../../services/shared/program-export.service';
@@ -181,7 +183,11 @@ export class UserMyProgramsComponent implements OnInit, OnDestroy {
     this.loadFailed = !response.success;
     this.messageType = response.success ? 'info' : 'error';
     this.message = responseMessage([response], response.success ? '' : 'userMyPrograms.loadError');
-    this.allPrograms = response.success ? response.data ?? [] : [];
+    // Only show programs that have not yet ended, newest start date first.
+    // A program ending today is already considered finished in this list.
+    this.allPrograms = response.success
+      ? selectCurrentUserPrograms(response.data ?? [], toIsoDate(new Date()))
+      : [];
     this.currentPage = 1;
 
     if (this.allPrograms.length === 0) {
