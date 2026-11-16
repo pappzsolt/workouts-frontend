@@ -324,6 +324,11 @@ export const routes: Routes = [
       },
 
       {
+        path: 'completed-programs',
+        loadComponent: () => import('./components/user-dashboard/operations/completed-program-history/completed-program-history.component').then(m => m.CompletedProgramHistoryComponent),
+      },
+
+      {
         path: 'program-statistics',
         loadComponent: () => import('./components/user-dashboard/operations/program-statistics/program-statistics.component').then(m => m.UserProgramStatisticsComponent),
       },
