@@ -13,6 +13,7 @@ import { RecaptchaService, recaptchaApi } from '../../services/account-deletion/
   selector: 'app-delete-account', standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslatePipe, LanguageSelectorComponent],
   templateUrl: './delete-account.component.html',
+  host: { class: 'flex min-w-0 flex-1 flex-col' },
   styleUrl: './delete-account.component.css',
 })
 export class DeleteAccountComponent implements AfterViewInit {

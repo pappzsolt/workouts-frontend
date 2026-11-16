@@ -11,7 +11,6 @@ import { RouterModule } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AppButtonComponent } from '../../components/shared/components/app-button/app-button.component';
 import { AppIconComponent } from '../../components/shared/components/app-icon/app-icon.component';
-import { APP_VERSION } from '../../config/app-version';
 import type { MenuItem } from '../../models/common/menu-item.model';
 
 @Component({
@@ -29,15 +28,14 @@ import type { MenuItem } from '../../models/common/menu-item.model';
     GuidedTourComponent,
   ],
   templateUrl: './layout.component.html',
+  host: { class: 'flex min-w-0 flex-1 flex-col' },
 })
 export class LayoutComponent implements OnInit {
   readonly guidedTour = inject(GuidedTourService);
   guideRole: GuideRole | null = null;
   username: string | null = null;
   role: string | null = null;
-  currentYear: number = new Date().getFullYear();
   currentDate: Date = new Date();
-  readonly appVersion = APP_VERSION;
 
   menuOpen = false; // <-- hamburger menü állapota
 

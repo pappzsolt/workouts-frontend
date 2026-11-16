@@ -1,2 +1,19 @@
-<!-- app.component.html -->
-<router-outlet></router-outlet>
+<!-- A lábléc az alkalmazás gyökerében van: minden route ugyanazt az egy példányt használja. -->
+<div class="flex min-h-screen min-h-[100dvh] min-w-0 flex-col">
+  <div class="flex min-w-0 flex-1 flex-col bg-gradient-to-br from-surface-50 via-primary-50/40 to-primary-50/50">
+    <router-outlet></router-outlet>
+  </div>
+
+  <!-- Normál dokumentumfolyam: telefonon sem takarja ki az űrlapokat; iOS safe-area támogatás. -->
+  <footer
+    class="w-full shrink-0 border-t border-surface-200 bg-white px-3 py-4 text-center text-sm text-content-500 shadow-sm sm:px-4"
+    style="padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px))"
+  >
+    <div>
+      &copy; {{ currentYear }} Fitness App. {{ 'header.copyright' | translate }}
+    </div>
+    <div class="mt-1 text-xs text-content-400">
+      v{{ appVersion }}
+    </div>
+  </footer>
+</div>
