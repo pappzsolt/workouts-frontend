@@ -41,17 +41,7 @@
   </div>
 }
 
-<div class="mt-6 flex flex-col gap-3 border-t border-surface-200 pt-4">
-  <div class="flex flex-wrap gap-2">
-    <a [routerLink]="['/coach/workouts', workout.workoutId, 'edit']"
-       class="inline-flex min-h-11 items-center rounded-xl border border-surface-300 bg-white px-4 text-sm font-semibold text-content-700 hover:bg-surface-50">
-      {{ 'coachWorkspace.editor.openInLibrary' | translate }}
-    </a>
-    <button type="button" (click)="copyToLibrary.emit()" [disabled]="busy"
-            class="btn btn-neutral">
-      {{ 'coachWorkspace.editor.copyToLibrary' | translate }}
-    </button>
-  </div>
+<div class="mt-6 flex flex-col gap-4 border-t border-surface-200 pt-4">
   <h3 class="text-sm font-semibold text-content-800">{{ 'coachWorkspace.editor.moreDays' | translate }}</h3>
   @if (confirmRepeat()) {
     <div class="flex flex-col gap-2 rounded-xl bg-primary-50 p-3 text-sm text-primary-800">
@@ -70,7 +60,7 @@
     </div>
   } @else {
     <button type="button" (click)="confirmRepeat.set(true)" [disabled]="busy || weeklyRepeatDays.length === 0"
-            class="btn btn-outline self-start">
+            class="btn btn-outline w-full sm:w-auto">
       <app-icon name="repeat" sizeClass="h-4 w-4" />
       {{ 'coachWorkspace.editor.repeatWeekly' | translate }}
     </button>
@@ -78,26 +68,39 @@
       <p class="text-xs text-content-600">{{ 'coachWorkspace.editor.repeatNothing' | translate }}</p>
     }
   }
-  <div class="flex flex-wrap items-end gap-2">
-    <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+  <div class="flex flex-col items-stretch gap-2 sm:flex-row sm:items-end">
+    <label class="flex min-w-0 flex-1 flex-col gap-1 text-sm font-semibold text-content-800">
       {{ 'coachWorkspace.editor.alsoOnDay' | translate }}
-      <input appInput="compact" type="date" [min]="firstDate" [max]="lastDate" name="extraDate" [(ngModel)]="extraDate" class="w-44" />
+      <input appInput="compact" type="date" [min]="firstDate" [max]="lastDate" name="extraDate" [(ngModel)]="extraDate" class="w-full" />
     </label>
     <button type="button" (click)="addToAnotherDay.emit()" [disabled]="busy"
-            class="btn btn-outline">
+            class="btn btn-outline w-full sm:w-auto">
       {{ 'coachWorkspace.editor.addToThatDay' | translate }}
     </button>
   </div>
-  <div class="flex flex-wrap items-end gap-2">
-    <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+  <div class="flex flex-col items-stretch gap-2 sm:flex-row sm:items-end">
+    <label class="flex min-w-0 flex-1 flex-col gap-1 text-sm font-semibold text-content-800">
       {{ 'coachWorkspace.editor.moveToDay' | translate }}
-      <input appInput="compact" type="date" [min]="firstDate" [max]="lastDate" name="moveDate" [(ngModel)]="moveDate" class="w-44" />
+      <input appInput="compact" type="date" [min]="firstDate" [max]="lastDate" name="moveDate" [(ngModel)]="moveDate" class="w-full" />
     </label>
     <button type="button" (click)="moveWorkout.emit()" [disabled]="busy || moveTargetIsSameDay"
-            class="btn btn-outline">
+            class="btn btn-outline w-full sm:w-auto">
       {{ 'coachWorkspace.client.move' | translate }}
     </button>
   </div>
+  <div class="border-t border-surface-200 pt-4">
+  <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
+    <a [routerLink]="['/coach/workouts', workout.workoutId, 'edit']"
+       class="inline-flex min-h-11 items-center justify-center rounded-xl border border-surface-300 bg-white px-4 text-sm font-semibold text-content-700 hover:bg-surface-50">
+      {{ 'coachWorkspace.editor.openInLibrary' | translate }}
+    </a>
+    <button type="button" (click)="copyToLibrary.emit()" [disabled]="busy"
+            class="btn btn-neutral w-full">
+      {{ 'coachWorkspace.editor.copyToLibrary' | translate }}
+    </button>
+  </div>
+  </div>
+  <div class="border-t border-surface-200 pt-4">
   @if (confirmRemove()) {
     <div class="flex flex-wrap items-center gap-3 rounded-xl bg-delete-50 p-3 text-sm text-delete-700">
       <span class="flex-1">{{ 'coachWorkspace.editor.removeConfirm' | translate }}</span>
@@ -110,9 +113,10 @@
     </div>
   } @else {
     <button type="button" (click)="confirmRemove.set(true)"
-            class="btn btn-ghost-delete self-start px-3">
+            class="btn btn-ghost-delete w-full sm:w-auto px-3">
       <app-icon name="trash-2" sizeClass="h-4 w-4" />
       {{ 'coachWorkspace.editor.remove' | translate }}
     </button>
   }
+  </div>
 </div>
