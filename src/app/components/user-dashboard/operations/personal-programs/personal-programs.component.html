@@ -68,7 +68,7 @@
               </div>
             </header>
             <div class="flex flex-1 flex-col px-5 py-4">
-              <div class="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
+              <div class="grid grid-cols-1 gap-3 text-sm sm:grid-cols-3">
                 @if (!program.standalone) {
                   <div class="rounded-xl bg-surface-50 px-3 py-2">
                     <p class="text-xs text-content-600">{{ 'personalPrograms.duration' | translate }}</p>
@@ -79,6 +79,12 @@
                   <div class="rounded-xl bg-surface-50 px-3 py-2">
                     <p class="text-xs text-content-600">{{ (program.standalone ? 'personalWorkouts.startDate' : 'personalPrograms.startDate') | translate }}</p>
                     <p class="font-semibold text-content-800">{{ program.startDate | date: 'yyyy.MM.dd' }}</p>
+                  </div>
+                }
+                @if (!program.standalone && programEndDate(program.startDate, program.durationDays); as endDate) {
+                  <div class="rounded-xl bg-surface-50 px-3 py-2">
+                    <p class="text-xs text-content-600">{{ 'personalPrograms.endDate' | translate }}</p>
+                    <p class="font-semibold text-content-800">{{ endDate | date: 'yyyy.MM.dd' }}</p>
                   </div>
                 }
               </div>

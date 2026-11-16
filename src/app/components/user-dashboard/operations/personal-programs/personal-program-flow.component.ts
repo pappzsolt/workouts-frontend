@@ -18,6 +18,7 @@ import type { PersonalProgramDays } from './personal-program-days';
 import type { PersonalProgramActions } from './personal-program-actions';
 import { validPersonalPrescriptions } from './personal-prescriptions';
 import { addDays, fromIsoDate, toIsoDate } from '../../../../shared/local-date';
+import { programDayDate, programDayIndex, programEndDate } from '../../../../shared/program-date';
 
 /** Shared personal program and standalone workout presentation; all mutations and persistence remain in existing handlers. */
 @Component({
@@ -298,6 +299,39 @@ export class PersonalProgramFlowComponent implements OnChanges {
       row.targetRepetitions !== first.targetRepetitions || row.targetWeightKg !== first.targetWeightKg ||
       row.restSeconds !== first.restSeconds || row.targetRpe !== first.targetRpe || row.notes !== first.notes,
     );
+  }
+
+  get endDate(): string | null {
+    return programEndDate(this.state.model.startDate, this.state.model.durationDays);
+  }
+
+  /** The date shown on a started program follows its execution, not its frozen draft index. */
+  dayDate(day: PersonalProgramDay): string | null {
+    const index = this.state.started ? this.days.displayIndexFor(day.dayIndex) : day.dayIndex;
+    return programDayDate(this.state.model.startDate, index);
+  }
+
+  /** Drafts still save dayIndex; the form edits it using a human-readable calendar date. */
+  changeDayDate(day: PersonalProgramDay, event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const revert = () => { input.value = this.dayDate(day) ?? ''; };
+    if (this.state.locked || this.state.standaloneMode || !this.state.model.workouts.includes(day)) {
+      revert();
+      return;
+    }
+    const index = programDayIndex(this.state.model.startDate, input.value);
+    if (index === null || index < 1 || index > this.state.model.durationDays ||
+        this.state.model.workouts.some(other => other !== day && other.dayIndex === index)) {
+      this.state.message = 'personalEditorUi.dayDateInvalid';
+      this.state.messageType = 'error';
+      revert();
+      return;
+    }
+    if (index !== day.dayIndex) {
+      day.dayIndex = index;
+      this.days.selectedDay = index;
+      this.state.changed();
+    }
   }
 
   get selectedDate(): Date | null {

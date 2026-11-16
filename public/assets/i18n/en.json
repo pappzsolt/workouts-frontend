@@ -1545,6 +1545,8 @@
     "details": "Program details",
     "name": "Program name",
     "description": "Description",
+    "endDate": "End date",
+    "dayDate": "Workout date",
     "startDate": "Start date",
     "dateHint": "Leave empty to use the day you start the program.",
     "difficulty": "Difficulty",
@@ -1579,7 +1581,7 @@
     "copy": "Create copy",
     "startHint": "Save your changes before starting. Include at least one training day and at least one exercise in every workout. Check set targets on the other days too.",
     "noFreeDay": "No free days left. Increase the program duration.",
-    "invalidDays": "Workout day numbers must be unique and within the program duration.",
+    "invalidDays": "Workout dates must be unique and within the program duration.",
     "saved": "Your personal program was saved.",
     "startSuccess": "The program has started. Select Open workouts to begin training.",
     "startTitle": "Start program",
@@ -1925,6 +1927,8 @@
     "saved": "Workout plan saved. Check the date and targets before starting."
   },
   "personalEditorUi": {
+    "dayDateInvalid": "Choose a free date between the program start and end dates.",
+    "dayDateRequiresStart": "Set the program start date before changing the workout date.",
     "actionAppliesTo": "Selected item:",
     "moveDatePickerHint": "Colored dates are available; other dates cannot be selected.",
     "moveDayTitle": "Reschedule workout",

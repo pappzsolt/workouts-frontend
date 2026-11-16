@@ -20,6 +20,7 @@ import { PersonalProgramService } from '../../../../services/user/personal-progr
 import { LanguageService } from '../../../../services/shared/language.service';
 import { PersonalProgramSummary } from '../../../../models/personal-program.model';
 import { errorMessage } from '../../../../models/backend-dto/common/api-response-message';
+import { programEndDate } from '../../../../shared/program-date';
 
 @Component({
   selector: 'app-personal-programs',
@@ -47,6 +48,7 @@ export class PersonalProgramsComponent implements OnInit {
   private readonly language = inject(LanguageService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  readonly programEndDate = programEndDate;
   programs: PersonalProgramSummary[] = [];
   private readonly reload$ = new Subject<void>();
   search = '';

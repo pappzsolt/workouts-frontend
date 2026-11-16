@@ -1545,6 +1545,8 @@
     "details": "Programmdaten",
     "name": "Programmname",
     "description": "Beschreibung",
+    "endDate": "Enddatum",
+    "dayDate": "Trainingsdatum",
     "startDate": "Startdatum",
     "dateHint": "Leer lassen, um den Tag des Programmstarts zu verwenden.",
     "difficulty": "Schwierigkeit",
@@ -1579,7 +1581,7 @@
     "copy": "Kopie erstellen",
     "startHint": "Speichere Änderungen vor dem Start. Mindestens ein Trainingstag und eine Übung pro Training sind erforderlich. Prüfe auch die Satzziele der anderen Tage.",
     "noFreeDay": "Keine freien Tage mehr. Verlängere die Programmdauer.",
-    "invalidDays": "Tagesnummern müssen eindeutig sein und innerhalb der Programmdauer liegen.",
+    "invalidDays": "Trainingstage müssen eindeutige Daten innerhalb der Programmdauer haben.",
     "saved": "Dein eigenes Programm wurde gespeichert.",
     "startSuccess": "Das Programm wurde gestartet. Öffne die Trainingseinheiten, um zu beginnen.",
     "startTitle": "Programm starten",
@@ -1925,6 +1927,8 @@
     "saved": "Trainingsplan gespeichert. Prüfe vor dem Start das Datum und die Ziele."
   },
   "personalEditorUi": {
+    "dayDateInvalid": "Wähle ein freies Datum zwischen Beginn und Ende des Programms.",
+    "dayDateRequiresStart": "Lege zuerst das Startdatum des Programms fest, um das Trainingsdatum zu ändern.",
     "actionAppliesTo": "Ausgewählter Eintrag:",
     "moveDatePickerHint": "Markierte Tage sind verfügbar; andere Tage sind nicht auswählbar.",
     "moveDayTitle": "Training verschieben",

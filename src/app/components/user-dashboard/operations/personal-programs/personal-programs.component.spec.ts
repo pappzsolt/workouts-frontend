@@ -34,6 +34,11 @@ describe('PersonalProgramsComponent pagination and personal actions', () => {
     component = TestBed.runInInjectionContext(() => new PersonalProgramsComponent());
     component.ngOnInit();
   });
+  it('calculates the inclusive end date on a program card without affecting standalone workouts', () => {
+    expect(component.programEndDate('2026-11-18', 50)).toBe('2027-01-06');
+    expect(component.programEndDate(null, 50)).toBeNull();
+  });
+
   it('loads one bounded page and uses server totals', () => {
     expect(api.listPage).toHaveBeenCalledOnceWith(0, 12, false, '');
     expect(component.totalItems).toBe(30);

@@ -43,6 +43,59 @@ describe('Personal multi-day program flow', () => {
     expect(flow.moveContextDate?.getDate()).toBe(16);
   });
 
+  it('shows the actual moved date in a started program without changing the draft', () => {
+    state.started = true;
+    state.model.startDate = '2026-11-18';
+    state.model.durationDays = 50;
+    days.schedules = [{ dayIndex: 1, scheduledAt: '2026-11-20', version: 1, editable: true }];
+    expect(flow.dayDate(state.model.workouts[0])).toBe('2026-11-20');
+    expect(state.model.workouts[0].dayIndex).toBe(1);
+    expect(flow.endDate).toBe('2027-01-06');
+  });
+
+  it('changes draft workout dates using day indexes without touching other exercises', () => {
+    state.model.startDate = '2026-11-18';
+    state.model.durationDays = 50;
+    const day = state.model.workouts[0];
+    const exercises = structuredClone(day.exercises);
+    const input = document.createElement('input');
+    input.type = 'date';
+    input.value = '2026-11-20';
+    flow.changeDayDate(day, { target: input } as unknown as Event);
+    expect(day.dayIndex).toBe(3);
+    expect(days.selectedDay).toBe(3);
+    expect(day.exercises).toEqual(exercises);
+    expect(state.dirty).toBeTrue();
+  });
+
+  it('rejects dates outside the duration or already occupied, without changing the draft', () => {
+    state.model.startDate = '2026-11-18';
+    state.model.durationDays = 50;
+    const day = state.model.workouts[0];
+    state.model.workouts.push({ ...structuredClone(day), dayIndex: 2 });
+    const input = document.createElement('input');
+    input.type = 'date';
+    for (const invalid of ['2026-11-19', '2027-01-07', '2026-11-17']) {
+      input.value = invalid;
+      flow.changeDayDate(day, { target: input } as unknown as Event);
+      expect(day.dayIndex).toBe(1);
+      expect(input.value).toBe('2026-11-18');
+      expect(state.dirty).toBeFalse();
+      expect(state.message).toBe('personalEditorUi.dayDateInvalid');
+    }
+  });
+
+  it('never changes the structure of an already started program via a date input', () => {
+    state.started = true;
+    state.model.startDate = '2026-11-18';
+    const input = document.createElement('input');
+    input.type = 'date';
+    input.value = '2026-11-20';
+    flow.changeDayDate(state.model.workouts[0], { target: input } as unknown as Event);
+    expect(state.model.workouts[0].dayIndex).toBe(1);
+    expect(state.dirty).toBeFalse();
+  });
+
   it('copies a complete independent week and never replaces occupied days', () => {
     state.model.durationDays = 21;
     state.model.workouts[0].exercises[0].setTargets = [{ targetRepetitions: 6,

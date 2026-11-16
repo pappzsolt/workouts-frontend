@@ -1545,6 +1545,8 @@
     "details": "Program adatai",
     "name": "Program neve",
     "description": "Leírás",
+    "endDate": "Befejezés dátuma",
+    "dayDate": "Edzés dátuma",
     "startDate": "Kezdőnap",
     "dateHint": "Ha üresen hagyod, az indítás napja lesz a kezdőnap.",
     "difficulty": "Nehézség",
@@ -1579,7 +1581,7 @@
     "copy": "Másolat készítése",
     "startHint": "Indítás előtt mentsd a változásokat. Legalább egy edzésnap és minden edzésen legalább egy gyakorlat szükséges. Ellenőrizd a többi nap sorozatcéljait is.",
     "noFreeDay": "Nincs több szabad nap. Növeld a program időtartamát.",
-    "invalidDays": "Minden edzésnap sorszáma legyen egyedi, és férjen bele a program időtartamába.",
+    "invalidDays": "Minden edzésnap dátuma legyen egyedi, és essen a program időtartamán belül.",
     "saved": "A saját programot mentettük.",
     "startSuccess": "A program elindult. Az Edzések megnyitása gombbal kezdhetsz edzeni.",
     "startTitle": "Program indítása",
@@ -1925,6 +1927,8 @@
     "saved": "Az edzésterv mentve. Indítás előtt ellenőrizd a dátumot és a célokat."
   },
   "personalEditorUi": {
+    "dayDateInvalid": "Válassz szabad dátumot a program kezdő- és befejezőnapja között.",
+    "dayDateRequiresStart": "A dátum módosításához előbb add meg a program kezdőnapját.",
     "actionAppliesTo": "Kiválasztott elem:",
     "moveDatePickerHint": "A színezett dátumok szabadok és kiválaszthatók; a többi nap nem választható.",
     "moveDayTitle": "Edzés áthelyezése",
