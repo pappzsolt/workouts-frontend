@@ -9,7 +9,16 @@
 
     <!-- Dashboard kártyák -->
     <div data-guide="user-dashboard" class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-      <app-dashboard-action icon="barbell" [label]="'workoutTemplates.title' | translate" (activated)="navigateTo('user/workout-templates')" />
+      <app-dashboard-action
+        icon="calendar-blank"
+        [label]="'userDashboard.myWorkouts' | translate"
+        (activated)="navigateTo('user/workouts')"
+      ></app-dashboard-action>
+      <app-dashboard-action
+        icon="book-open-text"
+        [label]="'userDashboard.myPrograms' | translate"
+        (activated)="navigateTo('user/my-programs')"
+      ></app-dashboard-action>
       <app-dashboard-action icon="barbell" [label]="'personalLibrary.workoutsTitle' | translate" (activated)="navigateTo('user/personal-workouts')" />
       <app-dashboard-action
         icon="pencil-simple"
@@ -17,28 +26,16 @@
         (activated)="navigateTo('user/personal-programs')"
       ></app-dashboard-action>
       <app-dashboard-action
-        icon="book-open-text"
-        [label]="'userDashboard.myPrograms' | translate"
-        (activated)="navigateTo('user/my-programs')"
-      ></app-dashboard-action>
-
-      <app-dashboard-action
         icon="chart-bar"
         [label]="'completedProgramHistory.title' | translate"
         (activated)="navigateTo('user/completed-programs')"
       ></app-dashboard-action>
-
       <app-dashboard-action
         icon="chart-line-up"
         [label]="'userDashboard.programStatistics' | translate"
         (activated)="navigateTo('user/program-statistics')"
       ></app-dashboard-action>
-
-      <app-dashboard-action
-        icon="calendar-blank"
-        [label]="'userDashboard.myWorkouts' | translate"
-        (activated)="navigateTo('user/workouts')"
-      ></app-dashboard-action>
+      <app-dashboard-action icon="barbell" [label]="'workoutTemplates.title' | translate" (activated)="navigateTo('user/workout-templates')" />
     </div>
   </div>
 </div>

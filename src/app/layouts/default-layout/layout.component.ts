@@ -67,8 +67,11 @@ export class LayoutComponent implements OnInit {
   userMenuItems: MenuItem[] = [
     { label: 'menu.dashboard', icon: 'house', path: '/user/dashboard' },
     { label: 'menu.profile', icon: 'user-round', path: '/user/profile' },
-    { label: 'menu.deleteAccount', icon: 'user-minus', path: '/delete-account' },
+  ];
+
+  userSupportMenuItems: MenuItem[] = [
     { label: 'menu.bugReport', icon: 'triangle-alert', path: '/user/bug-report' },
+    { label: 'menu.deleteAccount', icon: 'user-minus', path: '/delete-account' },
     { label: 'menu.logout', icon: 'log-out', action: 'logout' },
   ];
 

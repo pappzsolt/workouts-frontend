@@ -115,6 +115,14 @@
           </button>
         </div>
       }
+      <!-- Felhasználói támogatás és fiókműveletek az útmutató után -->
+      <ng-container *ngIf="isUser()">
+        <app-dynamic-menu
+          [menuItems]="userSupportMenuItems"
+          (menuAction)="handleMenuAction($event)"
+          (menuNavigate)="closeMobileMenu()"
+        ></app-dynamic-menu>
+      </ng-container>
     </aside>
 
     <!-- ===================================================== -->
