@@ -37,6 +37,16 @@ describe('My programs: dates and ordering', () => {
     expect(input.map(item => item.id)).toEqual([1, 3, 5, 2, 4]);
   });
 
+  it('preserves API order for programs without start dates', () => {
+    const first = program(1, null, null, '2026-11-01T12:00:00');
+    const second = program(2, null, null, '2026-11-16T12:00:00');
+    const third = program(3, null, null);
+    const dated = program(4, '2026-11-18', '2027-01-06');
+
+    expect(selectCurrentUserPrograms([first, second, third, dated], today).map(item => item.id))
+      .toEqual([4, 1, 2, 3]);
+  });
+
   it('does not treat progress or status as expiration', () => {
     const markedCompleted = { ...program(1, '2026-11-01', '2026-11-30'), status: 'completed' };
     expect(selectCurrentUserPrograms([markedCompleted], today)).toEqual([markedCompleted]);
