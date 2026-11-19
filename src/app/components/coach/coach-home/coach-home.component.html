@@ -1,4 +1,4 @@
-<div class="min-h-full min-w-0 px-4 py-6 sm:px-6 lg:px-8">
+<div class="workouts-coach-home min-h-full min-w-0 px-4 py-6 sm:px-6 lg:px-8">
   <div class="mx-auto flex w-full max-w-6xl min-w-0 flex-col gap-6">
 
     <!-- Fejléc + gyors műveletek -->
@@ -34,15 +34,15 @@
       <!-- Összesítő -->
       <section [attr.aria-label]="'coachWorkspace.home.summary' | translate"
                class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div class="rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
+        <div class="workouts-summary-card rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
           <p class="text-sm text-content-600">{{ 'coachWorkspace.home.todayWorkouts' | translate }}</p>
           <p class="mt-1 text-3xl font-bold text-content-900">{{ todayRows.length }}</p>
         </div>
-        <div class="rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
+        <div class="workouts-summary-card rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
           <p class="text-sm text-content-600">{{ 'coachWorkspace.home.doneToday' | translate }}</p>
           <p class="mt-1 text-3xl font-bold text-primary-700">{{ doneToday }} / {{ todayRows.length }}</p>
         </div>
-        <div class="rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
+        <div class="workouts-summary-card rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
           <p class="text-sm text-content-600">{{ 'coachWorkspace.home.needsAttention' | translate }}</p>
           <p class="mt-1 text-3xl font-bold" [class.text-warning-700]="attention.length > 0" [class.text-content-900]="attention.length === 0">
             {{ attention.length }}
