@@ -2,7 +2,7 @@
   <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
     <!-- Oldal címe -->
     <div class="text-center">
-      <h2 appHeading="page" class="break-words">
+      <h2 appHeading="page" class="workouts-page-title break-words">
         {{ 'adminMemberSearch.title' | translate }}
       </h2>
     </div>
@@ -12,7 +12,7 @@
 
     <!-- Keresőmező + gomb -->
     <div
-      class="flex flex-col gap-3 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:flex-row sm:items-end sm:p-5"
+      class="workouts-panel flex flex-col gap-3 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:flex-row sm:items-end sm:p-5"
     >
       <app-search
         inputId="memberSearch"
@@ -37,7 +37,7 @@
     <!-- Loading -->
     <div
       *ngIf="loading"
-      class="flex min-h-32 items-center justify-center rounded-2xl border border-surface-200 bg-white px-4 py-8 text-center text-sm font-medium text-content-500 shadow-sm"
+      class="workouts-panel flex min-h-32 items-center justify-center rounded-2xl border border-surface-200 bg-white px-4 py-8 text-center text-sm font-medium text-content-500 shadow-sm"
     >
       {{ 'adminMemberSearch.searching' | translate }}
     </div>
@@ -72,7 +72,7 @@
         >
           <div
             *ngFor="let member of displayedMembers; trackBy: trackByMember"
-            class="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary-200 hover:shadow-md"
+            class="workouts-panel group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-primary-200 hover:shadow-md"
           >
             <!-- Avatar -->
             <div
@@ -141,9 +141,9 @@
         <!-- Táblázat nézet -->
         <div
           *ngIf="viewMode === 'table'"
-          class="min-w-0 overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm"
+          class="workouts-panel min-w-0 overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-sm"
         >
-          <div class="w-full overflow-x-auto">
+          <div class="workouts-table-scroll w-full overflow-x-auto">
             <table appTable class="min-w-[800px]">
               <thead>
                 <tr class="border-b border-surface-200 bg-surface-50">
@@ -230,7 +230,7 @@
       <!-- Nincs találat -->
       <div
         *ngIf="displayedMembers.length === 0 && members.length === 0"
-        class="flex min-h-32 items-center justify-center rounded-2xl border border-surface-200 bg-white px-4 py-8 text-center text-sm font-medium text-content-500 shadow-sm"
+        class="workouts-panel flex min-h-32 items-center justify-center rounded-2xl border border-surface-200 bg-white px-4 py-8 text-center text-sm font-medium text-content-500 shadow-sm"
       >
         {{ 'adminMemberSearch.noResults' | translate }}
       </div>

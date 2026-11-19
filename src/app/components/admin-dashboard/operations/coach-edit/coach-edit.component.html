@@ -5,7 +5,7 @@
     <!-- ============================= -->
 
     <div class="text-center">
-      <h2 appHeading="page" class="break-words">
+      <h2 appHeading="page" class="workouts-page-title break-words">
         {{ 'adminCoachEdit.title' | translate }}
       </h2>
     </div>
@@ -26,7 +26,7 @@
     <!-- COACH KIVÁLASZTÁSA -->
     <!-- ============================= -->
 
-    <div class="rounded-2xl border border-surface-200 bg-white p-5 shadow-sm sm:p-6">
+    <div class="workouts-panel rounded-2xl border border-surface-200 bg-white p-5 shadow-sm sm:p-6">
       <app-form-field labelKey="adminCoachEdit.selectCoach" controlId="coachSelect">
         <app-select
           [searchable]="true"
@@ -46,7 +46,7 @@
 
     <form
       appProfileFields
-      class="rounded-2xl border border-surface-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8"
+      class="workouts-panel rounded-2xl border border-surface-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8"
       (ngSubmit)="onSave()"
     >
       <!-- Név -->

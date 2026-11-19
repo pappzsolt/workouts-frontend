@@ -1,7 +1,7 @@
 <div class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8">
   <div class="mx-auto flex w-full max-w-3xl min-w-0 flex-col gap-6">
     <div class="text-center">
-      <h2 appHeading="page" class="flex items-center justify-center gap-2 break-words">
+      <h2 appHeading="page" class="workouts-page-title flex items-center justify-center gap-2 break-words">
         <app-icon name="triangle-alert" sizeClass="h-6 w-6" />
         <span>{{ 'bugReport.title' | translate }}</span>
       </h2>
@@ -10,7 +10,7 @@
 
     @if (created) {
       <!-- Sikeres beküldés -->
-      <div class="flex flex-col items-center gap-4 rounded-2xl border border-surface-200 bg-white p-6 text-center shadow-sm sm:p-8" role="status">
+      <div class="workouts-panel flex flex-col items-center gap-4 rounded-2xl border border-surface-200 bg-white p-6 text-center shadow-sm sm:p-8" role="status">
         <span class="flex h-14 w-14 items-center justify-center rounded-full bg-primary-50 text-primary-600" aria-hidden="true">
           <app-icon name="circle-check" sizeClass="h-7 w-7" />
         </span>
@@ -27,7 +27,7 @@
       </div>
     } @else {
       <form [formGroup]="form" (ngSubmit)="submit()" novalidate
-            class="flex flex-col gap-5 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-6">
+            class="workouts-panel flex flex-col gap-5 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-6">
         <!-- Bejelentő és dátum: a szerver rögzíti, itt csak tájékoztatás -->
         <div class="flex flex-wrap gap-x-6 gap-y-1 rounded-xl bg-surface-50 px-4 py-3 text-sm">
           <p><span class="mr-1 text-content-500">{{ 'bugReport.reporter' | translate }}:</span>

@@ -8,12 +8,12 @@
     } @else if (client) {
 
       <!-- Ügyfél fejléc -->
-      <section class="flex flex-wrap items-center gap-5 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
+      <section class="workouts-panel flex flex-wrap items-center gap-5 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
         <span aria-hidden="true" class="flex h-14 w-14 flex-none items-center justify-center rounded-full bg-primary-100 text-xl font-bold text-primary-800">
           {{ initial(client.username) }}
         </span>
         <div class="flex min-w-0 flex-[1_1_240px] flex-col gap-1">
-          <h1 class="truncate text-2xl font-bold text-content-900">{{ client.username }}</h1>
+          <h1 class="workouts-page-title text-2xl font-bold text-content-900">{{ client.username }}</h1>
           <p class="text-sm text-content-600">
             @if (client.age) { {{ 'coachWorkspace.client.age' | translate: { value: client.age } }} · }
             @if (client.weight) { {{ client.weight }} kg · }
@@ -129,7 +129,7 @@
               <!-- Kiválasztott edzés -->
               @if (selected; as workout) {
                 <section [attr.aria-label]="'coachWorkspace.client.selectedWorkout' | translate"
-                         class="flex min-w-0 flex-[999_1_560px] flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
+                         class="workouts-panel flex min-w-0 flex-[999_1_560px] flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
                   <div class="flex flex-wrap items-center gap-3">
                     <button type="button" (click)="selectWorkout(selectedIndex - 1)" [disabled]="selectedIndex <= 0"
                             [attr.aria-label]="'coachWorkspace.client.previousWorkout' | translate"

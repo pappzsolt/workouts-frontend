@@ -17,7 +17,7 @@
   *ngIf="routerLink !== null; else staticCard"
   [routerLink]="routerLink"
   [queryParams]="queryParams"
-  class="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 group flex min-w-0 flex-col rounded-2xl transition duration-200"
+  class="workouts-panel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 group flex min-w-0 flex-col rounded-2xl transition duration-200"
   [class.overflow-hidden]="overflow === 'hidden'"
   [class.overflow-visible]="overflow === 'visible'"
   [class.overflow-auto]="overflow === 'auto'"
@@ -33,7 +33,7 @@
 
 <ng-template #staticCard>
   <div
-    class="group flex min-w-0 flex-col rounded-2xl transition duration-200"
+    class="workouts-panel group flex min-w-0 flex-col rounded-2xl transition duration-200"
     [class.overflow-hidden]="overflow === 'hidden'"
     [class.overflow-visible]="overflow === 'visible'"
     [class.overflow-auto]="overflow === 'auto'"

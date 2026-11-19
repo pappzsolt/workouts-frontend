@@ -1,5 +1,5 @@
 <nav [attr.aria-label]="'coachWorkspace.client.workoutList' | translate"
-     class="flex max-h-[70rem] min-w-0 flex-[1_1_280px] flex-col gap-1 overflow-y-auto rounded-2xl border border-surface-200 bg-white p-3 shadow-sm lg:max-w-sm">
+     class="workouts-panel flex max-h-[70rem] min-w-0 flex-[1_1_280px] flex-col gap-1 overflow-y-auto rounded-2xl border border-surface-200 bg-white p-3 shadow-sm lg:max-w-sm">
   @for (week of weeks; track week.from) {
     <h2 class="mx-2 mb-1 mt-3 text-xs font-bold uppercase tracking-wide text-content-600">
       {{ 'coachWorkspace.client.weekLabel' | translate: { n: week.label } }} · {{ week.from | date: 'MM.dd' }}–{{ week.to | date: 'MM.dd' }}

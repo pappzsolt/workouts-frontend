@@ -2,7 +2,7 @@
   <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
     <!-- Cím -->
     <div class="text-center">
-      <h2 appHeading="page" class="break-words">
+      <h2 appHeading="page" class="workouts-page-title break-words">
         {{ 'adminUsers.title' | translate }}
       </h2>
     </div>
@@ -79,7 +79,7 @@
     <!-- Üres lista -->
     <ng-template #noUsers>
       <div
-        class="flex min-h-32 items-center justify-center rounded-2xl border border-surface-200 bg-white px-4 py-8 text-center text-sm font-medium text-content-500 shadow-sm"
+        class="workouts-panel flex min-h-32 items-center justify-center rounded-2xl border border-surface-200 bg-white px-4 py-8 text-center text-sm font-medium text-content-500 shadow-sm"
       >
         {{ (searchTerm.trim() ? 'appSearch.noResults' : 'adminUsers.noUsers') | translate }}
       </div>

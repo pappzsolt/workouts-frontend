@@ -2,7 +2,7 @@
   <div class="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-6">
     <!-- Oldal címe -->
     <div class="text-center">
-      <h2 appHeading="page" class="break-words">
+      <h2 appHeading="page" class="workouts-page-title break-words">
         {{ 'adminUserNew.title' | translate }}
       </h2>
     </div>
@@ -15,7 +15,7 @@
       appProfileFields
       #userForm="ngForm"
       (ngSubmit)="onSubmit(userForm)"
-      class="rounded-2xl border border-surface-200 bg-white p-5 shadow-sm sm:p-6"
+      class="workouts-panel rounded-2xl border border-surface-200 bg-white p-5 shadow-sm sm:p-6"
     >
       <!-- Felhasználónév -->
       <app-form-field labelKey="common.username" controlId="username" [required]="true">

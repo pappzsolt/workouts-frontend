@@ -1,7 +1,7 @@
 <div class="min-h-full bg-surface-50 px-4 py-6 sm:px-6 lg:px-8">
   <div class="mx-auto max-w-6xl space-y-6">
     <header class="flex flex-wrap items-center justify-between gap-4">
-      <h1 class="text-center text-2xl font-bold text-content-800 sm:text-3xl">{{ 'completedProgramHistory.title' | translate }}</h1>
+      <h1 class="workouts-page-title text-center text-2xl font-bold text-content-800 sm:text-3xl">{{ 'completedProgramHistory.title' | translate }}</h1>
       <a routerLink="/user/dashboard" class="btn btn-neutral">{{ 'completedProgramHistory.dashboard' | translate }}</a>
     </header>
 
@@ -29,7 +29,7 @@
       </p>
       <div class="grid gap-4 md:grid-cols-2" *ngIf="!loading">
         <button type="button" *ngFor="let program of visiblePrograms" (click)="selectProgram(program)"
-                class="w-full rounded-2xl border border-surface-200 bg-white p-5 text-left shadow-sm hover:border-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-600">
+                class="workouts-panel w-full rounded-2xl border border-surface-200 bg-white p-5 text-left shadow-sm hover:border-primary-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-600">
           <h2 class="mb-2 break-words text-xl font-bold text-content-800">{{ program.name }}</h2>
           <p *ngIf="program.description" class="mb-3 text-sm text-content-600">{{ program.description }}</p>
           <div class="grid grid-cols-2 gap-3 text-sm">
@@ -49,7 +49,7 @@
     <!-- Workout selection: history endpoint also serves revoked assignments read-only. -->
     <section *ngIf="selectedProgram && !selectedWorkout" class="space-y-4">
       <button type="button" (click)="backToPrograms()" class="btn btn-neutral">{{ 'completedProgramHistory.backToPrograms' | translate }}</button>
-      <h2 class="break-words text-2xl font-bold text-content-800">{{ selectedProgram.name }}</h2>
+      <h2 class="workouts-page-title break-words text-2xl font-bold text-content-800">{{ selectedProgram.name }}</h2>
       <p *ngIf="selectedProgram.description" class="text-content-600">{{ selectedProgram.description }}</p>
       <div class="grid grid-cols-2 gap-3 rounded-xl bg-white p-4 text-sm">
         <div>{{ 'userMyPrograms.startDate' | translate }}: <strong>{{ selectedProgram.startDate | date: 'yyyy.MM.dd' }}</strong></div>
@@ -69,7 +69,7 @@
     <!-- All exercises and set targets/results are displayed, but never bound to edit controls. -->
     <section *ngIf="selectedProgram && selectedWorkout" class="space-y-4">
       <button type="button" (click)="backToWorkouts()" class="btn btn-neutral">{{ 'completedProgramHistory.backToWorkouts' | translate }}</button>
-      <h2 class="break-words text-2xl font-bold text-content-800">{{ selectedWorkout.workoutName }}</h2>
+      <h2 class="workouts-page-title break-words text-2xl font-bold text-content-800">{{ selectedWorkout.workoutName }}</h2>
       <div class="rounded-xl bg-white p-4 text-sm text-content-600">
         <div>{{ 'userMyPrograms.startDate' | translate }}: {{ selectedWorkout.workoutDate | date: 'yyyy.MM.dd' }}</div>
         <div *ngIf="selectedWorkout.performedAt">{{ 'completedProgramHistory.performedAt' | translate }}: {{ selectedWorkout.performedAt | date: 'yyyy.MM.dd HH:mm' }}</div>
@@ -79,7 +79,7 @@
       <p *ngIf="detail?.description" class="text-content-600">{{ detail?.description }}</p>
       <p *ngIf="detail?.durationMinutes" class="text-sm text-content-600">{{ 'completedProgramHistory.durationMinutes' | translate }}: {{ detail?.durationMinutes }}</p>
       <p *ngIf="detail && !detail.exercises.length" class="text-content-600">{{ 'completedProgramHistory.noExercises' | translate }}</p>
-      <article *ngFor="let exercise of detail?.exercises" class="rounded-2xl border border-surface-200 bg-white p-4 sm:p-6">
+      <article *ngFor="let exercise of detail?.exercises" class="workouts-panel rounded-2xl border border-surface-200 bg-white p-4 sm:p-6">
         <h3 class="break-words text-lg font-bold text-content-800">{{ exercise.exercise.name }}</h3>
         <img *ngIf="exercise.exercise.imageUrl" [src]="exercise.exercise.imageUrl"
              [alt]="exercise.exercise.name ?? ''" loading="lazy" class="mt-3 max-h-64 max-w-full rounded-lg object-contain" />
@@ -97,7 +97,7 @@
         <p *ngIf="exercise.exercise.instructions" class="mt-2 whitespace-pre-line text-sm text-content-600">{{ exercise.exercise.instructions }}</p>
         <p *ngIf="exercise.exercise.tips" class="mt-2 whitespace-pre-line text-sm text-content-600">{{ exercise.exercise.tips }}</p>
         <p *ngIf="exercise.notes" class="mt-2 whitespace-pre-line text-sm text-content-600">{{ 'completedProgramHistory.notes' | translate }}: {{ exercise.notes }}</p>
-        <div class="mt-4 overflow-x-auto">
+        <div class="workouts-table-scroll mt-4 overflow-x-auto">
           <table class="w-full min-w-[660px] text-left text-sm">
             <thead><tr class="border-b border-surface-200 text-content-600">
               <th class="p-2">#</th>

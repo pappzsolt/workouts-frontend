@@ -9,7 +9,7 @@
   <div class="grid grid-cols-1 gap-6 lg:grid-cols-5">
     <app-program-day-grid [cells]="cells" [selectedDay]="selectedDay" [showMultiAdd]="false" [showProgramDay]="false" [busy]="busy || movingWorkoutId !== null"
                           (daySelected)="selectedDay = $event" />
-    <section class="min-w-0 rounded-2xl border border-surface-200 bg-white p-4 lg:col-span-2">
+    <section class="workouts-panel min-w-0 rounded-2xl border border-surface-200 bg-white p-4 lg:col-span-2">
       <h2 class="break-words text-lg font-bold text-content-900">{{ client.username }}</h2>
       <p class="mb-4 text-sm text-content-600">{{ selectedDate | date: 'yyyy.MM.dd' }}</p>
       <app-message [message]="message" [type]="messageType" role="status" />

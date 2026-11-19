@@ -3,7 +3,7 @@
 
     <div class="flex flex-wrap items-end justify-between gap-4">
       <div class="min-w-0">
-        <h1 data-guide="coach-programs" class="text-2xl font-bold text-content-900 sm:text-3xl">{{ 'coachWorkspace.programs.title' | translate }}</h1>
+        <h1 data-guide="coach-programs" class="workouts-page-title text-2xl font-bold text-content-900 sm:text-3xl">{{ 'coachWorkspace.programs.title' | translate }}</h1>
         <p class="mt-1 text-sm text-content-600">{{ 'coachWorkspace.programs.subtitle' | translate }}</p>
       </div>
       <a routerLink="/coach/programs/import" class="btn btn-neutral">{{ 'excelImport.title' | translate }}</a>
@@ -14,7 +14,7 @@
       </a>
     </div>
 
-    <div class="flex flex-wrap items-end gap-3 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm">
+    <div class="workouts-panel flex flex-wrap items-end gap-3 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm">
       <label class="flex min-w-0 flex-[1_1_240px] flex-col gap-1 text-sm font-semibold text-content-800">
         {{ 'coachWorkspace.programs.search' | translate }}
         <input appInput="default" type="search" name="programSearch" [(ngModel)]="search" (ngModelChange)="onSearchChange()" class="font-normal" />

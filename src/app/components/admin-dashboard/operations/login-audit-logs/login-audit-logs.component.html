@@ -1,7 +1,7 @@
 <div class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8">
   <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
     <div class="text-center">
-      <h2 appHeading="page" class="break-words">
+      <h2 appHeading="page" class="workouts-page-title break-words">
         {{ 'adminLoginAudit.title' | translate }}
       </h2>
       <p class="mx-auto mt-2 max-w-3xl text-sm text-content-500">
@@ -12,7 +12,7 @@
     <app-message *ngIf="message" [message]="message" [type]="messageType"></app-message>
 
     <form
-      class="rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5"
+      class="workouts-panel rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5"
       (ngSubmit)="applyFilters()"
     >
       <div class="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -99,7 +99,7 @@
 
     <div
       *ngIf="!loading"
-      class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-surface-200 bg-white px-4 py-3 text-sm text-content-600 shadow-sm"
+      class="workouts-panel flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-surface-200 bg-white px-4 py-3 text-sm text-content-600 shadow-sm"
     >
       <span>
         {{ 'adminLoginAudit.summary.total' | translate }}:
@@ -116,7 +116,7 @@
 
     <ng-container *ngIf="!loading">
       <app-card *ngIf="logs.length > 0; else noLogs" variant="outlined" class="block min-w-0">
-        <div class="w-full overflow-x-auto">
+        <div class="workouts-table-scroll w-full overflow-x-auto">
           <table appTable class="min-w-[1100px]">
             <thead>
               <tr class="border-b border-surface-200 bg-surface-50">

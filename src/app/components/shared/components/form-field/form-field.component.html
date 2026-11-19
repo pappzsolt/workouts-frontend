@@ -10,7 +10,7 @@
 
   <ng-content></ng-content>
   @if (hint) {
-    <p [id]="hintId" class="text-xs text-content-500">{{ hint | translate }}</p>
+    <p [id]="hintId" class="text-sm text-content-600">{{ hint | translate }}</p>
   }
   @if (showError && error) {
     <app-message [message]="error" type="error" [compact]="true" role="alert"

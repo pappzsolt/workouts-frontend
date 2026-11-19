@@ -1,7 +1,7 @@
 <div class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8">
   <div class="mx-auto flex w-full max-w-5xl min-w-0 flex-col gap-6">
     <div class="text-center">
-      <h2 appHeading="page" class="break-words">{{ 'adminBugReports.title' | translate }}</h2>
+      <h2 appHeading="page" class="workouts-page-title break-words">{{ 'adminBugReports.title' | translate }}</h2>
       <p class="mx-auto mt-2 max-w-3xl text-sm text-content-500">{{ 'adminBugReports.subtitle' | translate }}</p>
     </div>
 
@@ -25,7 +25,7 @@
     } @else {
       <ul class="flex flex-col gap-4">
         @for (report of reports; track report.id) {
-          <li class="min-w-0 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5" [attr.aria-label]="report.title">
+          <li class="workouts-panel min-w-0 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5" [attr.aria-label]="report.title">
             <div class="flex flex-wrap items-start justify-between gap-3">
               <div class="min-w-0 flex-1">
                 <p class="text-xs font-semibold text-content-500">#{{ report.id }} · {{ report.createdAt | date: 'yyyy.MM.dd HH:mm' }}</p>

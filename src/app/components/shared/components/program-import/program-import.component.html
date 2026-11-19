@@ -2,14 +2,14 @@
   <div class="mx-auto flex w-full max-w-4xl min-w-0 flex-col gap-6">
     <a [routerLink]="backLink" class="self-start text-sm font-semibold text-primary-700">{{ 'excelImport.back' | translate }}</a>
     <div>
-      <h1 appHeading="page">{{ 'excelImport.title' | translate }}</h1>
+      <h1 appHeading="page" class="workouts-page-title">{{ 'excelImport.title' | translate }}</h1>
       <p class="mt-2 text-sm text-content-600">{{ (scope === 'coach' ? 'excelImport.coachHint' : 'excelImport.personalHint') | translate }}</p>
     </div>
     <app-message [message]="message" type="error" role="alert" />
     @if (uncertain) { <app-message message="excelImport.uncertain" type="info" role="alert" /> }
 
     @if (result) {
-      <section aria-live="polite" class="flex flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-5">
+      <section aria-live="polite" class="workouts-panel flex flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-5">
         <h2 class="text-xl font-bold text-content-900">{{ 'excelImport.success' | translate }}</h2>
         <p class="break-words font-semibold">{{ result.programName }}</p>
         <p>{{ 'excelImport.counts' | translate: { workouts: result.workouts, exercises: result.exercises, sets: result.sets } }}</p>
@@ -24,7 +24,7 @@
         </div>
       </section>
     } @else {
-      <form #importForm="ngForm" (ngSubmit)="check()" class="rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
+      <form #importForm="ngForm" (ngSubmit)="check()" class="workouts-panel rounded-2xl border border-surface-200 bg-white p-5 shadow-sm">
         <fieldset [disabled]="!!busy" class="flex min-w-0 flex-col gap-5" [attr.aria-busy]="!!busy">
           @if (scope === 'coach') {
             <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
@@ -101,7 +101,7 @@
       </form>
 
       @if (preview) {
-        <section aria-live="polite" class="flex flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-5">
+        <section aria-live="polite" class="workouts-panel flex flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-5">
           <h2 class="text-xl font-bold text-content-900">{{ 'excelImport.previewTitle' | translate }}</h2>
           <p class="break-words font-semibold">{{ preview.programName }}</p>
           @if (scope === 'coach') { <p>{{ 'excelImport.client' | translate }}: {{ selectedClient }}</p> }

@@ -6,7 +6,7 @@
       <a routerLink="/user/workout-templates" class="btn btn-neutral justify-center">{{ 'workoutTemplates.title' | translate }}</a>
     </nav>
     <div appPageHeader="actions">
-      <h1 appHeading="page">{{ (standalone ? 'personalLibrary.workoutsTitle' : 'personalPrograms.title') | translate }}</h1>
+      <h1 appHeading="page" class="workouts-page-title">{{ (standalone ? 'personalLibrary.workoutsTitle' : 'personalPrograms.title') | translate }}</h1>
       @if (!standalone) {
         <a routerLink="/user/personal-programs/import" class="btn btn-neutral">{{ 'excelImport.title' | translate }}</a>
       }

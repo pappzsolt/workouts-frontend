@@ -1,4 +1,4 @@
-<div class="w-full rounded-2xl border border-surface-200 bg-white p-6 shadow-lg sm:p-8">
+<div class="workouts-auth-card workouts-panel w-full rounded-2xl border border-surface-200 bg-white p-6 shadow-lg sm:p-8">
   <div class="mb-6 flex justify-end">
     <app-language-selector></app-language-selector>
   </div>
@@ -9,7 +9,7 @@
       <span class="flex h-14 w-14 items-center justify-center rounded-full bg-primary-50 text-primary-600" aria-hidden="true">
         <app-icon name="clock" sizeClass="h-7 w-7" />
       </span>
-      <h2 appHeading="page">{{ 'register.successTitle' | translate }}</h2>
+      <h2 appHeading="page" class="workouts-page-title">{{ 'register.successTitle' | translate }}</h2>
       <p class="text-sm text-content-600">{{ successMessage | translate }}</p>
       <p class="text-sm text-content-600">{{ 'register.successEmailHint' | translate }}</p>
       <app-button variant="primary" type="button" class="w-full" (buttonClick)="backToLogin()"
@@ -17,7 +17,7 @@
     </div>
   } @else {
     <div class="mb-6 text-center">
-      <h2 appHeading="page">{{ 'register.title' | translate }}</h2>
+      <h2 appHeading="page" class="workouts-page-title">{{ 'register.title' | translate }}</h2>
       <p class="mt-2 text-sm text-content-500">{{ 'register.description' | translate }}</p>
     </div>
 

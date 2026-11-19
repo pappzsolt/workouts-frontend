@@ -4,7 +4,7 @@
     {{ label | translate }}
   </label>
 
-  <div class="relative min-w-0">
+  <div class="workouts-search relative min-w-0">
     <input
       [id]="inputId"
       type="text"
@@ -15,7 +15,7 @@
       autocomplete="off"
       [disabled]="disabled"
       [class.pr-14]="showClearButton"
-      class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-400 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 disabled:opacity-60 sm:text-sm"
+      class="min-h-11 w-full min-w-0 rounded-xl border border-surface-300 bg-white px-3.5 py-2.5 text-base text-content-900 shadow-sm outline-none transition duration-150 placeholder:text-content-500 hover:border-primary-400 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 disabled:cursor-not-allowed disabled:bg-surface-100 disabled:text-content-400 disabled:opacity-60 sm:text-sm"
     />
     @if (showClearButton && searchTerm) {
       <app-button
