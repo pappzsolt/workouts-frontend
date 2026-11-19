@@ -238,3 +238,115 @@ body {
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--app-primary-600) 10%, transparent);
   }
 }
+
+/*
+ * Workouts UI/UX Pro Max design pass (presentation only).
+ * Retains all existing Angular bindings, interaction semantics and API calls.
+ * Palette comes from tailwind.config.js; do not hard-code a competing theme.
+ */
+@layer components {
+  .workouts-app-shell {
+    background: linear-gradient(155deg, var(--app-surface-50) 0%, var(--app-white) 45%, var(--app-primary-50) 100%);
+  }
+
+  .workouts-action-grid {
+    align-items: stretch;
+  }
+
+  .workouts-action-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: linear-gradient(160deg, var(--app-white) 0%, var(--app-surface-50) 100%);
+    box-shadow: 0 2px 5px color-mix(in srgb, var(--app-shadow-color) 5%, transparent),
+                0 14px 40px color-mix(in srgb, var(--app-shadow-color) 4%, transparent);
+    transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+  }
+
+  .workouts-action-card::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--app-primary-600), var(--app-primary-300));
+    opacity: 0.68;
+    pointer-events: none;
+  }
+
+  .workouts-action-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px color-mix(in srgb, var(--app-shadow-color) 11%, transparent);
+  }
+
+  .workouts-action-card:focus-visible {
+    outline: 3px solid var(--app-primary-600);
+    outline-offset: 3px;
+  }
+
+  .workouts-action-icon {
+    background: linear-gradient(135deg, var(--app-primary-50), var(--app-primary-100));
+    border: 1px solid var(--app-primary-200);
+  }
+
+  .workouts-breadcrumb {
+    box-shadow: 0 2px 12px color-mix(in srgb, var(--app-shadow-color) 5%, transparent);
+  }
+
+  .workouts-side-nav .menu-item {
+    min-height: 44px;
+    border: 1px solid transparent;
+    line-height: 1.45;
+  }
+
+  .workouts-side-nav .menu-item:hover {
+    border-color: var(--app-surface-200);
+  }
+
+  .workouts-side-nav .menu-item[aria-current='page'],
+  .workouts-side-nav .menu-item[aria-expanded='true'] {
+    border-color: var(--app-primary-200);
+    background: var(--app-primary-50);
+    color: var(--app-primary-800);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workouts-action-card,
+  .workouts-action-icon,
+  .workouts-side-nav .menu-item {
+    transition: none !important;
+  }
+
+  .workouts-action-card:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 375px) {
+  .workouts-action-card {
+    min-height: 11rem;
+    padding: 1.25rem;
+  }
+
+  .workouts-action-icon {
+    height: 4rem;
+    width: 4rem;
+  }
+}
+
+/* Shared data-oriented surface treatment for coach and administrator views. */
+@layer components {
+  .workouts-coach-home .workouts-summary-card {
+    border-top: 3px solid var(--app-primary-500);
+    background: linear-gradient(170deg, var(--app-white), var(--app-surface-50));
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--app-shadow-color) 5%, transparent);
+  }
+
+  .workouts-coach-home section.rounded-2xl {
+    box-shadow: 0 3px 14px color-mix(in srgb, var(--app-shadow-color) 5%, transparent);
+  }
+
+  .workouts-admin-home .workouts-action-card {
+    min-height: 12.5rem;
+  }
+}
