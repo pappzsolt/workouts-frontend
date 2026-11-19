@@ -141,3 +141,33 @@ test('responsive client detail: loaded set table stays inside viewport and keeps
   expect(dimensions.page, `Loaded set table overflow: ${JSON.stringify(dimensions)}`).toBeLessThanOrEqual(dimensions.viewport + 1);
   if (dimensions.viewport < 640) await expect(page.locator('#application-menu')).toBeHidden();
 });
+
+
+for (const width of [375, 768, 1024, 1440]) {
+  test(`calendar and set table fit a ${width}px viewport`, async ({ page, api }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/coach/calendar');
+    const calendar = page.locator('app-coach-calendar');
+    const day = calendar.getByRole('button', { pressed: false, name: /^2030\.04/ }).first();
+    await expect(day).toBeVisible();
+    expect((await day.boundingBox())?.height).toBeGreaterThanOrEqual(44);
+    await day.focus();
+    await expect(day).toBeFocused();
+    await expect(day).toHaveCSS('outline-style', 'solid');
+    // Keep the locator stable after the pressed state changes.
+    const label = await day.getAttribute('aria-label');
+    expect(label).toBeTruthy();
+    await day.press('Space');
+    await expect(calendar.getByRole('button', { name: label!, exact: true })).toHaveAttribute('aria-pressed', 'true');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
+
+    await page.goto('/coach/clients/7?program=1&workout=70');
+    const table = page.locator('app-coach-client-detail .workouts-table-scroll').first();
+    await expect(table.getByRole('spinbutton').first()).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
+    if (width === 375) {
+      expect(await table.evaluate(el => el.scrollWidth)).toBeGreaterThan(width);
+    }
+    expect(api.writes()).toEqual([]);
+  });
+}

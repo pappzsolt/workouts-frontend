@@ -26,7 +26,7 @@
                       class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-600 text-xs font-bold uppercase text-white">
                   {{ initials(client) }}
                 </span>
-                <span class="truncate">{{ client.username }}</span>
+                <span class="min-w-0 [overflow-wrap:anywhere]">{{ client.username }}</span>
               </a>
               <button type="button" (click)="askRevoke.emit(client)" [disabled]="busy"
                       class="btn btn-ghost-delete shrink-0 px-3"
@@ -86,9 +86,9 @@
                     {{ initials(client) }}
                   </span>
                   <span class="flex min-w-0 flex-1 flex-col">
-                    <span class="truncate text-sm font-semibold text-content-900">{{ client.username }}</span>
+                    <span class="min-w-0 [overflow-wrap:anywhere] text-sm font-semibold text-content-900">{{ client.username }}</span>
                     @if (client.email) {
-                      <span class="truncate text-xs text-content-600">{{ client.email }}</span>
+                      <span class="min-w-0 [overflow-wrap:anywhere] text-xs text-content-600">{{ client.email }}</span>
                     }
                   </span>
                   <input appCheckbox="selection" type="checkbox" class="shrink-0"

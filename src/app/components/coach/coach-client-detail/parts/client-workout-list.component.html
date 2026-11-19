@@ -13,7 +13,7 @@
           <span class="text-xs text-content-600">
             {{ workout.date | date: 'MM.dd' }} · {{ 'coachWorkspace.editor.dayLabel' | translate: { day: workout.dayIndex } }}
           </span>
-          <span class="truncate text-sm font-semibold text-content-900">{{ workout.name }}</span>
+          <span class="min-w-0 [overflow-wrap:anywhere] text-sm font-semibold text-content-900">{{ workout.name }}</span>
         </span>
         <span class="flex flex-none flex-col items-end gap-1">
           <app-status-badge [status]="status(workout)" />

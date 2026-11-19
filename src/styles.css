@@ -417,16 +417,6 @@ body {
   background-image: linear-gradient(120deg, var(--app-primary-800), var(--app-primary-900));
 }
 
-.workouts-calendar-day:hover {
-  border-color: var(--app-primary-600);
-}
-
-.workouts-calendar-day:focus-visible {
-  position: relative;
-  z-index: 1;
-  outline-offset: -2px;
-}
-
 .workouts-coach-calendar {
   align-items: start;
 }
@@ -450,6 +440,8 @@ body {
 
 app-dialog > [role='dialog'] > [tabindex='-1'] {
   max-height: min(92vh, calc(100dvh - 2rem));
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
 }
 
 @media (max-width: 639px) {
@@ -517,5 +509,43 @@ app-dialog > [role='dialog'] > [tabindex='-1'] {
 
   .workouts-topbar {
     padding-inline: 0.75rem;
+  }
+}
+
+/* Calendar selection keeps a visible edge even in compact, seven-column layouts. */
+.workouts-calendar-cell,
+.workouts-calendar-day {
+  min-height: 44px;
+}
+
+:is(.workouts-calendar-cell, .workouts-calendar-day):not(:disabled):hover {
+  border-color: var(--app-primary-700);
+}
+
+:is(.workouts-calendar-cell, .workouts-calendar-day):focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid var(--app-primary-800);
+  outline-offset: -3px;
+}
+
+.workouts-calendar-cell:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.workouts-table-scroll:focus-visible {
+  outline: 2px solid var(--app-primary-700);
+  outline-offset: -2px;
+}
+
+.workouts-table-scroll td {
+  overflow-wrap: anywhere;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .workouts-calendar-cell {
+    transition: none;
   }
 }

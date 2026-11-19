@@ -2,7 +2,8 @@ import { returningAccount } from './onboarding-fixture';
 import { test, expect, type Page } from '@playwright/test';
 
 const ROOT = '/api/me/personal-programs';
-const draft = () => ({ name: 'Saját terv', description: null, durationDays: 7, startDate: null,
+const START_DATE = '2026-10-25';
+const draft = () => ({ name: 'Saját terv', description: null, durationDays: 7, startDate: null as string | null,
   difficultyLevel: null, languageCode: 'hu', expectedVersion: 1, workouts: [{ dayIndex: 1, name: 'Első nap', description: null,
     exercises: [{ exerciseId: 11, sets: 3, repetitions: 10, restSeconds: 60, notes: null }] }] });
 
@@ -42,6 +43,27 @@ async function install(page: Page) {
     if (path === `${ROOT}/standalone` && req.method() === 'POST') { state.standalone=true;state.program={...call.body,expectedVersion:1};return ok(state.id); }
     if (path === `${ROOT}/${state.id}/repeat`) { state.id++;state.started=false;state.program={...state.program,startDate:null,expectedVersion:1};return ok({id:state.id,standalone:true,startedAt:null,program:state.program}); }
     if (path === ROOT && req.method() === 'POST') { state.program={...call.body,expectedVersion:1}; return ok(state.id); }
+    if (state.started && req.method() === 'GET') {
+      if (path === `${ROOT}/${state.id}/schedule`) {
+        return ok(state.program.workouts.map(day => ({
+          dayIndex: day.dayIndex, scheduledAt: state.program.startDate, version: 1, editable: false,
+        })));
+      }
+      const targets = path.match(new RegExp(`^${ROOT}/${state.id}/days/([0-9]+)/targets$`));
+      const day = targets && state.program.workouts.find(workout => workout.dayIndex === Number(targets[1]));
+      if (day) {
+        return ok({
+          dayIndex: day.dayIndex, version: 1, editable: false,
+          exercises: day.exercises.map((exercise, exerciseIndex) => ({
+            exerciseIndex,
+            sets: Array.from({ length: exercise.sets }, () => ({
+              targetRepetitions: exercise.repetitions, targetWeightKg: null,
+              restSeconds: exercise.restSeconds, targetRpe: null,
+            })),
+          })),
+        });
+      }
+    }
     if (path === `${ROOT}/${state.id}` && req.method() === 'GET') return ok({ id: state.id, standalone: state.standalone, startedAt: state.started ? '2026-10-25T12:00:00' : null, program: state.program });
     if (path === `${ROOT}/${state.id}` && req.method() === 'PUT') {
       if (call.body.expectedVersion !== state.program.expectedVersion) return route.fulfill({ status: 409, json: { success: false, message: 'A saját programot időközben módosították. A szerkesztésed megmaradt.' } });
@@ -49,8 +71,8 @@ async function install(page: Page) {
       state.program={...call.body,expectedVersion:state.program.expectedVersion+1}; return ok({id:state.id,standalone:state.standalone,startedAt:null,program:state.program});
     }
     if (path === `${ROOT}/${state.id}` && req.method() === 'DELETE') return ok(state.id);
-    if (path === `${ROOT}/${state.id}/start`) { state.started=true; state.program={...state.program,startDate:'2026-10-25'} as typeof state.program; return ok({id:state.id,standalone:state.standalone,startedAt:'2026-10-25T12:00:00',program:state.program}); }
-    if (path === `${ROOT}/${state.id}/copy`) { state.id++; state.started=false; return ok(state.id); }
+    if (path === `${ROOT}/${state.id}/start`) { state.started=true; state.program={...state.program,startDate:START_DATE}; return ok({id:state.id,standalone:state.standalone,startedAt:'2026-10-25T12:00:00',program:state.program}); }
+    if (path === `${ROOT}/${state.id}/copy`) { state.id++; state.started=false; state.program = { ...state.program, startDate: null }; return ok(state.id); }
     state.unexpected.push(`${req.method()} ${path}`);
     return route.abort('blockedbyclient');
   });
@@ -108,20 +130,21 @@ test('Saját program: létrehozás, gyakorlatválasztás, indítás, másolás �
   expect(api.unexpected).toEqual([]);
 });
 
-test('Saját program: hibás nap és nem mentett változások védelme', async ({ page }) => {
+test('Saját program: hibás edzés és nem mentett változások védelme', async ({ page }) => {
   const api=await install(page);
   await page.goto('/user/personal-programs/7');
   await selectProgramDay(page, 2);
   await editor(page).getByRole('button', { name: 'Edzésnap hozzáadása', exact: true }).click();
-  await editor(page).getByLabel('Edzés neve', { exact: true }).fill('Második nap');
-  await editor(page).getByLabel('Nap sorszáma', { exact: true }).fill('1');
+  const dayName = editor(page).getByRole('textbox', { name: /Edzés neve/ });
+  await dayName.fill('');
   await editor(page).getByRole('button', { name: 'Piszkozat mentése', exact: true }).click();
-  await expect(editor(page)).toContainText('Minden edzésnap sorszáma legyen egyedi');
+  await expect(dayName).toHaveValue('');
+  await expect(editor(page).getByRole('alert').filter({ hasText: 'Ezt a mezőt kötelező kitölteni.' })).toBeVisible();
   expect(api.calls.filter(c => c.method === 'PUT')).toHaveLength(0);
   await editor(page).getByRole('link', { name: 'Vissza a saját programokhoz', exact: true }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Mégse', exact: true }).click();
   await expect(page).toHaveURL(/personal-programs\/7$/);
-  await expect(editor(page)).toContainText('Minden edzésnap sorszáma legyen egyedi');
+  await expect(dayName).toHaveValue('');
   expect(api.calls.filter(c => c.method === 'PUT')).toHaveLength(0);
   await editor(page).getByRole('link', { name: 'Vissza a saját programokhoz', exact: true }).click();
   await page.getByRole('alertdialog').getByRole('button', { name: 'Megerősítés', exact: true }).click();
@@ -376,6 +399,7 @@ test('Saját program: heti ismétlés önálló sorozatokkal és sorozatkezelés
   await expect(r.getByLabel('Guggolás 4. Cél súly (kg)', {exact:true})).toHaveCount(0);
   await r.getByRole('button', {name:'2. Edzésnap',exact:true}).click();
   await r.getByRole('button', {name:'Ismétlés hetente',exact:true}).click();
+  await r.getByRole('button', { name: 'Másolás megerősítése', exact: true }).click();
   await expect(r).toContainText('Az edzést átmásoltuk');
   await selectProgramDay(page, 8);
   await openProgramExercise(page);
@@ -536,23 +560,22 @@ test('Önálló edzés: a dashboard a saját listára vezet, onnan nyílik az ú
   expect(api.unexpected).toEqual([]);
 });
 
-test('Saját program: ütköző napsorszámnál ugyanaz az edzés marad szerkeszthető', async ({ page }) => {
+test('Saját program: foglalt dátumnál ugyanaz az edzés marad szerkeszthető', async ({ page }) => {
   const api = await install(page);
+  await page.clock.setFixedTime(new Date('2026-10-24T12:00:00+02:00'));
+  api.program.startDate = START_DATE;
   api.program.workouts.push({ ...structuredClone(api.program.workouts[0]), dayIndex: 2, name: 'Második nap' });
   await page.goto('/user/personal-programs/7');
   await selectProgramDay(page, 2);
   const root = editor(page);
   await root.getByRole('button', { name: 'Edzés szerkesztése', exact: true }).click();
-  await root.getByLabel('Nap sorszáma', { exact: true }).fill('1');
+  const date = root.getByLabel('Edzés dátuma', { exact: true });
+  await date.fill(START_DATE);
+  await expect(date).toHaveValue('2026-10-26');
   await expect(root.getByLabel('Edzés neve', { exact: true })).toHaveValue('Második nap');
-  await root.getByRole('button', { name: 'Piszkozat mentése', exact: true }).click();
-  await expect(root).toContainText('Minden edzésnap sorszáma legyen egyedi');
+  await expect(root).toContainText('Válassz szabad dátumot');
   expect(api.calls.filter(call => call.method === 'PUT')).toHaveLength(0);
-  // A user can leave this screen and still recover either conflicting draft.
-  await root.getByRole('button', { name: '1. Naptár és programadatok', exact: true }).click();
-  await root.getByRole('button', { name: 'Edzés szerkesztése: Második nap', exact: true }).click();
-  await expect(root.getByLabel('Edzés neve', { exact: true })).toHaveValue('Második nap');
-  await root.getByLabel('Nap sorszáma', { exact: true }).fill('3');
+  await date.fill('2026-10-27');
   await root.getByRole('button', { name: 'Piszkozat mentése', exact: true }).click();
   await expect(root).toContainText('A saját programot mentettük.');
   expect(api.program.workouts.map(day => [day.dayIndex, day.name])).toEqual([[1, 'Első nap'], [3, 'Második nap']]);
@@ -561,6 +584,8 @@ test('Saját program: ütköző napsorszámnál ugyanaz az edzés marad szerkesz
 
 test('Saját program: rövidítés után a naptárból kilógó edzés javítható és menthető', async ({ page }) => {
   const api = await install(page);
+  await page.clock.setFixedTime(new Date('2026-10-24T12:00:00+02:00'));
+  api.program.startDate = START_DATE;
   api.program.workouts.push({ ...structuredClone(api.program.workouts[0]), dayIndex: 7, name: 'Hetedik nap' });
   await page.goto('/user/personal-programs/7');
   const root = editor(page);
@@ -568,7 +593,7 @@ test('Saját program: rövidítés után a naptárból kilógó edzés javíthat
   await expect(root.locator('[data-personal-program-day="7"]')).toHaveCount(0);
   await root.getByRole('button', { name: 'Edzés szerkesztése: Hetedik nap', exact: true }).click();
   await expect(root.getByLabel('Edzés neve', { exact: true })).toHaveValue('Hetedik nap');
-  await root.getByLabel('Nap sorszáma', { exact: true }).fill('3');
+  await root.getByLabel('Edzés dátuma', { exact: true }).fill('2026-10-27');
   await root.getByRole('button', { name: 'Piszkozat mentése', exact: true }).click();
   await expect(root).toContainText('A saját programot mentettük.');
   expect(api.program.durationDays).toBe(3);
@@ -604,23 +629,21 @@ for (const standalone of [false, true]) {
   });
 }
 
-test('Saját program: heti ismétlés hibás időtartammal és napsorszámmal nem készít másolatokat', async ({ page }) => {
+test('Saját program: heti ismétlés hibás időtartammal nem készít másolatokat', async ({ page }) => {
   const api = await install(page);
   await page.goto('/user/personal-programs/7');
   const root = editor(page);
   await root.locator('input[name=durationDays]').fill('1000000000');
   await root.getByRole('button', { name: '2. Edzésnap', exact: true }).click();
   await root.getByRole('button', { name: 'Ismétlés hetente', exact: true }).click();
+  await root.getByRole('button', { name: 'Másolás megerősítése', exact: true }).click();
   await expect(root).toContainText('Ellenőrizd a kötelező és hibás mezőket');
   await root.getByRole('button', { name: '1. Naptár és programadatok', exact: true }).click();
   await expect(root).toContainText('1 edzésnap');
   await root.locator('input[name=durationDays]').fill('21');
   await root.getByRole('button', { name: '2. Edzésnap', exact: true }).click();
-  await root.getByRole('spinbutton', { name: /^Nap sorszáma/ }).fill('');
   await root.getByRole('button', { name: 'Ismétlés hetente', exact: true }).click();
-  await expect(root).toContainText('Minden edzésnap sorszáma legyen egyedi');
-  await root.getByRole('spinbutton', { name: /^Nap sorszáma/ }).fill('1');
-  await root.getByRole('button', { name: 'Ismétlés hetente', exact: true }).click();
+  await root.getByRole('button', { name: 'Másolás megerősítése', exact: true }).click();
   await root.getByRole('button', { name: 'Piszkozat mentése', exact: true }).click();
   await expect(root).toContainText('A saját programot mentettük.');
   expect(api.program.workouts.map(day => day.dayIndex)).toEqual([1, 8, 15]);
@@ -664,7 +687,7 @@ for (const standalone of [false, true]) {
   });
 }
 
-test('Saját program: a foglalt heti napok ismétlése visszajelez és nem módosítja a mentett tervet', async ({ page }) => {
+test('Saját program: teljesen foglalt heteknél nincs másolási művelet', async ({ page }) => {
   const api = await install(page);
   api.program.durationDays = 21;
   const original = structuredClone(api.program.workouts[0]);
@@ -672,8 +695,7 @@ test('Saját program: a foglalt heti napok ismétlése visszajelez és nem módo
   await page.goto('/user/personal-programs/7');
   const root = editor(page);
   await root.getByRole('button', { name: '2. Edzésnap', exact: true }).click();
-  await root.getByRole('button', { name: 'Ismétlés hetente', exact: true }).click();
-  await expect(root).toContainText('Nincs szabad megfelelő nap');
+  await expect(root.getByRole('button', { name: 'Ismétlés hetente', exact: true })).toHaveCount(0);
   await expect(root.getByRole('button', { name: 'Piszkozat mentése', exact: true })).toBeDisabled();
   expect(api.program.workouts.map(day => day.dayIndex)).toEqual([1, 8, 15]);
   expect(api.calls.filter(call => call.method === 'PUT')).toHaveLength(0);

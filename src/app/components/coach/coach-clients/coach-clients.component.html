@@ -27,8 +27,8 @@
               {{ initial(row.client.username) }}
             </span>
             <span class="flex min-w-0 flex-[2_1_220px] flex-col">
-              <span class="truncate font-semibold text-content-900">{{ row.client.username }}</span>
-              <span class="truncate text-sm text-content-600">
+              <span class="min-w-0 [overflow-wrap:anywhere] font-semibold text-content-900">{{ row.client.username }}</span>
+              <span class="min-w-0 [overflow-wrap:anywhere] text-sm text-content-600">
                 {{ row.programNames || ('coachWorkspace.clients.noProgram' | translate) }}
               </span>
             </span>

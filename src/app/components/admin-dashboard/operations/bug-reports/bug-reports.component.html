@@ -96,7 +96,7 @@
               [closeOnEscape]="true" [closeOnBackdrop]="true" (dismissed)="closeScreenshot()"
               panelClass="flex max-h-[94vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl border border-surface-200 bg-white shadow-2xl">
     <div class="flex items-center justify-between gap-3 border-b border-surface-200 px-4 py-2">
-      <p class="min-w-0 truncate text-sm font-semibold text-content-900">#{{ zoomed.report.id }} · {{ zoomed.report.title }}</p>
+      <p class="min-w-0 [overflow-wrap:anywhere] text-sm font-semibold text-content-900">#{{ zoomed.report.id }} · {{ zoomed.report.title }}</p>
       <button type="button" (click)="closeScreenshot()" class="btn btn-neutral" [attr.aria-label]="'adminBugReports.close' | translate">
         <app-icon name="x" sizeClass="h-4 w-4" />
       </button>

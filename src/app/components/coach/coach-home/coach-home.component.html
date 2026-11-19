@@ -67,8 +67,8 @@
                 {{ initial(row.client.username) }}
               </span>
               <span class="flex min-w-0 flex-1 flex-col">
-                <span class="truncate font-semibold text-content-900">{{ row.client.username }}</span>
-                <span class="truncate text-sm text-content-600">{{ row.workout.programName }} · {{ row.workout.workoutName }}</span>
+                <span class="min-w-0 [overflow-wrap:anywhere] font-semibold text-content-900">{{ row.client.username }}</span>
+                <span class="min-w-0 [overflow-wrap:anywhere] text-sm text-content-600">{{ row.workout.programName }} · {{ row.workout.workoutName }}</span>
               </span>
               <app-status-badge [status]="row.status" />
             </a>
@@ -127,7 +127,7 @@
                 <a [routerLink]="['/coach/clients', row.client.userId]" [queryParams]="{ program: row.programId }"
                    class="flex min-h-11 items-center justify-between gap-3 border-t border-surface-100 py-2 text-content-900 hover:text-primary-700">
                   <span class="flex min-w-0 flex-col">
-                    <span class="truncate font-semibold">{{ row.client.username }} · {{ row.name }}</span>
+                    <span class="min-w-0 [overflow-wrap:anywhere] font-semibold">{{ row.client.username }} · {{ row.name }}</span>
                     <span class="text-xs text-content-600">{{ 'coachWorkspace.home.endedOn' | translate: { date: (row.endDate | date: 'yyyy.MM.dd') } }}</span>
                   </span>
                   <span class="whitespace-nowrap text-sm text-content-600">

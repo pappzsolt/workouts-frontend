@@ -38,7 +38,7 @@
         <button type="button" (click)="daySelected.emit(cell.day)" [disabled]="busy"
                 [attr.aria-pressed]="cell.day === selectedDay"
                 [attr.aria-label]="(cell.date ? (cell.date | date: 'yyyy.MM.dd') + ' · ' : '') + (showProgramDay ? ('coachWorkspace.editor.programDayLabel' | translate: { day: cell.day }) : '') + (cell.workout ? ' · ' + cell.workout.name : '')"
-                class="flex h-32 min-w-0 flex-col items-start gap-1 overflow-hidden rounded-xl border p-1 text-left text-xs"
+                class="workouts-calendar-cell flex h-32 min-w-0 flex-col items-start gap-1 overflow-hidden rounded-xl border p-1 text-left text-xs"
                 [class.border-primary-700]="cell.day === selectedDay"
                 [class.ring-2]="cell.day === selectedDay"
                 [class.ring-primary-200]="cell.day === selectedDay"
@@ -49,7 +49,7 @@
             <span class="w-full shrink-0 truncate text-[10px] font-semibold tabular-nums text-content-700" [title]="cell.date | date: 'yyyy.MM.dd'">{{ cell.date | date: 'MM.dd' }}</span>
           }
           @if (showProgramDay) {
-            <span class="h-10 w-full shrink-0 break-words text-[10px] leading-tight text-content-600">
+            <span class="w-full shrink-0 [overflow-wrap:anywhere] text-[10px] leading-tight text-content-600">
               {{ 'coachWorkspace.editor.programDayLabel' | translate: { day: cell.day } }}
             </span>
           }
