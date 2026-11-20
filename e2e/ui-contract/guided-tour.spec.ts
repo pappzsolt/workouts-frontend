@@ -105,6 +105,8 @@ async function install(page: Page, role: 'user' | 'coach') {
 for (const role of ['user', 'coach'] as const) {
   for (const language of ['hu', 'en', 'de'] as const) {
     test(`guide: ${role} ${language} covers every area without changing data`, async ({ page }) => {
+      // These cases visit every tour route, then reload to verify completion persists.
+      test.setTimeout(60_000);
       const api = await install(page, role);
       await page.goto(`/${role}/dashboard`);
       await page.locator('app-language-selector select').selectOption(language);
@@ -147,7 +149,7 @@ for (const role of ['user', 'coach'] as const) {
           .click();
       }
       await expect(dialog).toHaveCount(0);
-      await page.reload();
+      await page.reload({ waitUntil: 'domcontentloaded' });
       await expect(page.locator('app-language-selector select')).toBeVisible();
       await expect(dialog).toHaveCount(0);
       expect(api.writes).toEqual([]);
