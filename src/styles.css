@@ -246,7 +246,7 @@ body {
  */
 @layer components {
   .workouts-app-shell {
-    background: linear-gradient(155deg, var(--app-surface-50) 0%, var(--app-white) 45%, var(--app-primary-50) 100%);
+    background: var(--app-surface-50);
   }
 
   .workouts-action-grid {
@@ -289,7 +289,8 @@ body {
   }
 
   .workouts-breadcrumb {
-    box-shadow: 0 2px 12px color-mix(in srgb, var(--app-shadow-color) 5%, transparent);
+    background: var(--app-surface-50);
+    overflow-wrap: anywhere;
   }
 
   .workouts-side-nav .menu-item {
@@ -341,8 +342,8 @@ body {
 
 /* Shared presentation for workspace pages and authentication. */
 .workouts-panel {
-  --tw-shadow: 0 1px 2px color-mix(in srgb, var(--app-shadow-color) 6%, transparent),
-    0 6px 20px color-mix(in srgb, var(--app-shadow-color) 4%, transparent);
+  --tw-shadow: 0 1px 2px color-mix(in srgb, var(--app-shadow-color) 5%, transparent),
+    0 8px 24px -12px color-mix(in srgb, var(--app-shadow-color) 14%, transparent);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 transparent),
     var(--tw-ring-shadow, 0 0 transparent), var(--tw-shadow);
 }
@@ -361,7 +362,7 @@ body {
 }
 
 .workouts-topbar {
-  background-image: linear-gradient(115deg, var(--app-primary-800), var(--app-primary-900));
+  background-image: linear-gradient(115deg, var(--app-content-900), var(--app-primary-900));
   border-bottom: 1px solid var(--app-primary-700);
 }
 
@@ -394,10 +395,6 @@ body {
 
 .workouts-table-scroll thead {
   background-color: var(--app-surface-100);
-}
-
-.workouts-table-scroll tbody tr:focus-within {
-  background-color: var(--app-primary-50);
 }
 
 .workouts-calendar-toolbar {
@@ -482,7 +479,7 @@ app-dialog > [role='dialog'] > [tabindex='-1'] {
 
 :is(app-register, app-forgot-password, app-reset-password) > .workouts-auth-card {
   width: calc(100% - 2rem);
-  margin: 1rem auto;
+  margin-inline: auto;
 }
 
 @media (max-width: 639px) {
@@ -547,5 +544,176 @@ app-dialog > [role='dialog'] > [tabindex='-1'] {
 @media (prefers-reduced-motion: reduce) {
   .workouts-calendar-cell {
     transition: none;
+  }
+}
+
+/* Workspace surfaces */
+.workouts-main {
+  background: linear-gradient(180deg, var(--app-white), var(--app-surface-50) 16rem);
+}
+
+.workouts-main :where(h1, h2, h3, h4),
+app-login-layout :where(h1, h2) {
+  overflow-wrap: anywhere;
+}
+
+.workouts-main [appHeading='page'],
+app-login-layout [appHeading='page'] {
+  font-size: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+}
+
+.workouts-main [appHeading='section'] {
+  line-height: 1.3;
+  letter-spacing: -0.018em;
+}
+
+.workouts-card-header {
+  background: linear-gradient(180deg, var(--app-surface-50), var(--app-white));
+}
+
+.workouts-card-footer {
+  background: var(--app-surface-50);
+}
+
+.workouts-sidebar .menu-item {
+  border-inline-start: 3px solid transparent;
+}
+
+.workouts-side-nav .menu-item[aria-current='page'] {
+  border-inline-start-color: var(--app-primary-700);
+  font-weight: 650;
+}
+
+.workouts-side-nav .menu-item app-icon {
+  flex-shrink: 0;
+}
+
+app-login-layout {
+  background:
+    radial-gradient(ellipse at 50% 0%, var(--app-primary-100), transparent 58%),
+    var(--app-surface-50);
+}
+
+app-login-layout > div {
+  padding-block: 1.5rem;
+}
+
+app-login-layout .workouts-auth-card {
+  border-top-width: 4px;
+  box-shadow: 0 18px 56px -22px color-mix(in srgb, var(--app-shadow-color) 30%, transparent);
+}
+
+/* Forms, tabs and dialog chrome */
+.workouts-field-label {
+  line-height: 1.4;
+}
+
+:is(input[appInput], textarea[appTextarea], select):not(:disabled):hover {
+  border-color: var(--app-content-500);
+}
+
+:is(input[appInput], textarea[appTextarea]):disabled {
+  background-color: var(--app-surface-100);
+}
+
+:is(button, a).btn:active:not(:disabled) {
+  box-shadow: inset 0 1px 3px color-mix(in srgb, var(--app-shadow-color) 22%, transparent);
+}
+
+[role='tablist'] {
+  flex-wrap: wrap;
+}
+
+button[role='tab'] {
+  min-height: 44px;
+  overflow-wrap: anywhere;
+  text-underline-offset: 0.3em;
+}
+
+button[role='tab'][aria-selected='true'] {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+app-dialog > [role='dialog'] > [tabindex='-1'] {
+  box-shadow: 0 24px 64px -12px color-mix(in srgb, var(--app-shadow-color) 35%, transparent);
+}
+
+app-dialog :is([dialogHeader], [dialogActions]) {
+  overflow-wrap: anywhere;
+}
+
+.workouts-workspace-header {
+  background: linear-gradient(115deg, var(--app-white) 55%, var(--app-primary-50));
+}
+
+/* Calendars and numerical views */
+.workouts-calendar-toolbar h2 {
+  font-variant-numeric: tabular-nums;
+}
+
+.workouts-calendar-grid > div {
+  background: var(--app-surface-50);
+  border-radius: 0.5rem;
+}
+
+.workouts-calendar-day[aria-pressed='true'],
+.workouts-calendar-cell[aria-pressed='true'] {
+  box-shadow: inset 0 0 0 2px var(--app-primary-700);
+}
+
+.workouts-calendar-day .calendar-client-band {
+  border-inline-start-width: 3px;
+}
+
+.workouts-record {
+  border-inline-start: 3px solid var(--app-surface-300);
+}
+
+.workouts-set-panel {
+  border-inline-start: 3px solid var(--app-primary-600);
+}
+
+.workouts-summary-card {
+  font-variant-numeric: tabular-nums;
+}
+
+.workouts-metrics > div {
+  box-shadow: inset 0 2px var(--app-primary-200);
+}
+
+.workouts-table-scroll {
+  border-radius: 0.75rem;
+}
+
+.workouts-table-scroll :is(th, td) {
+  vertical-align: middle;
+}
+
+.workouts-table-scroll th {
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.workouts-table-scroll tbody tr:nth-child(even) {
+  background-color: var(--app-surface-50);
+}
+
+.workouts-table-scroll tbody tr:is(:hover, :focus-within) {
+  background-color: var(--app-primary-50);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workouts-panel,
+  .workouts-action-card,
+  .workouts-sidebar,
+  .workouts-main button[role='tab'] {
+    transition-duration: 0s;
+  }
+
+  .workouts-panel:hover {
+    transform: none;
   }
 }

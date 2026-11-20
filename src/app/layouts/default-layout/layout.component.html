@@ -79,7 +79,7 @@
       [class.translate-x-0]="menuOpen"
       [class.-translate-x-full]="!menuOpen && isMobile()"
       id="application-menu"
-      class="workouts-sidebar absolute left-0 top-0 z-20 h-full w-72 max-w-[calc(100%-1rem)] shrink-0 -translate-x-full overflow-y-auto border-r border-surface-200 bg-white shadow-xl transition-transform duration-200 sm:relative sm:block sm:h-auto sm:w-44 sm:translate-x-0 lg:w-56 xl:w-64"
+      class="workouts-sidebar absolute left-0 top-0 z-20 h-full w-72 max-w-[calc(100%-1rem)] shrink-0 -translate-x-full overflow-y-auto border-r border-surface-200 bg-white shadow-xl transition-transform sm:shadow-none duration-200 sm:relative sm:block sm:h-auto sm:w-44 sm:translate-x-0 lg:w-56 xl:w-64"
     >
       <!-- Admin -->
       <ng-container *ngIf="isAdmin()">
@@ -141,7 +141,7 @@
     <!-- TARTALOM -->
     <!-- ===================================================== -->
 
-    <main class="flex min-w-0 flex-1 flex-col [&>router-outlet+*]:min-w-0 [&>router-outlet+*]:flex-1">
+    <main class="workouts-main flex min-w-0 flex-1 flex-col [&>router-outlet+*]:min-w-0 [&>router-outlet+*]:flex-1">
       <app-dashboard-navigation></app-dashboard-navigation>
       <router-outlet></router-outlet>
     </main>

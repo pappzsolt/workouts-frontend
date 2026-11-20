@@ -1,6 +1,6 @@
 <ng-template #content>
   @if (showHeader) {
-    <header class="border-b border-surface-100 p-4">
+    <header class="workouts-card-header border-b border-surface-200 p-4 sm:px-5">
       <ng-content select="[cardHeader]"></ng-content>
     </header>
   }
@@ -8,7 +8,7 @@
     <ng-content></ng-content>
   </div>
   @if (showActions) {
-    <footer class="border-t border-surface-100 p-4">
+    <footer class="workouts-card-footer border-t border-surface-200 p-4 sm:px-5">
       <ng-content select="[cardActions]"></ng-content>
     </footer>
   }
