@@ -757,3 +757,34 @@ app-dialog :is([dialogHeader], [dialogActions]) {
 .workouts-metrics > div {
   min-inline-size: 0;
 }
+
+/* Shared styles also apply to pages outside the signed-in workspace. */
+:is(.workouts-panel, .workouts-field-label, .confirm-panel) {
+  overflow-wrap: anywhere;
+}
+
+.workouts-table-scroll th {
+  overflow-wrap: anywhere;
+}
+
+:is(.workouts-calendar-day, .workouts-calendar-cell, .workouts-set-panel) {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(app-button button, app-search input, app-select input, input[appInput], textarea[appTextarea]) {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  :is(.btn, app-button button, .workouts-side-nav a, .workouts-side-nav button):focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  .workouts-segmented-control button[aria-pressed='true'] {
+    text-decoration: underline 2px Highlight;
+    text-underline-offset: 0.25em;
+  }
+}

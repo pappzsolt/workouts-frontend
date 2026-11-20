@@ -11,7 +11,7 @@ import { FieldValidation } from './field-validation';
     { provide: NG_VALIDATORS, useExisting: forwardRef(() => AppTextareaDirective), multi: true },
   ],
 })
-export class AppTextareaDirective extends FieldValidation {
+export class AppTextareaDirective extends FieldValidation<HTMLTextAreaElement> {
   @Input() appTextarea: keyof typeof TEXTAREA_STYLES = 'default';
   get classes(): string {
     return TEXTAREA_STYLES[this.appTextarea];

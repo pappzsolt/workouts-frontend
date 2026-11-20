@@ -34,3 +34,19 @@ for (const language of ['hu', 'en', 'de']) {
     await expect(page).toHaveURL(/\/login$/);
   });
 }
+
+test('login controls retain keyboard focus in forced colors and respect reduced motion', async ({ page }) => {
+  await page.emulateMedia({ forcedColors: 'active', reducedMotion: 'reduce' });
+  await page.goto('/login');
+  const { usernameInput, passwordInput, submitButton } = loginControls(page);
+
+  await usernameInput.focus();
+  await page.keyboard.press('Tab');
+  await expect(passwordInput).toBeFocused();
+  await expect(passwordInput).toHaveCSS('transition-duration', '0s');
+  await page.keyboard.press('Tab');
+  await expect(submitButton).toBeFocused();
+  await expect(submitButton).toHaveCSS('outline-style', 'solid');
+  await expect(submitButton).toHaveCSS('outline-width', '2px');
+  await expect(submitButton).toHaveCSS('transition-duration', '0s');
+});

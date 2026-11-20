@@ -20,14 +20,16 @@ export interface ExerciseSetSaveEffects {
   onSettled(): void;
 }
 
+interface PendingSetSave {
+  signature: string;
+  request: Observable<void>;
+  confirmed: { completed: boolean; timerNeedsRefresh: boolean };
+}
+
 /** Per-occurrence save queue, request deduplication and confirmed completion state. */
 export class ExerciseSetSaves {
   private readonly failedSetSaves = new Set<string>();
-  private readonly pendingSetSaves = new Map<string, {
-    signature: string;
-    request: Observable<void>;
-    confirmed: { completed: boolean; timerNeedsRefresh: boolean };
-  }>();
+  private readonly pendingSetSaves = new Map<string, PendingSetSave>();
 
   constructor(
     private readonly service: UserExerciseDetailService,
@@ -80,7 +82,7 @@ export class ExerciseSetSaves {
         confirmed.timerNeedsRefresh = false;
       }
     };
-    const entry = { signature, confirmed, request: EMPTY as Observable<void> };
+    const entry: PendingSetSave = { signature, confirmed, request: EMPTY };
     let succeeded = false;
     // Changed payloads queue behind the existing request; identical blur/page
     // saves share it. Recover an earlier failure so a newer edit can still save.

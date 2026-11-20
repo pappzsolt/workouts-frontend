@@ -75,12 +75,13 @@ export function createInputValidationGuard(): (selector?: string) => boolean {
 }
 
 @Directive()
-export abstract class FieldValidation implements Validator, OnChanges, OnDestroy {
+export abstract class FieldValidation<Control extends HTMLInputElement | HTMLTextAreaElement>
+  implements Validator, OnChanges, OnDestroy {
   @Input() appValidation: '' | 'phone' | 'password' = '';
   @Input() appMatchValue: string | undefined;
   @Input() appMatchControl: AbstractControl | undefined;
   protected readonly element =
-    inject<ElementRef<HTMLInputElement | HTMLTextAreaElement>>(ElementRef).nativeElement;
+    inject<ElementRef<Control>>(ElementRef).nativeElement;
   private readonly container = inject(ViewContainerRef);
   private message?: ComponentRef<MessageComponent>;
   protected control?: AbstractControl;

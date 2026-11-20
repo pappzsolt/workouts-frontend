@@ -12,11 +12,8 @@ export { createInputValidationGuard } from './field-validation';
     { provide: NG_VALIDATORS, useExisting: forwardRef(() => AppInputDirective), multi: true },
   ],
 })
-export class AppInputDirective extends FieldValidation {
+export class AppInputDirective extends FieldValidation<HTMLInputElement> {
   @Input() appInput: keyof typeof INPUT_STYLES = 'default';
-  private get input(): HTMLInputElement {
-    return this.element as HTMLInputElement;
-  }
   get classes(): string {
     return INPUT_STYLES[this.appInput];
   }
@@ -24,7 +21,7 @@ export class AppInputDirective extends FieldValidation {
   @HostListener('keydown', ['$event'])
   onKeydown(event: KeyboardEvent): void {
     if (event.ctrlKey || event.metaKey || event.altKey || event.key.length !== 1) return;
-    if (!this.rejectText(event.key, event) && event.key === ',' && this.input.type === 'number') {
+    if (!this.rejectText(event.key, event) && event.key === ',' && this.element.type === 'number') {
       event.preventDefault();
       this.insertNumberText('.');
     }
@@ -36,7 +33,7 @@ export class AppInputDirective extends FieldValidation {
     if (
       !this.rejectText(event.data, event) &&
       event.data.includes(',') &&
-      this.input.type === 'number'
+      this.element.type === 'number'
     ) {
       event.preventDefault();
       this.insertNumberText(event.data.replace(',', '.'));
@@ -47,7 +44,7 @@ export class AppInputDirective extends FieldValidation {
   onPaste(event: ClipboardEvent): void {
     const text = event.clipboardData?.getData('text');
     if (!text) return;
-    if (!this.rejectText(text, event) && text.includes(',') && this.input.type === 'number') {
+    if (!this.rejectText(text, event) && text.includes(',') && this.element.type === 'number') {
       event.preventDefault();
       this.insertNumberText(text.replace(',', '.'));
     }
@@ -60,7 +57,7 @@ export class AppInputDirective extends FieldValidation {
       text &&
       !this.rejectText(text, event) &&
       text.includes(',') &&
-      this.input.type === 'number'
+      this.element.type === 'number'
     ) {
       event.preventDefault();
       this.insertNumberText(text.replace(',', '.'));
@@ -68,35 +65,35 @@ export class AppInputDirective extends FieldValidation {
   }
 
   private rejectText(text: string, event: Event): boolean {
-    if (this.input.type !== 'number' || this.input.disabled || this.input.readOnly) return false;
-    const integer = !this.input.step || this.input.step === '1';
+    if (this.element.type !== 'number' || this.element.disabled || this.element.readOnly) return false;
+    const integer = !this.element.step || this.element.step === '1';
     let key = '';
     if (!/^[+-]?\d*(?:[.,]\d*)?$/.test(text)) key = 'inputValidation.number';
     else if (integer && /[.,]/.test(text)) key = 'inputValidation.integer';
-    else if (this.input.min !== '' && Number(this.input.min) >= 0 && text.includes('-'))
+    else if (this.element.min !== '' && Number(this.element.min) >= 0 && text.includes('-'))
       key = 'inputValidation.min';
     if (key) {
       event.preventDefault();
-      this.showIssue({ key, params: { min: this.input.min } });
+      this.showIssue({ key, params: { min: this.element.min } });
     }
     return !!key;
   }
 
   private insertNumberText(text: string): void {
     // Native insertion retains the number control, caret, undo and Angular's number accessor.
-    const document = this.input.ownerDocument;
+    const document = this.element.ownerDocument;
     if (
       typeof document.execCommand === 'function' &&
       document.execCommand('insertText', false, text)
     )
       return;
     // Fallback for browsers without native insertion: keep the model numeric.
-    const value = text === '.' ? `${this.input.value}.` : text;
+    const value = text === '.' ? `${this.element.value}.` : text;
     if (value.endsWith('.')) {
       this.showIssue({ key: 'inputValidation.decimalSeparator' });
       return;
     }
-    this.input.value = value;
-    this.input.dispatchEvent(new Event('input', { bubbles: true }));
+    this.element.value = value;
+    this.element.dispatchEvent(new Event('input', { bubbles: true }));
   }
 }
