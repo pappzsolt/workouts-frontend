@@ -20,6 +20,9 @@ import { toIsoDate } from '../../../shared/local-date';
 import type { CoachProgram } from '../../../models/coach-workspace.model';
 import { errorText } from '../coach-ui';
 
+type ProgramStatus = 'active' | 'upcoming' | 'finished';
+type ProgramFilter = 'all' | ProgramStatus;
+
 /** A coach programjai: megnyitás a szerkesztőben, új program, törlés. */
 @Component({
   selector: 'app-coach-programs',
@@ -63,16 +66,17 @@ export class CoachProgramsComponent implements OnInit {
   private readonly sortState = signal<'dateDesc' | 'dateAsc' | 'nameAsc' | 'nameDesc'>('dateDesc');
   get sort(): 'dateDesc' | 'dateAsc' | 'nameAsc' | 'nameDesc' { return this.sortState(); }
   set sort(value: 'dateDesc' | 'dateAsc' | 'nameAsc' | 'nameDesc') { this.sortState.set(value); }
-  private readonly statusFilterState = signal<'all' | 'active' | 'upcoming' | 'finished'>('all');
-  get statusFilter(): 'all' | 'active' | 'upcoming' | 'finished' { return this.statusFilterState(); }
-  set statusFilter(value: 'all' | 'active' | 'upcoming' | 'finished') { this.statusFilterState.set(value); }
+  readonly statusFilters: readonly ProgramFilter[] = ['all', 'active', 'upcoming', 'finished'];
+  private readonly statusFilterState = signal<ProgramFilter>('all');
+  get statusFilter(): ProgramFilter { return this.statusFilterState(); }
+  set statusFilter(value: ProgramFilter) { this.statusFilterState.set(value); }
   private readonly pageState = signal<number>(1);
   get page(): number { return this.pageState(); }
   set page(value: number) { this.pageState.set(value); }
   readonly pageSize = 12;
   clientCounts: Record<number, number> = {};
 
-  status(program: CoachProgram): 'active' | 'upcoming' | 'finished' {
+  status(program: CoachProgram): ProgramStatus {
     if (program.endDate && program.endDate < this.todayIso) return 'finished';
     if (program.startDate && program.startDate > this.todayIso) return 'upcoming';
     return 'active';
@@ -84,7 +88,7 @@ export class CoachProgramsComponent implements OnInit {
     return counts;
   });
 
-  countBy(status: 'active' | 'upcoming' | 'finished'): number {
+  countBy(status: ProgramStatus): number {
     return this.statusCounts()[status];
   }
 
@@ -118,7 +122,7 @@ export class CoachProgramsComponent implements OnInit {
 
   get paged(): CoachProgram[] { return this.pagedPrograms(); }
 
-  setFilter(filter: 'all' | 'active' | 'upcoming' | 'finished'): void {
+  setFilter(filter: ProgramFilter): void {
     this.statusFilter = filter;
     this.page = 1;
   }

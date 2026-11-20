@@ -717,3 +717,43 @@ app-dialog :is([dialogHeader], [dialogActions]) {
     transform: none;
   }
 }
+
+/* Shared focus and wrapping for native controls and projected content. */
+:is(.workouts-main, app-login-layout, app-dialog)
+  :is(input[appInput], textarea[appTextarea], .workouts-search input, app-select input, select):focus-visible {
+  outline: 2px solid var(--app-primary-700);
+  outline-offset: 2px;
+}
+
+.workouts-card-link:focus-visible {
+  outline: 2px solid var(--app-primary-700);
+  outline-offset: 3px;
+}
+
+.workouts-segmented-control button:focus-visible,
+.workouts-table-scroll :is(button, a):focus-visible {
+  outline-offset: -3px;
+}
+
+.workouts-segmented-control button[aria-pressed='true'] {
+  box-shadow: inset 0 -2px var(--app-primary-700);
+}
+
+.workouts-editor-panel {
+  scroll-margin-block: 1rem;
+}
+
+.workouts-dialog-actions {
+  flex-wrap: wrap;
+}
+
+.workouts-field-label,
+.workouts-dialog-form {
+  overflow-wrap: anywhere;
+}
+
+.workouts-table-scroll,
+.workouts-calendar-toolbar,
+.workouts-metrics > div {
+  min-inline-size: 0;
+}

@@ -18,7 +18,7 @@
 
     <!-- Program selection: historical data is never editable. -->
     <ng-container *ngIf="!selectedProgram">
-      <label for="completed-program-search" class="block text-sm font-semibold text-content-700">
+      <label for="completed-program-search" class="workouts-field-label block text-sm font-semibold text-content-700">
         {{ 'completedProgramHistory.search' | translate }}
       </label>
       <input id="completed-program-search" type="search" [(ngModel)]="search"

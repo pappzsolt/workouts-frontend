@@ -91,10 +91,10 @@
                       <span class="min-w-0 [overflow-wrap:anywhere] text-xs text-content-600">{{ client.email }}</span>
                     }
                   </span>
-                  <input appCheckbox="selection" type="checkbox" class="shrink-0"
+                  <input #clientSelection appCheckbox="selection" type="checkbox" class="shrink-0"
                          [attr.aria-label]="client.username"
                          [checked]="toAssign.has(client.userId)"
-                         (change)="toggleAssign.emit({ userId: client.userId, checked: $any($event.target).checked })" />
+                         (change)="toggleAssign.emit({ userId: client.userId, checked: clientSelection.checked })" />
                 </label>
               </li>
             }

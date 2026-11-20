@@ -25,11 +25,11 @@ export class PreviousExercisePerformanceComponent implements OnChanges, OnDestro
   readonly state$ = this.context$.pipe(
     switchMap(({ userWorkoutId, exerciseId }) =>
       this.service.getPreviousPerformance(userWorkoutId, exerciseId).pipe(
-        map((response) => {
-          if (!response.success) return { status: 'error' } as HistoryState;
+        map((response): HistoryState => {
+          if (!response.success) return { status: 'error' };
           return response.data
-            ? ({ status: 'ready', data: response.data } as HistoryState)
-            : ({ status: 'empty' } as HistoryState);
+            ? { status: 'ready', data: response.data }
+            : { status: 'empty' };
         }),
         catchError(() => of<HistoryState>({ status: 'error' })),
         startWith<HistoryState>({ status: 'loading' }),

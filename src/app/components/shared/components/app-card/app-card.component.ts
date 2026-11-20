@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { RouterLink, Params } from '@angular/router';
+import { RouterLink, type Params } from '@angular/router';
 
 export type AppCardVariant = 'default' | 'outlined';
 
@@ -11,7 +11,7 @@ export type AppCardVariant = 'default' | 'outlined';
   templateUrl: './app-card.component.html',
 })
 export class AppCardComponent {
-  @Input() routerLink: string | any[] | null = null;
+  @Input() routerLink: string | unknown[] | null = null;
   @Input() queryParams: Params | null = null;
   @Input() padding: 'none' | 'sm' | 'md' | 'lg' = 'none';
   @Input() hover: boolean | null = null;

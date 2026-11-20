@@ -19,14 +19,14 @@
         {{ 'coachWorkspace.programs.search' | translate }}
         <input appInput="default" type="search" name="programSearch" [(ngModel)]="search" (ngModelChange)="onSearchChange()" class="font-normal" />
       </label>
-      <div role="group" [attr.aria-label]="'coachWorkspace.programs.statusFilter' | translate" class="flex flex-wrap overflow-hidden rounded-xl border border-surface-300">
-        @for (f of ['all', 'active', 'upcoming', 'finished']; track f) {
-          <button type="button" (click)="setFilter($any(f))" [attr.aria-pressed]="statusFilter === f"
+      <div role="group" [attr.aria-label]="'coachWorkspace.programs.statusFilter' | translate" class="workouts-segmented-control flex min-w-0 flex-wrap overflow-hidden rounded-xl border border-surface-300">
+        @for (f of statusFilters; track f) {
+          <button type="button" (click)="setFilter(f)" [attr.aria-pressed]="statusFilter === f"
                   class="min-h-11 border-l border-surface-300 px-3 text-sm first:border-l-0"
                   [class.bg-primary-50]="statusFilter === f" [class.font-semibold]="statusFilter === f" [class.text-primary-800]="statusFilter === f"
                   [class.bg-white]="statusFilter !== f" [class.text-content-700]="statusFilter !== f">
             {{ ('coachWorkspace.programs.filter.' + f) | translate }}
-            ({{ f === 'all' ? programs.length : countBy($any(f)) }})
+            ({{ f === 'all' ? programs.length : countBy(f) }})
           </button>
         }
       </div>

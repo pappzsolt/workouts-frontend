@@ -1,6 +1,6 @@
 <app-dialog [ariaLabel]="'coachWorkspace.editor.copyProgram' | translate" [trapFocus]="true" [closeOnEscape]="true"
             [closeOnBackdrop]="true" [busy]="busy" (dismissed)="dismissed.emit()">
-  <form class="flex flex-col gap-4 p-6" (ngSubmit)="confirmed.emit()">
+  <form class="workouts-dialog-form flex min-w-0 flex-col gap-4 p-6" (ngSubmit)="confirmed.emit()">
     <h2 class="text-xl font-bold text-content-900">{{ 'coachWorkspace.editor.copyProgram' | translate }}</h2>
     <p class="text-sm text-content-700">{{ 'coachWorkspace.editor.copyProgramHint' | translate }}</p>
     <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
