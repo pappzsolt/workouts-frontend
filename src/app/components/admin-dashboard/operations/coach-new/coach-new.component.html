@@ -8,15 +8,18 @@
     </div>
 
     <!-- Üzenet -->
-    <app-message *ngIf="message" [message]="message" [type]="messageType"></app-message>
+    @if (message) {
+      <app-message [message]="message" [type]="messageType"></app-message>
+    }
 
     <!-- Betöltés -->
-    <div
-      *ngIf="loading"
-      class="flex min-h-20 items-center justify-center rounded-xl border border-info-200 bg-info-50 px-4 py-4 text-center text-sm font-medium text-info-700"
-    >
-      {{ 'common.loading' | translate }}
-    </div>
+    @if (loading) {
+      <div
+        class="flex min-h-20 items-center justify-center rounded-xl border border-info-200 bg-info-50 px-4 py-4 text-center text-sm font-medium text-info-700"
+      >
+        {{ 'common.loading' | translate }}
+      </div>
+    }
 
     <!-- Coach form -->
     <form
@@ -26,11 +29,7 @@
       class="workouts-panel rounded-2xl border border-surface-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8"
     >
       <!-- Név -->
-      <app-form-field
-        labelKey="common.name"
-        controlId="name"
-        [required]="true"
-      >
+      <app-form-field labelKey="common.name" controlId="name" [required]="true">
         <input
           appInput="admin"
           id="name"
@@ -44,11 +43,7 @@
       </app-form-field>
 
       <!-- Email -->
-      <app-form-field
-        labelKey="common.email"
-        controlId="email"
-        [required]="true"
-      >
+      <app-form-field labelKey="common.email" controlId="email" [required]="true">
         <input
           appInput="admin"
           id="email"
@@ -63,11 +58,7 @@
       </app-form-field>
 
       <!-- Jelszó -->
-      <app-form-field
-        labelKey="common.password"
-        controlId="passwordHash"
-        [required]="true"
-      >
+      <app-form-field labelKey="common.password" controlId="passwordHash" [required]="true">
         <input
           appInput="admin"
           id="passwordHash"
@@ -82,11 +73,7 @@
       </app-form-field>
 
       <!-- Telefon -->
-      <app-form-field
-        labelKey="common.phone"
-        controlId="phone"
-        [required]="true"
-      >
+      <app-form-field labelKey="common.phone" controlId="phone" [required]="true">
         <input
           appInput="admin"
           id="phone"

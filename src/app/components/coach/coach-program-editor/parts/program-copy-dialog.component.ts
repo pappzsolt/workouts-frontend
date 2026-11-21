@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output, model } from '@angular/core';
 import { AppFormValidationDirective } from '../../../shared/components/form-controls/app-form-validation.directive';
 import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
 import { AppDialogComponent } from '../../../shared/components/app-dialog/app-dialog.component';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import type { CoachClientOverview } from '../../../../models/coach-workspace.model';
@@ -16,7 +16,6 @@ import type { CoachClientOverview } from '../../../../models/coach-workspace.mod
     AppFormValidationDirective,
     AppInputDirective,
     AppDialogComponent,
-    CommonModule,
     FormsModule,
     TranslatePipe,
   ],

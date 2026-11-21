@@ -1,19 +1,28 @@
 <div class="flex min-w-0 flex-col gap-2">
-  <label
-    *ngIf="labelKey"
-    [for]="controlId || null"
-    class="workouts-field-label block text-sm font-semibold text-content-700"
-  >
-    {{ labelKey | translate }}{{ labelSuffix }}
-    <span *ngIf="required" aria-hidden="true">*</span>
-  </label>
+  @if (labelKey) {
+    <label
+      [for]="controlId || null"
+      class="workouts-field-label block text-sm font-semibold text-content-700"
+    >
+      {{ labelKey | translate }}{{ labelSuffix }}
+      @if (required) {
+        <span aria-hidden="true">*</span>
+      }
+    </label>
+  }
 
   <ng-content></ng-content>
   @if (hint) {
     <p [id]="hintId" class="text-sm text-content-600">{{ hint | translate }}</p>
   }
   @if (showError && error) {
-    <app-message [message]="error" type="error" [compact]="true" role="alert"
-      [messageId]="errorId" class="form-field-error"></app-message>
+    <app-message
+      [message]="error"
+      type="error"
+      [compact]="true"
+      role="alert"
+      [messageId]="errorId"
+      class="form-field-error"
+    ></app-message>
   }
 </div>

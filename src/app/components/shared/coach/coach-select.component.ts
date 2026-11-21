@@ -15,14 +15,13 @@ import { CoachNameIdService } from '../../../services/coach/coach-name-id.servic
 import { AppSelectComponent } from '../components/app-select/app-select.component';
 import type { SelectOption } from '../../../models/common/select-option.model';
 
-import { CommonModule } from '@angular/common';
 import { MessageComponent } from '../components/message/message.component';
 import { FormFieldComponent } from '../components/form-field/form-field.component';
 
 @Component({
   selector: 'app-coach-select',
   standalone: true,
-  imports: [AppSearchComponent, CommonModule, MessageComponent, FormFieldComponent, AppSelectComponent],
+  imports: [AppSearchComponent, MessageComponent, FormFieldComponent, AppSelectComponent],
   template: `
     <div>
       @if (!searchable) {
@@ -36,12 +35,9 @@ import { FormFieldComponent } from '../components/form-field/form-field.componen
           class="mb-3 block"
           [disabled]="disabled"
         ></app-search>
-        <app-message
-          *ngIf="searchTerm.trim() && !matchingOptions.length"
-          message="appSearch.noResults"
-          type="info"
-          class="mb-3 block"
-        ></app-message>
+        @if (searchTerm.trim() && !matchingOptions.length) {
+          <app-message message="appSearch.noResults" type="info" class="mb-3 block"></app-message>
+        }
       }
       <app-form-field labelKey="coachSelect.coach" [controlId]="controlId">
         <app-select

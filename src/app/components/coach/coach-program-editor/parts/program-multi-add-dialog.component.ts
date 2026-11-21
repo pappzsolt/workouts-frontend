@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output, model } from '@angular/core';
 import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
 import { AppCheckboxDirective } from '../../../shared/components/form-controls/app-check.directive';
 import { AppDialogComponent } from '../../../shared/components/app-dialog/app-dialog.component';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import type { CoachWorkoutSummary } from '../../../../models/coach-workspace.model';
@@ -16,7 +16,6 @@ import type { CoachWorkoutSummary } from '../../../../models/coach-workspace.mod
     AppInputDirective,
     AppCheckboxDirective,
     AppDialogComponent,
-    CommonModule,
     FormsModule,
     TranslatePipe,
   ],

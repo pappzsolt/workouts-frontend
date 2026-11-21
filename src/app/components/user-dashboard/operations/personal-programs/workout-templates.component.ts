@@ -6,7 +6,7 @@ import { AppPageHeaderComponent } from '../../../shared/components/app-page-head
 import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
 import { AppLoadingComponent } from '../../../shared/components/app-state/app-state.component';
 import { AppEmptyStateComponent } from '../../../shared/components/app-state/app-state.component';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -29,7 +29,6 @@ import { errorMessage } from '../../../../models/backend-dto/common/api-response
     AppHeadingDirective,
     AppLoadingComponent,
     AppEmptyStateComponent,
-    CommonModule,
     RouterModule,
     FormsModule,
     TranslatePipe,

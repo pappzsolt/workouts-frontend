@@ -6,7 +6,9 @@
     </h2>
 
     <!-- Üzenet -->
-    <app-message *ngIf="message" [message]="message" [type]="messageType"></app-message>
+    @if (message) {
+      <app-message [message]="message" [type]="messageType"></app-message>
+    }
 
     <!-- Workout form kártya -->
     <app-card class="min-w-0 overflow-hidden">

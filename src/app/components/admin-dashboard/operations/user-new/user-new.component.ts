@@ -24,7 +24,7 @@ import { AppInputDirective } from '../../../shared/components/form-controls/app-
 import { AppTextareaDirective } from '../../../shared/components/form-controls/app-textarea.directive';
 import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
 import { ProfileFieldsComponent } from '../../../shared/components/profile-fields/profile-fields.component';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AppButtonComponent } from '../../../shared/components/app-button/app-button.component';
@@ -39,7 +39,6 @@ import { FormFieldComponent } from '../../../shared/components/form-field/form-f
     AppTextareaDirective,
     AppHeadingDirective,
     ProfileFieldsComponent,
-    CommonModule,
     FormsModule,
     TranslatePipe,
     AppButtonComponent,
@@ -162,28 +161,31 @@ export class UserNewComponent {
       roleIds: this.user.roleIds.map((role) => role.id),
     };
 
-    this.userNewService.createUser(payload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (res: ApiResponse<void>) => {
-        if (res.success) {
-          this.showSuccess(res.message || 'adminUserNew.createSuccess');
+    this.userNewService
+      .createUser(payload)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res: ApiResponse<void>) => {
+          if (res.success) {
+            this.showSuccess(res.message || 'adminUserNew.createSuccess');
 
-          form.resetForm();
-          this.user.gender = '';
+            form.resetForm();
+            this.user.gender = '';
 
-          this.user.roleIds = [];
+            this.user.roleIds = [];
 
-          this.user.coachId = undefined;
+            this.user.coachId = undefined;
 
-          this.user.coachName = '';
-        } else {
-          this.showError(res.message || 'adminUserNew.saveError');
-        }
-      },
+            this.user.coachName = '';
+          } else {
+            this.showError(res.message || 'adminUserNew.saveError');
+          }
+        },
 
-      error: (err) => {
-        this.showError(err.error?.message || 'adminUserNew.saveError');
-      },
-    });
+        error: (err) => {
+          this.showError(err.error?.message || 'adminUserNew.saveError');
+        },
+      });
   }
 
   // =============================
@@ -211,5 +213,4 @@ export class UserNewComponent {
   trackByRole(index: number, role: Role): number {
     return role.id;
   }
-
 }

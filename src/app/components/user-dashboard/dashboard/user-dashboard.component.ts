@@ -3,14 +3,14 @@ import { Router } from '@angular/router';
 
 import { AppPageHeaderComponent } from '../../shared/components/app-page-header/app-page-header.component';
 import { AppHeadingDirective } from '../../shared/components/app-page-header/app-page-header.component';
-import { CommonModule } from '@angular/common';
+
 import { TranslatePipe } from '@ngx-translate/core';
 import { DashboardActionComponent } from '../../shared/components/dashboard-action/dashboard-action.component';
 
 @Component({
   selector: 'app-user-dashboard',
   standalone: true,
-  imports: [AppPageHeaderComponent, AppHeadingDirective, CommonModule, TranslatePipe, DashboardActionComponent],
+  imports: [AppPageHeaderComponent, AppHeadingDirective, TranslatePipe, DashboardActionComponent],
   templateUrl: './user-dashboard.component.html',
 })
 export class UserDashboardComponent {

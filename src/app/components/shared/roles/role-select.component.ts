@@ -16,14 +16,13 @@ import type { SelectOption } from '../../../models/common/select-option.model';
 import { Role } from '../../../models/role.model';
 import { RoleService } from '../../../services/roles/role.service';
 
-import { CommonModule } from '@angular/common';
 import { MessageComponent } from '../components/message/message.component';
 import { FormFieldComponent } from '../components/form-field/form-field.component';
 
 @Component({
   selector: 'app-role-select',
   standalone: true,
-  imports: [CommonModule, MessageComponent, FormFieldComponent, AppSelectComponent],
+  imports: [MessageComponent, FormFieldComponent, AppSelectComponent],
   template: `
     <div class="w-full">
       <app-form-field labelKey="roleSelect.role" [controlId]="controlId">
@@ -38,7 +37,9 @@ import { FormFieldComponent } from '../components/form-field/form-field.componen
         ></app-select>
       </app-form-field>
 
-      <app-message *ngIf="errorMessage" [message]="errorMessage" type="error"></app-message>
+      @if (errorMessage) {
+        <app-message [message]="errorMessage" type="error"></app-message>
+      }
     </div>
   `,
 })

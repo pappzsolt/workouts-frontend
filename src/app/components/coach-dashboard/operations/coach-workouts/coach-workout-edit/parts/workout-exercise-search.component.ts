@@ -4,7 +4,7 @@ import type { Exercise } from '../../../../../../models/exercise.model';
 import { AppSearchComponent } from '../../../../../shared/components/app-search/app-search.component';
 import { AppBadgeComponent } from '../../../../../shared/components/app-badge/app-badge.component';
 import { AppLoadingComponent } from '../../../../../shared/components/app-state/app-state.component';
-import { CommonModule } from '@angular/common';
+
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from '../../../../../shared/components/message/message.component';
 import { AppButtonComponent } from '../../../../../shared/components/app-button/app-button.component';
@@ -18,7 +18,6 @@ import { AppIconComponent } from '../../../../../shared/components/app-icon/app-
     AppSearchComponent,
     AppBadgeComponent,
     AppLoadingComponent,
-    CommonModule,
     TranslatePipe,
     MessageComponent,
     AppButtonComponent,

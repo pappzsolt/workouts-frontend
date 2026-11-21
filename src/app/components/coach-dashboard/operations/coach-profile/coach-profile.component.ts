@@ -1,5 +1,8 @@
 import { createInputValidationGuard } from '../../../shared/components/form-controls/app-input.directive';
-import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
+import {
+  errorMessage,
+  responseMessage,
+} from '../../../../models/backend-dto/common/api-response-message';
 import { Component, OnInit, inject, DestroyRef } from '@angular/core';
 import { finalize } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -15,7 +18,7 @@ import { AppInputDirective } from '../../../shared/components/form-controls/app-
 import { AppTextareaDirective } from '../../../shared/components/form-controls/app-textarea.directive';
 import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
 import { ProfileFieldsComponent } from '../../../shared/components/profile-fields/profile-fields.component';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from '../../../shared/components/message/message.component';
@@ -34,7 +37,6 @@ import type { CoachProfile } from '../../../../models/coach-profile.model';
     AppTextareaDirective,
     AppHeadingDirective,
     ProfileFieldsComponent,
-    CommonModule,
     FormsModule,
     TranslatePipe,
     MessageComponent,
@@ -105,32 +107,36 @@ export class CoachProfileComponent implements OnInit {
       return;
     }
 
-    this.coachProfileService.getMemberById(userId).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: response => {
-        if (!response.success || !response.data) {
-          this.showError(responseMessage([response], USER_MESSAGES.loadProfileError)); return;
-        }
-        const profile = response.data;
-        this.profile = {
-          id: profile.id,
-          name: profile.usernameOrName ?? '',
-          email: profile.email ?? '',
-          password_hash: '',
-          phone: profile.extraFields?.phone ?? '',
-          specialization: profile.extraFields?.specialization ?? '',
-          avatar_url: profile.avatarUrl ?? '',
-          created_at: profile.createdAt ?? '',
-        };
+    this.coachProfileService
+      .getMemberById(userId)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          if (!response.success || !response.data) {
+            this.showError(responseMessage([response], USER_MESSAGES.loadProfileError));
+            return;
+          }
+          const profile = response.data;
+          this.profile = {
+            id: profile.id,
+            name: profile.usernameOrName ?? '',
+            email: profile.email ?? '',
+            password_hash: '',
+            phone: profile.extraFields?.phone ?? '',
+            specialization: profile.extraFields?.specialization ?? '',
+            avatar_url: profile.avatarUrl ?? '',
+            created_at: profile.createdAt ?? '',
+          };
 
-        this.showInfo(responseMessage([response], USER_MESSAGES.profileLoaded));
-      },
+          this.showInfo(responseMessage([response], USER_MESSAGES.profileLoaded));
+        },
 
-      error: (error) => {
-        this.logger.error('Coach profil betöltési hiba:', error);
+        error: (error) => {
+          this.logger.error('Coach profil betöltési hiba:', error);
 
-        this.showError(errorMessage(error, USER_MESSAGES.loadProfileError));
-      },
-    });
+          this.showError(errorMessage(error, USER_MESSAGES.loadProfileError));
+        },
+      });
   }
 
   // ==========================================================
@@ -165,29 +171,41 @@ export class CoachProfileComponent implements OnInit {
     };
 
     this.saving = true;
-    this.coachProfileService.saveCoachProfile(payload).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      finalize(() => { this.saving = false; }),
-    ).subscribe({
-      next: response => {
-        if (!response.success) {
-          this.showError(responseMessage([response], USER_MESSAGES.saveProfileUnknownError)); return;
-        }
-        if (this.profile.password_hash === payload.passwordHash) {
-          this.profile.password_hash = '';
-          this.currentPassword = '';
-        }
+    this.coachProfileService
+      .saveCoachProfile(payload)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.saving = false;
+        }),
+      )
+      .subscribe({
+        next: (response) => {
+          if (!response.success) {
+            this.showError(responseMessage([response], USER_MESSAGES.saveProfileUnknownError));
+            return;
+          }
+          if (this.profile.password_hash === payload.passwordHash) {
+            this.profile.password_hash = '';
+            this.currentPassword = '';
+          }
 
-        this.showSuccess(responseMessage([response], USER_MESSAGES.saveProfileSuccess));
-      },
+          this.showSuccess(responseMessage([response], USER_MESSAGES.saveProfileSuccess));
+        },
 
-      error: (error) => {
-        this.logger.error('Coach profil mentési hiba:', error);
+        error: (error) => {
+          this.logger.error('Coach profil mentési hiba:', error);
 
-        this.showError(errorMessage(error, error.status === 0
-          ? USER_MESSAGES.saveProfileNetworkError : USER_MESSAGES.saveProfileUnknownError));
-      },
-    });
+          this.showError(
+            errorMessage(
+              error,
+              error.status === 0
+                ? USER_MESSAGES.saveProfileNetworkError
+                : USER_MESSAGES.saveProfileUnknownError,
+            ),
+          );
+        },
+      });
   }
 
   // ==========================================================

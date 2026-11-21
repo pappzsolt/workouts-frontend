@@ -15,7 +15,7 @@ import { AppTextareaDirective } from '../../../shared/components/form-controls/a
 import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
 import { AppLoadingComponent } from '../../../shared/components/app-state/app-state.component';
 import { ProfileFieldsComponent } from '../../../shared/components/profile-fields/profile-fields.component';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from '../../../shared/components/message/message.component';
@@ -33,7 +33,6 @@ import { FormFieldComponent } from '../../../shared/components/form-field/form-f
     AppHeadingDirective,
     AppLoadingComponent,
     ProfileFieldsComponent,
-    CommonModule,
     FormsModule,
     TranslatePipe,
     MessageComponent,
@@ -100,27 +99,30 @@ export class CoachEditComponent implements OnInit {
     this.message = '';
     this.messageType = '';
 
-    this.coachService.getCoaches().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (coaches) => {
-        this.coaches = coaches;
+    this.coachService
+      .getCoaches()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (coaches) => {
+          this.coaches = coaches;
 
-        this.loading = false;
+          this.loading = false;
 
-        if (this.coaches.length > 0) {
-          this.selectedCoachId = this.coaches[0].id;
+          if (this.coaches.length > 0) {
+            this.selectedCoachId = this.coaches[0].id;
 
-          this.onSelectCoach();
-        }
-      },
+            this.onSelectCoach();
+          }
+        },
 
-      error: (err) => {
-        this.loading = false;
+        error: (err) => {
+          this.loading = false;
 
-        this.message = err?.error?.message || err?.message || 'adminCoachEdit.loadError';
+          this.message = err?.error?.message || err?.message || 'adminCoachEdit.loadError';
 
-        this.messageType = 'error';
-      },
-    });
+          this.messageType = 'error';
+        },
+      });
   }
 
   // =========================================================
@@ -171,26 +173,32 @@ export class CoachEditComponent implements OnInit {
     const payload = { ...this.selectedCoach, id: coachId };
     this.saving = true;
 
-    this.coachService.updateCoach(coachId, payload).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      finalize(() => { this.loading = false; this.saving = false; }),
-    ).subscribe({
-      next: (updatedCoach) => {
-        const index = this.coaches.findIndex((coach) => coach.id === coachId);
-        if (index !== -1) this.coaches[index] = { ...updatedCoach, password: '' };
-        if (this.selectedCoachId !== coachId || this.selectionVersion !== version) return;
-        this.selectedCoach = { ...updatedCoach, password: '' };
-        this.message = 'adminCoachEdit.updateSuccess';
-        this.messageType = 'success';
-      },
+    this.coachService
+      .updateCoach(coachId, payload)
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.loading = false;
+          this.saving = false;
+        }),
+      )
+      .subscribe({
+        next: (updatedCoach) => {
+          const index = this.coaches.findIndex((coach) => coach.id === coachId);
+          if (index !== -1) this.coaches[index] = { ...updatedCoach, password: '' };
+          if (this.selectedCoachId !== coachId || this.selectionVersion !== version) return;
+          this.selectedCoach = { ...updatedCoach, password: '' };
+          this.message = 'adminCoachEdit.updateSuccess';
+          this.messageType = 'success';
+        },
 
-      error: (err) => {
-        if (this.selectedCoachId !== coachId || this.selectionVersion !== version) return;
-        this.message = err?.error?.message || err?.message || 'adminCoachEdit.saveError';
+        error: (err) => {
+          if (this.selectedCoachId !== coachId || this.selectionVersion !== version) return;
+          this.message = err?.error?.message || err?.message || 'adminCoachEdit.saveError';
 
-        this.messageType = 'error';
-      },
-    });
+          this.messageType = 'error';
+        },
+      });
   }
 
   // =========================================================
@@ -208,6 +216,4 @@ export class CoachEditComponent implements OnInit {
       password: '',
     };
   }
-
-
 }

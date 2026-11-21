@@ -1,5 +1,8 @@
 import { createInputValidationGuard } from '../../../../shared/components/form-controls/app-input.directive';
-import { errorMessage, responseMessage } from '../../../../../models/backend-dto/common/api-response-message';
+import {
+  errorMessage,
+  responseMessage,
+} from '../../../../../models/backend-dto/common/api-response-message';
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -21,7 +24,7 @@ import { AppFormValidationDirective } from '../../../../shared/components/form-c
 import { AppInputDirective } from '../../../../shared/components/form-controls/app-input.directive';
 import { AppTextareaDirective } from '../../../../shared/components/form-controls/app-textarea.directive';
 import { AppHeadingDirective } from '../../../../shared/components/app-page-header/app-page-header.component';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AppButtonComponent } from '../../../../shared/components/app-button/app-button.component';
@@ -36,7 +39,6 @@ import { AppIconComponent } from '../../../../shared/components/app-icon/app-ico
     AppInputDirective,
     AppTextareaDirective,
     AppHeadingDirective,
-    CommonModule,
     FormsModule,
     TranslatePipe,
     AppButtonComponent,
@@ -166,50 +168,53 @@ export class CoachExerciseEditComponent implements OnInit {
     this.loading = true;
     this.clearMessage();
 
-    this.exerciseService.getAllExercises(language)
+    this.exerciseService
+      .getAllExercises(language)
       .pipe(takeUntil(this.loadCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({
-      next: (response: ApiResponse<Exercise[]>) => {
-        if (version !== this.loadVersion) return;
-        if (!response.success) {
-          this.loading = false; this.exerciseFound = false;
-          this.showError(responseMessage([response], 'coachExerciseEdit.loadError')); return;
-        }
-        this.message = responseMessage([response], ''); this.messageType = 'info';
-        const exercises = response.data ?? [];
+        next: (response: ApiResponse<Exercise[]>) => {
+          if (version !== this.loadVersion) return;
+          if (!response.success) {
+            this.loading = false;
+            this.exerciseFound = false;
+            this.showError(responseMessage([response], 'coachExerciseEdit.loadError'));
+            return;
+          }
+          this.message = responseMessage([response], '');
+          this.messageType = 'info';
+          const exercises = response.data ?? [];
 
+          const exercise = exercises.find((item) => item.id === exerciseId);
 
-        const exercise = exercises.find((item) => item.id === exerciseId);
+          if (exercise) {
+            this.exercise = {
+              ...exercise,
+            };
 
-        if (exercise) {
-          this.exercise = {
-            ...exercise,
-          };
+            this.loadedLanguage = language;
+            this.exerciseFound = true;
+          } else {
+            this.exerciseFound = false;
 
-          this.loadedLanguage = language;
-          this.exerciseFound = true;
-        } else {
-          this.exerciseFound = false;
+            this.router.navigate(['/coach/exercises'], {
+              queryParams: {
+                exerciseNotFound: 'true',
+              },
+            });
+          }
 
-          this.router.navigate(['/coach/exercises'], {
-            queryParams: {
-              exerciseNotFound: 'true',
-            },
-          });
-        }
+          this.loading = false;
+        },
 
-        this.loading = false;
-      },
+        error: (err) => {
+          if (version !== this.loadVersion) return;
+          this.logger.error('Hiba az exercise betöltésénél:', err);
 
-      error: (err) => {
-        if (version !== this.loadVersion) return;
-        this.logger.error('Hiba az exercise betöltésénél:', err);
+          this.showError(errorMessage(err, 'coachExerciseEdit.loadError'));
 
-        this.showError(errorMessage(err, 'coachExerciseEdit.loadError'));
-
-        this.loading = false;
-      },
-    });
+          this.loading = false;
+        },
+      });
   }
 
   // ==========================================================
@@ -217,7 +222,14 @@ export class CoachExerciseEditComponent implements OnInit {
   // ==========================================================
 
   saveExercise(): void {
-    if (this.loading || this.saving || !this.exerciseFound || this.exercise.id !== this.routeExerciseId || this.loadedLanguage !== this.currentLanguage) return;
+    if (
+      this.loading ||
+      this.saving ||
+      !this.exerciseFound ||
+      this.exercise.id !== this.routeExerciseId ||
+      this.loadedLanguage !== this.currentLanguage
+    )
+      return;
     if (!this.validateInputs()) return;
     const version = this.loadVersion;
     const language = this.loadedLanguage;
@@ -227,12 +239,19 @@ export class CoachExerciseEditComponent implements OnInit {
 
     this.exerciseService
       .updateExercise(exercise, language)
-      .pipe(takeUntilDestroyed(this.destroyRef), finalize(() => { this.saving = false; }))
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.saving = false;
+        }),
+      )
       .subscribe({
         next: (response) => {
           if (version !== this.loadVersion) return;
           if (!response.success) {
-            this.saving = false; this.showError(responseMessage([response], 'coachExerciseEdit.saveError')); return;
+            this.saving = false;
+            this.showError(responseMessage([response], 'coachExerciseEdit.saveError'));
+            return;
           }
 
           // A backend a módosított ExerciseDto-t az ApiResponse.data
@@ -255,14 +274,14 @@ export class CoachExerciseEditComponent implements OnInit {
         },
 
         error: (err) => {
-        if (version !== this.loadVersion) return;
-        this.logger.error('Hiba az exercise frissítésénél:', err);
+          if (version !== this.loadVersion) return;
+          this.logger.error('Hiba az exercise frissítésénél:', err);
 
-        this.showError(errorMessage(err, 'coachExerciseEdit.saveError'));
+          this.showError(errorMessage(err, 'coachExerciseEdit.saveError'));
 
-        this.saving = false;
-      },
-    });
+          this.saving = false;
+        },
+      });
   }
 
   // ==========================================================

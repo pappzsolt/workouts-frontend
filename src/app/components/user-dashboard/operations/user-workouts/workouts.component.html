@@ -1,32 +1,38 @@
 <!-- ======================================================
-     OLDAL
-     ====================================================== -->
+OLDAL
+====================================================== -->
 
 <div class="min-h-full bg-surface-50">
   <div class="mx-auto w-full max-w-6xl px-2.5 py-4 sm:px-6 sm:py-8 lg:px-8">
     <!-- ==================================================
-         OLDAL CÍM
-         ================================================== -->
+    OLDAL CÍM
+    ================================================== -->
 
     <h2
       class="workouts-page-title mb-5 flex items-center justify-center gap-2 break-words text-center text-2xl font-bold leading-tight tracking-tight text-content-800 sm:mb-8 sm:text-3xl"
     >
       <span class="shrink-0"><app-icon name="dumbbell" sizeClass="h-8 w-8" /></span>
-      <span class="min-w-0 break-words">{{ 'userWorkouts.program' | translate }}: {{ programName ?? (programNameMissing ? ('userWorkouts.unknownProgram' | translate) : '') }}</span>
+      <span class="min-w-0 break-words"
+        >{{ 'userWorkouts.program' | translate }}:
+        {{
+          programName ?? (programNameMissing ? ('userWorkouts.unknownProgram' | translate) : '')
+        }}</span
+      >
     </h2>
 
     <!-- ==================================================
-         WORKOUTOK
-         ================================================== -->
+    WORKOUTOK
+    ================================================== -->
 
     <app-message [message]="message" [type]="messageType" class="block mb-4"></app-message>
-    <app-loading *ngIf="loading" message="common.loading"></app-loading>
-    <ng-container *ngIf="loaded">
-      <ng-container *ngIf="workouts.length; else noWorkouts">
+    @if (loading) {
+      <app-loading message="common.loading"></app-loading>
+    }
+    @if (loaded) {
+      @if (workouts.length) {
         <!-- ==================================================
-             TAB VÁLASZTÓ
-             ================================================== -->
-
+        TAB VÁLASZTÓ
+        ================================================== -->
         <app-tabs
           #workoutTabs
           [activeTab]="activeTab"
@@ -35,7 +41,6 @@
           [ariaLabel]="'userWorkouts.groupingAria' | translate"
         >
           <!-- Elvégzendő edzések tab -->
-
           <button
             type="button"
             appTab="pending"
@@ -47,12 +52,10 @@
             "
           >
             <span class="text-xl sm:text-2xl"><app-icon name="timer" sizeClass="h-6 w-6" /></span>
-
             <span class="flex min-w-0 flex-col items-start">
               <span class="break-words text-sm font-bold leading-snug sm:text-lg">
                 {{ 'userWorkouts.pendingWorkouts' | translate }}
               </span>
-
               <span
                 appBadge="tab"
                 [ngClass]="
@@ -65,9 +68,7 @@
               </span>
             </span>
           </button>
-
           <!-- Elvégzett edzések tab -->
-
           <button
             type="button"
             appTab="completed"
@@ -81,12 +82,10 @@
             <span class="text-xl sm:text-2xl"
               ><app-icon name="circle-check" sizeClass="h-6 w-6"
             /></span>
-
             <span class="flex min-w-0 flex-col items-start">
               <span class="break-words text-sm font-bold leading-snug sm:text-lg">
                 {{ 'userWorkouts.completedWorkouts' | translate }}
               </span>
-
               <span
                 appBadge="tab"
                 [ngClass]="
@@ -100,317 +99,289 @@
             </span>
           </button>
         </app-tabs>
-
         <!-- ==================================================
-             ELVÉGZENDŐ EDZÉSEK TAB TARTALMA
-             ================================================== -->
-
-        <section
-          *ngIf="activeTab === 'pending'"
-          [id]="workoutTabs.panelId('pending')"
-          [attr.aria-labelledby]="workoutTabs.tabId('pending')"
-          role="tabpanel"
-          class="workouts-panel workouts-workspace-header rounded-2xl border border-surface-200 bg-white p-3.5 shadow-md shadow-surface-200/50 sm:p-5"
-        >
-          <!-- Szekció fejléc -->
-
-          <div appSectionHeader class="mb-4 sm:mb-5 sm:gap-3">
-            <h3
-              appHeading="compact"
-              class="flex min-w-0 items-center gap-2 leading-snug sm:text-xl"
-            >
-              <span><app-icon name="timer" sizeClass="h-6 w-6" /></span>
-              <span>{{ 'userWorkouts.pendingWorkouts' | translate }}</span>
-            </h3>
-
-            <span appBadge="counter" class="bg-primary-100 text-primary-700">
-              {{ pendingWorkouts.length }}
-            </span>
-          </div>
-
-          <!-- Edzéskártyák + közös lapozó -->
-
-          <div *ngIf="pendingWorkouts.length > 0; else noPendingWorkouts" class="w-full">
-            <app-side-pagination
-              [fullWidth]="true"
-              [navigationBelow]="true"
-              class="mx-auto block w-full min-w-0"
-              [currentPage]="pendingCurrentPage"
-              [totalPages]="pendingWorkouts.length"
-              (pageChange)="onPendingPageChange($event)"
-            >
-              <ng-container
-                *ngTemplateOutlet="
-                  workoutCards;
-                  context: {
-                    items: paginatedPendingWorkouts,
-                    isCompleted: false,
-                  }
-                "
-              ></ng-container>
-            </app-side-pagination>
-          </div>
-
-          <!-- Nincs elvégzendő edzés -->
-
-          <ng-template #noPendingWorkouts>
-            <div
-              class="flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed border-primary-200 bg-primary-50/50 px-4 py-8 text-center"
-            >
-              <span class="mb-3 text-4xl">🎉</span>
-
-              <p class="text-sm font-semibold text-content-600 sm:text-base">
-                {{ 'userWorkouts.noPendingWorkouts' | translate }}
-              </p>
+        ELVÉGZENDŐ EDZÉSEK TAB TARTALMA
+        ================================================== -->
+        @if (activeTab === 'pending') {
+          <section
+            [id]="workoutTabs.panelId('pending')"
+            [attr.aria-labelledby]="workoutTabs.tabId('pending')"
+            role="tabpanel"
+            class="workouts-panel workouts-workspace-header rounded-2xl border border-surface-200 bg-white p-3.5 shadow-md shadow-surface-200/50 sm:p-5"
+          >
+            <!-- Szekció fejléc -->
+            <div appSectionHeader class="mb-4 sm:mb-5 sm:gap-3">
+              <h3
+                appHeading="compact"
+                class="flex min-w-0 items-center gap-2 leading-snug sm:text-xl"
+              >
+                <span><app-icon name="timer" sizeClass="h-6 w-6" /></span>
+                <span>{{ 'userWorkouts.pendingWorkouts' | translate }}</span>
+              </h3>
+              <span appBadge="counter" class="bg-primary-100 text-primary-700">
+                {{ pendingWorkouts.length }}
+              </span>
             </div>
-          </ng-template>
-        </section>
-
+            <!-- Edzéskártyák + közös lapozó -->
+            @if (pendingWorkouts.length > 0) {
+              <div class="w-full">
+                <app-side-pagination
+                  [fullWidth]="true"
+                  [navigationBelow]="true"
+                  class="mx-auto block w-full min-w-0"
+                  [currentPage]="pendingCurrentPage"
+                  [totalPages]="pendingWorkouts.length"
+                  (pageChange)="onPendingPageChange($event)"
+                >
+                  <ng-container
+                    *ngTemplateOutlet="
+                      workoutCards;
+                      context: {
+                        items: paginatedPendingWorkouts,
+                        isCompleted: false,
+                      }
+                    "
+                  ></ng-container>
+                </app-side-pagination>
+              </div>
+            } @else {
+              <div
+                class="flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed border-primary-200 bg-primary-50/50 px-4 py-8 text-center"
+              >
+                <span class="mb-3 text-4xl">🎉</span>
+                <p class="text-sm font-semibold text-content-600 sm:text-base">
+                  {{ 'userWorkouts.noPendingWorkouts' | translate }}
+                </p>
+              </div>
+            }
+            <!-- Nincs elvégzendő edzés -->
+          </section>
+        }
         <!-- ==================================================
-             ELVÉGZETT EDZÉSEK TAB TARTALMA
-             ================================================== -->
-
-        <section
-          *ngIf="activeTab === 'completed'"
-          [id]="workoutTabs.panelId('completed')"
-          [attr.aria-labelledby]="workoutTabs.tabId('completed')"
-          role="tabpanel"
-          class="workouts-panel workouts-workspace-header rounded-2xl border border-surface-200 bg-white p-3.5 shadow-md shadow-surface-200/50 sm:p-5"
-        >
-          <!-- Szekció fejléc -->
-
-          <div appSectionHeader class="mb-4 sm:mb-5 sm:gap-3">
-            <h3
-              appHeading="compact"
-              class="flex min-w-0 items-center gap-2 leading-snug sm:text-xl"
-            >
-              <span><app-icon name="circle-check" sizeClass="h-6 w-6" /></span>
-              <span>{{ 'userWorkouts.completedWorkouts' | translate }}</span>
-            </h3>
-
-            <span appBadge="counter" class="bg-primary-100 text-primary-700">
-              {{ completedWorkouts.length }}
-            </span>
-          </div>
-
-          <!-- Edzéskártyák + közös lapozó -->
-
-          <ng-container *ngIf="completedWorkouts.length; else noCompletedWorkouts">
-            <app-side-pagination
-              [fullWidth]="true"
-              [navigationBelow]="true"
-              class="mx-auto block w-full min-w-0"
-              [currentPage]="completedCurrentPage"
-              [totalPages]="completedWorkouts.length"
-              (pageChange)="onCompletedPageChange($event)"
-            >
-              <ng-container
-                *ngTemplateOutlet="
-                  workoutCards;
-                  context: {
-                    items: paginatedCompletedWorkouts,
-                    isCompleted: true,
-                  }
-                "
-              ></ng-container>
-            </app-side-pagination>
-          </ng-container>
-
-          <!-- Nincs elvégzett edzés -->
-
-          <ng-template #noCompletedWorkouts>
-            <div
-              class="flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed border-primary-200 bg-primary-50/50 px-4 py-8 text-center"
-            >
-              <span class="mb-3"><app-icon name="dumbbell" sizeClass="h-10 w-10" /></span>
-
-              <p class="text-sm font-semibold text-content-600 sm:text-base">
-                {{ 'userWorkouts.noCompletedWorkouts' | translate }}
-              </p>
+      ELVÉGZETT EDZÉSEK TAB TARTALMA
+      ================================================== -->
+        @if (activeTab === 'completed') {
+          <section
+            [id]="workoutTabs.panelId('completed')"
+            [attr.aria-labelledby]="workoutTabs.tabId('completed')"
+            role="tabpanel"
+            class="workouts-panel workouts-workspace-header rounded-2xl border border-surface-200 bg-white p-3.5 shadow-md shadow-surface-200/50 sm:p-5"
+          >
+            <!-- Szekció fejléc -->
+            <div appSectionHeader class="mb-4 sm:mb-5 sm:gap-3">
+              <h3
+                appHeading="compact"
+                class="flex min-w-0 items-center gap-2 leading-snug sm:text-xl"
+              >
+                <span><app-icon name="circle-check" sizeClass="h-6 w-6" /></span>
+                <span>{{ 'userWorkouts.completedWorkouts' | translate }}</span>
+              </h3>
+              <span appBadge="counter" class="bg-primary-100 text-primary-700">
+                {{ completedWorkouts.length }}
+              </span>
             </div>
-          </ng-template>
-        </section>
-      </ng-container>
-    </ng-container>
+            <!-- Edzéskártyák + közös lapozó -->
+            @if (completedWorkouts.length) {
+              <app-side-pagination
+                [fullWidth]="true"
+                [navigationBelow]="true"
+                class="mx-auto block w-full min-w-0"
+                [currentPage]="completedCurrentPage"
+                [totalPages]="completedWorkouts.length"
+                (pageChange)="onCompletedPageChange($event)"
+              >
+                <ng-container
+                  *ngTemplateOutlet="
+                    workoutCards;
+                    context: {
+                      items: paginatedCompletedWorkouts,
+                      isCompleted: true,
+                    }
+                  "
+                ></ng-container>
+              </app-side-pagination>
+            } @else {
+              <div
+                class="flex min-h-40 flex-col items-center justify-center rounded-xl border border-dashed border-primary-200 bg-primary-50/50 px-4 py-8 text-center"
+              >
+                <span class="mb-3"><app-icon name="dumbbell" sizeClass="h-10 w-10" /></span>
+                <p class="text-sm font-semibold text-content-600 sm:text-base">
+                  {{ 'userWorkouts.noCompletedWorkouts' | translate }}
+                </p>
+              </div>
+            }
+            <!-- Nincs elvégzett edzés -->
+          </section>
+        }
+      } @else {
+        <div
+          class="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-surface-300 bg-white px-5 py-10 text-center shadow-md shadow-surface-200/40"
+        >
+          <span class="mb-3"><app-icon name="dumbbell" sizeClass="h-12 w-12" /></span>
+          <app-message [message]="'userWorkouts.noWorkouts'" type="info"></app-message>
+        </div>
+      }
+    }
 
     <!-- ==================================================
-         KÖZÖS EDZÉSKÁRTYA SABLON
-         ================================================== -->
+KÖZÖS EDZÉSKÁRTYA SABLON
+================================================== -->
 
     <ng-template #workoutCards let-items="items" let-isCompleted="isCompleted">
       <div class="w-full">
-        <app-card
-          *ngFor="let workout of items; trackBy: trackByWorkout"
-          variant="default"
-          class="block w-full min-w-0 cursor-pointer"
-        >
-          <div
-            class="group flex h-full min-w-0 flex-col overflow-hidden transition duration-200 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600"
-            (click)="goToExercises(workout)"
-          >
-            <!-- Edzés fejléc / ikon -->
-
+        @for (workout of items; track trackByWorkout($index, workout)) {
+          <app-card variant="default" class="block w-full min-w-0 cursor-pointer">
             <div
-              class="relative flex h-32 items-center justify-center overflow-hidden bg-surface-100 sm:h-44"
+              class="group flex h-full min-w-0 flex-col overflow-hidden transition duration-200 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600"
+              (click)="goToExercises(workout)"
             >
-              <span
-                class="relative flex h-14 w-14 items-center justify-center rounded-xl bg-white text-4xl shadow-sm ring-1 ring-surface-200 transition duration-200 group-hover:scale-105 sm:h-20 sm:w-20 sm:rounded-2xl sm:text-5xl"
-              >
-                <app-icon name="dumbbell" sizeClass="h-8 w-8" />
-              </span>
-            </div>
-
-            <!-- Edzés tartalom -->
-
-            <div class="flex min-w-0 flex-1 flex-col p-4 sm:p-7">
-              <!-- Edzés név -->
-
-              <h4 class="mb-3 break-words text-content-800 text-xl font-bold leading-tight sm:text-2xl">
-                {{ workout.workoutName }}
-              </h4>
-
-              <!-- Leírás -->
-
-              <p
-                *ngIf="workout.workoutDescription"
-                class="mb-3 min-w-0 break-words text-base leading-relaxed text-content-600 sm:mb-5 sm:text-lg"
-              >
-                {{ workout.workoutDescription }}
-              </p>
-
-              <!-- Meta adatok -->
-
+              <!-- Edzés fejléc / ikon -->
               <div
-                class="mt-auto grid grid-cols-1 min-[360px]:grid-cols-2 gap-2 border-t border-surface-100 pt-3 sm:gap-3 sm:pt-4"
+                class="relative flex h-32 items-center justify-center overflow-hidden bg-surface-100 sm:h-44"
               >
-                <!-- Dátum -->
-
-                <div class="rounded-xl bg-surface-50 px-2.5 py-2.5 sm:px-3 sm:py-3">
-                  <div
-                    class="mb-1 text-xs font-medium uppercase tracking-wide text-content-500 sm:text-sm"
-                  >
-                    {{ 'userWorkouts.date' | translate }}
-                  </div>
-
-                  <div class="break-words text-base font-bold text-content-800 sm:text-lg">
-                    {{ workout.workoutDate | date: 'yyyy.MM.dd' }}
-                  </div>
-                </div>
-
-                <!-- Intenzitás -->
-
-                <div class="rounded-xl bg-primary-50 px-2.5 py-2.5 sm:px-3 sm:py-3">
-                  <div
-                    class="mb-1 text-xs font-medium uppercase tracking-wide text-primary-600 sm:text-sm"
-                  >
-                    {{ 'userWorkouts.intensity' | translate }}
-                  </div>
-
-                  <div class="break-words text-base font-bold text-primary-700 sm:text-lg">
-                    {{ intensityLabelKey(workout.intensityLevel) ? (intensityLabelKey(workout.intensityLevel) | translate) : workout.intensityLevel }}
-                  </div>
-                </div>
-              </div>
-
-              <!-- Státusz: teljesített -->
-
-              <div
-                *ngIf="isCompleted"
-                class="mt-3 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2 text-center text-sm font-semibold text-primary-700 sm:py-3 sm:text-base"
-              >
-                {{ 'userWorkouts.completed' | translate }}
-                <app-icon name="circle-check" sizeClass="h-6 w-6" />
-              </div>
-
-              <!-- Státusz: nincs teljesítve / függőben -->
-
-              <ng-container *ngIf="!isCompleted">
-                <div
-                  *ngIf="workout.completed === false"
-                  class="mt-3 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2 text-center text-sm font-semibold text-primary-700 sm:py-3 sm:text-base"
+                <span
+                  class="relative flex h-14 w-14 items-center justify-center rounded-xl bg-white text-4xl shadow-sm ring-1 ring-surface-200 transition duration-200 group-hover:scale-105 sm:h-20 sm:w-20 sm:rounded-2xl sm:text-5xl"
                 >
-                  {{ 'userWorkouts.notCompleted' | translate }}
-                  <app-icon name="circle-x" sizeClass="h-6 w-6" />
-                </div>
-
-                <div
-                  *ngIf="workout.completed === null"
-                  class="mt-3 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2 text-center text-sm font-semibold text-primary-700 sm:py-3 sm:text-base"
+                  <app-icon name="dumbbell" sizeClass="h-8 w-8" />
+                </span>
+              </div>
+              <!-- Edzés tartalom -->
+              <div class="flex min-w-0 flex-1 flex-col p-4 sm:p-7">
+                <!-- Edzés név -->
+                <h4
+                  class="mb-3 break-words text-content-800 text-xl font-bold leading-tight sm:text-2xl"
                 >
-                  {{ 'userWorkouts.pending' | translate }}
-                  <app-icon name="timer" sizeClass="h-6 w-6" />
+                  {{ workout.workoutName }}
+                </h4>
+                <!-- Leírás -->
+                @if (workout.workoutDescription) {
+                  <p
+                    class="mb-3 min-w-0 break-words text-base leading-relaxed text-content-600 sm:mb-5 sm:text-lg"
+                  >
+                    {{ workout.workoutDescription }}
+                  </p>
+                }
+                <!-- Meta adatok -->
+                <div
+                  class="mt-auto grid grid-cols-1 min-[360px]:grid-cols-2 gap-2 border-t border-surface-100 pt-3 sm:gap-3 sm:pt-4"
+                >
+                  <!-- Dátum -->
+                  <div class="rounded-xl bg-surface-50 px-2.5 py-2.5 sm:px-3 sm:py-3">
+                    <div
+                      class="mb-1 text-xs font-medium uppercase tracking-wide text-content-500 sm:text-sm"
+                    >
+                      {{ 'userWorkouts.date' | translate }}
+                    </div>
+                    <div class="break-words text-base font-bold text-content-800 sm:text-lg">
+                      {{ workout.workoutDate | date: 'yyyy.MM.dd' }}
+                    </div>
+                  </div>
+                  <!-- Intenzitás -->
+                  <div class="rounded-xl bg-primary-50 px-2.5 py-2.5 sm:px-3 sm:py-3">
+                    <div
+                      class="mb-1 text-xs font-medium uppercase tracking-wide text-primary-600 sm:text-sm"
+                    >
+                      {{ 'userWorkouts.intensity' | translate }}
+                    </div>
+                    <div class="break-words text-base font-bold text-primary-700 sm:text-lg">
+                      {{
+                        intensityLabelKey(workout.intensityLevel)
+                          ? (intensityLabelKey(workout.intensityLevel) | translate)
+                          : workout.intensityLevel
+                      }}
+                    </div>
+                  </div>
                 </div>
-              </ng-container>
-
-              <!-- Teljesített edzés adatai -->
-
-              <div
-                *ngIf="workout.actualSets || workout.actualRepetitions || workout.weightUsed"
-                class="mt-3 rounded-xl border border-surface-200 bg-surface-50 p-3 text-sm text-content-600"
-              >
-                <div *ngIf="workout.actualSets" class="py-0.5">
-                  <span class="font-semibold text-content-700">
-                    {{ 'userWorkouts.sets' | translate }}:
-                  </span>
-                  {{ workout.actualSets }}
-                </div>
-
-                <div *ngIf="workout.actualRepetitions" class="py-0.5">
-                  <span class="font-semibold text-content-700">
-                    {{ 'userWorkouts.reps' | translate }}:
-                  </span>
-                  {{ workout.actualRepetitions }}
-                </div>
-
-                <div *ngIf="workout.weightUsed" class="py-0.5">
-                  <span class="font-semibold text-content-700">
-                    {{ 'userWorkouts.weight' | translate }}:
-                  </span>
-                  {{ workout.weightUsed }} kg
-                </div>
-              </div>
-
-              <!-- Visszajelzés -->
-
-              <div
-                *ngIf="workout.feedback"
-                class="mt-3 rounded-xl border border-primary-100 bg-primary-50 px-3 py-2.5 text-sm text-content-700"
-              >
-                <span class="font-semibold text-primary-700">
-                  {{ 'userWorkouts.feedback' | translate }}:
-                </span>
-                {{ workout.feedback }}
-              </div>
-
-              <!-- Megjegyzés -->
-
-              <div
-                *ngIf="workout.notes"
-                class="mt-3 rounded-xl border border-surface-200 bg-surface-50 px-3 py-2.5 text-sm text-content-700"
-              >
-                <span class="font-semibold text-content-700">
-                  {{ 'userWorkouts.notes' | translate }}:
-                </span>
-                {{ workout.notes }}
+                <!-- Státusz: teljesített -->
+                @if (isCompleted) {
+                  <div
+                    class="mt-3 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2 text-center text-sm font-semibold text-primary-700 sm:py-3 sm:text-base"
+                  >
+                    {{ 'userWorkouts.completed' | translate }}
+                    <app-icon name="circle-check" sizeClass="h-6 w-6" />
+                  </div>
+                }
+                <!-- Státusz: nincs teljesítve / függőben -->
+                @if (!isCompleted) {
+                  @if (workout.completed === false) {
+                    <div
+                      class="mt-3 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2 text-center text-sm font-semibold text-primary-700 sm:py-3 sm:text-base"
+                    >
+                      {{ 'userWorkouts.notCompleted' | translate }}
+                      <app-icon name="circle-x" sizeClass="h-6 w-6" />
+                    </div>
+                  }
+                  @if (workout.completed === null) {
+                    <div
+                      class="mt-3 rounded-xl border border-primary-200 bg-primary-50 px-3 py-2 text-center text-sm font-semibold text-primary-700 sm:py-3 sm:text-base"
+                    >
+                      {{ 'userWorkouts.pending' | translate }}
+                      <app-icon name="timer" sizeClass="h-6 w-6" />
+                    </div>
+                  }
+                }
+                <!-- Teljesített edzés adatai -->
+                @if (workout.actualSets || workout.actualRepetitions || workout.weightUsed) {
+                  <div
+                    class="mt-3 rounded-xl border border-surface-200 bg-surface-50 p-3 text-sm text-content-600"
+                  >
+                    @if (workout.actualSets) {
+                      <div class="py-0.5">
+                        <span class="font-semibold text-content-700">
+                          {{ 'userWorkouts.sets' | translate }}:
+                        </span>
+                        {{ workout.actualSets }}
+                      </div>
+                    }
+                    @if (workout.actualRepetitions) {
+                      <div class="py-0.5">
+                        <span class="font-semibold text-content-700">
+                          {{ 'userWorkouts.reps' | translate }}:
+                        </span>
+                        {{ workout.actualRepetitions }}
+                      </div>
+                    }
+                    @if (workout.weightUsed) {
+                      <div class="py-0.5">
+                        <span class="font-semibold text-content-700">
+                          {{ 'userWorkouts.weight' | translate }}:
+                        </span>
+                        {{ workout.weightUsed }} kg
+                      </div>
+                    }
+                  </div>
+                }
+                <!-- Visszajelzés -->
+                @if (workout.feedback) {
+                  <div
+                    class="mt-3 rounded-xl border border-primary-100 bg-primary-50 px-3 py-2.5 text-sm text-content-700"
+                  >
+                    <span class="font-semibold text-primary-700">
+                      {{ 'userWorkouts.feedback' | translate }}:
+                    </span>
+                    {{ workout.feedback }}
+                  </div>
+                }
+                <!-- Megjegyzés -->
+                @if (workout.notes) {
+                  <div
+                    class="mt-3 rounded-xl border border-surface-200 bg-surface-50 px-3 py-2.5 text-sm text-content-700"
+                  >
+                    <span class="font-semibold text-content-700">
+                      {{ 'userWorkouts.notes' | translate }}:
+                    </span>
+                    {{ workout.notes }}
+                  </div>
+                }
               </div>
             </div>
-          </div>
-        </app-card>
+          </app-card>
+        }
       </div>
     </ng-template>
 
     <!-- ==================================================
-         NINCS EDZÉS
-         ================================================== -->
-
-    <ng-template #noWorkouts>
-      <div
-        class="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-surface-300 bg-white px-5 py-10 text-center shadow-md shadow-surface-200/40"
-      >
-        <span class="mb-3"><app-icon name="dumbbell" sizeClass="h-12 w-12" /></span>
-
-        <app-message [message]="'userWorkouts.noWorkouts'" type="info"></app-message>
-      </div>
-    </ng-template>
+NINCS EDZÉS
+================================================== -->
   </div>
 </div>

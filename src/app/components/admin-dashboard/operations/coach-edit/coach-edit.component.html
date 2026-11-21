@@ -14,13 +14,17 @@
     <!-- ÜZENET -->
     <!-- ============================= -->
 
-    <app-message *ngIf="message" [message]="message" [type]="messageType"></app-message>
+    @if (message) {
+      <app-message [message]="message" [type]="messageType"></app-message>
+    }
 
     <!-- ============================= -->
     <!-- BETÖLTÉS -->
     <!-- ============================= -->
 
-    <app-loading *ngIf="loading" message="common.loading" class="block"></app-loading>
+    @if (loading) {
+      <app-loading message="common.loading" class="block"></app-loading>
+    }
 
     <!-- ============================= -->
     <!-- COACH KIVÁLASZTÁSA -->

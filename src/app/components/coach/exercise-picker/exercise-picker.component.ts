@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subject, switchMap, catchError, of, timer } from 'rxjs';
 
 import { AppInputDirective } from '../../shared/components/form-controls/app-input.directive';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AppIconComponent } from '../../shared/components/app-icon/app-icon.component';
@@ -24,7 +24,7 @@ import { codeLabel } from '../coach-ui';
 @Component({
   selector: 'app-exercise-picker',
   standalone: true,
-  imports: [AppInputDirective, CommonModule, FormsModule, TranslatePipe, AppIconComponent],
+  imports: [AppInputDirective, FormsModule, TranslatePipe, AppIconComponent],
   templateUrl: './exercise-picker.component.html',
 })
 export class ExercisePickerComponent implements OnInit {

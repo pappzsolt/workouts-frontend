@@ -1,13 +1,16 @@
 import { Component, EventEmitter, Input, Output, model } from '@angular/core';
 
 import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
-import type { CoachClientOverview, CoachProgramWorkout, CoachProgramExercise } from '../../../../models/coach-workspace.model';
-
+import type {
+  CoachClientOverview,
+  CoachProgramWorkout,
+  CoachProgramExercise,
+} from '../../../../models/coach-workspace.model';
 
 /**
  * A kiválasztott nap gyakorlatlistája és az edzéssel kapcsolatos műveletek.
@@ -15,7 +18,7 @@ import type { CoachClientOverview, CoachProgramWorkout, CoachProgramExercise } f
 @Component({
   selector: 'app-program-day-workout',
   standalone: true,
-  imports: [AppInputDirective, CommonModule, RouterModule, FormsModule, TranslatePipe, AppIconComponent],
+  imports: [AppInputDirective, RouterModule, FormsModule, TranslatePipe, AppIconComponent],
   templateUrl: './program-day-workout.component.html',
   host: { class: 'contents' },
 })

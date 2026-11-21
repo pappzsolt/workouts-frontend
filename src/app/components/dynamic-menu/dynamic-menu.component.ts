@@ -1,6 +1,6 @@
 import { AppIconComponent } from '../shared/components/app-icon/app-icon.component';
 import type { MenuItem } from '../../models/common/menu-item.model';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -8,7 +8,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 @Component({
   selector: 'app-dynamic-menu',
   standalone: true,
-  imports: [AppIconComponent, CommonModule, RouterModule, TranslatePipe],
+  imports: [AppIconComponent, RouterModule, TranslatePipe],
   templateUrl: './dynamic-menu.component.html',
   styleUrls: ['./dynamic-menu.component.css'],
 })
@@ -34,5 +34,4 @@ export class DynamicMenuComponent {
   trackByMenuItem(index: number, item: MenuItem): string | number {
     return item.path ?? item.action ?? `${item.label}-${index}`;
   }
-
 }

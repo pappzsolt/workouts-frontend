@@ -1,5 +1,8 @@
 import { createInputValidationGuard } from '../../../shared/components/form-controls/app-input.directive';
-import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
+import {
+  errorMessage,
+  responseMessage,
+} from '../../../../models/backend-dto/common/api-response-message';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 
 import { Subject, catchError, finalize, forkJoin, of, take, takeUntil } from 'rxjs';
@@ -21,7 +24,7 @@ import { AppFormValidationDirective } from '../../../shared/components/form-cont
 import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
 import { AppTextareaDirective } from '../../../shared/components/form-controls/app-textarea.directive';
 import { ProfileFieldsComponent } from '../../../shared/components/profile-fields/profile-fields.component';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from '../../../shared/components/message/message.component';
@@ -38,7 +41,6 @@ import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.c
     AppInputDirective,
     AppTextareaDirective,
     ProfileFieldsComponent,
-    CommonModule,
     FormsModule,
     TranslatePipe,
     MessageComponent,
@@ -209,9 +211,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
       email: this.selectedUser.email,
 
-      password: this.selectedUser.password?.trim()
-        ? this.selectedUser.password
-        : undefined,
+      password: this.selectedUser.password?.trim() ? this.selectedUser.password : undefined,
       currentPassword: this.selectedUser.password?.trim()
         ? this.selectedUser.currentPassword
         : undefined,
@@ -242,10 +242,18 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this.saving = true;
     this.userService
       .updateUser(rawUser)
-      .pipe(takeUntil(this.destroy$), finalize(() => { this.saving = false; }))
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => {
+          this.saving = false;
+        }),
+      )
       .subscribe({
         next: (response) => {
-          this.message = responseMessage([response], response.success ? 'userProfile.updateSuccess' : 'userProfile.updateError');
+          this.message = responseMessage(
+            [response],
+            response.success ? 'userProfile.updateSuccess' : 'userProfile.updateError',
+          );
           this.messageType = response.success ? 'success' : 'error';
           if (response.success && this.selectedUser.password === rawUser.password) {
             this.selectedUser.password = '';

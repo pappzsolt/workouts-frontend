@@ -1,17 +1,29 @@
-import { AfterViewInit, Component, DestroyRef, ElementRef, NgZone, ViewChild, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  ElementRef,
+  NgZone,
+  ViewChild,
+  inject,
+} from '@angular/core';
+
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslatePipe } from '@ngx-translate/core';
 import { LanguageSelectorComponent } from '../shared/language/language-selector.component';
-import { AccountDeletionService, DeletionConfig } from '../../services/account-deletion/account-deletion.service';
+import {
+  AccountDeletionService,
+  DeletionConfig,
+} from '../../services/account-deletion/account-deletion.service';
 import { RecaptchaService, recaptchaApi } from '../../services/account-deletion/recaptcha.service';
 
 @Component({
-  selector: 'app-delete-account', standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, TranslatePipe, LanguageSelectorComponent],
+  selector: 'app-delete-account',
+  standalone: true,
+  imports: [ReactiveFormsModule, RouterLink, TranslatePipe, LanguageSelectorComponent],
   templateUrl: './delete-account.component.html',
   host: { class: 'flex min-w-0 flex-1 flex-col' },
   styleUrl: './delete-account.component.css',
@@ -28,7 +40,11 @@ export class DeleteAccountComponent implements AfterViewInit {
     confirmation: [false, Validators.requiredTrue],
   });
   private destroyed = false;
-  constructor() { this.destroyRef.onDestroy(() => { this.destroyed = true; }); }
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      this.destroyed = true;
+    });
+  }
   config?: DeletionConfig;
   captchaToken = '';
   widget?: number;
@@ -39,19 +55,29 @@ export class DeleteAccountComponent implements AfterViewInit {
   retryAfter = '';
 
   ngAfterViewInit(): void {
-    this.service.config().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: config => {
-        this.config = config;
-        this.configuring = false;
-        if (!config.captchaSiteKey?.trim() || !config.appName?.trim() ||
-            !config.processingTime?.trim() || !config.retentionPolicy?.trim()) {
+    this.service
+      .config()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (config) => {
+          this.config = config;
+          this.configuring = false;
+          if (
+            !config.captchaSiteKey?.trim() ||
+            !config.appName?.trim() ||
+            !config.processingTime?.trim() ||
+            !config.retentionPolicy?.trim()
+          ) {
+            this.error = 'deleteAccount.errors.configuration';
+            return;
+          }
+          void this.loadCaptcha();
+        },
+        error: () => {
+          this.configuring = false;
           this.error = 'deleteAccount.errors.configuration';
-          return;
-        }
-        void this.loadCaptcha();
-      },
-      error: () => { this.configuring = false; this.error = 'deleteAccount.errors.configuration'; },
-    });
+        },
+      });
   }
   async loadCaptcha(): Promise<void> {
     if (!this.config?.captchaSiteKey || this.widget !== undefined) return;
@@ -62,13 +88,27 @@ export class DeleteAccountComponent implements AfterViewInit {
       this.zone.run(() => {
         this.widget = api.render(this.captchaHost.nativeElement, {
           sitekey: this.config!.captchaSiteKey,
-          callback: token => this.zone.run(() => { this.captchaToken = token; this.error = ''; }),
-          'expired-callback': () => this.zone.run(() => { this.captchaToken = ''; }),
-          'error-callback': () => this.zone.run(() => { this.captchaToken = ''; this.error = 'deleteAccount.errors.captcha'; }),
+          callback: (token) =>
+            this.zone.run(() => {
+              this.captchaToken = token;
+              this.error = '';
+            }),
+          'expired-callback': () =>
+            this.zone.run(() => {
+              this.captchaToken = '';
+            }),
+          'error-callback': () =>
+            this.zone.run(() => {
+              this.captchaToken = '';
+              this.error = 'deleteAccount.errors.captcha';
+            }),
         });
       });
     } catch {
-      if (!this.destroyed) this.zone.run(() => { this.error = 'deleteAccount.errors.captcha'; });
+      if (!this.destroyed)
+        this.zone.run(() => {
+          this.error = 'deleteAccount.errors.captcha';
+        });
     }
   }
   submit(): void {
@@ -82,15 +122,25 @@ export class DeleteAccountComponent implements AfterViewInit {
     this.error = '';
     this.retryAfter = '';
     const { email, message } = this.form.getRawValue();
-    this.service.submit({ email: email.trim(), message: message.trim(), captchaToken: this.captchaToken })
-      .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: () => { this.loading = false; this.success = true; this.form.reset(); this.resetCaptcha(); },
-        error: error => {
+    this.service
+      .submit({ email: email.trim(), message: message.trim(), captchaToken: this.captchaToken })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.loading = false;
+          this.success = true;
+          this.form.reset();
+          this.resetCaptcha();
+        },
+        error: (error) => {
           this.loading = false;
           this.resetCaptcha();
-          this.error = error instanceof HttpErrorResponse && error.status === 429
-            ? 'deleteAccount.errors.rateLimit' : 'deleteAccount.errors.submit';
-          const retry = error instanceof HttpErrorResponse ? error.headers.get('Retry-After') : null;
+          this.error =
+            error instanceof HttpErrorResponse && error.status === 429
+              ? 'deleteAccount.errors.rateLimit'
+              : 'deleteAccount.errors.submit';
+          const retry =
+            error instanceof HttpErrorResponse ? error.headers.get('Retry-After') : null;
           if (retry && /^\d+$/.test(retry)) this.retryAfter = retry;
         },
       });

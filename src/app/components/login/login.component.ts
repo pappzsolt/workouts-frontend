@@ -13,7 +13,7 @@ import { USER_MESSAGES } from '../../constants/user-messages';
 import { AppFormValidationDirective } from '../shared/components/form-controls/app-form-validation.directive';
 import { AppInputDirective } from '../shared/components/form-controls/app-input.directive';
 import { AppHeadingDirective } from '../shared/components/app-page-header/app-page-header.component';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -22,7 +22,6 @@ import { AppButtonComponent } from '../shared/components/app-button/app-button.c
 import { FormFieldComponent } from '../shared/components/form-field/form-field.component';
 import { LanguageSelectorComponent } from '../shared/language/language-selector.component';
 
-
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -30,7 +29,6 @@ import { LanguageSelectorComponent } from '../shared/language/language-selector.
     AppFormValidationDirective,
     AppInputDirective,
     AppHeadingDirective,
-    CommonModule,
     RouterModule,
     FormsModule,
     TranslatePipe,
@@ -80,28 +78,33 @@ export class LoginComponent {
     this.authService
       .login(username, password)
       .pipe(
-        finalize(() => { this.loading = false; }),
+        finalize(() => {
+          this.loading = false;
+        }),
         takeUntilDestroyed(this.destroyRef),
-      ).subscribe({ next: (res: LoginResponse) => {
-        this.loading = false;
+      )
+      .subscribe({
+        next: (res: LoginResponse) => {
+          this.loading = false;
 
-        if (res) {
+          if (res) {
+            const role = this.authService.getUserRole() ?? '';
 
-          const role = this.authService.getUserRole() ?? '';
-
-          if (role.includes('ROLE_ADMIN')) {
-            this.router.navigate(['/admin/dashboard']);
-          } else if (role.includes('ROLE_COACH')) {
-            this.router.navigate(['/coach/dashboard']);
-          } else if (role.includes('ROLE_USER')) {
-            this.router.navigate(['/user/dashboard']);
-          } else {
-            this.router.navigate(['/login']);
+            if (role.includes('ROLE_ADMIN')) {
+              this.router.navigate(['/admin/dashboard']);
+            } else if (role.includes('ROLE_COACH')) {
+              this.router.navigate(['/coach/dashboard']);
+            } else if (role.includes('ROLE_USER')) {
+              this.router.navigate(['/user/dashboard']);
+            } else {
+              this.router.navigate(['/login']);
+            }
           }
-        }
-      }, error: error => {
-        this.logger.error('Login hiba:', error);
-        this.errorMessage = errorMessage(error, USER_MESSAGES.userOrPassFailed);
-      } });
+        },
+        error: (error) => {
+          this.logger.error('Login hiba:', error);
+          this.errorMessage = errorMessage(error, USER_MESSAGES.userOrPassFailed);
+        },
+      });
   }
 }

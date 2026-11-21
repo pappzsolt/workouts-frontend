@@ -1,11 +1,11 @@
 <!-- ======================================================
-     OLDAL
-     ====================================================== -->
+OLDAL
+====================================================== -->
 <div class="min-h-full bg-transparent">
   <div class="mx-auto w-full max-w-6xl px-2.5 py-4 sm:px-6 sm:py-8 lg:px-8">
     <!-- ==================================================
-         OLDAL CÍM
-         ================================================== -->
+    OLDAL CÍM
+    ================================================== -->
     <h2
       data-guide="user-profile"
       class="workouts-page-title mb-5 flex items-center justify-center gap-2 break-words text-center text-xl font-bold leading-tight tracking-tight text-content-800 sm:mb-8 sm:text-3xl"
@@ -15,15 +15,17 @@
     </h2>
 
     <!-- ==================================================
-         PROFIL TARTALOM
-         ================================================== -->
+    PROFIL TARTALOM
+    ================================================== -->
     <div class="mx-auto w-full max-w-4xl">
       <!-- Üzenet -->
-      <app-message *ngIf="message" [message]="message" [type]="messageType"></app-message>
+      @if (message) {
+        <app-message [message]="message" [type]="messageType"></app-message>
+      }
 
       <!-- ==================================================
-           PROFIL KÁRTYA
-           ================================================== -->
+      PROFIL KÁRTYA
+      ================================================== -->
       <app-card variant="default">
         <form class="min-w-0">
           <!-- Profil fejléc – a Program Workouts kártyastílusa -->
@@ -44,8 +46,8 @@
           </div>
 
           <!-- ==================================================
-               PROFIL ADATOK
-               ================================================== -->
+          PROFIL ADATOK
+          ================================================== -->
           <div appProfileFields="compact" class="p-3.5 sm:gap-x-5 sm:gap-y-4 sm:p-5">
             <!-- Username -->
             <app-form-field labelKey="userProfile.username" controlId="username" [required]="true">

@@ -1,28 +1,45 @@
-import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
+import {
+  errorMessage,
+  responseMessage,
+} from '../../../../models/backend-dto/common/api-response-message';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { EMPTY, Subject, catchError, combineLatest, distinctUntilChanged, map, switchMap, takeUntil } from 'rxjs';
+import {
+  EMPTY,
+  Subject,
+  catchError,
+  combineLatest,
+  distinctUntilChanged,
+  map,
+  switchMap,
+  takeUntil,
+} from 'rxjs';
 
 import { UserExerciseService } from '../../../../services/user/user-exercise/user-exercise.service';
 import { LanguageService } from '../../../../services/shared/language.service';
 
-import { UserWorkoutExerciseDetailDto, ExerciseDetailDto } from '../../../../models/user-workout-exercise-detail.dto';
+import {
+  UserWorkoutExerciseDetailDto,
+  ExerciseDetailDto,
+} from '../../../../models/user-workout-exercise-detail.dto';
 import { SidePaginationComponent } from '../../../../components/shared/components/side-pagination/side-pagination.component';
 import { AppLoadingComponent } from '../../../shared/components/app-state/app-state.component';
-import { CommonModule } from '@angular/common';
+
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from '../../../shared/components/message/message.component';
 import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
 import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
-import { exerciseImageSources, markExerciseImageBroken } from '../../../../constants/exercise-images';
+import {
+  exerciseImageSources,
+  markExerciseImageBroken,
+} from '../../../../constants/exercise-images';
 
 @Component({
   standalone: true,
   selector: 'app-user-exercises',
   imports: [
     AppLoadingComponent,
-    CommonModule,
     TranslatePipe,
     MessageComponent,
     AppCardComponent,
@@ -32,7 +49,6 @@ import { exerciseImageSources, markExerciseImageBroken } from '../../../../const
   templateUrl: './user-exercises.component.html',
 })
 export class UserExercisesComponent implements OnInit, OnDestroy {
-
   private readonly destroy$ = new Subject<void>();
 
   message = '';
@@ -57,10 +73,11 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
   }
 
   getTargetRepetitions(exercise: UserWorkoutExerciseDetailDto): string {
-    const repetitions = exercise.userWorkoutExerciseSets
-      ?.map(set => set.targetRepetitions ?? '-');
+    const repetitions = exercise.userWorkoutExerciseSets?.map(
+      (set) => set.targetRepetitions ?? '-',
+    );
     if (!repetitions?.length) return '-';
-    return repetitions.every(value => value === repetitions[0])
+    return repetitions.every((value) => value === repetitions[0])
       ? String(repetitions[0])
       : repetitions.join(' / ');
   }
@@ -118,13 +135,17 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
           workoutName: query.get('workoutName') || '',
           language,
         })),
-        distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current)),
-        switchMap(context => {
+        distinctUntilChanged(
+          (previous, current) => JSON.stringify(previous) === JSON.stringify(current),
+        ),
+        switchMap((context) => {
           this.workoutId = context.workoutId;
           this.programId = context.programId;
           this.userWorkoutId = context.userWorkoutId;
-          this.programWorkoutId = Number.isInteger(context.programWorkoutId) && context.programWorkoutId > 0
-            ? context.programWorkoutId : undefined;
+          this.programWorkoutId =
+            Number.isInteger(context.programWorkoutId) && context.programWorkoutId > 0
+              ? context.programWorkoutId
+              : undefined;
           this.workoutName = context.workoutName;
           this.allExercises = [];
           this.paginatedExercises = [];
@@ -132,7 +153,11 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
           this.currentPage = 1;
           this.message = '';
           this.loadFailed = false;
-          if (![this.workoutId, this.programId, this.userWorkoutId].every(id => Number.isInteger(id) && id > 0)) {
+          if (
+            ![this.workoutId, this.programId, this.userWorkoutId].every(
+              (id) => Number.isInteger(id) && id > 0,
+            )
+          ) {
             this.loading = false;
             this.loadFailed = true;
             this.message = 'userExercises.loadError';
@@ -140,23 +165,29 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
             return EMPTY;
           }
           this.loading = true;
-          return this.exercisesService.getWorkoutExercises(context.userWorkoutId, context.language).pipe(
-            catchError(error => {
-              this.loading = false;
-              this.loadFailed = true;
-              this.message = errorMessage(error, 'userExercises.loadError');
-              this.messageType = 'error';
-              return EMPTY;
-            }),
-          );
+          return this.exercisesService
+            .getWorkoutExercises(context.userWorkoutId, context.language)
+            .pipe(
+              catchError((error) => {
+                this.loading = false;
+                this.loadFailed = true;
+                this.message = errorMessage(error, 'userExercises.loadError');
+                this.messageType = 'error';
+                return EMPTY;
+              }),
+            );
         }),
         takeUntil(this.destroy$),
-      ).subscribe(response => {
+      )
+      .subscribe((response) => {
         this.loading = false;
         this.loadFailed = !response.success;
-        this.message = responseMessage([response], response.success ? '' : 'userExercises.loadError');
+        this.message = responseMessage(
+          [response],
+          response.success ? '' : 'userExercises.loadError',
+        );
         this.messageType = response.success ? 'info' : 'error';
-        this.allExercises = response.success ? response.data?.exercises ?? [] : [];
+        this.allExercises = response.success ? (response.data?.exercises ?? []) : [];
         if (response.success && response.data?.name) this.workoutName = response.data.name;
         this.totalItems = this.allExercises.length;
         this.updatePaginatedExercises();
@@ -166,7 +197,6 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
   // ============================================================
   // EXERCISE-EK BETÖLTÉSE
   // ============================================================
-
 
   // ============================================================
   // LAPOZOTT GYAKORLATOK FRISSÍTÉSE
@@ -231,7 +261,6 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
     markExerciseImageBroken(source);
   }
 
-
   trackByExercise(index: number, exercise: UserWorkoutExerciseDetailDto): number {
     return exercise.id;
   }
@@ -239,5 +268,4 @@ export class UserExercisesComponent implements OnInit, OnDestroy {
   trackByImage(index: number, image: string): string {
     return image;
   }
-
 }

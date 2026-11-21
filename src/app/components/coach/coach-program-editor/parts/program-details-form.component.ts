@@ -4,7 +4,7 @@ import { AppFormValidationDirective } from '../../../shared/components/form-cont
 import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
 import { AppTextareaDirective } from '../../../shared/components/form-controls/app-textarea.directive';
 import { AppRadioDirective } from '../../../shared/components/form-controls/app-check.directive';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
@@ -20,7 +20,6 @@ import { DIFFICULTY_OPTIONS } from '../../coach-ui';
     AppInputDirective,
     AppTextareaDirective,
     AppRadioDirective,
-    CommonModule,
     FormsModule,
     TranslatePipe,
     AppIconComponent,

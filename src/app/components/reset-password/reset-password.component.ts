@@ -1,10 +1,16 @@
-import { PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH } from '../shared/components/form-controls/field-validation';
+import {
+  PASSWORD_MIN_LENGTH,
+  PASSWORD_MAX_LENGTH,
+} from '../shared/components/form-controls/field-validation';
 import { createInputValidationGuard } from '../shared/components/form-controls/app-input.directive';
 import { Component, DestroyRef, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize } from 'rxjs';
-import { errorMessage, responseMessage } from '../../models/backend-dto/common/api-response-message';
+import {
+  errorMessage,
+  responseMessage,
+} from '../../models/backend-dto/common/api-response-message';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -12,7 +18,7 @@ import { AuthService } from '../../services/auth/auth.service';
 import { AppFormValidationDirective } from '../shared/components/form-controls/app-form-validation.directive';
 import { AppInputDirective } from '../shared/components/form-controls/app-input.directive';
 import { AppHeadingDirective } from '../shared/components/app-page-header/app-page-header.component';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from '../shared/components/message/message.component';
@@ -27,7 +33,6 @@ import { LanguageSelectorComponent } from '../shared/language/language-selector.
     AppFormValidationDirective,
     AppInputDirective,
     AppHeadingDirective,
-    CommonModule,
     FormsModule,
     TranslatePipe,
     MessageComponent,
@@ -44,7 +49,14 @@ export class ResetPasswordComponent {
   private readonly route = inject(ActivatedRoute);
 
   readonly form = inject(FormBuilder).nonNullable.group({
-    newPassword: ['', [Validators.required, Validators.minLength(PASSWORD_MIN_LENGTH), Validators.maxLength(PASSWORD_MAX_LENGTH)]],
+    newPassword: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(PASSWORD_MIN_LENGTH),
+        Validators.maxLength(PASSWORD_MAX_LENGTH),
+      ],
+    ],
     confirmPassword: ['', [Validators.required]],
   });
 
@@ -94,18 +106,24 @@ export class ResetPasswordComponent {
     this.authService
       .resetPassword(this.token, newPassword)
       .pipe(
-        finalize(() => { this.loading = false; }),
+        finalize(() => {
+          this.loading = false;
+        }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: response => {
+        next: (response) => {
           this.completed = true;
           this.successMessage = responseMessage([response], 'resetPassword.success');
         },
-        error: error => {
+        error: (error) => {
           const status = error instanceof HttpErrorResponse ? error.status : undefined;
-          const fallback = status === 400 ? 'resetPassword.invalidToken'
-            : status === 503 ? 'resetPassword.serviceUnavailable' : 'resetPassword.resetFailed';
+          const fallback =
+            status === 400
+              ? 'resetPassword.invalidToken'
+              : status === 503
+                ? 'resetPassword.serviceUnavailable'
+                : 'resetPassword.resetFailed';
           this.errorMessage = errorMessage(error, fallback);
         },
       });

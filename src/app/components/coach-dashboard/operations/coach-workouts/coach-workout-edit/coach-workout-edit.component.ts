@@ -22,7 +22,7 @@ import { AppInputDirective } from '../../../../shared/components/form-controls/a
 import { AppTextareaDirective } from '../../../../shared/components/form-controls/app-textarea.directive';
 import { AppCheckboxDirective } from '../../../../shared/components/form-controls/app-check.directive';
 import { AppHeadingDirective } from '../../../../shared/components/app-page-header/app-page-header.component';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -50,7 +50,6 @@ import type { WorkoutEditorEffects } from './workout-editor-effects';
     AppTextareaDirective,
     AppCheckboxDirective,
     AppHeadingDirective,
-    CommonModule,
     RouterModule,
     FormsModule,
     TranslatePipe,
@@ -89,13 +88,33 @@ export class CoachWorkoutEditComponent extends WorkoutEditorState implements OnI
       setMessage: (message, type) => this.setMessage(message, type),
       loadWorkoutExercises: () => this.loadWorkoutExercises(),
     };
-    this.metadata = new WorkoutMetadataEditor(this, coachWorkoutsService, languageService,
-      this.logger, router, this.destroyRef, this.validateInputs, effects);
-    this.structure = new WorkoutExerciseEditor(this, workoutExerciseService, this.workspace,
-      exerciseService, programWorkoutService, languageService, this.logger, router, this.destroyRef, effects);
+    this.metadata = new WorkoutMetadataEditor(
+      this,
+      coachWorkoutsService,
+      languageService,
+      this.logger,
+      router,
+      this.destroyRef,
+      this.validateInputs,
+      effects,
+    );
+    this.structure = new WorkoutExerciseEditor(
+      this,
+      workoutExerciseService,
+      this.workspace,
+      exerciseService,
+      programWorkoutService,
+      languageService,
+      this.logger,
+      router,
+      this.destroyRef,
+      effects,
+    );
   }
 
-  get canSaveWorkout(): boolean { return this.metadata.canSaveWorkout; }
+  get canSaveWorkout(): boolean {
+    return this.metadata.canSaveWorkout;
+  }
 
   ngOnInit(): void {
     this.languageService.language$
@@ -107,83 +126,109 @@ export class CoachWorkoutEditComponent extends WorkoutEditorState implements OnI
         this.checkProgramAssignment();
       });
 
-    this.route.paramMap.pipe(
-      map(params => Number(params.get('id'))),
-      distinctUntilChanged(),
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe(id => {
-      this.contextCancelled$.next();
-      this.workoutLoadCancelled$.next();
-      this.exercisesLoadCancelled$.next();
-      this.workoutExercisesLoadCancelled$.next();
-      this.assignmentLoadCancelled$.next();
-      this.messageCancelled$.next();
-      this.workoutId = undefined;
-      this.workoutReady = false;
-      this.workout = emptyWorkoutForm();
-      this.workoutExercises = [];
-      this.usedInPrograms = [];
-      this.selectedExerciseId = null;
-      this.exerciseSearchTerm = '';
-      this.assignmentVerified = false;
-      this.workoutAssignedToProgram = false;
-      this.checkingProgramAssignment = false;
-      this.loadingWorkout = false;
-      this.savingWorkout = false;
-      this.addingExercise = false;
-      this.structureBusy = false;
-      this.copying = false;
-      this.message = '';
-      this.messageType = '';
-      if (!Number.isSafeInteger(id) || id <= 0) {
-        this.setMessage('coachWorkoutEdit.invalidWorkoutId', 'error');
-        return;
-      }
-      this.workoutId = id;
-      this.loadWorkout();
-      this.loadExercises();
-      this.loadWorkoutExercises();
-      this.checkProgramAssignment();
-      this.loadUsage();
-    });
+    this.route.paramMap
+      .pipe(
+        map((params) => Number(params.get('id'))),
+        distinctUntilChanged(),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((id) => {
+        this.contextCancelled$.next();
+        this.workoutLoadCancelled$.next();
+        this.exercisesLoadCancelled$.next();
+        this.workoutExercisesLoadCancelled$.next();
+        this.assignmentLoadCancelled$.next();
+        this.messageCancelled$.next();
+        this.workoutId = undefined;
+        this.workoutReady = false;
+        this.workout = emptyWorkoutForm();
+        this.workoutExercises = [];
+        this.usedInPrograms = [];
+        this.selectedExerciseId = null;
+        this.exerciseSearchTerm = '';
+        this.assignmentVerified = false;
+        this.workoutAssignedToProgram = false;
+        this.checkingProgramAssignment = false;
+        this.loadingWorkout = false;
+        this.savingWorkout = false;
+        this.addingExercise = false;
+        this.structureBusy = false;
+        this.copying = false;
+        this.message = '';
+        this.messageType = '';
+        if (!Number.isSafeInteger(id) || id <= 0) {
+          this.setMessage('coachWorkoutEdit.invalidWorkoutId', 'error');
+          return;
+        }
+        this.workoutId = id;
+        this.loadWorkout();
+        this.loadExercises();
+        this.loadWorkoutExercises();
+        this.checkProgramAssignment();
+        this.loadUsage();
+      });
   }
 
   // ----------------------------------------------------------
   // Betöltés
   // ----------------------------------------------------------
 
-  checkProgramAssignment(): void { this.structure.checkProgramAssignment(); }
+  checkProgramAssignment(): void {
+    this.structure.checkProgramAssignment();
+  }
 
-  loadWorkout(preserveDrafts = false): void { this.metadata.loadWorkout(preserveDrafts); }
+  loadWorkout(preserveDrafts = false): void {
+    this.metadata.loadWorkout(preserveDrafts);
+  }
 
-  loadExercises(): void { this.structure.loadExercises(); }
+  loadExercises(): void {
+    this.structure.loadExercises();
+  }
 
-  loadWorkoutExercises(): void { this.structure.loadWorkoutExercises(); }
+  loadWorkoutExercises(): void {
+    this.structure.loadWorkoutExercises();
+  }
 
-  private loadUsage(): void { this.structure.loadUsage(); }
+  private loadUsage(): void {
+    this.structure.loadUsage();
+  }
 
   // ----------------------------------------------------------
   // Gyakorlat kiválasztása és hozzáadása
   // ----------------------------------------------------------
 
-  isExerciseAlreadyAdded(exerciseId: number): boolean { return this.structure.isExerciseAlreadyAdded(exerciseId); }
+  isExerciseAlreadyAdded(exerciseId: number): boolean {
+    return this.structure.isExerciseAlreadyAdded(exerciseId);
+  }
 
-  selectExercise(exerciseId: number | undefined): void { this.structure.selectExercise(exerciseId); }
+  selectExercise(exerciseId: number | undefined): void {
+    this.structure.selectExercise(exerciseId);
+  }
 
-  getSelectedExerciseName(): string { return this.structure.getSelectedExerciseName(); }
+  getSelectedExerciseName(): string {
+    return this.structure.getSelectedExerciseName();
+  }
 
-  onExerciseSearchChange(term: string): void { this.structure.onExerciseSearchChange(term); }
+  onExerciseSearchChange(term: string): void {
+    this.structure.onExerciseSearchChange(term);
+  }
 
   /** A még hozzá nem adott gyakorlatok a keresés szerint; programban lévő edzésnél egy sem. */
-  get availableExercises(): Exercise[] { return this.structure.availableExercises; }
+  get availableExercises(): Exercise[] {
+    return this.structure.availableExercises;
+  }
 
-  addExerciseToWorkout(): void { this.structure.addExerciseToWorkout(); }
+  addExerciseToWorkout(): void {
+    this.structure.addExerciseToWorkout();
+  }
 
   // ----------------------------------------------------------
   // Mentés
   // ----------------------------------------------------------
 
-  saveWorkout(): void { this.metadata.saveWorkout(); }
+  saveWorkout(): void {
+    this.metadata.saveWorkout();
+  }
 
   cancelEdit(): void {
     this.router.navigate(['/coach/workouts']);
@@ -194,12 +239,18 @@ export class CoachWorkoutEditComponent extends WorkoutEditorState implements OnI
   // ----------------------------------------------------------
 
   /** A programban lévő edzés zárolt; a másolat szabadon szerkeszthető, és napra tehető. */
-  copyForEditing(): void { this.structure.copyForEditing(); }
+  copyForEditing(): void {
+    this.structure.copyForEditing();
+  }
 
-  removeExercise(view: WorkoutExerciseView): void { this.structure.removeExercise(view); }
+  removeExercise(view: WorkoutExerciseView): void {
+    this.structure.removeExercise(view);
+  }
 
   /** Egy hellyel feljebb/lejjebb; a backend a többi gyakorlat indexét eltolja. */
-  moveExercise(index: number, direction: -1 | 1): void { this.structure.moveExercise(index, direction); }
+  moveExercise(index: number, direction: -1 | 1): void {
+    this.structure.moveExercise(index, direction);
+  }
 
   private setMessage(msg: string, type: 'success' | 'error'): void {
     this.messageCancelled$.next();

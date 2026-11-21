@@ -2,7 +2,7 @@ import { Component, DestroyRef, inject } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 
@@ -16,7 +16,7 @@ const dashboard = '/coach/dashboard';
 @Component({
   selector: 'app-dashboard-navigation',
   standalone: true,
-  imports: [CommonModule, RouterModule, TranslatePipe],
+  imports: [RouterModule, TranslatePipe],
   templateUrl: './dashboard-navigation.component.html',
 })
 export class DashboardNavigationComponent {
@@ -25,10 +25,12 @@ export class DashboardNavigationComponent {
 
   constructor() {
     this.update();
-    this.router.events.pipe(
-      filter(event => event instanceof NavigationEnd),
-      takeUntilDestroyed(inject(DestroyRef)),
-    ).subscribe(() => this.update());
+    this.router.events
+      .pipe(
+        filter((event) => event instanceof NavigationEnd),
+        takeUntilDestroyed(inject(DestroyRef)),
+      )
+      .subscribe(() => this.update());
   }
 
   link(url: string) {
@@ -37,7 +39,7 @@ export class DashboardNavigationComponent {
 
   private update(): void {
     const tree = this.router.parseUrl(this.router.url);
-    const segments = tree.root.children['primary']?.segments.map(segment => segment.path) ?? [];
+    const segments = tree.root.children['primary']?.segments.map((segment) => segment.path) ?? [];
     this.items = [];
     if (segments[0] === 'user') {
       this.updateUser(segments, tree.queryParams);
@@ -123,12 +125,23 @@ export class DashboardNavigationComponent {
     };
     if (page === 'personal-workouts' && segments[2]) {
       this.items.push({ label: 'personalLibrary.workoutsTitle', url: '/user/personal-workouts' });
-      this.items.push({ label: segments[2] === 'new' ? 'personalWorkouts.create' : 'personalWorkouts.editor', url: this.router.url });
+      this.items.push({
+        label: segments[2] === 'new' ? 'personalWorkouts.create' : 'personalWorkouts.editor',
+        url: this.router.url,
+      });
       return;
     }
     if (page === 'personal-programs' && segments[2]) {
       this.items.push({ label: 'personalPrograms.title', url: '/user/personal-programs' });
-      this.items.push({ label: segments[2] === 'import' ? 'excelImport.title' : segments[2] === 'new' ? 'personalPrograms.create' : 'personalPrograms.editor', url: this.router.url });
+      this.items.push({
+        label:
+          segments[2] === 'import'
+            ? 'excelImport.title'
+            : segments[2] === 'new'
+              ? 'personalPrograms.create'
+              : 'personalPrograms.editor',
+        url: this.router.url,
+      });
       return;
     }
     if (page === 'programs' && segments[3] === 'workouts') {
@@ -140,16 +153,20 @@ export class DashboardNavigationComponent {
         this.items.push({ label: 'userMyPrograms.title', url: '/user/my-programs' });
         this.items.push({
           label: 'userDashboard.myWorkouts',
-          url: this.router.createUrlTree(['/user/programs', programId, 'workouts'], {
-            queryParams: { programName: queryParams['programName'] },
-          }).toString(),
+          url: this.router
+            .createUrlTree(['/user/programs', programId, 'workouts'], {
+              queryParams: { programName: queryParams['programName'] },
+            })
+            .toString(),
         });
       } else {
         this.items.push({ label: 'userDashboard.myWorkouts', url: '/user/workouts' });
       }
       this.items.push({
         label: 'userExercises.exercises',
-        url: this.router.createUrlTree(['/user/workouts', segments[2], 'exercises'], { queryParams }).toString(),
+        url: this.router
+          .createUrlTree(['/user/workouts', segments[2], 'exercises'], { queryParams })
+          .toString(),
       });
       if (segments[4]) {
         this.items.push({ label: 'userExerciseDetail.exercise', url: this.router.url });
@@ -158,5 +175,4 @@ export class DashboardNavigationComponent {
       this.items.push({ label: pages[page], url: this.router.url });
     }
   }
-
 }

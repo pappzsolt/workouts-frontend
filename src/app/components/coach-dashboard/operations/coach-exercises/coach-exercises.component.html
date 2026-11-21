@@ -1,16 +1,16 @@
 <div class="min-h-full min-w-0 bg-transparent px-4 py-6 sm:px-6 lg:px-8">
   <div class="mx-auto flex w-full max-w-7xl min-w-0 flex-col gap-6">
     <!-- ======================================================
-         OLDAL CÍM
-         ====================================================== -->
+    OLDAL CÍM
+    ====================================================== -->
 
     <h2 data-guide="coach-exercises" appHeading="page" class="workouts-page-title text-center">
       {{ 'coachExercises.title' | translate }}
     </h2>
 
     <!-- ======================================================
-         ÜZENET
-         ====================================================== -->
+    ÜZENET
+    ====================================================== -->
 
     @if (exerciseNotFound) {
       <app-message [message]="'coachDashboard.exerciseNotFound'" type="error"></app-message>
@@ -18,203 +18,204 @@
     <app-message [message]="message" [type]="messageType"> </app-message>
 
     <!-- ======================================================
-         BETÖLTÉS
-         ====================================================== -->
+    BETÖLTÉS
+    ====================================================== -->
 
-    <app-loading *ngIf="loading" message="common.loading" class="block mb-4"></app-loading>
+    @if (loading) {
+      <app-loading message="common.loading" class="block mb-4"></app-loading>
+    }
 
-      <!-- ====================================================
-           KERESÉS ÉS RENDEZÉS
-           ==================================================== -->
+    <!-- ====================================================
+    KERESÉS ÉS RENDEZÉS
+    ==================================================== -->
 
-      <div
-        class="workouts-panel flex flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5 lg:flex-row lg:items-end"
-      >
-        <!-- KERESÉS -->
+    <div
+      class="workouts-panel flex flex-col gap-4 rounded-2xl border border-surface-200 bg-white p-4 shadow-sm sm:p-5 lg:flex-row lg:items-end"
+    >
+      <!-- KERESÉS -->
 
-        <div class="flex min-w-0 flex-1 flex-col gap-2">
-          <div
-            class="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_180px_auto] sm:items-end"
-          >
-            <!-- KERESÉSI SZÖVEG -->
+      <div class="flex min-w-0 flex-1 flex-col gap-2">
+        <div
+          class="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_180px_auto] sm:items-end"
+        >
+          <!-- KERESÉSI SZÖVEG -->
 
-            <app-search
-              inputId="exerciseSearch"
-              [searchTerm]="searchTerm"
-              label="coachExercises.search"
-              placeholder="coachExercises.searchPlaceholder"
-              [showClearButton]="true"
-              (searchTermChange)="onSearchTermChange($event)"
-              (keydown.enter)="search()"
-              [debounceMs]="0"
-            ></app-search>
+          <app-search
+            inputId="exerciseSearch"
+            [searchTerm]="searchTerm"
+            label="coachExercises.search"
+            placeholder="coachExercises.searchPlaceholder"
+            [showClearButton]="true"
+            (searchTermChange)="onSearchTermChange($event)"
+            (keydown.enter)="search()"
+            [debounceMs]="0"
+          ></app-search>
 
-            <!-- KERESÉSI MEZŐ -->
+          <!-- KERESÉSI MEZŐ -->
 
-            <div class="flex min-w-0 flex-col gap-2">
-              <span class="text-sm font-semibold text-content-700">{{ 'coachExercises.searchIn' | translate }}</span>
-              <app-exercise-search-field
-                [value]="searchField"
-                (valueChange)="onSearchFieldChange($event)"
-                [options]="searchFieldOptions"
-              ></app-exercise-search-field>
-            </div>
-
-            <!-- KERESÉS GOMB -->
-
-            <app-button
-              variant="search"
-              type="button"
-              [label]="'common.search' | translate"
-              (buttonClick)="search()"
-            ></app-button>
+          <div class="flex min-w-0 flex-col gap-2">
+            <span class="text-sm font-semibold text-content-700">{{
+              'coachExercises.searchIn' | translate
+            }}</span>
+            <app-exercise-search-field
+              [value]="searchField"
+              (valueChange)="onSearchFieldChange($event)"
+              [options]="searchFieldOptions"
+            ></app-exercise-search-field>
           </div>
 
-          <!-- SZŰRŐK: testrész és eszköz -->
+          <!-- KERESÉS GOMB -->
 
-          <div class="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
-            <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
-              {{ 'coachWorkspace.picker.bodyPart' | translate }}
-              <select name="libraryBodyPart" [(ngModel)]="bodyPartFilter" (ngModelChange)="onFilterChange()" class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm text-content-800 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/10 font-normal">
-                <option value="">{{ 'coachWorkspace.picker.all' | translate }}</option>
-                @for (code of bodyPartOptions; track code) {
-                  <option [value]="code">{{ bodyPartLabel(code) }}</option>
-                }
-              </select>
-            </label>
-            <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
-              {{ 'coachWorkspace.picker.equipment' | translate }}
-              <select name="libraryEquipment" [(ngModel)]="equipmentFilter" (ngModelChange)="onFilterChange()" class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm text-content-800 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/10 font-normal">
-                <option value="">{{ 'coachWorkspace.picker.all' | translate }}</option>
-                @for (code of equipmentOptions; track code) {
-                  <option [value]="code">{{ equipmentLabel(code) }}</option>
-                }
-              </select>
-            </label>
-          </div>
+          <app-button
+            variant="search"
+            type="button"
+            [label]="'common.search' | translate"
+            (buttonClick)="search()"
+          ></app-button>
         </div>
 
-        <!-- RENDEZÉS -->
+        <!-- SZŰRŐK: testrész és eszköz -->
 
-        <app-button
-          variant="sort"
-          [label]="'coachExercises.sortByName' | translate"
-          [lucideIcon]="sortDirection === 'asc' ? 'arrow-up-narrow-wide' : 'arrow-down-wide-narrow'"
-          (buttonClick)="toggleSort()"
-        ></app-button>
+        <div class="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2">
+          <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+            {{ 'coachWorkspace.picker.bodyPart' | translate }}
+            <select
+              name="libraryBodyPart"
+              [(ngModel)]="bodyPartFilter"
+              (ngModelChange)="onFilterChange()"
+              class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm text-content-800 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/10 font-normal"
+            >
+              <option value="">{{ 'coachWorkspace.picker.all' | translate }}</option>
+              @for (code of bodyPartOptions; track code) {
+                <option [value]="code">{{ bodyPartLabel(code) }}</option>
+              }
+            </select>
+          </label>
+          <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
+            {{ 'coachWorkspace.picker.equipment' | translate }}
+            <select
+              name="libraryEquipment"
+              [(ngModel)]="equipmentFilter"
+              (ngModelChange)="onFilterChange()"
+              class="min-h-11 w-full rounded-xl border border-surface-300 bg-white px-3 py-2.5 text-sm text-content-800 focus:border-primary-500 focus:outline-none focus:ring-4 focus:ring-primary-500/10 font-normal"
+            >
+              <option value="">{{ 'coachWorkspace.picker.all' | translate }}</option>
+              @for (code of equipmentOptions; track code) {
+                <option [value]="code">{{ equipmentLabel(code) }}</option>
+              }
+            </select>
+          </label>
+        </div>
       </div>
 
-      <app-message [message]="filterOptionsError" type="error"></app-message>
+      <!-- RENDEZÉS -->
 
-      <ng-container *ngIf="!loading">
+      <app-button
+        variant="sort"
+        [label]="'coachExercises.sortByName' | translate"
+        [lucideIcon]="sortDirection === 'asc' ? 'arrow-up-narrow-wide' : 'arrow-down-wide-narrow'"
+        (buttonClick)="toggleSort()"
+      ></app-button>
+    </div>
+
+    <app-message [message]="filterOptionsError" type="error"></app-message>
+
+    @if (!loading) {
       <!-- ======================================================
-           GYAKORLATOK
-           ====================================================== -->
-
-      <ng-container *ngIf="filteredExercises.length > 0; else noExercises">
+      GYAKORLATOK
+      ====================================================== -->
+      @if (filteredExercises.length > 0) {
         <div class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <!-- ==================================================
-               EXERCISE KÁRTYA
-               ================================================== -->
-
-          <app-card
-            *ngFor="let ex of pagedExercises; trackBy: trackByExercise"
-            class="group flex min-w-0 flex-col overflow-hidden"
-          >
-            <!-- FEJLÉC -->
-
-            <app-card-banner icon="dumbbell" />
-
-            <!-- EXERCISE KÉPEK -->
-
-            <div
-              class="flex h-[180px] items-center justify-center overflow-hidden border-b border-surface-100 bg-surface-50"
-            >
-              <ng-container *ngIf="getExerciseImages(ex).length > 0; else noImage">
-                <img
-                  *ngFor="let image of getExerciseImages(ex); trackBy: trackByImage"
-                  [src]="image"
-                  (error)="onExerciseImageError(image)"
-                  [alt]="ex.name"
-                  class="h-full w-full object-contain transition duration-200 group-hover:scale-105"
-                />
-              </ng-container>
-
-              <!-- NINCS KÉP -->
-
-              <ng-template #noImage>
-                <span class="text-5xl">
-                  <app-icon name="dumbbell" sizeClass="h-5 w-5" />
-                </span>
-              </ng-template>
-            </div>
-
-            <!-- KÁRTYA TARTALOM -->
-
-            <div class="flex min-w-0 flex-1 flex-col p-5">
-              <!-- EXERCISE NÉV -->
-
-              <h3 class="mb-2 break-words text-lg font-bold text-content-800">
-                {{ ex.name }}
-              </h3>
-
-              <!-- LEÍRÁS -->
-
-              <p *ngIf="ex.description" class="mb-4 break-words text-sm leading-6 text-content-600">
-                {{ ex.description }}
-              </p>
-
-              <!-- SZERKESZTÉS -->
-
-              <div class="mt-auto pt-4">
-                <app-button
-                  type="button"
-                  (buttonClick)="editExercise(ex.id!)"
-                  variant="primary"
-                  appearance="solid"
-                  [fullWidth]="true"
-                  class="block w-full"
-                >
-                  <app-icon name="pencil" sizeClass="h-5 w-5" /> {{ 'common.edit' | translate }}
-                </app-button>
+          EXERCISE KÁRTYA
+          ================================================== -->
+          @for (ex of pagedExercises; track trackByExercise($index, ex)) {
+            <app-card class="group flex min-w-0 flex-col overflow-hidden">
+              <!-- FEJLÉC -->
+              <app-card-banner icon="dumbbell" />
+              <!-- EXERCISE KÉPEK -->
+              <div
+                class="flex h-[180px] items-center justify-center overflow-hidden border-b border-surface-100 bg-surface-50"
+              >
+                @if (getExerciseImages(ex).length > 0) {
+                  @for (image of getExerciseImages(ex); track trackByImage($index, image)) {
+                    <img
+                      [src]="image"
+                      (error)="onExerciseImageError(image)"
+                      [alt]="ex.name"
+                      class="h-full w-full object-contain transition duration-200 group-hover:scale-105"
+                    />
+                  }
+                } @else {
+                  <span class="text-5xl">
+                    <app-icon name="dumbbell" sizeClass="h-5 w-5" />
+                  </span>
+                }
+                <!-- NINCS KÉP -->
               </div>
-            </div>
-          </app-card>
+              <!-- KÁRTYA TARTALOM -->
+              <div class="flex min-w-0 flex-1 flex-col p-5">
+                <!-- EXERCISE NÉV -->
+                <h3 class="mb-2 break-words text-lg font-bold text-content-800">
+                  {{ ex.name }}
+                </h3>
+                <!-- LEÍRÁS -->
+                @if (ex.description) {
+                  <p class="mb-4 break-words text-sm leading-6 text-content-600">
+                    {{ ex.description }}
+                  </p>
+                }
+                <!-- SZERKESZTÉS -->
+                <div class="mt-auto pt-4">
+                  <app-button
+                    type="button"
+                    (buttonClick)="editExercise(ex.id!)"
+                    variant="primary"
+                    appearance="solid"
+                    [fullWidth]="true"
+                    class="block w-full"
+                  >
+                    <app-icon name="pencil" sizeClass="h-5 w-5" /> {{ 'common.edit' | translate }}
+                  </app-button>
+                </div>
+              </div>
+            </app-card>
+          }
         </div>
-
         <!-- ======================================================
-             KÖZÖS LAPOZÓ KOMPONENS
-             ====================================================== -->
-
-        <app-pagination
-          *ngIf="totalElements > 0"
-          [totalItems]="totalElements"
-          [pageSize]="itemsPerPage"
-          [currentPage]="currentPage + 1"
-          [showPageSize]="false"
-          [showInfo]="true"
-          (pageChange)="onPageChange($event)"
-        >
-        </app-pagination>
-      </ng-container>
-    </ng-container>
-
-    <!-- ======================================================
-         NINCS GYAKORLAT / NINCS KERESÉSI TALÁLAT
-         ====================================================== -->
-
-    <ng-template #noExercises>
-      <app-message
-        *ngIf="messageType !== 'error'"
-        [message]="hasActiveSearch ? 'coachExercises.noSearchResults' : 'coachExercises.noExercises'"
-        type="info"
-      >
-      </app-message>
-    </ng-template>
+        KÖZÖS LAPOZÓ KOMPONENS
+        ====================================================== -->
+        @if (totalElements > 0) {
+          <app-pagination
+            [totalItems]="totalElements"
+            [pageSize]="itemsPerPage"
+            [currentPage]="currentPage + 1"
+            [showPageSize]="false"
+            [showInfo]="true"
+            (pageChange)="onPageChange($event)"
+          >
+          </app-pagination>
+        }
+      } @else {
+        @if (messageType !== 'error') {
+          <app-message
+            [message]="
+              hasActiveSearch ? 'coachExercises.noSearchResults' : 'coachExercises.noExercises'
+            "
+            type="info"
+          >
+          </app-message>
+        }
+      }
+    }
 
     <!-- ======================================================
-         ÚJ GYAKORLAT
-         ====================================================== -->
+    NINCS GYAKORLAT / NINCS KERESÉSI TALÁLAT
+    ====================================================== -->
+
+    <!-- ======================================================
+    ÚJ GYAKORLAT
+    ====================================================== -->
 
     <app-button
       type="button"

@@ -4,7 +4,10 @@ import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
-import type { RegistrationAccountType, RegistrationPayload } from '../../models/backend-dto/registration/registration';
+import type {
+  RegistrationAccountType,
+  RegistrationPayload,
+} from '../../models/backend-dto/registration/registration';
 import { errorMessage } from '../../models/backend-dto/common/api-response-message';
 import type { SelectOption } from '../../models/common/select-option.model';
 import { AuthService } from '../../services/auth/auth.service';
@@ -15,7 +18,7 @@ import { AppInputDirective } from '../shared/components/form-controls/app-input.
 import { AppTextareaDirective } from '../shared/components/form-controls/app-textarea.directive';
 import { AppRadioDirective } from '../shared/components/form-controls/app-check.directive';
 import { AppHeadingDirective } from '../shared/components/app-page-header/app-page-header.component';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
@@ -56,7 +59,6 @@ const ERROR_KEYS: Record<string, string> = {
     AppTextareaDirective,
     AppRadioDirective,
     AppHeadingDirective,
-    CommonModule,
     RouterModule,
     FormsModule,
     TranslatePipe,
@@ -80,8 +82,19 @@ export class RegisterComponent {
   readonly form = inject(FormBuilder).nonNullable.group(
     {
       accountType: ['USER' as RegistrationAccountType, Validators.required],
-      username: ['', [Validators.required, Validators.minLength(L.usernameMin), Validators.maxLength(L.usernameMaxUser), usernameFormat]],
-      email: ['', [Validators.required, Validators.maxLength(L.emailMax), Validators.email, emailFormat]],
+      username: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(L.usernameMin),
+          Validators.maxLength(L.usernameMaxUser),
+          usernameFormat,
+        ],
+      ],
+      email: [
+        '',
+        [Validators.required, Validators.maxLength(L.emailMax), Validators.email, emailFormat],
+      ],
       password: ['', [Validators.required, passwordRules]],
       passwordConfirmation: ['', Validators.required],
       age: ['', [Validators.min(L.ageMin), Validators.max(L.ageMax), integerOnly]],
@@ -118,9 +131,10 @@ export class RegisterComponent {
       ]);
       username.updateValueAndValidity();
       // A másik fióktípus (most rejtett) mezői nem akadályozhatják a beküldést.
-      const hidden = type === 'COACH'
-        ? (['age', 'weight', 'height', 'gender', 'goals'] as const)
-        : (['phone', 'specialization'] as const);
+      const hidden =
+        type === 'COACH'
+          ? (['age', 'weight', 'height', 'gender', 'goals'] as const)
+          : (['phone', 'specialization'] as const);
       for (const name of hidden) this.form.controls[name].reset('');
     });
   }
@@ -136,7 +150,8 @@ export class RegisterComponent {
   /** A mező saját (appInput által nem jelzett) hibájának fordítási kulcsa, érintés vagy beküldés után. */
   fieldError(name: keyof typeof this.form.controls): string {
     const control: AbstractControl = this.form.controls[name];
-    if (!(control.touched || this.submitted) || !control.errors || control.errors['inputType']) return '';
+    if (!(control.touched || this.submitted) || !control.errors || control.errors['inputType'])
+      return '';
     const own = Object.keys(control.errors).find((key) => ERROR_KEYS[key]);
     return own ? ERROR_KEYS[own] : '';
   }
@@ -171,7 +186,8 @@ export class RegisterComponent {
   private payload(): RegistrationPayload {
     const v = this.form.getRawValue();
     const text = (value: string): string | null => (value.trim() ? value.trim() : null);
-    const num = (value: string | number): number | null => (String(value).trim() === '' ? null : Number(value));
+    const num = (value: string | number): number | null =>
+      String(value).trim() === '' ? null : Number(value);
     const base: RegistrationPayload = {
       accountType: v.accountType,
       username: v.username.trim(),

@@ -9,8 +9,7 @@
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
     "isolatedModules": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,   // ← hozzáadva
+    "esModuleInterop": true, // ← hozzáadva
     "experimentalDecorators": true,
     "moduleResolution": "bundler",
     "importHelpers": true,

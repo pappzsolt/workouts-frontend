@@ -1,5 +1,5 @@
 import { MessageComponent } from '../message/message.component';
-import { CommonModule } from '@angular/common';
+
 import {
   AfterContentChecked,
   Component,
@@ -15,7 +15,7 @@ let nextFieldId = 0;
 @Component({
   selector: 'app-form-field',
   standalone: true,
-  imports: [CommonModule, TranslatePipe, MessageComponent],
+  imports: [TranslatePipe, MessageComponent],
   templateUrl: './form-field.component.html',
 })
 export class FormFieldComponent implements AfterContentChecked {

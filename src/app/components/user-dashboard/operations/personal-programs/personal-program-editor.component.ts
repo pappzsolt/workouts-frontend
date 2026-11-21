@@ -4,11 +4,20 @@ import { WORKOUT_PRESCRIPTION_LIMITS } from '../../../../models/workout-prescrip
 import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subject, catchError, combineLatest, of, startWith, switchMap, tap } from 'rxjs';
+import {
+  Observable,
+  Subject,
+  catchError,
+  combineLatest,
+  of,
+  startWith,
+  switchMap,
+  tap,
+} from 'rxjs';
 import { AppPageHeaderComponent } from '../../../shared/components/app-page-header/app-page-header.component';
 import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
 import { AppLoadingComponent } from '../../../shared/components/app-state/app-state.component';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
@@ -29,7 +38,6 @@ import { PersonalProgramNavigation } from './personal-program-navigation';
     AppPageHeaderComponent,
     AppHeadingDirective,
     AppLoadingComponent,
-    CommonModule,
     RouterModule,
     TranslatePipe,
     ConfirmDialogComponent,

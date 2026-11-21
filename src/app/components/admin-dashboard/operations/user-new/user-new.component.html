@@ -8,7 +8,9 @@
     </div>
 
     <!-- Üzenet -->
-    <app-message *ngIf="message" [message]="message" [type]="messageType"></app-message>
+    @if (message) {
+      <app-message [message]="message" [type]="messageType"></app-message>
+    }
 
     <!-- Form -->
     <form
@@ -157,19 +159,22 @@
           </app-role-select>
 
           <!-- Kiválasztott szerepkörök -->
-          <div *ngIf="user.roleIds?.length" class="mt-4 flex flex-wrap gap-2">
-            <app-button
-              *ngFor="let role of user.roleIds; trackBy: trackByRole"
-              variant="delete"
-              appearance="outline"
-              size="sm"
-              [round]="true"
-              [label]="role.name"
-              lucideIcon="x"
-              [ariaLabel]="('common.remove' | translate) + ': ' + role.name"
-              (buttonClick)="onRemoveRole(role)"
-            ></app-button>
-          </div>
+          @if (user.roleIds?.length) {
+            <div class="mt-4 flex flex-wrap gap-2">
+              @for (role of user.roleIds; track trackByRole($index, role)) {
+                <app-button
+                  variant="delete"
+                  appearance="outline"
+                  size="sm"
+                  [round]="true"
+                  [label]="role.name"
+                  lucideIcon="x"
+                  [ariaLabel]="('common.remove' | translate) + ': ' + role.name"
+                  (buttonClick)="onRemoveRole(role)"
+                ></app-button>
+              }
+            </div>
+          }
         </div>
       </app-form-field>
 

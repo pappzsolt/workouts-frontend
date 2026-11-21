@@ -3,14 +3,14 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
-import { CommonModule } from '@angular/common';
+
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from '../../../shared/components/message/message.component';
 
 @Component({
   selector: 'app-choice-edit',
   standalone: true,
-  imports: [AppHeadingDirective, CommonModule, TranslatePipe, MessageComponent, DashboardActionComponent],
+  imports: [AppHeadingDirective, TranslatePipe, MessageComponent, DashboardActionComponent],
   templateUrl: './choice-user-edit.component.html',
 })
 export class ChoiceUserEditComponent {

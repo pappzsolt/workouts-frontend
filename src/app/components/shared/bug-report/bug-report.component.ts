@@ -1,13 +1,23 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, HostListener, OnDestroy, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { errorMessage } from '../../../models/backend-dto/common/api-response-message';
 import { BugReportAttachments } from './bug-report-attachments';
-import { BUG_REPORT_LIMITS as L, type BugReportCreated } from '../../../models/backend-dto/bug-report/bug-report';
+import {
+  BUG_REPORT_LIMITS as L,
+  type BugReportCreated,
+} from '../../../models/backend-dto/bug-report/bug-report';
 import { AuthService } from '../../../services/auth/auth.service';
 import { BugReportService } from '../../../services/bug-report/bug-report.service';
 import { AppFormValidationDirective } from '../components/form-controls/app-form-validation.directive';
@@ -35,7 +45,9 @@ export function trimmedLength(min: number, max: number): ValidatorFn {
 }
 
 /** Üres, vagy (szóközök nélkül) alkalmazáson belüli útvonal. */
-export const appPathValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+export const appPathValidator: ValidatorFn = (
+  control: AbstractControl,
+): ValidationErrors | null => {
   const value = String(control.value ?? '').trim();
   return value === '' || APP_PATH.test(value) ? null : { appPath: true };
 };
@@ -44,8 +56,10 @@ export { detectImageType } from './bug-report-attachments';
 
 /** A proxy (nginx) 413-as válasza HTML; azt nem írjuk ki, helyette érthető üzenet jelenik meg. */
 export function submitError(error: unknown): string {
-  if (error instanceof HttpErrorResponse && error.status === 413) return 'bugReport.errors.tooLarge';
-  if (error instanceof HttpErrorResponse && typeof error.error === 'string') return 'bugReport.errors.submit';
+  if (error instanceof HttpErrorResponse && error.status === 413)
+    return 'bugReport.errors.tooLarge';
+  if (error instanceof HttpErrorResponse && typeof error.error === 'string')
+    return 'bugReport.errors.submit';
   return errorMessage(error, 'bugReport.errors.submit');
 }
 
@@ -83,15 +97,35 @@ export class BugReportComponent implements OnDestroy {
   readonly today = new Date();
 
   readonly form = inject(FormBuilder).nonNullable.group({
-    title: ['', [Validators.required, Validators.maxLength(L.titleMax), trimmedLength(L.titleMin, L.titleMax)]],
-    description: ['', [Validators.required, Validators.maxLength(L.descriptionMax), trimmedLength(L.descriptionMin, L.descriptionMax)]],
+    title: [
+      '',
+      [
+        Validators.required,
+        Validators.maxLength(L.titleMax),
+        trimmedLength(L.titleMin, L.titleMax),
+      ],
+    ],
+    description: [
+      '',
+      [
+        Validators.required,
+        Validators.maxLength(L.descriptionMax),
+        trimmedLength(L.descriptionMin, L.descriptionMax),
+      ],
+    ],
     pageUrl: [this.previousPage(), [Validators.maxLength(L.pageUrlMax), appPathValidator]],
   });
 
   private readonly attachmentStore = new BugReportAttachments();
-  get attachments() { return this.attachmentStore.items; }
-  get fileError(): string { return this.attachmentStore.error; }
-  get fileErrorParams(): Record<string, unknown> { return this.attachmentStore.errorParams; }
+  get attachments() {
+    return this.attachmentStore.items;
+  }
+  get fileError(): string {
+    return this.attachmentStore.error;
+  }
+  get fileErrorParams(): Record<string, unknown> {
+    return this.attachmentStore.errorParams;
+  }
   dragging = false;
   submitted = false;
   sending = false;
@@ -136,7 +170,9 @@ export class BugReportComponent implements OnDestroy {
   @HostListener('window:paste', ['$event'])
   onPaste(event: ClipboardEvent): void {
     if (this.created) return;
-    const images = Array.from(event.clipboardData?.files ?? []).filter((file) => file.type.startsWith('image/'));
+    const images = Array.from(event.clipboardData?.files ?? []).filter((file) =>
+      file.type.startsWith('image/'),
+    );
     if (images.length === 0) return;
     event.preventDefault();
     void this.addFiles(images);
@@ -190,7 +226,9 @@ export class BugReportComponent implements OnDestroy {
   }
 
   formatSize(bytes: number): string {
-    return bytes >= 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${Math.max(1, Math.round(bytes / 1024))} KB`;
+    return bytes >= 1024 * 1024
+      ? `${(bytes / 1024 / 1024).toFixed(1)} MB`
+      : `${Math.max(1, Math.round(bytes / 1024))} KB`;
   }
 
   private clearAttachments(): void {
@@ -200,9 +238,12 @@ export class BugReportComponent implements OnDestroy {
   /** Az előző oldal az alkalmazásban (ahonnan a bejelentőt megnyitották), ha van. */
   private previousPage(): string {
     // A komponens a navigáció közben jön létre: az előző oldal a folyamatban lévő navigáció előzménye.
-    const navigation = this.router.getCurrentNavigation() ?? this.router.lastSuccessfulNavigation;
+    const navigation = this.router.getCurrentNavigation() ?? this.router.lastSuccessfulNavigation();
     const previous = navigation?.previousNavigation?.finalUrl?.toString() ?? '';
-    return previous && APP_PATH.test(previous) && !previous.includes('bug-report') && previous.length <= L.pageUrlMax
+    return previous &&
+      APP_PATH.test(previous) &&
+      !previous.includes('bug-report') &&
+      previous.length <= L.pageUrlMax
       ? previous
       : '';
   }

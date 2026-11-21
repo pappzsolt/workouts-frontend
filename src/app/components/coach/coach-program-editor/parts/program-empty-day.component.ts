@@ -2,12 +2,15 @@ import { Component, EventEmitter, Input, Output, model } from '@angular/core';
 
 import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
 import { AppRadioDirective } from '../../../shared/components/form-controls/app-check.directive';
-import { CommonModule } from '@angular/common';
+
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
-import type { CoachExerciseSearchItem, CoachWorkoutSummary } from '../../../../models/coach-workspace.model';
+import type {
+  CoachExerciseSearchItem,
+  CoachWorkoutSummary,
+} from '../../../../models/coach-workspace.model';
 import { ExercisePickerComponent } from '../../exercise-picker/exercise-picker.component';
 
 /** Üres nap: új edzés összeállítása vagy edzés az Edzéstárból (hozzárendelés vagy másolat). */
@@ -17,7 +20,6 @@ import { ExercisePickerComponent } from '../../exercise-picker/exercise-picker.c
   imports: [
     AppInputDirective,
     AppRadioDirective,
-    CommonModule,
     RouterModule,
     FormsModule,
     TranslatePipe,

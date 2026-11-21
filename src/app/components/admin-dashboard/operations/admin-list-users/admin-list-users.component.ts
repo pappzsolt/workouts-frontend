@@ -10,7 +10,7 @@ import { User } from '../../../../models/user.model';
 import { USER_MESSAGES } from '../../../../constants/user-messages';
 
 import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
-import { CommonModule } from '@angular/common';
+
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from '../../../shared/components/message/message.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
@@ -25,7 +25,6 @@ import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.c
     AppButtonComponent,
     AppSearchComponent,
     AppHeadingDirective,
-    CommonModule,
     TranslatePipe,
     MessageComponent,
     PaginationComponent,
@@ -40,12 +39,13 @@ export class AdminListUsersComponent {
   users: User[] = [];
   deletingUserId: number | null = null;
   onUserDeleted(id: number): void {
-    this.users = this.users.filter(user => !(user.accountType === 'user' && user.id === id));
+    this.users = this.users.filter((user) => !(user.accountType === 'user' && user.id === id));
     this.deletingUserId = null;
     this.currentPage = Math.min(this.currentPage, this.totalPages);
-    this.message = 'userDeletion.success'; this.messageType = 'success';
+    this.message = 'userDeletion.success';
+    this.messageType = 'success';
   }
-  searchTerm = "";
+  searchTerm = '';
 
   message = '';
   messageType: 'success' | 'error' | '' = '';
@@ -58,7 +58,9 @@ export class AdminListUsersComponent {
   }
 
   get filteredUsers(): User[] {
-    return this.users.filter(user => matchesSearch(this.searchTerm, user.username, user.email, user.roles.join(' ')));
+    return this.users.filter((user) =>
+      matchesSearch(this.searchTerm, user.username, user.email, user.roles.join(' ')),
+    );
   }
 
   onSearchChange(term: string): void {
@@ -74,19 +76,22 @@ export class AdminListUsersComponent {
     this.message = '';
     this.messageType = '';
 
-    this.adminListUsersService.getUsers().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (users) => {
-        this.users = users;
+    this.adminListUsersService
+      .getUsers()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (users) => {
+          this.users = users;
 
-        this.currentPage = 1;
-      },
+          this.currentPage = 1;
+        },
 
-      error: (err) => {
-        this.message = err?.error?.message || err?.message || USER_MESSAGES.loadError;
+        error: (err) => {
+          this.message = err?.error?.message || err?.message || USER_MESSAGES.loadError;
 
-        this.messageType = 'error';
-      },
-    });
+          this.messageType = 'error';
+        },
+      });
   }
 
   get paginatedUsers(): User[] {
@@ -113,5 +118,4 @@ export class AdminListUsersComponent {
   trackByUser(index: number, user: { id?: number }): number {
     return user.id ?? index;
   }
-
 }

@@ -19,7 +19,7 @@ import { AppSelectComponent } from '../../../../../components/shared/components/
 import { AppFormValidationDirective } from '../../../../shared/components/form-controls/app-form-validation.directive';
 import { AppInputDirective } from '../../../../shared/components/form-controls/app-input.directive';
 import { AppTextareaDirective } from '../../../../shared/components/form-controls/app-textarea.directive';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from '../../../../shared/components/message/message.component';
@@ -36,7 +36,6 @@ import { AppIconComponent } from '../../../../shared/components/app-icon/app-ico
     AppFormValidationDirective,
     AppInputDirective,
     AppTextareaDirective,
-    CommonModule,
     FormsModule,
     TranslatePipe,
     MessageComponent,

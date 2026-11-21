@@ -8,7 +8,9 @@
     </div>
 
     <!-- Üzenet -->
-    <app-message *ngIf="message" [message]="message" [type]="messageType"> </app-message>
+    @if (message) {
+      <app-message [message]="message" [type]="messageType"> </app-message>
+    }
 
     <!-- Választási lehetőségek -->
     <div class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2">

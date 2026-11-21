@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 import { AppInputDirective } from '../../../shared/components/form-controls/app-input.directive';
 import { AppCheckboxDirective } from '../../../shared/components/form-controls/app-check.directive';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
@@ -12,7 +12,7 @@ import { type EditableSet, type ExerciseSets, isSetChanged, isSetInvalid } from 
 @Component({
   selector: 'app-client-exercise-sets',
   standalone: true,
-  imports: [AppInputDirective, AppCheckboxDirective, CommonModule, FormsModule, TranslatePipe, AppIconComponent],
+  imports: [AppInputDirective, AppCheckboxDirective, FormsModule, TranslatePipe, AppIconComponent],
   templateUrl: './client-exercise-sets.component.html',
   host: { class: 'contents' },
 })

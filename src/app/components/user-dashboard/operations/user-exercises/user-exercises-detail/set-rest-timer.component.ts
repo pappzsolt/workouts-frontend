@@ -1,30 +1,62 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { TranslatePipe } from '@ngx-translate/core';
-import { CommonModule } from '@angular/common';
+
 import { Subscription, interval, startWith } from 'rxjs';
-import { UserExerciseDetailService, WebSetRestTimerStatus } from '../../../../../services/user/user-exercises-detail/user-exercises-detail.service';
+import {
+  UserExerciseDetailService,
+  WebSetRestTimerStatus,
+} from '../../../../../services/user/user-exercises-detail/user-exercises-detail.service';
 
 /** Display only: the database is the source of truth for timer start and duration. */
 @Component({
   selector: 'app-set-rest-timer',
   standalone: true,
-  imports: [CommonModule, TranslatePipe],
+  imports: [TranslatePipe],
   template: `
-    <section *ngIf="timer?.exists" [attr.aria-label]="'restTimer.title' | translate"
-      class="mx-auto my-4 w-full max-w-md rounded-2xl border border-primary-200 bg-primary-50 p-4 text-center shadow-sm sm:p-5"
-      role="timer" [attr.aria-live]="remainingSeconds === 0 ? 'polite' : 'off'">
-      <div class="text-sm font-semibold uppercase tracking-wide text-primary-700">{{ 'restTimer.title' | translate }}</div>
-      <div class="my-2 text-5xl font-bold tabular-nums text-content-900 sm:text-6xl">{{ formattedRemaining }}</div>
-      <div class="text-sm font-medium text-primary-800">
-        {{ (remainingSeconds === 0 ? 'restTimer.finished' : 'restTimer.remaining') | translate }}
-      </div>
-      <div class="mt-3 h-2 w-full overflow-hidden rounded-full bg-primary-200" role="progressbar"
-        [attr.aria-valuenow]="elapsedSeconds" [attr.aria-valuemin]="0"
-        [attr.aria-valuemax]="timer?.restDurationSeconds ?? 0">
-        <div class="h-full bg-primary-600 transition-[width] duration-300" [style.width.%]="progressPercent"></div>
-      </div>
-    </section>
-    <p *ngIf="error" role="alert" class="mx-auto my-3 max-w-md text-center text-sm text-delete-700">{{ error | translate }}</p>
+    @if (timer?.exists) {
+      <section
+        [attr.aria-label]="'restTimer.title' | translate"
+        class="mx-auto my-4 w-full max-w-md rounded-2xl border border-primary-200 bg-primary-50 p-4 text-center shadow-sm sm:p-5"
+        role="timer"
+        [attr.aria-live]="remainingSeconds === 0 ? 'polite' : 'off'"
+      >
+        <div class="text-sm font-semibold uppercase tracking-wide text-primary-700">
+          {{ 'restTimer.title' | translate }}
+        </div>
+        <div class="my-2 text-5xl font-bold tabular-nums text-content-900 sm:text-6xl">
+          {{ formattedRemaining }}
+        </div>
+        <div class="text-sm font-medium text-primary-800">
+          {{ (remainingSeconds === 0 ? 'restTimer.finished' : 'restTimer.remaining') | translate }}
+        </div>
+        <div
+          class="mt-3 h-2 w-full overflow-hidden rounded-full bg-primary-200"
+          role="progressbar"
+          [attr.aria-valuenow]="elapsedSeconds"
+          [attr.aria-valuemin]="0"
+          [attr.aria-valuemax]="timer?.restDurationSeconds ?? 0"
+        >
+          <div
+            class="h-full bg-primary-600 transition-[width] duration-300"
+            [style.width.%]="progressPercent"
+          ></div>
+        </div>
+      </section>
+    }
+    @if (error) {
+      <p role="alert" class="mx-auto my-3 max-w-md text-center text-sm text-delete-700">
+        {{ error | translate }}
+      </p>
+    }
   `,
 })
 export class SetRestTimerComponent implements OnChanges, OnDestroy {
@@ -41,7 +73,10 @@ export class SetRestTimerComponent implements OnChanges, OnDestroy {
   private initialRemaining = 0;
   private finishReported = false;
 
-  constructor(private service: UserExerciseDetailService, private cdr: ChangeDetectorRef) {}
+  constructor(
+    private service: UserExerciseDetailService,
+    private cdr: ChangeDetectorRef,
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes['setId'] && !changes['revision']) return;
@@ -54,7 +89,7 @@ export class SetRestTimerComponent implements OnChanges, OnDestroy {
     if (this.setId == null) return;
     const requestedId = this.setId;
     this.request = this.service.getRestTimer(requestedId).subscribe({
-      next: response => {
+      next: (response) => {
         if (this.setId !== requestedId) return;
         if (!response.success || !response.data) {
           this.error = response.message || 'restTimer.loadError';
@@ -66,18 +101,20 @@ export class SetRestTimerComponent implements OnChanges, OnDestroy {
         if (!this.timer) return;
         this.initialRemaining = Math.max(0, status.remainingSeconds);
         this.receivedAt = Date.now();
-        this.ticker = interval(250).pipe(startWith(0)).subscribe(() => {
-          const elapsed = Math.floor((Date.now() - this.receivedAt) / 1000);
-          this.remainingSeconds = Math.max(0, this.initialRemaining - Math.max(0, elapsed));
-          if (this.remainingSeconds === 0) {
-            this.ticker?.unsubscribe();
-            if (!this.finishReported) {
-              this.finishReported = true;
-              this.restFinished.emit(requestedId);
+        this.ticker = interval(250)
+          .pipe(startWith(0))
+          .subscribe(() => {
+            const elapsed = Math.floor((Date.now() - this.receivedAt) / 1000);
+            this.remainingSeconds = Math.max(0, this.initialRemaining - Math.max(0, elapsed));
+            if (this.remainingSeconds === 0) {
+              this.ticker?.unsubscribe();
+              if (!this.finishReported) {
+                this.finishReported = true;
+                this.restFinished.emit(requestedId);
+              }
             }
-          }
-          this.cdr.markForCheck();
-        });
+            this.cdr.markForCheck();
+          });
         this.cdr.markForCheck();
       },
       error: () => {

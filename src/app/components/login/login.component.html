@@ -1,7 +1,7 @@
-<div
-  class="flex items-center justify-center px-4"
->
-  <div class="workouts-auth-card workouts-panel w-full rounded-2xl border border-surface-200 bg-white p-6 shadow-lg sm:p-8">
+<div class="flex items-center justify-center px-4">
+  <div
+    class="workouts-auth-card workouts-panel w-full rounded-2xl border border-surface-200 bg-white p-6 shadow-lg sm:p-8"
+  >
     <!-- Language selector -->
     <div class="mb-6 flex justify-end">
       <app-language-selector></app-language-selector>
@@ -43,12 +43,9 @@
       </app-form-field>
 
       <!-- Error -->
-      <app-message
-        *ngIf="errorMessage"
-        [message]="errorMessage"
-        type="error"
-        class="block mb-4"
-      ></app-message>
+      @if (errorMessage) {
+        <app-message [message]="errorMessage" type="error" class="block mb-4"></app-message>
+      }
 
       <!-- Login button -->
       <app-button
@@ -68,7 +65,11 @@
         </a>
       </div>
 
-      <p class="text-center text-sm"><a routerLink="/delete-account" class="text-primary-600 underline">{{ 'menu.deleteAccount' | translate }}</a></p>
+      <p class="text-center text-sm">
+        <a routerLink="/delete-account" class="text-primary-600 underline">{{
+          'menu.deleteAccount' | translate
+        }}</a>
+      </p>
       <!-- Registration -->
       <p class="border-t border-surface-200 pt-4 text-center text-sm text-content-600">
         {{ 'login.noAccount' | translate }}

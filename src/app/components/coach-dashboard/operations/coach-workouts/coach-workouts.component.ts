@@ -1,9 +1,29 @@
-import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, inject } from '@angular/core';
+import {
+  errorMessage,
+  responseMessage,
+} from '../../../../models/backend-dto/common/api-response-message';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+  inject,
+} from '@angular/core';
 import { LoggerService } from '../../../../services/logger.service';
 import { Router } from '@angular/router';
 
-import { EMPTY, Subject, catchError, debounceTime, distinctUntilChanged, switchMap, takeUntil, timer } from 'rxjs';
+import {
+  EMPTY,
+  Subject,
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  takeUntil,
+  timer,
+} from 'rxjs';
 
 import {
   CoachWorkoutsService,
@@ -12,7 +32,7 @@ import {
 } from '../../../../services/coach/coach-workouts/coach-workouts.service';
 import { LanguageService } from '../../../../services/shared/language.service';
 import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
-import { CommonModule } from '@angular/common';
+
 import { TranslatePipe } from '@ngx-translate/core';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { MessageComponent } from '../../../shared/components/message/message.component';
@@ -31,7 +51,12 @@ import { AppButtonComponent } from '../../../../components/shared/components/app
   selector: 'app-coach-workouts',
   standalone: true,
   imports: [
-    AppHeadingDirective, CommonModule, TranslatePipe, ConfirmDialogComponent, MessageComponent, AppCardBannerComponent, AppCardStatComponent,
+    AppHeadingDirective,
+    TranslatePipe,
+    ConfirmDialogComponent,
+    MessageComponent,
+    AppCardBannerComponent,
+    AppCardStatComponent,
     NewWorkoutComponent,
     AppCardComponent,
     AppSearchComponent,
@@ -142,22 +167,24 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
     this.pageRequests$
       .pipe(
         switchMap(() =>
-          this.coachWorkoutsService.getWorkoutLibraryPage(
-            this.currentPage,
-            this.itemsPerPage,
-            this.searchTerm,
-            this.sortMode,
-          ).pipe(
-            catchError((error) => {
-              this.loading = false;
-              this.logger.error('[CoachWorkouts] workout betöltési hiba:', error);
-              this.workouts = [];
-              this.totalItems = 0;
-              this.totalPages = 1;
-              this.setMessage('coachWorkouts.loadError', 'error');
-              return EMPTY;
-            }),
-          ),
+          this.coachWorkoutsService
+            .getWorkoutLibraryPage(
+              this.currentPage,
+              this.itemsPerPage,
+              this.searchTerm,
+              this.sortMode,
+            )
+            .pipe(
+              catchError((error) => {
+                this.loading = false;
+                this.logger.error('[CoachWorkouts] workout betöltési hiba:', error);
+                this.workouts = [];
+                this.totalItems = 0;
+                this.totalPages = 1;
+                this.setMessage('coachWorkouts.loadError', 'error');
+                return EMPTY;
+              }),
+            ),
         ),
         takeUntil(this.destroy$),
       )
@@ -238,7 +265,8 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
 
   toggleSort(): void {
     // Legújabb elöl → név A–Z → név Z–A → legújabb elöl
-    this.sortMode = this.sortMode === 'newest' ? 'nameAsc' : this.sortMode === 'nameAsc' ? 'nameDesc' : 'newest';
+    this.sortMode =
+      this.sortMode === 'newest' ? 'nameAsc' : this.sortMode === 'nameAsc' ? 'nameDesc' : 'newest';
     this.currentPage = 1;
     this.loadWorkouts();
   }
@@ -264,27 +292,33 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
 
-    this.coachWorkoutsService.addWorkout(this.newWorkout).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (res) => {
-        if (res.data?.done === true) {
-          this.setMessage(res.data.message || res.message || 'coachWorkouts.addSuccess', 'success');
+    this.coachWorkoutsService
+      .addWorkout(this.newWorkout)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          if (res.data?.done === true) {
+            this.setMessage(
+              res.data.message || res.message || 'coachWorkouts.addSuccess',
+              'success',
+            );
 
-          this.newWorkout = {
-            name: '',
-            description: '',
-            durationMinutes: 0,
-          };
+            this.newWorkout = {
+              name: '',
+              description: '',
+              durationMinutes: 0,
+            };
 
-          this.loadWorkouts();
-        } else {
-          this.setMessage(res.data?.message || res.message || 'coachWorkouts.addError', 'error');
-        }
-      },
+            this.loadWorkouts();
+          } else {
+            this.setMessage(res.data?.message || res.message || 'coachWorkouts.addError', 'error');
+          }
+        },
 
-      error: () => {
-        this.setMessage('coachWorkouts.addError', 'error');
-      },
-    });
+        error: () => {
+          this.setMessage('coachWorkouts.addError', 'error');
+        },
+      });
   }
 
   // ==========================================================
@@ -378,9 +412,7 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
 
   get deleteWorkoutConfirmMessage(): string {
     const name = this.pendingDeleteWorkoutName.trim();
-    return name
-      ? 'coachWorkouts.deleteConfirmNamed'
-      : 'coachWorkouts.deleteConfirm';
+    return name ? 'coachWorkouts.deleteConfirmNamed' : 'coachWorkouts.deleteConfirm';
   }
 
   // ==========================================================
@@ -419,5 +451,4 @@ export class WorkoutListComponent implements OnInit, OnChanges, OnDestroy {
   trackByWorkout(index: number, workout: WorkoutWithExercises): number | string {
     return workout.id ?? index;
   }
-
 }

@@ -26,7 +26,7 @@ import { AppInputDirective } from '../../../shared/components/form-controls/app-
 import { AppTextareaDirective } from '../../../shared/components/form-controls/app-textarea.directive';
 import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
 import { ProfileFieldsComponent } from '../../../shared/components/profile-fields/profile-fields.component';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AppButtonComponent } from '../../../shared/components/app-button/app-button.component';
@@ -42,7 +42,15 @@ import {
   selector: 'app-user-edit',
   standalone: true,
   imports: [
-    AppFormValidationDirective, AppInputDirective, AppTextareaDirective, AppHeadingDirective, ProfileFieldsComponent, CommonModule, FormsModule, TranslatePipe, AppButtonComponent, FormFieldComponent,
+    AppFormValidationDirective,
+    AppInputDirective,
+    AppTextareaDirective,
+    AppHeadingDirective,
+    ProfileFieldsComponent,
+    FormsModule,
+    TranslatePipe,
+    AppButtonComponent,
+    FormFieldComponent,
     UserSelectComponent,
     CoachSelectComponent,
     MessageComponent,
@@ -127,27 +135,31 @@ export class UserEditComponent implements OnInit {
       coaches: this.userService.getCoaches(),
       roles: this.roleService.getRoles(),
       users: this.userService.getUsers(),
-    }).pipe(
-      finalize(() => { this.loading = false; }),
-      takeUntilDestroyed(this.destroyRef),
-    ).subscribe({
-      next: ({ coaches, roles, users }) => {
-        this.coaches = coaches;
-        this.roles = roles;
-        this.users = users;
-        if (!roles.length) {
-          this.showError('adminUserEdit.loadRolesError');
-          return;
-        }
-        const user = users.find(current => current.id === this.selectedUserId) ?? users[0];
-        if (user) {
-          this.selectedUserId = user.id;
-          this.patchUserFromRaw(user);
-        }
-        this.ready = true;
-      },
-      error: () => this.showError('adminUserEdit.loadUsersError'),
-    });
+    })
+      .pipe(
+        finalize(() => {
+          this.loading = false;
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe({
+        next: ({ coaches, roles, users }) => {
+          this.coaches = coaches;
+          this.roles = roles;
+          this.users = users;
+          if (!roles.length) {
+            this.showError('adminUserEdit.loadRolesError');
+            return;
+          }
+          const user = users.find((current) => current.id === this.selectedUserId) ?? users[0];
+          if (user) {
+            this.selectedUserId = user.id;
+            this.patchUserFromRaw(user);
+          }
+          this.ready = true;
+        },
+        error: () => this.showError('adminUserEdit.loadUsersError'),
+      });
   }
 
   // =============================
@@ -234,25 +246,30 @@ export class UserEditComponent implements OnInit {
       const rawUser = this.createRawUser();
 
       this.saving = true;
-      this.userService.updateUser(rawUser, this.selectedUser.roleIds || []).pipe(
-        finalize(() => { this.saving = false; }),
-        takeUntilDestroyed(this.destroyRef),
-      ).subscribe({
-        next: response => {
-          if (!response.success) {
-            this.showError(response.message || 'adminUserEdit.updateError');
-            return;
-          }
-          const index = this.users.findIndex(user => user.id === rawUser.id);
-          if (index >= 0) this.users[index] = { ...rawUser, password: undefined };
-          this.selectedUser.password = '';
-          this.showSuccess('adminUserEdit.updateSuccess');
-        },
+      this.userService
+        .updateUser(rawUser, this.selectedUser.roleIds || [])
+        .pipe(
+          finalize(() => {
+            this.saving = false;
+          }),
+          takeUntilDestroyed(this.destroyRef),
+        )
+        .subscribe({
+          next: (response) => {
+            if (!response.success) {
+              this.showError(response.message || 'adminUserEdit.updateError');
+              return;
+            }
+            const index = this.users.findIndex((user) => user.id === rawUser.id);
+            if (index >= 0) this.users[index] = { ...rawUser, password: undefined };
+            this.selectedUser.password = '';
+            this.showSuccess('adminUserEdit.updateSuccess');
+          },
 
-        error: () => {
-          this.showError('adminUserEdit.updateError');
-        },
-      });
+          error: () => {
+            this.showError('adminUserEdit.updateError');
+          },
+        });
     } catch {
       this.saving = false;
       this.showError('adminUserEdit.saveError');
@@ -268,7 +285,9 @@ export class UserEditComponent implements OnInit {
       return;
     }
 
-    const defaultRole = this.roles.find((role) => role.name === 'ROLE_USER' || role.name === 'user');
+    const defaultRole = this.roles.find(
+      (role) => role.name === 'ROLE_USER' || role.name === 'user',
+    );
 
     if (!defaultRole) {
       return;
@@ -339,5 +358,4 @@ export class UserEditComponent implements OnInit {
   trackByRole(index: number, role: Role): number {
     return role.id;
   }
-
 }

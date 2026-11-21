@@ -1,5 +1,8 @@
 import { AppSearchComponent } from '../../../shared/components/app-search/app-search.component';
-import { errorMessage, responseMessage } from '../../../../models/backend-dto/common/api-response-message';
+import {
+  errorMessage,
+  responseMessage,
+} from '../../../../models/backend-dto/common/api-response-message';
 import type { SelectOption } from '../../../../models/common/select-option.model';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../services/logger.service';
@@ -17,7 +20,7 @@ import { LanguageService } from '../../../../services/shared/language.service';
 
 import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
 import { AppLoadingComponent } from '../../../shared/components/app-state/app-state.component';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from '../../../shared/components/message/message.component';
@@ -29,7 +32,10 @@ import { CoachWorkspaceService } from '../../../../services/coach/coach-workspac
 import { codeLabel, humanizeCode } from '../../../coach/coach-ui';
 
 import { ExerciseSearchFieldComponent } from '../../../shared/components/exercise-search-field/exercise-search-field.component';
-import { exerciseImageSources, markExerciseImageBroken } from '../../../../constants/exercise-images';
+import {
+  exerciseImageSources,
+  markExerciseImageBroken,
+} from '../../../../constants/exercise-images';
 
 @Component({
   selector: 'app-exercise-controller',
@@ -38,7 +44,6 @@ import { exerciseImageSources, markExerciseImageBroken } from '../../../../const
     AppSearchComponent,
     AppHeadingDirective,
     AppLoadingComponent,
-    CommonModule,
     FormsModule,
     TranslatePipe,
     MessageComponent,
@@ -81,11 +86,15 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   }
 
   bodyPartLabel(code: string): string {
-    return this.translate ? codeLabel(this.translate, 'coachWorkspace.bodyPart', code) : humanizeCode(code);
+    return this.translate
+      ? codeLabel(this.translate, 'coachWorkspace.bodyPart', code)
+      : humanizeCode(code);
   }
 
   equipmentLabel(code: string): string {
-    return this.translate ? codeLabel(this.translate, 'coachWorkspace.equipment', code) : humanizeCode(code);
+    return this.translate
+      ? codeLabel(this.translate, 'coachWorkspace.equipment', code)
+      : humanizeCode(code);
   }
 
   private loadFilterOptions(): void {
@@ -224,10 +233,14 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
         next: (response) => {
           this.loading = false;
           if (!response.success) {
-            this.exercises = []; this.totalElements = 0; this.totalPages = 1;
-            this.showError(responseMessage([response], 'coachExercises.loadError')); return;
+            this.exercises = [];
+            this.totalElements = 0;
+            this.totalPages = 1;
+            this.showError(responseMessage([response], 'coachExercises.loadError'));
+            return;
           }
-          this.message = responseMessage([response], ''); this.messageType = 'info';
+          this.message = responseMessage([response], '');
+          this.messageType = 'info';
           const searchResponse = response.data;
 
           this.exercises = searchResponse?.content ?? [];
@@ -289,9 +302,10 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   private resolvedSearchTerm(): string {
     if (this.searchField !== 'bodyPart' || !this.appliedSearchTerm) return this.appliedSearchTerm;
     const requested = this.appliedSearchTerm.toLocaleLowerCase();
-    const codes = this.bodyPartOptions.filter((code) =>
-      code.toLocaleLowerCase().includes(requested)
-      || this.bodyPartLabel(code).toLocaleLowerCase().includes(requested),
+    const codes = this.bodyPartOptions.filter(
+      (code) =>
+        code.toLocaleLowerCase().includes(requested) ||
+        this.bodyPartLabel(code).toLocaleLowerCase().includes(requested),
     );
     // Ambiguous labels remain free text rather than arbitrarily selecting a code.
     return codes.length === 1 ? codes[0] : this.appliedSearchTerm;
@@ -391,5 +405,4 @@ export class ExerciseControllerComponent implements OnInit, OnDestroy {
   trackByImage(index: number, image: string): string {
     return image || String(index);
   }
-
 }

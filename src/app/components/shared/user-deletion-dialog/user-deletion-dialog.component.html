@@ -1,32 +1,64 @@
-<app-dialog [ariaLabel]="'userDeletion.title' | translate" [trapFocus]="true" [busy]="saving" [closeOnEscape]="true" (dismissed)="closed.emit()">
+<app-dialog
+  [ariaLabel]="'userDeletion.title' | translate"
+  [trapFocus]="true"
+  [busy]="saving"
+  [closeOnEscape]="true"
+  (dismissed)="closed.emit()"
+>
   <div class="overflow-y-auto p-5 space-y-4">
     <h2 class="text-xl font-bold">{{ 'userDeletion.title' | translate }}</h2>
-    <p *ngIf="loading" role="status">{{ 'deleteAccount.loading' | translate }}</p>
-    <p *ngIf="error" role="alert" class="text-delete-700">{{ error | translate }}</p>
-    <ng-container *ngIf="preview as user">
-      <p class="font-semibold break-words">{{ user.username }} · {{ user.email }} · #{{ user.userId }}</p>
+    @if (loading) {
+      <p role="status">{{ 'deleteAccount.loading' | translate }}</p>
+    }
+    @if (error) {
+      <p role="alert" class="text-delete-700">{{ error | translate }}</p>
+    }
+    @if (preview; as user) {
+      <p class="font-semibold break-words">
+        {{ user.username }} · {{ user.email }} · #{{ user.userId }}
+      </p>
       <p>{{ 'userDeletion.warning' | translate }}</p>
       <dl class="grid grid-cols-2 gap-2">
-        <ng-container *ngFor="let key of countKeys">
-          <dt>{{ ('userDeletion.counts.' + key) | translate }}</dt><dd>{{ user.affectedData[key] }}</dd>
-        </ng-container>
+        @for (key of countKeys; track key) {
+          <dt>{{ 'userDeletion.counts.' + key | translate }}</dt>
+          <dd>{{ user.affectedData[key] }}</dd>
+        }
       </dl>
       <p class="text-sm">{{ 'userDeletion.notification' | translate }}</p>
-      <p *ngIf="!user.deletable" class="text-delete-700">{{ 'userDeletion.protected' | translate }}</p>
-      <form *ngIf="user.deletable" (ngSubmit)="submit()" class="space-y-4">
-        <fieldset [disabled]="saving" class="space-y-4">
-          <label class="block">{{ 'userDeletion.email' | translate }}
-            <input appInput="default" name="confirmationEmail" type="email" [(ngModel)]="email" autocomplete="off" required />
-          </label>
-          <label class="flex items-start gap-3"><input name="verified" type="checkbox" [(ngModel)]="verified" required />
-            <span>{{ 'userDeletion.verified' | translate }}</span>
-          </label>
-          <app-button variant="danger" type="submit" [disabled]="!canDelete">
-            {{ (saving ? 'userDeletion.deleting' : 'userDeletion.confirm') | translate }}
-          </app-button>
-        </fieldset>
-      </form>
-    </ng-container>
-    <app-button variant="secondary" type="button" [disabled]="saving" (buttonClick)="closed.emit()">{{ 'deleteAccount.admin.cancel' | translate }}</app-button>
+      @if (!user.deletable) {
+        <p class="text-delete-700">{{ 'userDeletion.protected' | translate }}</p>
+      }
+      @if (user.deletable) {
+        <form (ngSubmit)="submit()" class="space-y-4">
+          <fieldset [disabled]="saving" class="space-y-4">
+            <label class="block"
+              >{{ 'userDeletion.email' | translate }}
+              <input
+                appInput="default"
+                name="confirmationEmail"
+                type="email"
+                [(ngModel)]="email"
+                autocomplete="off"
+                required
+              />
+            </label>
+            <label class="flex items-start gap-3"
+              ><input name="verified" type="checkbox" [(ngModel)]="verified" required />
+              <span>{{ 'userDeletion.verified' | translate }}</span>
+            </label>
+            <app-button variant="danger" type="submit" [disabled]="!canDelete">
+              {{ (saving ? 'userDeletion.deleting' : 'userDeletion.confirm') | translate }}
+            </app-button>
+          </fieldset>
+        </form>
+      }
+    }
+    <app-button
+      variant="secondary"
+      type="button"
+      [disabled]="saving"
+      (buttonClick)="closed.emit()"
+      >{{ 'deleteAccount.admin.cancel' | translate }}</app-button
+    >
   </div>
 </app-dialog>

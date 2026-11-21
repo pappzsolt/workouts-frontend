@@ -7,11 +7,10 @@ import {
   Output,
   OnDestroy,
   inject,
-  DOCUMENT
+  DOCUMENT,
 } from '@angular/core';
 import { A11yModule } from '@angular/cdk/a11y';
 
-import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from '../message/message.component';
 
@@ -21,7 +20,7 @@ let nextDialogId = 0;
 @Component({
   selector: 'app-confirm-dialog',
   standalone: true,
-  imports: [A11yModule, AppButtonComponent, CommonModule, TranslatePipe, MessageComponent],
+  imports: [A11yModule, AppButtonComponent, TranslatePipe, MessageComponent],
   templateUrl: './confirm-dialog.component.html',
   styleUrls: ['./confirm-dialog.component.css'],
 })

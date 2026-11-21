@@ -12,7 +12,7 @@ import { AppInputDirective } from '../../../shared/components/form-controls/app-
 import { AppTextareaDirective } from '../../../shared/components/form-controls/app-textarea.directive';
 import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
 import { ProfileFieldsComponent } from '../../../shared/components/profile-fields/profile-fields.component';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from '../../../shared/components/message/message.component';
@@ -28,7 +28,6 @@ import { FormFieldComponent } from '../../../shared/components/form-field/form-f
     AppTextareaDirective,
     AppHeadingDirective,
     ProfileFieldsComponent,
-    CommonModule,
     FormsModule,
     TranslatePipe,
     MessageComponent,
@@ -66,27 +65,30 @@ export class CoachNewComponent {
 
     this.clearMessage();
 
-    this.coachNewService.createCoach(this.coach).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (response) => {
-        this.loading = false;
+    this.coachNewService
+      .createCoach(this.coach)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (response) => {
+          this.loading = false;
 
-        if (response.success) {
-          this.showSuccess(response.message || 'adminCoachNew.createSuccess');
+          if (response.success) {
+            this.showSuccess(response.message || 'adminCoachNew.createSuccess');
 
-          form.resetForm();
+            form.resetForm();
 
-          this.coach = this.createEmptyCoach();
-        } else {
-          this.showError(response.message || 'adminCoachNew.createError');
-        }
-      },
+            this.coach = this.createEmptyCoach();
+          } else {
+            this.showError(response.message || 'adminCoachNew.createError');
+          }
+        },
 
-      error: (error: HttpErrorResponse) => {
-        this.loading = false;
+        error: (error: HttpErrorResponse) => {
+          this.loading = false;
 
-        this.showError(this.getBackendErrorMessage(error) ?? 'adminCoachNew.createError');
-      },
-    });
+          this.showError(this.getBackendErrorMessage(error) ?? 'adminCoachNew.createError');
+        },
+      });
   }
 
   /**
@@ -148,5 +150,4 @@ export class CoachNewComponent {
 
     return error.message || undefined;
   }
-
 }

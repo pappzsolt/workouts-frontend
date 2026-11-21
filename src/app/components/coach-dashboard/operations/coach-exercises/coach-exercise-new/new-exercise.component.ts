@@ -1,5 +1,8 @@
 import { createInputValidationGuard } from '../../../../shared/components/form-controls/app-input.directive';
-import { errorMessage, responseMessage } from '../../../../../models/backend-dto/common/api-response-message';
+import {
+  errorMessage,
+  responseMessage,
+} from '../../../../../models/backend-dto/common/api-response-message';
 import { Component, DestroyRef, Input, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -12,7 +15,7 @@ import { AppSelectComponent } from '../../../../../components/shared/components/
 import { AppFormValidationDirective } from '../../../../shared/components/form-controls/app-form-validation.directive';
 import { AppInputDirective } from '../../../../shared/components/form-controls/app-input.directive';
 import { AppTextareaDirective } from '../../../../shared/components/form-controls/app-textarea.directive';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from '../../../../shared/components/message/message.component';
@@ -27,7 +30,6 @@ import { AppIconComponent } from '../../../../shared/components/app-icon/app-ico
     AppFormValidationDirective,
     AppInputDirective,
     AppTextareaDirective,
-    CommonModule,
     FormsModule,
     TranslatePipe,
     MessageComponent,
@@ -56,9 +58,7 @@ export class NewExerciseComponent implements OnInit {
   messageParams: Record<string, unknown> = {};
   messageType: 'success' | 'error' | '' = '';
 
-  constructor(
-    private exercisesService: ExerciseService,
-  ) {}
+  constructor(private exercisesService: ExerciseService) {}
 
   // =============================
   // INIT
@@ -68,7 +68,6 @@ export class NewExerciseComponent implements OnInit {
     if (!this.workoutId) {
       this.showError('newExercise.workoutIdRequired');
     }
-
   }
 
   // =============================
@@ -96,33 +95,37 @@ export class NewExerciseComponent implements OnInit {
       durationSeconds: this.newExercise.durationSeconds,
     };
 
-    this.exercisesService.addExercise(payload).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (res) => {
-        this.saving = false;
+    this.exercisesService
+      .addExercise(payload)
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.saving = false;
 
-        if (!res.success) {
-          this.showError(responseMessage([res], 'newExercise.error')); return;
-        }
-        this.showSuccess(responseMessage([res], 'newExercise.success'));
-        this.messageParams = res.message ? {} : { name: payload.name };
-
-        const nextExercise = this.createEmptyExercise();
-        for (const key of Object.keys(submitted) as (keyof Exercise)[]) {
-          if (this.newExercise[key] !== submitted[key]) {
-            Object.assign(nextExercise, { [key]: this.newExercise[key] });
+          if (!res.success) {
+            this.showError(responseMessage([res], 'newExercise.error'));
+            return;
           }
-        }
-        this.newExercise = nextExercise;
-      },
+          this.showSuccess(responseMessage([res], 'newExercise.success'));
+          this.messageParams = res.message ? {} : { name: payload.name };
 
-      error: (err: HttpErrorResponse) => {
-        this.saving = false;
+          const nextExercise = this.createEmptyExercise();
+          for (const key of Object.keys(submitted) as (keyof Exercise)[]) {
+            if (this.newExercise[key] !== submitted[key]) {
+              Object.assign(nextExercise, { [key]: this.newExercise[key] });
+            }
+          }
+          this.newExercise = nextExercise;
+        },
 
-        this.logger.error('Exercise creation error:', err);
+        error: (err: HttpErrorResponse) => {
+          this.saving = false;
 
-        this.handleError(err);
-      },
-    });
+          this.logger.error('Exercise creation error:', err);
+
+          this.handleError(err);
+        },
+      });
   }
 
   // =============================

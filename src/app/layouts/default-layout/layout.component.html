@@ -1,22 +1,17 @@
-<div
-  class="flex min-w-0 flex-1 flex-col"
->
+<div class="flex min-w-0 flex-1 flex-col">
   <!-- ===================================================== -->
   <!-- FEJLÉC -->
   <!-- ===================================================== -->
 
   <header
-      class="workouts-topbar relative z-30 flex min-h-16 items-center justify-between gap-3 bg-gradient-to-r from-primary-700 to-primary-800 px-4 py-3 text-white shadow-md sm:px-6"
+    class="workouts-topbar relative z-30 flex min-h-16 items-center justify-between gap-3 bg-gradient-to-r from-primary-700 to-primary-800 px-4 py-3 text-white shadow-md sm:px-6"
   >
     <!-- Dátum -->
-    <div
-      class="shrink-0 whitespace-nowrap text-sm font-semibold tabular-nums sm:text-base"
-    >
+    <div class="shrink-0 whitespace-nowrap text-sm font-semibold tabular-nums sm:text-base">
       {{ currentDate | date: 'yyyy.MM.dd' }}
     </div>
 
     <div class="flex min-w-0 flex-wrap items-center justify-end gap-2 sm:gap-3">
-
       <!-- Hamburger menü mobilon -->
       <app-button
         class="sm:hidden"
@@ -31,22 +26,20 @@
       ></app-button>
 
       <!-- Username -->
-      <span
-        *ngIf="username"
-        class="header-chip hidden max-w-56 sm:inline-flex"
-      >
-        <app-icon name="user-round" sizeClass="h-4 w-4 shrink-0" />
-        <span class="truncate">{{ 'header.user' | translate }}: {{ username }}</span>
-      </span>
+      @if (username) {
+        <span class="header-chip hidden max-w-56 sm:inline-flex">
+          <app-icon name="user-round" sizeClass="h-4 w-4 shrink-0" />
+          <span class="truncate">{{ 'header.user' | translate }}: {{ username }}</span>
+        </span>
+      }
 
       <!-- Role -->
-      <span
-        *ngIf="role"
-        class="header-chip hidden max-w-56 sm:inline-flex"
-      >
-        <app-icon name="user-check" sizeClass="h-4 w-4 shrink-0" />
-        <span class="truncate">{{ 'header.role' | translate }}: {{ role }}</span>
-      </span>
+      @if (role) {
+        <span class="header-chip hidden max-w-56 sm:inline-flex">
+          <app-icon name="user-check" sizeClass="h-4 w-4 shrink-0" />
+          <span class="truncate">{{ 'header.role' | translate }}: {{ role }}</span>
+        </span>
+      }
 
       <!-- Nyelvválasztó -->
       <div class="shrink-0">
@@ -69,7 +62,6 @@
   <!-- ===================================================== -->
 
   <div class="relative flex min-w-0 flex-1 flex-col sm:flex-row">
-
     <!-- ===================================================== -->
     <!-- MENÜSÁV -->
     <!-- ===================================================== -->
@@ -82,31 +74,31 @@
       class="workouts-sidebar absolute left-0 top-0 z-20 h-full w-72 max-w-[calc(100%-1rem)] shrink-0 -translate-x-full overflow-y-auto border-r border-surface-200 bg-white shadow-xl transition-transform sm:shadow-none duration-200 sm:relative sm:block sm:h-auto sm:w-44 sm:translate-x-0 lg:w-56 xl:w-64"
     >
       <!-- Admin -->
-      <ng-container *ngIf="isAdmin()">
+      @if (isAdmin()) {
         <app-dynamic-menu
           [menuItems]="adminMenuItems"
           (menuAction)="handleMenuAction($event)"
           (menuNavigate)="closeMobileMenu()"
         ></app-dynamic-menu>
-      </ng-container>
+      }
 
       <!-- Coach -->
-      <ng-container *ngIf="isCoach()">
+      @if (isCoach()) {
         <app-dynamic-menu
           [menuItems]="coachMenuItems"
           (menuAction)="handleMenuAction($event)"
           (menuNavigate)="closeMobileMenu()"
         ></app-dynamic-menu>
-      </ng-container>
+      }
 
       <!-- User -->
-      <ng-container *ngIf="isUser()">
+      @if (isUser()) {
         <app-dynamic-menu
           [menuItems]="userMenuItems"
           (menuAction)="handleMenuAction($event)"
           (menuNavigate)="closeMobileMenu()"
         ></app-dynamic-menu>
-      </ng-container>
+      }
       @if (guideRole) {
         <div class="border-t border-surface-200 px-2 py-2">
           <button type="button" class="menu-item" data-tour-reopen (click)="openGuide()">
@@ -116,37 +108,39 @@
         </div>
       }
       <!-- Felhasználói támogatás és fiókműveletek az útmutató után -->
-      <ng-container *ngIf="isUser()">
+      @if (isUser()) {
         <app-dynamic-menu
           [menuItems]="userSupportMenuItems"
           (menuAction)="handleMenuAction($event)"
           (menuNavigate)="closeMobileMenu()"
         ></app-dynamic-menu>
-      </ng-container>
+      }
     </aside>
 
     <!-- ===================================================== -->
     <!-- MOBIL OVERLAY -->
     <!-- ===================================================== -->
 
-    <button
-      *ngIf="menuOpen && isMobile()"
-      type="button"
-      [attr.aria-label]="'header.closeMenu' | translate"
-      (click)="menuOpen = false"
-      class="workouts-drawer-scrim fixed inset-0 z-10 cursor-default border-0 bg-surface-900/30 p-0 backdrop-blur-[1px]"
-    ></button>
+    @if (menuOpen && isMobile()) {
+      <button
+        type="button"
+        [attr.aria-label]="'header.closeMenu' | translate"
+        (click)="menuOpen = false"
+        class="workouts-drawer-scrim fixed inset-0 z-10 cursor-default border-0 bg-surface-900/30 p-0 backdrop-blur-[1px]"
+      ></button>
+    }
 
     <!-- ===================================================== -->
     <!-- TARTALOM -->
     <!-- ===================================================== -->
 
-    <main class="workouts-main flex min-w-0 flex-1 flex-col [&>router-outlet+*]:min-w-0 [&>router-outlet+*]:flex-1">
+    <main
+      class="workouts-main flex min-w-0 flex-1 flex-col [&>router-outlet+*]:min-w-0 [&>router-outlet+*]:flex-1"
+    >
       <app-dashboard-navigation></app-dashboard-navigation>
       <router-outlet></router-outlet>
     </main>
   </div>
-
 </div>
 
 <!-- Az útmutató a teljes alkalmazás felett jelenik meg, a tényleges oldal elemeit kiemelve. -->

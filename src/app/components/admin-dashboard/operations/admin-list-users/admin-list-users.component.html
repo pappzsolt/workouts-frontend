@@ -8,7 +8,9 @@
     </div>
 
     <!-- Üzenet -->
-    <app-message *ngIf="message" [message]="message" [type]="messageType"> </app-message>
+    @if (message) {
+      <app-message [message]="message" [type]="messageType"> </app-message>
+    }
 
     <app-search
       inputId="adminUserSearch"
@@ -20,52 +22,51 @@
     ></app-search>
 
     <!-- Felhasználók -->
-    <ng-container *ngIf="paginatedUsers.length > 0; else noUsers">
+    @if (paginatedUsers.length > 0) {
       <div class="grid min-w-0 grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <app-card
-          *ngFor="let user of paginatedUsers; trackBy: trackByUser"
-          variant="outlined"
-          class="block min-w-0"
-        >
-          <!-- Avatar -->
-          <div class="flex h-40 items-center justify-center overflow-hidden bg-surface-100">
-            <span
-              class="text-6xl opacity-75 transition-transform duration-200 group-hover:scale-110"
-            >
-              <app-icon name="user-round" sizeClass="h-5 w-5" />
-            </span>
-          </div>
-
-          <!-- Tartalom -->
-          <div class="flex flex-1 min-w-0 flex-col p-5">
-            <!-- Username -->
-            <div class="break-words text-lg font-bold text-content-800">
-              {{ user.username }}
-            </div>
-
-            <!-- Email -->
-            <div class="mt-2 break-words text-sm text-content-600">
-              {{ user.email }}
-            </div>
-
-            <!-- Roles -->
-            <div
-              class="mt-4 rounded-xl border border-surface-200 bg-surface-50 px-3 py-2.5 text-sm text-content-600"
-            >
-              <span class="font-semibold text-content-700">
-                {{ 'adminUsers.role' | translate }}:
+        @for (user of paginatedUsers; track trackByUser($index, user)) {
+          <app-card variant="outlined" class="block min-w-0">
+            <!-- Avatar -->
+            <div class="flex h-40 items-center justify-center overflow-hidden bg-surface-100">
+              <span
+                class="text-6xl opacity-75 transition-transform duration-200 group-hover:scale-110"
+              >
+                <app-icon name="user-round" sizeClass="h-5 w-5" />
               </span>
-
-              {{ user.roles.join(', ') }}
             </div>
-            <app-button *ngIf="user.accountType === 'user'" variant="delete" type="button"
-              buttonClass="mt-4" (buttonClick)="deletingUserId = user.id">
-              {{ 'userDeletion.action' | translate }}
-            </app-button>
-          </div>
-        </app-card>
+            <!-- Tartalom -->
+            <div class="flex flex-1 min-w-0 flex-col p-5">
+              <!-- Username -->
+              <div class="break-words text-lg font-bold text-content-800">
+                {{ user.username }}
+              </div>
+              <!-- Email -->
+              <div class="mt-2 break-words text-sm text-content-600">
+                {{ user.email }}
+              </div>
+              <!-- Roles -->
+              <div
+                class="mt-4 rounded-xl border border-surface-200 bg-surface-50 px-3 py-2.5 text-sm text-content-600"
+              >
+                <span class="font-semibold text-content-700">
+                  {{ 'adminUsers.role' | translate }}:
+                </span>
+                {{ user.roles.join(', ') }}
+              </div>
+              @if (user.accountType === 'user') {
+                <app-button
+                  variant="delete"
+                  type="button"
+                  buttonClass="mt-4"
+                  (buttonClick)="deletingUserId = user.id"
+                >
+                  {{ 'userDeletion.action' | translate }}
+                </app-button>
+              }
+            </div>
+          </app-card>
+        }
       </div>
-
       <app-pagination
         [totalItems]="filteredUsers.length"
         [pageSize]="pageSize"
@@ -74,18 +75,22 @@
         [showInfo]="false"
         (pageChange)="onPageChange($event)"
       ></app-pagination>
-    </ng-container>
-
-    <!-- Üres lista -->
-    <ng-template #noUsers>
+    } @else {
       <div
         class="workouts-panel flex min-h-32 items-center justify-center rounded-2xl border border-surface-200 bg-white px-4 py-8 text-center text-sm font-medium text-content-500 shadow-sm"
       >
         {{ (searchTerm.trim() ? 'appSearch.noResults' : 'adminUsers.noUsers') | translate }}
       </div>
-    </ng-template>
+    }
+
+    <!-- Üres lista -->
   </div>
 </div>
 
-<app-user-deletion-dialog *ngIf="deletingUserId !== null" [lookup]="{ userId: deletingUserId }"
-  (closed)="deletingUserId = null" (deleted)="onUserDeleted($event)" />
+@if (deletingUserId !== null) {
+  <app-user-deletion-dialog
+    [lookup]="{ userId: deletingUserId }"
+    (closed)="deletingUserId = null"
+    (deleted)="onUserDeleted($event)"
+  />
+}

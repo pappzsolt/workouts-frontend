@@ -11,7 +11,7 @@ import { AuthService } from '../../services/auth/auth.service';
 import { AppFormValidationDirective } from '../shared/components/form-controls/app-form-validation.directive';
 import { AppInputDirective } from '../shared/components/form-controls/app-input.directive';
 import { AppHeadingDirective } from '../shared/components/app-page-header/app-page-header.component';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from '../shared/components/message/message.component';
@@ -26,7 +26,6 @@ import { LanguageSelectorComponent } from '../shared/language/language-selector.
     AppFormValidationDirective,
     AppInputDirective,
     AppHeadingDirective,
-    CommonModule,
     FormsModule,
     TranslatePipe,
     MessageComponent,
@@ -70,14 +69,20 @@ export class ForgotPasswordComponent {
     this.authService
       .requestPasswordReset(this.form.controls.email.value.trim())
       .pipe(
-        finalize(() => { this.loading = false; }),
+        finalize(() => {
+          this.loading = false;
+        }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe({
-        next: response => { this.successMessage = response.message; },
-        error: error => {
-          const fallback = error instanceof HttpErrorResponse && error.status === 503
-            ? 'forgotPassword.serviceUnavailable' : 'forgotPassword.requestFailed';
+        next: (response) => {
+          this.successMessage = response.message;
+        },
+        error: (error) => {
+          const fallback =
+            error instanceof HttpErrorResponse && error.status === 503
+              ? 'forgotPassword.serviceUnavailable'
+              : 'forgotPassword.requestFailed';
           this.errorMessage = errorMessage(error, fallback);
         },
       });

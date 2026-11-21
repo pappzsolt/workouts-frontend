@@ -1,12 +1,15 @@
 <!-- ======================================================
-     OLDAL
+OLDAL
 ====================================================== -->
 
 <div class="min-h-full bg-surface-50">
   <div class="mx-auto w-full max-w-6xl px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
     <!-- OLDAL CÍM -->
 
-    <h2 data-guide="user-programs" class="workouts-page-title mb-6 font-bold text-content-800 text-2xl sm:text-3xl flex items-center justify-center gap-2 text-center sm:mb-8">
+    <h2
+      data-guide="user-programs"
+      class="workouts-page-title mb-6 font-bold text-content-800 text-2xl sm:text-3xl flex items-center justify-center gap-2 text-center sm:mb-8"
+    >
       <span><app-icon name="clipboard-list" sizeClass="h-6 w-6" /></span>
 
       <span>
@@ -15,15 +18,25 @@
     </h2>
 
     <div class="mb-6 flex flex-wrap justify-center gap-3">
-      <a routerLink="/user/personal-programs/import" class="btn btn-neutral">{{ 'excelImport.title' | translate }}</a>
-      <a routerLink="/user/personal-workouts/new" class="btn btn-neutral">{{ 'personalWorkouts.create' | translate }}</a>
-      <a routerLink="/user/personal-programs" class="btn btn-neutral">{{ 'personalPrograms.title' | translate }}</a>
-      <a routerLink="/user/personal-programs/new" class="btn btn-primary">{{ 'personalPrograms.create' | translate }}</a>
+      <a routerLink="/user/personal-programs/import" class="btn btn-neutral">{{
+        'excelImport.title' | translate
+      }}</a>
+      <a routerLink="/user/personal-workouts/new" class="btn btn-neutral">{{
+        'personalWorkouts.create' | translate
+      }}</a>
+      <a routerLink="/user/personal-programs" class="btn btn-neutral">{{
+        'personalPrograms.title' | translate
+      }}</a>
+      <a routerLink="/user/personal-programs/new" class="btn btn-primary">{{
+        'personalPrograms.create' | translate
+      }}</a>
     </div>
 
     <!-- ÜZENET -->
 
-    <app-message *ngIf="message" [message]="message" [type]="messageType"></app-message>
+    @if (message) {
+      <app-message [message]="message" [type]="messageType"></app-message>
+    }
 
     <app-search
       inputId="userProgramSearch"
@@ -36,11 +49,10 @@
 
     <!-- PROGRAMOK -->
 
-    <ng-container *ngIf="totalItems > 0; else noPrograms">
+    @if (totalItems > 0) {
       <!-- ==================================================
-           LAPOZÓ + PROGRAMKÁRTYA
-           ================================================== -->
-
+      LAPOZÓ + PROGRAMKÁRTYA
+      ================================================== -->
       <app-side-pagination
         [fullWidth]="true"
         [navigationBelow]="true"
@@ -50,147 +62,155 @@
         (pageChange)="onPageChange($event)"
       >
         <!-- =================================================
-             AKTUÁLIS PROGRAMKÁRTYA
-             ================================================= -->
-
-        <app-card
-          *ngFor="let program of paginatedPrograms; trackBy: trackByProgram"
-          variant="default"
-          class="block w-full min-w-0 cursor-pointer rounded-2xl"
-          [ngClass]="{ 'ring-2 ring-success-300': isProgramCompleted(program.id) }"
-          [routerLink]="['/user/programs', program.id, 'workouts']"
-          [queryParams]="{ programName: program.name }"
-        >
-          <!-- =================================================
-               PROGRAM FEJLÉC / KÉP
-               ================================================= -->
-
-          <app-card-banner icon="dumbbell" variant="decorated" />
-
-          <!-- =================================================
-               PROGRAM TARTALOM
-               ================================================= -->
-
-          <div class="flex min-w-0 flex-1 flex-col p-4 sm:p-7">
-            <!-- PROGRAM NÉV -->
-
-            <div class="mb-4 flex flex-wrap items-center gap-3">
-              <h3 class="min-w-0 break-words text-xl sm:text-2xl font-bold leading-tight text-content-800">
-                {{ program.name }}
-              </h3>
-              <ng-container *ngIf="programProgress[program.id] as progress">
-                <app-status-badge
-                  *ngIf="progress.totalWorkouts > 0"
-                  [status]="isProgramCompleted(program.id) ? 'programCompleted' : 'programInProgress'"
-                />
-              </ng-container>
-            </div>
-
-            <!-- KEZDÉS / BEFEJEZÉS -->
-
-            <div class="mb-4 grid grid-cols-1 min-[360px]:grid-cols-2 gap-3">
-              <div class="rounded-xl bg-primary-50 px-3 py-3">
-                <div class="mb-1 text-xs font-medium uppercase tracking-wide text-primary-600">
-                  {{ 'userMyPrograms.startDate' | translate }}
-                </div>
-                <div class="break-words text-base sm:text-lg font-bold text-primary-800">
-                  {{ program.startDate | date: 'yyyy.MM.dd' }}
-                </div>
+        AKTUÁLIS PROGRAMKÁRTYA
+        ================================================= -->
+        @for (program of paginatedPrograms; track trackByProgram($index, program)) {
+          <app-card
+            variant="default"
+            class="block w-full min-w-0 cursor-pointer rounded-2xl"
+            [ngClass]="{ 'ring-2 ring-success-300': isProgramCompleted(program.id) }"
+            [routerLink]="['/user/programs', program.id, 'workouts']"
+            [queryParams]="{ programName: program.name }"
+          >
+            <!-- =================================================
+            PROGRAM FEJLÉC / KÉP
+            ================================================= -->
+            <app-card-banner icon="dumbbell" variant="decorated" />
+            <!-- =================================================
+            PROGRAM TARTALOM
+            ================================================= -->
+            <div class="flex min-w-0 flex-1 flex-col p-4 sm:p-7">
+              <!-- PROGRAM NÉV -->
+              <div class="mb-4 flex flex-wrap items-center gap-3">
+                <h3
+                  class="min-w-0 break-words text-xl sm:text-2xl font-bold leading-tight text-content-800"
+                >
+                  {{ program.name }}
+                </h3>
+                @if (programProgress[program.id]; as progress) {
+                  @if (progress.totalWorkouts > 0) {
+                    <app-status-badge
+                      [status]="
+                        isProgramCompleted(program.id) ? 'programCompleted' : 'programInProgress'
+                      "
+                    />
+                  }
+                }
               </div>
-
-              <div class="rounded-xl bg-success-50 px-3 py-3">
-                <div class="mb-1 text-xs font-medium uppercase tracking-wide text-success-600">
-                  {{ 'userMyPrograms.endDate' | translate }}
+              <!-- KEZDÉS / BEFEJEZÉS -->
+              <div class="mb-4 grid grid-cols-1 min-[360px]:grid-cols-2 gap-3">
+                <div class="rounded-xl bg-primary-50 px-3 py-3">
+                  <div class="mb-1 text-xs font-medium uppercase tracking-wide text-primary-600">
+                    {{ 'userMyPrograms.startDate' | translate }}
+                  </div>
+                  <div class="break-words text-base sm:text-lg font-bold text-primary-800">
+                    {{ program.startDate | date: 'yyyy.MM.dd' }}
+                  </div>
                 </div>
-                <div class="break-words text-base sm:text-lg font-bold text-success-800">
-                  {{ program.endDate | date: 'yyyy.MM.dd' }}
+                <div class="rounded-xl bg-success-50 px-3 py-3">
+                  <div class="mb-1 text-xs font-medium uppercase tracking-wide text-success-600">
+                    {{ 'userMyPrograms.endDate' | translate }}
+                  </div>
+                  <div class="break-words text-base sm:text-lg font-bold text-success-800">
+                    {{ program.endDate | date: 'yyyy.MM.dd' }}
+                  </div>
                 </div>
               </div>
-            </div>
-
-            <!-- IDŐTARTAM -->
-
-            <div class="rounded-xl bg-surface-50 px-3 py-3">
-              <div class="mb-1 text-xs font-medium uppercase tracking-wide text-content-500">
-                {{ 'userMyPrograms.duration' | translate }}
+              <!-- IDŐTARTAM -->
+              <div class="rounded-xl bg-surface-50 px-3 py-3">
+                <div class="mb-1 text-xs font-medium uppercase tracking-wide text-content-500">
+                  {{ 'userMyPrograms.duration' | translate }}
+                </div>
+                <div class="break-words text-base sm:text-lg font-bold text-content-800">
+                  {{ program.durationWeeks }}
+                  {{ 'userMyPrograms.weeks' | translate }}
+                </div>
               </div>
-
-              <div class="break-words text-base sm:text-lg font-bold text-content-800">
-                {{ program.durationWeeks }}
-
-                {{ 'userMyPrograms.weeks' | translate }}
+              <!-- PROGRESS -->
+              @if (programProgress[program.id]; as progress) {
+                <div class="mt-5">
+                  <!-- PROGRESS LABEL -->
+                  <div
+                    class="mb-2 flex flex-wrap items-center gap-2 text-base sm:text-lg"
+                    [ngClass]="
+                      isProgramCompleted(program.id) ? 'text-success-800' : 'text-content-700'
+                    "
+                  >
+                    @if (progress.totalWorkouts > 0) {
+                      @if (isProgramCompleted(program.id)) {
+                        <app-icon name="circle-check" sizeClass="h-5 w-5" />
+                      }
+                      <span class="font-semibold">
+                        {{
+                          (isProgramCompleted(program.id)
+                            ? 'userMyPrograms.allWorkoutsCompleted'
+                            : 'userMyPrograms.workoutsCompleted'
+                          )
+                            | translate
+                              : {
+                                  completed: progress.completedWorkouts,
+                                  total: progress.totalWorkouts,
+                                  remaining: remainingWorkouts(program.id),
+                                }
+                        }}
+                      </span>
+                    } @else {
+                      <span class="font-semibold">{{
+                        'userMyPrograms.noWorkouts' | translate
+                      }}</span>
+                    }
+                  </div>
+                  <!-- PROGRESS BAR -->
+                  <div class="h-3 w-full overflow-hidden rounded-full bg-surface-200">
+                    <div
+                      class="h-full rounded-full bg-gradient-to-r from-primary-600 to-primary-700 transition-all duration-300"
+                      [style.width.%]="programProgress[program.id]?.progressPercent ?? 0"
+                    ></div>
+                  </div>
+                </div>
+              }
+              <!-- EXCEL-EXPORT (a kártya linkjét nem indítja el) -->
+              <div class="mt-5 flex justify-end">
+                <button
+                  type="button"
+                  class="btn btn-outline min-h-11 gap-2"
+                  (click)="exportProgram($event, program)"
+                  [disabled]="exportingProgramId !== null || !canExport(program)"
+                  [attr.aria-busy]="exportingProgramId === program.id"
+                  [title]="'userMyPrograms.exportHint' | translate"
+                >
+                  <app-icon name="arrow-down" sizeClass="h-4 w-4" />
+                  {{
+                    (exportingProgramId === program.id
+                      ? 'userMyPrograms.exporting'
+                      : 'userMyPrograms.exportExcel'
+                    ) | translate
+                  }}
+                </button>
               </div>
             </div>
-
-            <!-- PROGRESS -->
-
-            <div class="mt-5" *ngIf="programProgress[program.id] as progress">
-              <!-- PROGRESS LABEL -->
-
-              <div class="mb-2 flex flex-wrap items-center gap-2 text-base sm:text-lg"
-                   [ngClass]="isProgramCompleted(program.id) ? 'text-success-800' : 'text-content-700'">
-                <ng-container *ngIf="progress.totalWorkouts > 0; else emptyProgram">
-                  <app-icon *ngIf="isProgramCompleted(program.id)" name="circle-check" sizeClass="h-5 w-5" />
-                  <span class="font-semibold">
-                    {{ (isProgramCompleted(program.id) ? 'userMyPrograms.allWorkoutsCompleted' : 'userMyPrograms.workoutsCompleted')
-                      | translate: { completed: progress.completedWorkouts, total: progress.totalWorkouts, remaining: remainingWorkouts(program.id) } }}
-                  </span>
-                </ng-container>
-                <ng-template #emptyProgram>
-                  <span class="font-semibold">{{ 'userMyPrograms.noWorkouts' | translate }}</span>
-                </ng-template>
-              </div>
-
-              <!-- PROGRESS BAR -->
-
-              <div class="h-3 w-full overflow-hidden rounded-full bg-surface-200">
-                <div
-                  class="h-full rounded-full bg-gradient-to-r from-primary-600 to-primary-700 transition-all duration-300"
-                  [style.width.%]="programProgress[program.id]?.progressPercent ?? 0"
-                ></div>
-              </div>
-            </div>
-
-            <!-- EXCEL-EXPORT (a kártya linkjét nem indítja el) -->
-
-            <div class="mt-5 flex justify-end">
-              <button
-                type="button"
-                class="btn btn-outline min-h-11 gap-2"
-                (click)="exportProgram($event, program)"
-                [disabled]="exportingProgramId !== null || !canExport(program)"
-                [attr.aria-busy]="exportingProgramId === program.id"
-                [title]="'userMyPrograms.exportHint' | translate"
-              >
-                <app-icon name="arrow-down" sizeClass="h-4 w-4" />
-                {{ (exportingProgramId === program.id ? 'userMyPrograms.exporting' : 'userMyPrograms.exportExcel') | translate }}
-              </button>
-            </div>
-          </div>
-        </app-card>
+          </app-card>
+        }
       </app-side-pagination>
-    </ng-container>
-
-    <!-- ======================================================
-         NINCS PROGRAM
-         ====================================================== -->
-
-    <ng-template #noPrograms>
-      <ng-container *ngIf="!loading && !loadFailed">
+    } @else {
+      @if (!loading && !loadFailed) {
         <div
           class="flex min-h-48 flex-col items-center justify-center rounded-2xl border border-dashed border-surface-300 bg-white px-5 py-10 text-center shadow-sm"
         >
           <span class="mb-3 text-5xl">
             <app-icon name="clipboard-list" sizeClass="h-6 w-6" />
           </span>
-
           <p class="text-sm font-medium text-content-500">
             {{
               (searchTerm.trim() ? 'appSearch.noResults' : 'userMyPrograms.noPrograms') | translate
             }}
           </p>
         </div>
-      </ng-container>
-    </ng-template>
+      }
+    }
+
+    <!-- ======================================================
+    NINCS PROGRAM
+    ====================================================== -->
   </div>
 </div>
