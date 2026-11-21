@@ -152,7 +152,7 @@ test('Saját program: hibás edzés és nem mentett változások védelme', asyn
   expect(api.unexpected).toEqual([]);
 });
 
-test('Saját program: sikertelen mentés megőrzi az adatokat és újrapróbálható', async ({ page }) => {
+test('Saját program: sikertelen mentés megőrzi az adatokat és újrapróbálható', { tag: '@ci-workouts' }, async ({ page }) => {
   const api=await install(page); api.failSave=true;
   await page.goto('/user/personal-programs/7');
   await editor(page).locator('input[name=name]').fill('Megőrzendő változás');
@@ -192,7 +192,7 @@ for (const [language, label] of [['en', 'Program name'], ['de', 'Programmname']]
   });
 }
 
-test('Saját program: régi verzió mentése nem veszít adatot', async ({ page }) => {
+test('Saját program: régi verzió mentése nem veszít adatot', { tag: '@ci-workouts' }, async ({ page }) => {
   const api=await install(page);
   await page.goto('/user/personal-programs/7');
   await editor(page).getByLabel('Program neve',{exact:true}).fill('Megőrzendő helyi szerkesztés');
@@ -560,7 +560,7 @@ test('Önálló edzés: a dashboard a saját listára vezet, onnan nyílik az ú
   expect(api.unexpected).toEqual([]);
 });
 
-test('Saját program: foglalt dátumnál ugyanaz az edzés marad szerkeszthető', async ({ page }) => {
+test('Saját program: foglalt dátumnál ugyanaz az edzés marad szerkeszthető', { tag: '@ci-workouts' }, async ({ page }) => {
   const api = await install(page);
   await page.clock.setFixedTime(new Date('2026-10-24T12:00:00+02:00'));
   api.program.startDate = START_DATE;

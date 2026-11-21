@@ -233,7 +233,12 @@ KÖZÖS EDZÉSKÁRTYA SABLON
           <app-card variant="default" class="block w-full min-w-0 cursor-pointer">
             <div
               class="group flex h-full min-w-0 flex-col overflow-hidden transition duration-200 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600"
+              role="button"
+              tabindex="0"
+              [attr.aria-label]="workout.workoutName"
               (click)="goToExercises(workout)"
+              (keydown.enter)="goToExercises(workout)"
+              (keydown.space)="$event.preventDefault(); goToExercises(workout)"
             >
               <!-- Edzés fejléc / ikon -->
               <div

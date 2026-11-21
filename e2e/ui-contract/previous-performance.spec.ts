@@ -192,3 +192,33 @@ test('athlete can open workout history without editing it', { tag: '@ci-workouts
   expect(api.writes).toEqual([]);
   expect(api.unexpected).toEqual([]);
 });
+
+// Accessibility regression: the card's mouse navigation must also work with a keyboard.
+for (const [workoutKey, exerciseKey] of [
+  ['Enter', 'Space'],
+  ['Space', 'Enter'],
+] as const) {
+  test(`athlete cards open with ${workoutKey} then ${exerciseKey} from keyboard`, { tag: '@ci-workouts' }, async ({ page }) => {
+    const api = await install(page, 'ready', true);
+    await page.goto('/user/programs/7/workouts?programName=Program');
+
+    const workoutCard = page.getByRole('button', { name: 'Lábnap', exact: true });
+    await expect(workoutCard).toBeVisible();
+    await workoutCard.focus();
+    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('Tab');
+    await expect(workoutCard).toBeFocused();
+    await page.keyboard.press(workoutKey);
+    await expect(page).toHaveURL(/\/user\/workouts\/5\/exercises\?/);
+
+    const exerciseCard = page.getByRole('button', { name: 'Guggolás', exact: true });
+    await expect(exerciseCard).toBeVisible();
+    await exerciseCard.focus();
+    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('Tab');
+    await expect(exerciseCard).toBeFocused();
+    await page.keyboard.press(exerciseKey);
+    await expect(page).toHaveURL(/\/user\/workouts\/5\/exercises\/6\?/);
+    expect(api.unexpected).toEqual([]);
+  });
+}

@@ -47,7 +47,12 @@ OLDAL
           <app-card variant="default" class="block w-full min-w-0">
             <div
               class="group flex h-full min-w-0 cursor-pointer flex-col active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+              role="button"
+              tabindex="0"
+              [attr.aria-label]="exercise.exercise.name"
               (click)="goToExercise(exercise.exercise.id!)"
+              (keydown.enter)="goToExercise(exercise.exercise.id!)"
+              (keydown.space)="$event.preventDefault(); goToExercise(exercise.exercise.id!)"
             >
               <!-- ==========================================
               KÁRTYA FEJLÉC / GYAKORLAT KÉPE
