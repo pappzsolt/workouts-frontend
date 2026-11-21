@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { PersonalProgramService } from '../../../../services/user/personal-program.service';
 import { NgForm } from '@angular/forms';
+import { of, Subject } from 'rxjs';
+import type { PersonalDayTargets, PersonalWorkoutSchedule } from '../../../../models/personal-program.model';
 import { PersonalProgramDays } from './personal-program-days';
 import { PersonalProgramFlowComponent } from './personal-program-flow.component';
 import { PersonalProgramState } from './personal-program-state';
@@ -10,6 +12,7 @@ describe('Personal multi-day program flow', () => {
   let flow: PersonalProgramFlowComponent;
   let state: PersonalProgramState;
   let days: PersonalProgramDays;
+  let service: jasmine.SpyObj<PersonalProgramService>;
   beforeEach(() => {
     state = new PersonalProgramState(false, 'hu');
     state.model.name = 'Edzésterv';
@@ -21,11 +24,90 @@ describe('Personal multi-day program flow', () => {
       ],
     }];
     days = new PersonalProgramDays(state);
-    TestBed.configureTestingModule({ providers: [{ provide: PersonalProgramService, useValue: {} }] });
+    service = jasmine.createSpyObj<PersonalProgramService>('PersonalProgramService', ['schedule', 'moveDay', 'dayTargets']);
+    TestBed.configureTestingModule({ providers: [{ provide: PersonalProgramService, useValue: service }] });
     flow = TestBed.runInInjectionContext(() => new PersonalProgramFlowComponent());
     flow.state = state;
     flow.days = days;
     flow.actions = { save: jasmine.createSpy('save') } as never;
+  });
+
+  it('keeps the newest schedule when an older read finishes last', () => {
+    const first = new Subject<PersonalWorkoutSchedule[]>();
+    const second = new Subject<PersonalWorkoutSchedule[]>();
+    service.schedule.and.returnValues(first.asObservable(), second.asObservable());
+    state.started = true;
+    state.model.startDate = '2030-01-01';
+    flow.scheduleStarted = true;
+    flow.scheduleProgramId = 7;
+
+    flow.loadSchedules();
+    flow.loadSchedules();
+    const newest = [{ dayIndex: 1, scheduledAt: '2030-01-03', version: 2, editable: true }];
+    second.next(newest);
+    second.complete();
+    first.next([{ dayIndex: 1, scheduledAt: '2030-01-01', version: 1, editable: true }]);
+    first.complete();
+
+    expect(service.schedule).toHaveBeenCalledTimes(2);
+    expect(days.schedules).toEqual(newest);
+    expect(flow.scheduleLoading).toBeFalse();
+    expect(flow.scheduleFailed).toBeFalse();
+  });
+
+  it('does not restore an old schedule after a successful workout date move', () => {
+    const outdated = new Subject<PersonalWorkoutSchedule[]>();
+    service.schedule.and.returnValue(outdated.asObservable());
+    state.started = true;
+    state.model.startDate = '2030-01-01';
+    state.model.durationDays = 14;
+    flow.scheduleStarted = true;
+    flow.scheduleProgramId = 7;
+    days.schedules = [{ dayIndex: 1, scheduledAt: '2030-01-01', version: 1, editable: true }];
+    days.selectedDay = 1;
+    flow.moveDestination = 2;
+    const updated = [{ dayIndex: 1, scheduledAt: '2030-01-02', version: 2, editable: true }];
+    service.moveDay.and.returnValue(of(updated));
+
+    flow.loadSchedules();
+    flow.moveSelectedDay();
+    outdated.next([{ dayIndex: 1, scheduledAt: '2030-01-01', version: 1, editable: true }]);
+    outdated.complete();
+
+    expect(service.moveDay).toHaveBeenCalledOnceWith(7, 1, '2030-01-02', 1);
+    expect(days.schedules).toEqual(updated);
+    expect(days.selectedDay).toBe(2);
+    expect(flow.scheduleLoading).toBeFalse();
+    expect(flow.scheduleFailed).toBeFalse();
+  });
+
+  it('keeps newer target values and version if an earlier load settles last', () => {
+    const first = new Subject<PersonalDayTargets>();
+    const second = new Subject<PersonalDayTargets>();
+    service.dayTargets.and.returnValues(first.asObservable(), second.asObservable());
+    state.id = 7;
+    state.started = true;
+    const targets = (version: number): PersonalDayTargets => ({
+      dayIndex: 1, version, editable: true,
+      exercises: state.model.workouts[0].exercises.map((exercise, exerciseIndex) => ({
+        exerciseIndex,
+        sets: Array.from({ length: exercise.sets }, () => ({
+          targetRepetitions: version + 3, targetWeightKg: 50, restSeconds: 60, targetRpe: 8,
+        })),
+      })),
+    });
+
+    flow.openDay();
+    flow.openDay();
+    second.next(targets(2));
+    second.complete();
+    first.next(targets(1));
+    first.complete();
+
+    expect(service.dayTargets).toHaveBeenCalledTimes(2);
+    expect(flow.targetSession?.version).toBe(2);
+    expect(flow.targetDay?.exercises[0].setTargets?.[0].targetRepetitions).toBe(5);
+    expect(flow.targetLoading).toBeFalse();
   });
 
   it('offers free program dates before and after a workout without a today cutoff', () => {

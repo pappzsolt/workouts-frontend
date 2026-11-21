@@ -41,6 +41,8 @@ export class PersonalProgramFlowComponent implements OnChanges {
 
   scheduleLoading = false;
   scheduleFailed = false;
+  /** Ignore older schedule responses once a newer read or a write has started. */
+  private scheduleRequestSequence = 0;
   moveDestination: number | null = null;
   confirmWeekly = false;
   copyDestination: number | null = null;
@@ -51,6 +53,8 @@ export class PersonalProgramFlowComponent implements OnChanges {
   targetDay: PersonalProgramDay | null = null;
   targetLoading = false;
   targetDirty = false;
+  /** A previously started target GET must not replace newer edits or versions. */
+  private targetRequestSequence = 0;
 
 
   view: 'calendar' | 'day' | 'exercise' = 'calendar';
@@ -58,7 +62,12 @@ export class PersonalProgramFlowComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (!changes['scheduleProgramId'] && !changes['scheduleStarted']) return;
+    ++this.scheduleRequestSequence;
+    ++this.targetRequestSequence;
+    this.targetLoading = false;
     this.days.schedules = null;
+    this.scheduleLoading = false;
+    this.scheduleFailed = false;
     this.moveDestination = null;
     if (this.scheduleStarted && !this.state.standaloneMode && this.scheduleProgramId != null) {
       this.loadSchedules();
@@ -68,11 +77,12 @@ export class PersonalProgramFlowComponent implements OnChanges {
   loadSchedules(): void {
     const id = this.scheduleProgramId;
     if (id == null || !this.scheduleStarted || this.state.standaloneMode) return;
+    const requestSequence = ++this.scheduleRequestSequence;
     this.scheduleLoading = true;
     this.scheduleFailed = false;
     this.service.schedule(id).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: schedules => {
-        if (this.scheduleProgramId !== id) return;
+        if (this.scheduleProgramId !== id || requestSequence !== this.scheduleRequestSequence) return;
         const previouslySelectedDay = this.days.selectedDay;
         const firstLoad = this.days.schedules == null;
         this.days.schedules = schedules;
@@ -84,7 +94,7 @@ export class PersonalProgramFlowComponent implements OnChanges {
         this.scheduleLoading = false;
       },
       error: () => {
-        if (this.scheduleProgramId !== id) return;
+        if (this.scheduleProgramId !== id || requestSequence !== this.scheduleRequestSequence) return;
         this.scheduleLoading = false;
         this.scheduleFailed = true;
       },
@@ -124,6 +134,10 @@ export class PersonalProgramFlowComponent implements OnChanges {
         destination == null || !this.availableMoveDays.includes(destination) ||
         !this.state.model.startDate) return;
     const scheduledAt = toIsoDate(addDays(fromIsoDate(this.state.model.startDate), destination - 1));
+    // An older GET must never replace the schedule returned by this write.
+    ++this.scheduleRequestSequence;
+    this.scheduleLoading = false;
+    this.scheduleFailed = false;
     this.state.busy = true;
     this.service.moveDay(id, source.dayIndex, scheduledAt, execution.version)
       .pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -132,6 +146,8 @@ export class PersonalProgramFlowComponent implements OnChanges {
           this.days.schedules = schedules;
           this.days.selectedDay = destination;
           this.moveDestination = null;
+          ++this.targetRequestSequence;
+          this.targetLoading = false;
           this.targetSession = null;
           this.targetDay = null;
           this.state.message = 'personalEditorUi.moveSuccess';
@@ -186,13 +202,15 @@ export class PersonalProgramFlowComponent implements OnChanges {
   private loadStartedTargets(day: PersonalProgramDay): void {
     const id = this.state.id;
     if (id == null) return;
+    const requestSequence = ++this.targetRequestSequence;
     this.targetSession = null;
     this.targetDay = null;
     this.targetLoading = true;
     const dayIndex = day.dayIndex;
     this.service.dayTargets(id, dayIndex).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (result) => {
-        if (this.state.id !== id || this.activeDay?.dayIndex !== dayIndex) return;
+        if (requestSequence !== this.targetRequestSequence ||
+            this.state.id !== id || this.activeDay?.dayIndex !== dayIndex) return;
         this.targetLoading = false;
         const copy = structuredClone(day);
         // Each exercise is mapped only by its validated server-side order index.
@@ -217,6 +235,8 @@ export class PersonalProgramFlowComponent implements OnChanges {
         this.targetDirty = false;
       },
       error: (error: unknown) => {
+        if (requestSequence !== this.targetRequestSequence ||
+            this.state.id !== id || this.activeDay?.dayIndex !== dayIndex) return;
         this.targetLoading = false;
         this.state.fail(error);
       },
@@ -347,6 +367,8 @@ export class PersonalProgramFlowComponent implements OnChanges {
       return;
     }
     this.days.selectDay(day);
+    ++this.targetRequestSequence;
+    this.targetLoading = false;
     this.editingDay = null;
     this.targetDay = null;
     this.targetSession = null;
@@ -386,6 +408,8 @@ export class PersonalProgramFlowComponent implements OnChanges {
       this.state.messageType = 'error';
       return;
     }
+    ++this.targetRequestSequence;
+    this.targetLoading = false;
     this.editingDay = null;
     this.days.pickerDay = null;
     this.view = 'calendar';

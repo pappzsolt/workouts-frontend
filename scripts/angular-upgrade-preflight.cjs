@@ -18,8 +18,7 @@ const majorOf = (value) => {
 const majors = [
   '@angular/core', '@angular/common', '@angular/compiler', '@angular/forms',
   '@angular/platform-browser', '@angular/router', '@angular/cli',
-  '@angular/compiler-cli', '@angular-devkit/build-angular',
-  '@angular/cdk', '@angular/material',
+  '@angular/compiler-cli', '@angular/cdk', '@angular/material',
 ];
 const errors = [];
 const core = majorOf(dependency('@angular/core'));
@@ -40,6 +39,20 @@ if (!/provideZoneChangeDetection\s*\(/.test(appConfig)) {
 }
 const project = angular.projects?.['workouts-frontend'];
 if (!project) errors.push('Angular workspace does not contain workouts-frontend.');
+// Angular 21's application builder comes from @angular/build, while older
+// workspaces may still use @angular-devkit/build-angular. Check the package
+// selected by angular.json rather than always requiring the legacy package.
+const builder = project?.architect?.build?.builder ?? '';
+const builderPackage = builder.split(':')[0];
+if (!['@angular/build', '@angular-devkit/build-angular'].includes(builderPackage)) {
+  errors.push(`Unexpected Angular build package in angular.json: ${builder || '(missing)'}.`);
+} else {
+  const declared = dependency(builderPackage);
+  const locked = lock.packages?.[`node_modules/${builderPackage}`]?.version;
+  if (!declared || !locked || majorOf(declared) !== core || majorOf(locked) !== core) {
+    errors.push(`${builderPackage}: declared ${declared}, locked ${locked}, expected major ${core}.`);
+  }
+}
 const buildPolyfills = project?.architect?.build?.options?.polyfills ?? [];
 const testPolyfills = project?.architect?.test?.options?.polyfills ?? [];
 if (!buildPolyfills.includes('zone.js') || !testPolyfills.includes('zone.js/testing')) {
