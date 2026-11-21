@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { LoggerService } from '../../../../../services/logger.service';
 import { UserExerciseDetailComponent } from './user-exercises-detail.component';
 import { Observable, Subject } from 'rxjs';
-import type { UserWorkoutExerciseDetailDto } from '../../../../../models/user-workout-exercise-detail.dto';
+import type { UserWorkoutExerciseDetailDto, UserWorkoutExerciseSetDto } from '../../../../../models/user-workout-exercise-detail.dto';
 
 describe('UserExerciseDetailComponent prescription summary', () => {
   let component: UserExerciseDetailComponent;
@@ -138,6 +138,43 @@ function makeSaveComponent(updateSetCompleted: jasmine.Spy): UserExerciseDetailC
 }
 
 describe('UserExerciseDetailComponent queued save regression', () => {
+  for (const latestFails of [false, true]) {
+    it(`waits for the newest set save before paginating when it ${latestFails ? 'fails' : 'succeeds'}`, () => {
+      const first = new Subject<{ success: boolean }>();
+      const latest = new Subject<{ success: boolean }>();
+      const update = jasmine.createSpy('updateSetCompleted').and.returnValues(first, latest);
+      const component = makeSaveComponent(update);
+      const set: UserWorkoutExerciseSetDto = {
+        id: 101, userWorkoutExerciseId: 77, setNumber: 1, completed: false,
+        actualWeightKg: 20, actualRepetitions: 8, targetWeightKg: 20, targetRepetitions: 8,
+        startedAt: null, completedAt: null, notes: null,
+      };
+      component.workoutExercise = {
+        exercise: { id: 55 }, userWorkoutExerciseSets: [set, { ...set, id: 102, setNumber: 2 }],
+      } as UserWorkoutExerciseDetailDto;
+      component.userWorkoutId = 77;
+      component.programId = 10;
+      component.workoutId = 20;
+
+      component.goToSet(1);
+      set.actualWeightKg = 25;
+      component.saveSetDetails(set, false);
+      first.next({ success: true });
+      first.complete();
+      expect(component.currentSetIndex).toBe(0);
+      expect(update).toHaveBeenCalledTimes(2);
+      if (latestFails) latest.error(new Error('Save failed'));
+      else {
+        latest.next({ success: true });
+        latest.complete();
+      }
+
+      expect(component.currentSetIndex).toBe(latestFails ? 0 : 1);
+      expect(set.actualWeightKg).toBe(25);
+      if (latestFails) expect(component.messageType).toBe('error');
+    });
+  }
+
   for (const firstFails of [false, true]) {
     it(`finishes active and queued edits after destruction when the first save ${firstFails ? 'fails' : 'succeeds'}`, () => {
       const firstResponse = new Subject<any>();

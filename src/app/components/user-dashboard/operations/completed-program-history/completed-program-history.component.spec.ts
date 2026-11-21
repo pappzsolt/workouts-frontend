@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, Subject, of, throwError } from 'rxjs';
 import { ApiResponse } from '../../../../models/backend-dto/common/api-response';
 import { CompletedProgramHistoryService, CompletedProgram } from '../../../../services/user/completed-program-history.service';
 import { UserExerciseDetailService } from '../../../../services/user/user-exercises-detail/user-exercises-detail.service';
@@ -14,11 +14,13 @@ const program: CompletedProgram = {
 };
 
 describe('Completed program history', () => {
+  let language: BehaviorSubject<string>;
   let component: CompletedProgramHistoryComponent;
   let programs: jasmine.SpyObj<CompletedProgramHistoryService>;
   let exercises: jasmine.SpyObj<UserExerciseDetailService>;
 
   beforeEach(() => {
+    language = new BehaviorSubject('hu');
     programs = jasmine.createSpyObj('CompletedProgramHistoryService', ['getCompletedPrograms', 'getWorkouts']);
     exercises = jasmine.createSpyObj('UserExerciseDetailService', ['getWorkoutExercises']);
     programs.getCompletedPrograms.and.returnValue(of(ok([program])));
@@ -33,7 +35,7 @@ describe('Completed program history', () => {
       providers: [
         { provide: CompletedProgramHistoryService, useValue: programs },
         { provide: UserExerciseDetailService, useValue: exercises },
-        { provide: LanguageService, useValue: { language$: new BehaviorSubject('hu') } },
+        { provide: LanguageService, useValue: { language$: language } },
       ],
     });
     // Isolate controller logic from the presentation/template in this contract test.
@@ -47,6 +49,43 @@ describe('Completed program history', () => {
     expect(programs.getCompletedPrograms).toHaveBeenCalledWith('hu');
     component.search = 'más program';
     expect(component.visiblePrograms).toEqual([]);
+  });
+
+  it('retries the archive in the current language after a transport error', () => {
+    programs.getCompletedPrograms.and.returnValues(throwError(() => new Error('offline')), of(ok([program])));
+    language.next('de');
+    expect(component.error).toBeTrue();
+    expect(component.loading).toBeFalse();
+    component.retry();
+    expect(programs.getCompletedPrograms).toHaveBeenCalledWith('de');
+    expect(component.visiblePrograms).toEqual([program]);
+    expect(component.error).toBeFalse();
+  });
+
+  it('keeps listening for language changes and clears cancelled loading flags', () => {
+    programs.getWorkouts.and.returnValue(new Subject());
+    component.selectProgram(program);
+    expect(component.loadingWorkouts).toBeTrue();
+    programs.getCompletedPrograms.and.returnValues(throwError(() => new Error('offline')), of(ok([program])));
+    language.next('en');
+    expect(component.loadingWorkouts).toBeFalse();
+    expect(component.error).toBeTrue();
+    language.next('de');
+    expect(component.visiblePrograms).toEqual([program]);
+    expect(component.error).toBeFalse();
+  });
+
+  it('clears workout detail loading when navigating back or changing language', () => {
+    exercises.getWorkoutExercises.and.returnValue(new Subject());
+    component.selectProgram(program);
+    component.selectWorkout(component.workouts[0]);
+    expect(component.loadingDetail).toBeTrue();
+    component.backToWorkouts();
+    expect(component.loadingDetail).toBeFalse();
+    component.selectWorkout(component.workouts[0]);
+    language.next('en');
+    expect(component.loadingDetail).toBeFalse();
+    expect(component.selectedWorkout).toBeNull();
   });
 
   it('drills into workouts and their sets using GET-only services', () => {

@@ -461,6 +461,7 @@
     "dashboard": "Back to dashboard",
     "readOnly": "This archive is read-only. Programs, workouts and sets cannot be edited here.",
     "error": "Could not load completed program history.",
+    "retry": "Retry",
     "loading": "Loading...",
     "search": "Search programs",
     "empty": "You have no fully completed programs yet.",

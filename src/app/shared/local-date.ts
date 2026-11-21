@@ -12,6 +12,12 @@ export function fromIsoDate(value: string): Date {
   return new Date(y, m - 1, d);
 }
 
+/** Validates an ISO calendar date against optional inclusive bounds. */
+export function isIsoDateInRange(value: string, min?: string | null, max?: string | null): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) && toIsoDate(fromIsoDate(value)) === value
+    && (!min || value >= min) && (!max || value <= max);
+}
+
 export function addDays(date: Date, days: number): Date {
   const copy = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   copy.setDate(copy.getDate() + days);

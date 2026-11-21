@@ -24,6 +24,9 @@ export class ProgramStrengthOverviewComponent implements OnChanges {
   @Input({ required: true }) program!: ProgramStatisticsProgram;
   @Input() exerciseIds: number[] = [];
   selectedWeek: number | null = null;
+  volumeMax = 4;
+  strengthMax = 4;
+  zoneMax = 4;
   calculatorWeight: number | null = 120;
   calculatorReps: number | null = 5;
   get calculatedEstimate(): number | null {
@@ -54,6 +57,14 @@ export class ProgramStrengthOverviewComponent implements OnChanges {
         estimates: this.weeks.map(week => exercise?.weeks.find(value => value.week === week)?.metrics?.estimatedOneRepMaxKg ?? null),
       };
     });
+    this.volumeMax = this.scale(this.series.flatMap(series => series.volumes));
+    this.strengthMax = this.scale(this.series.flatMap(series => series.estimates));
+    this.selectWeek(this.selectedWeek);
+  }
+
+  selectWeek(week: number | null): void {
+    this.selectedWeek = week;
+    this.zoneMax = this.scale(this.zones ?? []);
   }
 
   get validSelection(): boolean {
@@ -106,9 +117,6 @@ export class ProgramStrengthOverviewComponent implements OnChanges {
   }
   get visibleZoneLabels(): string[] { return this.zoneLabels.slice(0, this.zones?.[5] ? 6 : 5); }
   get chartWidth(): number { return Math.max(720, this.weeks.length * 95 + 80); }
-  get volumeMax(): number { return this.scale(this.series.flatMap(series => series.volumes)); }
-  get strengthMax(): number { return this.scale(this.series.flatMap(series => series.estimates)); }
-  get zoneMax(): number { return this.scale(this.zones ?? []); }
   get hasVolumes(): boolean { return this.series.some(series => series.volumes.some(value => value !== null)); }
   get hasEstimates(): boolean { return this.series.some(series => series.estimates.some(value => value !== null)); }
   private scale(values: (number | null)[]): number {

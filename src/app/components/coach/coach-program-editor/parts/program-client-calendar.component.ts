@@ -10,7 +10,7 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { Subject, takeUntil, finalize } from 'rxjs';
 import { CoachWorkspaceService } from '../../../../services/coach/coach-workspace.service';
 import type { CoachClientOverview } from '../../../../models/coach-workspace.model';
-import { addDays, calendarDaysBetween, fromIsoDate, toIsoDate } from '../../../../shared/local-date';
+import { addDays, calendarDaysBetween, fromIsoDate, isIsoDateInRange, toIsoDate } from '../../../../shared/local-date';
 import { groupWorkouts, type ClientWorkoutEntry } from '../../coach-client-detail/client-plan';
 import type { DayCell } from '../program-days';
 import { ProgramDayGridComponent } from './program-day-grid.component';
@@ -55,8 +55,7 @@ export class ProgramClientCalendarComponent implements OnChanges {
     const date = this.moveDates[workout.userWorkoutId];
     return !this.busy && !this.loading && !this.failed && this.movingWorkoutId === null
       && this.workouts.includes(workout) && !workout.completed && !workout.startedAt
-      && !!date && /^\d{4}-\d{2}-\d{2}$/.test(date) && toIsoDate(fromIsoDate(date)) === date
-      && date !== workout.date && (!this.minDate || date >= this.minDate) && (!this.maxDate || date <= this.maxDate);
+      && date !== workout.date && isIsoDateInRange(date ?? '', this.minDate, this.maxDate);
   }
 
   moveWorkout(workout: ClientWorkoutEntry): void {

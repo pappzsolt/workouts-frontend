@@ -78,6 +78,20 @@ describe('Powerlifting charts and Epley calculator', () => {
     expect(component.unclassifiedReps).toBe(21);
   });
 
+  it('preserves chart scales across populated, empty and changed inputs', () => {
+    const component = overview();
+    expect(component.ticks(component.volumeMax)).toEqual([0, 1000, 2000, 3000, 4000]);
+    expect(component.ticks(component.strengthMax)).toEqual([0, 100, 200, 300, 400]);
+    expect(component.ticks(component.zoneMax)).toEqual([0, 5, 10, 15, 20]);
+    component.selectWeek(2);
+    expect(component.zoneMax).toBe(4);
+    component.selectWeek(3);
+    expect(component.zoneMax).toBe(20);
+    component.exerciseIds = [0, 0, 0];
+    component.ngOnChanges();
+    expect([component.volumeMax, component.strengthMax, component.zoneMax]).toEqual([4, 4, 4]);
+  });
+
   it('matches the supplied Epley example and rejects invalid calculator input', () => {
     const component = overview();
     expect(component.calculatedEstimate).toBe(140);

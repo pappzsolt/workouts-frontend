@@ -9,9 +9,12 @@
       {{ 'completedProgramHistory.readOnly' | translate }}
     </p>
 
-    <p *ngIf="error" role="alert" class="rounded-xl border border-danger-300 bg-white p-4 text-danger-700">
+    <p *ngIf="error" role="alert" class="rounded-xl border border-delete-300 bg-white p-4 text-delete-700">
       {{ 'completedProgramHistory.error' | translate }}
     </p>
+    <button *ngIf="error" type="button" class="btn btn-neutral" (click)="retry()">
+      {{ 'completedProgramHistory.retry' | translate }}
+    </button>
     <p *ngIf="loading || loadingWorkouts || loadingDetail" role="status" class="text-content-600">
       {{ 'completedProgramHistory.loading' | translate }}
     </p>

@@ -244,7 +244,9 @@ describe('Program editor screen bindings', () => {
     button(fixture, 'coachWorkspace.editor.clientsTab').click(); fixture.detectChanges();
     expect(element.querySelector<HTMLElement>('#program-panel-clients')!.style.display).toBe('');
     expect(element.querySelector('#program-panel-clients a[href="/coach/clients/7?program=10"]')).not.toBeNull();
-    expect(element.querySelector('#program-panel-calendar')).toBeNull();
+    const calendarPanel = element.querySelector<HTMLElement>('#program-panel-calendar')!;
+    expect(calendarPanel.hidden).toBeTrue();
+    expect(calendarPanel.querySelector('app-coach-calendar, app-program-client-calendar')).toBeNull();
     button(fixture, 'coachWorkspace.editor.workoutsTab').click(); fixture.detectChanges();
     expect(element.querySelector<HTMLElement>('#program-panel-workouts')!.style.display).toBe('');
   });

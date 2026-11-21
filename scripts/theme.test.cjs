@@ -2,6 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
+const os = require('node:os');
 const postcss = require('postcss');
 const tailwind = require('tailwindcss');
 const config = require('../tailwind.config.js');
@@ -23,6 +24,17 @@ test('all application colors reference the configured palette', () => {
   const result = auditTheme();
   assert.ok(result.files > 300);
   assert.deepEqual(result.errors, []);
+});
+
+test('reports undefined semantic utility colors', (context) => {
+  const directory = fs.mkdtempSync(path.join(os.tmpdir(), 'workouts-theme-'));
+  context.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+  fs.writeFileSync(path.join(directory, 'fixture.html'),
+    '<div class="border-danger-300 text-delete-999 bg-delete-50"></div>');
+  assert.deepEqual(auditTheme(directory).errors, [
+    'fixture.html: undefined color danger-300',
+    'fixture.html: undefined color delete-999',
+  ]);
 });
 
 test('the global stylesheet compiles and exports every semantic shade', async () => {

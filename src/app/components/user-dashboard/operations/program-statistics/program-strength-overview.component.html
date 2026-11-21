@@ -6,7 +6,7 @@
     </div>
     <label class="text-xs text-content-700">
       <span class="mb-1 block">{{ 'userProgramStatistics.dashboardWeek' | translate }}</span>
-      <select class="rounded-lg border border-surface-300 bg-surface-50 p-2 text-content-800" [(ngModel)]="selectedWeek" [disabled]="!weeks.length">
+      <select class="rounded-lg border border-surface-300 bg-surface-50 p-2 text-content-800" [ngModel]="selectedWeek" (ngModelChange)="selectWeek($event)" [disabled]="!weeks.length">
         <option *ngFor="let week of weeks" [ngValue]="week">{{ 'userProgramStatistics.weekLabel' | translate:{ week: week } }}</option>
       </select>
     </label>

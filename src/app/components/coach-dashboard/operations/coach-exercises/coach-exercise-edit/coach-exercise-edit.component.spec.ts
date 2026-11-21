@@ -11,24 +11,47 @@ import type { ApiResponse } from '../../../../../models/backend-dto/common/api-r
 
 describe('Exercise editor language isolation', () => {
   let component: CoachExerciseEditComponent;
+  let routeParams: BehaviorSubject<ReturnType<typeof convertToParamMap>>;
   let language: BehaviorSubject<LanguageCode>;
   let loads: Subject<ApiResponse<Exercise[]>>[];
   let save: Subject<ApiResponse<ExerciseDto>>;
   let update: jasmine.Spy;
-  const loaded = (request: number, name: string) => loads[request].next({ success: true, data: [{ id: 7, name }], message: null });
+  const loaded = (request: number, name: string, id = 7) => loads[request].next({ success: true, data: [{ id, name }], message: null });
   beforeEach(() => {
     language = new BehaviorSubject<LanguageCode>('hu');
+    routeParams = new BehaviorSubject(convertToParamMap({ id: '7' }));
     loads = [];
     save = new Subject<ApiResponse<ExerciseDto>>();
     update = jasmine.createSpy().and.returnValue(save);
-    TestBed.configureTestingModule({ providers: [{ provide: LoggerService, useValue: { error() {} } }] });
+    TestBed.configureTestingModule({ providers: [
+      { provide: LoggerService, useValue: { error() {} } },
+      { provide: ActivatedRoute, useValue: { paramMap: routeParams } },
+    ] });
     component = TestBed.runInInjectionContext(() => new CoachExerciseEditComponent(
-      { snapshot: { paramMap: convertToParamMap({ id: '7' }) } } as ActivatedRoute,
+      TestBed.inject(ActivatedRoute),
       { navigate: jasmine.createSpy() } as never,
       { getAllExercises: () => { const request = new Subject<ApiResponse<Exercise[]>>(); loads.push(request); return request; }, updateExercise: update } as unknown as ExerciseService,
       { language$: language } as unknown as LanguageService,
     ));
     component.ngOnInit();
+  });
+
+  it('loads the new route ID and ignores the earlier route response', () => {
+    routeParams.next(convertToParamMap({ id: '8' }));
+    loaded(1, 'Bench', 8);
+    loaded(0, 'Squat');
+    component.saveExercise();
+    expect(update).toHaveBeenCalledOnceWith(jasmine.objectContaining({ id: 8 }), 'hu');
+  });
+
+  it('blocks saving the old exercise while the new route is loading', () => {
+    loaded(0, 'Squat');
+    routeParams.next(convertToParamMap({ id: '8' }));
+    component.saveExercise();
+    expect(update).not.toHaveBeenCalled();
+    language.next('de');
+    loaded(2, 'Bankdrücken', 8);
+    expect(component.exercise.name).toBe('Bankdrücken');
   });
 
   it('keeps the latest language despite an older response arriving last', () => {

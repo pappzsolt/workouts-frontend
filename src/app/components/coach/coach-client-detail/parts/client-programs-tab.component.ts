@@ -18,6 +18,7 @@ import { programState } from '../client-plan';
 })
 export class ClientProgramsTabComponent {
   @Input({ required: true }) programs: CoachClientProgram[] = [];
+  @Input() revoking = false;
   @Input() revokeProgramId: number | null = null;
   @Input({ required: true }) today = '';
 

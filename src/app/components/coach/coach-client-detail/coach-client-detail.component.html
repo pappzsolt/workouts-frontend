@@ -157,7 +157,7 @@
                       <input appInput="compact" type="date" name="rescheduleDate" [(ngModel)]="schedule.rescheduleDate" class="w-44"
                              [attr.min]="selectedProgram?.startDate || null" [attr.max]="selectedProgram?.endDate || null" />
                     </label>
-                    <button type="button" (click)="rescheduleWorkout()" [disabled]="setEditor.saving || schedule.saving || !schedule.rescheduleDate || schedule.rescheduleDate === workout.date"
+                    <button type="button" (click)="rescheduleWorkout()" [disabled]="setEditor.saving || !schedule.canReschedule(workout)"
                             class="btn btn-neutral">
                       {{ 'coachWorkspace.client.saveDate' | translate }}
                     </button>
@@ -204,7 +204,7 @@
         }
       } @else {
         <!-- Programok fül -->
-        <app-client-programs-tab [programs]="sortedPrograms" [revokeProgramId]="assignments.revokeProgramId" [today]="todayIso"
+        <app-client-programs-tab [programs]="sortedPrograms" [revokeProgramId]="assignments.revokeProgramId" [revoking]="assignments.revoking" [today]="todayIso"
                                  (askRevoke)="assignments.askRevoke($event)" (cancelRevoke)="assignments.cancelRevoke()" (confirmRevoke)="assignments.confirmRevoke(userId)"
                                  (openPlan)="tab = 'plan'; selectProgram($event)" />
       }

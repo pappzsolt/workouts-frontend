@@ -1,3 +1,4 @@
+import { isIsoDateInRange } from '../../../shared/local-date';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { finalize, takeUntil } from 'rxjs';
 import type { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
@@ -12,6 +13,7 @@ export class ClientWorkoutSchedule {
   constructor(
     private readonly workspace: Pick<CoachWorkspaceService, 'rescheduleWorkout'>,
     private readonly effects: ClientDetailEffects,
+    private readonly bounds: () => { startDate: string | null; endDate: string | null } | null,
     private readonly onRescheduled: (userWorkoutId: number) => void,
   ) {}
 
@@ -19,8 +21,14 @@ export class ClientWorkoutSchedule {
     this.rescheduleDate = '';
   }
 
+  canReschedule(workout: ClientWorkoutEntry | null): workout is ClientWorkoutEntry {
+    const bounds = this.bounds();
+    return !this.saving && !!workout && this.rescheduleDate !== workout.date
+      && isIsoDateInRange(this.rescheduleDate, bounds?.startDate, bounds?.endDate);
+  }
+
   reschedule(workout: ClientWorkoutEntry | null): void {
-    if (this.saving || !workout || !this.rescheduleDate || this.rescheduleDate === workout.date) return;
+    if (!this.canReschedule(workout)) return;
     const id = workout.userWorkoutId;
     this.saving = true;
     this.workspace

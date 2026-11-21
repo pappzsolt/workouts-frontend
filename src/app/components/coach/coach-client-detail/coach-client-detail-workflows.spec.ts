@@ -284,16 +284,42 @@ describe('Client editing workflow behavior', () => {
     const revoked = new Subject<void>();
     api.revokeProgram.and.returnValue(revoked);
     component.assignments.askRevoke(1); component.assignments.confirmRevoke(component.userId);
+    component.assignments.confirmRevoke(component.userId);
+    expect(api.revokeProgram).toHaveBeenCalledOnceWith(1, 7);
+    expect(component.assignments.revoking).toBeTrue();
     revoked.error({});
+    expect(component.assignments.revoking).toBeFalse();
     expect(component.programId).toBe(1);
     expect(component.assignments.revokeProgramId).toBeNull();
     expect(component.message).toBe('coachWorkspace.client.revokeError');
+    component.assignments.askRevoke(1);
+    component.assignments.confirmRevoke(component.userId);
+    expect(api.revokeProgram).toHaveBeenCalledTimes(2);
   });
 
   it('does not submit an unchanged or empty date', () => {
     component.schedule.reschedule(component.selected);
     component.schedule.rescheduleDate = ''; component.schedule.reschedule(component.selected);
     expect(api.rescheduleWorkout).not.toHaveBeenCalled();
+  });
+
+  it('rejects invalid dates and accepts both inclusive program boundaries', () => {
+    const assigned = component.client!.programs[0];
+    assigned.startDate = '2026-10-01';
+    assigned.endDate = '2026-10-31';
+    api.rescheduleWorkout.and.returnValue(of(undefined));
+
+    for (const invalid of ['2026-9-30', '2026-09-30', '2026-10-32', '2026-11-01']) {
+      component.schedule.rescheduleDate = invalid;
+      component.rescheduleWorkout();
+    }
+    expect(api.rescheduleWorkout).not.toHaveBeenCalled();
+
+    for (const boundary of ['2026-10-01', '2026-10-31']) {
+      component.schedule.rescheduleDate = boundary;
+      component.rescheduleWorkout();
+    }
+    expect(api.rescheduleWorkout.calls.allArgs()).toEqual([[11, '2026-10-01'], [11, '2026-10-31']]);
   });
 
   it('reloads the selected workout after successful rescheduling', () => {

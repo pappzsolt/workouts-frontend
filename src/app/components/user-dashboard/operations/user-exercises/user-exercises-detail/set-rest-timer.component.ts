@@ -24,7 +24,7 @@ import { UserExerciseDetailService, WebSetRestTimerStatus } from '../../../../..
         <div class="h-full bg-primary-600 transition-[width] duration-300" [style.width.%]="progressPercent"></div>
       </div>
     </section>
-    <p *ngIf="error" role="alert" class="mx-auto my-3 max-w-md text-center text-sm text-danger-700">{{ error | translate }}</p>
+    <p *ngIf="error" role="alert" class="mx-auto my-3 max-w-md text-center text-sm text-delete-700">{{ error | translate }}</p>
   `,
 })
 export class SetRestTimerComponent implements OnChanges, OnDestroy {

@@ -3,7 +3,7 @@ import { Component, DestroyRef, OnDestroy, OnInit, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
-import { Subscription, switchMap, take } from 'rxjs';
+import { EMPTY, Subject, Subscription, catchError, map, merge, switchMap, take } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { LanguageService } from '../../../../services/shared/language.service';
 import {
@@ -24,6 +24,7 @@ export class CompletedProgramHistoryComponent implements OnInit, OnDestroy {
   private readonly exerciseService = inject(UserExerciseDetailService);
   private readonly language = inject(LanguageService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly retry$ = new Subject<void>();
   private workoutsRequest?: Subscription;
   private detailRequest?: Subscription;
 
@@ -46,18 +47,25 @@ export class CompletedProgramHistoryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.language.language$.pipe(
+    merge(this.language.language$, this.retry$.pipe(map(() => this.currentLanguage))).pipe(
       switchMap(language => {
         this.currentLanguage = language;
         this.workoutsRequest?.unsubscribe();
         this.detailRequest?.unsubscribe();
+        this.loadingWorkouts = false;
+        this.loadingDetail = false;
         this.selectedProgram = null;
         this.selectedWorkout = null;
         this.detail = null;
         this.workouts = [];
         this.loading = true;
         this.error = false;
-        return this.archive.getCompletedPrograms(language);
+        return this.archive.getCompletedPrograms(language).pipe(catchError(() => {
+          this.loading = false;
+          this.error = true;
+          this.programs = [];
+          return EMPTY;
+        }));
       }),
       takeUntilDestroyed(this.destroyRef),
     ).subscribe({
@@ -66,8 +74,13 @@ export class CompletedProgramHistoryComponent implements OnInit, OnDestroy {
         this.error = !response.success;
         this.programs = response.success ? (response.data ?? []) : [];
       },
-      error: () => { this.loading = false; this.error = true; this.programs = []; },
     });
+  }
+
+  retry(): void {
+    if (this.selectedWorkout) this.selectWorkout(this.selectedWorkout);
+    else if (this.selectedProgram) this.selectProgram(this.selectedProgram);
+    else this.retry$.next();
   }
 
   selectProgram(program: CompletedProgram): void {
@@ -113,6 +126,8 @@ export class CompletedProgramHistoryComponent implements OnInit, OnDestroy {
   backToPrograms(): void {
     this.workoutsRequest?.unsubscribe();
     this.detailRequest?.unsubscribe();
+    this.loadingWorkouts = false;
+    this.loadingDetail = false;
     this.selectedProgram = null;
     this.selectedWorkout = null;
     this.detail = null;
@@ -122,6 +137,7 @@ export class CompletedProgramHistoryComponent implements OnInit, OnDestroy {
 
   backToWorkouts(): void {
     this.detailRequest?.unsubscribe();
+    this.loadingDetail = false;
     this.selectedWorkout = null;
     this.detail = null;
     this.error = false;

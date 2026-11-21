@@ -158,7 +158,7 @@
             [buttonClass]="
               'group flex min-w-0 cursor-pointer items-center gap-1 rounded-lg border px-1 py-1.5 text-left text-[10px] font-semibold transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-primary-400 sm:gap-2 sm:px-2 sm:text-xs' +
               (isPastWorkoutDay(day.date) ? ' border-success-200 bg-success-50 text-success-700 hover:border-success-300' : '') +
-              (isFutureWorkoutDay(day.date) ? ' border-danger-200 bg-danger-50 text-danger-700 hover:border-danger-300' : '') +
+              (isFutureWorkoutDay(day.date) ? ' border-delete-200 bg-delete-50 text-delete-700 hover:border-delete-300' : '') +
               (!isPastWorkoutDay(day.date) && !isFutureWorkoutDay(day.date) ? ' border-primary-200 bg-primary-50 text-primary-700 hover:border-primary-300' : '')
             "
           >
@@ -206,7 +206,7 @@
               [buttonClass]="
                 'flex min-h-11 w-full items-center gap-3 rounded-lg border px-3 py-2 text-left text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary-400' +
                 (isPastWorkoutDay(day.date) ? ' border-success-200 bg-success-50 text-success-700' : '') +
-                (isFutureWorkoutDay(day.date) ? ' border-danger-200 bg-danger-50 text-danger-700' : '') +
+                (isFutureWorkoutDay(day.date) ? ' border-delete-200 bg-delete-50 text-delete-700' : '') +
                 (!isPastWorkoutDay(day.date) && !isFutureWorkoutDay(day.date) ? ' border-primary-200 bg-primary-50 text-primary-700' : '')
               "
             >

@@ -2,7 +2,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const config = require('../tailwind.config.js');
 
-function auditTheme() {
+function auditTheme(root = path.resolve(__dirname, '../src')) {
   const colors = config.theme.extend.colors;
   const declared = new Set(['--app-shadow-color']);
   for (const [name, palette] of Object.entries(colors)) {
@@ -11,7 +11,6 @@ function auditTheme() {
   }
   const errors = [];
   let files = 0;
-  const root = path.resolve(__dirname, '../src');
   function walk(dir) {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const file = path.join(dir, entry.name);
@@ -32,7 +31,7 @@ function auditTheme() {
         if (!declared.has(match[1])) errors.push(`${relative}: undefined ${match[1]}`);
       }
       for (const match of text.matchAll(
-        /(?:bg|text|border|ring|from|via|to|shadow|accent|fill|stroke|outline|divide)-(primary|success|edit|info|search|add|save|surface|content|sort|pagination|warning|delete)-(\d+)/g,
+        /(?:bg|text|border|ring|from|via|to|shadow|accent|fill|stroke|outline|divide)-(primary|success|edit|info|search|add|save|surface|content|sort|pagination|warning|delete|danger)-(\d+)/g,
       )) {
         if (!colors[match[1]]?.[match[2]])
           errors.push(`${relative}: undefined color ${match[1]}-${match[2]}`);

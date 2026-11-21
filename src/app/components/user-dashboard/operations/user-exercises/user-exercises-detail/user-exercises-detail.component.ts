@@ -165,27 +165,11 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       : repetitions.join(' / ');
   }
 
-  get hasPreviousSet(): boolean {
-    return this.currentSetIndex > 0;
-  }
-
   get hasNextSet(): boolean {
     return (
       !!this.workoutExercise?.userWorkoutExerciseSets?.length &&
       this.currentSetIndex < this.workoutExercise.userWorkoutExerciseSets.length - 1
     );
-  }
-
-  previousSet(): void {
-    if (this.hasPreviousSet) {
-      this.currentSetIndex--;
-    }
-  }
-
-  nextSet(): void {
-    if (this.hasNextSet) {
-      this.currentSetIndex++;
-    }
   }
 
   /**
@@ -376,15 +360,11 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
     // Lapozáskor megvárjuk az aktuális set mentését.
     // Ha blur már elindította, ugyanazt a folyamatban lévő requestet használjuk.
-    this.setSaves.createRequest(currentSet, false)
+    this.setSaves.saveBeforeNavigation(currentSet)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           if (this.workoutExercise === exercise && this.userWorkoutId === userWorkoutId) this.currentSetIndex = index;
-        },
-        error: () => {
-          // Sikertelen mentéskor az aktuális seten maradunk;
-          // a mentési folyamat már megjelenítette a hibaüzenetet.
         },
       });
   }

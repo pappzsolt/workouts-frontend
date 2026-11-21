@@ -461,6 +461,7 @@
     "dashboard": "Vissza a dashboardhoz",
     "readOnly": "Ez az archívum csak megtekinthető. A programok, edzések és sorozatok itt nem módosíthatók.",
     "error": "Nem sikerült betölteni az elvégzett programok adatait.",
+    "retry": "Újrapróbálás",
     "loading": "Betöltés...",
     "search": "Program keresése",
     "empty": "Még nincs teljesen elvégzett programod.",

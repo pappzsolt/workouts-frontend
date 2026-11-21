@@ -37,8 +37,32 @@ export class ExerciseSetSaves {
   ) {}
 
   isSettled(userWorkoutId: number, setId: number | null | undefined): boolean {
-    const key = `${userWorkoutId}:${setId}`;
+    const key = this.setKey(userWorkoutId, setId);
     return !this.pendingSetSaves.has(key) && !this.failedSetSaves.has(key);
+  }
+
+  saveBeforeNavigation(set: UserWorkoutExerciseSetDto): Observable<void> {
+    const key = this.setKey(this.effects.context().userWorkoutId, set.id);
+    const request = this.createRequest(set, false);
+    const entry = this.pendingSetSaves.get(key);
+    if (request === EMPTY || !entry) return EMPTY;
+    return this.waitForLatest(key, entry);
+  }
+
+  private waitForLatest(key: string, entry: PendingSetSave): Observable<void> {
+    return entry.request.pipe(
+      map(() => true),
+      catchError(() => of(false)),
+      concatMap(success => {
+        const latest = this.pendingSetSaves.get(key);
+        if (latest && latest !== entry) return this.waitForLatest(key, latest);
+        return success && !this.failedSetSaves.has(key) ? of(void 0) : EMPTY;
+      }),
+    );
+  }
+
+  private setKey(userWorkoutId: number, setId: number | null | undefined): string {
+    return `${userWorkoutId}:${setId}`;
   }
 
   createRequest(
@@ -62,7 +86,7 @@ export class ExerciseSetSaves {
     const hasEffort = 'actualRpe' in set || 'rir' in set;
     const effortArgs = [set.actualRpe, set.rir] as const;
     const args = hasEffort ? [...originalArgs, ...effortArgs] as const : originalArgs;
-    const key = `${context.userWorkoutId}:${set.id}`;
+    const key = this.setKey(context.userWorkoutId, set.id);
     const signature = JSON.stringify(args);
     const previous = this.pendingSetSaves.get(key);
     if (previous?.signature === signature) return previous.request;

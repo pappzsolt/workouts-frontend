@@ -84,6 +84,32 @@ describe('Client operation and assignment safety',()=>{
     expect(parent.assignments.assignedClients.map(client=>client.userId)).toEqual([7]);
   });
 
+  it('keeps the Calendar panel linked during keyboard activation, loading, failure and retry', () => {
+    const assignments = new Subject<number[]>();
+    api.getAssignedUserIds.and.returnValue(assignments);
+    const fixture = TestBed.createComponent(CoachProgramEditorComponent);
+    fixture.detectChanges();
+    const element = fixture.nativeElement as HTMLElement;
+    const calendarTab = element.querySelector<HTMLButtonElement>('#program-tab-calendar')!;
+    const calendarPanel = element.querySelector<HTMLElement>('#' + calendarTab.getAttribute('aria-controls'))!;
+    expect(calendarPanel.hidden).toBeTrue();
+
+    element.querySelector('#program-tab-workouts')!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    fixture.detectChanges();
+    expect(calendarTab.getAttribute('aria-selected')).toBe('true');
+    expect(calendarPanel.hidden).toBeFalse();
+    expect(calendarPanel.querySelector('[role="status"]')).not.toBeNull();
+
+    assignments.error(new Error('Network'));
+    fixture.detectChanges();
+    expect(calendarPanel.querySelector('[role="alert"]')).not.toBeNull();
+    api.getAssignedUserIds.and.returnValue(of([7]));
+    calendarPanel.querySelector<HTMLButtonElement>('[role="alert"] button')!.click();
+    fixture.detectChanges();
+    expect(calendarPanel.querySelector('[role="alert"]')).toBeNull();
+    expect(calendarPanel.querySelector('app-coach-calendar')).not.toBeNull();
+  });
+
   it('retains confirmed assignments and exposes a failed post-save refresh without duplicate writes',()=>{
     api.getAssignedUserIds.and.returnValue(of([]));
     const fixture=TestBed.createComponent(CoachProgramEditorComponent);fixture.detectChanges();

@@ -21,16 +21,16 @@
           <span class="flex-[1_1_220px]">
             {{ 'coachWorkspace.client.revokeConfirmCounts' | translate: { total: program.totalWorkouts, done: program.completedWorkouts } }}
           </span>
-          <button type="button" (click)="cancelRevoke.emit()" class="btn btn-neutral px-3">
+          <button type="button" (click)="cancelRevoke.emit()" [disabled]="revoking" class="btn btn-neutral px-3">
             {{ 'coachWorkspace.cancel' | translate }}
           </button>
-          <button type="button" (click)="confirmRevoke.emit()" class="btn btn-danger px-3">
+          <button type="button" (click)="confirmRevoke.emit()" [disabled]="revoking" class="btn btn-danger px-3">
             {{ 'coachWorkspace.client.revoke' | translate }}
           </button>
         </div>
       } @else {
         <div class="flex flex-wrap justify-end gap-2">
-          <button type="button" (click)="askRevoke.emit(program.programId)" class="btn btn-ghost-delete px-3">
+          <button type="button" (click)="askRevoke.emit(program.programId)" [disabled]="revoking" class="btn btn-ghost-delete px-3">
             {{ 'coachWorkspace.client.revoke' | translate }}
           </button>
           <button type="button" (click)="openPlan.emit(program.programId)"

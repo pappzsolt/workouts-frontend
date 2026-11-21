@@ -93,7 +93,7 @@ export class CoachClientDetailComponent implements OnInit {
       this.loadClient(null);
     },
   );
-  readonly schedule = new ClientWorkoutSchedule(this.workspace, this.effects, userWorkoutId => {
+  readonly schedule = new ClientWorkoutSchedule(this.workspace, this.effects, () => this.selectedProgram, userWorkoutId => {
     this.requestedWorkoutId = userWorkoutId;
     if (this.programId !== null) this.loadProgram(this.programId);
   });
@@ -138,8 +138,7 @@ export class CoachClientDetailComponent implements OnInit {
   }
 
   rescheduleWorkout(): void {
-    if (this.setEditor.saving || this.schedule.saving || !this.selected ||
-        !this.schedule.rescheduleDate || this.schedule.rescheduleDate === this.selected.date) return;
+    if (this.setEditor.saving || !this.schedule.canReschedule(this.selected)) return;
     if (this.setEditor.dirty) {
       this.pendingNav = { kind: 'reschedule', date: this.schedule.rescheduleDate };
       return;

@@ -4,7 +4,7 @@ import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Subject, finalize, takeUntil } from 'rxjs';
+import { Subject, combineLatest, finalize, takeUntil } from 'rxjs';
 
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 import { Exercise } from '../../../../../models/exercise.model';
@@ -108,6 +108,7 @@ export class CoachExerciseEditComponent implements OnInit {
   exerciseFound = false;
   currentLanguage: LanguageCode = 'hu';
   private loadedLanguage: LanguageCode | null = null;
+  private routeExerciseId: number | null = null;
   private loadVersion = 0;
   private readonly loadCancelled$ = new Subject<void>();
 
@@ -135,22 +136,20 @@ export class CoachExerciseEditComponent implements OnInit {
   // ==========================================================
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-
-    if (!id) {
-      this.showError('coachExerciseEdit.notFound');
-      return;
-    }
-
-    // ==========================================================
-    // AKTUÁLIS NYELV ÉS NYELVVÁLTÁS
-    // ==========================================================
-
-    this.languageService.language$
+    combineLatest([this.route.paramMap, this.languageService.language$])
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((language) => {
-        this.currentLanguage = language;
-        this.loadExercise(id, language);
+      .subscribe(([params, language]) => {
+        const id = Number(params.get('id'));
+        this.routeExerciseId = Number.isInteger(id) && id > 0 ? id : null;
+        if (this.routeExerciseId === null) {
+          this.loadCancelled$.next();
+          this.loadVersion++;
+          this.exerciseFound = false;
+          this.loading = false;
+          this.showError('coachExerciseEdit.notFound');
+          return;
+        }
+        this.loadExercise(this.routeExerciseId, language);
       });
   }
 
@@ -218,7 +217,7 @@ export class CoachExerciseEditComponent implements OnInit {
   // ==========================================================
 
   saveExercise(): void {
-    if (this.loading || this.saving || !this.exerciseFound || this.loadedLanguage !== this.currentLanguage) return;
+    if (this.loading || this.saving || !this.exerciseFound || this.exercise.id !== this.routeExerciseId || this.loadedLanguage !== this.currentLanguage) return;
     if (!this.validateInputs()) return;
     const version = this.loadVersion;
     const language = this.loadedLanguage;

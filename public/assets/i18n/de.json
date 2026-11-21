@@ -461,6 +461,7 @@
     "dashboard": "Zurück zum Dashboard",
     "readOnly": "Dieses Archiv ist schreibgeschützt. Programme, Trainings und Sätze können hier nicht bearbeitet werden.",
     "error": "Der Verlauf abgeschlossener Programme konnte nicht geladen werden.",
+    "retry": "Erneut versuchen",
     "loading": "Laden...",
     "search": "Programme suchen",
     "empty": "Noch keine vollständig abgeschlossenen Programme vorhanden.",

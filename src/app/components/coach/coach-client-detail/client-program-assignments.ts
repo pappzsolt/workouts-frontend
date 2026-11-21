@@ -1,5 +1,5 @@
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { takeUntil } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs';
 import type { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import type { CoachClientOverview, CoachProgram } from '../../../models/coach-workspace.model';
 import type { ClientDetailEffects } from './client-detail-effects';
@@ -11,6 +11,7 @@ export class ClientProgramAssignments {
   assignablePrograms: CoachProgram[] = [];
   assignProgramId: number | null = null;
   assigning = false;
+  revoking = false;
   revokeProgramId: number | null = null;
 
   constructor(
@@ -27,6 +28,7 @@ export class ClientProgramAssignments {
     this.assignProgramId = null;
     this.assigning = false;
     this.revokeProgramId = null;
+    this.revoking = false;
   }
 
   openAssign(client: CoachClientOverview | null): void {
@@ -80,19 +82,20 @@ export class ClientProgramAssignments {
   }
 
   askRevoke(programId: number): void {
-    this.revokeProgramId = programId;
+    if (!this.revoking) this.revokeProgramId = programId;
   }
 
   cancelRevoke(): void {
-    this.revokeProgramId = null;
+    if (!this.revoking) this.revokeProgramId = null;
   }
 
   confirmRevoke(userId: number): void {
-    if (this.revokeProgramId === null) return;
+    if (this.revokeProgramId === null || this.revoking) return;
+    this.revoking = true;
     const programId = this.revokeProgramId;
     this.workspace
       .revokeProgram(programId, userId)
-      .pipe(takeUntil(this.effects.cancelled$), takeUntilDestroyed(this.effects.destroyRef))
+      .pipe(takeUntil(this.effects.cancelled$), takeUntilDestroyed(this.effects.destroyRef), finalize(() => { this.revoking = false; }))
       .subscribe({
         next: () => {
           this.revokeProgramId = null;
