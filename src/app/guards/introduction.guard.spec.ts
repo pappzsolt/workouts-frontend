@@ -1,4 +1,5 @@
 
+import { DOCUMENT } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { introductionGuard } from './introduction.guard';

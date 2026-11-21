@@ -258,14 +258,16 @@ export class AuthService {
   private sessionQueue: Promise<unknown> = Promise.resolve();
 
   private withSessionLock<T>(request: () => Observable<T>): Observable<T> {
-    return defer(() => {
+    return defer(async () => {
       if (typeof navigator !== 'undefined' && navigator.locks) {
-        return navigator.locks.request('workouts-auth-refresh', () => firstValueFrom(request()));
+        // Web Locks types return Promise<Promise<T>> for an async callback.
+        // Awaiting normalizes the result to T without changing lock lifetime.
+        return await navigator.locks.request('workouts-auth-refresh', () => firstValueFrom(request()));
       }
       // Browsers without Web Locks still serialize operations within this tab.
       const result = this.sessionQueue.then(() => firstValueFrom(request()));
       this.sessionQueue = result.then(() => undefined, () => undefined);
-      return result;
+      return await result;
     });
   }
 
