@@ -214,10 +214,14 @@ export class PersonalProgramFlowComponent implements OnChanges {
         this.targetLoading = false;
         const copy = structuredClone(day);
         // Each exercise is mapped only by its validated server-side order index.
-        if (result.exercises.length !== copy.exercises.length ||
-            result.exercises.some(exercise => exercise.exerciseIndex < 0 ||
-              exercise.exerciseIndex >= copy.exercises.length ||
-              exercise.sets.length !== copy.exercises[exercise.exerciseIndex].sets) ||
+        if (!result || !Array.isArray(result.exercises) ||
+            result.exercises.length !== copy.exercises.length ||
+            Array.from(result.exercises).some(exercise => !exercise ||
+              !Number.isInteger(exercise.exerciseIndex) ||
+              exercise.exerciseIndex < 0 || exercise.exerciseIndex >= copy.exercises.length ||
+              !Array.isArray(exercise.sets) ||
+              exercise.sets.length !== copy.exercises[exercise.exerciseIndex].sets ||
+              Array.from(exercise.sets).some(set => !set || typeof set !== 'object')) ||
             new Set(result.exercises.map(exercise => exercise.exerciseIndex)).size !== result.exercises.length) {
           this.state.message = 'personalEditorUi.targetsLoadFailed';
           this.state.messageType = 'error';

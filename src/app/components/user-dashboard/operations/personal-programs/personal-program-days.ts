@@ -45,9 +45,27 @@ export class PersonalProgramDays {
       366,
       Math.max(1, Math.floor(Number(this.state.model.durationDays) || 1)),
     );
+    // Build the lookup once per calendar derivation. Previously each of the up to
+    // 366 cells scanned the workouts, and every workout scanned the schedules.
+    // Keep first-match semantics for duplicate/invalid draft day indexes.
+    const schedulesByDayIndex = new Map<number, PersonalWorkoutSchedule>();
+    for (const schedule of this.schedules ?? []) {
+      if (!schedulesByDayIndex.has(schedule.dayIndex)) schedulesByDayIndex.set(schedule.dayIndex, schedule);
+    }
+    const workoutsByDisplayIndex = new Map<number, PersonalProgramDay>();
+    for (const workout of this.state.model.workouts) {
+      let displayIndex = workout.dayIndex;
+      const scheduled = schedulesByDayIndex.get(workout.dayIndex);
+      if (this.state.started && start && scheduled?.scheduledAt) {
+        const movedIndex = calendarDaysBetween(start, fromIsoDate(scheduled.scheduledAt));
+        displayIndex = movedIndex < 0 || movedIndex >= this.state.model.durationDays
+          ? workout.dayIndex : movedIndex + 1;
+      }
+      if (!workoutsByDisplayIndex.has(displayIndex)) workoutsByDisplayIndex.set(displayIndex, workout);
+    }
     return Array.from({ length: count }, (_, index) => {
       const day = index + 1;
-      const workout = this.state.model.workouts.find((item) => this.displayIndexFor(item.dayIndex) === day);
+      const workout = workoutsByDisplayIndex.get(day);
       return {
         day,
         date: start ? addDays(start, index) : null,

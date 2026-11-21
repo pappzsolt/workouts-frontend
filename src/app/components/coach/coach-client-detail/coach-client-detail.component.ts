@@ -564,6 +564,12 @@ export class CoachClientDetailComponent implements OnInit {
     }
   }
 
+  onTabChange(tab: string): void {
+    if (tab === 'plan' || tab === 'programs') {
+      this.setTab(tab);
+    }
+  }
+
   setTab(tab: 'plan' | 'programs'): void {
     if (this.workoutMutationPending || this.pendingNav?.kind === 'route') return;
     if (tab === this.tab) return;

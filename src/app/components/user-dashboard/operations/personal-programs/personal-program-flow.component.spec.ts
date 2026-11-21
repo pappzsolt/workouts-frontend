@@ -110,6 +110,58 @@ describe('Personal multi-day program flow', () => {
     expect(flow.targetLoading).toBeFalse();
   });
 
+  it('handles malformed target indexes and array shapes using the existing load-failure state', () => {
+    state.id = 7;
+    state.started = true;
+    const sets = (count: number) => Array.from({ length: count }, () => ({
+      targetRepetitions: 5, targetWeightKg: 50, restSeconds: 60, targetRpe: 8,
+    }));
+    const valid = [
+      { exerciseIndex: 0, sets: sets(3) },
+      { exerciseIndex: 1, sets: sets(2) },
+    ];
+    const invalid: unknown[][] = [
+      [{ ...valid[0], exerciseIndex: 0.5 }, valid[1]],
+      [{ ...valid[0], exerciseIndex: Number.NaN }, valid[1]],
+      [{ ...valid[0], exerciseIndex: -1 }, valid[1]],
+      [{ ...valid[0], exerciseIndex: 2 }, valid[1]],
+      [valid[0], { ...valid[1], exerciseIndex: 0 }],
+      [valid[0], { ...valid[1], sets: sets(1) }],
+      [valid[0], { ...valid[1], sets: null }],
+    ];
+    for (const exercises of invalid) {
+      service.dayTargets.and.returnValue(of({ dayIndex: 1, version: 1, editable: true, exercises } as unknown as PersonalDayTargets));
+      expect(() => flow.openDay()).not.toThrow();
+      expect(flow.targetLoading).toBeFalse();
+      expect(flow.targetDay).toBeNull();
+      expect(flow.targetSession).toBeNull();
+      expect(state.message).toBe('personalEditorUi.targetsLoadFailed');
+    }
+    service.dayTargets.and.returnValue(of({ dayIndex: 1, version: 1, editable: true, exercises: null } as unknown as PersonalDayTargets));
+    expect(() => flow.openDay()).not.toThrow();
+    expect(state.message).toBe('personalEditorUi.targetsLoadFailed');
+  });
+
+  it('maps a valid reordered target response to the correct immutable exercise indexes', () => {
+    state.id = 7;
+    state.started = true;
+    const targetSets = (count: number, reps: number) => Array.from({ length: count }, () => ({
+      targetRepetitions: reps, targetWeightKg: 42, restSeconds: 60, targetRpe: 7,
+    }));
+    service.dayTargets.and.returnValue(of({
+      dayIndex: 1, version: 3, editable: true,
+      exercises: [
+        { exerciseIndex: 1, sets: targetSets(2, 8) },
+        { exerciseIndex: 0, sets: targetSets(3, 5) },
+      ],
+    }));
+    flow.openDay();
+    expect(flow.targetDay?.exercises[0].setTargets?.[0].targetRepetitions).toBe(5);
+    expect(flow.targetDay?.exercises[1].setTargets?.[0].targetRepetitions).toBe(8);
+    expect(state.model.workouts[0].exercises[0].setTargets).toBeUndefined();
+    expect(flow.targetSession?.version).toBe(3);
+  });
+
   it('keeps execution target edits through a failed save and day navigation, independently of the template', () => {
     state.id = 7;
     state.started = true;

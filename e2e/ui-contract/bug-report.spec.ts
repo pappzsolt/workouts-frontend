@@ -151,6 +151,48 @@ test('admin: lists reports with reporter, date and screenshot; content is render
   expect(dialog).toBe(false);
 });
 
+
+test('admin: screenshot previews load near the viewport instead of fetching the full list',
+  { tag: '@ci-workouts' }, async ({ page }) => {
+    const shots = Array.from({ length: 36 }, (_, index) => ({
+      id: 100 + index, position: index + 1, contentType: 'image/png', width: 2, height: 2, sizeBytes: PNG.length,
+    }));
+    const report = {
+      id: 70, reporterType: 'USER', reporterId: 316, reporterName: 'Test', reporterEmail: null,
+      title: 'Sok képernyőkép', description: 'Hosszú hibajegyzék', pageUrl: '/user/profile',
+      userAgent: 'Browser', createdAt: '2026-10-24T13:30:00+02:00', screenshots: shots,
+    };
+    const calls = await mockApi(page, 'ROLE_ADMIN', call => {
+      if (call.path === '/api/admin/bug-reports') return {
+        json: { success: true, data: { content: [report], page: 0, size: 10, totalElements: 1, totalPages: 1 } },
+      };
+      if (/^\/api\/admin\/bug-reports\/70\/screenshots\/\d+$/.test(call.path)) {
+        return { body: PNG, type: 'image/png' };
+      }
+      if (call.path === '/api/admin/registrations/pending-count') return {
+        json: { success: true, data: { count: 0 } },
+      };
+      return null;
+    });
+    await page.goto('/admin/bug-reports');
+    await expect(page.getByRole('heading', { name: 'Sok képernyőkép' })).toBeVisible();
+    const screenshotRequests = () => calls.filter(call =>
+      /^\/api\/admin\/bug-reports\/70\/screenshots\/\d+$/.test(call.path));
+    await expect.poll(() => screenshotRequests().length).toBeGreaterThan(0);
+    await page.waitForTimeout(250); // Give the intersection observer time to report visible tiles.
+    expect(screenshotRequests().length).toBeLessThan(shots.length);
+    const last = page.getByRole('button', { name: '36. képernyőkép megnyitása' });
+    await last.scrollIntoViewIfNeeded();
+    await expect(last).toBeEnabled();
+    expect(screenshotRequests().some(call => call.path.endsWith('/135'))).toBe(true);
+    // Angular may reuse the same @for nodes on reload; observers must fire again.
+    const beforeReload = screenshotRequests().length;
+    await page.getByRole('button', { name: 'Frissítés', exact: true }).click();
+    await expect.poll(() => screenshotRequests().length).toBeGreaterThan(beforeReload);
+    await last.scrollIntoViewIfNeeded();
+    await expect(last).toBeEnabled();
+  });
+
 test('user: selected screenshot is not silently omitted while validation is pending', { tag: '@ci-workouts' }, async ({ page }) => {
   const calls = await mockApi(page, 'ROLE_USER', (call) => call.path === '/api/bug-reports'
     ? { status: 201, json: { success: true, data: { id: 91, createdAt: '2030-04-15T14:05:00+02:00', screenshots: 1 }, message: 'Bejelentés rögzítve' } }

@@ -1,6 +1,6 @@
 import { Component, DestroyRef, OnDestroy, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Subject, takeUntil } from 'rxjs';
+import { EMPTY, Subject, Subscription, catchError, mergeMap, takeUntil, tap } from 'rxjs';
 
 import { errorMessage } from '../../../../models/backend-dto/common/api-response-message';
 import type { BugReportDto, BugReportScreenshot } from '../../../../models/backend-dto/bug-report/bug-report';
@@ -12,6 +12,15 @@ import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from '../../../shared/components/message/message.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
+import { BugReportPreviewVisibleDirective } from './bug-report-preview-visible.directive';
+
+const MAX_PARALLEL_PREVIEWS = 3;
+
+interface PreviewRequest {
+  report: BugReportDto;
+  screenshot: BugReportScreenshot;
+  preview: Preview;
+}
 
 interface Preview {
   url: string | null;
@@ -34,6 +43,7 @@ interface Preview {
     MessageComponent,
     PaginationComponent,
     AppIconComponent,
+    BugReportPreviewVisibleDirective,
   ],
   templateUrl: './bug-reports.component.html',
 })
@@ -41,6 +51,8 @@ export class BugReportsComponent implements OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
   private readonly service = inject(BugReportService);
   private readonly listCancelled$ = new Subject<void>();
+  private readonly previewRequests$ = new Subject<PreviewRequest>();
+  private previewSubscription: Subscription | null = null;
 
   readonly pageSizeOptions = [10, 20, 50];
 
@@ -51,6 +63,8 @@ export class BugReportsComponent implements OnDestroy {
   pageSize = 10;
   totalElements = 0;
   totalPages = 0;
+  /** Force reused thumbnail directives to observe again after pagination/reload. */
+  previewRevision = 0;
 
   /** Képernyőkép-előnézetek a képazonosító szerint. */
   previews: Record<number, Preview | undefined> = {};
@@ -63,6 +77,7 @@ export class BugReportsComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.listCancelled$.next();
+    this.previewSubscription?.unsubscribe();
     this.releasePreviews();
   }
 
@@ -93,7 +108,31 @@ export class BugReportsComponent implements OnDestroy {
 
   private load(page: number): void {
     this.listCancelled$.next();
+    // Unsubscribe before releasing object URLs; queued requests from the old page
+    // must not start after pagination or reload.
+    this.previewSubscription?.unsubscribe();
     this.releasePreviews();
+    this.previewSubscription = this.previewRequests$.pipe(
+      mergeMap(({ report, screenshot, preview }) =>
+        this.service.screenshot(report.id, screenshot.id).pipe(
+          tap(blob => {
+            if (this.previews[screenshot.id] !== preview) return;
+            // Preserve the existing PNG/JPEG fallback and blob URL lifecycle.
+            const type = blob.type === 'image/png' || blob.type === 'image/jpeg' ? blob.type : screenshot.contentType;
+            preview.url = URL.createObjectURL(new Blob([blob], { type }));
+            preview.loading = false;
+          }),
+          catchError(() => {
+            if (this.previews[screenshot.id] === preview) {
+              preview.loading = false;
+              preview.failed = true;
+            }
+            return EMPTY;
+          }),
+        ),
+      MAX_PARALLEL_PREVIEWS),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe();
     this.zoomed = null;
     this.loading = true;
     this.message = '';
@@ -105,12 +144,11 @@ export class BugReportsComponent implements OnDestroy {
         next: (result) => {
           this.loading = false;
           this.reports = result.content;
+          ++this.previewRevision;
           this.currentPage = result.page + 1;
           this.totalElements = result.totalElements;
           this.totalPages = result.totalPages;
-          for (const report of this.reports) {
-            for (const screenshot of report.screenshots) this.loadPreview(report, screenshot);
-          }
+          // Preview requests are started by the visibility observer in the template.
         },
         error: (error) => {
           this.loading = false;
@@ -120,24 +158,12 @@ export class BugReportsComponent implements OnDestroy {
       });
   }
 
-  private loadPreview(report: BugReportDto, screenshot: BugReportScreenshot): void {
+  /** Called when a thumbnail approaches the viewport. Duplicate events are harmless. */
+  loadPreview(report: BugReportDto, screenshot: BugReportScreenshot): void {
+    if (this.loading || !this.reports.includes(report) || this.previews[screenshot.id]) return;
     const preview: Preview = { url: null, loading: true, failed: false };
     this.previews[screenshot.id] = preview;
-    this.service
-      .screenshot(report.id, screenshot.id)
-      .pipe(takeUntil(this.listCancelled$), takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (blob) => {
-          // Csak képként kezelhető tartalom kap URL-t (a szerver is csak PNG/JPEG-et ad).
-          const type = blob.type === 'image/png' || blob.type === 'image/jpeg' ? blob.type : screenshot.contentType;
-          preview.url = URL.createObjectURL(new Blob([blob], { type }));
-          preview.loading = false;
-        },
-        error: () => {
-          preview.loading = false;
-          preview.failed = true;
-        },
-      });
+    this.previewRequests$.next({ report, screenshot, preview });
   }
 
   private releasePreviews(): void {

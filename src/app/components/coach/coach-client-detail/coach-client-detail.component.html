@@ -40,7 +40,7 @@
       <!-- Az alkalmazás közös, képernyőolvasóval és billentyűzettel használható fülkezelője. -->
       <app-tabs #clientTabs [activeTab]="tab" [ariaLabel]="client.username"
                 containerClass="flex gap-1 border-b border-surface-200"
-                (activeTabChange)="setTab($event)">
+                (activeTabChange)="onTabChange($event)">
         <button type="button" appTab="plan" [disabled]="workoutMutationPending || pendingNav?.kind === 'route'"
                 class="min-h-11 border-b-[3px] px-4 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
                 [class.border-primary-700]="tab === 'plan'" [class.text-primary-800]="tab === 'plan'"
