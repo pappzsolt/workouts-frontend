@@ -38,7 +38,7 @@ test('editor: existing metadata saves, reloads and error preserves fields', asyn
   await expect(root.locator('app-message[role=status]')).toContainText('Contract failure');
   await expect(root.locator('[name=programName]')).toHaveValue('Retry name');
 });
-test('editor: day selection links identify the program occurrence', async ({ page, api }) => {
+test('editor: day selection links identify the program occurrence', { tag: '@ci-workouts' }, async ({ page, api }) => {
   await page.goto('/coach/programs/1'); const root = editor(page);
   await expect(root.getByRole('button', { name: /Program 1\. napja · Workout\ A$/ })).toHaveAttribute('aria-pressed', 'true');
   await expect(selected(page).locator('a[href="/coach/clients/7?program=1&programWorkout=100"]')).toBeVisible();
@@ -46,7 +46,7 @@ test('editor: day selection links identify the program occurrence', async ({ pag
   await expect(selected(page).getByRole('heading', { name: 'Workout B', exact: true })).toBeVisible();
   await expect(selected(page).getByRole('link', { name: 'Edzés megnyitása az Edzéstárban' })).toHaveAttribute('href', '/coach/workouts/20/edit');
 });
-test('editor: shared exercise list is read-only and opens the library editor', async ({ page, api }) => {
+test('editor: shared exercise list is read-only and opens the library editor', { tag: '@ci-workouts' }, async ({ page, api }) => {
   await page.goto('/coach/programs/1');
   const panel = selected(page);
   await expect(panel).toContainText('Exercise 01');
@@ -58,7 +58,7 @@ test('editor: shared exercise list is read-only and opens the library editor', a
   await expect(page.locator('app-coach-workout-edit #workoutName')).toHaveValue('Workout A');
   expect(api.writes()).toEqual([]);
 });
-test('editor: weekly repeat skips occupied day and confirms only once', async ({ page, api }) => {
+test('editor: weekly repeat skips occupied day and confirms only once', { tag: '@ci-workouts' }, async ({ page, api }) => {
   await page.goto('/coach/programs/1'); const panel = selected(page);
   await panel.getByRole('button', { name: 'Ismétlés hetente', exact: true }).click();
   await expect(panel).toContainText('15, 22'); await expect(panel).toContainText('1 nap kimarad');

@@ -6,7 +6,7 @@ const editor = (page: Page) => page.locator('app-coach-program-editor');
 const selected = (page: Page) => editor(page).getByRole('region', { name: 'Kiválasztott nap', exact: true });
 const status = (page: Page) => editor(page).locator('app-message[role=status]');
 
-test('editor more: revoking an assigned client asks first; cancel keeps, confirm moves the client back', async ({ page, api }) => {
+test('editor more: revoking an assigned client asks first; cancel keeps, confirm moves the client back', { tag: '@ci-workouts' }, async ({ page, api }) => {
   await page.goto('/coach/programs/1'); const r = editor(page);
   await editor(page).getByRole('tab', { name: 'Ügyfelek', exact: true }).click();
   await expect(r.getByRole('link', { name: 'Alice', exact: true })).toBeVisible();
@@ -20,6 +20,10 @@ test('editor more: revoking an assigned client asks first; cancel keeps, confirm
   await expect(status(page)).toContainText('A program visszavonva.');
   await expect(r.getByRole('checkbox', { name: 'Alice', exact: true })).toBeVisible();
   await expect(r.getByRole('button', { name: 'Program visszavonása: Alice', exact: true })).toHaveCount(0);
+  await r.getByRole('tab', { name: 'Naptár', exact: true }).click();
+  await expect(r.locator('#program-calendar-client')).toBeVisible();
+  await expect(r.locator('#program-calendar-client').getByRole('option', { name: /Alice/ })).toHaveCount(0);
+  await expect(r.locator('app-coach-calendar')).not.toContainText('Alice');
   expect(api.writes()).toEqual([expect.objectContaining({ method: 'DELETE', path: '/api/programs/1/assigned-users/7' })]);
 });
 

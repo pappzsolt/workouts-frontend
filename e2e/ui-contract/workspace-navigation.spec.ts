@@ -62,7 +62,7 @@ test('clients: zero-workout progress is finite; failure is visible', async ({ pa
   api.fail('GET', '/api/coach/overview'); await page.reload();
   await expect(page.locator('app-coach-clients app-message[role=alert]')).toContainText('Contract failure');
 });
-test('programs: local search, sorting, pagination resets and editor link', async ({ page, api }) => {
+test('programs: local search, sorting, pagination resets and editor link', { tag: '@ci-workouts' }, async ({ page, api }) => {
   await page.goto('/coach/programs'); const root = page.locator('app-coach-programs');
   await expect(root.locator('article')).toHaveCount(12);
   await root.locator('[name=programSort]').selectOption('nameAsc');
@@ -171,3 +171,11 @@ for (const width of [375, 768, 1024, 1440]) {
     expect(api.writes()).toEqual([]);
   });
 }
+
+
+test('coach routes redirect away from the athlete workspace', { tag: '@ci-workouts' }, async ({ page, api }) => {
+  await page.goto('/user/dashboard');
+  await expect(page).toHaveURL(/\/coach\/dashboard$/);
+  await expect(page.locator('app-coach-home')).toBeVisible();
+  expect(api.writes()).toEqual([]);
+});

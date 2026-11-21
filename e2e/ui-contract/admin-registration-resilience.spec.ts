@@ -4,7 +4,7 @@ const card = (page: Page, id = 1) => page.getByRole('listitem', { name: `Applica
 const tab = (page: Page, name: string) => page.getByRole('group', { name: 'Kérelmek állapot szerint' }).getByRole('button', { name: new RegExp(`^${name}`) });
 async function open(page: Page) { await page.goto('/admin/registrations'); await expect(card(page)).toBeVisible(); }
 
-test('Admin kérelmek: a kezdőlap megfelelő státusszal és nulla alapú lapozással kérdez', async ({ page, api }) => {
+test('Admin kérelmek: a kezdőlap megfelelő státusszal és nulla alapú lapozással kérdez', { tag: '@ci-workouts' }, async ({ page, api }) => {
   await open(page);
   expect(api.reads().map(c => Object.fromEntries(c.query))).toEqual([{ status: 'PENDING', page: '0', size: '10', language: 'hu' }]);
   await expect(page.locator('app-registration-requests li')).toHaveCount(10);
@@ -162,7 +162,7 @@ test('Admin kérelmek: coachlista hibájánál coach nélkül is jóváhagyható
   await expect(card(page)).toHaveCount(0); expect(api.writes().map(c => c.body)).toEqual([{ coachId: null }]);
 });
 
-test('Admin kérelmek: anonim megnyitás loginra irányít lista és döntési API-hívás nélkül', async ({ page, api }) => {
+test('Admin kérelmek: anonim megnyitás loginra irányít lista és döntési API-hívás nélkül', { tag: '@ci-workouts' }, async ({ page, api }) => {
   api.authenticated = false; await page.goto('/admin/registrations');
   await expect(page).toHaveURL(/\/login$/); await expect(page.locator('#login-username')).toBeVisible();
   expect(api.reads()).toHaveLength(0); expect(api.writes()).toHaveLength(0);

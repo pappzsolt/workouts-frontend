@@ -114,6 +114,37 @@ test('client: reschedule sends user-workout id and ISO date', async ({ page, api
   await expect(r.locator('app-message[role=status]')).toContainText('Az edzés áthelyezve.');
   expect(api.writes()[0].body).toEqual({ userWorkoutId: 70, scheduledAt: '2030-04-17' });
 });
+test('client: two athletes keep separate dates and targets in a shared program', { tag: '@ci-workouts' }, async ({ page, api }) => {
+  api.state.clients[1].programs = structuredClone(api.state.clients[0].programs);
+  api.rowsByClient.set(8, [{ ...api.state.rows[0], user_workout_id: 80, user_workout_exercise_id: 900 }]);
+  api.state.sets[900] = api.state.sets[700].map((row, index) => ({
+    ...row, id: 9000 + index, userWorkoutExerciseId: 900, targetWeightKg: 35,
+  }));
+
+  await page.goto('/coach/clients/7?program=1&workout=70');
+  await input(page, 'tw').fill('45');
+  await save(page).click();
+  await expect(save(page)).toBeDisabled();
+  await root(page).locator('[name=rescheduleDate]').fill('2030-04-17');
+  await root(page).getByRole('button', { name: 'Dátum mentése' }).click();
+  await expect(root(page).locator('app-message[role=status]')).toContainText('Az edzés áthelyezve.');
+
+  await page.goto('/coach/clients/8?program=1&workout=80');
+  await expect(input(page, 'tw')).toHaveValue('35');
+  await expect(root(page).locator('[name=rescheduleDate]')).toHaveValue('2030-04-15');
+  await expect(root(page).getByRole('heading', { name: 'Exercise 01', exact: true })).toBeVisible();
+
+  await page.goto('/coach/programs/1');
+  await expect(page.getByRole('button', { name: /1\. napja · Workout A$/ })).toBeVisible();
+  const shared = page.getByRole('region', { name: 'Kiválasztott nap', exact: true });
+  await expect(shared).toContainText('Exercise 01');
+  await expect(shared).toContainText('Exercise 02');
+  expect(api.writes().map(({ method, path }) => [method, path])).toEqual([
+    ['PUT', '/api/user-workout-exercise-sets/7000'],
+    ['PATCH', '/api/user-workout-exercises/schedule'],
+  ]);
+});
+
 test('client: assignment dialog excludes existing programs, cancel/Escape and confirm', async ({ page, api }) => {
   await page.goto('/coach/clients/7?tab=programs'); const r = root(page);
   await r.getByRole('button', { name: 'Program kiosztása', exact: true }).click(); let dialog = page.getByRole('dialog');
@@ -133,7 +164,7 @@ test('client: revoke cancel then confirm with counts and selected client', async
   await expect(r.getByRole('progressbar', { name: 'Program 01' })).toHaveCount(0);
   expect(api.writes()[0]).toMatchObject({ method: 'DELETE', path: '/api/programs/1/assigned-users/7' });
 });
-test('client: failed save keeps dirty edits and allows retry', async ({ page, api }) => {
+test('client: failed save keeps dirty edits and allows retry', { tag: '@ci-workouts' }, async ({ page, api }) => {
   api.fail('PUT', '/api/user-workout-exercise-sets/7000');
   await page.goto('/coach/clients/7?workout=70'); await input(page, 'tw').fill('65'); await save(page).click();
   await expect(root(page).locator('app-message[role=status]')).toContainText('Contract failure'); await expect(input(page, 'tw')).toHaveValue('65');

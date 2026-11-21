@@ -48,6 +48,39 @@ frontend-unit-test:
       - karma.log
     expire_in: 7 days
 
+# Mocked UI contracts use a locally started Angular server and no live API credentials.
+frontend-playwright:
+  stage: test
+  image: node:22-bookworm
+  rules:
+    - changes:
+        - .gitlab-ci.yml
+        - src/**/*
+        - public/**/*
+        - e2e/**/*
+        - package*.json
+        - angular.json
+        - tsconfig*.json
+        - tailwind.config.js
+        - postcss.config.js
+  variables:
+    PLAYWRIGHT_JUNIT_OUTPUT_FILE: contract-results/junit.xml
+  script:
+    - 'npm ci --no-audit --no-fund'
+    - 'cd e2e'
+    - 'npm ci --no-audit --no-fund'
+    - 'npx playwright install --with-deps chromium'
+    - 'set -o pipefail; env -u E2E_CONTRACT_BASE_URL -u E2E_BROWSER_PATH npm run test:contract:ci 2>&1 | tee contract.log'
+  artifacts:
+    when: always
+    paths:
+      - e2e/contract.log
+      - e2e/contract-report/
+      - e2e/contract-results/
+    reports:
+      junit: e2e/contract-results/junit.xml
+    expire_in: 7 days
+
 # ------------------------------------------------------------
 # ONE Angular build for the whole pipeline.
 # No production build is performed.
@@ -60,6 +93,9 @@ frontend-build:
       artifacts: false
     - job: frontend-unit-test
       artifacts: false
+    - job: frontend-playwright
+      artifacts: false
+      optional: true
   script:
     - 'echo "Building Angular frontend exactly once"'
     - 'npm ci --no-audit --no-fund'

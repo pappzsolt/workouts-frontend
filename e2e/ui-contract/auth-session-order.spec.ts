@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('session order: a new login waits until the previous logout response completes', async ({ page }) => {
+test('session order: a new login waits until the previous logout response completes', { tag: '@ci-workouts' }, async ({ page }) => {
   let requested!: () => void, release!: () => void;
   const logoutRequested = new Promise<void>(resolve => requested = resolve);
   const pending = new Promise<void>(resolve => release = resolve);

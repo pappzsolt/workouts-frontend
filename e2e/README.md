@@ -189,6 +189,13 @@ a `http://127.0.0.1:4200` címen. Meglévő szerver használatához állítsd be
 az `E2E_CONTRACT_BASE_URL` változót. Ezek a tesztek a HTTP-határon rögzített
 API-válaszokat használnak; a valódi API/DB csomagokat külön kell futtatni.
 
+A GitLab `frontend-playwright` tesztkapuja a `@ci-workouts` címkéjű
+asztali Chromium eseteket futtatja. A teljes asztali és mobil contract csomag
+továbbra is a `npm run test:contract` paranccsal futtatható. A CI-részhalmaz
+helyben az `npm run test:contract:ci` paranccsal indítható. A GitLab a naplót,
+HTML- és JUnit-riportot, valamint a hibás esetek képernyőképeit és trace fájljait
+artifaktumként menti.
+
 Az első belépési útmutatót a workspace fixture és a valódi belépési helper
 az útmutató saját gombjával zárja be. A személyes funkciók contract fixture-jei
 visszatérő fiókot modelleznek. Az első látogatást és az útmutató újranyitását
