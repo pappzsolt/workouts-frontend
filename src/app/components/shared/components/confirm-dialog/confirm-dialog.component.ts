@@ -7,9 +7,10 @@ import {
   Output,
   OnDestroy,
   inject,
+  DOCUMENT
 } from '@angular/core';
 import { A11yModule } from '@angular/cdk/a11y';
-import { DOCUMENT } from '@angular/common';
+
 import { CommonModule } from '@angular/common';
 import { TranslatePipe } from '@ngx-translate/core';
 import { MessageComponent } from '../message/message.component';
