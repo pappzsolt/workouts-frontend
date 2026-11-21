@@ -288,6 +288,8 @@
     "endDate": "Befejezés"
   },
   "coachWorkoutEdit": {
+    "unsavedLeaveTitle": "Mentetlen edzésadatok",
+    "unsavedLeavePrompt": "Az edzés módosításait még nem mentetted. Elveted őket és elhagyod az oldalt?",
     "invalidWorkoutId": "Érvénytelen workout ID.",
     "notFound": "A workout nem található.",
     "loadError": "Nem sikerült betölteni a workoutot.",

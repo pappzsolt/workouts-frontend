@@ -30,13 +30,22 @@ test('workout edit: loads the workout, saves the exact form values and returns t
   await expect(page).toHaveURL(/\/coach\/workouts$/);
 });
 
-test('workout edit: cancel leaves without writing', async ({ page, api }) => {
-  freeWorkout(api); await page.goto('/coach/workouts/30/edit'); const r = root(page);
-  await expect(r.locator('#workoutName')).toHaveValue('Free workout');
-  await r.locator('#workoutName').fill('Not saved');
-  await r.getByRole('button', { name: 'Mégse', exact: true }).click();
-  await expect(page).toHaveURL(/\/coach\/workouts$/); expect(api.writes()).toEqual([]);
-});
+test('workout edit: cancel protects unsaved form values until explicit discard',
+  { tag: '@ci-workouts' }, async ({ page, api }) => {
+    freeWorkout(api); await page.goto('/coach/workouts/30/edit'); const r = root(page);
+    await expect(r.locator('#workoutName')).toHaveValue('Free workout');
+    await r.locator('#workoutName').fill('Not saved');
+    await r.getByRole('button', { name: 'Mégse', exact: true }).click();
+    const confirmation = page.getByRole('alertdialog');
+    await expect(confirmation).toBeVisible();
+    await confirmation.getByRole('button', { name: 'Maradok', exact: true }).click();
+    await expect(page).toHaveURL(/\/coach\/workouts\/30\/edit$/);
+    await expect(r.locator('#workoutName')).toHaveValue('Not saved');
+    await r.getByRole('button', { name: 'Mégse', exact: true }).click();
+    await confirmation.getByRole('button', { name: 'Módosítások elvetése', exact: true }).click();
+    await expect(page).toHaveURL(/\/coach\/workouts$/);
+    expect(api.writes()).toEqual([]);
+  });
 
 test('workout edit: search, select and add an exercise; added exercises leave the list', async ({ page, api }) => {
   freeWorkout(api); await page.goto('/coach/workouts/30/edit'); const r = root(page);

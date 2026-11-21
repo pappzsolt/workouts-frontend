@@ -61,7 +61,7 @@
             </a>
           </div>
           @for (row of todayRows; track row.workout.userWorkoutId) {
-            <a [routerLink]="['/coach/clients', row.client.userId]" [queryParams]="{ workout: row.workout.userWorkoutId }"
+            <a [routerLink]="['/coach/clients', row.client.userId]" [queryParams]="{ program: row.workout.programId, workout: row.workout.userWorkoutId }"
                class="flex min-h-11 items-center gap-4 border-t border-surface-100 px-5 py-3 hover:bg-surface-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-600">
               <span aria-hidden="true" class="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-primary-50 font-bold text-primary-700">
                 {{ initial(row.client.username) }}

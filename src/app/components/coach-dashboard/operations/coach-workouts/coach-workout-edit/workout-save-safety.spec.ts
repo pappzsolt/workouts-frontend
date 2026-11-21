@@ -55,6 +55,49 @@ describe('Workout save safety', () => {
     expect(state.savingWorkout).toBeFalse();
   }));
 
+  it('updates the leave baseline only after a confirmed save', fakeAsync(() => {
+    const { state, editor, navigate, updateWorkout } = metadata();
+    state.workout.name = 'Changed';
+    expect(state.drafts.hasUnsavedChanges(state.workout, 7)).toBeTrue();
+    const response = new Subject<any>();
+    updateWorkout.and.returnValue(response);
+    editor.saveWorkout();
+    expect(state.drafts.hasUnsavedChanges(state.workout, 7)).toBeTrue();
+    response.next({ success: true, data: { status: 'ok' } });
+    response.complete();
+    expect(state.drafts.hasUnsavedChanges(state.workout, 7)).toBeFalse();
+    tick(1500);
+    expect(navigate).toHaveBeenCalledOnceWith(['/coach/workouts']);
+  }));
+
+  it('does not lose edits entered during an in-flight save or failed save', fakeAsync(() => {
+    const { state, editor, navigate, updateWorkout } = metadata();
+    state.workout.name = 'First edit';
+    const response = new Subject<any>();
+    updateWorkout.and.returnValue(response);
+    editor.saveWorkout();
+    state.workout.name = 'Second edit';
+    response.next({ success: true, data: { status: 'ok' } });
+    response.complete();
+    expect(state.drafts.hasUnsavedChanges(state.workout, 7)).toBeTrue();
+    tick(1500);
+    expect(navigate).not.toHaveBeenCalled();
+    const failed = new Subject<any>();
+    updateWorkout.and.returnValue(failed);
+    editor.saveWorkout();
+    failed.error(new Error('offline'));
+    expect(state.drafts.hasUnsavedChanges(state.workout, 7)).toBeTrue();
+  }));
+
+  it('protects a saved-language form while another language still has unsaved text', () => {
+    const { state } = metadata();
+    state.workout.name = 'Changed HU';
+    state.drafts.beginLoad(state.workout, 7, 'en', true);
+    state.workout = state.drafts.applyLoaded(state.workout,
+      { ...state.workout, name: 'Saved EN' }, 7, 'en', true);
+    expect(state.drafts.hasUnsavedChanges(state.workout, 7)).toBeTrue();
+  });
+
   for (const success of [false, true]) {
     it(`updates exercise membership only when assignment success=${success}`, () => {
       TestBed.configureTestingModule({});

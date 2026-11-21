@@ -37,6 +37,23 @@ export class WorkoutFormDrafts {
     };
   }
 
+  /** Includes drafts preserved in another language for this same workout. */
+  hasUnsavedChanges(current: WorkoutForm, workoutId: number | undefined): boolean {
+    if (!this.baseline || !this.formContext || !workoutId || !this.formContext.startsWith(`${workoutId}:`)) return false;
+    if ((Object.keys(this.baseline) as (keyof WorkoutForm)[])
+      .some(key => key !== 'id' && current[key] !== this.baseline![key])) return true;
+    return [...this.textDrafts].some(([context, draft]) => context !== this.formContext &&
+      context.startsWith(`${workoutId}:`) && Object.keys(draft).length > 0);
+  }
+
+  /** A successful write becomes the new baseline; newer edits remain visible as dirty. */
+  markSaved(submitted: WorkoutForm, workoutId: number, language: string): void {
+    if (this.formContext !== `${workoutId}:${language}`) return;
+    this.baseline = { ...submitted, id: workoutId };
+    this.sharedDrafts.delete(workoutId);
+    this.textDrafts.delete(this.formContext);
+  }
+
   private capture(current: WorkoutForm): void {
     if (!this.baseline || !this.formContext) return;
     const text: Partial<WorkoutForm> = {};

@@ -2,8 +2,8 @@ import { ProgramOperationRunner } from './program-operation-runner';
 import { LanguageService } from '../../../services/shared/language.service';
 import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subject, distinctUntilChanged, forkJoin, takeUntil } from 'rxjs';
+import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
+import { Observable, Subject, distinctUntilChanged, forkJoin, of, takeUntil } from 'rxjs';
 import { AppLoadingComponent } from '../../shared/components/app-state/app-state.component';
 import { CoachCalendarComponent } from '../coach-calendar/coach-calendar.component';
 import { FormsModule } from '@angular/forms';
@@ -144,8 +144,7 @@ export class CoachProgramEditorComponent implements OnInit {
           programName: '', programDescription: '', durationDays: 28,
           difficultyLevel: 'BEGINNER', startDate: toIsoDate(new Date()),
         };
-        const forUser = Number(this.route.snapshot.queryParamMap.get('userId'));
-        this.state.newForUserId = Number.isInteger(forUser) && forUser > 0 ? forUser : null;
+        this.updateNewProgramClient(this.route.snapshot?.queryParamMap?.get('userId') ?? null);
         if (this.state.newForUserId !== null) this.assignments.loadClientsOnly();
         this.detailsBaseline = { ...this.state.form };
         this.buildCells();
@@ -168,11 +167,27 @@ export class CoachProgramEditorComponent implements OnInit {
       this.state.programId = id;
       this.loadProgram(null);
     });
+    // Query-only navigation reuses this component. Keep the prospective athlete in sync
+    // without resetting the unsaved program form or reloading the program template.
+    const queryParams$ = this.route.queryParamMap ?? of(this.route.snapshot?.queryParamMap ?? convertToParamMap({}));
+    queryParams$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(query => {
+      if (this.state.programId !== null) return;
+      const previous = this.state.newForUserId;
+      this.updateNewProgramClient(query.get('userId'));
+      if (previous !== this.state.newForUserId && this.state.newForUserId !== null && !this.assignments.clients.length) {
+        this.assignments.loadClientsOnly();
+      }
+    });
     this.language.language$.pipe(distinctUntilChanged(), takeUntilDestroyed(this.destroyRef)).subscribe(language => {
       if (language === this.state.languageCode) return;
       this.state.languageCode = language;
       if (this.state.programId !== null) this.loadProgram(this.state.selectedDay, true);
     });
+  }
+
+  private updateNewProgramClient(raw: string | null): void {
+    const id = raw === null || raw.trim() === '' ? NaN : Number(raw);
+    this.state.newForUserId = Number.isSafeInteger(id) && id > 0 ? id : null;
   }
 
   private loadProgram(

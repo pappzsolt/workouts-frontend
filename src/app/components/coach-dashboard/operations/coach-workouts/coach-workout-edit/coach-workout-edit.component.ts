@@ -1,7 +1,7 @@
 import { createInputValidationGuard } from '../../../../shared/components/form-controls/app-input.directive';
 import { INTENSITY_OPTIONS } from '../../../../../constants/intensity';
 import type { WorkoutExerciseView } from '../../../../../models/workout/workout-exercise-view.model';
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
 import { LoggerService } from '../../../../../services/logger.service';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -10,8 +10,9 @@ import { WorkoutExerciseService } from '../../../../../services/coach/workout-ex
 import { CoachWorkspaceService } from '../../../../../services/coach/coach-workspace.service';
 import { ExerciseService } from '../../../../../services/coach/coach-exercises/coach-exercises.service';
 import { ProgramWorkoutService } from '../../../../../services/coach/program-workout.service';
-import { skip, timer, takeUntil, distinctUntilChanged, map } from 'rxjs';
+import { Observable, Subject, skip, timer, takeUntil, distinctUntilChanged, map } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { AppSelectComponent } from '../../../../../components/shared/components/app-select/app-select.component';
 import { LanguageService } from '../../../../../services/shared/language.service';
 import { emptyWorkoutForm } from '../../../../../services/shared/workout-mapping';
@@ -58,6 +59,7 @@ import type { WorkoutEditorEffects } from './workout-editor-effects';
     FormFieldComponent,
     AppIconComponent,
     AppSelectComponent,
+    ConfirmDialogComponent,
     WorkoutExerciseSearchComponent,
     WorkoutExerciseListComponent,
   ],
@@ -68,6 +70,8 @@ export class CoachWorkoutEditComponent extends WorkoutEditorState implements OnI
   private readonly metadata: WorkoutMetadataEditor;
   private readonly structure: WorkoutExerciseEditor;
 
+  leaveConfirmationOpen = false;
+  private leaveResult?: Subject<boolean>;
   readonly intensityOptions = INTENSITY_OPTIONS;
   private readonly validateInputs = createInputValidationGuard();
   private readonly logger = inject(LoggerService);
@@ -117,6 +121,7 @@ export class CoachWorkoutEditComponent extends WorkoutEditorState implements OnI
   }
 
   ngOnInit(): void {
+    this.destroyRef.onDestroy(() => this.resolveLeave(false));
     this.languageService.language$
       .pipe(skip(1), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
@@ -231,7 +236,37 @@ export class CoachWorkoutEditComponent extends WorkoutEditorState implements OnI
   }
 
   cancelEdit(): void {
-    this.router.navigate(['/coach/workouts']);
+    void this.router.navigate(['/coach/workouts']);
+  }
+
+  get hasUnsavedChanges(): boolean {
+    return this.drafts.hasUnsavedChanges(this.workout, this.workoutId);
+  }
+
+  canLeave(): boolean | Observable<boolean> {
+    if (this.savingWorkout || this.structureBusy || this.addingExercise || this.copying) return false;
+    if (!this.hasUnsavedChanges) return true;
+    this.leaveConfirmationOpen = true;
+    this.leaveResult ??= new Subject<boolean>();
+    return this.leaveResult.asObservable();
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  beforeUnload(event: BeforeUnloadEvent): void {
+    if (this.hasUnsavedChanges || this.savingWorkout || this.structureBusy || this.addingExercise || this.copying) {
+      event.preventDefault();
+      event.returnValue = '';
+    }
+  }
+
+  confirmLeave(): void { this.resolveLeave(true); }
+  cancelLeave(): void { this.resolveLeave(false); }
+
+  private resolveLeave(leave: boolean): void {
+    this.leaveConfirmationOpen = false;
+    this.leaveResult?.next(leave);
+    this.leaveResult?.complete();
+    this.leaveResult = undefined;
   }
 
   // ----------------------------------------------------------

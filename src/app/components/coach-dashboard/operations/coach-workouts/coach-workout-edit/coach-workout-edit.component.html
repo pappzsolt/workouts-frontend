@@ -303,3 +303,15 @@
     </div>
   </div>
 </div>
+
+<!-- A meglévő szerkesztő-navigációs védelmi párbeszédablakot használjuk. -->
+<app-confirm-dialog
+  [open]="leaveConfirmationOpen"
+  [busy]="savingWorkout || structureBusy || addingExercise || copying"
+  title="coachWorkoutEdit.unsavedLeaveTitle"
+  message="coachWorkoutEdit.unsavedLeavePrompt"
+  confirmLabel="coachWorkspace.editor.leaveWithoutSaving"
+  cancelLabel="coachWorkspace.client.stay"
+  (confirmed)="confirmLeave()"
+  (cancelled)="cancelLeave()"
+></app-confirm-dialog>

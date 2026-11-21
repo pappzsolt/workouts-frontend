@@ -288,6 +288,8 @@
     "endDate": "End"
   },
   "coachWorkoutEdit": {
+    "unsavedLeaveTitle": "Unsaved workout changes",
+    "unsavedLeavePrompt": "Your workout changes have not been saved. Discard them and leave this page?",
     "invalidWorkoutId": "Invalid workout ID.",
     "notFound": "Workout not found.",
     "loadError": "Failed to load workout.",

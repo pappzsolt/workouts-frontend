@@ -1,7 +1,7 @@
 import { LanguageService } from '../../../services/shared/language.service';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
-import { of, Subject } from 'rxjs';
+import { BehaviorSubject, of, Subject } from 'rxjs';
 import { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import type { CoachProgram } from '../../../models/coach-workspace.model';
 import { CoachProgramEditorComponent } from './coach-program-editor.component';
@@ -93,5 +93,60 @@ describe('Coach program editor unsaved navigation protection', () => {
     component.beforeUnload(event as unknown as BeforeUnloadEvent);
     expect(event.preventDefault).toHaveBeenCalled();
     expect(event.returnValue).toBe('');
+  });
+});
+
+
+describe('Coach new program athlete query changes', () => {
+  it('uses the latest userId without discarding unsaved form values or reloading the form', () => {
+    const query = new BehaviorSubject(convertToParamMap({ userId: '8' }));
+    const assignProgram = jasmine.createSpy('assignProgram').and.returnValue(of(undefined));
+    const createProgram = jasmine.createSpy('createProgram').and.returnValue(of(200));
+    const overview = jasmine.createSpy('getOverview').and.returnValue(of({ clients: [
+      { userId: 7, username: 'Alice' }, { userId: 8, username: 'Bob' },
+    ] }));
+    TestBed.configureTestingModule({ providers: [
+      { provide: LanguageService, useValue: { getCurrentLanguage: () => 'hu', language$: of('hu') } },
+      { provide: CoachWorkspaceService, useValue: { getOverview: overview, createProgram, assignProgram } },
+      { provide: ActivatedRoute, useValue: {
+        paramMap: of(convertToParamMap({ id: 'new' })), queryParamMap: query,
+        snapshot: { queryParamMap: convertToParamMap({ userId: '8' }) },
+      } },
+      { provide: Router, useValue: { navigate: jasmine.createSpy('navigate').and.resolveTo(true) } },
+    ] });
+    const component = TestBed.runInInjectionContext(() => new CoachProgramEditorComponent());
+    component.ngOnInit();
+    expect(component.state.newForUserId).toBe(8);
+    component.state.form.programName = 'My unsaved program';
+    query.next(convertToParamMap({ userId: '7' }));
+    expect(component.state.newForUserId).toBe(7);
+    expect(component.state.form.programName).toBe('My unsaved program');
+    expect(overview).toHaveBeenCalledTimes(1);
+    component.details.saveDetails();
+    expect(createProgram).toHaveBeenCalled();
+    expect(assignProgram).toHaveBeenCalledOnceWith(7, 200);
+  });
+
+  it('never keeps the previously selected athlete when the query is removed or invalid', () => {
+    const query = new BehaviorSubject(convertToParamMap({ userId: '8' }));
+    TestBed.configureTestingModule({ providers: [
+      { provide: LanguageService, useValue: { getCurrentLanguage: () => 'hu', language$: of('hu') } },
+      { provide: CoachWorkspaceService, useValue: { getOverview: () => of({ clients: [] }) } },
+      { provide: ActivatedRoute, useValue: {
+        paramMap: of(convertToParamMap({ id: 'new' })), queryParamMap: query,
+        snapshot: { queryParamMap: convertToParamMap({ userId: '8' }) },
+      } },
+      { provide: Router, useValue: { navigate: jasmine.createSpy('navigate') } },
+    ] });
+    const component = TestBed.runInInjectionContext(() => new CoachProgramEditorComponent());
+    component.ngOnInit();
+    for (const value of ['0', '-3', '1.4', 'NaN', '']) {
+      query.next(convertToParamMap({ userId: value }));
+      expect(component.state.newForUserId).toBeNull();
+    }
+    query.next(convertToParamMap({ userId: '7' }));
+    expect(component.state.newForUserId).toBe(7);
+    query.next(convertToParamMap({}));
+    expect(component.state.newForUserId).toBeNull();
   });
 });

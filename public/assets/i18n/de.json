@@ -288,6 +288,8 @@
     "endDate": "Ende"
   },
   "coachWorkoutEdit": {
+    "unsavedLeaveTitle": "Ungespeicherte Trainingsänderungen",
+    "unsavedLeavePrompt": "Deine Änderungen am Training sind noch nicht gespeichert. Verwerfen und die Seite verlassen?",
     "invalidWorkoutId": "Ungültige Trainings-ID",
     "notFound": "Training nicht gefunden.",
     "loadError": "Training konnte nicht geladen werden.",

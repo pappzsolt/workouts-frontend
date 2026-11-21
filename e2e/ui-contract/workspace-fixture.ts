@@ -50,6 +50,7 @@ export type State = ReturnType<typeof seed>;
 export class WorkspaceApi {
   state = seed();
   rowsByClient = new Map<number, State['rows']>();
+  rowsByClientAndProgram = new Map<string, State['rows']>();
   calls: Call[] = [];
   unknown: string[] = [];
   failures = new Map<string, number>();
@@ -99,7 +100,7 @@ export class WorkspaceApi {
         const q = c.query; const all = s.exercises.filter(e => (!q.get('search') || e.name.toLowerCase().includes(q.get('search')!.toLowerCase())) && (!q.get('bodyPart') || e.bodyPart === q.get('bodyPart')) && (!q.get('equipment') || e.equipment === q.get('equipment')));
         const size = Number(q.get('size') ?? 12); const page = Number(q.get('page') ?? 0);
         data = { content: all.slice(page * size, (page + 1) * size), totalElements: all.length, totalPages: Math.ceil(all.length / size) };
-      } else if (c.method === 'GET' && /^\/api\/user-workout-exercises\/user-programs\//.test(c.path)) data = id === 1 ? this.rowsByClient.get(Number(c.path.split('/')[4])) ?? s.rows : [];
+      } else if (c.method === 'GET' && /^\/api\/user-workout-exercises\/user-programs\//.test(c.path)) data = this.rowsByClientAndProgram.get(`${c.path.split('/')[4]}:${id}`) ?? (id === 1 ? this.rowsByClient.get(Number(c.path.split('/')[4])) ?? s.rows : []);
       else if (c.method === 'GET' && /^\/api\/user-workout-exercise-sets\/\d+$/.test(c.path)) data = s.sets[id] ?? [];
       else if (c.method === 'PUT' && /^\/api\/user-workout-exercise-sets\/\d+$/.test(c.path)) {
         const row = Object.values(s.sets).flat().find(x => x.id === id)!;

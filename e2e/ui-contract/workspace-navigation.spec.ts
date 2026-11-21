@@ -5,11 +5,29 @@ test('overview: real new home, totals and query range', async ({ page, api }) =>
   const home = page.locator('app-coach-home');
   await expect(home.getByRole('heading', { name: 'Áttekintés' })).toBeVisible();
   await expect(home.getByRole('region', { name: 'Összesítés' }).locator('div').first().locator('p').last()).toHaveText('1');
-  await expect(home.locator(`a[href="/coach/clients/7?workout=70"]`)).toContainText('Alice');
+  await expect(home.locator(`a[href="/coach/clients/7?program=1&workout=70"]`)).toContainText('Alice');
   await expect(home.getByText('Nincs kiosztott programja')).toBeVisible();
   expect(api.calls.find(c => c.path === '/api/coach/overview')?.query.get('from')).toBe('2030-04-08');
   expect(api.writes()).toEqual([]);
 });
+test('overview: the clicked workout selects its own program when the athlete has multiple programs',
+  { tag: '@ci-workouts' }, async ({ page, api }) => {
+    const athlete = api.state.clients[0];
+    athlete.programs.push({ ...athlete.programs[0], programId: 2, name: 'Program 02' });
+    athlete.workouts.push({ ...athlete.workouts[0], programId: 2, userWorkoutId: 75,
+      workoutId: 20, workoutName: 'Workout B', programName: 'Program 02' });
+    api.state.links.push({ id: 202, programId: 2, workoutId: 20, dayIndex: 1 });
+    api.rowsByClientAndProgram.set('7:2', [{ ...api.state.rows[0], user_workout_id: 75,
+      program_workout_id: 202, workout_id: 20, workout_name: 'Workout B' }]);
+    await page.goto('/coach/dashboard');
+    const deepLink = page.locator('a[href="/coach/clients/7?program=2&workout=75"]');
+    await expect(deepLink).toContainText('Workout B');
+    await deepLink.click();
+    await expect(page.locator('select[name=clientProgram] option:checked')).toContainText('Program 02');
+    await expect(page.locator('app-coach-client-detail')).toContainText('Workout B');
+    expect(api.calls.some(call => call.path === '/api/user-workout-exercises/user-programs/7/2')).toBe(true);
+    expect(api.writes()).toEqual([]);
+  });
 for (const [name, target] of [['Új program', '/coach/programs/new'], ['Program kiosztása', '/coach/clients'], ['Összes program', '/coach/programs']] as const) {
   test(`overview shortcut: ${name}`, async ({ page, api }) => {
     await page.goto('/coach/dashboard');
@@ -36,7 +54,7 @@ test('overview: statuses, missed sessions and recently finished deep link', asyn
   u.programs.push({ ...u.programs[0], programId: 2, name: 'Finished plan', endDate: '2030-04-01' });
   await page.goto('/coach/dashboard');
   const home = page.locator('app-coach-home');
-  for (const [id, status] of [[70, 'Tervezett'], [72, 'Kész'], [73, 'Folyamatban']]) await expect(home.locator(`a[href="/coach/clients/7?workout=${id}"]`)).toContainText(String(status));
+  for (const [id, status] of [[70, 'Tervezett'], [72, 'Kész'], [73, 'Folyamatban']]) await expect(home.locator(`a[href="/coach/clients/7?program=1&workout=${id}"]`)).toContainText(String(status));
   await expect(home.getByText('1 kimaradt edzés')).toBeVisible();
   await expect(home.locator('a[href="/coach/clients/7?program=2"]')).toContainText('Finished plan');
 });
@@ -211,15 +229,19 @@ test.describe('mobile navigation drawer keyboard accessibility', () => {
       expect(api.writes()).toEqual([]);
     });
 
-  test('drawer returns to desktop navigation after widening', { tag: '@ci-mobile' }, async ({ page }) => {
+  test('drawer returns to desktop navigation after widening', { tag: '@ci-mobile' }, async ({ page, api }) => {
     await page.goto('/coach/dashboard');
+    await expect(page.locator('app-coach-home h1')).toBeVisible({ timeout: 30000 });
+    await expect.poll(() => page.evaluate(() => matchMedia('(max-width: 639.98px)').matches)).toBe(true);
     const toggle = page.locator('header app-button').first().getByRole('button');
     const drawer = page.locator('#application-menu');
-    await toggle.click();
+    await expect(toggle).toBeVisible({ timeout: 30000 });
+    await toggle.click({ timeout: 30000 });
     await expect(drawer).toHaveAttribute('aria-modal', 'true');
     await page.setViewportSize({ width: 1024, height: 812 });
     await expect(drawer).not.toHaveAttribute('aria-modal', 'true');
     await expect(drawer).toBeVisible();
     await expect(page.locator('main')).not.toHaveAttribute('inert', '');
+    expect(api.writes()).toEqual([]);
   });
 });

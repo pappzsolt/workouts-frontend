@@ -207,6 +207,7 @@ export const routes: Routes = [
 
       {
         path: 'workouts/:id/edit',
+        canDeactivate: [(component: { canLeave(): boolean | Observable<boolean> }) => component.canLeave()],
         loadComponent: () => import('./components/coach-dashboard/operations/coach-workouts/coach-workout-edit/coach-workout-edit.component').then(m => m.CoachWorkoutEditComponent),
       },
 

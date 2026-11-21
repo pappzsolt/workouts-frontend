@@ -173,6 +173,20 @@ test('editor: new program for client assigns after creating', async ({ page, api
   expect(api.writes()[1].body).toEqual({ userId: 8, programId: 200 });
 });
 
+test('editor: same new-program route switches assignment to its latest userId without losing the form',
+  { tag: '@ci-workouts' }, async ({ page, api }) => {
+    await page.goto('/coach/programs/new?userId=8');
+    const root = editor(page);
+    await expect(root).toContainText('Bob számára készül');
+    await root.locator('[name=programName]').fill('Preserved draft');
+    await page.evaluate(() => history.pushState({}, '', '/coach/programs/new?userId=7'));
+    await page.evaluate(() => dispatchEvent(new PopStateEvent('popstate')));
+    await expect(root).toContainText('Alice számára készül');
+    await expect(root.locator('[name=programName]')).toHaveValue('Preserved draft');
+    await root.getByRole('button', { name: 'Létrehozás', exact: true }).click();
+    await expect(page).toHaveURL(/\/coach\/programs\/200$/);
+    expect(api.writes('/api/programs/assign')[0].body).toEqual({ userId: 7, programId: 200 });
+  });
 test('editor: copy dialog cancel, invalid name and backend failure keep dialog open', async ({ page, api }) => {
   await page.goto('/coach/programs/1'); const r = editor(page);
   await r.getByRole('button', { name: 'Program másolása', exact: true }).click(); const d = page.getByRole('dialog');

@@ -79,13 +79,15 @@ export class WorkoutMetadataEditor {
       next: (res) => {
         if (!unchangedContext()) return;
         if (res.success && res.data?.status === 'ok') {
+          this.state.drafts.markSaved(payload, this.state.workoutId!, language);
           this.effects.setMessage('coachWorkoutEdit.updateSuccess', 'success');
           timer(1500)
             .pipe(takeUntil(this.saveStarted$), takeUntil(this.state.contextCancelled$), takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
               const unchangedForm = (Object.keys(payload) as (keyof WorkoutForm)[])
                 .every(key => this.state.workout[key] === payload[key]);
-              if (unchangedContext() && unchangedForm && !this.state.savingWorkout) {
+              if (unchangedContext() && unchangedForm && !this.state.savingWorkout &&
+                  !this.state.drafts.hasUnsavedChanges(this.state.workout, this.state.workoutId)) {
                 void this.router.navigate(['/coach/workouts']);
               }
             });
