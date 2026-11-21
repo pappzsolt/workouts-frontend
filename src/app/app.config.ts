@@ -1,4 +1,4 @@
-import { ApplicationConfig } from '@angular/core';
+import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter, withNavigationErrorHandler } from '@angular/router';
 import { reloadOnChunkLoadError } from './config/chunk-load-recovery';
 import { routes } from './app.routes';
@@ -16,6 +16,10 @@ import { provideTranslateHttpLoader } from '@ngx-translate/http-loader';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    // Preserve the existing Zone.js-based change detection when moving to Angular 21+.
+    // Angular 21 defaults to zoneless unless Zone.js change detection is requested.
+    provideZoneChangeDetection(),
+
     provideRouter(routes, withNavigationErrorHandler(reloadOnChunkLoadError)),
 
     provideHttpClient(withInterceptorsFromDi()),
