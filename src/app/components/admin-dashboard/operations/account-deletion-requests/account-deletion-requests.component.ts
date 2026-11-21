@@ -27,7 +27,17 @@ export class AccountDeletionRequestsComponent {
   saving = false;
   error = '';
   selected: DeletionRequest | null = null;
-  decision: 'COMPLETED' | 'REJECTED' = 'COMPLETED';
+  private selectedDecision: 'COMPLETED' | 'REJECTED' = 'COMPLETED';
+
+  get decision(): 'COMPLETED' | 'REJECTED' {
+    return this.selectedDecision;
+  }
+
+  set decision(value: 'COMPLETED' | 'REJECTED') {
+    if (value === this.selectedDecision) return;
+    this.selectedDecision = value;
+    this.confirmed = false;
+  }
   note = '';
   confirmed = false;
   constructor() { this.load(0); }
@@ -47,8 +57,14 @@ export class AccountDeletionRequestsComponent {
     this.confirmed = false;
     this.error = '';
   }
+  get canSave(): boolean {
+    return !this.saving && this.confirmed &&
+      (this.decision === 'COMPLETED' || this.decision === 'REJECTED') &&
+      !!this.note.trim() && this.note.length <= 2000;
+  }
+
   save(): void {
-    if (!this.selected || this.saving || !this.confirmed || !this.note.trim() || this.note.length > 2000) return;
+    if (!this.selected || !this.canSave) return;
     this.saving = true;
     this.error = '';
     this.service.resolve(this.selected.id, this.decision, this.note.trim())

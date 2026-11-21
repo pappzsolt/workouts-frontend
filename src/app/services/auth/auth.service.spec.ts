@@ -5,7 +5,7 @@ import { API_ENDPOINTS } from '../../api-endpoints';
 import { AuthService } from './auth.service';
 import { AuthInterceptor } from '../../interceptors/auth.interceptor';
 import { Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 
 describe('AuthService cross-tab refresh', () => {
   let http: HttpTestingController;
@@ -102,6 +102,54 @@ describe('AuthService cross-tab refresh', () => {
         expect(successes).toBe(1);
         expect(errors).toBe(1);
       }
+    }));
+  }
+
+  for (const afterRetry of [false, true]) {
+    it(`ignores a late ${afterRetry ? 'retry' : 'original'} 401 after login replaces the session`, fakeAsync(() => {
+      const login = (token: string) => {
+        first.login('fixture-user', 'password').subscribe();
+        flushMicrotasks();
+        http.expectOne(request => request.url === API_ENDPOINTS.authWebLogin).flush({ success: true, data: { accessToken: token } });
+        flushMicrotasks();
+      };
+      login('old-session');
+      const router = { navigate: jasmine.createSpy('navigate') };
+      const interceptor = new AuthInterceptor(first, router as unknown as Router);
+      const logout = spyOn(first, 'logout').and.callThrough();
+      const original = new Subject<HttpResponse<unknown>>();
+      const retry = new Subject<HttpResponse<unknown>>();
+      const forwarded: HttpRequest<unknown>[] = [];
+      const handler = { handle: (request: HttpRequest<unknown>) => {
+        forwarded.push(request);
+        return forwarded.length === 1 ? original : retry;
+      }};
+      const error = jasmine.createSpy('error');
+      const unauthorized = new HttpErrorResponse({ status: 401 });
+      interceptor.intercept(new HttpRequest('PATCH', API_ENDPOINTS.workouts, { name: 'Pending' }), handler)
+        .subscribe({ error });
+      expect(forwarded[0].headers.get('Authorization')).toBe('Bearer old-session');
+      if (afterRetry) {
+        original.error(unauthorized);
+        flushMicrotasks();
+        const refresh = http.expectOne(request => request.url === API_ENDPOINTS.authWebRefresh);
+        expect(refresh.request.withCredentials).toBeTrue();
+        refresh.flush({ success: true, data: { accessToken: 'rotated-old-session' } });
+        flushMicrotasks();
+        expect(forwarded[1].headers.get('Authorization')).toBe('Bearer rotated-old-session');
+        expect(forwarded[1].body).toEqual({ name: 'Pending' });
+      }
+      login('new-session');
+
+      (afterRetry ? retry : original).error(unauthorized);
+      flushMicrotasks();
+      http.expectNone(request => request.url === API_ENDPOINTS.authWebRefresh);
+      http.expectNone(request => request.url === API_ENDPOINTS.authWebLogout);
+      expect(forwarded.length).toBe(afterRetry ? 2 : 1);
+      expect(error).toHaveBeenCalledOnceWith(unauthorized);
+      expect(first.getAccessToken()).toBe('new-session');
+      expect(logout).not.toHaveBeenCalled();
+      expect(router.navigate).not.toHaveBeenCalled();
     }));
   }
 

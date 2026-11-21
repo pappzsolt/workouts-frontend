@@ -44,6 +44,7 @@ describe('Frontend fixes', () => {
   function authFixture(refresh: any = of({ accessToken: 'new' })) {
     const auth = {
       getAccessToken: () => 'old',
+      getSessionVersion: () => 0,
       refreshAccessToken: jasmine.createSpy('refresh').and.callFake((onFailure?: () => void) =>
         refresh.pipe(catchError((error: unknown) => {
           onFailure?.();

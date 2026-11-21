@@ -10,7 +10,7 @@ import { AccountDeletionService } from './account-deletion.service';
 describe('Public deletion requests', () => {
   let http: HttpTestingController;
   let service: AccountDeletionService;
-  const auth = { getAccessToken: jasmine.createSpy().and.returnValue('expired-token'), refreshAccessToken: jasmine.createSpy(), logout: jasmine.createSpy() };
+  const auth = { getSessionVersion: jasmine.createSpy().and.returnValue(0), getAccessToken: jasmine.createSpy().and.returnValue('expired-token'), refreshAccessToken: jasmine.createSpy(), logout: jasmine.createSpy() };
   const router = { navigate: jasmine.createSpy() };
   beforeEach(() => {
     Object.values(auth).forEach(spy => spy.calls.reset()); router.navigate.calls.reset();

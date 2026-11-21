@@ -51,6 +51,28 @@ describe('Personal program editor handlers', () => {
     expect(state.action).toBeNull();
   });
 
+  it('protects target-only edits on unload and discards them only after confirmed navigation', () => {
+    state.executionTargetsDirty = true;
+    const event = new Event('beforeunload', { cancelable: true }) as BeforeUnloadEvent;
+    navigation.beforeUnload(event);
+    expect(event.defaultPrevented).toBeTrue();
+
+    const decisions: boolean[] = [];
+    const first = navigation.canLeave();
+    if (typeof first !== 'boolean') first.subscribe(value => decisions.push(value));
+    navigation.cancel();
+    expect(decisions).toEqual([false]);
+    expect(state.executionTargetsDirty).toBeTrue();
+    expect(state.dirty).toBeFalse();
+
+    const second = navigation.canLeave();
+    if (typeof second !== 'boolean') second.subscribe(value => decisions.push(value));
+    actions.confirm();
+    expect(decisions).toEqual([false, true]);
+    expect(state.executionTargetsDirty).toBeFalse();
+    expect(navigation.canLeave()).toBeTrue();
+  });
+
   it('resolves a pending leave request as rejected when the editor is destroyed', () => {
     state.dirty = true;
     const result = navigation.canLeave();

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { Subject, of, throwError } from 'rxjs';
+import { Subject, of } from 'rxjs';
 import { AccountDeletionRequestsComponent } from './account-deletion-requests.component';
 import { AccountDeletionService, DeletionRequest } from '../../../../services/account-deletion/account-deletion.service';
 
@@ -20,6 +20,36 @@ describe('Manual deletion administration', () => {
     expect(service.resolve).toHaveBeenCalledOnceWith(1, 'COMPLETED', 'verified and deleted');
     expect(c.selected).toBeNull();
   });
+  for (const initial of ['REJECTED', 'COMPLETED'] as const) {
+    it(`requires fresh confirmation after changing a confirmed ${initial} outcome`, () => {
+      const c = create();
+      c.select(row);
+      c.decision = initial;
+      c.note = 'Verified outcome';
+      c.confirmed = true;
+      const next = initial === 'REJECTED' ? 'COMPLETED' : 'REJECTED';
+      c.decision = next;
+      expect(c.confirmed).toBeFalse();
+      c.save();
+      expect(service.resolve).not.toHaveBeenCalled();
+      service.resolve.and.returnValue(of({ success: true }));
+      c.confirmed = true;
+      c.save();
+      expect(service.resolve).toHaveBeenCalledOnceWith(1, next, 'Verified outcome');
+    });
+  }
+
+  it('rejects an invalid outcome even when the form handler is called directly', () => {
+    const c = create();
+    c.select(row);
+    c.decision = '' as typeof c.decision;
+    c.note = 'Verified outcome';
+    c.confirmed = true;
+    expect(c.canSave).toBeFalse();
+    c.save();
+    expect(service.resolve).not.toHaveBeenCalled();
+  });
+
   it('prevents concurrent resolutions and allows retry after failure', () => {
     const pending = new Subject<any>(); service.resolve.and.returnValue(pending);
     const c = create(); c.select(row); c.note = 'verified'; c.confirmed = true;

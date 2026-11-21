@@ -93,7 +93,7 @@
               <app-button
                 variant="save"
                 type="submit"
-                [disabled]="saving || !confirmed || !note.trim()"
+                [disabled]="!canSave"
                 >{{ 'deleteAccount.admin.save' | translate }}</app-button
               >
               <app-button variant="secondary" type="button" (buttonClick)="selected = null">{{

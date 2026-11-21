@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { PersonalProgramService } from '../../../../services/user/personal-program.service';
 import { NgForm } from '@angular/forms';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import type { PersonalDayTargets, PersonalWorkoutSchedule } from '../../../../models/personal-program.model';
 import { PersonalProgramDays } from './personal-program-days';
 import { PersonalProgramFlowComponent } from './personal-program-flow.component';
@@ -24,7 +24,7 @@ describe('Personal multi-day program flow', () => {
       ],
     }];
     days = new PersonalProgramDays(state);
-    service = jasmine.createSpyObj<PersonalProgramService>('PersonalProgramService', ['schedule', 'moveDay', 'dayTargets']);
+    service = jasmine.createSpyObj<PersonalProgramService>('PersonalProgramService', ['schedule', 'moveDay', 'dayTargets', 'updateDayTargets']);
     TestBed.configureTestingModule({ providers: [{ provide: PersonalProgramService, useValue: service }] });
     flow = TestBed.runInInjectionContext(() => new PersonalProgramFlowComponent());
     flow.state = state;
@@ -108,6 +108,59 @@ describe('Personal multi-day program flow', () => {
     expect(flow.targetSession?.version).toBe(2);
     expect(flow.targetDay?.exercises[0].setTargets?.[0].targetRepetitions).toBe(5);
     expect(flow.targetLoading).toBeFalse();
+  });
+
+  it('keeps execution target edits through a failed save and day navigation, independently of the template', () => {
+    state.id = 7;
+    state.started = true;
+    const targets: PersonalDayTargets = {
+      dayIndex: 1, version: 3, editable: true,
+      exercises: state.model.workouts[0].exercises.map((exercise, exerciseIndex) => ({
+        exerciseIndex,
+        sets: Array.from({ length: exercise.sets }, () => ({
+          targetRepetitions: 5, targetWeightKg: null, restSeconds: 60, targetRpe: null,
+        })),
+      })),
+    };
+    service.dayTargets.and.returnValue(of(targets));
+    service.updateDayTargets.and.returnValues(
+      throwError(() => new Error('save failed')),
+      of({ ...targets, version: 4 }),
+    );
+
+    flow.openDay();
+    flow.openExercise(0);
+    const target = flow.targetDay!.exercises[0].setTargets![0];
+    target.targetWeightKg = 42;
+    flow.targetChanged();
+    expect(state.hasUnsavedChanges).toBeTrue();
+    expect(state.dirty).toBeFalse();
+
+    flow.saveTargets();
+    expect(state.executionTargetsDirty).toBeTrue();
+    expect(flow.targetSession?.version).toBe(3);
+    flow.openDay();
+    expect(service.dayTargets).toHaveBeenCalledTimes(1);
+    expect(flow.targetDay?.exercises[0].setTargets?.[0].targetWeightKg).toBe(42);
+    flow.backToCalendar();
+    expect(flow.view).toBe('day');
+
+    state.dirty = true;
+    flow.saveTargets();
+    const request = service.updateDayTargets.calls.mostRecent().args;
+    expect(request[2].expectedVersion).toBe(3);
+    expect(request[2].exercises[0].sets[0].targetWeightKg).toBe(42);
+    expect(flow.targetSession?.version).toBe(4);
+    expect(state.executionTargetsDirty).toBeFalse();
+    expect(state.hasUnsavedChanges).toBeTrue();
+    expect(state.model.workouts[0].exercises[0].setTargets).toBeUndefined();
+
+    flow.targetChanged();
+    flow.discardTargets();
+    expect(state.executionTargetsDirty).toBeFalse();
+    expect(state.dirty).toBeTrue();
+    flow.backToCalendar();
+    expect(flow.view).toBe('calendar');
   });
 
   it('offers free program dates before and after a workout without a today cutoff', () => {

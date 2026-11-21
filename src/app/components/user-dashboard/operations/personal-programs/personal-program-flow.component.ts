@@ -52,7 +52,7 @@ export class PersonalProgramFlowComponent implements OnChanges {
   targetSession: PersonalDayTargets | null = null;
   targetDay: PersonalProgramDay | null = null;
   targetLoading = false;
-  targetDirty = false;
+  get targetDirty(): boolean { return this.state.executionTargetsDirty; }
   /** A previously started target GET must not replace newer edits or versions. */
   private targetRequestSequence = 0;
 
@@ -232,7 +232,6 @@ export class PersonalProgramFlowComponent implements OnChanges {
         }
         this.targetDay = copy;
         this.targetSession = result;
-        this.targetDirty = false;
       },
       error: (error: unknown) => {
         if (requestSequence !== this.targetRequestSequence ||
@@ -245,15 +244,14 @@ export class PersonalProgramFlowComponent implements OnChanges {
 
   discardTargets(): void {
     if (this.state.busy || !this.state.started || !this.targetDay) return;
-    this.targetDirty = false;
-    this.state.dirty = false;
+    this.state.executionTargetsDirty = false;
     const source = this.activeDay;
     if (source) this.loadStartedTargets(source);
   }
 
   targetChanged(): void {
     if (!this.targetSession?.editable || !this.targetDay || this.state.busy) return;
-    this.targetDirty = true;
+    this.state.executionTargetsDirty = true;
     this.state.message = '';
   }
 
@@ -283,7 +281,7 @@ export class PersonalProgramFlowComponent implements OnChanges {
       next: (saved) => {
         this.state.busy = false;
         this.targetSession = saved;
-        this.targetDirty = false;
+        this.state.executionTargetsDirty = false;
         this.state.message = 'personalEditorUi.targetsSaved';
         this.state.messageType = 'success';
       },
@@ -382,7 +380,7 @@ export class PersonalProgramFlowComponent implements OnChanges {
     this.editingDay = this.activeDay;
     this.days.pickerDay = null;
     this.view = 'day';
-    if (this.state.started && !this.state.standaloneMode && this.editingDay)
+    if (this.state.started && !this.state.standaloneMode && this.editingDay && !this.targetDirty)
       this.loadStartedTargets(this.editingDay);
   }
 

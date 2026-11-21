@@ -78,7 +78,7 @@ export class PersonalProgramEditorComponent implements OnInit {
   private readonly reload$ = new Subject<void>();
 
   retryLoad(): void {
-    if (this.state.loadFailed && !this.state.loading && !this.state.busy && !this.state.dirty)
+    if (this.state.loadFailed && !this.state.loading && !this.state.busy && !this.state.hasUnsavedChanges)
       this.reload$.next();
   }
 
@@ -104,6 +104,7 @@ export class PersonalProgramEditorComponent implements OnInit {
           const value = params.get('id');
           this.state.id = value == null ? null : Number(value);
           this.state.dirty = false;
+          this.state.executionTargetsDirty = false;
           this.state.started = false;
           this.days.pickerDay = null;
           this.days.selectedDay = 1;

@@ -18,6 +18,7 @@ async function setup(page: Page, baseURL: string) {
   });
   await page.addInitScript(() => localStorage.setItem('language', 'hu'));
   let deleted = false;
+  let resolution: { status: string; note: string } | null = null;
   await page.route('**/api/**', async route => {
     const req = route.request(), url = new URL(req.url());
     const success = (data: unknown) => route.fulfill({ json: { success: true, data, message: null } });
@@ -36,10 +37,15 @@ async function setup(page: Page, baseURL: string) {
     if (url.pathname === '/api/admin/user-deletions') {
       writes.push(req.postDataJSON()); deleted = true; return success(null);
     }
+    if (url.pathname === '/api/admin/account-deletion-requests/13/resolution' && req.method() === 'PATCH') {
+      resolution = req.postDataJSON();
+      writes.push(resolution);
+      return success(null);
+    }
     if (url.pathname === '/api/admin/account-deletion-requests') return success({
       content: [{ id: 13, email: deleted ? 'deleted+13@account.invalid' : 'user@example.test', message: deleted ? null : 'delete please',
-        status: deleted ? 'COMPLETED' : 'PENDING', createdAt: '2026-11-10T10:00:00Z', resolvedAt: deleted ? '2026-11-10T11:00:00Z' : null,
-        resolvedBy: deleted ? 'USER:1' : null, resolutionNote: null }], page: 0, size: 20, totalElements: 1, totalPages: 1,
+        status: deleted ? 'COMPLETED' : resolution?.status ?? 'PENDING', createdAt: '2026-11-10T10:00:00Z', resolvedAt: deleted || resolution ? '2026-11-10T11:00:00Z' : null,
+        resolvedBy: deleted || resolution ? 'USER:1' : null, resolutionNote: resolution?.note ?? null }], page: 0, size: 20, totalElements: 1, totalPages: 1,
     });
     return route.fulfill({ status: 404, json: { success: false, data: null } });
   });
@@ -73,4 +79,34 @@ test('admin request deletion includes request ID and refreshes the closed, redac
   await expect(dialog).toHaveCount(0);
   await expect(page.getByText(/deleted\+13@account.invalid/)).toBeVisible();
   expect(writes).toHaveLength(1); expect(writes[0].deletionRequestId).toBe(13);
+});
+
+
+test('admin must reconfirm the current deletion request outcome before saving', async ({ page, baseURL }) => {
+  const writes = await setup(page, baseURL!);
+  await page.goto('/admin/account-deletion-requests');
+  await page.getByRole('button', { name: 'Feldolgozás rögzítése', exact: true }).click();
+  const outcome = page.getByRole('combobox', { name: 'Eredmény' });
+  const confirmed = page.getByRole('checkbox');
+  const save = page.getByRole('button', { name: 'Végleges lezárás', exact: true });
+  await page.getByRole('textbox', { name: /Indoklás/ }).fill('A kérelmezőt értesítettük.');
+
+  await outcome.selectOption('REJECTED');
+  await confirmed.check();
+  await expect(save).toBeEnabled();
+  await outcome.selectOption('COMPLETED');
+  await expect(confirmed).not.toBeChecked();
+  await expect(save).toBeDisabled();
+  await confirmed.check();
+  await outcome.selectOption('REJECTED');
+  await expect(confirmed).not.toBeChecked();
+  await expect(save).toBeDisabled();
+  expect(writes).toEqual([]);
+
+  await confirmed.check();
+  await save.click();
+  await expect(save).toHaveCount(0);
+  expect(writes).toEqual([{ status: 'REJECTED', note: 'A kérelmezőt értesítettük.' }]);
+  await expect(page.getByRole('heading', { name: '#13 · user@example.test', exact: true })).toBeVisible();
+  await expect(page.getByText(/Elutasítva/)).toBeVisible();
 });

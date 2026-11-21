@@ -289,6 +289,10 @@ export class AuthService {
     return new HttpParams().set('language', language);
   }
 
+  getSessionVersion(): number {
+    return this.sessionVersion;
+  }
+
   getAccessToken(): string | null {
     return this.accessToken;
   }

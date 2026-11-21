@@ -12,6 +12,7 @@ import {
   catchError,
   switchMap,
   throwError,
+  throwIfEmpty,
 } from 'rxjs';
 import { Router } from '@angular/router';
 import { AuthService } from '../services/auth/auth.service';
@@ -35,21 +36,23 @@ export class AuthInterceptor implements HttpInterceptor {
       return next.handle(req);
     }
 
+    const sessionVersion = this.authService.getSessionVersion();
     const authReq = this.addAccessToken(req);
 
     return next.handle(authReq).pipe(
       catchError((error: unknown) => {
-        if (!(error instanceof HttpErrorResponse) || error.status !== 401) {
+        if (!(error instanceof HttpErrorResponse) || error.status !== 401 ||
+            sessionVersion !== this.authService.getSessionVersion()) {
           return throwError(() => error);
         }
 
         // Ugyanazt a kérést csak egyszer próbáljuk új access tokennel.
         if (req.context.get(AUTH_RETRY)) {
-          this.clearSessionAndRedirect();
+          this.clearSessionAndRedirect(sessionVersion);
           return throwError(() => error);
         }
 
-        return this.handleUnauthorized(req, next);
+        return this.handleUnauthorized(req, next, sessionVersion, error);
       }),
     );
   }
@@ -57,10 +60,15 @@ export class AuthInterceptor implements HttpInterceptor {
   private handleUnauthorized(
     req: HttpRequest<unknown>,
     next: HttpHandler,
+    sessionVersion: number,
+    originalError: HttpErrorResponse,
   ): Observable<HttpEvent<unknown>> {
     // AuthService owns the shared refresh and invokes failure handling once.
-    return this.authService.refreshAccessToken(() => this.clearSessionAndRedirect()).pipe(
-      switchMap(response => this.retryWithToken(req, next, response.accessToken)),
+    return this.authService.refreshAccessToken(() => this.clearSessionAndRedirect(sessionVersion)).pipe(
+      throwIfEmpty(() => originalError),
+      switchMap(response => sessionVersion === this.authService.getSessionVersion()
+        ? this.retryWithToken(req, next, response.accessToken, sessionVersion)
+        : throwError(() => originalError)),
     );
   }
 
@@ -68,6 +76,7 @@ export class AuthInterceptor implements HttpInterceptor {
     req: HttpRequest<unknown>,
     next: HttpHandler,
     accessToken: string,
+    sessionVersion: number,
   ): Observable<HttpEvent<unknown>> {
     return next
       .handle(
@@ -79,7 +88,7 @@ export class AuthInterceptor implements HttpInterceptor {
       .pipe(
         catchError((error: unknown) => {
           if (error instanceof HttpErrorResponse && error.status === 401) {
-            this.clearSessionAndRedirect();
+            this.clearSessionAndRedirect(sessionVersion);
           }
           return throwError(() => error);
         }),
@@ -118,7 +127,8 @@ export class AuthInterceptor implements HttpInterceptor {
     );
   }
 
-  private clearSessionAndRedirect(): void {
+  private clearSessionAndRedirect(sessionVersion: number): void {
+    if (sessionVersion !== this.authService.getSessionVersion()) return;
     this.authService.logout();
     void this.router.navigate(['/login']);
   }

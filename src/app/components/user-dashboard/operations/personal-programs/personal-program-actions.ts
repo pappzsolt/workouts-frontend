@@ -151,6 +151,7 @@ export class PersonalProgramActions {
   confirm(): void {
     if (this.state.action === 'leave') {
       this.state.dirty = false;
+      this.state.executionTargetsDirty = false;
       this.navigation.finishLeave(true);
       return;
     }

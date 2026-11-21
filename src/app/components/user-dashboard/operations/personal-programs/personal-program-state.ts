@@ -14,6 +14,11 @@ export class PersonalProgramState {
   busy = false;
 
   dirty = false;
+  executionTargetsDirty = false;
+
+  get hasUnsavedChanges(): boolean {
+    return this.dirty || this.executionTargetsDirty;
+  }
 
   navigationPending = false;
   navigating = false;

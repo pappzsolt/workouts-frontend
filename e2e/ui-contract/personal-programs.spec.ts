@@ -10,6 +10,7 @@ const draft = () => ({ name: 'Saját terv', description: null, durationDays: 7, 
 async function install(page: Page) {
   await returningAccount(page, 'user', 42);
   const state = { program: draft(), id: 7, started: false, standalone: false, failSave: false, failList: false,
+    editableTargets: false, failTargetSave: false,
     calls: [] as { method: string; path: string; body: any }[], unexpected: [] as string[] };
   const token = [Buffer.from(JSON.stringify({ alg: 'none' })).toString('base64url'),
     Buffer.from(JSON.stringify({ sub: 'anna', id: 42, roles: 'ROLE_USER', exp: Math.floor(Date.now()/1000)+3600 })).toString('base64url'), 'signature'].join('.');
@@ -43,6 +44,12 @@ async function install(page: Page) {
     if (path === `${ROOT}/standalone` && req.method() === 'POST') { state.standalone=true;state.program={...call.body,expectedVersion:1};return ok(state.id); }
     if (path === `${ROOT}/${state.id}/repeat`) { state.id++;state.started=false;state.program={...state.program,startDate:null,expectedVersion:1};return ok({id:state.id,standalone:true,startedAt:null,program:state.program}); }
     if (path === ROOT && req.method() === 'POST') { state.program={...call.body,expectedVersion:1}; return ok(state.id); }
+    if (state.started && state.editableTargets && path === `${ROOT}/${state.id}/days/1/targets` && req.method() === 'PUT') {
+      if (state.failTargetSave || call.body.expectedVersion !== 1) {
+        return route.fulfill({ status: 409, json: { success: false, message: 'A célértékek mentése sikertelen.' } });
+      }
+      return ok({ dayIndex: 1, version: 2, editable: true, exercises: call.body.exercises });
+    }
     if (state.started && req.method() === 'GET') {
       if (path === `${ROOT}/${state.id}/schedule`) {
         return ok(state.program.workouts.map(day => ({
@@ -53,7 +60,7 @@ async function install(page: Page) {
       const day = targets && state.program.workouts.find(workout => workout.dayIndex === Number(targets[1]));
       if (day) {
         return ok({
-          dayIndex: day.dayIndex, version: 1, editable: false,
+          dayIndex: day.dayIndex, version: 1, editable: state.editableTargets,
           exercises: day.exercises.map((exercise, exerciseIndex) => ({
             exerciseIndex,
             sets: Array.from({ length: exercise.sets }, () => ({
@@ -717,3 +724,77 @@ for (const standalone of [false, true]) {
     expect(api.unexpected).toEqual([]);
   });
 }
+
+
+test('started program target draft protects back navigation and survives cancellation', async ({ page }) => {
+  const api = await install(page);
+  api.started = true;
+  api.editableTargets = true;
+  api.program.startDate = START_DATE;
+  await page.goto('/user/personal-programs/7');
+  await openProgramExercise(page);
+  const weight = editor(page).getByRole('spinbutton', { name: 'Guggolás 1. Cél súly (kg)' });
+  await weight.fill('42');
+  await weight.blur();
+
+  const back = editor(page).getByRole('link', { name: 'Vissza a saját programokhoz', exact: true });
+  const dialog = page.getByRole('alertdialog');
+  await back.click();
+  await dialog.getByRole('button', { name: 'Mégse', exact: true }).click();
+  await expect(page).toHaveURL(/personal-programs\/7$/);
+  await expect(weight).toHaveValue('42');
+  expect(await page.evaluate(() => {
+    const event = new Event('beforeunload', { cancelable: true });
+    window.dispatchEvent(event);
+    return event.defaultPrevented;
+  })).toBe(true);
+
+  await back.click();
+  await dialog.getByRole('button', { name: 'Megerősítés', exact: true }).click();
+  await expect(page).toHaveURL(/personal-programs$/);
+  expect(api.calls.filter(call => call.method === 'PUT')).toEqual([]);
+});
+
+test('started program target draft survives failed save and clears the sidebar guard after save', async ({ page }) => {
+  const api = await install(page);
+  api.started = true;
+  api.editableTargets = true;
+  api.failTargetSave = true;
+  api.program.startDate = START_DATE;
+  await page.goto('/user/personal-programs/7');
+  await openProgramExercise(page);
+  const root = editor(page);
+  const weight = root.getByRole('spinbutton', { name: 'Guggolás 1. Cél súly (kg)' });
+  const save = root.getByRole('button', { name: 'Célértékek mentése', exact: true });
+  await weight.fill('42');
+  await weight.blur();
+  await save.click();
+  await expect(root.getByText('A célértékek mentése sikertelen.', { exact: true })).toBeVisible();
+  await expect(weight).toHaveValue('42');
+
+  const sidebarLink = page.locator('#application-menu').getByRole('link', { name: 'Dashboard', exact: true });
+  const openMenu = page.getByRole('button', { name: 'Menü megnyitása', exact: true });
+  if (await openMenu.isVisible()) await openMenu.click();
+  await sidebarLink.click();
+  await page.getByRole('alertdialog').getByRole('button', { name: 'Mégse', exact: true }).click();
+  await expect(weight).toHaveValue('42');
+
+  api.failTargetSave = false;
+  await save.click();
+  await expect(root.getByText('Az edzés célértékeit elmentettük.', { exact: true })).toBeVisible();
+  await expect(save).toBeDisabled();
+  if (await openMenu.isVisible()) await openMenu.click();
+  await sidebarLink.click();
+  await expect(page).toHaveURL(/dashboard$/);
+  await expect(page.getByRole('alertdialog')).toHaveCount(0);
+
+  const writes = api.calls.filter(call => call.method === 'PUT');
+  expect(writes).toHaveLength(2);
+  expect(writes.map(call => call.path)).toEqual(Array(2).fill(`${ROOT}/7/days/1/targets`));
+  expect(writes[0].body).toEqual(writes[1].body);
+  expect(writes[1].body).toMatchObject({ expectedVersion: 1, exercises: [{ exerciseIndex: 0, sets: [
+    { targetWeightKg: 42, targetRepetitions: 10, restSeconds: 60, targetRpe: null },
+    { targetWeightKg: null, targetRepetitions: 10, restSeconds: 60, targetRpe: null },
+    { targetWeightKg: null, targetRepetitions: 10, restSeconds: 60, targetRpe: null },
+  ] }] });
+});

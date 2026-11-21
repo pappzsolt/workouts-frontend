@@ -20,7 +20,7 @@ export class PersonalProgramNavigation {
 
   canLeave(): boolean | Observable<boolean> {
     if (this.state.busy) return false;
-    if (!this.state.dirty) return true;
+    if (!this.state.hasUnsavedChanges) return true;
     this.state.action = 'leave';
     this.leaveResult ??= new Subject<boolean>();
     return this.leaveResult.asObservable();
@@ -34,7 +34,7 @@ export class PersonalProgramNavigation {
   }
 
   beforeUnload(event: BeforeUnloadEvent): void {
-    if (this.state.dirty || this.state.busy) {
+    if (this.state.hasUnsavedChanges || this.state.busy) {
       event.preventDefault();
       event.returnValue = '';
     }
