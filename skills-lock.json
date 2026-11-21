@@ -1,11 +1,47 @@
 {
   "version": 1,
   "skills": {
+    "angular-best-practices": {
+      "source": "somnio-software/somnio-ai-tools",
+      "sourceType": "github",
+      "skillPath": "skills/angular-best-practices/SKILL.md",
+      "computedHash": "951fb812ebe5747cf13792509190261731a04acd43c449f33c631c8f9df45a84"
+    },
     "angular-developer": {
       "source": "angular/skills",
       "sourceType": "github",
       "skillPath": "angular-developer/SKILL.md",
       "computedHash": "048df1fb3b30e170e84593b6dfffdebf5208eb58f6feb3c2100faa926d5c8b41"
+    },
+    "angular-health-audit": {
+      "source": "somnio-software/somnio-ai-tools",
+      "sourceType": "github",
+      "skillPath": "skills/angular-health-audit/SKILL.md",
+      "computedHash": "c9b9657ffe4cfaae844d209c05267ee6f3f1d5f4dc9d3bf9cdd385bb92221992"
+    },
+    "angular-testing": {
+      "source": "claude-dev-suite/claude-dev-suite",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-frameworks/angular-testing/SKILL.md",
+      "computedHash": "c94ff525523c4e83351a49686738829dbed7bdcd96ac16d99dc93b03283f6bde"
+    },
+    "debug:angular": {
+      "source": "snakeo/claude-debug-and-refactor-skills-plugin",
+      "sourceType": "github",
+      "skillPath": "plugins/debug-and-refactor/skills/debug-angular/SKILL.md",
+      "computedHash": "5214198f139ad251b77b3a45b00a2a2b28016ace81bebb0fa8422018b9e696e4"
+    },
+    "playwright-core": {
+      "source": "testdino-hq/playwright-skill",
+      "sourceType": "github",
+      "skillPath": "core/SKILL.md",
+      "computedHash": "1058695caa1c595007495cd3af0ba4789f8cfd4a543bc1764ce676d7a3f598eb"
+    },
+    "web-design-guidelines": {
+      "source": "vercel-labs/agent-skills",
+      "sourceType": "github",
+      "skillPath": "skills/web-design-guidelines/SKILL.md",
+      "computedHash": "f3bc47f890f42a44db1007ab390709ec368e4b8c089baee6b0007182236ac474"
     }
   }
 }
