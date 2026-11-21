@@ -197,7 +197,7 @@
                       {{ 'userProgramStatistics.sbdMissing' | translate }}
                     </p>
                   }
-                  @for (week of sbdWeeks(program); track week) {
+                  @for (week of sbdWeeks(program); track week.week) {
                     <div class="mt-2 rounded-lg bg-surface-50 p-3 text-xs text-content-800">
                       <span class="font-semibold">{{
                         'userProgramStatistics.weekLabel' | translate: { week: week.week }

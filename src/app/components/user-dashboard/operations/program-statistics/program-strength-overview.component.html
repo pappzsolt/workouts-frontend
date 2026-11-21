@@ -141,7 +141,7 @@
           <text class="axis-label" x="20" y="20">kg</text>
           @for (lift of series; track lift; let seriesIndex = $index) {
             <g [attr.class]="lift.className">
-              @for (value of lift.volumes; track value; let index = $index) {
+              @for (value of lift.volumes; track $index; let index = $index) {
                 <ng-container>
                   @if (value !== null) {
                     <rect
@@ -211,7 +211,7 @@
           @for (lift of series; track lift) {
             <g [attr.class]="lift.className">
               <path class="strength-line" [attr.d]="linePath(lift.estimates)" />
-              @for (value of lift.estimates; track value; let index = $index) {
+              @for (value of lift.estimates; track $index; let index = $index) {
                 <ng-container>
                   @if (value !== null) {
                     <circle [attr.cx]="x(index)" [attr.cy]="y(value, strengthMax)" r="4.5">

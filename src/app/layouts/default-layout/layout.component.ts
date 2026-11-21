@@ -134,7 +134,7 @@ export class LayoutComponent implements OnInit {
     }
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onResize(): void {
     if (!this.isMobile()) {
       this.menuOpen = false;

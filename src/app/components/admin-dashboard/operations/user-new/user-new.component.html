@@ -159,7 +159,7 @@
           </app-role-select>
 
           <!-- Kiválasztott szerepkörök -->
-          @if (user.roleIds?.length) {
+          @if (user.roleIds.length) {
             <div class="mt-4 flex flex-wrap gap-2">
               @for (role of user.roleIds; track trackByRole($index, role)) {
                 <app-button
