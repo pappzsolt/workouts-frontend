@@ -1,8 +1,9 @@
 import { Component, DestroyRef, HostListener, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subject, finalize, takeUntil } from 'rxjs';
+import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
+import { Observable, Subject, combineLatest, finalize, of, takeUntil } from 'rxjs';
 
+import { AppTabsComponent, AppTabDirective } from '../../shared/components/app-tabs/app-tabs.component';
 import { AppInputDirective } from '../../shared/components/form-controls/app-input.directive';
 import { AppLoadingComponent } from '../../shared/components/app-state/app-state.component';
 import { AppEmptyStateComponent } from '../../shared/components/app-state/app-state.component';
@@ -40,7 +41,18 @@ import { ClientSetEditor } from './client-set-editor';
 import { ClientProgramAssignments } from './client-program-assignments';
 import { ClientWorkoutSchedule } from './client-workout-schedule';
 
+interface ClientRouteSelection {
+  userId: number;
+  programId: number | null;
+  workoutId: number | null;
+  programWorkoutId: number | null;
+  date: string | null;
+  tab: 'plan' | 'programs';
+  queryParams: Params;
+}
+
 type PendingNav =
+  | { kind: 'deepLink'; selection: ClientRouteSelection }
   | { kind: 'route' }
   | { kind: 'reschedule'; date: string }
   | { kind: 'workout'; index: number }
@@ -58,7 +70,7 @@ type PendingNav =
   selector: 'app-coach-client-detail',
   standalone: true,
   imports: [
-    AppInputDirective, AppLoadingComponent, AppEmptyStateComponent, CommonModule, RouterModule, FormsModule, TranslatePipe, MessageComponent, AppIconComponent, AppStatusBadgeComponent, ClientWorkoutListComponent, ClientExerciseSetsComponent, ClientProgramsTabComponent,
+    AppTabsComponent, AppTabDirective, AppInputDirective, AppLoadingComponent, AppEmptyStateComponent, CommonModule, RouterModule, FormsModule, TranslatePipe, MessageComponent, AppIconComponent, AppStatusBadgeComponent, ClientWorkoutListComponent, ClientExerciseSetsComponent, ClientProgramsTabComponent,
     ClientAssignDialogComponent,
   ],
   templateUrl: './coach-client-detail.component.html',
@@ -164,27 +176,124 @@ export class CoachClientDetailComponent implements OnInit {
   private requestedWorkoutId: number | null = null;
   private requestedDate: string | null = null;
   private requestedProgramWorkoutId: number | null = null;
+  private programWorkoutOccurrences = new Map<number, number>();
+  private acceptedRoute: ClientRouteSelection | null = null;
 
   ngOnInit(): void {
-    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+    // Observe query changes even when Angular reuses this component for the same client.
+    // The fallback keeps older isolated unit-test route stubs compatible.
+    const queryParams$ = this.route.queryParamMap ?? of(this.route.snapshot.queryParamMap);
+    combineLatest([this.route.paramMap, queryParams$])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(([params, query]) => {
+        const userId = Number(params.get('userId'));
+        if (!Number.isSafeInteger(userId) || userId <= 0) {
+          void this.router.navigate(['/coach/clients']);
+          return;
+        }
+        const selection = this.readRouteSelection(userId, query);
+        if (this.acceptedRoute && this.sameRouteSelection(this.acceptedRoute, selection)) {
+          // A browser navigation back to the accepted URL cancels a pending deep-link switch.
+          if (this.pendingNav?.kind === 'deepLink') this.pendingNav = null;
+          // Retain the existing same-client retry behavior after a failed overview load.
+          if (!this.loading && !this.client && this.userId === userId) this.loadClient(null);
+          return;
+        }
+        if (this.acceptedRoute && this.setEditor.dirty) {
+          this.pendingNav = { kind: 'deepLink', selection };
+          return;
+        }
+        if (this.acceptedRoute && this.workoutMutationPending) {
+          this.restoreAcceptedRoute();
+          return;
+        }
+        this.acceptRouteSelection(selection);
+      });
+  }
+
+  private readRouteSelection(userId: number, query: ParamMap): ClientRouteSelection {
+    const positiveId = (key: string): number | null => {
+      const value = Number(query.get(key));
+      return Number.isSafeInteger(value) && value > 0 ? value : null;
+    };
+    const date = query.get('date');
+    return {
+      userId,
+      programId: positiveId('program'),
+      workoutId: positiveId('workout'),
+      programWorkoutId: positiveId('programWorkout'),
+      date: date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : null,
+      tab: query.get('tab') === 'programs' ? 'programs' : 'plan',
+      queryParams: Object.fromEntries(query.keys.map(key => [key, query.getAll(key)])),
+    };
+  }
+
+  private sameRouteSelection(a: ClientRouteSelection, b: ClientRouteSelection): boolean {
+    return a.userId === b.userId && a.programId === b.programId && a.workoutId === b.workoutId &&
+      a.programWorkoutId === b.programWorkoutId && a.date === b.date && a.tab === b.tab;
+  }
+
+  private restoreAcceptedRoute(): void {
+    const accepted = this.acceptedRoute;
+    if (!accepted) return;
+    // A canceled browser Back/Forward returns to the last accepted URL without discarding drafts.
+    void this.router.navigate(['/coach/clients', accepted.userId], { queryParams: accepted.queryParams });
+  }
+
+  private acceptRouteSelection(selection: ClientRouteSelection): void {
+    const previous = this.acceptedRoute;
+    this.acceptedRoute = selection;
+    if (this.userId !== selection.userId) {
       this.resetClientContext();
-      const id = Number(params.get('userId'));
-      if (!Number.isInteger(id) || id <= 0) {
-        void this.router.navigate(['/coach/clients']);
-        return;
-      }
-      this.userId = id;
-      const query = this.route.snapshot.queryParamMap;
-      const workout = Number(query.get('workout'));
-      this.requestedWorkoutId = Number.isInteger(workout) && workout > 0 ? workout : null;
-      const programWorkout = Number(query.get('programWorkout'));
-      this.requestedProgramWorkoutId = Number.isSafeInteger(programWorkout) && programWorkout > 0 ? programWorkout : null;
-      const date = query.get('date');
-      this.requestedDate = date && /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : null;
-      const program = Number(query.get('program'));
-      this.tab = query.get('tab') === 'programs' ? 'programs' : 'plan';
-      this.loadClient(Number.isInteger(program) && program > 0 ? program : null);
-    });
+      this.userId = selection.userId;
+      this.requestedWorkoutId = selection.workoutId;
+      this.requestedProgramWorkoutId = selection.programWorkoutId;
+      this.requestedDate = selection.date;
+      this.tab = selection.tab;
+      // The latest route query is read when the overview request completes.
+      this.loadClient(null);
+      return;
+    }
+    this.requestedWorkoutId = selection.workoutId;
+    this.requestedProgramWorkoutId = selection.programWorkoutId;
+    this.requestedDate = selection.date;
+    this.tab = selection.tab;
+    // Query-only navigation must not refetch the whole client overview.
+    if (this.loading) return;
+    const requestedProgramIsAssigned = selection.programId === null ||
+      this.sortedPrograms.some(program => program.programId === selection.programId);
+    const programId = requestedProgramIsAssigned
+      ? selection.programId ?? this.programId ?? this.sortedPrograms[0]?.programId ?? null
+      : this.sortedPrograms[0]?.programId ?? null;
+    if (programId !== null && programId !== this.programId) {
+      this.loadProgram(programId);
+      return;
+    }
+    if (this.programLoading || !this.client || !this.workouts.length) return;
+    if (previous?.programId === selection.programId && previous?.workoutId === selection.workoutId &&
+        previous?.programWorkoutId === selection.programWorkoutId && previous?.date === selection.date) return;
+    this.selectRequestedOccurrence();
+  }
+
+  private selectRequestedOccurrence(): void {
+    const requestedProgramWorkoutId = this.requestedProgramWorkoutId;
+    const requestedWorkoutId = this.requestedWorkoutId;
+    const requestedDate = this.requestedDate;
+    this.requestedProgramWorkoutId = null;
+    this.requestedWorkoutId = null;
+    this.requestedDate = null;
+    if (requestedProgramWorkoutId !== null && !this.programWorkoutOccurrences.has(requestedProgramWorkoutId)) {
+      this.openWorkout(-1);
+      this.showMessage('coachWorkspace.client.requestedWorkoutUnavailable', 'error');
+      return;
+    }
+    const occurrenceId = requestedProgramWorkoutId !== null
+      ? this.programWorkoutOccurrences.get(requestedProgramWorkoutId)!
+      : requestedWorkoutId;
+    let index = occurrenceId === null ? -1 : this.workouts.findIndex(w => w.userWorkoutId === occurrenceId);
+    if (index < 0 && requestedDate) index = this.workouts.findIndex(w => w.date === requestedDate);
+    if (index < 0) index = this.defaultWorkoutIndex();
+    if (index !== this.selectedIndex) this.openWorkout(index);
   }
 
   // ----------------------------------------------------------
@@ -212,6 +321,7 @@ export class CoachClientDetailComponent implements OnInit {
     this.requestedWorkoutId = null;
     this.requestedDate = null;
     this.requestedProgramWorkoutId = null;
+    this.programWorkoutOccurrences.clear();
     this.message = '';
     this.messageType = 'info';
     this.messageParams = {};
@@ -230,7 +340,7 @@ export class CoachClientDetailComponent implements OnInit {
           this.client = overview.clients.find((client) => client.userId === userId) ?? null;
           this.loading = false;
           const programs = this.sortedPrograms;
-          let target = preferredProgramId ?? this.programId;
+          let target = preferredProgramId ?? (this.acceptedRoute?.userId === userId ? this.acceptedRoute.programId : null) ?? this.programId;
           if (target !== null && !programs.some((p) => p.programId === target)) target = null;
           target ??= programs[0]?.programId ?? null;
           if (target !== null) {
@@ -288,6 +398,7 @@ export class CoachClientDetailComponent implements OnInit {
 
   private loadProgram(programId: number): void {
     this.programLoadCancelled$.next();
+    this.programWorkoutOccurrences.clear();
     const keep = this.requestedWorkoutId ?? (this.programId === programId ? this.selected?.userWorkoutId : null) ?? null;
     this.programId = programId;
     this.programLoading = true;
@@ -309,10 +420,18 @@ export class CoachClientDetailComponent implements OnInit {
         next: (rows) => {
           if (this.programId !== programId) return;
           const requestedProgramWorkoutId = this.requestedProgramWorkoutId;
+          const requestedWorkoutId = this.requestedWorkoutId;
           this.requestedProgramWorkoutId = null;
+          this.requestedWorkoutId = null;
           const requestedOccurrence = requestedProgramWorkoutId === null ? null
             : rows.find(row => row.program_workout_id === requestedProgramWorkoutId);
-          this.requestedWorkoutId = null;
+          const occurrences = new Map<number, number>();
+          for (const row of rows) {
+            if (row.program_workout_id !== null) {
+              occurrences.set(row.program_workout_id, row.user_workout_id);
+            }
+          }
+          this.programWorkoutOccurrences = occurrences;
           this.workouts = groupWorkouts(rows);
           this.weeks = this.buildWeeks();
           this.programLoading = false;
@@ -322,7 +441,7 @@ export class CoachClientDetailComponent implements OnInit {
             this.showMessage('coachWorkspace.client.requestedWorkoutUnavailable', 'error');
             return;
           }
-          const selectedWorkoutId = requestedOccurrence?.user_workout_id ?? keep;
+          const selectedWorkoutId = requestedOccurrence?.user_workout_id ?? requestedWorkoutId ?? keep;
           let index = selectedWorkoutId === null ? -1 : this.workouts.findIndex((w) => w.userWorkoutId === selectedWorkoutId);
           if (index < 0 && this.requestedDate) index = this.workouts.findIndex((w) => w.date === this.requestedDate);
           this.requestedDate = null;
@@ -421,11 +540,15 @@ export class CoachClientDetailComponent implements OnInit {
     if (action === 'cancel') {
       this.pendingNav = null;
       if (nav.kind === 'route') this.resolveLeave(false);
+      else if (nav.kind === 'deepLink') this.restoreAcceptedRoute();
       return;
     }
     const go = () => {
+      // A later navigation request must not be replaced by an older save completion.
+      if (this.pendingNav !== nav) return;
       this.pendingNav = null;
       if (nav.kind === 'route') this.resolveLeave(true);
+      else if (nav.kind === 'deepLink') this.acceptRouteSelection(nav.selection);
       else if (nav.kind === 'reschedule') {
         this.schedule.rescheduleDate = nav.date;
         this.schedule.reschedule(this.selected);

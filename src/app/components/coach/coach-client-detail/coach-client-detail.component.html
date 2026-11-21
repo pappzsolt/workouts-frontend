@@ -37,21 +37,23 @@
         </div>
       </section>
 
-      <!-- Fülek -->
-      <div role="tablist" [attr.aria-label]="client.username" class="flex gap-1 border-b border-surface-200">
-        <button type="button" role="tab" [attr.aria-selected]="tab === 'plan'" (click)="setTab('plan')"
-                class="min-h-11 border-b-[3px] px-4 text-sm font-semibold"
+      <!-- Az alkalmazás közös, képernyőolvasóval és billentyűzettel használható fülkezelője. -->
+      <app-tabs #clientTabs [activeTab]="tab" [ariaLabel]="client.username"
+                containerClass="flex gap-1 border-b border-surface-200"
+                (activeTabChange)="setTab($event)">
+        <button type="button" appTab="plan" [disabled]="workoutMutationPending || pendingNav?.kind === 'route'"
+                class="min-h-11 border-b-[3px] px-4 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
                 [class.border-primary-700]="tab === 'plan'" [class.text-primary-800]="tab === 'plan'"
                 [class.border-transparent]="tab !== 'plan'" [class.text-content-600]="tab !== 'plan'">
           {{ 'coachWorkspace.client.tabPlan' | translate }}
         </button>
-        <button type="button" role="tab" [attr.aria-selected]="tab === 'programs'" (click)="setTab('programs')"
-                class="min-h-11 border-b-[3px] px-4 text-sm font-semibold"
+        <button type="button" appTab="programs" [disabled]="workoutMutationPending || pendingNav?.kind === 'route'"
+                class="min-h-11 border-b-[3px] px-4 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-700"
                 [class.border-primary-700]="tab === 'programs'" [class.text-primary-800]="tab === 'programs'"
                 [class.border-transparent]="tab !== 'programs'" [class.text-content-600]="tab !== 'programs'">
           {{ 'coachWorkspace.client.tabPrograms' | translate: { count: client.programs.length } }}
         </button>
-      </div>
+      </app-tabs>
 
       <!-- Mentetlen változás közbeni váltás -->
       @if (pendingNav) {
@@ -69,6 +71,8 @@
         </div>
       }
 
+      <section [id]="clientTabs.panelId('plan')" role="tabpanel"
+               [attr.aria-labelledby]="clientTabs.tabId('plan')" [hidden]="tab !== 'plan'" tabindex="0">
       @if (tab === 'plan') {
         @if (client.programs.length === 0) {
           <div class="rounded-2xl border border-dashed border-surface-300 bg-white p-6 text-sm text-content-600">
@@ -202,12 +206,17 @@
             </div>
           }
         }
-      } @else {
+      }
+      </section>
+      <section [id]="clientTabs.panelId('programs')" role="tabpanel"
+               [attr.aria-labelledby]="clientTabs.tabId('programs')" [hidden]="tab !== 'programs'" tabindex="0">
+        @if (tab === 'programs') {
         <!-- Programok fül -->
         <app-client-programs-tab [programs]="sortedPrograms" [revokeProgramId]="assignments.revokeProgramId" [revoking]="assignments.revoking" [today]="todayIso"
                                  (askRevoke)="assignments.askRevoke($event)" (cancelRevoke)="assignments.cancelRevoke()" (confirmRevoke)="assignments.confirmRevoke(userId)"
                                  (openPlan)="tab = 'plan'; selectProgram($event)" />
-      }
+        }
+      </section>
     } @else {
       <app-empty-state message="coachWorkspace.client.notFound"></app-empty-state>
     }

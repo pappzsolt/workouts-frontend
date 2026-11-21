@@ -208,3 +208,74 @@ test('client: decimal comma typing becomes numeric weight', async ({ page, api }
   await save(page).click(); await expect(save(page)).toBeDisabled();
   expect(api.writes('/api/user-workout-exercise-sets/7000')[0].body.targetWeightKg).toBe(42.5);
 });
+
+test('client: same-client history navigation selects the URL occurrence and guards a dirty draft', { tag: '@ci-workouts' }, async ({ page, api }) => {
+  const first = '/coach/clients/7?program=1&workout=70';
+  const second = '/coach/clients/7?program=1&workout=71';
+  await page.goto(first);
+  await expect(input(page, 'tw')).toHaveAttribute('aria-label', /Exercise 01/);
+
+  // Add a same-document history entry, then traverse it through Angular's real popstate handler.
+  await page.evaluate(url => {
+    history.pushState(null, '', url);
+    history.back();
+  }, second);
+  await expect(page).toHaveURL(url => url.pathname + url.search === first);
+  await page.goForward();
+  await expect(page).toHaveURL(url => url.pathname + url.search === second);
+  await expect(input(page, 'tw')).toHaveAttribute('aria-label', /Exercise 02/);
+
+  await input(page, 'tw').fill('51');
+  await page.goBack();
+  const dialog = root(page).getByRole('alertdialog');
+  await dialog.getByRole('button', { name: 'Maradok', exact: true }).click();
+  await expect(page).toHaveURL(url => url.pathname + url.search === second);
+  await expect(input(page, 'tw')).toHaveValue('51');
+  await page.goBack();
+  await dialog.getByRole('button', { name: 'Elvetés és tovább', exact: true }).click();
+  await expect(page).toHaveURL(url => url.pathname + url.search === first);
+  await expect(input(page, 'tw')).toHaveAttribute('aria-label', /Exercise 01/);
+  await page.goForward();
+  await expect(input(page, 'tw')).toHaveAttribute('aria-label', /Exercise 02/);
+  await input(page, 'tw').fill('52');
+  await save(page).click();
+  await expect(save(page)).toBeDisabled();
+  expect(api.writes()).toHaveLength(1);
+  expect(api.writes()[0]).toMatchObject({ path: '/api/user-workout-exercise-sets/7010', body: { targetWeightKg: 52 } });
+  expect(api.calls.filter(call => call.path === '/api/coach/overview')).toHaveLength(1);
+  expect(api.calls.filter(call => call.path === '/api/user-workout-exercises/user-programs/7/1')).toHaveLength(1);
+});
+
+
+test('client: keyboard tabs keep panel relations and draft confirmation', { tag: '@ci-workouts' }, async ({ page, api }) => {
+  await page.goto('/coach/clients/7?workout=70');
+  const r = root(page);
+  const plan = r.getByRole('tab', { name: 'Edzésterv' });
+  const programs = r.getByRole('tab', { name: /^Programok/ });
+  await expect(plan).toHaveAttribute('tabindex', '0');
+  await expect(programs).toHaveAttribute('tabindex', '-1');
+  const planId = await plan.getAttribute('aria-controls');
+  const programsId = await programs.getAttribute('aria-controls');
+  expect(planId).toBeTruthy();
+  expect(programsId).toBeTruthy();
+  await expect(r.locator(`#${planId}`)).toHaveAttribute('aria-labelledby', await plan.getAttribute('id') ?? '');
+  await expect(r.locator(`#${programsId}`)).toHaveAttribute('aria-labelledby', await programs.getAttribute('id') ?? '');
+  await plan.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(programs).toBeFocused();
+  await expect(plan).toHaveAttribute('aria-selected', 'true');
+  await page.keyboard.press('Enter');
+  await expect(programs).toHaveAttribute('aria-selected', 'true');
+  await expect(r.locator(`#${planId}`)).toBeHidden();
+  await expect(r.locator(`#${programsId}`)).toBeVisible();
+  await page.keyboard.press('ArrowLeft');
+  await page.keyboard.press('Space');
+  await expect(plan).toHaveAttribute('aria-selected', 'true');
+  await input(page, 'tw').fill('55');
+  await programs.click();
+  await expect(r.getByRole('alertdialog')).toBeVisible();
+  await r.getByRole('alertdialog').getByRole('button', { name: 'Maradok' }).click();
+  await expect(plan).toHaveAttribute('aria-selected', 'true');
+  await expect(input(page, 'tw')).toHaveValue('55');
+  expect(api.writes()).toEqual([]);
+});

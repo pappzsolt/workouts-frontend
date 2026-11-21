@@ -108,7 +108,7 @@
         }
 
         <div class="flex justify-end">
-          <app-button variant="primary" type="submit" [disabled]="sending"
+          <app-button variant="primary" type="submit" [disabled]="sending || processingAttachments"
                       [label]="(sending ? 'bugReport.sending' : 'bugReport.submit') | translate"></app-button>
         </div>
       </form>

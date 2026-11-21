@@ -179,3 +179,47 @@ test('coach routes redirect away from the athlete workspace', { tag: '@ci-workou
   await expect(page.locator('app-coach-home')).toBeVisible();
   expect(api.writes()).toEqual([]);
 });
+
+
+test.describe('mobile navigation drawer keyboard accessibility', () => {
+  test.use({ viewport: { width: 375, height: 812 } });
+
+  test('drawer traps focus, closes on Escape and restores focus without leaving active navigation',
+    { tag: '@ci-workouts' }, async ({ page, api }) => {
+      await page.goto('/coach/dashboard');
+      const toggle = page.locator('header app-button').first().getByRole('button');
+      const drawer = page.locator('#application-menu');
+      await toggle.click();
+      await expect(drawer).toBeVisible();
+      await expect(drawer).toHaveAttribute('role', 'dialog');
+      await expect(drawer).toHaveAttribute('aria-modal', 'true');
+      await expect(page.locator('main')).toHaveAttribute('inert', '');
+      const links = drawer.locator('a[href]');
+      await expect(links.first()).toBeFocused();
+      await page.keyboard.press('Shift+Tab');
+      await expect(drawer.locator(':focus')).toHaveCount(1);
+      await page.keyboard.press('Tab');
+      await expect(links.first()).toBeFocused();
+      await page.keyboard.press('Escape');
+      await expect(drawer).toBeHidden();
+      await expect(toggle).toBeFocused();
+      await expect(page.locator('main')).not.toHaveAttribute('inert', '');
+      await toggle.click();
+      await drawer.locator('a[href="/coach/clients"]').first().click();
+      await expect(drawer).toBeHidden();
+      await expect(page).toHaveURL(/\/coach\/clients$/);
+      expect(api.writes()).toEqual([]);
+    });
+
+  test('drawer returns to desktop navigation after widening', async ({ page }) => {
+    await page.goto('/coach/dashboard');
+    const toggle = page.locator('header app-button').first().getByRole('button');
+    const drawer = page.locator('#application-menu');
+    await toggle.click();
+    await expect(drawer).toHaveAttribute('aria-modal', 'true');
+    await page.setViewportSize({ width: 1024, height: 812 });
+    await expect(drawer).not.toHaveAttribute('aria-modal', 'true');
+    await expect(drawer).toBeVisible();
+    await expect(page.locator('main')).not.toHaveAttribute('inert', '');
+  });
+});

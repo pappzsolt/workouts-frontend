@@ -85,6 +85,7 @@ export class LoginAuditLogsComponent {
   ];
 
   filters: LoginAuditFilters = this.emptyFilters();
+  private appliedFilters: LoginAuditFilters = this.emptyFilters();
 
   constructor(private readonly loginAuditLogsService: LoginAuditLogsService) {
     this.loadPage(1);
@@ -96,11 +97,13 @@ export class LoginAuditLogsComponent {
       return;
     }
 
+    this.appliedFilters = { ...this.filters };
     this.loadPage(1);
   }
 
   clearFilters(): void {
     this.filters = this.emptyFilters();
+    this.appliedFilters = this.emptyFilters();
     this.loadPage(1);
   }
 
@@ -127,11 +130,11 @@ export class LoginAuditLogsComponent {
       .getLoginAuditLogs({
         page: page - 1,
         size: this.pageSize,
-        accountType: this.filters.accountType || null,
-        accountId: this.filters.accountId,
-        username: this.filters.username,
-        from: this.filters.from || null,
-        to: this.filters.to || null,
+        accountType: this.appliedFilters.accountType || null,
+        accountId: this.appliedFilters.accountId,
+        username: this.appliedFilters.username,
+        from: this.appliedFilters.from || null,
+        to: this.appliedFilters.to || null,
       })
       .pipe(takeUntil(this.loadCancelled$), takeUntilDestroyed(this.destroyRef))
       .subscribe({

@@ -146,6 +146,7 @@ describe('Existing shared component migration', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.componentInstance.filters.username = 'Anna';
+    fixture.componentInstance.applyFilters();
     fixture.componentInstance.onPageChange(3);
     fixture.detectChanges();
     await fixture.whenStable();

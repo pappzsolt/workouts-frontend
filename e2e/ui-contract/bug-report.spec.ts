@@ -57,6 +57,22 @@ test('user: menu item opens the form, client validation blocks bad input and fil
   expect(calls.filter((c) => c.path === '/api/bug-reports')).toEqual([]);
 });
 
+test('user: report navigation strips secrets from the automatically suggested source URL',
+  { tag: '@ci-workouts' }, async ({ page }) => {
+    const calls = await mockApi(page, 'ROLE_USER', () => null);
+    await page.goto('/user/profile?tab=1&token=SYNTHETIC_SECRET#private-part');
+    await openMenuItem(page, 'Hibabejelentés');
+    await expect(page.locator('#bug-page')).toHaveValue('/user/profile?tab=1');
+    await page.locator('#bug-title').fill('Jelentés URL ellenőrzése');
+    await page.locator('#bug-description').fill('Az automatikus oldalcím ne tartalmazzon tokent.');
+    await page.getByRole('button', { name: 'Bejelentés elküldése' }).click();
+    const sent = calls.filter(call => call.method === 'POST' && call.path === '/api/bug-reports');
+    expect(sent).toHaveLength(1);
+    expect(sent[0].body).toContain('/user/profile?tab=1');
+    expect(sent[0].body).not.toContain('SYNTHETIC_SECRET');
+    expect(sent[0].body).not.toContain('private-part');
+  });
+
 test('user: sends text and screenshot as multipart and shows the recorded report; XSS stays text', async ({ page }) => {
   const calls = await mockApi(page, 'ROLE_USER', (c) => c.path === '/api/bug-reports'
     ? { status: 201, json: { success: true, data: { id: 42, createdAt: '2026-10-24T14:05:00+02:00', screenshots: 1 }, message: 'Köszönjük, a hibabejelentést rögzítettük.' } }
@@ -133,4 +149,45 @@ test('admin: lists reports with reporter, date and screenshot; content is render
   expect(calls.some((c) => c.path === '/api/admin/bug-reports/7/screenshots/3')).toBe(true);
   expect(await page.locator('img[src="x"]').count()).toBe(0);
   expect(dialog).toBe(false);
+});
+
+test('user: selected screenshot is not silently omitted while validation is pending', { tag: '@ci-workouts' }, async ({ page }) => {
+  const calls = await mockApi(page, 'ROLE_USER', (call) => call.path === '/api/bug-reports'
+    ? { status: 201, json: { success: true, data: { id: 91, createdAt: '2030-04-15T14:05:00+02:00', screenshots: 1 }, message: 'Bejelentés rögzítve' } }
+    : null);
+  await page.goto('/user/bug-report');
+  await page.locator('#bug-title').fill('Képernyőkép küldése');
+  await page.locator('#bug-description').fill('A kiválasztott képernyőképnek szerepelnie kell a bejelentésben.');
+  await page.evaluate(() => {
+    const actualRead = Blob.prototype.arrayBuffer;
+    let held = true;
+    let resolveRead: (() => void) | undefined;
+    Blob.prototype.arrayBuffer = function () {
+      if (held && this.size === 8) {
+        const blob = this;
+        return new Promise<ArrayBuffer>((resolve, reject) => {
+          resolveRead = () => { held = false; actualRead.call(blob).then(resolve, reject); };
+        });
+      }
+      return actualRead.call(this);
+    };
+    const gate = window as Window & { releaseScreenshotRead?: () => void; screenshotReadReady?: () => boolean };
+    gate.releaseScreenshotRead = () => resolveRead?.();
+    gate.screenshotReadReady = () => !!resolveRead;
+  });
+  await page.locator('#bug-screenshots').setInputFiles({ name: 'pending.png', mimeType: 'image/png', buffer: PNG });
+  const send = page.getByRole('button', { name: 'Bejelentés elküldése' });
+  await expect(send).toBeDisabled();
+  expect(calls.filter(call => call.path === '/api/bug-reports')).toEqual([]);
+  await expect.poll(() => page.evaluate(() =>
+    (window as Window & { screenshotReadReady?: () => boolean }).screenshotReadReady?.() ?? false,
+  )).toBe(true);
+  await page.evaluate(() => (window as Window & { releaseScreenshotRead?: () => void }).releaseScreenshotRead?.());
+  await expect(page.locator('img[alt="pending.png"]')).toBeVisible();
+  await expect(send).toBeEnabled();
+  await send.click();
+  await expect(page.getByText('Bejelentés rögzítve')).toBeVisible();
+  const writes = calls.filter(call => call.path === '/api/bug-reports' && call.method === 'POST');
+  expect(writes).toHaveLength(1);
+  expect(writes[0].body).toContain('name="screenshots"; filename="pending.png"');
 });

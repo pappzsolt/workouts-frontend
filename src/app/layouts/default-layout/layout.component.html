@@ -14,6 +14,7 @@
     <div class="flex min-w-0 flex-wrap items-center justify-end gap-2 sm:gap-3">
       <!-- Hamburger menü mobilon -->
       <app-button
+        #mobileMenuButton
         class="sm:hidden"
         variant="primary"
         [floating]="false"
@@ -22,7 +23,7 @@
         [ariaExpanded]="menuOpen"
         ariaControls="application-menu"
         [lucideIcon]="menuOpen ? 'x' : 'menu'"
-        (buttonClick)="menuOpen = !menuOpen"
+        (buttonClick)="toggleMobileMenu()"
       ></app-button>
 
       <!-- Username -->
@@ -67,6 +68,11 @@
     <!-- ===================================================== -->
 
     <aside
+      #mobileMenuDrawer
+      tabindex="-1"
+      [attr.role]="menuOpen && isMobile() ? 'dialog' : null"
+      [attr.aria-modal]="menuOpen && isMobile() ? 'true' : null"
+      [attr.aria-label]="menuOpen && isMobile() ? ('header.openMenu' | translate) : null"
       [class.hidden]="!menuOpen && isMobile()"
       [class.translate-x-0]="menuOpen"
       [class.-translate-x-full]="!menuOpen && isMobile()"
@@ -125,7 +131,8 @@
       <button
         type="button"
         [attr.aria-label]="'header.closeMenu' | translate"
-        (click)="menuOpen = false"
+        (click)="dismissMobileMenu(true)"
+        tabindex="-1"
         class="workouts-drawer-scrim fixed inset-0 z-10 cursor-default border-0 bg-surface-900/30 p-0 backdrop-blur-[1px]"
       ></button>
     }
@@ -135,6 +142,7 @@
     <!-- ===================================================== -->
 
     <main
+      [attr.inert]="menuOpen && isMobile() ? '' : null"
       class="workouts-main flex min-w-0 flex-1 flex-col [&>router-outlet+*]:min-w-0 [&>router-outlet+*]:flex-1"
     >
       <app-dashboard-navigation></app-dashboard-navigation>

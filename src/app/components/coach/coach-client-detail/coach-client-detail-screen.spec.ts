@@ -59,6 +59,31 @@ describe('Client editing screen bindings', () => {
     return result!;
   };
 
+  it('uses one keyboard tab stop and associated panels without skipping dirty-draft protection', () => {
+    const fixture = TestBed.createComponent(CoachClientDetailComponent);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    const tabs = [...host.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
+    expect(tabs.length).toBe(2);
+    expect(tabs.map(tab => tab.tabIndex)).toEqual([0, -1]);
+    for (const tab of tabs) {
+      const panel = host.querySelector<HTMLElement>('#' + tab.getAttribute('aria-controls'));
+      expect(panel).not.toBeNull();
+      expect(panel?.getAttribute('role')).toBe('tabpanel');
+      expect(panel?.getAttribute('aria-labelledby')).toBe(tab.id);
+    }
+    tabs[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    fixture.detectChanges();
+    expect(tabs.map(tab => tab.tabIndex)).toEqual([-1, 0]);
+    expect(fixture.componentInstance.tab).toBe('plan'); // Arrow keys move focus; activation is explicit.
+    tabs[1].click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.tab).toBe('programs');
+    expect(tabs.map(tab => tab.tabIndex)).toEqual([-1, 0]);
+    expect(host.querySelector<HTMLElement>('#' + tabs[0].getAttribute('aria-controls'))?.hidden).toBeTrue();
+    expect(host.querySelector<HTMLElement>('#' + tabs[1].getAttribute('aria-controls'))?.hidden).toBeFalse();
+  });
+
   it('connects exercise set add/delete outputs to their state owner', () => {
     api.addClientSet.and.returnValue(of(72));
     api.saveClientSet.and.returnValue(of(undefined));

@@ -1,5 +1,5 @@
 import { DashboardNavigationComponent } from '../../components/shared/components/dashboard-navigation/dashboard-navigation.component';
-import { Component, OnInit, HostListener, inject } from '@angular/core';
+import { Component, OnInit, HostListener, ElementRef, ViewChild, afterNextRender, inject, Injector } from '@angular/core';
 import { GuidedTourComponent } from '../../components/shared/guided-tour/guided-tour.component';
 import { GuidedTourService, type GuideRole } from '../../services/shared/guided-tour.service';
 import { Router } from '@angular/router';
@@ -38,6 +38,60 @@ export class LayoutComponent implements OnInit {
   currentDate: Date = new Date();
 
   menuOpen = false; // <-- hamburger menü állapota
+  @ViewChild('mobileMenuButton', { read: ElementRef }) private mobileMenuButton?: ElementRef<HTMLElement>;
+  @ViewChild('mobileMenuDrawer', { read: ElementRef }) private mobileMenuDrawer?: ElementRef<HTMLElement>;
+  private readonly injector = inject(Injector);
+
+  toggleMobileMenu(): void {
+    if (this.menuOpen) {
+      this.dismissMobileMenu(true);
+      return;
+    }
+    this.menuOpen = true;
+    afterNextRender(() => {
+      if (!this.menuOpen || !this.isMobile()) return;
+      this.menuFocusable()[0]?.focus();
+    }, { injector: this.injector });
+  }
+
+  dismissMobileMenu(restoreFocus = false): void {
+    if (!this.menuOpen) return;
+    this.menuOpen = false;
+    if (restoreFocus) {
+      afterNextRender(() => this.mobileMenuButton?.nativeElement.querySelector('button')?.focus(),
+        { injector: this.injector });
+    }
+  }
+
+  private menuFocusable(): HTMLElement[] {
+    const drawer = this.mobileMenuDrawer?.nativeElement;
+    if (!drawer) return [];
+    return Array.from(drawer.querySelectorAll<HTMLElement>(
+      'a[href]:not([tabindex="-1"]), button:not([disabled]):not([tabindex="-1"]), input:not([disabled]), select:not([disabled])',
+    )).filter(element => element.getClientRects().length > 0);
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  onMenuKeydown(event: KeyboardEvent): void {
+    if (!this.menuOpen || !this.isMobile()) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      this.dismissMobileMenu(true);
+      return;
+    }
+    if (event.key !== 'Tab') return;
+    const items = this.menuFocusable();
+    if (!items.length) {
+      event.preventDefault();
+      this.mobileMenuDrawer?.nativeElement.focus();
+      return;
+    }
+    const index = items.indexOf(document.activeElement as HTMLElement);
+    if (index < 0 || (event.shiftKey && index === 0) || (!event.shiftKey && index === items.length - 1)) {
+      event.preventDefault();
+      (event.shiftKey ? items[items.length - 1] : items[0]).focus();
+    }
+  }
 
   adminMenuItems: MenuItem[] = [
     { label: 'menu.adminDashboard', icon: 'house', path: '/admin/dashboard' },

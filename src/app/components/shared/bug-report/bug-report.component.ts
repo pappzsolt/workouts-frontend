@@ -34,6 +34,35 @@ import { AppIconComponent } from '../components/app-icon/app-icon.component';
 
 /** Alkalmazáson belüli útvonal (ugyanaz a szabály, mint a backendben). */
 export const APP_PATH = /^\/(?!\/)[A-Za-z0-9\-._~/?#[\]@!$&'()*+,;=%:]*$/;
+/** Auto-filled diagnostic location: never copy arbitrary query values or fragments (tokens, codes, etc.). */
+export function safeBugReportSource(raw: string): string {
+  if (!APP_PATH.test(raw)) return '';
+  const withoutFragment = raw.split('#', 1)[0];
+  const question = withoutFragment.indexOf('?');
+  const path = question === -1 ? withoutFragment : withoutFragment.slice(0, question);
+  if (path.split('/').includes('bug-report')) return '';
+  if (question === -1) return path;
+
+  const original = new URLSearchParams(withoutFragment.slice(question + 1));
+  const allowed = new URLSearchParams();
+  // Coach workout links require these identifiers to reproduce the selected occurrence.
+  if (/^\/coach\/clients\/\d+$/.test(path)) {
+    for (const key of ['program', 'workout', 'programWorkout']) {
+      const value = original.get(key);
+      if (value !== null && /^\d{1,12}$/.test(value)) allowed.set(key, value);
+    }
+    const date = original.get('date');
+    if (date !== null && /^\d{4}-\d{2}-\d{2}$/.test(date)) allowed.set('date', date);
+    const tab = original.get('tab');
+    if (tab === 'plan' || tab === 'programs') allowed.set('tab', tab);
+  } else if (path === '/user/profile' || path === '/coach/profile') {
+    const tab = original.get('tab');
+    if (tab !== null && /^\d{1,2}$/.test(tab)) allowed.set('tab', tab);
+  }
+  const query = allowed.toString();
+  return query ? `${path}?${query}` : path;
+}
+
 
 /** A szöveg szóközök nélküli hossza a megadott tartományban (a csak szóközből álló mező üres). */
 export function trimmedLength(min: number, max: number): ValidatorFn {
@@ -123,6 +152,9 @@ export class BugReportComponent implements OnDestroy {
   get fileError(): string {
     return this.attachmentStore.error;
   }
+  get processingAttachments(): boolean {
+    return this.attachmentStore.processing;
+  }
   get fileErrorParams(): Record<string, unknown> {
     return this.attachmentStore.errorParams;
   }
@@ -189,7 +221,7 @@ export class BugReportComponent implements OnDestroy {
   submit(): void {
     this.submitted = true;
     this.errorMessage = '';
-    if (this.form.invalid || this.sending) {
+    if (this.form.invalid || this.sending || this.processingAttachments) {
       this.form.markAllAsTouched();
       if (this.form.invalid) this.errorMessage = 'bugReport.errors.fixFields';
       return;
@@ -240,11 +272,7 @@ export class BugReportComponent implements OnDestroy {
     // A komponens a navigáció közben jön létre: az előző oldal a folyamatban lévő navigáció előzménye.
     const navigation = this.router.getCurrentNavigation() ?? this.router.lastSuccessfulNavigation();
     const previous = navigation?.previousNavigation?.finalUrl?.toString() ?? '';
-    return previous &&
-      APP_PATH.test(previous) &&
-      !previous.includes('bug-report') &&
-      previous.length <= L.pageUrlMax
-      ? previous
-      : '';
+    const safePage = safeBugReportSource(previous);
+    return safePage.length <= L.pageUrlMax ? safePage : '';
   }
 }

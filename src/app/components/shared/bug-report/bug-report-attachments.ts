@@ -21,39 +21,47 @@ export class BugReportAttachments {
   private readonly attachments: BugReportAttachment[] = [];
   private generation = 0;
   private destroyed = false;
+  private pendingReads = 0;
   error = '';
   errorParams: Record<string, unknown> = {};
 
   get items(): readonly BugReportAttachment[] { return this.attachments; }
+  get processing(): boolean { return this.pendingReads > 0; }
 
   async add(files: readonly File[]): Promise<void> {
-    if (this.destroyed) return;
+    if (this.destroyed || files.length === 0) return;
+    // Reserve the in-progress state synchronously, before the first asynchronous read.
+    this.pendingReads++;
     const generation = this.generation;
     this.error = '';
-    for (const file of files) {
-      if (!this.isCurrent(generation)) return;
-      if (this.atCapacity()) return;
-      if (file.size > L.maxScreenshotBytes) {
-        this.setError('bugReport.errors.fileTooLarge', { name: file.name, max: L.maxScreenshotBytes / 1024 / 1024 });
-        continue;
-      }
-      let type: 'image/png' | 'image/jpeg' | null;
-      try {
-        type = await detectImageType(file);
-      } catch {
+    try {
+      for (const file of files) {
         if (!this.isCurrent(generation)) return;
-        this.setError('bugReport.errors.fileType', { name: file.name });
-        continue;
+        if (this.atCapacity()) return;
+        if (file.size > L.maxScreenshotBytes) {
+          this.setError('bugReport.errors.fileTooLarge', { name: file.name, max: L.maxScreenshotBytes / 1024 / 1024 });
+          continue;
+        }
+        let type: 'image/png' | 'image/jpeg' | null;
+        try {
+          type = await detectImageType(file);
+        } catch {
+          if (!this.isCurrent(generation)) return;
+          this.setError('bugReport.errors.fileType', { name: file.name });
+          continue;
+        }
+        if (!this.isCurrent(generation)) return;
+        if (!type) {
+          this.setError('bugReport.errors.fileType', { name: file.name });
+          continue;
+        }
+        // Another file picker/drop/paste can fill the last slot while bytes are read.
+        if (this.atCapacity()) return;
+        const safe = new File([file], file.name || `screenshot.${type === 'image/png' ? 'png' : 'jpg'}`, { type });
+        this.attachments.push({ file: safe, url: URL.createObjectURL(safe), name: safe.name, size: safe.size });
       }
-      if (!this.isCurrent(generation)) return;
-      if (!type) {
-        this.setError('bugReport.errors.fileType', { name: file.name });
-        continue;
-      }
-      // Another file picker/drop/paste can fill the last slot while bytes are read.
-      if (this.atCapacity()) return;
-      const safe = new File([file], file.name || `screenshot.${type === 'image/png' ? 'png' : 'jpg'}`, { type });
-      this.attachments.push({ file: safe, url: URL.createObjectURL(safe), name: safe.name, size: safe.size });
+    } finally {
+      this.pendingReads--;
     }
   }
 

@@ -159,6 +159,11 @@ describe('Client route context isolation', () => {
     component.assignments.assignProgramId = 99;
     component.assignments.askRevoke(99);
     go(routes, '2');
+    expect(component.pendingNav?.kind).toBe('deepLink');
+    expect(component.client?.userId).toBe(1);
+    expect(component.setEditor.dirty).toBeTrue();
+    // A URL change must not silently discard a dirty workout draft.
+    component.resolvePending('discard');
     expect(component.client).toBeNull();
     expect(component.loading).toBeTrue();
     expect(component.setEditor.exerciseSets).toEqual([]);

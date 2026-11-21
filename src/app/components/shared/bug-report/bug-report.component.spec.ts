@@ -5,7 +5,7 @@ import { Subject } from 'rxjs';
 import { AuthService } from '../../../services/auth/auth.service';
 import { BugReportService } from '../../../services/bug-report/bug-report.service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { APP_PATH, BugReportComponent, detectImageType, submitError } from './bug-report.component';
+import { APP_PATH, BugReportComponent, safeBugReportSource, detectImageType, submitError } from './bug-report.component';
 
 const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]);
 const JPEG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0, 0]);
@@ -31,6 +31,21 @@ describe('Bug report form', () => {
   it('prefills the previous in-app page and shows the reporter', () => {
     expect(component.form.controls.pageUrl.value).toBe('/user/profile?tab=1');
     expect(component.reporterName).toBe('kiss.anna');
+  });
+
+  it('keeps only non-sensitive route identifiers in automatically prefilled report pages', () => {
+    expect(safeBugReportSource('/coach/clients/7?workout=70&program=1&token=SECRET#private'))
+      .toBe('/coach/clients/7?program=1&workout=70');
+    expect(safeBugReportSource('/user/profile?tab=1&access_token=SECRET#part'))
+      .toBe('/user/profile?tab=1');
+    expect(safeBugReportSource('/reset-password?token=SECRET#private'))
+      .toBe('/reset-password');
+    expect(safeBugReportSource('/user/dashboard?username=test&code=SECRET#private'))
+      .toBe('/user/dashboard');
+    expect(safeBugReportSource('/coach/clients/7?workout=secret&programWorkout=101&tab=programs'))
+      .toBe('/coach/clients/7?programWorkout=101&tab=programs');
+    expect(safeBugReportSource('//outside.example/?token=SECRET')).toBe('');
+    expect(safeBugReportSource('/coach/bug-report?token=SECRET')).toBe('');
   });
 
   it('accepts only in-app paths', () => {
@@ -96,6 +111,45 @@ describe('Bug report form', () => {
     expect(component.created?.id).toBe(12);
     expect(component.attachments.length).toBe(0);
     expect(component.sending).toBeFalse();
+  });
+
+  it('blocks submission until overlapping screenshot reads finish and preserves accepted bytes', async () => {
+    component.form.setValue({ title: 'Mentés hiba', description: 'A profil mentése nem működik.', pageUrl: '' });
+    await component.addFiles([new File([JPEG], 'existing.jpg')]);
+    const delayed = new File([PNG], 'pending.png');
+    const invalid = new File(['invalid'], 'invalid.png');
+    let finish!: (bytes: ArrayBuffer) => void;
+    let fail!: (reason: Error) => void;
+    spyOn(delayed, 'slice').and.returnValue({
+      arrayBuffer: () => new Promise<ArrayBuffer>(resolve => { finish = resolve; }),
+    } as Blob);
+    spyOn(invalid, 'slice').and.returnValue({
+      arrayBuffer: () => new Promise<ArrayBuffer>((_, reject) => { fail = reject; }),
+    } as Blob);
+    const validRead = component.addFiles([delayed]);
+    const invalidRead = component.addFiles([invalid]);
+    component.submit();
+    expect(submit).not.toHaveBeenCalled();
+
+    finish(PNG.buffer);
+    await validRead;
+    component.submit();
+    expect(submit).not.toHaveBeenCalled();
+    fail(new Error('read failed'));
+    await invalidRead;
+    expect(component.fileError).toBe('bugReport.errors.fileType');
+    component.submit();
+    component.submit();
+    expect(submit).toHaveBeenCalledTimes(1);
+    const files: File[] = submit.calls.mostRecent().args[0].screenshots;
+    expect(files.map(file => file.name)).toEqual(['existing.jpg', 'pending.png']);
+    expect(new Uint8Array(await files[1].arrayBuffer())).toEqual(PNG);
+
+    response.next({ created: { id: 12, createdAt: '2026-10-24T14:00:00+02:00', screenshots: 2 }, message: 'Köszönjük' });
+    response.complete();
+    component.newReport();
+    expect(component.attachments).toEqual([]);
+    expect(component.form.controls.title.value).toBe('');
   });
 
   it('shows the backend message on failure', () => {
