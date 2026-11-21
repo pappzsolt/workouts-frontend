@@ -29,6 +29,14 @@
       <p class="rounded-xl bg-info-50 p-3 text-sm text-info-900">{{ 'coachWorkspace.editor.newForClientHint' | translate: { name: assignments.newForUserName } }}</p>
     }
     <app-message [message]="state.message" [messageParams]="state.messageParams" [type]="state.messageType" role="status" />
+    @if (workouts.needsRepeatReconciliation) {
+      <div role="status" class="rounded-xl border border-warning-300 bg-warning-50 p-3 text-sm text-warning-900">
+        <p>{{ 'coachWorkspace.editor.repeatRefreshRequired' | translate }}</p>
+        <button type="button" class="btn btn-neutral mt-2" (click)="workouts.refreshRepeatSchedule()" [disabled]="state.operationPending">
+          {{ 'coachWorkspace.editor.repeatRefresh' | translate }}
+        </button>
+      </div>
+    }
     <div id="program-details-editor" [style.display]="state.programId === null || editDetails ? null : 'none'">
       <app-program-details-form [form]="state.form" [isNew]="state.programId === null" [saving]="state.savingDetails"
         [submitDisabled]="state.operationPending || (state.programId !== null && (state.program?.programId !== state.programId || state.detailsLanguage !== state.languageCode))"
@@ -82,7 +90,7 @@
                 <app-program-day-workout
                   [workout]="workout" [rows]="workouts.rows" [selectedWorkoutDayCount]="workouts.selectedWorkoutDayCount"
                   [selectedDayClients]="assignments.selectedDayClients" [programId]="state.programId" [busy]="state.operationPending"
-                  [weeklyRepeatDays]="workouts.weeklyRepeatDays" [weeklyRepeatSkipped]="workouts.weeklyRepeatSkipped"
+                  [repeatBlocked]="workouts.needsRepeatReconciliation" [weeklyRepeatDays]="workouts.weeklyRepeatDays" [weeklyRepeatSkipped]="workouts.weeklyRepeatSkipped"
                   [firstDate]="state.firstDate" [lastDate]="state.lastDate" [moveTargetIsSameDay]="state.dayForDate(workouts.moveDate) === cell.day"
                   [(confirmRepeat)]="workouts.confirmRepeat" [(confirmRemove)]="workouts.confirmRemove" [(extraDate)]="workouts.extraDate" [(moveDate)]="workouts.moveDate"
                   (copyToLibrary)="workouts.copyToLibrary()" (repeatWeekly)="workouts.repeatWeekly()"

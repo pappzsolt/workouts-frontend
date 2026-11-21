@@ -256,7 +256,7 @@ describe('UserExerciseDetailComponent queued save regression', () => {
 
 describe('UserExerciseDetailComponent reload timer regression', () => {
   it('selects the most recently completed set from the loaded backend response, regardless of list order', () => {
-    const component = Object.create(UserExerciseDetailComponent.prototype) as UserExerciseDetailComponent;
+    const component = makeSaveComponent(jasmine.createSpy('updateSetCompleted'));
     component.currentSetIndex = 0;
     component.restTimerRevision = 0;
     const exercise = {

@@ -1,5 +1,5 @@
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, concat, of, takeUntil, tap, toArray } from 'rxjs';
+import { NEVER, Observable, Subject, concat, finalize, of, takeUntil, tap, toArray } from 'rxjs';
 import type { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import type { ClientSetValues } from '../../../models/coach-workspace.model';
 import type { ClientDetailEffects } from './client-detail-effects';
@@ -10,6 +10,8 @@ import {
 
 /** Owns editable sets, sequential saves, and confirmed exercise/workout totals. */
 export class ClientSetEditor {
+  private readonly workoutLoadsCancelled$ = new Subject<void>();
+  private readonly saveRecoveryReads = new WeakMap<ExerciseSets, Subject<void>>();
   exerciseSets: ExerciseSets[] = [];
   saving = false;
   deleteSetId: number | null = null;
@@ -28,22 +30,32 @@ export class ClientSetEditor {
   }
 
   clearWorkout(): void {
+    this.workoutLoadsCancelled$.next();
     this.exerciseSets = [];
     this.deleteSetId = null;
   }
 
   loadWorkout(workout: ClientWorkoutEntry | null): void {
-    this.deleteSetId = null;
+    this.clearWorkout();
     this.exerciseSets = (workout?.exercises ?? []).map(exercise => ({ exercise, sets: [], loading: true }));
     for (const entry of this.exerciseSets) this.loadSets(entry);
   }
 
-  private loadSets(entry: ExerciseSets, keepEdits = false): void {
+  private loadSets(entry: ExerciseSets, keepEdits = false, saveRecovery?: Subject<void>): void {
     entry.loading = true;
     const previous = keepEdits ? entry.sets : [];
     this.workspace
       .getClientWorkoutSets(entry.exercise.userWorkoutExerciseId)
-      .pipe(takeUntil(this.effects.cancelled$), takeUntilDestroyed(this.effects.destroyRef))
+      .pipe(
+        takeUntil(saveRecovery ?? NEVER),
+        takeUntil(this.workoutLoadsCancelled$),
+        takeUntil(this.effects.cancelled$),
+        takeUntilDestroyed(this.effects.destroyRef),
+        finalize(() => {
+          entry.loading = false;
+          if (saveRecovery) this.saveRecoveryReads.delete(entry);
+        }),
+      )
       .subscribe({
         next: (sets) => {
           entry.sets = [...sets]
@@ -52,13 +64,11 @@ export class ClientSetEditor {
               const edited = previous.find((row) => row.id === set.id);
               return edited && this.isChanged(edited) ? edited : toEditable(set);
             });
-          entry.loading = false;
           // Use the server snapshot for totals while keeping unsaved input values intact.
           this.updateExerciseProgress(entry, sets);
           this.refreshWorkoutTotals();
         },
         error: (error) => {
-          entry.loading = false;
           this.effects.showError(error, 'coachWorkspace.client.planLoadError');
         },
       });
@@ -94,7 +104,7 @@ export class ClientSetEditor {
   }
 
   addSet(entry: ExerciseSets): void {
-    if (this.setBusy) return;
+    if (this.effects.workoutMutationPending() || entry.loading || !this.exerciseSets.includes(entry)) return;
     const last = entry.sets[entry.sets.length - 1];
     const prefill = last ? this.values(last) : null;
     this.setBusy = true;
@@ -140,7 +150,7 @@ export class ClientSetEditor {
   }
 
   askDeleteSet(row: EditableSet): void {
-    this.deleteSetId = row.id;
+    if (!this.effects.workoutMutationPending()) this.deleteSetId = row.id;
   }
 
   cancelDeleteSet(): void {
@@ -149,7 +159,8 @@ export class ClientSetEditor {
 
   confirmDeleteSet(entry: ExerciseSets): void {
     const id = this.deleteSetId;
-    if (id === null || this.setBusy) return;
+    if (id === null || this.effects.workoutMutationPending() || entry.loading ||
+        !this.exerciseSets.includes(entry) || !entry.sets.some(row => row.id === id)) return;
     this.setBusy = true;
     this.workspace
       .deleteClientSet(id)
@@ -173,7 +184,9 @@ export class ClientSetEditor {
   }
 
   saveSets(after?: () => void): void {
-    if (this.saving) return;
+    if (this.effects.workoutMutationPending()) return;
+    const changedEntries = this.exerciseSets.filter(entry => entry.sets.some(row => this.isChanged(row)));
+    if (changedEntries.some(entry => entry.loading && !this.saveRecoveryReads.has(entry))) return;
     const changed = this.changedRows;
     if (changed.length === 0) {
       after?.();
@@ -185,6 +198,8 @@ export class ClientSetEditor {
     }
     // Snapshot the payload: edits made while the request is pending must remain dirty.
     const saves = changed.map((row) => ({ row, values: this.values(row)!, expected: { ...row.original } }));
+    // A manual retry keeps its original expected values and supersedes an older recovery read.
+    for (const entry of changedEntries) this.saveRecoveryReads.get(entry)?.next();
     this.saving = true;
     concat(...saves.map(({ row, values, expected }) => this.workspace.saveClientSet(row.id, values, expected).pipe(
       // Each request commits independently. Preserve edits made while it was pending;
@@ -206,7 +221,11 @@ export class ClientSetEditor {
         error: (error) => {
           this.saving = false;
           this.effects.showError(error, 'coachWorkspace.client.saveError');
-          for (const entry of this.exerciseSets) this.loadSets(entry, true);
+          for (const entry of changedEntries) {
+            const recovery = new Subject<void>();
+            this.saveRecoveryReads.set(entry, recovery);
+            this.loadSets(entry, true, recovery);
+          }
         },
       });
   }

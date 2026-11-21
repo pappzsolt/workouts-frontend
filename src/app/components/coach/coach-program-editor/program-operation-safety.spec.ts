@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
 import { of, Subject } from 'rxjs';
 import { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
 import { CoachProgramEditorComponent } from './coach-program-editor.component';
-import type { CoachProgram } from '../../../models/coach-workspace.model';
+import type { CoachProgram, CoachProgramDayLink } from '../../../models/coach-workspace.model';
 
 const program: CoachProgram = { programId: 10, programName: 'Review', programDescription: '', durationDays: 21,
   difficultyLevel: 'BEGINNER', startDate: '2026-11-13', endDate: '2026-12-03', workouts: [{
@@ -28,6 +28,60 @@ describe('Program operation safety', () => {
       {provide:Router,useValue:{}},
     ]});
     component=TestBed.runInInjectionContext(()=>new CoachProgramEditorComponent()); component.ngOnInit();
+  });
+
+  it('blocks another weekly write until a fresh schedule includes the confirmed days', () => {
+    const first = new Subject<void>();
+    const second = new Subject<void>();
+    const refresh = new Subject<CoachProgramDayLink[]>();
+    api.addWorkoutToDay.and.returnValues(first, second);
+    const original = { id: 11, programId: 10, workoutId: 20, dayIndex: 1 };
+    api.getProgramDays.and.returnValue(refresh);
+    component.state.form.programName = 'Unsaved name';
+    component.workouts.repeatWeekly();
+    first.next(); first.complete();
+    second.error(new Error('Offline'));
+    refresh.error(new Error('Reload failed'));
+    component.workouts.repeatWeekly();
+    expect(api.addWorkoutToDay.calls.allArgs()).toEqual([[10, 20, 8], [10, 20, 15]]);
+    expect(component.state.form.programName).toBe('Unsaved name');
+    expect(component.state.message).toBe('coachWorkspace.editor.repeatPartial');
+    expect(component.workouts.needsRepeatReconciliation).toBeTrue();
+
+    api.getProgramDays.and.returnValue(of([original]));
+    component.workouts.refreshRepeatSchedule();
+    component.workouts.repeatWeekly();
+    expect(component.workouts.needsRepeatReconciliation).toBeTrue();
+    expect(api.addWorkoutToDay).toHaveBeenCalledTimes(2);
+
+    const confirmed = { ...original, id: 12, dayIndex: 8 };
+    api.getProgramDays.and.returnValue(of([original, confirmed]));
+    component.workouts.refreshRepeatSchedule();
+    expect(component.workouts.needsRepeatReconciliation).toBeFalse();
+    expect(api.addWorkoutToDay).toHaveBeenCalledTimes(2);
+    expect(component.state.form.programName).toBe('Unsaved name');
+
+    const retry = new Subject<void>();
+    api.addWorkoutToDay.and.returnValue(retry);
+    component.workouts.repeatWeekly();
+    expect(api.addWorkoutToDay.calls.allArgs()).toEqual([[10, 20, 8], [10, 20, 15], [10, 20, 15]]);
+  });
+
+  it('does not resend a day present in the refreshed schedule after a lost write response', () => {
+    const lostResponse = new Subject<void>();
+    api.addWorkoutToDay.and.returnValues(of(undefined), lostResponse);
+    component.workouts.repeatWeekly();
+    expect(api.addWorkoutToDay.calls.allArgs()).toEqual([[10, 20, 8], [10, 20, 15]]);
+    api.getProgramDays.and.returnValue(of([
+      { id: 11, programId: 10, workoutId: 20, dayIndex: 1 },
+      { id: 12, programId: 10, workoutId: 20, dayIndex: 8 },
+      { id: 13, programId: 10, workoutId: 20, dayIndex: 15 },
+    ]));
+    lostResponse.error(new Error('Response lost'));
+    expect(component.workouts.needsRepeatReconciliation).toBeFalse();
+    expect(component.workouts.weeklyRepeatDays).toEqual([]);
+    component.workouts.repeatWeekly();
+    expect(api.addWorkoutToDay).toHaveBeenCalledTimes(2);
   });
 
   it('uses saved dates for moves and retains the saved calendar after a background reload', () => {

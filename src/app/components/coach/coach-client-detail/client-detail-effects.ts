@@ -5,6 +5,7 @@ import type { Observable } from 'rxjs';
 export interface ClientDetailEffects {
   readonly cancelled$: Observable<void>;
   readonly destroyRef: DestroyRef;
+  workoutMutationPending(): boolean;
   showMessage(key: string, type: 'success' | 'error' | 'info', params?: Record<string, unknown>): void;
   showError(error: unknown, fallbackKey: string): void;
 }

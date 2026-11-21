@@ -138,25 +138,29 @@ describe('Client editing screen bindings', () => {
     expect(fixture.componentInstance.message).toBe('coachWorkspace.client.saved');
   });
 
-  it('cancels requests owned by all extracted units when the screen is destroyed', () => {
-    const added = new Subject<number>();
-    const scheduled = new Subject<void>();
-    const programs = new Subject<CoachProgram[]>();
-    api.addClientSet.and.returnValue(added);
-    api.rescheduleWorkout.and.returnValue(scheduled);
-    api.getCoachPrograms.and.returnValue(programs);
-    const fixture = TestBed.createComponent(CoachClientDetailComponent);
-    fixture.detectChanges();
-    const component = fixture.componentInstance;
-    component.setEditor.addSet(component.setEditor.exerciseSets[0]);
-    component.schedule.rescheduleDate = '2026-10-24';
-    component.schedule.reschedule(component.selected);
-    component.assignments.openAssign(component.client);
-    expect(added.observed).toBeTrue(); expect(scheduled.observed).toBeTrue(); expect(programs.observed).toBeTrue();
-    fixture.destroy();
-    expect(added.observed).toBeFalse(); expect(scheduled.observed).toBeFalse(); expect(programs.observed).toBeFalse();
-    added.next(99); scheduled.next(); programs.next([]);
-    expect(api.saveClientSet).not.toHaveBeenCalled();
-    expect(api.getClientProgramRows).toHaveBeenCalledTimes(1);
-  });
+  for (const active of ['add', 'schedule'] as const) {
+    it(`cancels an active ${active} operation and assignment reads when the screen is destroyed`, () => {
+      const added = new Subject<number>();
+      const scheduled = new Subject<void>();
+      const programs = new Subject<CoachProgram[]>();
+      api.addClientSet.and.returnValue(added);
+      api.rescheduleWorkout.and.returnValue(scheduled);
+      api.getCoachPrograms.and.returnValue(programs);
+      const fixture = TestBed.createComponent(CoachClientDetailComponent);
+      fixture.detectChanges();
+      const component = fixture.componentInstance;
+      if (active === 'add') component.setEditor.addSet(component.setEditor.exerciseSets[0]);
+      component.schedule.rescheduleDate = '2026-10-24';
+      component.schedule.reschedule(component.selected);
+      component.assignments.openAssign(component.client);
+      expect(added.observed).toBe(active === 'add');
+      expect(scheduled.observed).toBe(active === 'schedule');
+      expect(programs.observed).toBeTrue();
+      fixture.destroy();
+      expect(added.observed).toBeFalse(); expect(scheduled.observed).toBeFalse(); expect(programs.observed).toBeFalse();
+      added.next(99); scheduled.next(); programs.next([]);
+      expect(api.saveClientSet).not.toHaveBeenCalled();
+      expect(api.getClientProgramRows).toHaveBeenCalledTimes(1);
+    });
+  }
 });

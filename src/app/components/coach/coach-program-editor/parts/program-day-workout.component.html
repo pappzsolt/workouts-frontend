@@ -53,13 +53,13 @@
         <button type="button" (click)="confirmRepeat.set(false)" class="btn btn-neutral px-3">
           {{ 'coachWorkspace.cancel' | translate }}
         </button>
-        <button type="button" (click)="repeatWeekly.emit()" [disabled]="busy" class="btn btn-primary px-3">
+        <button type="button" (click)="confirmRepeat.set(false); repeatWeekly.emit()" [disabled]="busy || repeatBlocked" class="btn btn-primary px-3">
           {{ 'coachWorkspace.editor.repeatWeekly' | translate }}
         </button>
       </div>
     </div>
   } @else {
-    <button type="button" (click)="confirmRepeat.set(true)" [disabled]="busy || weeklyRepeatDays.length === 0"
+    <button type="button" (click)="confirmRepeat.set(true)" [disabled]="busy || repeatBlocked || weeklyRepeatDays.length === 0"
             class="btn btn-outline w-full sm:w-auto">
       <app-icon name="repeat" sizeClass="h-4 w-4" />
       {{ 'coachWorkspace.editor.repeatWeekly' | translate }}

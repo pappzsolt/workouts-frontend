@@ -35,12 +35,14 @@ describe('Client set save snapshots', () => {
   let component: CoachClientDetailComponent;
   let requests: Subject<void>[];
   let save: jasmine.Spy;
+  let recovery: Subject<ClientWorkoutSet[]>;
   beforeEach(() => {
     requests = [];
+    recovery = new Subject<ClientWorkoutSet[]>();
     save = jasmine.createSpy().and.callFake(() => {
       const request = new Subject<void>(); requests.push(request); return request;
     });
-    component = create({ saveClientSet: save, getClientWorkoutSets: () => new Subject<ClientWorkoutSet[]>() });
+    component = create({ saveClientSet: save, getClientWorkoutSets: () => recovery });
     component.userId = 1;
     component.setEditor.exerciseSets = [entry([editable()])];
   });
@@ -102,6 +104,9 @@ describe('Client set save snapshots', () => {
     expect(save.calls.allArgs().map(args => args[0])).toEqual([1, 2, 2]);
     expect(save.calls.mostRecent().args[2]).toEqual(values(10));
     finish(requests[2]);
+    expect(recovery.observed).toBeFalse();
+    recovery.next([]);
+    expect(component.setEditor.exerciseSets[0].sets.map(row => row.id)).toEqual([1, 2]);
     expect(component.setEditor.dirty).toBeFalse();
   });
 

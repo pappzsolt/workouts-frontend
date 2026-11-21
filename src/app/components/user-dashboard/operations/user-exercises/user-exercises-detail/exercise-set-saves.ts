@@ -1,4 +1,4 @@
-import { EMPTY, Observable, catchError, concatMap, defer, finalize, map, of, shareReplay, tap } from 'rxjs';
+import { EMPTY, Observable, Subject, catchError, concatMap, defer, filter, finalize, map, of, shareReplay, take, tap } from 'rxjs';
 import { errorMessage, responseMessage } from '../../../../../models/backend-dto/common/api-response-message';
 import type { UserWorkoutDetailDto, UserWorkoutExerciseSetDto } from '../../../../../models/user-workout-exercise-detail.dto';
 import type { UserExerciseDetailService } from '../../../../../services/user/user-exercises-detail/user-exercises-detail.service';
@@ -21,6 +21,7 @@ export interface ExerciseSetSaveEffects {
 }
 
 interface PendingSetSave {
+  userWorkoutId: number;
   signature: string;
   request: Observable<void>;
   confirmed: { completed: boolean; timerNeedsRefresh: boolean };
@@ -28,13 +29,38 @@ interface PendingSetSave {
 
 /** Per-occurrence save queue, request deduplication and confirmed completion state. */
 export class ExerciseSetSaves {
-  private readonly failedSetSaves = new Set<string>();
+  private readonly failedSetSaves = new Map<string, { exerciseId: number; set: UserWorkoutExerciseSetDto; message: string }>();
+  private readonly settled$ = new Subject<number>();
   private readonly pendingSetSaves = new Map<string, PendingSetSave>();
 
   constructor(
     private readonly service: UserExerciseDetailService,
     private readonly effects: ExerciseSetSaveEffects,
   ) {}
+
+  waitForOccurrence(userWorkoutId: number): Observable<void> {
+    const hasPending = () => [...this.pendingSetSaves.values()].some(entry => entry.userWorkoutId === userWorkoutId);
+    return defer(() => hasPending()
+      ? this.settled$.pipe(filter(id => id === userWorkoutId && !hasPending()), take(1), map(() => void 0))
+      : of(void 0));
+  }
+
+  restoreFailedEdits(userWorkoutId: number, exercise: UserWorkoutDetailDto['exercises'][number]): void {
+    let message: string | undefined;
+    for (const set of exercise.userWorkoutExerciseSets ?? []) {
+      const failed = this.failedSetSaves.get(this.setKey(userWorkoutId, set.id));
+      if (!failed || failed.exerciseId !== exercise.exercise.id) continue;
+      const draft = failed.set;
+      set.actualRepetitions = draft.actualRepetitions;
+      set.actualWeightKg = draft.actualWeightKg;
+      set.notes = draft.notes;
+      if ('actualRpe' in draft) set.actualRpe = draft.actualRpe;
+      if ('rir' in draft) set.rir = draft.rir;
+      failed.set = set;
+      message = failed.message;
+    }
+    if (message) this.effects.showError(message);
+  }
 
   isSettled(userWorkoutId: number, setId: number | null | undefined): boolean {
     const key = this.setKey(userWorkoutId, setId);
@@ -106,7 +132,7 @@ export class ExerciseSetSaves {
         confirmed.timerNeedsRefresh = false;
       }
     };
-    const entry: PendingSetSave = { signature, confirmed, request: EMPTY };
+    const entry: PendingSetSave = { userWorkoutId: args[0], signature, confirmed, request: EMPTY };
     let succeeded = false;
     // Changed payloads queue behind the existing request; identical blur/page
     // saves share it. Recover an earlier failure so a newer edit can still save.
@@ -138,19 +164,21 @@ export class ExerciseSetSaves {
         return void 0;
       }),
       tap({ error: error => {
-        if (isCurrent() && this.pendingSetSaves.get(key) === entry) {
-          this.failedSetSaves.add(key);
-          set.completed = confirmed.completed;
-          syncConfirmedTimer();
-          this.effects.updateExerciseDone();
-          this.effects.showError(errorMessage(error, completed === undefined
-            ? 'userExerciseDetail.saveError' : 'userExerciseDetail.setUpdateError'));
-        }
+        if (this.pendingSetSaves.get(key) !== entry) return;
+        const message = errorMessage(error, completed === undefined
+          ? 'userExerciseDetail.saveError' : 'userExerciseDetail.setUpdateError');
+        this.failedSetSaves.set(key, { exerciseId, set, message });
+        if (!isCurrent()) return;
+        set.completed = confirmed.completed;
+        syncConfirmedTimer();
+        this.effects.updateExerciseDone();
+        this.effects.showError(message);
       } }),
       finalize(() => {
         if (this.pendingSetSaves.get(key) === entry) {
           this.pendingSetSaves.delete(key);
           if (succeeded && isCurrent() && !this.effects.isDestroyed()) this.effects.onSettled();
+          this.settled$.next(entry.userWorkoutId);
         }
       }),
       // Navigation only detaches UI observers. Keep the finite HTTP save and

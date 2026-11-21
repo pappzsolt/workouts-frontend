@@ -3,7 +3,8 @@ import type { CoachWorkspaceService } from '../../../services/coach/coach-worksp
 import type { ProgramEditorState } from './program-editor-state';
 import type { ProgramEditorEffects } from './program-editor-effects';
 import type { Router } from '@angular/router';
-import { concat, toArray, type Observable } from 'rxjs';
+import { concatMap, from, tap, type Observable } from 'rxjs';
+import type { CoachProgramDayLink } from '../../../models/coach-workspace.model';
 import { weeklyRepeat } from './program-days';
 
 /** Shared exercise display and program-day scheduling actions. */
@@ -13,6 +14,7 @@ export class ProgramDayWorkoutEditor {
   confirmRemove = false;
   extraDate = '';
   confirmRepeat = false;
+  private readonly repeatRecoveries = new Map<number, { workoutId: number; confirmedDays: number[] }>();
   constructor(
     private readonly state: ProgramEditorState,
     private readonly workspace: CoachWorkspaceService,
@@ -62,18 +64,54 @@ export class ProgramDayWorkoutEditor {
     return weeklyRepeat(this.state.cells, this.state.selectedDay).skipped;
   }
 
+  get needsRepeatReconciliation(): boolean {
+    return this.state.programId !== null && this.repeatRecoveries.has(this.state.programId);
+  }
+
+  reconcileRepeat(links: CoachProgramDayLink[]): void {
+    const programId = this.state.programId;
+    if (programId === null) return;
+    const recovery = this.repeatRecoveries.get(programId);
+    if (recovery?.confirmedDays.every(day =>
+      links.some(link => link.dayIndex === day && link.workoutId === recovery.workoutId))) {
+      this.repeatRecoveries.delete(programId);
+    }
+  }
+
+  refreshRepeatSchedule(): void {
+    if (this.needsRepeatReconciliation && !this.state.operationPending) {
+      this.effects.reload(this.state.selectedDay, true);
+    }
+  }
+
   repeatWeekly(): void {
     const workout = this.state.selectedCell?.workout;
     const days = this.weeklyRepeatDays;
-    if (this.state.programId === null || !workout || days.length === 0 || this.state.operationPending) return;
+    if (this.state.programId === null || !workout || days.length === 0 || this.state.operationPending || this.needsRepeatReconciliation) return;
     const programId = this.state.programId;
     this.confirmRepeat = false;
-    this.runDayAction(
-      concat(...days.map((day) => this.workspace.addWorkoutToDay(programId, workout.workoutId, day))).pipe(toArray()),
-      'coachWorkspace.editor.repeated',
-      this.state.selectedDay,
-      true,
-    );
+    const selectedDay = this.state.selectedDay;
+    const confirmedDays: number[] = [];
+    const reconcile = () => {
+      this.repeatRecoveries.set(programId, { workoutId: workout.workoutId, confirmedDays });
+      if (this.state.programId === programId) this.effects.reload(selectedDay, true);
+    };
+    this.effects.run(from(days).pipe(concatMap(day =>
+      this.workspace.addWorkoutToDay(programId, workout.workoutId, day).pipe(tap(() => confirmedDays.push(day))),
+    )), {
+      success: () => {
+        if (this.state.programId === programId) this.effects.showMessage('coachWorkspace.editor.repeated', 'success');
+        reconcile();
+      },
+      failure: () => {
+        if (this.state.programId === programId) {
+          this.effects.showMessage('coachWorkspace.editor.repeatPartial', 'error', {
+            confirmed: confirmedDays.length, total: days.length,
+          });
+        }
+        reconcile();
+      },
+    });
   }
 
   addToAnotherDay(): void {

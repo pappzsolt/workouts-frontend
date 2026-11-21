@@ -26,6 +26,7 @@ export class ProgramDayWorkoutComponent {
   @Input() selectedDayClients: { client: CoachClientOverview; programWorkoutId: number }[] = [];
   @Input() programId: number | null = null;
   @Input() busy = false;
+  @Input() repeatBlocked = false;
   @Input() weeklyRepeatDays: number[] = [];
   @Input() weeklyRepeatSkipped = 0;
   @Input() firstDate = '';

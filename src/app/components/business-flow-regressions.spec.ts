@@ -83,6 +83,65 @@ describe('Business flow regressions', () => {
     component.ngOnDestroy();
   });
 
+  for (const fails of [false, true]) {
+    it(`reopens the same occurrence after a pending save ${fails ? 'fails' : 'succeeds'} without bleeding into another workout`, () => {
+      const route = exerciseRoute(true);
+      const language = new BehaviorSubject('hu');
+      const write = new Subject<any>();
+      const other = new Subject<any>();
+      const reloaded = new Subject<any>();
+      const workout = (weight: number) => ({ exercises: [{ exercise: { id: 6 }, userWorkoutExerciseSets: [
+        { id: 201, setNumber: 1, actualWeightKg: weight, completed: false },
+      ] }] });
+      const load = jasmine.createSpy('getWorkoutExercises').and.returnValues(of(ok(workout(20))), other, reloaded);
+      const save = jasmine.createSpy('updateSetCompleted').and.returnValue(write);
+      const component = make(() => new UserExerciseDetailComponent(route as any,
+        { getWorkoutExercises: load, updateSetCompleted: save } as any, { language$: language } as any));
+      component.ngOnInit();
+      component.currentSet!.actualWeightKg = 25;
+      component.saveSetDetails(component.currentSet!);
+      route.queryParamMap.next(params({ programId: '7', userWorkoutId: '200' }));
+      other.next(ok(workout(40)));
+      expect(component.currentSet?.actualWeightKg).toBe(40);
+      route.queryParamMap.next(params({ programId: '7', userWorkoutId: '100' }));
+      expect(load.calls.count()).toBe(2);
+      if (fails) write.error(new Error('Save failed'));
+      else { write.next(ok()); write.complete(); }
+      expect(load.calls.count()).toBe(3);
+      other.next(ok(workout(99)));
+      reloaded.next(ok(workout(fails ? 20 : 25)));
+      expect(component.currentSet?.actualWeightKg).toBe(25);
+      expect(component.messageType).toBe(fails ? 'error' : 'info');
+      expect(save).toHaveBeenCalledTimes(1);
+      component.ngOnDestroy();
+    });
+  }
+
+  it('keeps a late save error out of another occurrence and restores it when returning', () => {
+    const route = exerciseRoute(true);
+    const write = new Subject<any>();
+    const workout = (actualWeightKg: number) => ({ exercises: [{ exercise: { id: 6 }, userWorkoutExerciseSets: [
+      { id: 201, setNumber: 1, actualWeightKg, completed: false },
+    ] }] });
+    const load = jasmine.createSpy('getWorkoutExercises').and.callFake((id: number) =>
+      of(ok(workout(id === 100 ? 20 : 40))));
+    const save = jasmine.createSpy('updateSetCompleted').and.returnValue(write);
+    const component = make(() => new UserExerciseDetailComponent(route as any,
+      { getWorkoutExercises: load, updateSetCompleted: save } as any, { language$: new BehaviorSubject('hu') } as any));
+    component.ngOnInit();
+    component.currentSet!.actualWeightKg = 25;
+    component.saveSetDetails(component.currentSet!);
+    route.queryParamMap.next(params({ programId: '7', userWorkoutId: '200' }));
+    write.error(new Error('Offline'));
+    expect(component.currentSet?.actualWeightKg).toBe(40);
+    expect(component.messageType).toBe('info');
+    route.queryParamMap.next(params({ programId: '7', userWorkoutId: '100' }));
+    expect(component.currentSet?.actualWeightKg).toBe(25);
+    expect(component.message).toBe('Offline');
+    expect(save).toHaveBeenCalledTimes(1);
+    component.ngOnDestroy();
+  });
+
   function setEditor() {
     const requests: Subject<any>[] = [];
     const save = jasmine.createSpy('save').and.callFake(() => {

@@ -76,6 +76,7 @@ export class CoachClientDetailComponent implements OnInit {
   private readonly effects: ClientDetailEffects = {
     cancelled$: this.clientContextCancelled$,
     destroyRef: this.destroyRef,
+    workoutMutationPending: () => this.workoutMutationPending,
     showMessage: (key, type, params) => this.showMessage(key, type, params),
     showError: (error, fallbackKey) => this.showError(error, fallbackKey),
   };
@@ -121,8 +122,12 @@ export class CoachClientDetailComponent implements OnInit {
   pendingNav: PendingNav | null = null;
   private leaveResult?: Subject<boolean>;
 
+  get workoutMutationPending(): boolean {
+    return this.setEditor.saving || this.setEditor.setBusy || this.schedule.saving;
+  }
+
   canLeave(): boolean | Observable<boolean> {
-    if (this.setEditor.saving || this.schedule.saving) return false;
+    if (this.workoutMutationPending) return false;
     if (!this.setEditor.dirty) return true;
     this.pendingNav = { kind: 'route' };
     this.leaveResult ??= new Subject<boolean>();
@@ -131,14 +136,14 @@ export class CoachClientDetailComponent implements OnInit {
 
   @HostListener('window:beforeunload', ['$event'])
   beforeUnload(event: BeforeUnloadEvent): void {
-    if (this.setEditor.dirty || this.setEditor.saving || this.schedule.saving) {
+    if (this.setEditor.dirty || this.workoutMutationPending) {
       event.preventDefault();
       event.returnValue = '';
     }
   }
 
   rescheduleWorkout(): void {
-    if (this.setEditor.saving || !this.schedule.canReschedule(this.selected)) return;
+    if (!this.schedule.canReschedule(this.selected)) return;
     if (this.setEditor.dirty) {
       this.pendingNav = { kind: 'reschedule', date: this.schedule.rescheduleDate };
       return;
@@ -238,7 +243,7 @@ export class CoachClientDetailComponent implements OnInit {
             this.workouts = [];
             this.weeks = [];
             this.selectedIndex = -1;
-            this.setEditor.exerciseSets = [];
+            this.setEditor.clearWorkout();
           }
         },
         error: (error) => {
@@ -267,7 +272,7 @@ export class CoachClientDetailComponent implements OnInit {
   // ----------------------------------------------------------
 
   selectProgram(programId: number | string): void {
-    if (this.schedule.saving || this.pendingNav?.kind === 'route') return;
+    if (this.workoutMutationPending || this.pendingNav?.kind === 'route') return;
     const id = Number(programId);
     if (id === this.programId) return;
     if (this.setEditor.dirty) {
@@ -278,7 +283,7 @@ export class CoachClientDetailComponent implements OnInit {
   }
 
   retryProgram(): void {
-    if (this.programId !== null && !this.programLoading) this.loadProgram(this.programId);
+    if (this.programId !== null && !this.programLoading && !this.workoutMutationPending) this.loadProgram(this.programId);
   }
 
   private loadProgram(programId: number): void {
@@ -387,7 +392,7 @@ export class CoachClientDetailComponent implements OnInit {
   }
 
   selectWorkout(index: number): void {
-    if (this.schedule.saving || this.pendingNav?.kind === 'route') return;
+    if (this.workoutMutationPending || this.pendingNav?.kind === 'route') return;
     if (index < 0 || index >= this.workouts.length || index === this.selectedIndex) return;
     if (this.setEditor.dirty) {
       this.pendingNav = { kind: 'workout', index };
@@ -412,7 +417,7 @@ export class CoachClientDetailComponent implements OnInit {
   resolvePending(action: 'save' | 'discard' | 'cancel'): void {
     const nav = this.pendingNav;
     if (!nav) return;
-    if (this.setEditor.saving || this.schedule.saving) return;
+    if (this.workoutMutationPending) return;
     if (action === 'cancel') {
       this.pendingNav = null;
       if (nav.kind === 'route') this.resolveLeave(false);
@@ -437,7 +442,7 @@ export class CoachClientDetailComponent implements OnInit {
   }
 
   setTab(tab: 'plan' | 'programs'): void {
-    if (this.schedule.saving || this.pendingNav?.kind === 'route') return;
+    if (this.workoutMutationPending || this.pendingNav?.kind === 'route') return;
     if (tab === this.tab) return;
     if (this.setEditor.dirty && tab !== 'plan') {
       this.pendingNav = { kind: 'tab', tab };

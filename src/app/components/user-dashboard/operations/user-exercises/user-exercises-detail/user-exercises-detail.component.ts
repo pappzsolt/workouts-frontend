@@ -129,7 +129,8 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
             this.messageType = 'error';
             return EMPTY;
           }
-          return this.exercisesService.getWorkoutExercises(context.userWorkoutId, context.language).pipe(
+          return this.setSaves.waitForOccurrence(context.userWorkoutId).pipe(
+            switchMap(() => this.exercisesService.getWorkoutExercises(context.userWorkoutId, context.language)),
             map(response => ({ response, exerciseId: context.exerciseId })),
             catchError(error => {
               this.message = errorMessage(error, 'userExerciseDetail.loadError');
@@ -204,6 +205,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     }
 
     this.workoutExercise = found;
+    this.setSaves.restoreFailedEdits(this.userWorkoutId, found);
     const setCount = found.userWorkoutExerciseSets?.length || 0;
     this.currentSetIndex = setCount > 0 ? Math.min(this.currentSetIndex, setCount - 1) : 0;
     this.updateExerciseDone();

@@ -49,6 +49,49 @@ describe('Client editing workflow behavior', () => {
     component.selectProgram(1);
   });
 
+  it('excludes set add, delete and rescheduling during a delayed row save', () => {
+    const save = new Subject<void>();
+    api.saveClientSet.and.returnValue(save);
+    api.addClientSet.and.returnValue(new Subject<number>());
+    api.deleteClientSet.and.returnValue(new Subject<void>());
+    api.rescheduleWorkout.and.returnValue(new Subject<void>());
+    const entry = component.setEditor.exerciseSets[0];
+    entry.sets[0].notes = 'edited';
+    component.setEditor.saveSets();
+    component.setEditor.askDeleteSet(entry.sets[0]);
+    component.setEditor.confirmDeleteSet(entry);
+    component.setEditor.addSet(entry);
+    component.schedule.rescheduleDate = '2026-10-24';
+    component.schedule.reschedule(component.selected);
+    expect(api.deleteClientSet).not.toHaveBeenCalled();
+    expect(api.addClientSet).not.toHaveBeenCalled();
+    expect(api.rescheduleWorkout).not.toHaveBeenCalled();
+    save.error(new Error('Offline'));
+    expect(entry.sets[0].notes).toBe('edited');
+  });
+
+  it('blocks bulk save and reschedule through the add and prefill requests', () => {
+    const added = new Subject<number>();
+    const prefilled = new Subject<void>();
+    api.addClientSet.and.returnValue(added);
+    api.saveClientSet.and.returnValue(prefilled);
+    api.rescheduleWorkout.and.returnValue(new Subject<void>());
+    const entry = component.setEditor.exerciseSets[0];
+    entry.sets[0].notes = 'keep this draft';
+    component.setEditor.addSet(entry);
+    component.setEditor.saveSets();
+    expect(api.saveClientSet).not.toHaveBeenCalled();
+    added.next(72);
+    component.schedule.rescheduleDate = '2026-10-24';
+    component.schedule.reschedule(component.selected);
+    component.setEditor.saveSets();
+    expect(api.rescheduleWorkout).not.toHaveBeenCalled();
+    expect(api.saveClientSet).toHaveBeenCalledTimes(1);
+    prefilled.next(); prefilled.complete();
+    expect(entry.sets[0].notes).toBe('keep this draft');
+    expect(component.setEditor.dirty).toBeTrue();
+  });
+
   it('prefills only target values when adding a set and keeps existing edits', () => {
     const added = new Subject<number>();
     const saved = new Subject<void>();
@@ -359,6 +402,7 @@ describe('Client editing workflow behavior', () => {
     component.assignments.openAssign(component.client);
     routes.next(convertToParamMap({ userId: 8 }));
     expect(added.observed).toBeFalse(); expect(revoked.observed).toBeFalse();
+    expect(api.rescheduleWorkout).not.toHaveBeenCalled();
     expect(scheduled.observed).toBeFalse(); expect(programs.observed).toBeFalse();
     expect(component.setEditor.setBusy).toBeFalse(); expect(component.assignments.assignOpen).toBeFalse();
     expect(component.setEditor.exerciseSets).toEqual([]); expect(component.message).toBe('');

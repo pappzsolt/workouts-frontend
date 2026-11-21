@@ -23,7 +23,7 @@ export class ClientWorkoutSchedule {
 
   canReschedule(workout: ClientWorkoutEntry | null): workout is ClientWorkoutEntry {
     const bounds = this.bounds();
-    return !this.saving && !!workout && this.rescheduleDate !== workout.date
+    return !this.effects.workoutMutationPending() && !!workout && this.rescheduleDate !== workout.date
       && isIsoDateInRange(this.rescheduleDate, bounds?.startDate, bounds?.endDate);
   }
 

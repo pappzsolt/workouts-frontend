@@ -217,6 +217,7 @@ export class CoachProgramEditorComponent implements OnInit {
           this.state.form = { ...this.detailsBaseline, ...metadataDraft, ...this.detailsDrafts.get(language) };
           this.state.detailsLanguage = language;
           this.buildCells(links);
+          this.workouts.reconcileRepeat(links);
           this.assignments.loadAssignment();
           const firstWorkoutDay = this.state.cells.find((cell) => cell.workout)?.day ?? 1;
           this.openDay(selectDay ?? (this.state.cells.some((c) => c.day === this.state.selectedDay) ? this.state.selectedDay : firstWorkoutDay));
@@ -226,7 +227,7 @@ export class CoachProgramEditorComponent implements OnInit {
         error: (error) => {
           if (this.state.programId !== programId || this.state.languageCode !== language) return;
           this.state.loading = false;
-          this.showError(error, 'coachWorkspace.loadError');
+          if (!this.workouts.needsRepeatReconciliation) this.showError(error, 'coachWorkspace.loadError');
         },
       });
   }
