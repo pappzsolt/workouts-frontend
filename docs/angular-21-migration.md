@@ -1,20 +1,31 @@
-# Workouts frontend: Angular 19 → 21 migration
+# Workouts frontend: Angular 19 → 21 migration (completed)
 
-This document describes **next steps**, not a completed version upgrade. It accompanies
-an Angular 19-compatible change to `app.config.ts` that explicitly preserves Zone.js
-change detection. The application and unit tests currently rely on Zone.js.
+**Status: completed on 2026-11-21. Do not rerun the steps below on the current Angular 21 branch.**
+They document the original migration procedure for reference and recovery.
+The application retains Zone.js change detection and its existing Jasmine/Karma tests.
 
-## Audited starting state (uploaded ZIP dated 2026-11-21)
+## Current stack (2026-11-21 source checkout)
+
+- Angular core `21.2.26`, CLI/build `21.2.30`, Angular Material/CDK `21.2.14` (package manifests).
+- TypeScript `5.9.3` and Zone.js `0.15.x`; the application has **not** migrated to zoneless.
+- GitLab uses Node 22, Firefox Headless unit tests and mocked Playwright contracts.
+- Run `node scripts/angular-upgrade-preflight.cjs` to verify the current toolchain.
+- Run `npm run test:i18n`, `npm run test:theme`, `npm run test:seo`, `npm run test:landing`,
+  `npx ng test --watch=false`, and `npx ng build --configuration production` from the root;
+  run `(cd e2e && npm run test:contract:ci)` for the desktop + mobile CI contract selection.
+
+
+## Historical starting state (Angular 19 snapshot, before migration)
 
 - Angular core 19.2.15, CLI 19.2.18, Material/CDK 19.2.19.
 - TypeScript 5.7.3 and Zone.js 0.15.1 in `package-lock.json`.
 - Angular build runs on Node 22 in GitLab CI.
-- Existing `frontend-playwright` GitLab test job runs mocked `@ci-workouts`
-  tests; no additional CI/CD integration is needed.
+- The original `frontend-playwright` GitLab test job ran only desktop mocked
+  `@ci-workouts` tests; the current job adds an explicitly selected mobile subset.
 - `@ngx-translate/core` 18 and `@lucide/angular` 1.47 have Angular peer ranges
   that do not themselves forbid Angular 21, but runtime behavior still needs testing.
 
-## Safe rollout
+## Historical rollout procedure (already performed; do not repeat)
 
 1. Start with a **clean `master`**. Fetch `origin/master` and `gitlab/master`;
    confirm all three commits match. If not, stop and reconcile without reset/force.

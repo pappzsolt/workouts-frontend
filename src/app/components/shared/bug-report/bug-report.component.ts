@@ -270,7 +270,7 @@ export class BugReportComponent implements OnDestroy {
   /** Az előző oldal az alkalmazásban (ahonnan a bejelentőt megnyitották), ha van. */
   private previousPage(): string {
     // A komponens a navigáció közben jön létre: az előző oldal a folyamatban lévő navigáció előzménye.
-    const navigation = this.router.getCurrentNavigation() ?? this.router.lastSuccessfulNavigation();
+    const navigation = this.router.currentNavigation() ?? this.router.lastSuccessfulNavigation();
     const previous = navigation?.previousNavigation?.finalUrl?.toString() ?? '';
     const safePage = safeBugReportSource(previous);
     return safePage.length <= L.pageUrlMax ? safePage : '';

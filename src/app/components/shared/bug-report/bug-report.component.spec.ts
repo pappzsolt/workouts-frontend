@@ -14,15 +14,19 @@ describe('Bug report form', () => {
   let component: BugReportComponent;
   let submit: jasmine.Spy;
   let response: Subject<{ created: { id: number; createdAt: string; screenshots: number }; message: string }>;
+  let currentNavigation: jasmine.Spy;
+  let lastSuccessfulNavigation: jasmine.Spy;
 
   beforeEach(() => {
     response = new Subject();
     submit = jasmine.createSpy('submit').and.returnValue(response);
+    currentNavigation = jasmine.createSpy('currentNavigation').and.returnValue({ previousNavigation: { finalUrl: { toString: () => '/user/profile?tab=1' } } });
+    lastSuccessfulNavigation = jasmine.createSpy('lastSuccessfulNavigation').and.returnValue(null);
     TestBed.configureTestingModule({
       providers: [
         { provide: BugReportService, useValue: { submit } },
         { provide: AuthService, useValue: { getUserName: () => 'kiss.anna' } },
-        { provide: Router, useValue: { getCurrentNavigation: () => ({ previousNavigation: { finalUrl: { toString: () => '/user/profile?tab=1' } } }), lastSuccessfulNavigation: null } },
+        { provide: Router, useValue: { currentNavigation, lastSuccessfulNavigation } },
       ],
     });
     component = TestBed.runInInjectionContext(() => new BugReportComponent());
@@ -31,6 +35,20 @@ describe('Bug report form', () => {
   it('prefills the previous in-app page and shows the reporter', () => {
     expect(component.form.controls.pageUrl.value).toBe('/user/profile?tab=1');
     expect(component.reporterName).toBe('kiss.anna');
+  });
+
+  it('uses the last successful navigation when no navigation is currently running', () => {
+    currentNavigation.and.returnValue(null);
+    lastSuccessfulNavigation.and.returnValue({ previousNavigation: { finalUrl: { toString: () => '/coach/clients/7?workout=70&token=PRIVATE' } } });
+    const direct = TestBed.runInInjectionContext(() => new BugReportComponent());
+    expect(direct.form.controls.pageUrl.value).toBe('/coach/clients/7?workout=70');
+  });
+
+  it('leaves the source blank on a direct load without any previous navigation', () => {
+    currentNavigation.and.returnValue(null);
+    lastSuccessfulNavigation.and.returnValue(null);
+    const direct = TestBed.runInInjectionContext(() => new BugReportComponent());
+    expect(direct.form.controls.pageUrl.value).toBe('');
   });
 
   it('keeps only non-sensitive route identifiers in automatically prefilled report pages', () => {

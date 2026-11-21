@@ -185,7 +185,7 @@ test.describe('mobile navigation drawer keyboard accessibility', () => {
   test.use({ viewport: { width: 375, height: 812 } });
 
   test('drawer traps focus, closes on Escape and restores focus without leaving active navigation',
-    { tag: '@ci-workouts' }, async ({ page, api }) => {
+    { tag: ['@ci-workouts', '@ci-mobile'] }, async ({ page, api }) => {
       await page.goto('/coach/dashboard');
       const toggle = page.locator('header app-button').first().getByRole('button');
       const drawer = page.locator('#application-menu');
@@ -211,7 +211,7 @@ test.describe('mobile navigation drawer keyboard accessibility', () => {
       expect(api.writes()).toEqual([]);
     });
 
-  test('drawer returns to desktop navigation after widening', async ({ page }) => {
+  test('drawer returns to desktop navigation after widening', { tag: '@ci-mobile' }, async ({ page }) => {
     await page.goto('/coach/dashboard');
     const toggle = page.locator('header app-button').first().getByRole('button');
     const drawer = page.locator('#application-menu');

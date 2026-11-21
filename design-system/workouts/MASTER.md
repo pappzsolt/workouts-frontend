@@ -5,7 +5,7 @@ Source skill: https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
 This is a project-specific interpretation of its publicly documented design principles, **not** generated output from the upstream search script. Run `bash scripts/install-ui-ux-pro-max.sh` on an internet-connected development machine to install the original full skill.
 
 ## Product context
-Existing Angular 19 / Angular Material / Tailwind 3 application for sportspersons, coaches and administrators. Preserve every current feature, event handler, routerLink, form control, permission and API contract. Styling-only pass.
+Existing Angular 21 / Angular Material 21 / Tailwind 3 application for sportspersons, coaches and administrators. Preserve every current feature, event handler, routerLink, form control, permission and API contract. Styling-only pass.
 
 ## Design system
 - **Direction:** professional, calm, data-dense fitness SaaS. Not a marketing landing page.
