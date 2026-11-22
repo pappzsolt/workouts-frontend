@@ -37,6 +37,18 @@ export class DashboardNavigationComponent {
     return this.router.parseUrl(url);
   }
 
+  /** Only the route actually displayed may be marked as the current page.
+   * If a new route has no breadcrumb label yet, the dashboard must stay a link.
+   */
+  isCurrent(url: string): boolean {
+    return this.router.isActive(this.link(url), {
+      paths: 'exact',
+      queryParams: 'ignored',
+      fragment: 'ignored',
+      matrixParams: 'ignored',
+    });
+  }
+
   private update(): void {
     const tree = this.router.parseUrl(this.router.url);
     const segments = tree.root.children['primary']?.segments.map((segment) => segment.path) ?? [];
@@ -95,6 +107,7 @@ export class DashboardNavigationComponent {
       'coach/edit': 'adminCoachEdit.title',
       'login-audit-logs': 'adminLoginAudit.title',
       registrations: 'adminRegistrations.title',
+      'account-deletion-requests': 'deleteAccount.admin.title',
       'bug-reports': 'adminBugReports.title',
     };
     if (page === 'users/search') {
@@ -117,6 +130,8 @@ export class DashboardNavigationComponent {
       profile: 'userProfile.title',
       'my-programs': 'userMyPrograms.title',
       'workout-templates': 'workoutTemplates.title',
+      'exercise-library': 'userExerciseLibrary.title',
+      'completed-programs': 'completedProgramHistory.title',
       'personal-programs': 'personalPrograms.title',
       'personal-workouts': 'personalLibrary.workoutsTitle',
       'program-statistics': 'userProgramStatistics.title',

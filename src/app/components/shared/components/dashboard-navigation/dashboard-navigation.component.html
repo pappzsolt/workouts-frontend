@@ -7,7 +7,7 @@
           @if (!first) {
             <span aria-hidden="true" class="text-content-400">/</span>
           }
-          @if (last) {
+          @if (last && isCurrent(item.url)) {
             <span aria-current="page" class="font-semibold text-content-800">{{ item.label | translate }}</span>
           } @else {
             <a [routerLink]="link(item.url)" class="rounded text-primary-700 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary-600">{{ item.label | translate }}</a>
