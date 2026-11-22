@@ -56,7 +56,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
   private readonly router = inject(Router, { optional: true });
-  private readonly advancedExercises = new WeakSet<object>();
+  private exercisePendingAdvance?: UserWorkoutDetailDto['exercises'][number];
   private destroyed = false;
 
   workout?: UserWorkoutDetailDto;
@@ -120,6 +120,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
           this.restTimerRevision++;
           this.workout = undefined;
           this.workoutExercise = undefined;
+          this.exercisePendingAdvance = undefined;
           this.message = '';
           this.messageParams = {};
           this.messageType = '';
@@ -251,6 +252,9 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
    * és aktuális adatainak frissítése a backendben.
    */
   updateSetCompleted(set: UserWorkoutExerciseSetDto, completed: boolean): void {
+    if (completed && set.completed !== true && this.workout?.completed !== true) {
+      this.exercisePendingAdvance = this.workoutExercise;
+    }
     this.setSaves.createRequest(set, true, completed).pipe(takeUntil(this.destroy$)).subscribe({
       error: () => { /* The shared save reports the failure. */ },
     });
@@ -320,7 +324,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     if (this.workout?.completed === true) return;
     const exercise = this.workoutExercise;
     const sets = exercise?.userWorkoutExerciseSets;
-    if (!exercise || !sets?.length || this.advancedExercises.has(exercise)) return;
+    if (!exercise || !sets?.length || this.exercisePendingAdvance !== exercise) return;
     const ready = sets.every(set => {
       return set.completed === true
         && this.setSaves.isSettled(this.userWorkoutId, set.id)
@@ -334,7 +338,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     const index = exercises.indexOf(exercise);
     const next = index >= 0 ? exercises[index + 1] : undefined;
     if (!next || !this.router) return;
-    this.advancedExercises.add(exercise);
+    this.exercisePendingAdvance = undefined;
     void this.router.navigate(['/user/workouts', this.workoutId, 'exercises', next.exercise.id], {
       queryParamsHandling: 'merge',
     });

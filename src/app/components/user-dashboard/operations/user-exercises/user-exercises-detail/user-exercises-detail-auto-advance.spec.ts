@@ -49,6 +49,19 @@ describe('Automatic navigation after completing an exercise', () => {
     expect(navigate).toHaveBeenCalledOnceWith(['/user/workouts', 5, 'exercises', 8], { queryParamsHandling: 'merge' });
   });
 
+  it('stays on an already completed exercise when going back to a previous set', () => {
+    component.workout!.completed = false;
+    sets[3].completed = true;
+    component.currentSetIndex = 3;
+    sets[3].actualWeightKg = 30;
+
+    component.goToSet(2);
+    finish();
+
+    expect(component.currentSetIndex).toBe(2);
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
   it('stays in a completed workout after editing set details', () => {
     component.workout!.completed = true;
     sets[3].completed = true;
