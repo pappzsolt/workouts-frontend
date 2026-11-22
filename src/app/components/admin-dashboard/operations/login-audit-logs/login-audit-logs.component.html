@@ -125,7 +125,7 @@
     @if (!loading) {
       @if (logs.length > 0) {
         <app-card variant="outlined" class="block min-w-0">
-          <div class="workouts-table-scroll w-full overflow-x-auto">
+          <div class="workouts-table-scroll w-full max-w-full overflow-x-auto" tabindex="0">
             <table appTable class="min-w-[1100px]">
               <thead>
                 <tr class="border-b border-surface-200 bg-surface-50">

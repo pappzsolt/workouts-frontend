@@ -788,3 +788,21 @@ app-dialog :is([dialogHeader], [dialogActions]) {
     text-underline-offset: 0.25em;
   }
 }
+
+/* Mobile presentation only: controls remain fully visible without iOS input zoom.
+   Keep scrolling local to dense data tables, never to the whole page. */
+@media (max-width: 639px) {
+  :is(.workouts-main, app-login-layout, app-dialog)
+    :is(input:not([type='checkbox']):not([type='radio']), select, textarea) {
+    font-size: 1rem;
+  }
+
+  .workouts-main :is(img, video, iframe) {
+    max-inline-size: 100%;
+  }
+
+  .workouts-main .workouts-table-scroll {
+    max-inline-size: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+}

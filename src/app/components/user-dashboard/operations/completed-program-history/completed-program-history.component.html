@@ -65,7 +65,7 @@
               @if (program.description) {
                 <p class="mb-3 text-sm text-content-600">{{ program.description }}</p>
               }
-              <div class="grid grid-cols-2 gap-3 text-sm">
+              <div class="grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
                 <div>
                   <span class="block text-content-500">{{
                     'userMyPrograms.startDate' | translate
@@ -107,7 +107,7 @@
         @if (selectedProgram.description) {
           <p class="text-content-600">{{ selectedProgram.description }}</p>
         }
-        <div class="grid grid-cols-2 gap-3 rounded-xl bg-white p-4 text-sm">
+        <div class="grid grid-cols-1 gap-3 rounded-xl bg-white p-4 text-sm sm:grid-cols-2">
           <div>
             {{ 'userMyPrograms.startDate' | translate }}:
             <strong>{{ selectedProgram.startDate | date: 'yyyy.MM.dd' }}</strong>
@@ -236,7 +236,7 @@
                 {{ 'completedProgramHistory.notes' | translate }}: {{ exercise.notes }}
               </p>
             }
-            <div class="workouts-table-scroll mt-4 overflow-x-auto">
+            <div class="workouts-table-scroll mt-4 max-w-full overflow-x-auto" tabindex="0">
               <table class="w-full min-w-[660px] text-left text-sm">
                 <thead>
                   <tr class="border-b border-surface-200 text-content-600">

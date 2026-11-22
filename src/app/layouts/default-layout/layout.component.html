@@ -4,14 +4,14 @@
   <!-- ===================================================== -->
 
   <header
-    class="workouts-topbar relative z-30 flex min-h-16 items-center justify-between gap-3 bg-gradient-to-r from-primary-700 to-primary-800 px-4 py-3 text-white shadow-md sm:px-6"
+    class="workouts-topbar relative z-30 flex min-h-16 flex-col items-stretch justify-between gap-3 bg-gradient-to-r from-primary-700 to-primary-800 px-4 py-3 text-white shadow-md sm:flex-row sm:items-center sm:px-6"
   >
     <!-- Dátum -->
     <div class="shrink-0 whitespace-nowrap text-sm font-semibold tabular-nums sm:text-base">
       {{ currentDate | date: 'yyyy.MM.dd' }}
     </div>
 
-    <div class="flex min-w-0 flex-wrap items-center justify-end gap-2 sm:gap-3">
+    <div class="flex w-full min-w-0 flex-wrap items-center justify-between gap-2 sm:w-auto sm:justify-end sm:gap-3">
       <!-- Hamburger menü mobilon -->
       <app-button
         #mobileMenuButton
