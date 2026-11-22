@@ -7,6 +7,9 @@ export interface PersonalSetTarget {
 }
 export interface PersonalProgramExercise {
   exerciseId: number;
+  /** Execution-only identity; never part of the shared template request. */
+  userExerciseId?: number | null;
+  executionEditable?: boolean;
   setTargets?: PersonalSetTarget[] | null;
   sets: number;
   repetitions: number;
@@ -49,12 +52,13 @@ export interface PersonalDayTargets {
   dayIndex: number;
   version: number;
   editable: boolean;
-  exercises: { exerciseIndex: number; sets: Pick<PersonalSetTarget,
+  exercises: { exerciseIndex: number; userExerciseId: number; exerciseId: number; editable: boolean;
+    sets: Pick<PersonalSetTarget,
     'targetRepetitions' | 'targetWeightKg' | 'restSeconds' | 'targetRpe'>[] }[];
 }
 export interface PersonalDayTargetsUpdate {
   expectedVersion: number;
-  exercises: PersonalDayTargets['exercises'];
+  exercises: { exerciseIndex: number; userExerciseId: number | null; exerciseId: number; sets: PersonalDayTargets['exercises'][number]['sets'] }[];
 }
 
 /** Current execution dates of a started personal program, independent of the immutable draft day index. */

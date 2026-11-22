@@ -61,6 +61,49 @@ describe('Personal program planner and per-set targets', () => {
     expect(targets.exercise.setTargets![1].targetWeightKg).toBe(42.5);
   });
 
+  it('adds and removes live execution sets without changing a frozen template or performed results', () => {
+    const { state } = setup();
+    const frozen = structuredClone(state.model.workouts[0].exercises[0]);
+    const execution = structuredClone(frozen);
+    const targets = new PersonalExerciseTargetsComponent();
+    targets.exercise = execution;
+    targets.targetOnly = true;
+    const changed = jasmine.createSpy('changed');
+    targets.changed.subscribe(changed);
+
+    execution.setTargets![1].targetWeightKg = 67;
+    targets.addSet();
+    expect(execution.sets).toBe(3);
+    expect(execution.setTargets![2].targetWeightKg).toBe(67);
+    expect(execution.setTargets![2]).not.toBe(execution.setTargets![1]);
+    targets.removeSet(0);
+    expect(execution.sets).toBe(2);
+    expect(execution.setTargets!.length).toBe(2);
+    expect(changed).toHaveBeenCalledTimes(2);
+    expect(state.model.workouts[0].exercises[0]).toEqual(frozen);
+    expect(validPersonalPrescriptions({ ...state.model,
+      workouts: [{ ...state.model.workouts[0], exercises: [execution] }],
+    })).toBeTrue();
+  });
+
+  it('enforces execution set boundaries and blocks changes to locked workouts', () => {
+    const { targets } = setup();
+    targets.targetOnly = true;
+    targets.removeSet(0);
+    expect(targets.exercise.sets).toBe(1);
+    targets.removeSet(0);
+    expect(targets.exercise.sets).toBe(1);
+    targets.exercise.setTargets = Array.from({ length: targets.limits.maxSets },
+      () => ({ targetRepetitions: 10, targetWeightKg: null, restSeconds: 60,
+        targetRpe: null, notes: null }));
+    targets.exercise.sets = targets.limits.maxSets;
+    targets.addSet();
+    expect(targets.exercise.sets).toBe(targets.limits.maxSets);
+    targets.locked = true;
+    targets.removeSet(0);
+    expect(targets.exercise.sets).toBe(targets.limits.maxSets);
+  });
+
   it('selects rest days without discarding edits and repeats independent workouts only into empty weeks', () => {
     const { state, days, targets } = setup();
     targets.exercise.setTargets![0].targetWeightKg = 42.5;

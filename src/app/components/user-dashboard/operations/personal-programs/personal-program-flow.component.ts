@@ -16,7 +16,8 @@ import { PersonalMoveDatePickerComponent, PersonalMoveDateOption } from './perso
 import type { PersonalProgramState } from './personal-program-state';
 import type { PersonalProgramDays } from './personal-program-days';
 import type { PersonalProgramActions } from './personal-program-actions';
-import { validPersonalPrescriptions } from './personal-prescriptions';
+import { initialSetTargets, syncExercisePrescription, validPersonalPrescriptions } from './personal-prescriptions';
+import { WORKOUT_PRESCRIPTION_LIMITS } from '../../../../models/workout-prescription-limits';
 import { addDays, fromIsoDate, toIsoDate } from '../../../../shared/local-date';
 import { programDayDate, programDayIndex, programEndDate } from '../../../../shared/program-date';
 
@@ -52,6 +53,8 @@ export class PersonalProgramFlowComponent implements OnChanges {
   targetSession: PersonalDayTargets | null = null;
   targetDay: PersonalProgramDay | null = null;
   targetLoading = false;
+  startedPickerOpen = false;
+  get startedChosenIds(): number[] { return this.targetDay?.exercises.map(exercise => exercise.exerciseId) ?? []; }
   get targetDirty(): boolean { return this.state.executionTargetsDirty; }
   /** A previously started target GET must not replace newer edits or versions. */
   private targetRequestSequence = 0;
@@ -212,28 +215,37 @@ export class PersonalProgramFlowComponent implements OnChanges {
         if (requestSequence !== this.targetRequestSequence ||
             this.state.id !== id || this.activeDay?.dayIndex !== dayIndex) return;
         this.targetLoading = false;
-        const copy = structuredClone(day);
-        // Each exercise is mapped only by its validated server-side order index.
-        if (!result || !Array.isArray(result.exercises) ||
-            result.exercises.length !== copy.exercises.length ||
-            Array.from(result.exercises).some(exercise => !exercise ||
-              !Number.isInteger(exercise.exerciseIndex) ||
-              exercise.exerciseIndex < 0 || exercise.exerciseIndex >= copy.exercises.length ||
-              !Array.isArray(exercise.sets) ||
-              exercise.sets.length !== copy.exercises[exercise.exerciseIndex].sets ||
-              Array.from(exercise.sets).some(set => !set || typeof set !== 'object')) ||
-            new Set(result.exercises.map(exercise => exercise.exerciseIndex)).size !== result.exercises.length) {
+        if (!result || !Array.isArray(result.exercises) || result.exercises.length < 1 ||
+            result.exercises.length > 100 ||
+            result.exercises.some((exercise, index) => !exercise ||
+              exercise.exerciseIndex !== index || !Number.isInteger(exercise.userExerciseId) ||
+              !Number.isInteger(exercise.exerciseId) || !Array.isArray(exercise.sets) ||
+              exercise.sets.length < 1 || exercise.sets.length > WORKOUT_PRESCRIPTION_LIMITS.maxSets ||
+              exercise.sets.some(set => !set || typeof set !== 'object')) ||
+            new Set(result.exercises.map(exercise => exercise.userExerciseId)).size !== result.exercises.length) {
           this.state.message = 'personalEditorUi.targetsLoadFailed';
           this.state.messageType = 'error';
           return;
         }
-        for (const exercise of result.exercises) {
-          const target = copy.exercises[exercise.exerciseIndex];
-          const existing = target.setTargets ?? [];
+        const copy = structuredClone(day);
+        // An execution can have newly added, replaced or removed exercises.
+        // The original program template is never used as the source of truth.
+        copy.exercises = result.exercises.map(exercise => {
+          const source = day.exercises.find(row => row.exerciseId === exercise.exerciseId);
+          const first = exercise.sets[0];
+          const target: PersonalProgramExercise = source ? structuredClone(source) : {
+            exerciseId: exercise.exerciseId, sets: exercise.sets.length,
+            repetitions: first.targetRepetitions, restSeconds: first.restSeconds, notes: null,
+          };
+          const old = source?.setTargets ?? [];
           target.setTargets = exercise.sets.map((set, index) => ({
-            ...set, notes: existing[index]?.notes ?? target.notes,
+            ...set, notes: old[index]?.notes ?? target.notes,
           }));
-        }
+          target.userExerciseId = exercise.userExerciseId;
+          target.executionEditable = exercise.editable;
+          syncExercisePrescription(target);
+          return target;
+        });
         this.targetDay = copy;
         this.targetSession = result;
       },
@@ -269,22 +281,42 @@ export class PersonalProgramFlowComponent implements OnChanges {
       this.state.messageType = 'error';
       return;
     }
+    const exercises = target.exercises.map((exercise, exerciseIndex) => ({
+      exerciseIndex,
+      userExerciseId: exercise.userExerciseId ?? null,
+      exerciseId: exercise.exerciseId,
+      sets: (exercise.setTargets ?? []).map(row => ({
+        targetRepetitions: row.targetRepetitions,
+        targetWeightKg: row.targetWeightKg,
+        restSeconds: row.restSeconds,
+        targetRpe: row.targetRpe,
+      })),
+    }));
     this.state.busy = true;
     this.service.updateDayTargets(id, session.dayIndex, {
-      expectedVersion: session.version,
-      exercises: target.exercises.map((exercise, exerciseIndex) => ({
-        exerciseIndex,
-        sets: (exercise.setTargets ?? []).map(row => ({
-          targetRepetitions: row.targetRepetitions,
-          targetWeightKg: row.targetWeightKg,
-          restSeconds: row.restSeconds,
-          targetRpe: row.targetRpe,
-        })),
-      })),
+      expectedVersion: session.version, exercises,
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (saved) => {
         this.state.busy = false;
+        // A successful HTTP response is not enough: the server must retain
+        // the new set counts. Never display "saved" for a silently rejected edit.
+        if (!saved?.exercises || saved.exercises.length !== exercises.length ||
+            exercises.some(submitted => {
+              const returned = saved.exercises.find(exercise => exercise.exerciseIndex === submitted.exerciseIndex);
+              return !returned || returned.exerciseId !== submitted.exerciseId ||
+                returned.sets.length !== submitted.sets.length;
+            })) {
+          this.state.message = 'personalEditorUi.targetsSaveMismatch';
+          this.state.messageType = 'error';
+          return;
+        }
         this.targetSession = saved;
+        saved.exercises.forEach((row, index) => {
+          if (target.exercises[index]) {
+            target.exercises[index].userExerciseId = row.userExerciseId;
+            target.exercises[index].executionEditable = row.editable;
+          }
+        });
         this.state.executionTargetsDirty = false;
         this.state.message = 'personalEditorUi.targetsSaved';
         this.state.messageType = 'success';
@@ -418,13 +450,38 @@ export class PersonalProgramFlowComponent implements OnChanges {
     this.targetLoading = false;
     this.editingDay = null;
     this.days.pickerDay = null;
+    this.startedPickerOpen = false;
     this.view = 'calendar';
   }
 
   backToDay(): void {
     if (this.state.busy) return;
     this.days.pickerDay = null;
+    this.startedPickerOpen = false;
     this.view = 'day';
+  }
+
+  addStartedExercise(exercise: CoachExerciseSearchItem): void {
+    const day = this.targetDay;
+    if (!this.targetSession?.editable || !day || this.state.busy ||
+        day.exercises.length >= 100 || day.exercises.some(row => row.exerciseId === exercise.id)) return;
+    this.days.names[exercise.id] = exercise.name;
+    const created: PersonalProgramExercise = {
+      exerciseId: exercise.id, userExerciseId: null, executionEditable: true,
+      sets: 3, repetitions: 10, restSeconds: 60, notes: null,
+    };
+    day.exercises.push({ ...created, setTargets: initialSetTargets(created) });
+    this.startedPickerOpen = false;
+    this.targetChanged();
+    this.openExercise(day.exercises.length - 1);
+  }
+
+  removeStartedExercise(index: number): void {
+    const day = this.targetDay;
+    if (!this.targetSession?.editable || !day || day.exercises.length <= 1 ||
+        !day.exercises[index]?.executionEditable || this.state.busy) return;
+    day.exercises.splice(index, 1);
+    this.targetChanged();
   }
 
   addExercise(exercise: CoachExerciseSearchItem): void {

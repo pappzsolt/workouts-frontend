@@ -145,7 +145,7 @@ describe('Personal multi-day program flow', () => {
     const targets = (version: number): PersonalDayTargets => ({
       dayIndex: 1, version, editable: true,
       exercises: state.model.workouts[0].exercises.map((exercise, exerciseIndex) => ({
-        exerciseIndex,
+        exerciseIndex, userExerciseId: 100 + exerciseIndex, exerciseId: exercise.exerciseId, editable: true,
         sets: Array.from({ length: exercise.sets }, () => ({
           targetRepetitions: version + 3, targetWeightKg: 50, restSeconds: 60, targetRpe: 8,
         })),
@@ -172,8 +172,8 @@ describe('Personal multi-day program flow', () => {
       targetRepetitions: 5, targetWeightKg: 50, restSeconds: 60, targetRpe: 8,
     }));
     const valid = [
-      { exerciseIndex: 0, sets: sets(3) },
-      { exerciseIndex: 1, sets: sets(2) },
+      { exerciseIndex: 0, userExerciseId: 100, exerciseId: 12, editable: true, sets: sets(3) },
+      { exerciseIndex: 1, userExerciseId: 101, exerciseId: 13, editable: true, sets: sets(2) },
     ];
     const invalid: unknown[][] = [
       [{ ...valid[0], exerciseIndex: 0.5 }, valid[1]],
@@ -181,7 +181,7 @@ describe('Personal multi-day program flow', () => {
       [{ ...valid[0], exerciseIndex: -1 }, valid[1]],
       [{ ...valid[0], exerciseIndex: 2 }, valid[1]],
       [valid[0], { ...valid[1], exerciseIndex: 0 }],
-      [valid[0], { ...valid[1], sets: sets(1) }],
+      [valid[0], { ...valid[1], userExerciseId: 100 }],
       [valid[0], { ...valid[1], sets: null }],
     ];
     for (const exercises of invalid) {
@@ -197,24 +197,151 @@ describe('Personal multi-day program flow', () => {
     expect(state.message).toBe('personalEditorUi.targetsLoadFailed');
   });
 
-  it('maps a valid reordered target response to the correct immutable exercise indexes', () => {
+  it('rejects non-sequential execution order instead of applying targets to the wrong exercise', () => {
     state.id = 7;
     state.started = true;
-    const targetSets = (count: number, reps: number) => Array.from({ length: count }, () => ({
-      targetRepetitions: reps, targetWeightKg: 42, restSeconds: 60, targetRpe: 7,
-    }));
+    const set = { targetRepetitions: 8, targetWeightKg: 42, restSeconds: 60, targetRpe: 7 };
     service.dayTargets.and.returnValue(of({
       dayIndex: 1, version: 3, editable: true,
       exercises: [
-        { exerciseIndex: 1, sets: targetSets(2, 8) },
-        { exerciseIndex: 0, sets: targetSets(3, 5) },
+        { exerciseIndex: 1, userExerciseId: 101, exerciseId: 13, editable: true, sets: [set] },
+        { exerciseIndex: 0, userExerciseId: 100, exerciseId: 12, editable: true, sets: [set] },
       ],
     }));
     flow.openDay();
-    expect(flow.targetDay?.exercises[0].setTargets?.[0].targetRepetitions).toBe(5);
-    expect(flow.targetDay?.exercises[1].setTargets?.[0].targetRepetitions).toBe(8);
-    expect(state.model.workouts[0].exercises[0].setTargets).toBeUndefined();
+    expect(flow.targetDay).toBeNull();
+    expect(state.message).toBe('personalEditorUi.targetsLoadFailed');
+  });
+
+  it('adds and removes future exercises but leaves a completed exercise and the blueprint untouched', () => {
+    state.id = 7;
+    state.started = true;
+    const blueprint = structuredClone(state.model.workouts);
+    const base: PersonalDayTargets = {
+      dayIndex: 1, version: 2, editable: true,
+      exercises: [
+        { exerciseIndex: 0, userExerciseId: 100, exerciseId: 12, editable: false,
+          sets: [{ targetRepetitions: 5, targetWeightKg: 90, restSeconds: 120, targetRpe: 8 }] },
+        { exerciseIndex: 1, userExerciseId: 101, exerciseId: 13, editable: true,
+          sets: [{ targetRepetitions: 8, targetWeightKg: 30, restSeconds: 60, targetRpe: 7 }] },
+      ],
+    };
+    service.dayTargets.and.returnValue(of(base));
+    flow.openDay();
+    expect(flow.targetDay?.exercises[0].executionEditable).toBeFalse();
+    flow.removeStartedExercise(0);
+    expect(flow.targetDay?.exercises.length).toBe(2);
+    flow.removeStartedExercise(1);
+    expect(flow.targetDay?.exercises.length).toBe(1);
+    flow.addStartedExercise({ id: 14, name: 'Új gyakorlat' } as never);
+    expect(flow.targetDay?.exercises.map(row => row.exerciseId)).toEqual([12, 14]);
+    expect(flow.targetDay?.exercises[1].sets).toBe(3);
+    expect(state.model.workouts).toEqual(blueprint);
+
+    const saved: PersonalDayTargets = { dayIndex: 1, version: 3, editable: true,
+      exercises: [base.exercises[0], {
+        exerciseIndex: 1, userExerciseId: 102, exerciseId: 14, editable: true,
+        sets: Array.from({ length: 3 }, () => ({ targetRepetitions: 10,
+          targetWeightKg: null, restSeconds: 60, targetRpe: null })),
+      }],
+    };
+    service.updateDayTargets.and.returnValue(of(saved));
+    flow.saveTargets();
+    const submitted = service.updateDayTargets.calls.mostRecent().args[2];
+    expect(submitted.exercises.map(item => item.exerciseId)).toEqual([12, 14]);
+    expect(submitted.exercises[0].userExerciseId).toBe(100);
+    expect(submitted.exercises[1].userExerciseId).toBeNull();
+    expect(flow.targetDay?.exercises[1].userExerciseId).toBe(102);
+    expect(state.model.workouts).toEqual(blueprint);
+    expect(state.executionTargetsDirty).toBeFalse();
+  });
+
+  it('loads a different live set count without mutating the started program template', () => {
+    state.id = 7;
+    state.started = true;
+    const original = structuredClone(state.model.workouts);
+    const result: PersonalDayTargets = {
+      dayIndex: 1, version: 3, editable: true,
+      exercises: [
+        { exerciseIndex: 0, userExerciseId: 100, exerciseId: 12, editable: true, sets: Array.from({ length: 4 }, () => ({
+          targetRepetitions: 3, targetWeightKg: 75, restSeconds: 180, targetRpe: 8,
+        })) },
+        { exerciseIndex: 1, userExerciseId: 101, exerciseId: 13, editable: true, sets: Array.from({ length: 2 }, () => ({
+          targetRepetitions: 8, targetWeightKg: 40, restSeconds: 90, targetRpe: 7,
+        })) },
+      ],
+    };
+    service.dayTargets.and.returnValue(of(result));
+    service.updateDayTargets.and.returnValue(of({ ...result, version: 4, exercises: [
+      { ...result.exercises[0], sets: result.exercises[0].sets.slice(0, 3) }, result.exercises[1],
+    ] }));
+
+    flow.openDay();
     expect(flow.targetSession?.version).toBe(3);
+    expect(flow.targetDay?.exercises[0].sets).toBe(4);
+    expect(flow.targetDay?.exercises[0].setTargets?.length).toBe(4);
+    expect(flow.targetDay?.exercises[0].repetitions).toBe(3);
+    expect(state.model.workouts).toEqual(original);
+
+    const execution = flow.targetDay!.exercises[0];
+    execution.setTargets!.splice(2, 1);
+    execution.sets = execution.setTargets!.length;
+    flow.targetChanged();
+    flow.saveTargets();
+
+    const [, , payload] = service.updateDayTargets.calls.mostRecent().args;
+    expect(payload.expectedVersion).toBe(3);
+    expect(payload.exercises[0].sets.length).toBe(3);
+    expect(payload.exercises[1].sets.length).toBe(2);
+    expect(state.model.workouts).toEqual(original);
+    expect(state.executionTargetsDirty).toBeFalse();
+  });
+
+  it('keeps the live edit dirty if the server silently returns the old set count', () => {
+    state.id = 7;
+    state.started = true;
+    const original: PersonalDayTargets = {
+      dayIndex: 1, version: 3, editable: true,
+      exercises: state.model.workouts[0].exercises.map((exercise, exerciseIndex) => ({
+        exerciseIndex, userExerciseId: 100 + exerciseIndex, exerciseId: exercise.exerciseId, editable: true,
+        sets: Array.from({ length: exercise.sets }, () => ({
+          targetRepetitions: exercise.repetitions, targetWeightKg: null,
+          restSeconds: exercise.restSeconds, targetRpe: null,
+        })),
+      })),
+    };
+    service.dayTargets.and.returnValue(of(original));
+    service.updateDayTargets.and.returnValue(of({ ...original, version: 4 }));
+    flow.openDay();
+    const execution = flow.targetDay!.exercises[0];
+    execution.setTargets!.push({ ...execution.setTargets![2] });
+    execution.sets = execution.setTargets!.length;
+    flow.targetChanged();
+    flow.saveTargets();
+
+    expect(state.executionTargetsDirty).toBeTrue();
+    expect(flow.targetSession?.version).toBe(3);
+    expect(state.message).toBe('personalEditorUi.targetsSaveMismatch');
+    expect(state.messageType).toBe('error');
+    expect(flow.targetDay?.exercises[0].sets).toBe(4);
+    expect(state.model.workouts[0].exercises[0].sets).toBe(3);
+  });
+
+  it('rejects empty or over-limit set counts in the execution target response', () => {
+    state.id = 7;
+    state.started = true;
+    service.dayTargets.and.returnValue(of({
+      dayIndex: 1, version: 3, editable: true,
+      exercises: [
+        { exerciseIndex: 0, userExerciseId: 100, exerciseId: 12, editable: true, sets: [] },
+        { exerciseIndex: 1, userExerciseId: 101, exerciseId: 13, editable: true, sets: [{ targetRepetitions: 8, targetWeightKg: null,
+          restSeconds: 90, targetRpe: null }] },
+      ],
+    }));
+    flow.openDay();
+    expect(flow.targetDay).toBeNull();
+    expect(flow.targetSession).toBeNull();
+    expect(state.message).toBe('personalEditorUi.targetsLoadFailed');
   });
 
   it('keeps execution target edits through a failed save and day navigation, independently of the template', () => {
@@ -223,7 +350,7 @@ describe('Personal multi-day program flow', () => {
     const targets: PersonalDayTargets = {
       dayIndex: 1, version: 3, editable: true,
       exercises: state.model.workouts[0].exercises.map((exercise, exerciseIndex) => ({
-        exerciseIndex,
+        exerciseIndex, userExerciseId: 100 + exerciseIndex, exerciseId: exercise.exerciseId, editable: true,
         sets: Array.from({ length: exercise.sets }, () => ({
           targetRepetitions: 5, targetWeightKg: null, restSeconds: 60, targetRpe: null,
         })),

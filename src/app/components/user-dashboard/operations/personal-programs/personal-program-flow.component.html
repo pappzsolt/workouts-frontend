@@ -20,7 +20,7 @@
       </span>
     </nav>
     <span class="rounded-full bg-surface-100 px-3 py-1 text-xs font-semibold text-content-700">
-      {{ (state.dirty || state.id === null ? 'personalPrograms.flow.unsaved' : 'personalPrograms.flow.saved') | translate }}
+      {{ (state.hasUnsavedChanges || state.id === null ? 'personalPrograms.flow.unsaved' : 'personalPrograms.flow.saved') | translate }}
     </span>
   </div>
 
@@ -293,6 +293,12 @@
             {{ 'personalPrograms.flow.exercises' | translate }}
             <span class="ml-1 text-sm font-normal text-content-500">({{ day.exercises.length }})</span>
           </h3>
+          @if (state.started && !state.standaloneMode && targetSession?.editable) {
+            <button type="button" class="btn btn-primary" [disabled]="state.busy || day.exercises.length >= 100"
+                    (click)="startedPickerOpen = !startedPickerOpen">
+              {{ (startedPickerOpen ? 'personalPrograms.closePicker' : 'personalPrograms.addExercise') | translate }}
+            </button>
+          }
           @if (!state.started) {
             <button type="button" class="btn btn-primary" [disabled]="state.locked || day.exercises.length >= 100"
                     (click)="days.pickerDay = days.pickerDay === day ? null : day">
@@ -300,6 +306,11 @@
             </button>
           }
         </div>
+        @if (state.started && !state.standaloneMode && startedPickerOpen && targetSession?.editable) {
+          <div class="mb-4 rounded-xl border border-surface-200 p-3">
+            <app-exercise-picker [chosenIds]="startedChosenIds" (picked)="addStartedExercise($event)" />
+          </div>
+        }
         @if (days.pickerDay === day && !state.started) {
           <div class="mb-4 rounded-xl border border-surface-200 p-3">
             <app-exercise-picker [chosenIds]="days.chosenIds" (picked)="addExercise($event)" />
@@ -323,6 +334,12 @@
                 </span>
                 <span class="ml-auto font-bold text-primary-700" aria-hidden="true">›</span>
               </button>
+              @if (state.started && !state.standaloneMode && targetSession?.editable && exercise.executionEditable) {
+                <button type="button" class="btn btn-delete px-2" (click)="removeStartedExercise(i)"
+                        [disabled]="state.busy || day.exercises.length <= 1"
+                        [attr.aria-label]="('personalPrograms.removeExercise' | translate) + ': ' +
+                          (days.names[exercise.exerciseId] || exercise.exerciseId)">×</button>
+              }
               @if (!state.started) {
                 <div class="ml-auto flex shrink-0 gap-1 sm:ml-0">
                   <button type="button" class="btn btn-neutral px-2" (click)="days.moveExercise(day, i, -1)"
@@ -390,7 +407,7 @@
         <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>
             <p class="text-xs font-semibold uppercase tracking-wider text-content-500">
-              {{ 'personalPrograms.flow.exerciseProgress' | translate: { current: exerciseIndex + 1, total: activeDay?.exercises?.length } }}
+              {{ 'personalPrograms.flow.exerciseProgress' | translate: { current: exerciseIndex + 1, total: dayForDisplay?.exercises?.length } }}
             </p>
             <h2 class="mt-1 break-words text-xl font-bold text-content-900">
               {{ days.names[exercise.exerciseId] || ('personalPrograms.exerciseFallback' | translate: { id: exercise.exerciseId }) }}
@@ -399,7 +416,7 @@
         </div>
         <app-personal-exercise-targets [exercise]="exercise"
           [exerciseName]="days.names[exercise.exerciseId] || ('personalPrograms.exerciseFallback' | translate: { id: exercise.exerciseId })"
-          [locked]="state.started && !state.standaloneMode ? (!targetSession?.editable || state.busy) : state.locked"
+          [locked]="state.started && !state.standaloneMode ? (!targetSession?.editable || !exercise.executionEditable || state.busy) : state.locked"
           [targetOnly]="state.started && !state.standaloneMode"
           (changed)="state.started && !state.standaloneMode ? targetChanged() : state.changed()" />
         @if (state.started && !state.standaloneMode && targetSession?.editable) {
@@ -416,7 +433,7 @@
           <button type="button" class="btn btn-neutral" (click)="nextExercise(-1)" [disabled]="exerciseIndex === 0">
             ← {{ 'personalPrograms.flow.previousExercise' | translate }}
           </button>
-          @if (exerciseIndex < (activeDay?.exercises?.length ?? 0) - 1) {
+          @if (exerciseIndex < (dayForDisplay?.exercises?.length ?? 0) - 1) {
             <button type="button" class="btn btn-primary" (click)="nextExercise(1)">
               {{ 'personalPrograms.flow.nextExercise' | translate }} <span aria-hidden="true">→</span>
             </button>

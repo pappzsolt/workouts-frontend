@@ -58,7 +58,7 @@ export class PersonalExerciseTargetsComponent {
   @Input({ required: true }) exercise!: PersonalProgramExercise;
   @Input({ required: true }) exerciseName = '';
   @Input() locked = false;
-  /** Started executions allow target changes, never structural or performance changes. */
+  /** Started executions edit their own targets; notes and performed results remain unchanged. */
   @Input() targetOnly = false;
   @Output() readonly changed = new EventEmitter<void>();
   readonly limits = WORKOUT_PRESCRIPTION_LIMITS;
@@ -66,12 +66,14 @@ export class PersonalExerciseTargetsComponent {
 
   update(): void {
     if (this.locked) return;
-    if (!this.targetOnly) syncExercisePrescription(this.exercise);
+    // Keep the aggregate count in sync for both drafts and editable execution copies.
+    // Started workouts receive a cloned exercise, never the frozen program template.
+    syncExercisePrescription(this.exercise);
     this.changed.emit();
   }
 
   addSet(): void {
-    if (this.locked || this.targetOnly || this.exercise.sets >= this.limits.maxSets) return;
+    if (this.locked || this.exercise.sets >= this.limits.maxSets) return;
     this.exercise.setTargets ??= initialSetTargets(this.exercise);
     const last = this.exercise.setTargets.at(-1)!;
     this.exercise.setTargets.push({ ...last });
@@ -79,7 +81,8 @@ export class PersonalExerciseTargetsComponent {
   }
 
   removeSet(index: number): void {
-    if (this.locked || this.targetOnly || !this.exercise.setTargets || this.exercise.setTargets.length <= 1) return;
+    if (this.locked || !this.exercise.setTargets || this.exercise.setTargets.length <= 1 ||
+        !Number.isInteger(index) || index < 0 || index >= this.exercise.setTargets.length) return;
     this.exercise.setTargets.splice(index, 1);
     this.update();
   }
