@@ -19,7 +19,7 @@ describe('Backend messages presented by coach and user components', () => {
   beforeEach(() => {
     profileApi = jasmine.createSpyObj('CoachProfileService', ['saveCoachProfile']);
     TestBed.configureTestingModule({ providers: [
-      { provide: AuthService, useValue: {} },
+      { provide: AuthService, useValue: { getSessionVersion: () => 1 } },
       { provide: CoachProfileService, useValue: profileApi },
       { provide: LoggerService, useValue: { error: () => undefined } },
       { provide: UserMyProgramsService, useValue: { getPrograms: () => of({ success: true, data: [], message: null }) } },

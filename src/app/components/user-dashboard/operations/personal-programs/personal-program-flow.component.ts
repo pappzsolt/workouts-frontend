@@ -363,6 +363,8 @@ export class PersonalProgramFlowComponent implements OnChanges {
   get restDays(): number { return Math.max(0, this.state.model.durationDays - this.plannedDays); }
 
   selectDay(day: number): void {
+    // A pending move/save owns the selected occurrence until its response settles.
+    if (this.state.busy) return;
     if (this.state.started && this.targetDirty) {
       this.state.message = 'personalEditorUi.saveTargetsFirst';
       this.state.messageType = 'error';
@@ -406,6 +408,7 @@ export class PersonalProgramFlowComponent implements OnChanges {
   nextExercise(direction: -1 | 1): void { this.openExercise(this.exerciseIndex + direction); }
 
   backToCalendar(): void {
+    if (this.state.busy) return;
     if (this.targetDirty) {
       this.state.message = 'personalEditorUi.saveTargetsFirst';
       this.state.messageType = 'error';
@@ -419,6 +422,7 @@ export class PersonalProgramFlowComponent implements OnChanges {
   }
 
   backToDay(): void {
+    if (this.state.busy) return;
     this.days.pickerDay = null;
     this.view = 'day';
   }

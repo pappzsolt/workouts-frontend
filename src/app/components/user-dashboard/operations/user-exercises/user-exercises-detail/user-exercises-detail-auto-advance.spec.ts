@@ -147,7 +147,16 @@ describe('Automatic navigation after completing an exercise', () => {
     component.updateSetCompleted(sets[3], true);
     finish(); expect(navigate).not.toHaveBeenCalled();
     finish(1); expect(navigate).toHaveBeenCalledTimes(1);
-    component.saveSetDetails(sets[3], false); finish(2);
+    // A blur/save without changes must not send a redundant PATCH.
+    component.saveSetDetails(sets[3], false);
+    expect(requests.length).toBe(2);
+    expect(navigate).toHaveBeenCalledTimes(1);
+
+    // A subsequent real edit still saves, but must not advance a second time.
+    sets[3].actualWeightKg = 25;
+    component.saveSetDetails(sets[3], false);
+    expect(requests.length).toBe(3);
+    finish(2);
     expect(navigate).toHaveBeenCalledTimes(1);
   });
 

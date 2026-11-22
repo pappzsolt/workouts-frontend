@@ -30,7 +30,7 @@ describe('Program operation safety', () => {
     component=TestBed.runInInjectionContext(()=>new CoachProgramEditorComponent()); component.ngOnInit();
   });
 
-  it('blocks another weekly write until a fresh schedule includes the confirmed days', () => {
+  it('blocks weekly writes after a partial failure until a fresh schedule is explicitly reconciled', () => {
     const first = new Subject<void>();
     const second = new Subject<void>();
     const refresh = new Subject<CoachProgramDayLink[]>();
@@ -48,23 +48,24 @@ describe('Program operation safety', () => {
     expect(component.state.message).toBe('coachWorkspace.editor.repeatPartial');
     expect(component.workouts.needsRepeatReconciliation).toBeTrue();
 
+    // A manual refresh reconciles against the *current* server schedule.
+    // If the previously confirmed day was removed elsewhere, it must be
+    // eligible for a new repeat rather than leaving the editor locked forever.
     api.getProgramDays.and.returnValue(of([original]));
     component.workouts.refreshRepeatSchedule();
-    component.workouts.repeatWeekly();
-    expect(component.workouts.needsRepeatReconciliation).toBeTrue();
-    expect(api.addWorkoutToDay).toHaveBeenCalledTimes(2);
-
-    const confirmed = { ...original, id: 12, dayIndex: 8 };
-    api.getProgramDays.and.returnValue(of([original, confirmed]));
-    component.workouts.refreshRepeatSchedule();
     expect(component.workouts.needsRepeatReconciliation).toBeFalse();
+    expect(component.state.message).toBe('coachWorkspace.editor.repeatScheduleChanged');
     expect(api.addWorkoutToDay).toHaveBeenCalledTimes(2);
     expect(component.state.form.programName).toBe('Unsaved name');
 
+    // A deliberate retry must follow the freshly loaded dates, not the old
+    // partial-write confirmation. It must not happen before refresh.
     const retry = new Subject<void>();
-    api.addWorkoutToDay.and.returnValue(retry);
+    api.addWorkoutToDay.and.returnValues(of(undefined), retry);
     component.workouts.repeatWeekly();
-    expect(api.addWorkoutToDay.calls.allArgs()).toEqual([[10, 20, 8], [10, 20, 15], [10, 20, 15]]);
+    expect(api.addWorkoutToDay.calls.allArgs()).toEqual([
+      [10, 20, 8], [10, 20, 15], [10, 20, 8], [10, 20, 15],
+    ]);
   });
 
   it('does not resend a day present in the refreshed schedule after a lost write response', () => {

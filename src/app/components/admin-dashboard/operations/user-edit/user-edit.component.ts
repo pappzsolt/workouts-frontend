@@ -178,13 +178,18 @@ export class UserEditComponent implements OnInit {
     this.clearMessage();
 
     this.selectedUserId = user.id;
+    // A different picker selection must never retain the previous account's
+    // editable fields while the newly selected account is being fetched.
+    this.baseline = undefined;
+    this.selectedUser = { id: 0, username: '', email: '', password: '', roleIds: [] };
+    this.selectedCoach = undefined;
+    this.selectedRole = undefined;
 
     const found = this.users.find((currentUser) => currentUser.id === user.id);
 
     if (found) {
       this.patchUserFromRaw(found);
     } else {
-      this.baseline = undefined;
       this.userService.getUser(user.id)
         .pipe(takeUntil(this.selectionChanged), takeUntilDestroyed(this.destroyRef))
         .subscribe({

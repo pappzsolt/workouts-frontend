@@ -113,6 +113,34 @@ describe('Admin user coach assignment removal', () => {
     request.flush({ success: true });
   });
 
+  it('clears the previous account while fetching a newly selected account', () => {
+    editor.onUserSelected({ id: 8, username: 'Bela' });
+    const load = http.expectOne(API_ENDPOINTS.memberUserById(8));
+    expect(editor.selectedUserId).toBe(8);
+    expect(editor.selectedUser.id).toBe(0);
+    expect(editor.selectedUser.username).toBe('');
+    expect(editor.selectedCoach).toBeUndefined();
+    expect(editor.hasSelectedSnapshot).toBeFalse();
+    editor.onSave();
+    http.expectNone(API_ENDPOINTS.members);
+
+    load.flush({ success: true, data: { id: 8, usernameOrName: 'Bela', email: 'bela@example.com', roles: ['ROLE_USER'] } });
+    expect(editor.selectedUser.id).toBe(8);
+    expect(editor.selectedUser.username).toBe('Bela');
+    expect(editor.hasSelectedSnapshot).toBeTrue();
+  });
+
+  it('does not expose the previous account after the new account fetch fails', () => {
+    editor.onUserSelected({ id: 8, username: 'Bela' });
+    http.expectOne(API_ENDPOINTS.memberUserById(8))
+      .flush({ success: false }, { status: 404, statusText: 'Not Found' });
+    expect(editor.selectedUserId).toBe(8);
+    expect(editor.selectedUser.id).toBe(0);
+    expect(editor.hasSelectedSnapshot).toBeFalse();
+    editor.onSave();
+    http.expectNone(API_ENDPOINTS.members);
+  });
+
   it('cannot save the previous user while an unknown picker selection is loading', () => {
     editor.onUserSelected({ id: 8, username: 'Bela' });
     const load = http.expectOne(API_ENDPOINTS.memberUserById(8));
