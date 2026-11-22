@@ -160,6 +160,7 @@
     "createCoach": "Create Coach"
   },
   "adminUserEdit": {
+    "conflict": "This user was changed elsewhere. Reload the user before retrying your changes.",
     "title": "Edit User",
     "newPassword": "New password",
     "avatarUrl": "Avatar URL",
@@ -1071,6 +1072,8 @@
       "addSet": "Add set",
       "removeSet": "Remove set",
       "actual": "done",
+      "setConflict": "This set was also edited elsewhere. Review the current saved values below before saving.",
+      "keepSetEdits": "Keep my changes",
       "saveChanges": "Save ({{count}})",
       "actualReps": "Actual reps",
       "actualWeight": "Actual weight (kg)",
@@ -1270,6 +1273,7 @@
       "repeatNothing": "There is no later empty day on the same weekday.",
       "repeated": "The workout now repeats weekly.",
       "repeatPartial": "Weekly repeat was interrupted. Confirmed: {{confirmed}} of {{total}} requested days.",
+      "repeatScheduleChanged": "The program schedule has changed. Review the updated calendar before repeating.",
       "repeatRefreshRequired": "Refresh the schedule before repeating again.",
       "repeatRefresh": "Refresh schedule",
       "alsoOnDay": "Also on day",

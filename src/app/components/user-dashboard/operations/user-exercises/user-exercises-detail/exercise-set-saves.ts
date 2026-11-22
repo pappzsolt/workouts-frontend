@@ -1,4 +1,5 @@
-import { EMPTY, Observable, Subject, catchError, concatMap, defer, filter, finalize, map, of, shareReplay, take, tap } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { EMPTY, Observable, Subject, catchError, concatMap, defer, filter, finalize, map, of, shareReplay, take, tap, throwError } from 'rxjs';
 import { errorMessage, responseMessage } from '../../../../../models/backend-dto/common/api-response-message';
 import type { UserWorkoutDetailDto, UserWorkoutExerciseSetDto } from '../../../../../models/user-workout-exercise-detail.dto';
 import type { UserExerciseDetailService } from '../../../../../services/user/user-exercises-detail/user-exercises-detail.service';
@@ -27,28 +28,56 @@ interface PendingSetSave {
   confirmed: { completed: boolean; timerNeedsRefresh: boolean };
 }
 
+interface FailedSetSave {
+  exerciseId: number;
+  set: UserWorkoutExerciseSetDto;
+  message: string;
+  retryCompletion?: boolean;
+}
+
+class ExerciseSetSaveSession {
+  readonly failedSetSaves = new Map<string, FailedSetSave>();
+  readonly settled$ = new Subject<number>();
+  readonly pendingSetSaves = new Map<string, PendingSetSave>();
+}
+
+/** Keeps pending writes and failed edits available when an exercise detail is reopened. */
+@Injectable({ providedIn: 'root' })
+export class ExerciseSetSaveStore {
+  private version?: number;
+  private session = new ExerciseSetSaveSession();
+
+  forSession(version: number): ExerciseSetSaveSession {
+    if (version !== this.version) {
+      this.version = version;
+      this.session = new ExerciseSetSaveSession();
+    }
+    return this.session;
+  }
+}
+
 /** Per-occurrence save queue, request deduplication and confirmed completion state. */
 export class ExerciseSetSaves {
-  private readonly failedSetSaves = new Map<string, { exerciseId: number; set: UserWorkoutExerciseSetDto; message: string }>();
-  private readonly settled$ = new Subject<number>();
-  private readonly pendingSetSaves = new Map<string, PendingSetSave>();
-
+  private readonly confirmedValues = new WeakMap<UserWorkoutExerciseSetDto, string>();
   constructor(
     private readonly service: UserExerciseDetailService,
     private readonly effects: ExerciseSetSaveEffects,
+    private readonly session = new ExerciseSetSaveSession(),
+    private readonly isCurrentSession = () => true,
   ) {}
 
   waitForOccurrence(userWorkoutId: number): Observable<void> {
-    const hasPending = () => [...this.pendingSetSaves.values()].some(entry => entry.userWorkoutId === userWorkoutId);
+    const hasPending = () => [...this.session.pendingSetSaves.values()].some(entry => entry.userWorkoutId === userWorkoutId);
     return defer(() => hasPending()
-      ? this.settled$.pipe(filter(id => id === userWorkoutId && !hasPending()), take(1), map(() => void 0))
+      ? this.session.settled$.pipe(filter(id => id === userWorkoutId && !hasPending()), take(1), map(() => void 0))
       : of(void 0));
   }
 
   restoreFailedEdits(userWorkoutId: number, exercise: UserWorkoutDetailDto['exercises'][number]): void {
     let message: string | undefined;
     for (const set of exercise.userWorkoutExerciseSets ?? []) {
-      const failed = this.failedSetSaves.get(this.setKey(userWorkoutId, set.id));
+      this.confirmedValues.set(set, this.valuesSignature(set));
+      const failed = this.session.failedSetSaves.get(this.setKey(userWorkoutId, set.id));
       if (!failed || failed.exerciseId !== exercise.exercise.id) continue;
       const draft = failed.set;
       set.actualRepetitions = draft.actualRepetitions;
@@ -64,15 +93,18 @@ export class ExerciseSetSaves {
 
   isSettled(userWorkoutId: number, setId: number | null | undefined): boolean {
     const key = this.setKey(userWorkoutId, setId);
-    return !this.pendingSetSaves.has(key) && !this.failedSetSaves.has(key);
+    return !this.session.pendingSetSaves.has(key) && !this.session.failedSetSaves.has(key);
+  }
+
+  failedSave(set: UserWorkoutExerciseSetDto): FailedSetSave | undefined {
+    return this.session.failedSetSaves.get(this.setKey(this.effects.context().userWorkoutId, set.id));
   }
 
   saveBeforeNavigation(set: UserWorkoutExerciseSetDto): Observable<void> {
     const key = this.setKey(this.effects.context().userWorkoutId, set.id);
     const request = this.createRequest(set, false);
-    const entry = this.pendingSetSaves.get(key);
-    if (request === EMPTY || !entry) return EMPTY;
-    return this.waitForLatest(key, entry);
+    const entry = this.session.pendingSetSaves.get(key);
+    return request === EMPTY || !entry ? request : this.waitForLatest(key, entry);
   }
 
   private waitForLatest(key: string, entry: PendingSetSave): Observable<void> {
@@ -80,15 +112,19 @@ export class ExerciseSetSaves {
       map(() => true),
       catchError(() => of(false)),
       concatMap(success => {
-        const latest = this.pendingSetSaves.get(key);
+        const latest = this.session.pendingSetSaves.get(key);
         if (latest && latest !== entry) return this.waitForLatest(key, latest);
-        return success && !this.failedSetSaves.has(key) ? of(void 0) : EMPTY;
+        return success ? of(void 0) : EMPTY;
       }),
     );
   }
 
   private setKey(userWorkoutId: number, setId: number | null | undefined): string {
     return `${userWorkoutId}:${setId}`;
+  }
+
+  private valuesSignature(set: UserWorkoutExerciseSetDto, completed = set.completed === true): string {
+    return JSON.stringify([completed, set.actualRepetitions, set.actualWeightKg, set.notes, set.actualRpe, set.rir]);
   }
 
   createRequest(
@@ -114,13 +150,19 @@ export class ExerciseSetSaves {
     const args = hasEffort ? [...originalArgs, ...effortArgs] as const : originalArgs;
     const key = this.setKey(context.userWorkoutId, set.id);
     const signature = JSON.stringify(args);
-    const previous = this.pendingSetSaves.get(key);
+    const previous = this.session.pendingSetSaves.get(key);
     if (previous?.signature === signature) return previous.request;
+    const failed = this.session.failedSetSaves.get(key);
+    const values = this.valuesSignature(set, completed);
+    if (!previous && !failed && this.confirmedValues.get(set) === values) {
+      return of(void 0);
+    }
     const confirmed = previous?.confirmed ?? { completed: set.completed === true, timerNeedsRefresh: false };
     if (completed !== undefined) set.completed = completed;
     const isCurrent = (): boolean => {
       const current = this.effects.context();
-      return current.workoutExercise === exercise && current.userWorkoutId === args[0];
+      return this.isCurrentSession() && !this.effects.isDestroyed()
+        && current.workoutExercise === exercise && current.userWorkoutId === args[0];
     };
     // Blur saves must not move the form while the user clicks another control.
     // They report failures, but leave feedback changes to explicit actions.
@@ -137,18 +179,22 @@ export class ExerciseSetSaves {
     // Changed payloads queue behind the existing request; identical blur/page
     // saves share it. Recover an earlier failure so a newer edit can still save.
     entry.request = (previous ? previous.request.pipe(catchError(() => of(void 0))) : of(void 0)).pipe(
-      concatMap(() => defer(() => hasEffort
-        ? this.service.updateSetCompleted(...originalArgs, ...effortArgs)
-        : this.service.updateSetCompleted(...originalArgs))),
+      concatMap(() => defer(() => {
+        if (!this.isCurrentSession()) return throwError(() => new Error('authErrors.sessionEnded'));
+        return hasEffort
+          ? this.service.updateSetCompleted(...originalArgs, ...effortArgs)
+          : this.service.updateSetCompleted(...originalArgs);
+      })),
       map(response => {
         if (!response.success) throw new Error(responseMessage([response], 'userExerciseDetail.saveError'));
         if (completed !== undefined || confirmed.completed !== args[5]) confirmed.timerNeedsRefresh = true;
         confirmed.completed = args[5];
+        this.confirmedValues.set(set, values);
         // An older queued response must not replace newer pending UI state.
-        const isLatestSave = this.pendingSetSaves.get(key) === entry;
+        const isLatestSave = this.session.pendingSetSaves.get(key) === entry;
         if (isLatestSave) {
           succeeded = true;
-          this.failedSetSaves.delete(key);
+          if (completed !== undefined || failed?.retryCompletion === undefined) this.session.failedSetSaves.delete(key);
           syncConfirmedTimer();
         }
         if (isCurrent()) {
@@ -164,10 +210,11 @@ export class ExerciseSetSaves {
         return void 0;
       }),
       tap({ error: error => {
-        if (this.pendingSetSaves.get(key) !== entry) return;
+        if (this.session.pendingSetSaves.get(key) !== entry || !this.isCurrentSession()) return;
         const message = errorMessage(error, completed === undefined
           ? 'userExerciseDetail.saveError' : 'userExerciseDetail.setUpdateError');
-        this.failedSetSaves.set(key, { exerciseId, set, message });
+        const retryCompletion = args[5] !== confirmed.completed ? args[5] : failed?.retryCompletion;
+        this.session.failedSetSaves.set(key, { exerciseId, set, message, retryCompletion });
         if (!isCurrent()) return;
         set.completed = confirmed.completed;
         syncConfirmedTimer();
@@ -175,17 +222,17 @@ export class ExerciseSetSaves {
         this.effects.showError(message);
       } }),
       finalize(() => {
-        if (this.pendingSetSaves.get(key) === entry) {
-          this.pendingSetSaves.delete(key);
-          if (succeeded && isCurrent() && !this.effects.isDestroyed()) this.effects.onSettled();
-          this.settled$.next(entry.userWorkoutId);
+        if (this.session.pendingSetSaves.get(key) === entry) {
+          this.session.pendingSetSaves.delete(key);
+          if (succeeded && isCurrent()) this.effects.onSettled();
+          this.session.settled$.next(entry.userWorkoutId);
         }
       }),
       // Navigation only detaches UI observers. Keep the finite HTTP save and
       // any queued edits alive until they finish, even after component teardown.
       shareReplay({ bufferSize: 1, refCount: false }),
     );
-    this.pendingSetSaves.set(key, entry);
+    this.session.pendingSetSaves.set(key, entry);
     return entry.request;
   }
 }

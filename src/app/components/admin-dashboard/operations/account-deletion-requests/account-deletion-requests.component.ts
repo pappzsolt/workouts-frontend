@@ -42,7 +42,7 @@ export class AccountDeletionRequestsComponent {
   confirmed = false;
   constructor() { this.load(0); }
   load(page: number): void {
-    if (this.loading || this.saving) return;
+    if (this.loading || this.saving || this.deleting) return;
     this.loading = true;
     this.error = '';
     this.service.list(page).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -51,6 +51,7 @@ export class AccountDeletionRequestsComponent {
     });
   }
   select(row: DeletionRequest): void {
+    if (this.loading || this.saving || this.deleting) return;
     this.selected = row;
     this.decision = 'COMPLETED';
     this.note = '';
@@ -58,7 +59,7 @@ export class AccountDeletionRequestsComponent {
     this.error = '';
   }
   get canSave(): boolean {
-    return !this.saving && this.confirmed &&
+    return !this.loading && !this.saving && !this.deleting && this.confirmed &&
       (this.decision === 'COMPLETED' || this.decision === 'REJECTED') &&
       !!this.note.trim() && this.note.length <= 2000;
   }

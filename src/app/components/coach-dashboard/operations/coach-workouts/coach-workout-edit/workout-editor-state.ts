@@ -32,10 +32,11 @@ export class WorkoutEditorState {
   /** Igaz, ha az edzés már legalább egy programban szerepel: ekkor a gyakorlatlista zárolt. */
   workoutAssignedToProgram = false;
   checkingProgramAssignment = false;
+  loadingWorkoutExercises = false;
   assignmentVerified = false;
 
   get canEditStructure(): boolean {
-    return this.assignmentVerified && !this.checkingProgramAssignment && !this.workoutAssignedToProgram;
+    return this.assignmentVerified && !this.checkingProgramAssignment && !this.workoutAssignedToProgram && !this.loadingWorkoutExercises;
   }
 
   /** Az összes választható gyakorlat. */

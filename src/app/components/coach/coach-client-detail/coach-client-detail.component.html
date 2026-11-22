@@ -159,7 +159,7 @@
                     <label class="flex flex-col gap-1 text-sm font-semibold text-content-800">
                       {{ 'coachWorkspace.client.scheduledDate' | translate }}
                       <input appInput="compact" type="date" name="rescheduleDate" [(ngModel)]="schedule.rescheduleDate" class="w-44"
-                             [attr.min]="selectedProgram?.startDate || null" [attr.max]="selectedProgram?.endDate || null" />
+                             [disabled]="revokingSelectedProgram" [attr.min]="selectedProgram?.startDate || null" [attr.max]="selectedProgram?.endDate || null" />
                     </label>
                     <button type="button" (click)="rescheduleWorkout()" [disabled]="!schedule.canReschedule(workout)"
                             class="btn btn-neutral">
@@ -174,7 +174,7 @@
 
                   <p class="text-xs text-content-600">{{ 'coachWorkspace.client.restHint' | translate }}</p>
 
-                  <fieldset [disabled]="schedule.saving" class="min-w-0 space-y-4">
+                  <fieldset [disabled]="schedule.saving || revokingSelectedProgram" class="min-w-0 space-y-4">
                     @for (entry of setEditor.exerciseSets; track entry.exercise.userWorkoutExerciseId; let e = $index) {
                       <app-client-exercise-sets [entry]="entry" [index]="e" [setBusy]="workoutMutationPending || entry.loading" [deleteSetId]="setEditor.deleteSetId"
                                                 (fillDown)="setEditor.fillDown(entry)" (addSet)="setEditor.addSet(entry)"

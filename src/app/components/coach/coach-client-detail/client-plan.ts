@@ -52,6 +52,7 @@ export interface EditableSet {
   completed: boolean;
   notes: string | null;
   original: ClientSetValues;
+  conflicts?: (keyof ClientSetValues)[];
 }
 
 export interface ExerciseSets {
@@ -204,6 +205,25 @@ export function toEditable(set: ClientWorkoutSet): EditableSet {
   };
 }
 
+const editableSetFields = [
+  'targetRepetitions', 'targetWeightKg', 'restSeconds', 'actualRepetitions', 'actualWeightKg', 'targetRpe', 'completed', 'notes',
+] as const satisfies readonly (keyof ClientSetValues)[];
+
+export function rebaseSet(draft: EditableSet, latest: EditableSet): EditableSet {
+  const values = setValues(draft) ?? draft;
+  const conflicts: (keyof ClientSetValues)[] = [];
+  for (const field of editableSetFields) {
+    const edited = values[field] ?? null;
+    const before = draft.original[field] ?? null;
+    const server = latest.original[field] ?? null;
+    if (edited === before || edited === server) continue;
+    Object.assign(latest, { [field]: draft[field] });
+    if (server !== before || draft.conflicts?.includes(field)) conflicts.push(field);
+  }
+  if (conflicts.length) latest.conflicts = conflicts;
+  return latest;
+}
+
 /** A sor értékei mentésre kész formában; érvénytelen értéknél null. */
 export function setValues(row: EditableSet): ClientSetValues | null {
   const targetRpe = toNumber(row.targetRpe ?? null);
@@ -263,6 +283,7 @@ export function restoreSet(row: EditableSet): void {
   row.actualWeightKg = o.actualWeightKg;
   row.completed = o.completed;
   row.notes = o.notes;
+  row.conflicts = undefined;
 }
 
 /** Az első sorozat cél értékei (ismétlés, súly, pihenő, tervezett RPE) a többi, nem teljesített sorozatra. */

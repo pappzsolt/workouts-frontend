@@ -160,6 +160,7 @@
     "createCoach": "Edző létrehozása"
   },
   "adminUserEdit": {
+    "conflict": "A felhasználó adatait közben máshol módosították. Az újrapróbálkozás előtt töltsd újra az adatlapot.",
     "title": "Felhasználó módosítása",
     "newPassword": "Új jelszó",
     "avatarUrl": "Avatar URL",
@@ -1071,6 +1072,8 @@
       "addSet": "Sorozat hozzáadása",
       "removeSet": "Sorozat törlése",
       "actual": "teljesített",
+      "setConflict": "A sorozatot közben más is módosította. Ellenőrizd az alábbi szerverértékeket a mentés előtt.",
+      "keepSetEdits": "Saját módosítások megtartása",
       "saveChanges": "Mentés ({{count}})",
       "actualReps": "Tény. ism.",
       "actualWeight": "Tény. súly (kg)",
@@ -1270,6 +1273,7 @@
       "repeatNothing": "Nincs későbbi üres nap ugyanezen a hétnapon.",
       "repeated": "Az edzés hetente ismétlődik.",
       "repeatPartial": "A heti ismétlés megszakadt. A kért {{total}} napból {{confirmed}} mentése igazolt.",
+      "repeatScheduleChanged": "A program ütemezése közben megváltozott. Az ismétlés előtt ellenőrizd a friss naptárat.",
       "repeatRefreshRequired": "Az ismétlés újbóli indítása előtt frissítsd az ütemezést.",
       "repeatRefresh": "Ütemezés frissítése",
       "alsoOnDay": "Ugyanez erre a napra is",

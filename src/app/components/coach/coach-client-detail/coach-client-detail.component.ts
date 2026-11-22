@@ -88,7 +88,7 @@ export class CoachClientDetailComponent implements OnInit {
   private readonly effects: ClientDetailEffects = {
     cancelled$: this.clientContextCancelled$,
     destroyRef: this.destroyRef,
-    workoutMutationPending: () => this.workoutMutationPending,
+    workoutMutationPending: () => this.workoutMutationPending || this.revokingSelectedProgram,
     showMessage: (key, type, params) => this.showMessage(key, type, params),
     showError: (error, fallbackKey) => this.showError(error, fallbackKey),
   };
@@ -102,8 +102,21 @@ export class CoachClientDetailComponent implements OnInit {
       this.loadClient(programId);
     },
     programId => {
-      if (this.programId === programId) this.programId = null;
-      this.loadClient(null);
+      if (this.programId === programId) {
+        this.programId = null;
+        this.programLoadCancelled$.next();
+        this.programLoading = false;
+        this.programLoadFailed = false;
+        this.schedule.reset();
+        this.workouts = [];
+        this.weeks = [];
+        this.selectedIndex = -1;
+        this.setEditor.clearWorkout();
+      }
+      if (this.client) {
+        this.client = { ...this.client, programs: this.client.programs.filter(program => program.programId !== programId) };
+      }
+      this.loadClient(null, true);
     },
   );
   readonly schedule = new ClientWorkoutSchedule(this.workspace, this.effects, () => this.selectedProgram, userWorkoutId => {
@@ -133,6 +146,10 @@ export class CoachClientDetailComponent implements OnInit {
 
   pendingNav: PendingNav | null = null;
   private leaveResult?: Subject<boolean>;
+
+  get revokingSelectedProgram(): boolean {
+    return this.assignments.revoking && this.programId === this.assignments.revokeProgramId;
+  }
 
   get workoutMutationPending(): boolean {
     return this.setEditor.saving || this.setEditor.setBusy || this.schedule.saving;
@@ -269,7 +286,7 @@ export class CoachClientDetailComponent implements OnInit {
       this.loadProgram(programId);
       return;
     }
-    if (this.programLoading || !this.client || !this.workouts.length) return;
+    if (this.programLoading || !this.client) return;
     if (previous?.programId === selection.programId && previous?.workoutId === selection.workoutId &&
         previous?.programWorkoutId === selection.programWorkoutId && previous?.date === selection.date) return;
     this.selectRequestedOccurrence();
@@ -282,17 +299,23 @@ export class CoachClientDetailComponent implements OnInit {
     this.requestedProgramWorkoutId = null;
     this.requestedWorkoutId = null;
     this.requestedDate = null;
-    if (requestedProgramWorkoutId !== null && !this.programWorkoutOccurrences.has(requestedProgramWorkoutId)) {
+    this.openRequestedOccurrence(requestedProgramWorkoutId, requestedWorkoutId, requestedDate);
+  }
+
+  private openRequestedOccurrence(
+    programWorkoutId: number | null, workoutId: number | null, date: string | null, preferredWorkoutId: number | null = null,
+  ): void {
+    const occurrenceId = programWorkoutId !== null ? this.programWorkoutOccurrences.get(programWorkoutId) : workoutId;
+    let index = occurrenceId == null ? -1 : this.workouts.findIndex(workout => workout.userWorkoutId === occurrenceId);
+    if (index < 0 && (programWorkoutId !== null || workoutId !== null)) {
       this.openWorkout(-1);
       this.showMessage('coachWorkspace.client.requestedWorkoutUnavailable', 'error');
       return;
     }
-    const occurrenceId = requestedProgramWorkoutId !== null
-      ? this.programWorkoutOccurrences.get(requestedProgramWorkoutId)!
-      : requestedWorkoutId;
-    let index = occurrenceId === null ? -1 : this.workouts.findIndex(w => w.userWorkoutId === occurrenceId);
-    if (index < 0 && requestedDate) index = this.workouts.findIndex(w => w.date === requestedDate);
+    if (index < 0 && preferredWorkoutId !== null) index = this.workouts.findIndex(workout => workout.userWorkoutId === preferredWorkoutId);
+    if (index < 0 && date) index = this.workouts.findIndex(workout => workout.date === date);
     if (index < 0) index = this.defaultWorkoutIndex();
+    if (this.message === 'coachWorkspace.client.requestedWorkoutUnavailable') this.message = '';
     if (index !== this.selectedIndex) this.openWorkout(index);
   }
 
@@ -327,7 +350,7 @@ export class CoachClientDetailComponent implements OnInit {
     this.messageParams = {};
   }
 
-  private loadClient(preferredProgramId: number | null): void {
+  private loadClient(preferredProgramId: number | null, preservePlan = false): void {
     this.clientLoadCancelled$.next();
     const userId = this.userId;
     this.loading = true;
@@ -340,6 +363,7 @@ export class CoachClientDetailComponent implements OnInit {
           this.client = overview.clients.find((client) => client.userId === userId) ?? null;
           this.loading = false;
           const programs = this.sortedPrograms;
+          if (preservePlan && this.programId !== null && programs.some(program => program.programId === this.programId)) return;
           let target = preferredProgramId ?? (this.acceptedRoute?.userId === userId ? this.acceptedRoute.programId : null) ?? this.programId;
           if (target !== null && !programs.some((p) => p.programId === target)) target = null;
           target ??= programs[0]?.programId ?? null;
@@ -384,7 +408,7 @@ export class CoachClientDetailComponent implements OnInit {
   selectProgram(programId: number | string): void {
     if (this.workoutMutationPending || this.pendingNav?.kind === 'route') return;
     const id = Number(programId);
-    if (id === this.programId) return;
+    if (id === this.programId || (this.assignments.revoking && id === this.assignments.revokeProgramId)) return;
     if (this.setEditor.dirty) {
       this.pendingNav = { kind: 'program', programId: id };
       return;
@@ -423,8 +447,6 @@ export class CoachClientDetailComponent implements OnInit {
           const requestedWorkoutId = this.requestedWorkoutId;
           this.requestedProgramWorkoutId = null;
           this.requestedWorkoutId = null;
-          const requestedOccurrence = requestedProgramWorkoutId === null ? null
-            : rows.find(row => row.program_workout_id === requestedProgramWorkoutId);
           const occurrences = new Map<number, number>();
           for (const row of rows) {
             if (row.program_workout_id !== null) {
@@ -436,17 +458,9 @@ export class CoachClientDetailComponent implements OnInit {
           this.weeks = this.buildWeeks();
           this.programLoading = false;
           this.selectedIndex = -1;
-          if (requestedProgramWorkoutId !== null && !requestedOccurrence) {
-            this.requestedDate = null;
-            this.showMessage('coachWorkspace.client.requestedWorkoutUnavailable', 'error');
-            return;
-          }
-          const selectedWorkoutId = requestedOccurrence?.user_workout_id ?? requestedWorkoutId ?? keep;
-          let index = selectedWorkoutId === null ? -1 : this.workouts.findIndex((w) => w.userWorkoutId === selectedWorkoutId);
-          if (index < 0 && this.requestedDate) index = this.workouts.findIndex((w) => w.date === this.requestedDate);
+          const requestedDate = this.requestedDate;
           this.requestedDate = null;
-          if (index < 0) index = this.defaultWorkoutIndex();
-          this.openWorkout(index);
+          this.openRequestedOccurrence(requestedProgramWorkoutId, requestedWorkoutId, requestedDate, keep);
         },
         error: (error) => {
           if (this.programId !== programId) return;

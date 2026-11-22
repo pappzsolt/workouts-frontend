@@ -35,6 +35,11 @@
       }}
     </label>
     <app-message [message]="message" type="error" />
+    @if (pendingDraftId !== null && !busy) {
+      <button type="button" class="btn btn-neutral self-start" (click)="retryOpenDraft()">
+        {{ 'personalNavigation.retryOpen' | translate }}
+      </button>
+    }
     @if (loadFailed) {
       <button
         type="button"
@@ -83,7 +88,7 @@
                 <button
                   type="button"
                   class="btn btn-primary"
-                  [disabled]="busy"
+                  [disabled]="busy || pendingDraftId !== null"
                   (click)="use(template)"
                 >
                   {{ 'workoutTemplates.use' | translate }}

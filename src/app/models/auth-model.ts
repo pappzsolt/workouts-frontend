@@ -11,6 +11,7 @@ export interface LoginResponse {
 export interface TokenPayload {
   sub: string;
   id: number;
+  accountType?: string;
   roles: string;
   iat: number;
   exp: number;

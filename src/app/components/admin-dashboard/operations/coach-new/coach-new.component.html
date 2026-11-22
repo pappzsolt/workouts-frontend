@@ -28,6 +28,7 @@
       (ngSubmit)="onSubmit(coachForm)"
       class="workouts-panel rounded-2xl border border-surface-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8"
     >
+      <fieldset class="contents" [disabled]="loading" [attr.inert]="loading ? '' : null">
       <!-- Név -->
       <app-form-field labelKey="common.name" controlId="name" [required]="true">
         <input
@@ -134,6 +135,7 @@
           "
         ></app-button>
       </div>
+      </fieldset>
     </form>
   </div>
 </div>

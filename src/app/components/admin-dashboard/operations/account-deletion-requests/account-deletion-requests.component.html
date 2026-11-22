@@ -37,7 +37,7 @@
       }
       <p class="whitespace-pre-wrap">{{ row.resolutionNote }}</p>
       @if (row.status === 'PENDING') {
-        <app-button variant="edit" type="button" (buttonClick)="select(row)" [disabled]="saving">{{
+        <app-button variant="edit" type="button" (buttonClick)="select(row)" [disabled]="loading || saving || !!deleting">{{
           'deleteAccount.admin.resolve' | translate
         }}</app-button>
       }
@@ -46,13 +46,13 @@
           variant="delete"
           type="button"
           (buttonClick)="deleting = row; deletionSuccess = false"
-          [disabled]="saving"
+          [disabled]="loading || saving || !!deleting"
           >{{ 'userDeletion.action' | translate }}</app-button
         >
       }
       @if (selected?.id === row.id) {
         <form (ngSubmit)="save()" class="space-y-4 pt-4">
-          <fieldset [disabled]="saving" class="space-y-4">
+          <fieldset [disabled]="loading || saving || !!deleting" class="space-y-4">
             <legend class="font-semibold">
               {{ 'deleteAccount.admin.resolutionTitle' | translate }}
             </legend>

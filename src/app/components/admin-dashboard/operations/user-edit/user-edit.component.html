@@ -23,7 +23,7 @@
       </app-user-select>
     </div>
 
-    <fieldset [disabled]="!ready || saving" class="min-w-0">
+    <fieldset [hidden]="!hasSelectedSnapshot" [disabled]="!ready || !hasSelectedSnapshot || saving" class="min-w-0">
       <!-- Form -->
       <form
         appProfileFields
@@ -165,6 +165,7 @@
 
           <app-coach-select
             [selectedCoachId]="selectedCoach?.id"
+            [disabled]="saving"
             (coachSelected)="onCoachSelected($event)"
           >
           </app-coach-select>
@@ -178,8 +179,8 @@
             </mat-label>
 
             <mat-select
-              multiple
-              [value]="selectedRoles"
+              [disabled]="saving"
+              [value]="selectedRole"
               (selectionChange)="onRoleSelected($event.value)"
             >
               @for (role of roles; track trackByRole($index, role)) {

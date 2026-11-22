@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EMPTY, Subject, catchError, combineLatest, distinctUntilChanged, map, switchMap, takeUntil } from 'rxjs';
 
 import { UserExerciseDetailService } from '../../../../../services/user/user-exercises-detail/user-exercises-detail.service';
+import { AuthService } from '../../../../../services/auth/auth.service';
 import { SidePaginationComponent } from '../../../../../components/shared/components/side-pagination/side-pagination.component';
 import { LanguageService } from '../../../../../services/shared/language.service';
 
@@ -15,7 +16,7 @@ import {
   UserWorkoutExerciseSetDto,
 } from '../../../../../models/user-workout-exercise-detail.dto';
 
-import { ExerciseSetSaves } from './exercise-set-saves';
+import { ExerciseSetSaves, ExerciseSetSaveStore } from './exercise-set-saves';
 import { PreviousExercisePerformanceComponent } from './previous-exercise-performance.component';
 import { SetRestTimerComponent } from './set-rest-timer.component';
 
@@ -82,6 +83,9 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     private exercisesService: UserExerciseDetailService,
     private languageService: LanguageService,
   ) {
+    const auth = inject(AuthService);
+    const sessionVersion = auth.getSessionVersion();
+    const session = inject(ExerciseSetSaveStore).forSession(sessionVersion);
     this.setSaves = new ExerciseSetSaves(this.exercisesService, {
       context: () => ({ userWorkoutId: this.userWorkoutId, programId: this.programId,
         workoutId: this.workoutId, workoutExercise: this.workoutExercise }),
@@ -93,7 +97,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
       updateExerciseDone: () => this.updateExerciseDone(),
       isDestroyed: () => this.destroyed,
       onSettled: () => this.advanceToNextExercise(),
-    });
+    }, session, () => auth.getSessionVersion() === sessionVersion);
   }
 
   ngOnInit(): void {
@@ -219,7 +223,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     if (this.restTimerSetId !== setId) return;
     const current = this.currentSet;
     if (!current || current.id !== setId || current.completed !== true) return;
-    if (this.hasNextSet) this.goToSet(this.currentSetIndex + 1);
+    if (this.hasNextSet) this.goToSet(this.currentSetIndex + 1, false);
   }
 
   private selectLastCompletedTimer(preferredSetId?: number): void {
@@ -320,6 +324,17 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  hasFailedSave(set: UserWorkoutExerciseSetDto): boolean {
+    return this.setSaves.failedSave(set) !== undefined;
+  }
+
+  retrySetSave(set: UserWorkoutExerciseSetDto): void {
+    const failed = this.setSaves.failedSave(set);
+    if (!failed) return;
+    if (failed.retryCompletion === undefined) this.saveSetDetails(set);
+    else this.updateSetCompleted(set, failed.retryCompletion);
+  }
+
   private advanceToNextExercise(): void {
     if (this.workout?.completed === true) return;
     const exercise = this.workoutExercise;
@@ -344,7 +359,7 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  goToSet(index: number): void {
+  goToSet(index: number, manual = true): void {
     const sets = this.workoutExercise?.userWorkoutExerciseSets;
 
     if (!sets?.length || index < 0 || index >= sets.length) {
@@ -354,6 +369,8 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     if (index === this.currentSetIndex) {
       return;
     }
+
+    if (manual) this.exercisePendingAdvance = undefined;
 
     const exercise = this.workoutExercise;
     const userWorkoutId = this.userWorkoutId;

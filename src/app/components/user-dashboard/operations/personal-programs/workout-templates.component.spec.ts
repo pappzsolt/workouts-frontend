@@ -86,6 +86,26 @@ describe('Workout template library', () => {
     expect(component.busy).toBeFalse();
     expect(component.message).toBe('Unavailable');
   });
+  it('reopens the same draft after a cancelled navigation without creating a duplicate', async () => {
+    api.useTemplate.and.returnValue(of({ id: 55, startedAt: null, program: template().program }));
+    router.navigate.and.resolveTo(false);
+    component.use(component.templates[0]);
+    await Promise.resolve();
+
+    expect(component.pendingDraftId).toBe(55);
+    expect(component.message).toBe('personalNavigation.openFailed');
+    component.use(component.templates[0]);
+    router.navigate.and.resolveTo(true);
+    component.retryOpenDraft();
+    await Promise.resolve();
+
+    expect(api.useTemplate).toHaveBeenCalledOnceWith(1);
+    expect(router.navigate.calls.allArgs()).toEqual([
+      ['/user/personal-workouts', 55],
+      ['/user/personal-workouts', 55],
+    ].map(commands => [commands]));
+    expect(component.pendingDraftId).toBeNull();
+  });
   it('deletes only after confirmation and preserves other templates', () => {
     component.confirmDelete();
     expect(api.deleteTemplate).not.toHaveBeenCalled();

@@ -15,5 +15,5 @@ export interface UpdateUserRequest {
   gender?: string;
   goals?: string;
   coachId?: number | null;
-  roleIds: number[];
+  roleIds?: number[];
 }

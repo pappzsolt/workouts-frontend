@@ -82,7 +82,7 @@
       </ul>
     }
 
-    @if (totalPages > 1) {
+    @if (totalPages > 0) {
       <app-pagination [totalItems]="totalElements" [totalPagesOverride]="totalPages" [pageSize]="pageSize"
                       [currentPage]="currentPage" [pageSizeOptions]="pageSizeOptions" [showPageSize]="true"
                       [showInfo]="false" (pageChange)="onPageChange($event)"

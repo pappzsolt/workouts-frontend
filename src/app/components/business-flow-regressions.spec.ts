@@ -226,28 +226,31 @@ describe('Business flow regressions', () => {
     const roles = new Subject<any[]>();
     const coaches = new Subject<any[]>();
     const update = jasmine.createSpy('updateUser').and.returnValue(of(ok()));
+    const getUser = jasmine.createSpy('getUser');
     const component = make(() => new UserEditComponent({ getUsers: () => users, getCoaches: () => coaches,
-      updateUser: update } as any, { getRoles: () => roles } as any, { detectChanges() {} } as any));
+      getUser, updateUser: update } as any, { getRoles: () => roles } as any, { detectChanges() {} } as any));
     component.ngOnInit();
-    return { component, users, roles, coaches, update };
+    return { component, users, roles, coaches, update, getUser };
   }
 
-  it('waits for roles and coaches and retains the existing roles in the admin payload', () => {
-    const { component, users, roles, coaches, update } = adminEditor();
+  it('waits for roles and coaches and omits untouched roles from the admin update', () => {
+    const { component, users, roles, coaches, update, getUser } = adminEditor();
     users.next([{ id: 1, usernameOrName: 'User', roles: ['ROLE_USER', 'ROLE_ADMIN'], extraFields: { coach_id: 10 } }]); users.complete();
     component.onSave(); expect(update).not.toHaveBeenCalled();
     roles.next([{ id: 1, name: 'ROLE_USER' }, { id: 2, name: 'ROLE_ADMIN' }]); roles.complete();
     coaches.next([{ id: 10, name: 'Coach' }]); coaches.complete();
     expect(component.selectedCoach?.id).toBe(10);
+    getUser.and.returnValue(of(component.users[0]));
     component.onSave();
-    expect(update.calls.mostRecent().args[1]).toEqual([1, 2]);
+    expect(update.calls.mostRecent().args[1]).toBeUndefined();
   });
 
   it('passes the new admin password and does not report a rejected save as success', () => {
-    const { component, users, roles, coaches, update } = adminEditor();
+    const { component, users, roles, coaches, update, getUser } = adminEditor();
     roles.next([{ id: 1, name: 'ROLE_USER' }]); roles.complete();
     coaches.next([]); coaches.complete();
     users.next([{ id: 1, usernameOrName: 'User', roles: ['ROLE_USER'] }]); users.complete();
+    getUser.and.returnValue(of(component.users[0]));
     component.selectedUser.password = 'new-test-password';
     update.and.returnValue(of({ success: false, data: null, message: 'Rejected' }));
     component.onSave();
@@ -268,7 +271,7 @@ describe('Business flow regressions', () => {
   });
 
   it('does not save roles when the role catalog is empty', () => {
-    const { component, users, roles, coaches, update } = adminEditor();
+    const { component, users, roles, coaches, update, getUser } = adminEditor();
     users.next([{ id: 1, usernameOrName: 'User', roles: ['ROLE_USER'] }]); users.complete();
     roles.next([]); roles.complete();
     coaches.next([]); coaches.complete();

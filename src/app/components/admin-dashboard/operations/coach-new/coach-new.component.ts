@@ -54,7 +54,7 @@ export class CoachNewComponent {
    * Új edző létrehozása.
    */
   onSubmit(form: NgForm): void {
-    if (!this.validateInputs()) return;
+    if (this.loading || !this.validateInputs()) return;
     if (!form.valid) {
       this.showError('adminCoachNew.validationError');
 

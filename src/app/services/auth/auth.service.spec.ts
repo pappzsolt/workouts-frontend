@@ -7,6 +7,10 @@ import { AuthInterceptor } from '../../interceptors/auth.interceptor';
 import { Router } from '@angular/router';
 import { Subject, of, throwError } from 'rxjs';
 
+function accountToken(id: number, marker: string, accountType = 'USER'): string {
+  return `e30.${btoa(JSON.stringify({ id, sub: `user-${id}`, accountType, exp: 4102444800 }))}.${marker}`;
+}
+
 describe('AuthService cross-tab refresh', () => {
   let http: HttpTestingController;
   let first: AuthService;
@@ -113,7 +117,9 @@ describe('AuthService cross-tab refresh', () => {
         http.expectOne(request => request.url === API_ENDPOINTS.authWebLogin).flush({ success: true, data: { accessToken: token } });
         flushMicrotasks();
       };
-      login('old-session');
+      const oldToken = accountToken(1, 'old');
+      const rotatedToken = accountToken(1, 'rotated');
+      login(oldToken);
       const router = { navigate: jasmine.createSpy('navigate') };
       const interceptor = new AuthInterceptor(first, router as unknown as Router);
       const logout = spyOn(first, 'logout').and.callThrough();
@@ -128,15 +134,15 @@ describe('AuthService cross-tab refresh', () => {
       const unauthorized = new HttpErrorResponse({ status: 401 });
       interceptor.intercept(new HttpRequest('PATCH', API_ENDPOINTS.workouts, { name: 'Pending' }), handler)
         .subscribe({ error });
-      expect(forwarded[0].headers.get('Authorization')).toBe('Bearer old-session');
+      expect(forwarded[0].headers.get('Authorization')).toBe(`Bearer ${oldToken}`);
       if (afterRetry) {
         original.error(unauthorized);
         flushMicrotasks();
         const refresh = http.expectOne(request => request.url === API_ENDPOINTS.authWebRefresh);
         expect(refresh.request.withCredentials).toBeTrue();
-        refresh.flush({ success: true, data: { accessToken: 'rotated-old-session' } });
+        refresh.flush({ success: true, data: { accessToken: rotatedToken } });
         flushMicrotasks();
-        expect(forwarded[1].headers.get('Authorization')).toBe('Bearer rotated-old-session');
+        expect(forwarded[1].headers.get('Authorization')).toBe(`Bearer ${rotatedToken}`);
         expect(forwarded[1].body).toEqual({ name: 'Pending' });
       }
       login('new-session');
@@ -150,6 +156,45 @@ describe('AuthService cross-tab refresh', () => {
       expect(first.getAccessToken()).toBe('new-session');
       expect(logout).not.toHaveBeenCalled();
       expect(router.navigate).not.toHaveBeenCalled();
+    }));
+  }
+
+  for (const outcome of ['different account', 'different account type', 'service unavailable']) {
+    it(`does not retry or revoke the cookie when refresh returns ${outcome}`, fakeAsync(() => {
+      const oldToken = accountToken(1, 'original');
+      first.login('fixture-user', 'password').subscribe();
+      flushMicrotasks();
+      http.expectOne(request => request.url === API_ENDPOINTS.authWebLogin)
+        .flush({ success: true, data: { accessToken: oldToken } });
+      flushMicrotasks();
+      const version = first.getSessionVersion();
+      const router = { navigate: jasmine.createSpy('navigate') };
+      const interceptor = new AuthInterceptor(first, router as unknown as Router);
+      const handle = jasmine.createSpy('handle').and.returnValue(throwError(() => new HttpErrorResponse({ status: 401 })));
+      const error = jasmine.createSpy('error');
+      interceptor.intercept(new HttpRequest('PATCH', API_ENDPOINTS.workouts, {}), { handle }).subscribe({ error });
+      flushMicrotasks();
+      const refresh = http.expectOne(request => request.url === API_ENDPOINTS.authWebRefresh);
+      if (outcome === 'service unavailable') {
+        refresh.flush(null, { status: 503, statusText: 'Unavailable' });
+      } else {
+        const accessToken = outcome === 'different account'
+          ? accountToken(2, 'other') : accountToken(1, 'other', 'COACH');
+        refresh.flush({ success: true, data: { accessToken } });
+      }
+      flushMicrotasks();
+      http.expectNone(request => request.url === API_ENDPOINTS.authWebLogout);
+      expect(handle).toHaveBeenCalledTimes(1);
+      expect(error).toHaveBeenCalledTimes(1);
+      if (outcome === 'service unavailable') {
+        expect(first.getAccessToken()).toBe(oldToken);
+        expect(first.getSessionVersion()).toBe(version);
+        expect(router.navigate).not.toHaveBeenCalled();
+      } else {
+        expect(first.getAccessToken()).toBeNull();
+        expect(first.getSessionVersion()).toBe(version + 1);
+        expect(router.navigate).toHaveBeenCalledOnceWith(['/login']);
+      }
     }));
   }
 
@@ -170,23 +215,25 @@ describe('AuthService cross-tab refresh', () => {
   }));
 
   it('retires a queued refresh from the previous session after login succeeds', fakeAsync(() => {
+    const loginToken = accountToken(1, 'login');
+    const refreshToken = accountToken(1, 'refresh');
     const failure = jasmine.createSpy('refreshFailure');
     first.login('new-user', 'password').subscribe();
     flushMicrotasks();
     const login = http.expectOne(request => request.url === API_ENDPOINTS.authWebLogin);
     first.refreshAccessToken(failure).subscribe({ error: () => {} });
-    login.flush({ success: true, data: { accessToken: 'new-login-token' } });
+    login.flush({ success: true, data: { accessToken: loginToken } });
     flushMicrotasks();
     http.expectNone(request => request.url === API_ENDPOINTS.authWebRefresh);
-    expect(first.getAccessToken()).toBe('new-login-token');
+    expect(first.getAccessToken()).toBe(loginToken);
     expect(failure).not.toHaveBeenCalled();
     // A fresh request now belongs to the new session and must remain usable.
     first.refreshAccessToken().subscribe();
     flushMicrotasks();
     http.expectOne(request => request.url === API_ENDPOINTS.authWebRefresh)
-      .flush({ success: true, data: { accessToken: 'new-session-refresh' } });
+      .flush({ success: true, data: { accessToken: refreshToken } });
     flushMicrotasks();
-    expect(first.getAccessToken()).toBe('new-session-refresh');
+    expect(first.getAccessToken()).toBe(refreshToken);
   }));
 
   it('serializes refresh and login when Web Locks are unavailable', fakeAsync(() => {

@@ -1,5 +1,5 @@
 import { createInputValidationGuard } from '../../../shared/components/form-controls/app-input.directive';
-import { finalize, forkJoin } from 'rxjs';
+import { EMPTY, Subject, finalize, forkJoin, map, switchMap, takeUntil } from 'rxjs';
 import type { UserNameId } from '../../../../models/common/user-name-id.model';
 import { Component, OnInit, ChangeDetectorRef, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -102,7 +102,13 @@ export class UserEditComponent implements OnInit {
 
   selectedCoach?: CoachNameId;
 
-  selectedRoles: Role[] = [];
+  selectedRole?: Role;
+  private baseline?: RawUser;
+  private readonly selectionChanged = new Subject<void>();
+
+  get hasSelectedSnapshot(): boolean {
+    return !!this.baseline && this.selectedUserId === this.baseline.id && this.selectedUser.id === this.baseline.id;
+  }
 
   // =============================
   // ÜZENET
@@ -167,6 +173,8 @@ export class UserEditComponent implements OnInit {
   // =============================
 
   onUserSelected(user: UserNameId): void {
+    if (this.saving) return;
+    this.selectionChanged.next();
     this.clearMessage();
 
     this.selectedUserId = user.id;
@@ -175,6 +183,18 @@ export class UserEditComponent implements OnInit {
 
     if (found) {
       this.patchUserFromRaw(found);
+    } else {
+      this.baseline = undefined;
+      this.userService.getUser(user.id)
+        .pipe(takeUntil(this.selectionChanged), takeUntilDestroyed(this.destroyRef))
+        .subscribe({
+          next: snapshot => {
+            if (this.selectedUserId !== snapshot.id) return;
+            this.users.push(snapshot);
+            this.patchUserFromRaw(snapshot);
+          },
+          error: () => this.showError('adminUserEdit.loadUsersError'),
+        });
     }
   }
 
@@ -201,11 +221,11 @@ export class UserEditComponent implements OnInit {
 
     this.selectedCoach = this.coaches.find((coach) => coach.id === this.selectedUser.coachId);
 
-    this.selectedRoles = this.roles.filter((role) => raw.roles?.includes(role.name));
-
-    this.selectedUser.roleIds = this.selectedRoles.map((role) => role.id);
-
-    this.selectedUser.roleName = this.selectedRoles.map((role) => role.name).join(',');
+    this.selectedRole = this.roles.find((role) => raw.roles?.includes(role.name));
+    this.selectedUser.roleIds = this.selectedRole ? [this.selectedRole.id] : [];
+    this.selectedUser.roleName = this.selectedRole?.name;
+    this.baseline = this.createRawUser();
+    this.baseline.roles = [...raw.roles];
 
     this.cdr.detectChanges();
   }
@@ -223,12 +243,10 @@ export class UserEditComponent implements OnInit {
   // ROLE KIVÁLASZTÁSA
   // =============================
 
-  onRoleSelected(roles: Role[]): void {
-    this.selectedRoles = roles;
-
-    this.selectedUser.roleIds = roles.map((role) => role.id);
-
-    this.selectedUser.roleName = roles.map((role) => role.name).join(',');
+  onRoleSelected(role: Role): void {
+    this.selectedRole = role;
+    this.selectedUser.roleIds = [role.id];
+    this.selectedUser.roleName = role.name;
   }
 
   // =============================
@@ -236,68 +254,70 @@ export class UserEditComponent implements OnInit {
   // =============================
 
   onSave(): void {
-    if (!this.validateInputs()) return;
-    if (!this.ready || this.saving || !this.selectedUser.id) return;
+    const baseline = this.baseline;
+    if (!baseline || !this.ready || this.saving || !this.hasSelectedSnapshot || !this.validateInputs()) return;
     this.clearMessage();
 
-    try {
-      this.setDefaultRoleIfNeeded();
+    const draft = this.createRawUser();
+    // If the role picker was untouched, keep the complete server role state.
+    const originalRole = this.roles.find((role) => baseline.roles.includes(role.name));
+    const role = this.selectedRole?.id !== originalRole?.id ? this.selectedRole : undefined;
+    this.saving = true;
 
-      const rawUser = this.createRawUser();
-
-      this.saving = true;
-      this.userService
-        .updateUser(rawUser, this.selectedUser.roleIds || [])
-        .pipe(
-          finalize(() => {
-            this.saving = false;
-          }),
-          takeUntilDestroyed(this.destroyRef),
-        )
-        .subscribe({
-          next: (response) => {
-            if (!response.success) {
-              this.showError(response.message || 'adminUserEdit.updateError');
-              return;
-            }
-            const index = this.users.findIndex((user) => user.id === rawUser.id);
-            if (index >= 0) this.users[index] = { ...rawUser, password: undefined };
-            this.selectedUser.password = '';
-            this.showSuccess('adminUserEdit.updateSuccess');
-          },
-
-          error: () => {
-            this.showError('adminUserEdit.updateError');
-          },
-        });
-    } catch {
-      this.saving = false;
-      this.showError('adminUserEdit.saveError');
-    }
+    this.userService.getUser(baseline.id).pipe(
+      switchMap(latest => {
+        const merged = this.mergeUserEdits(baseline, draft, latest);
+        const rolesChanged = role && !this.sameRoles(baseline.roles, latest.roles)
+          && !this.sameRoles([role.name], latest.roles);
+        if (!merged || rolesChanged) {
+          this.showError('adminUserEdit.conflict');
+          return EMPTY;
+        }
+        if (role) merged.roles = [role.name];
+        return this.userService.updateUser(merged, role ? [role.id] : undefined).pipe(
+          map(response => ({ response, merged })),
+        );
+      }),
+      takeUntilDestroyed(this.destroyRef),
+      finalize(() => { this.saving = false; }),
+    ).subscribe({
+      next: ({ response, merged }) => {
+        if (!response.success) {
+          this.showError(response.message || 'adminUserEdit.updateError');
+          return;
+        }
+        const saved = { ...merged, password: undefined };
+        const index = this.users.findIndex(user => user.id === saved.id);
+        if (index >= 0) this.users[index] = saved;
+        this.patchUserFromRaw(saved);
+        this.showSuccess('adminUserEdit.updateSuccess');
+      },
+      error: () => this.showError('adminUserEdit.updateError'),
+    });
   }
 
-  // =============================
-  // ALAPÉRTELMEZETT ROLE
-  // =============================
-
-  private setDefaultRoleIfNeeded(): void {
-    if (this.selectedRoles.length > 0) {
-      return;
+  private mergeUserEdits(baseline: RawUser, draft: RawUser, latest: RawUser): RawUser | null {
+    const merged: RawUser = { ...latest, password: draft.password, extraFields: { ...latest.extraFields } };
+    const extraFields = merged.extraFields!;
+    for (const key of ['usernameOrName', 'email', 'avatarUrl'] as const) {
+      if ((draft[key] ?? '') === (baseline[key] ?? '')) continue;
+      if ((latest[key] ?? '') !== (baseline[key] ?? '') && latest[key] !== draft[key]) return null;
+      if (draft[key] !== undefined) merged[key] = draft[key];
     }
-
-    const defaultRole = this.roles.find(
-      (role) => role.name === 'ROLE_USER' || role.name === 'user',
-    );
-
-    if (!defaultRole) {
-      return;
+    for (const key of ['coach_id', 'age', 'weight', 'height', 'gender', 'goals'] as const) {
+      const original = baseline.extraFields?.[key];
+      const edited = draft.extraFields?.[key];
+      const current = latest.extraFields?.[key];
+      const normalize = (value: typeof original) => key === 'gender' ? normalizeGender(typeof value === 'string' ? value : undefined) : (value ?? null);
+      if (normalize(edited) === normalize(original)) continue;
+      if (normalize(current) !== normalize(original) && normalize(current) !== normalize(edited)) return null;
+      Object.assign(extraFields, { [key]: edited });
     }
+    return merged;
+  }
 
-    this.selectedRoles = [defaultRole];
-
-    this.selectedUser.roleIds = [defaultRole.id];
-
-    this.selectedUser.roleName = defaultRole.name;
+  private sameRoles(a: string[], b: string[]): boolean {
+    return a.length === b.length && a.every(role => b.includes(role));
   }
 
   // =============================
@@ -315,7 +335,7 @@ export class UserEditComponent implements OnInit {
 
       avatarUrl: this.selectedUser.avatarUrl,
 
-      roles: this.selectedRoles.map((role) => role.name),
+      roles: this.selectedRole ? [this.selectedRole.name] : [],
 
       extraFields: {
         coach_id: this.selectedUser.coachId,

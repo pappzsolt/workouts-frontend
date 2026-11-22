@@ -5,13 +5,13 @@ import type { ClientSetValues } from '../../../models/coach-workspace.model';
 import type { ClientDetailEffects } from './client-detail-effects';
 import {
   type ClientWorkoutEntry, type EditableSet, type ExerciseSets,
-  fillDownSets, isSetChanged, isSetInvalid, restoreSet, setValues, toEditable,
+  fillDownSets, isSetChanged, isSetInvalid, rebaseSet, restoreSet, setValues, toEditable,
 } from './client-plan';
 
 /** Owns editable sets, sequential saves, and confirmed exercise/workout totals. */
 export class ClientSetEditor {
   private readonly workoutLoadsCancelled$ = new Subject<void>();
-  private readonly saveRecoveryReads = new WeakMap<ExerciseSets, Subject<void>>();
+  private readonly saveRecoveryReads = new WeakMap<ExerciseSets, { cancel: Subject<void>; conflict: boolean }>();
   exerciseSets: ExerciseSets[] = [];
   saving = false;
   deleteSetId: number | null = null;
@@ -62,7 +62,8 @@ export class ClientSetEditor {
             .sort((a, b) => a.setNumber - b.setNumber)
             .map((set) => {
               const edited = previous.find((row) => row.id === set.id);
-              return edited && this.isChanged(edited) ? edited : toEditable(set);
+              const latest = toEditable(set);
+              return edited && this.isChanged(edited) ? rebaseSet(edited, latest) : latest;
             });
           // Use the server snapshot for totals while keeping unsaved input values intact.
           this.updateExerciseProgress(entry, sets);
@@ -186,10 +187,14 @@ export class ClientSetEditor {
   saveSets(after?: () => void): void {
     if (this.effects.workoutMutationPending()) return;
     const changedEntries = this.exerciseSets.filter(entry => entry.sets.some(row => this.isChanged(row)));
-    if (changedEntries.some(entry => entry.loading && !this.saveRecoveryReads.has(entry))) return;
+    if (changedEntries.some(entry => entry.loading && this.saveRecoveryReads.get(entry)?.conflict !== false)) return;
     const changed = this.changedRows;
     if (changed.length === 0) {
       after?.();
+      return;
+    }
+    if (changed.some(row => row.conflicts?.length)) {
+      this.effects.showMessage('coachWorkspace.client.setConflict', 'error');
       return;
     }
     if (changed.some((row) => this.isInvalid(row))) {
@@ -199,7 +204,7 @@ export class ClientSetEditor {
     // Snapshot the payload: edits made while the request is pending must remain dirty.
     const saves = changed.map((row) => ({ row, values: this.values(row)!, expected: { ...row.original } }));
     // A manual retry keeps its original expected values and supersedes an older recovery read.
-    for (const entry of changedEntries) this.saveRecoveryReads.get(entry)?.next();
+    for (const entry of changedEntries) this.saveRecoveryReads.get(entry)?.cancel.next();
     this.saving = true;
     concat(...saves.map(({ row, values, expected }) => this.workspace.saveClientSet(row.id, values, expected).pipe(
       // Each request commits independently. Preserve edits made while it was pending;
@@ -223,7 +228,7 @@ export class ClientSetEditor {
           this.effects.showError(error, 'coachWorkspace.client.saveError');
           for (const entry of changedEntries) {
             const recovery = new Subject<void>();
-            this.saveRecoveryReads.set(entry, recovery);
+            this.saveRecoveryReads.set(entry, { cancel: recovery, conflict: error?.status === 409 });
             this.loadSets(entry, true, recovery);
           }
         },

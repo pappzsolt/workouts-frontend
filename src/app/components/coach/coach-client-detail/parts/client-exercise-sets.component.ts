@@ -32,6 +32,19 @@ export class ClientExerciseSetsComponent {
   readonly isChanged = isSetChanged;
   readonly isInvalid = isSetInvalid;
 
+  readonly fieldLabels = {
+    targetRepetitions: 'coachWorkspace.client.targetReps',
+    targetWeightKg: 'coachWorkspace.client.targetWeight',
+    restSeconds: 'coachWorkspace.restSeconds',
+    actualRepetitions: 'coachWorkspace.client.actualReps',
+    actualWeightKg: 'coachWorkspace.client.actualWeight',
+    targetRpe: 'setEffort.targetRpe',
+    actualRpe: 'setEffort.actualRpe',
+    rir: 'setEffort.rir',
+    completed: 'coachWorkspace.client.done',
+    notes: 'coachWorkspace.client.notes',
+  };
+
   get completedCount(): number {
     return this.entry.sets.filter((row) => row.original.completed).length;
   }

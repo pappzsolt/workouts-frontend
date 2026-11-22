@@ -36,24 +36,39 @@ export class UserEditService {
       map((response) => {
         if (!response.success) throw new Error(response.message || 'dataErrors.usersLoad');
         return (response.data ?? [])
-        .filter((user): user is MemberResponse & { id: number } => user.id != null)
-        .map((user) => ({
-          id: user.id,
-          usernameOrName: user.usernameOrName ?? '',
-          email: user.email ?? '',
-          avatarUrl: user.avatarUrl ?? undefined,
-          roles: user.roles ?? [],
-          extraFields: {
-            coach_id: this.getNumberExtraField(user.extraFields?.['coach_id']),
-            age: this.getNumberExtraField(user.extraFields?.['age']),
-            weight: this.getNumberExtraField(user.extraFields?.['weight']),
-            height: this.getNumberExtraField(user.extraFields?.['height']),
-            gender: this.getStringExtraField(user.extraFields?.['gender']),
-            goals: this.getStringExtraField(user.extraFields?.['goals']),
-          },
-        }));
+          .filter((user): user is MemberResponse & { id: number } => user.id != null)
+          .map((user) => this.mapUser(user));
       }),
     );
+  }
+
+  getUser(id: number): Observable<RawUser> {
+    return this.http.get<ApiResponse<MemberResponse>>(API_ENDPOINTS.memberUserById(id)).pipe(
+      map((response) => {
+        if (!response.success || response.data?.id !== id) {
+          throw new Error(response.message || 'dataErrors.usersLoad');
+        }
+        return this.mapUser({ ...response.data, id });
+      }),
+    );
+  }
+
+  private mapUser(user: MemberResponse & { id: number }): RawUser {
+    return {
+      id: user.id,
+      usernameOrName: user.usernameOrName ?? '',
+      email: user.email ?? '',
+      avatarUrl: user.avatarUrl ?? undefined,
+      roles: user.roles ?? [],
+      extraFields: {
+        coach_id: this.getNumberExtraField(user.extraFields?.['coach_id']),
+        age: this.getNumberExtraField(user.extraFields?.['age']),
+        weight: this.getNumberExtraField(user.extraFields?.['weight']),
+        height: this.getNumberExtraField(user.extraFields?.['height']),
+        gender: this.getStringExtraField(user.extraFields?.['gender']),
+        goals: this.getStringExtraField(user.extraFields?.['goals']),
+      },
+    };
   }
 
   getCoaches(): Observable<CoachNameId[]> {
@@ -79,7 +94,7 @@ export class UserEditService {
     );
   }
 
-  updateUser(user: RawUser, roleIds: number[]): Observable<ApiResponse<void>> {
+  updateUser(user: RawUser, roleIds?: number[]): Observable<ApiResponse<void>> {
     const payload: UpdateUserRequest = {
       type: 'user',
       username: user.usernameOrName,
@@ -91,7 +106,7 @@ export class UserEditService {
       gender: normalizeGender(user.extraFields?.gender) || undefined,
       goals: user.extraFields?.goals,
       coachId: user.extraFields?.coach_id ?? null,
-      roleIds: roleIds || [],
+      roleIds,
     };
 
     if (user.password && user.password.trim() !== '') {

@@ -64,7 +64,13 @@ export class AuthInterceptor implements HttpInterceptor {
     originalError: HttpErrorResponse,
   ): Observable<HttpEvent<unknown>> {
     // AuthService owns the shared refresh and invokes failure handling once.
-    return this.authService.refreshAccessToken(() => this.clearSessionAndRedirect(sessionVersion)).pipe(
+    return this.authService.refreshAccessToken(failure => {
+      if (failure === 'identity-changed') {
+        void this.router.navigate(['/login']);
+      } else {
+        this.clearSessionAndRedirect(sessionVersion);
+      }
+    }).pipe(
       throwIfEmpty(() => originalError),
       switchMap(response => sessionVersion === this.authService.getSessionVersion()
         ? this.retryWithToken(req, next, response.accessToken, sessionVersion)

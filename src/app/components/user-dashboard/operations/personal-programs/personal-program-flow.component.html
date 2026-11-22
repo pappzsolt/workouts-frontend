@@ -9,7 +9,8 @@
       <span class="text-content-400" aria-hidden="true">›</span>
       <button type="button" class="rounded-lg px-3 py-2 font-semibold"
               [class.bg-primary-50]="view === 'day'" [class.text-primary-800]="view === 'day'"
-              (click)="openDay()" [attr.aria-current]="view === 'day' ? 'step' : null">
+              (click)="openDay()" [disabled]="state.busy || (state.started && (scheduleLoading || scheduleFailed))"
+              [attr.aria-current]="view === 'day' ? 'step' : null">
         {{ (state.standaloneMode ? 'personalWorkoutFlow.exercises' : 'personalPrograms.flow.stepDay') | translate }}
       </button>
       <span class="text-content-400" aria-hidden="true">›</span>

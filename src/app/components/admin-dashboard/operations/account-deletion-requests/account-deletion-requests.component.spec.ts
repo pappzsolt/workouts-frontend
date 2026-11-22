@@ -50,6 +50,27 @@ describe('Manual deletion administration', () => {
     expect(service.resolve).not.toHaveBeenCalled();
   });
 
+  it('prevents decisions on retained rows until the current list request finishes', () => {
+    const c = create();
+    c.select(row);
+    c.note = 'verified';
+    c.confirmed = true;
+    const refresh = new Subject<{ content: DeletionRequest[]; page: number; totalPages: number }>();
+    service.list.and.returnValue(refresh);
+
+    c.load(0);
+    c.save();
+    expect(service.resolve).not.toHaveBeenCalled();
+
+    refresh.next({ content: [row], page: 0, totalPages: 1 });
+    refresh.complete();
+    service.resolve.and.returnValue(of({ success: true }));
+    service.list.and.returnValue(of({ content: [{ ...row, status: 'COMPLETED' }], page: 0, totalPages: 1 }));
+    c.save();
+    expect(service.resolve).toHaveBeenCalledOnceWith(1, 'COMPLETED', 'verified');
+    expect(c.rows[0].status).toBe('COMPLETED');
+  });
+
   it('prevents concurrent resolutions and allows retry after failure', () => {
     const pending = new Subject<any>(); service.resolve.and.returnValue(pending);
     const c = create(); c.select(row); c.note = 'verified'; c.confirmed = true;

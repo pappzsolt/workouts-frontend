@@ -1,6 +1,6 @@
 import type { DestroyRef } from '@angular/core';
 import type { Router } from '@angular/router';
-import { takeUntil } from 'rxjs';
+import { finalize, takeUntil } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import type { HttpErrorResponse } from '@angular/common/http';
 import type { WorkoutExerciseView } from '../../../../../models/workout/workout-exercise-view.model';
@@ -74,14 +74,18 @@ export class WorkoutExerciseEditor {
   loadWorkoutExercises(): void {
     if (!this.state.workoutId) return;
     this.state.workoutExercisesLoadCancelled$.next();
-    this.exerciseService.getWorkoutExercises(this.state.workoutId)
-      .pipe(takeUntil(this.state.workoutExercisesLoadCancelled$), takeUntilDestroyed(this.destroyRef)).subscribe({
+    const workoutId = this.state.workoutId;
+    this.state.loadingWorkoutExercises = true;
+    this.exerciseService.getWorkoutExercises(workoutId)
+      .pipe(
+        takeUntil(this.state.workoutExercisesLoadCancelled$), takeUntilDestroyed(this.destroyRef),
+        finalize(() => { this.state.loadingWorkoutExercises = false; }),
+      ).subscribe({
         next: (workout: WorkoutUiDto) => {
-          this.state.workoutExercises = toWorkoutExerciseViews(workout, this.state.workoutId!);
+          this.state.workoutExercises = toWorkoutExerciseViews(workout, workoutId);
         },
         error: (error: HttpErrorResponse) => {
           this.logger.error('Hiba a workout exercise-ek betöltésekor:', error);
-          this.state.workoutExercises = [];
           this.effects.setMessage('coachWorkoutEdit.loadWorkoutExercisesError', 'error');
         },
       });
@@ -171,6 +175,7 @@ export class WorkoutExerciseEditor {
         this.state.selectedExerciseId = null;
         this.state.addingExercise = false;
         this.effects.setMessage('coachWorkoutEdit.addSuccess', 'success');
+        this.effects.loadWorkoutExercises();
       },
       error: (error: HttpErrorResponse) => {
         this.logger.error('Hiba az exercise workoutba adásakor:', error);

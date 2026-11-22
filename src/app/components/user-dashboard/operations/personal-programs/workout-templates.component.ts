@@ -52,6 +52,7 @@ export class WorkoutTemplatesComponent implements OnInit {
   message = '';
   loadFailed = false;
   pendingDelete: WorkoutTemplate | null = null;
+  pendingDraftId: number | null = null;
 
   get filtered(): WorkoutTemplate[] {
     return this.templates
@@ -102,7 +103,7 @@ export class WorkoutTemplatesComponent implements OnInit {
       });
   }
   use(template: WorkoutTemplate): void {
-    if (this.busy || this.loading) return;
+    if (this.busy || this.loading || this.pendingDraftId !== null) return;
     this.busy = true;
     this.message = '';
     this.service
@@ -110,22 +111,31 @@ export class WorkoutTemplatesComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (draft) => {
-          // Keep the action locked until navigation completes to avoid duplicate occasions.
-          void this.router.navigate(['/user/personal-workouts', draft.id]).then(
-            () => {
-              this.busy = false;
-            },
-            (error) => {
-              this.busy = false;
-              this.fail(error);
-            },
-          );
+          this.pendingDraftId = draft.id;
+          this.openPendingDraft();
         },
         error: (error) => {
           this.busy = false;
           this.fail(error);
         },
       });
+  }
+
+  retryOpenDraft(): void {
+    if (this.busy || this.pendingDraftId === null) return;
+    this.busy = true;
+    this.message = '';
+    this.openPendingDraft();
+  }
+
+  private openPendingDraft(): void {
+    const finished = (opened: boolean) => {
+      this.busy = false;
+      if (opened) this.pendingDraftId = null;
+      else this.message = 'personalNavigation.openFailed';
+    };
+    void this.router.navigate(['/user/personal-workouts', this.pendingDraftId])
+      .then(finished, () => finished(false));
   }
   confirmDelete(): void {
     if (this.busy || !this.pendingDelete) return;

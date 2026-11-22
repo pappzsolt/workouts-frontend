@@ -381,6 +381,7 @@ export class PersonalProgramFlowComponent implements OnChanges {
   }
 
   openDay(): void {
+    if (this.state.busy || (this.state.started && (this.scheduleLoading || this.scheduleFailed))) return;
     this.editingDay = this.activeDay;
     this.days.pickerDay = null;
     this.view = 'day';

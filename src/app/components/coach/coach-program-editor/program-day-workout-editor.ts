@@ -14,7 +14,7 @@ export class ProgramDayWorkoutEditor {
   confirmRemove = false;
   extraDate = '';
   confirmRepeat = false;
-  private readonly repeatRecoveries = new Map<number, { workoutId: number; confirmedDays: number[] }>();
+  private readonly repeatRecoveries = new Map<number, { workoutId: number; confirmedDays: number[]; acceptChangedSchedule?: boolean }>();
   constructor(
     private readonly state: ProgramEditorState,
     private readonly workspace: CoachWorkspaceService,
@@ -72,16 +72,23 @@ export class ProgramDayWorkoutEditor {
     const programId = this.state.programId;
     if (programId === null) return;
     const recovery = this.repeatRecoveries.get(programId);
-    if (recovery?.confirmedDays.every(day =>
-      links.some(link => link.dayIndex === day && link.workoutId === recovery.workoutId))) {
-      this.repeatRecoveries.delete(programId);
-    }
+    if (!recovery) return;
+    const matchesConfirmed = recovery.confirmedDays.every(day =>
+      links.some(link => link.dayIndex === day && link.workoutId === recovery.workoutId));
+    if (!matchesConfirmed && !recovery.acceptChangedSchedule) return;
+
+    this.repeatRecoveries.delete(programId);
+    if (!matchesConfirmed) this.effects.showMessage('coachWorkspace.editor.repeatScheduleChanged', 'info');
   }
 
   refreshRepeatSchedule(): void {
-    if (this.needsRepeatReconciliation && !this.state.operationPending) {
-      this.effects.reload(this.state.selectedDay, true);
-    }
+    const programId = this.state.programId;
+    if (programId === null || this.state.operationPending) return;
+    const recovery = this.repeatRecoveries.get(programId);
+    if (!recovery) return;
+
+    recovery.acceptChangedSchedule = true;
+    this.effects.reload(this.state.selectedDay, true);
   }
 
   repeatWeekly(): void {

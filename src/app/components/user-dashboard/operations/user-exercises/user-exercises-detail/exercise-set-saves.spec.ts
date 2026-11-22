@@ -1,7 +1,7 @@
 import { Subject } from 'rxjs';
 import type { ApiResponse } from '../../../../../models/backend-dto/common/api-response';
 import type { UserWorkoutExerciseDetailDto, UserWorkoutExerciseSetDto } from '../../../../../models/user-workout-exercise-detail.dto';
-import { ExerciseSetSaves, type ExerciseSetSaveEffects } from './exercise-set-saves';
+import { ExerciseSetSaves, ExerciseSetSaveStore, type ExerciseSetSaveEffects } from './exercise-set-saves';
 
 describe('Exercise set save queue', () => {
   let saves: ExerciseSetSaves;
@@ -144,6 +144,58 @@ describe('Exercise set save queue', () => {
     expect(set.completed).toBeTrue();
     expect(saves.isSettled(30, 1)).toBeTrue();
     expect(effects.selectLastCompletedTimer).toHaveBeenCalledWith(1);
+  });
+
+  it('paginates and blurs without resending values loaded from the server', () => {
+    saves.restoreFailedEdits(30, context.workoutExercise!);
+    const paginate = jasmine.createSpy('paginate');
+
+    saves.saveBeforeNavigation(set).subscribe(paginate);
+    saves.createRequest(set, false).subscribe();
+
+    expect(paginate).toHaveBeenCalledTimes(1);
+    expect(update).not.toHaveBeenCalled();
+  });
+
+  it('waits for an abandoned save and restores its failed edit when detail reopens', () => {
+    const store = new ExerciseSetSaveStore();
+    const session = store.forSession(1);
+    const first = new ExerciseSetSaves({ updateSetCompleted: update } as never, effects, session);
+    const reopened = new ExerciseSetSaves({ updateSetCompleted: update } as never, effects, session);
+    const loaded = { ...set };
+    first.restoreFailedEdits(30, context.workoutExercise!);
+    set.actualWeightKg = 25;
+    first.createRequest(set, false).subscribe().unsubscribe();
+    effects.isDestroyed.and.returnValue(true);
+    const loadedExercise = { ...context.workoutExercise!, userWorkoutExerciseSets: [loaded] };
+    const restore = jasmine.createSpy('restore').and.callFake(() => reopened.restoreFailedEdits(30, loadedExercise));
+    reopened.waitForOccurrence(30).subscribe(restore);
+    expect(restore).not.toHaveBeenCalled();
+
+    responses[0].error(new Error('Save failed'));
+
+    expect(restore).toHaveBeenCalledTimes(1);
+    expect(loaded.actualWeightKg).toBe(25);
+    expect(effects.showError).toHaveBeenCalledTimes(1);
+    const fresh = new ExerciseSetSaves({ updateSetCompleted: update } as never, effects, store.forSession(2));
+    const freshSet = { ...loaded, actualWeightKg: 20 };
+    fresh.restoreFailedEdits(30, { ...loadedExercise, userWorkoutExerciseSets: [freshSet] });
+    expect(freshSet.actualWeightKg).toBe(20);
+  });
+
+  it('does not dispatch a queued write after the original login session ends', () => {
+    let signedIn = true;
+    const store = new ExerciseSetSaveStore();
+    saves = new ExerciseSetSaves({ updateSetCompleted: update } as never, effects, store.forSession(1), () => signedIn);
+    saves.createRequest(set).subscribe();
+    set.actualWeightKg = 25;
+    const failed = jasmine.createSpy('failed');
+    saves.createRequest(set).subscribe({ error: failed });
+    signedIn = false;
+    finish(0);
+
+    expect(update).toHaveBeenCalledTimes(1);
+    expect(failed).toHaveBeenCalledOnceWith(new Error('authErrors.sessionEnded'));
   });
 
 });

@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, convertToParamMap } from '@angular/router';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, Subject, of } from 'rxjs';
 
 import type { ClientProgramRow, ClientWorkoutSet, CoachClientOverview, CoachOverview } from '../../../models/coach-workspace.model';
 import { CoachWorkspaceService } from '../../../services/coach/coach-workspace.service';
@@ -45,7 +45,7 @@ describe('Coach client same-route deep links', () => {
   beforeEach(() => {
     query = new BehaviorSubject(convertToParamMap({ program: '1', workout: '70' }));
     params = new BehaviorSubject(convertToParamMap({ userId: '7' }));
-    api = jasmine.createSpyObj('workspace', ['getOverview', 'getClientProgramRows', 'getClientWorkoutSets', 'saveClientSet']);
+    api = jasmine.createSpyObj('workspace', ['getOverview', 'getClientProgramRows', 'getClientWorkoutSets', 'saveClientSet', 'revokeProgram']);
     api.getOverview.and.callFake((_from, _to, userId) => of(overview(userId!)));
     api.getClientProgramRows.and.callFake((_userId, programId) => of(programId === 1
       ? [workoutRow(70, 100), workoutRow(71, 101)]
@@ -84,6 +84,48 @@ describe('Coach client same-route deep links', () => {
     query.next(convertToParamMap({ program: '2', programWorkout: '9999' }));
     expect(component.selected).toBeNull();
     expect(component.message).toBe('coachWorkspace.client.requestedWorkoutUnavailable');
+  });
+
+  it('leaves the editor closed for a missing occurrence even when another workout has the requested date', () => {
+    query.next(convertToParamMap({ program: '2', workout: '999', date: '2030-04-16' }));
+    expect(component.selected).toBeNull();
+    expect(component.message).toBe('coachWorkspace.client.requestedWorkoutUnavailable');
+
+    query.next(convertToParamMap({ program: '2', workout: '80' }));
+    expect(component.selected?.userWorkoutId).toBe(80);
+    expect(component.message).toBe('');
+
+    query.next(convertToParamMap({ program: '2', workout: '999', date: '2030-04-16' }));
+    expect(component.selected).toBeNull();
+    expect(component.message).toBe('coachWorkspace.client.requestedWorkoutUnavailable');
+  });
+
+  it('preserves the open plan draft when revoking another program finishes', () => {
+    const revoke = new Subject<void>();
+    const reload = new Subject<CoachOverview>();
+    api.revokeProgram.and.returnValue(revoke);
+    api.getOverview.and.returnValue(reload);
+
+    component.setTab('programs');
+    component.assignments.askRevoke(1);
+    component.assignments.confirmRevoke(7);
+    component.setTab('plan');
+    component.selectProgram(2);
+    const row = component.setEditor.exerciseSets[0].sets[0];
+    row.targetWeightKg = 55;
+
+    revoke.next();
+    revoke.complete();
+    const athleteAfterRevocation = athlete(7);
+    athleteAfterRevocation.programs = athleteAfterRevocation.programs.filter(program => program.programId !== 1);
+    reload.next({ ...overview(7), clients: [athleteAfterRevocation] });
+    reload.complete();
+
+    expect(component.programId).toBe(2);
+    expect(component.selected?.userWorkoutId).toBe(80);
+    expect(component.setEditor.exerciseSets[0].sets[0]).toBe(row);
+    expect(component.setEditor.changedRows[0].targetWeightKg).toBe(55);
+    expect(api.getClientProgramRows.calls.allArgs()).toEqual([[7, 1], [7, 2]]);
   });
 
   it('guards dirty drafts, restores the accepted URL on cancel and allows explicit discard', () => {

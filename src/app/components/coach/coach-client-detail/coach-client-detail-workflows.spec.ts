@@ -365,6 +365,18 @@ describe('Client editing workflow behavior', () => {
     expect(api.rescheduleWorkout.calls.allArgs()).toEqual([[11, '2026-10-01'], [11, '2026-10-31']]);
   });
 
+  it('does not reschedule started or completed sessions from the client plan', () => {
+    api.rescheduleWorkout.and.returnValue(of(undefined));
+    component.schedule.rescheduleDate = '2026-10-24';
+    component.selected!.startedAt = '2026-10-21T13:00:00';
+    component.rescheduleWorkout();
+    component.selected!.startedAt = null;
+    component.selected!.completed = true;
+    component.rescheduleWorkout();
+
+    expect(api.rescheduleWorkout).not.toHaveBeenCalled();
+  });
+
   it('reloads the selected workout after successful rescheduling', () => {
     const scheduled = new Subject<void>();
     api.rescheduleWorkout.and.returnValue(scheduled);

@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { AuthService } from '../../../../../services/auth/auth.service';
 import { LoggerService } from '../../../../../services/logger.service';
 import { UserExerciseDetailComponent } from './user-exercises-detail.component';
 import { Observable, Subject } from 'rxjs';
@@ -131,7 +132,10 @@ describe('UserExerciseDetailComponent persisted rest timer selection', () => {
 
 
 function makeSaveComponent(updateSetCompleted: jasmine.Spy): UserExerciseDetailComponent {
-  TestBed.configureTestingModule({ providers: [{ provide: LoggerService, useValue: { error() {} } }] });
+  TestBed.configureTestingModule({ providers: [
+    { provide: AuthService, useValue: { getSessionVersion: () => 1 } },
+    { provide: LoggerService, useValue: { error() {} } },
+  ] });
   return TestBed.runInInjectionContext(() => new UserExerciseDetailComponent(
     {} as never, { updateSetCompleted } as never, {} as never,
   ));

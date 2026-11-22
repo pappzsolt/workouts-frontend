@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
+import { AuthService } from '../../../../../services/auth/auth.service';
 import { LoggerService } from '../../../../../services/logger.service';
 import type { ApiResponse } from '../../../../../models/backend-dto/common/api-response';
 import type { UserWorkoutExerciseDetailDto, UserWorkoutExerciseSetDto } from '../../../../../models/user-workout-exercise-detail.dto';
@@ -16,6 +17,7 @@ describe('Automatic navigation after completing an exercise', () => {
     navigate = jasmine.createSpy('navigate').and.resolveTo(true);
     TestBed.configureTestingModule({ providers: [
       { provide: Router, useValue: { navigate } },
+      { provide: AuthService, useValue: { getSessionVersion: () => 1 } },
       { provide: LoggerService, useValue: { error() {} } },
     ] });
     requests = [];
@@ -59,6 +61,19 @@ describe('Automatic navigation after completing an exercise', () => {
     finish();
 
     expect(component.currentSetIndex).toBe(2);
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it('keeps the previous set selected when the queued completion settles', () => {
+    component.currentSetIndex = 3;
+    component.updateSetCompleted(sets[3], true);
+    component.goToSet(2);
+    expect(requests.length).toBe(1);
+
+    finish();
+
+    expect(component.currentSetIndex).toBe(2);
+    expect(sets[3].completed).toBeTrue();
     expect(navigate).not.toHaveBeenCalled();
   });
 

@@ -88,6 +88,31 @@
                 </button>
               </td>
             </tr>
+            @if (row.conflicts?.length) {
+              <tr>
+                <td colspan="12" class="px-2 pb-2">
+                  <div class="flex flex-wrap items-center gap-3 rounded-xl bg-warning-50 p-3 text-sm text-content-900">
+                    <div class="flex-1">
+                      <p>{{ 'coachWorkspace.client.setConflict' | translate }}</p>
+                      <ul>
+                        @for (field of row.conflicts; track field) {
+                          <li>{{ fieldLabels[field] | translate }} ·
+                            @if (field === 'completed') {
+                              {{ (row.original.completed ? 'common.yes' : 'common.no') | translate }}
+                            } @else {
+                              {{ row.original[field] ?? '—' }}
+                            }
+                          </li>
+                        }
+                      </ul>
+                    </div>
+                    <button type="button" (click)="row.conflicts = undefined" [disabled]="setBusy" class="btn btn-neutral px-3">
+                      {{ 'coachWorkspace.client.keepSetEdits' | translate }}
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
             @if (deleteSetId === row.id) {
               <tr>
                 <td colspan="12" class="px-2 pb-2">

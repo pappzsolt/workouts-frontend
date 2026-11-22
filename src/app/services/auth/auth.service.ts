@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { LoggerService } from '../logger.service';
-import { HttpClient, HttpBackend, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpBackend, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, Subject, catchError, defer, finalize, firstValueFrom, map, shareReplay, takeUntil, tap, throwError } from 'rxjs';
 import { jwtDecode } from 'jwt-decode';
 
@@ -10,6 +10,9 @@ import { API_ENDPOINTS } from '../../api-endpoints';
 import { LoginResponse, TokenPayload } from '../../models/auth-model';
 import { ApiResponse } from '../../models/backend-dto/common/api-response';
 import { safeStorageGet, safeStorageRemove } from '../../shared/safe-storage';
+
+type RefreshFailure = 'expired' | 'identity-changed';
+class RefreshIdentityChanged extends Error {}
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +28,7 @@ export class AuthService {
    */
   private accessToken: string | null = null;
 
-  private refreshFailureHandler: (() => void) | null = null;
+  private refreshFailureHandler: ((failure: RefreshFailure) => void) | null = null;
   private refreshInFlight$: Observable<LoginResponse> | null = null;
   private readonly refreshCancelled$ = new Subject<void>();
   private sessionVersion = 0;
@@ -165,7 +168,7 @@ export class AuthService {
    * Új access token kérése a böngésző által automatikusan küldött
    * HttpOnly refresh cookie-val.
    */
-  refreshAccessToken(onFailure?: () => void): Observable<LoginResponse> {
+  refreshAccessToken(onFailure?: (failure: RefreshFailure) => void): Observable<LoginResponse> {
     // Guards and interceptors share one request. The first recovery consumer owns
     // the failure side effect, so parallel 401 responses redirect only once.
     if (onFailure && !this.refreshFailureHandler) this.refreshFailureHandler = onFailure;
@@ -202,12 +205,21 @@ export class AuthService {
           return response.data;
         }),
         tap((response) => {
+          if (this.accessToken && !this.isSameAccount(this.accessToken, response.accessToken)) {
+            throw new RefreshIdentityChanged('authErrors.sessionEnded');
+          }
           this.accessToken = response.accessToken;
         }),
         catchError((error: unknown) => {
           const onFailure = this.refreshFailureHandler;
           this.refreshFailureHandler = null;
-          onFailure?.();
+          if (error instanceof RefreshIdentityChanged) {
+            this.accessToken = null;
+            this.cancelPendingRefresh();
+            onFailure?.('identity-changed');
+          } else if (error instanceof HttpErrorResponse && error.status === 401) {
+            onFailure?.('expired');
+          }
           return throwError(() => error);
         }),
         finalize(() => {
@@ -222,6 +234,18 @@ export class AuthService {
     this.refreshInFlight$ = request$;
 
     return request$;
+  }
+
+  private isSameAccount(currentToken: string, refreshedToken: string): boolean {
+    try {
+      const current = jwtDecode<TokenPayload>(currentToken);
+      const refreshed = jwtDecode<TokenPayload>(refreshedToken);
+      return Number.isInteger(current.id) && current.id === refreshed.id &&
+        current.accountType === refreshed.accountType &&
+        (current.accountType != null || current.sub === refreshed.sub);
+    } catch {
+      return false;
+    }
   }
 
   /**

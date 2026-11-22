@@ -110,6 +110,51 @@ describe('Client set save snapshots', () => {
     expect(component.setEditor.dirty).toBeFalse();
   });
 
+  it('rebases separate field edits on the fresh server snapshot after a conflict', () => {
+    component.setEditor.saveSets();
+    requests[0].error({ status: 409 });
+    component.setEditor.saveSets();
+    expect(requests).toHaveSize(1);
+    recovery.next([{
+      id: 1, userWorkoutExerciseId: 1, setNumber: 1,
+      ...values(10), targetRpe: null, notes: 'Athlete edit', startedAt: null, completedAt: null,
+    }]);
+    recovery.complete();
+
+    const row = component.setEditor.changedRows[0];
+    expect(row.notes).toBe('Athlete edit');
+    expect(row.targetRepetitions).toBe(15);
+    component.setEditor.saveSets();
+    expect(save.calls.mostRecent().args).toEqual([
+      1, { ...values(15), targetRpe: null, notes: 'Athlete edit' },
+      { ...values(10), targetRpe: null, notes: 'Athlete edit' },
+    ]);
+    finish(requests[1]);
+    expect(component.setEditor.dirty).toBeFalse();
+  });
+
+  it('requires explicit acknowledgement for overlapping edits and discards to the latest saved value', () => {
+    component.setEditor.saveSets();
+    requests[0].error({ status: 409 });
+    recovery.next([{
+      id: 1, userWorkoutExerciseId: 1, setNumber: 1,
+      ...values(12), targetRpe: null, startedAt: null, completedAt: null,
+    }]);
+    recovery.complete();
+
+    const row = component.setEditor.changedRows[0];
+    expect(row.conflicts).toEqual(['targetRepetitions']);
+    expect(row.targetRepetitions).toBe(15);
+    expect(row.original.targetRepetitions).toBe(12);
+    component.setEditor.saveSets();
+    expect(requests).toHaveSize(1);
+
+    component.setEditor.discardChanges();
+    expect(row.targetRepetitions).toBe(12);
+    expect(row.conflicts).toBeUndefined();
+    expect(component.setEditor.dirty).toBeFalse();
+  });
+
   it('does not change the last confirmed values when saving fails', () => {
     const row = component.setEditor.exerciseSets[0].sets[0];
     component.setEditor.saveSets();

@@ -81,6 +81,31 @@ describe('Personal multi-day program flow', () => {
     expect(flow.scheduleFailed).toBeFalse();
   });
 
+  it('waits for a pending workout move before opening that day’s targets', () => {
+    const pending = new Subject<PersonalWorkoutSchedule[]>();
+    state.id = 7;
+    state.started = true;
+    state.model.startDate = '2030-01-01';
+    flow.scheduleStarted = true;
+    flow.scheduleProgramId = 7;
+    flow.moveDestination = 2;
+    days.schedules = [{ dayIndex: 1, scheduledAt: '2030-01-01', version: 1, editable: true }];
+    service.moveDay.and.returnValue(pending);
+    service.dayTargets.and.returnValue(new Subject<PersonalDayTargets>());
+
+    flow.moveSelectedDay();
+    flow.openDay();
+    expect(flow.view).toBe('calendar');
+    expect(service.dayTargets).not.toHaveBeenCalled();
+    pending.next([{ dayIndex: 1, scheduledAt: '2030-01-02', version: 2, editable: true }]);
+    pending.complete();
+    flow.openDay();
+
+    expect(flow.view).toBe('day');
+    expect(days.selectedDay).toBe(2);
+    expect(service.dayTargets).toHaveBeenCalledOnceWith(7, 1);
+  });
+
   it('keeps newer target values and version if an earlier load settles last', () => {
     const first = new Subject<PersonalDayTargets>();
     const second = new Subject<PersonalDayTargets>();

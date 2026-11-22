@@ -160,6 +160,7 @@
     "createCoach": "Coach erstellen"
   },
   "adminUserEdit": {
+    "conflict": "Die Benutzerdaten wurden inzwischen geändert. Lade den Benutzer vor einem erneuten Versuch neu.",
     "title": "Benutzer bearbeiten",
     "newPassword": "Neues Passwort",
     "avatarUrl": "Avatar-URL",
@@ -1071,6 +1072,8 @@
       "addSet": "Satz hinzufügen",
       "removeSet": "Satz löschen",
       "actual": "erledigt",
+      "setConflict": "Dieser Satz wurde auch an anderer Stelle bearbeitet. Prüfe vor dem Speichern die aktuellen gespeicherten Werte unten.",
+      "keepSetEdits": "Meine Änderungen behalten",
       "saveChanges": "Speichern ({{count}})",
       "actualReps": "Ist-Wdh.",
       "actualWeight": "Ist-Gewicht (kg)",
@@ -1270,6 +1273,7 @@
       "repeatNothing": "Kein späterer freier Tag am selben Wochentag.",
       "repeated": "Das Training wiederholt sich jetzt wöchentlich.",
       "repeatPartial": "Die wöchentliche Wiederholung wurde unterbrochen. Bestätigt: {{confirmed}} von {{total}} angeforderten Tagen.",
+      "repeatScheduleChanged": "Der Programmplan wurde inzwischen geändert. Prüfe vor der Wiederholung den aktualisierten Kalender.",
       "repeatRefreshRequired": "Aktualisiere den Zeitplan, bevor du die Wiederholung erneut startest.",
       "repeatRefresh": "Zeitplan aktualisieren",
       "alsoOnDay": "Auch an Tag",

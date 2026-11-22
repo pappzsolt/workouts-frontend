@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
+import { AuthService } from '../../../../../services/auth/auth.service';
 import { LoggerService } from '../../../../../services/logger.service';
 import { UserExerciseDetailComponent } from './user-exercises-detail.component';
 import type { ApiResponse } from '../../../../../models/backend-dto/common/api-response';
@@ -10,7 +11,10 @@ describe('Rest timer after queued set saves', () => {
   let set: UserWorkoutExerciseSetDto;
   let requests: Subject<ApiResponse<void>>[];
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [{ provide: LoggerService, useValue: { error() {} } }] });
+    TestBed.configureTestingModule({ providers: [
+      { provide: AuthService, useValue: { getSessionVersion: () => 1 } },
+      { provide: LoggerService, useValue: { error() {} } },
+    ] });
     requests = [];
     component = TestBed.runInInjectionContext(() => new UserExerciseDetailComponent({} as never, {
       updateSetCompleted: () => { const request = new Subject<ApiResponse<void>>(); requests.push(request); return request; },

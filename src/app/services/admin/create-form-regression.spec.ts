@@ -25,6 +25,33 @@ describe('Create form regressions', () => {
     expect(create.calls.first().args[0].roleIds).toEqual([2]);
   });
 
+  it('blocks duplicate admin user creation and allows retry after a failed request', () => {
+    const request = new Subject<ApiResponse<void>>();
+    const retry = new Subject<ApiResponse<void>>();
+    const createUser = jasmine.createSpy('createUser').and.returnValues(request, retry);
+    TestBed.configureTestingModule({ providers: [{ provide: UserNewService, useValue: { createUser } }] });
+    const component = TestBed.runInInjectionContext(() => new UserNewComponent(TestBed.inject(UserNewService)));
+    component.user.username = 'test-user';
+    component.user.email = 'user@example.com';
+    component.user.passwordHash = 'Password123';
+    component.onRoleSelected({ id: 1, name: 'USER' });
+    const form = { valid: true, resetForm: jasmine.createSpy() } as unknown as NgForm;
+
+    component.onSubmit(form);
+    component.onSubmit(form);
+    expect(createUser).toHaveBeenCalledTimes(1);
+    request.error(new Error('offline'));
+    expect(component.user.username).toBe('test-user');
+    expect(form.resetForm).not.toHaveBeenCalled();
+
+    component.onSubmit(form);
+    expect(createUser).toHaveBeenCalledTimes(2);
+    retry.next({ success: true, data: null, message: null });
+    retry.complete();
+    expect(form.resetForm).toHaveBeenCalledTimes(1);
+    expect(component.saving).toBeFalse();
+  });
+
   it('preserves newer exercise data and uses the submitted name in its success message', () => {
     const request = new Subject<ApiResponse<Exercise>>();
     const add = jasmine.createSpy('addExercise').and.returnValue(request);

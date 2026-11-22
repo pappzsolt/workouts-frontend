@@ -1,3 +1,4 @@
+import { finalize } from 'rxjs';
 import { createInputValidationGuard } from '../../../shared/components/form-controls/app-input.directive';
 import type { CoachNameId } from '../../../../models/common/coach-name-id.model';
 import { Component, DestroyRef, inject } from '@angular/core';
@@ -90,6 +91,7 @@ export class UserNewComponent {
   // ÜZENET
   // =============================
 
+  saving = false;
   message = '';
 
   messageType: 'success' | 'error' | '' = '';
@@ -126,7 +128,7 @@ export class UserNewComponent {
   // =============================
 
   onSubmit(form: NgForm): void {
-    if (!this.validateInputs()) return;
+    if (this.saving || !this.validateInputs()) return;
     this.clearMessage();
 
     if (!form.valid || this.user.roleIds.length !== 1) {
@@ -161,9 +163,10 @@ export class UserNewComponent {
       roleIds: this.user.roleIds.map((role) => role.id),
     };
 
+    this.saving = true;
     this.userNewService
       .createUser(payload)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), finalize(() => { this.saving = false; }))
       .subscribe({
         next: (res: ApiResponse<void>) => {
           if (res.success) {
