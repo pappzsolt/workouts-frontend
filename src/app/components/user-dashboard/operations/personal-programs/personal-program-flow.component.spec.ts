@@ -297,6 +297,43 @@ describe('Personal multi-day program flow', () => {
     expect(state.executionTargetsDirty).toBeFalse();
   });
 
+  it('submits retained set identities and reuses server-issued IDs on the next save', () => {
+    state.id = 7;
+    state.started = true;
+    const original: PersonalDayTargets = {
+      dayIndex: 1, version: 3, editable: true,
+      exercises: [{ exerciseIndex: 0, userExerciseId: 100, exerciseId: 12, editable: true,
+        sets: [41, 42, 43].map(userWorkoutSetId => ({
+          userWorkoutSetId, targetRepetitions: 5, targetWeightKg: null, restSeconds: 60, targetRpe: null,
+        })),
+      }],
+    };
+    service.dayTargets.and.returnValue(of(original));
+    flow.openDay();
+    const exercise = flow.targetDay!.exercises[0];
+    exercise.setTargets!.splice(1, 1);
+    exercise.setTargets!.push({ targetRepetitions: 8, targetWeightKg: null, restSeconds: 60,
+      targetRpe: null, notes: null });
+    exercise.sets = 3;
+    flow.targetChanged();
+    const saved = { ...original, version: 4, exercises: [{ ...original.exercises[0],
+      sets: [original.exercises[0].sets[0], original.exercises[0].sets[2],
+        { ...original.exercises[0].sets[2], userWorkoutSetId: 44, targetRepetitions: 8 }],
+    }] };
+    service.updateDayTargets.and.returnValue(of(saved));
+    flow.saveTargets();
+    const submitted = service.updateDayTargets.calls.mostRecent().args[2];
+    expect(submitted.useSetIds).toBeTrue();
+    expect(submitted.exercises[0].sets.map(set => set.userWorkoutSetId)).toEqual([41, 43, undefined]);
+    expect(exercise.setTargets!.map(set => set.userWorkoutSetId)).toEqual([41, 43, 44]);
+    expect(state.executionTargetsDirty).toBeFalse();
+    flow.targetChanged();
+    flow.saveTargets();
+    const next = service.updateDayTargets.calls.mostRecent().args[2];
+    expect(next.expectedVersion).toBe(4);
+    expect(next.exercises[0].sets.map(set => set.userWorkoutSetId)).toEqual([41, 43, 44]);
+  });
+
   it('keeps the live edit dirty if the server silently returns the old set count', () => {
     state.id = 7;
     state.started = true;

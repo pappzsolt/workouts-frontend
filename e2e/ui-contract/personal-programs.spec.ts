@@ -48,7 +48,9 @@ async function install(page: Page) {
       if (state.failTargetSave || call.body.expectedVersion !== 1) {
         return route.fulfill({ status: 409, json: { success: false, message: 'A célértékek mentése sikertelen.' } });
       }
-      return ok({ dayIndex: 1, version: 2, editable: true, exercises: call.body.exercises });
+      return ok({ dayIndex: 1, version: 2, editable: true,
+        exercises: call.body.exercises.map((exercise: object) => ({ ...exercise, editable: true })),
+      });
     }
     if (state.started && req.method() === 'GET') {
       if (path === `${ROOT}/${state.id}/schedule`) {
@@ -62,8 +64,10 @@ async function install(page: Page) {
         return ok({
           dayIndex: day.dayIndex, version: 1, editable: state.editableTargets,
           exercises: day.exercises.map((exercise, exerciseIndex) => ({
-            exerciseIndex,
-            sets: Array.from({ length: exercise.sets }, () => ({
+            exerciseIndex, userExerciseId: 100 + exerciseIndex, exerciseId: exercise.exerciseId,
+            editable: state.editableTargets,
+            sets: Array.from({ length: exercise.sets }, (_, index) => ({
+              userWorkoutSetId: 1000 + exerciseIndex * 20 + index,
               targetRepetitions: exercise.repetitions, targetWeightKg: null,
               restSeconds: exercise.restSeconds, targetRpe: null,
             })),

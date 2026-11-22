@@ -1,4 +1,5 @@
 export interface PersonalSetTarget {
+  userWorkoutSetId?: number;
   targetRepetitions: number;
   targetWeightKg: number | null;
   restSeconds: number;
@@ -54,10 +55,11 @@ export interface PersonalDayTargets {
   editable: boolean;
   exercises: { exerciseIndex: number; userExerciseId: number; exerciseId: number; editable: boolean;
     sets: Pick<PersonalSetTarget,
-    'targetRepetitions' | 'targetWeightKg' | 'restSeconds' | 'targetRpe'>[] }[];
+    'targetRepetitions' | 'targetWeightKg' | 'restSeconds' | 'targetRpe' | 'userWorkoutSetId'>[] }[];
 }
 export interface PersonalDayTargetsUpdate {
   expectedVersion: number;
+  useSetIds?: boolean;
   exercises: { exerciseIndex: number; userExerciseId: number | null; exerciseId: number; sets: PersonalDayTargets['exercises'][number]['sets'] }[];
 }
 

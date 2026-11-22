@@ -281,6 +281,8 @@ export class PersonalProgramFlowComponent implements OnChanges {
       this.state.messageType = 'error';
       return;
     }
+    const useSetIds = session.exercises.every(exercise =>
+      exercise.sets.every(set => Number.isInteger(set.userWorkoutSetId) && set.userWorkoutSetId! > 0));
     const exercises = target.exercises.map((exercise, exerciseIndex) => ({
       exerciseIndex,
       userExerciseId: exercise.userExerciseId ?? null,
@@ -290,11 +292,12 @@ export class PersonalProgramFlowComponent implements OnChanges {
         targetWeightKg: row.targetWeightKg,
         restSeconds: row.restSeconds,
         targetRpe: row.targetRpe,
+        ...(useSetIds && row.userWorkoutSetId != null ? { userWorkoutSetId: row.userWorkoutSetId } : {}),
       })),
     }));
     this.state.busy = true;
     this.service.updateDayTargets(id, session.dayIndex, {
-      expectedVersion: session.version, exercises,
+      expectedVersion: session.version, ...(useSetIds ? { useSetIds } : {}), exercises,
     }).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (saved) => {
         this.state.busy = false;
@@ -304,18 +307,25 @@ export class PersonalProgramFlowComponent implements OnChanges {
             exercises.some(submitted => {
               const returned = saved.exercises.find(exercise => exercise.exerciseIndex === submitted.exerciseIndex);
               return !returned || returned.exerciseId !== submitted.exerciseId ||
-                returned.sets.length !== submitted.sets.length;
+                !Array.isArray(returned.sets) || returned.sets.length !== submitted.sets.length ||
+                (useSetIds && (returned.sets.some((set, index) =>
+                  !Number.isInteger(set?.userWorkoutSetId) || set.userWorkoutSetId! <= 0 ||
+                  (submitted.sets[index].userWorkoutSetId != null &&
+                    submitted.sets[index].userWorkoutSetId !== set.userWorkoutSetId)) ||
+                  new Set(returned.sets.map(set => set.userWorkoutSetId)).size !== returned.sets.length));
             })) {
           this.state.message = 'personalEditorUi.targetsSaveMismatch';
           this.state.messageType = 'error';
           return;
         }
         this.targetSession = saved;
-        saved.exercises.forEach((row, index) => {
-          if (target.exercises[index]) {
-            target.exercises[index].userExerciseId = row.userExerciseId;
-            target.exercises[index].executionEditable = row.editable;
-          }
+        saved.exercises.forEach(row => {
+          const exercise = target.exercises[row.exerciseIndex];
+          exercise.userExerciseId = row.userExerciseId;
+          exercise.executionEditable = row.editable;
+          exercise.setTargets?.forEach((set, index) => {
+            set.userWorkoutSetId = row.sets[index].userWorkoutSetId;
+          });
         });
         this.state.executionTargetsDirty = false;
         this.state.message = 'personalEditorUi.targetsSaved';

@@ -76,7 +76,9 @@ export class PersonalExerciseTargetsComponent {
     if (this.locked || this.exercise.sets >= this.limits.maxSets) return;
     this.exercise.setTargets ??= initialSetTargets(this.exercise);
     const last = this.exercise.setTargets.at(-1)!;
-    this.exercise.setTargets.push({ ...last });
+    const newSet = { ...last };
+    delete newSet.userWorkoutSetId;
+    this.exercise.setTargets.push(newSet);
     this.update();
   }
 
