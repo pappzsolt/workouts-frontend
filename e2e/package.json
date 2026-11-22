@@ -17,6 +17,7 @@
     "test:auth-contract": "playwright test -c playwright.auth.config.ts",
     "test:frontend-contract": "playwright test -c playwright.frontend.config.ts",
     "test:live-api": "playwright test -c playwright.live-api.config.ts",
+    "test:menu": "playwright test -c playwright.live-api.config.ts menu-navigation-real.spec.ts",
     "coverage:live-api": "node scripts/report-live-coverage.cjs",
     "coverage:live-api:check": "node scripts/report-live-coverage.cjs --strict",
     "test:workout-templates": "playwright test -c playwright.workout-templates.config.ts",
