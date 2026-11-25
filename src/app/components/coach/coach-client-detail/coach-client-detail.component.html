@@ -194,7 +194,8 @@
                           {{ 'coachWorkspace.client.discard' | translate }}
                         </button>
                       }
-                      <button type="button" (click)="setEditor.saveSets()" [disabled]="workoutMutationPending || !setEditor.dirty"
+                      <button type="button" data-testid="coach-client-save-sets" (click)="setEditor.saveSets()"
+                              [attr.aria-busy]="setEditor.saving" [disabled]="workoutMutationPending || !setEditor.dirty"
                               class="btn btn-primary px-5">
                         <app-icon name="save" sizeClass="h-4 w-4" />
                         {{ (setEditor.saving ? 'coachWorkspace.saving' : 'coachWorkspace.client.saveChanges') | translate: { count: setEditor.changedRows.length } }}

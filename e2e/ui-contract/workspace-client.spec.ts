@@ -2,7 +2,13 @@ import { test, expect } from './workspace-fixture';
 const root = (p: any) => p.locator('app-coach-client-detail');
 const labels: Record<string, string> = { rpe: 'Tervezett RPE', tr: 'Cél ism.', tw: 'Cél súly (kg)', rs: 'Pihenő (mp)', ar: 'Tény. ism.', aw: 'Tény. súly (kg)', dn: 'Kész', nt: 'Megjegyzés' };
 const input = (p: any, name: string, row = 1) => root(p).locator('article').first().getByLabel(new RegExp(` ${row}\\. ${labels[name].replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`));
-const save = (p: any) => root(p).getByRole('button', { name: /^Mentés \(\d+\)$/ });
+const save = (p: any) => root(p).getByTestId('coach-client-save-sets');
+const expectSaved = async (p: any) => {
+  await expect(root(p).locator('app-message[role=status]')).toContainText('Az edzés terve mentve.');
+  await expect(save(p)).toHaveAttribute('aria-busy', 'false');
+  await expect(save(p)).toHaveAccessibleName('Mentés (0)');
+  await expect(save(p)).toBeDisabled();
+};
 
 test('client: deep link selects workout, feedback, next/previous and program tab', async ({ page, api }) => {
   await page.goto('/coach/clients/7?program=1&workout=70'); const r = root(page);
@@ -21,7 +27,7 @@ test('client: edits every field, sends exact values and reload persists', async 
   await page.goto('/coach/clients/7?program=1&workout=70');
   for (const [field, value] of [['tr','10'],['tw','42.5'],['rs','0'],['ar','9'],['aw','40'],['nt','  Test note  ']]) await input(page, field).fill(value);
   await input(page, 'dn').check(); await save(page).click();
-  await expect(save(page)).toBeDisabled();
+  await expectSaved(page);
   expect(api.writes('/api/user-workout-exercise-sets/7000')[0].body).toEqual({
     expected: { targetRepetitions: 8, targetWeightKg: 20, actualRepetitions: null, actualWeightKg: null,
       completed: false, restSeconds: 90, notes: null, targetRpe: null },
@@ -35,7 +41,7 @@ test('client: edits every field, sends exact values and reload persists', async 
 test('client: clearing optional fields emits all clear flags', async ({ page, api }) => {
   await page.goto('/coach/clients/7?workout=70');
   for (const field of ['tw','rs','ar','aw','nt']) await input(page, field).clear();
-  await save(page).click(); await expect(save(page)).toBeDisabled();
+  await save(page).click(); await expectSaved(page);
   expect(api.writes('/api/user-workout-exercise-sets/7000')[0].body).toMatchObject({
     targetWeightKg: null, clearTargetWeightKg: true, restSeconds: null, clearRestSeconds: true,
     actualRepetitions: null, clearActualRepetitions: true, actualWeightKg: null, clearActualWeightKg: true, notes: null, clearNotes: true,
@@ -122,9 +128,14 @@ test('client: two athletes keep separate dates and targets in a shared program',
   }));
 
   await page.goto('/coach/clients/7?program=1&workout=70');
+  await expect(input(page, 'tw')).toHaveValue('20');
   await input(page, 'tw').fill('45');
+  await expect(input(page, 'tw')).toHaveValue('45');
+  await expect(save(page)).toHaveAccessibleName('Mentés (1)');
+  await expect(save(page)).toBeEnabled();
   await save(page).click();
-  await expect(save(page)).toBeDisabled();
+  await expectSaved(page);
+  expect(api.state.sets[700][0].targetWeightKg).toBe(45);
   await root(page).locator('[name=rescheduleDate]').fill('2030-04-17');
   await root(page).getByRole('button', { name: 'Dátum mentése' }).click();
   await expect(root(page).locator('app-message[role=status]')).toContainText('Az edzés áthelyezve.');
@@ -166,9 +177,22 @@ test('client: revoke cancel then confirm with counts and selected client', async
 });
 test('client: failed save keeps dirty edits and allows retry', { tag: '@ci-workouts' }, async ({ page, api }) => {
   api.fail('PUT', '/api/user-workout-exercise-sets/7000');
-  await page.goto('/coach/clients/7?workout=70'); await input(page, 'tw').fill('65'); await save(page).click();
-  await expect(root(page).locator('app-message[role=status]')).toContainText('Contract failure'); await expect(input(page, 'tw')).toHaveValue('65');
-  await expect(save(page)).toBeEnabled(); api.failures.clear(); await save(page).click(); await expect(save(page)).toBeDisabled();
+  await page.goto('/coach/clients/7?workout=70');
+  await expect(input(page, 'tw')).toHaveValue('20');
+  await input(page, 'tw').fill('65');
+  await expect(save(page)).toHaveAccessibleName('Mentés (1)');
+  await expect(save(page)).toBeEnabled();
+  await save(page).click();
+  await expect(root(page).locator('app-message[role=status]')).toContainText('Contract failure');
+  await expect(input(page, 'tw')).toHaveValue('65');
+  expect(api.state.sets[700][0].targetWeightKg).toBe(20);
+  await expect(save(page)).toHaveAccessibleName('Mentés (1)');
+  await expect(save(page)).toBeEnabled();
+  api.failures.clear();
+  await save(page).click();
+  await expectSaved(page);
+  expect(api.state.sets[700][0].targetWeightKg).toBe(65);
+  expect(api.writes('/api/user-workout-exercise-sets/7000')).toHaveLength(2);
 });
 test('client: missing user, empty plan and invalid URL are handled', async ({ page, api }) => {
   await page.goto('/coach/clients/999'); await expect(root(page).locator('app-empty-state')).toBeVisible();
