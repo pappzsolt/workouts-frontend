@@ -1,6 +1,6 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Subject, catchError, map, merge, of, switchMap, tap } from 'rxjs';
+import { Observable, Subject, catchError, map, merge, of, switchMap, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppPageHeaderComponent } from '../../../shared/components/app-page-header/app-page-header.component';
 import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
@@ -21,6 +21,12 @@ import { LanguageService } from '../../../../services/shared/language.service';
 import { PersonalProgramSummary, StandaloneWorkoutGroup, StandaloneWorkoutStatus } from '../../../../models/personal-program.model';
 import { errorMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { programEndDate } from '../../../../shared/program-date';
+
+interface PersonalProgramsListResult {
+  groups: StandaloneWorkoutGroup[];
+  content: PersonalProgramSummary[];
+  totalElements: number;
+}
 
 @Component({
   selector: 'app-personal-programs',
@@ -102,20 +108,21 @@ export class PersonalProgramsComponent implements OnInit {
           this.loading = true;
           this.message = '';
         }),
-        switchMap(() =>
-          (this.standalone
+        switchMap(() => {
+          const request$: Observable<PersonalProgramsListResult> = this.standalone
             ? this.service.listWorkoutGroups(this.page, this.pageSize, this.search, this.statusFilter === 'all' ? null : this.statusFilter).pipe(
                 map(result => ({ groups: result.content, content: [], totalElements: result.totalElements })),
               )
             : this.service.listPage(this.page, this.pageSize, false, this.search).pipe(
                 map(result => ({ groups: [], content: result.content, totalElements: result.totalElements })),
-              )).pipe(
+              );
+          return request$.pipe(
             catchError((error) => {
               this.message = errorMessage(error, 'personalPrograms.loadError');
               return of({ groups: [], content: [], totalElements: 0 });
             }),
-          ),
-        ),
+          );
+        }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((programs) => {
