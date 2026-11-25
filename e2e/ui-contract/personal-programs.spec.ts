@@ -24,6 +24,19 @@ async function install(page: Page) {
     if (path === '/api/exercises' && req.method() === 'GET') return ok([{ id: 11, name: 'Guggolás' }]);
     if (path === '/api/exercises/filter-options') return ok({ bodyParts: [], equipment: [] });
     if (path === '/api/exercises/search') return ok({ content: [{ id: 11, name: 'Guggolás' }], totalElements: 1, totalPages: 1 });
+    if (path === `${ROOT}/standalone/groups` && req.method() === 'GET') {
+      if (state.failList) return route.fulfill({ status: 503, json: { success: false, message: 'Átmeneti betöltési hiba' } });
+      const query = new URL(req.url()).searchParams;
+      const status = state.started ? 'planned' : 'draft';
+      const matches = state.standalone && state.program.name.toLowerCase().includes((query.get('search') ?? '').toLowerCase())
+        && (!query.has('status') || query.get('status') === status);
+      const item = { id: state.id, name: state.program.name, description: state.program.description, durationDays: 1,
+        startDate: state.program.startDate, startedAt: state.started ? '2026-10-25T12:00:00' : null, standalone: true, status, completedDate: null };
+      const groups = matches ? [{ groupId: 7, name: item.name, description: item.description, occasions: [item] }] : [];
+      const pageIndex = Number(query.get('page') ?? 0), size = Number(query.get('size') ?? 12);
+      return ok({ content: groups.slice(pageIndex * size, (pageIndex + 1) * size), page: pageIndex, size,
+        totalElements: groups.length, totalPages: Math.ceil(groups.length / size) });
+    }
     if (path === `${ROOT}/page` && req.method() === 'GET') {
       if (state.failList) return route.fulfill({ status: 503, json: { success: false, message: 'Átmeneti betöltési hiba' } });
       const query = new URL(req.url()).searchParams;
@@ -456,13 +469,14 @@ test('Külön listák: az önálló edzések és programok lekérése, navigáci
   page.on('request', request => {
     const url = new URL(request.url());
     if (url.pathname === `${ROOT}/page`) queries.push(url.searchParams.get('standalone') ?? 'missing');
+    if (url.pathname === `${ROOT}/standalone/groups`) queries.push('groups');
   });
   await page.goto('/user/personal-workouts');
   const list = page.locator('app-personal-programs');
   await expect(list.getByRole('heading', { name: 'Önálló edzéseim', exact: true })).toBeVisible();
   await expect(list.getByRole('heading', { name: api.program.name, exact: true })).toBeVisible();
   await expect(list.locator('select[name=kind]')).toHaveCount(0);
-  expect(queries.at(-1)).toBe('true');
+  expect(queries.at(-1)).toBe('groups');
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: `/tmp/separate-workouts-${info.project.name}.png`, fullPage: true });
   await list.getByRole('link', { name: 'Saját készítésű programok', exact: true }).click();
@@ -473,11 +487,42 @@ test('Külön listák: az önálló edzések és programok lekérése, navigáci
   expect(queries.at(-1)).toBe('false');
   await list.getByRole('link', { name: 'Önálló edzéseim', exact: true }).click();
   await expect(list.getByRole('heading', { name: api.program.name, exact: true })).toBeVisible();
+  await list.getByRole('button', { name: 'Edzésalkalmak megtekintése (1)', exact: true }).click();
   await list.getByRole('link', { name: 'Edzés szerkesztése', exact: true }).click();
   await expect(page).toHaveURL(/\/personal-workouts\/7$/);
   await editor(page).getByRole('link', { name: 'Vissza az önálló edzéseimhez', exact: true }).click();
   await expect(page).toHaveURL(/\/personal-workouts$/);
-  expect(queries.every(value => value === 'true' || value === 'false')).toBe(true);
+  expect(queries.every(value => value === 'groups' || value === 'false')).toBe(true);
+  expect(api.unexpected).toEqual([]);
+});
+
+test('Önálló edzések: egy csoportkártyán külön alkalmak és állapotszűrés', async ({ page }) => {
+  const api = await install(page);
+  api.standalone = true;
+  api.started = true;
+  api.program.durationDays = 1;
+  const group = { groupId: 7, name: 'Otthoni R nap', description: null, occasions: [
+    { id: 8, name: 'Otthoni R nap', description: null, startDate: '2030-01-05', durationDays: 1,
+      startedAt: '2026-10-25T12:00:00', standalone: true, status: 'planned', completedDate: null },
+    { id: 7, name: 'Otthoni R nap', description: null, startDate: '2026-10-25', durationDays: 1,
+      startedAt: '2026-10-25T12:00:00', standalone: true, status: 'done', completedDate: '2026-10-25' },
+  ] };
+  await page.route('**/api/me/personal-programs/standalone/groups?**', route => route.fulfill({ json: {
+    success: true, data: { content: [group], page: 0, size: 12, totalElements: 1, totalPages: 1 },
+  } }));
+  await page.goto('/user/personal-workouts');
+  const list = page.locator('app-personal-programs');
+  await expect(list.locator('app-card')).toHaveCount(1);
+  await expect(list.getByRole('heading', { name: group.name, exact: true })).toHaveCount(1);
+  await expect(list.getByRole('link', { name: 'Terv megtekintése', exact: true })).toHaveCount(0);
+  await list.getByRole('button', { name: 'Edzésalkalmak megtekintése (2)', exact: true }).click();
+  await expect(list.getByRole('link', { name: 'Terv megtekintése', exact: true })).toHaveCount(2);
+  const filtered = page.waitForRequest(request => new URL(request.url()).searchParams.get('status') === 'done');
+  await list.getByRole('button', { name: 'Elvégzett', exact: true }).click();
+  await filtered;
+  await expect(list.getByRole('link', { name: 'Terv megtekintése', exact: true })).toHaveCount(1);
+  await expect(list.getByRole('link', { name: 'Terv megtekintése', exact: true })).toHaveAttribute('href', '/user/personal-workouts/7');
+  expect(api.calls.filter(call => call.method !== 'GET' && call.path.startsWith(ROOT))).toHaveLength(0);
   expect(api.unexpected).toEqual([]);
 });
 
@@ -488,6 +533,8 @@ test('Önálló edzés: saját listáról archiválható, és a szerkesztő is u
   api.program.durationDays = 1;
   await page.goto('/user/personal-workouts');
   const list = page.locator('app-personal-programs');
+  await list.getByRole('button', { name: 'Edzésalkalmak megtekintése (1)', exact: true }).click();
+  await list.getByText('További műveletek', { exact: true }).click();
   await list.getByRole('button', { name: 'Edzés archiválása', exact: true }).click();
   expect(api.calls.filter(call => call.method === 'DELETE')).toHaveLength(0);
   await page.getByRole('alertdialog').getByRole('button', { name: 'Mégse', exact: true }).click();

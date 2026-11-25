@@ -9,6 +9,7 @@ import {
   PersonalProgramDetail,
   PersonalProgramRequest,
   PersonalProgramSummary,
+  StandaloneWorkoutGroup,
   PersonalDayTargets,
   PersonalDayTargetsUpdate,
   PersonalWorkoutSchedule,
@@ -37,6 +38,12 @@ export class PersonalProgramService {
     let params = this.params().set('page', page).set('size', size).set('search', search);
     if (standalone != null) params = params.set('standalone', standalone);
     return this.http.get<ApiResponse<PageResponse<PersonalProgramSummary>>>(`${this.url}/page`, { params })
+      .pipe(map((response) => this.unwrap(response)));
+  }
+  listWorkoutGroups(page = 0, size = 12, search = '', status: string | null = null) {
+    let params = this.params().set('page', page).set('size', size).set('search', search);
+    if (status !== null) params = params.set('status', status);
+    return this.http.get<ApiResponse<PageResponse<StandaloneWorkoutGroup>>>(`${this.url}/standalone/groups`, { params })
       .pipe(map((response) => this.unwrap(response)));
   }
   get(id: number) {

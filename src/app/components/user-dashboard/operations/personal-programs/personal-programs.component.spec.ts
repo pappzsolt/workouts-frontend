@@ -21,8 +21,9 @@ describe('PersonalProgramsComponent pagination and personal actions', () => {
   let api: jasmine.SpyObj<PersonalProgramService>;
   let router: jasmine.SpyObj<Router>;
   beforeEach(() => {
-    api = jasmine.createSpyObj('PersonalProgramService', ['listPage', 'delete', 'copy', 'repeat']);
+    api = jasmine.createSpyObj('PersonalProgramService', ['listPage', 'listWorkoutGroups', 'delete', 'copy', 'repeat']);
     api.listPage.and.returnValue(of({ content: [], page: 0, size: 12, totalElements: 30, totalPages: 3 }));
+    api.listWorkoutGroups.and.returnValue(of({ content: [], page: 0, size: 12, totalElements: 30, totalPages: 3 }));
     router = jasmine.createSpyObj('Router', ['navigate']);
     router.navigate.and.returnValue(Promise.resolve(true));
     TestBed.configureTestingModule({ providers: [
@@ -58,12 +59,34 @@ describe('PersonalProgramsComponent pagination and personal actions', () => {
     TestBed.inject(ActivatedRoute).snapshot.data['standalone'] = true;
     const workouts = TestBed.runInInjectionContext(() => new PersonalProgramsComponent());
     workouts.ngOnInit();
-    expect(api.listPage).toHaveBeenCalledWith(0, 12, true, '');
+    expect(api.listWorkoutGroups).toHaveBeenCalledWith(0, 12, '', null);
     workouts.changePage(2);
-    expect(api.listPage).toHaveBeenCalledWith(1, 12, true, '');
+    expect(api.listWorkoutGroups).toHaveBeenCalledWith(1, 12, '', null);
     workouts.search = 'Solo';
     workouts.filtersChanged();
-    expect(api.listPage).toHaveBeenCalledWith(0, 12, true, 'Solo');
+    expect(api.listWorkoutGroups).toHaveBeenCalledWith(0, 12, 'Solo', null);
+  });
+  it('loads groups, keeps occurrence identity and filters on the server', () => {
+    TestBed.inject(ActivatedRoute).snapshot.data['standalone'] = true;
+    const group = { groupId: 13, name: 'Solo workout', description: null, occasions: [
+      { ...startedWorkout, description: null, status: 'done' as const, completedDate: '2026-11-14' },
+      { ...draftWorkout, description: null, status: 'draft' as const, completedDate: null },
+    ] };
+    api.listWorkoutGroups.and.returnValue(of({ content: [group], page: 0, size: 12, totalElements: 1, totalPages: 1 }));
+    const workouts = TestBed.runInInjectionContext(() => new PersonalProgramsComponent());
+    workouts.ngOnInit();
+    expect(workouts.groups.length).toBe(1);
+    expect(workouts.totalItems).toBe(1);
+    expect(workouts.repeatSource(group)?.id).toBe(13);
+    expect(workouts.expandedGroups.has(13)).toBeFalse();
+    workouts.toggleGroup(13);
+    expect(workouts.expandedGroups.has(13)).toBeTrue();
+    workouts.statusFilter = 'draft';
+    workouts.filtersChanged();
+    expect(api.listWorkoutGroups).toHaveBeenCalledWith(0, 12, '', 'draft');
+    expect(workouts.visibleOccasions(group).map(item => item.id)).toEqual([11]);
+    expect(workouts.countStatus(group, 'done')).toBe(1);
+    expect(workouts.lastCompletedDate(group)).toBe('2026-11-14');
   });
   it('opens a confirmation without deleting until confirmed and supports cancellation', () => {
     component.askDelete(draftProgram);

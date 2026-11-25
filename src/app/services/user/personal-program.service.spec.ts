@@ -41,6 +41,22 @@ describe('PersonalProgramService', () => {
     expect(call.request.params.get('search')).toBe('%_!');
     call.flush({ success: true, data: { content: [], page: 2, size: 12, totalElements: 30, totalPages: 3 } });
   });
+  it('requests grouped standalone workouts with server pagination, search and status', () => {
+    service.listWorkoutGroups(1, 12, '%_!', 'done').subscribe(page => expect(page.totalElements).toBe(13));
+    const call = http.expectOne(request => request.url === API_ENDPOINTS.personalPrograms + '/standalone/groups');
+    expect(call.request.method).toBe('GET');
+    expect(call.request.params.get('languageCode')).toBe('de');
+    expect(call.request.params.get('page')).toBe('1');
+    expect(call.request.params.get('size')).toBe('12');
+    expect(call.request.params.get('search')).toBe('%_!');
+    expect(call.request.params.get('status')).toBe('done');
+    expect(call.request.params.has('userId')).toBeFalse();
+    call.flush({ success: true, data: { content: [], page: 1, size: 12, totalElements: 13, totalPages: 2 } });
+    service.listWorkoutGroups().subscribe();
+    const all = http.expectOne(request => request.url === API_ENDPOINTS.personalPrograms + '/standalone/groups');
+    expect(all.request.params.has('status')).toBeFalse();
+    all.flush({ success: true, data: { content: [], page: 0, size: 12, totalElements: 0, totalPages: 0 } });
+  });
   it('uses the private API and current language for lists and details', () => {
     service.list().subscribe((result) => expect(result).toEqual([]));
     http

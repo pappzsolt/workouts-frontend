@@ -1,4 +1,19 @@
 {
+  "standaloneGroups": {
+    "last": "Datum der letzten abgeschlossenen Einheit",
+    "repeatSource": "Vorlage für Wiederholung",
+    "all": "Alle",
+    "draft": "Entwurf",
+    "planned": "Geplant",
+    "inProgress": "In Bearbeitung",
+    "done": "Abgeschlossen",
+    "total": "Trainingseinheiten",
+    "next": "Nächstes Training",
+    "occasions": "Trainingseinheiten anzeigen",
+    "noDate": "Kein Datum",
+    "actions": "Weitere Aktionen",
+    "filter": "Trainingsstatus filtern"
+  },
   "userExerciseLibrary": {
     "title": "Übungsbibliothek",
     "intro": "Sieh dir Übungen und ihre Ausführung an. Beim Erstellen eines eigenen Programms oder Einzeltrainings kannst du Übungen auswählen.",

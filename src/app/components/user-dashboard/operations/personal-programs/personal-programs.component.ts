@@ -18,7 +18,7 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { PersonalProgramService } from '../../../../services/user/personal-program.service';
 import { LanguageService } from '../../../../services/shared/language.service';
-import { PersonalProgramSummary } from '../../../../models/personal-program.model';
+import { PersonalProgramSummary, StandaloneWorkoutGroup, StandaloneWorkoutStatus } from '../../../../models/personal-program.model';
 import { errorMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { programEndDate } from '../../../../shared/program-date';
 
@@ -50,6 +50,37 @@ export class PersonalProgramsComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   readonly programEndDate = programEndDate;
   programs: PersonalProgramSummary[] = [];
+  groups: StandaloneWorkoutGroup[] = [];
+  statusFilter: StandaloneWorkoutStatus | 'all' = 'all';
+  readonly statuses = ['all', 'draft', 'planned', 'inProgress', 'done'] as const;
+  readonly expandedGroups = new Set<number>();
+  toggleGroup(id: number): void {
+    if (this.expandedGroups.has(id)) this.expandedGroups.delete(id);
+    else this.expandedGroups.add(id);
+  }
+  visibleOccasions(group: StandaloneWorkoutGroup) {
+    return group.occasions.filter(item => this.statusFilter === 'all' || item.status === this.statusFilter);
+  }
+  countStatus(group: StandaloneWorkoutGroup, status: StandaloneWorkoutStatus): number {
+    return group.occasions.filter(item => item.status === status).length;
+  }
+  repeatSource(group: StandaloneWorkoutGroup) {
+    return group.occasions.find(item => !!item.startedAt);
+  }
+  lastCompletedDate(group: StandaloneWorkoutGroup): string | null {
+    return group.occasions.flatMap(item => item.status === 'done' && item.completedDate ? [item.completedDate] : [])
+      .sort().at(-1) ?? null;
+  }
+  nextDate(group: StandaloneWorkoutGroup): string | null {
+    const today = new Date();
+    const localDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    return group.occasions.filter(item => item.status === 'planned' && item.startDate && item.startDate >= localDate)
+      .flatMap(item => item.startDate ? [item.startDate] : []).sort()[0] ?? null;
+  }
+  get visibleGroups(): StandaloneWorkoutGroup[] {
+    return this.groups.filter(group => this.visibleOccasions(group).length > 0);
+  }
+
   private readonly reload$ = new Subject<void>();
   search = '';
   page = 0;
@@ -72,10 +103,16 @@ export class PersonalProgramsComponent implements OnInit {
           this.message = '';
         }),
         switchMap(() =>
-          this.service.listPage(this.page, this.pageSize, this.standalone, this.search).pipe(
+          (this.standalone
+            ? this.service.listWorkoutGroups(this.page, this.pageSize, this.search, this.statusFilter === 'all' ? null : this.statusFilter).pipe(
+                map(result => ({ groups: result.content, content: [], totalElements: result.totalElements })),
+              )
+            : this.service.listPage(this.page, this.pageSize, false, this.search).pipe(
+                map(result => ({ groups: [], content: result.content, totalElements: result.totalElements })),
+              )).pipe(
             catchError((error) => {
               this.message = errorMessage(error, 'personalPrograms.loadError');
-              return of({ content: [], totalElements: 0 });
+              return of({ groups: [], content: [], totalElements: 0 });
             }),
           ),
         ),
@@ -83,8 +120,13 @@ export class PersonalProgramsComponent implements OnInit {
       )
       .subscribe((programs) => {
         this.programs = programs.content;
+        this.groups = programs.groups;
         this.totalItems = programs.totalElements;
         this.loading = false;
+        if (this.standalone && !this.message && this.page > 0 && this.groups.length === 0 && this.page >= Math.ceil(this.totalItems / this.pageSize)) {
+          this.page = Math.max(0, Math.ceil(this.totalItems / this.pageSize) - 1);
+          this.reload$.next();
+        }
       });
   }
   filtersChanged(): void {
@@ -124,7 +166,7 @@ export class PersonalProgramsComponent implements OnInit {
           ? program.standalone ? 'personalWorkouts.archiveSuccess' : 'personalPrograms.archiveSuccess'
           : program.standalone ? 'personalWorkouts.deleteSuccess' : 'personalPrograms.deleteSuccess';
         // The last item on a page can leave that page empty after deletion.
-        if (this.page > 0 && this.programs.length === 1) this.page--;
+        if (!this.standalone && this.page > 0 && this.programs.length === 1) this.page--;
         this.reload$.next();
       },
       error: (error) => {

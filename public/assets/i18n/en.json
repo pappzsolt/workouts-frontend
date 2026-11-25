@@ -1,4 +1,19 @@
 {
+  "standaloneGroups": {
+    "last": "Last completed workout date",
+    "repeatSource": "Repeat source",
+    "all": "All",
+    "draft": "Draft",
+    "planned": "Planned",
+    "inProgress": "In progress",
+    "done": "Completed",
+    "total": "Total occasions",
+    "next": "Next workout",
+    "occasions": "View workout occasions",
+    "noDate": "No date",
+    "actions": "More actions",
+    "filter": "Filter workout status"
+  },
   "userExerciseLibrary": {
     "title": "Exercise library",
     "intro": "Browse exercises and learn how to perform them. Select exercises when building a personal program or a standalone workout.",

@@ -41,6 +41,18 @@ export interface PersonalProgramSummary {
   durationDays: number;
   startedAt: string | null;
 }
+export type StandaloneWorkoutStatus = 'draft' | 'planned' | 'inProgress' | 'done';
+export interface StandaloneWorkoutOccasion extends PersonalProgramSummary {
+  description: string | null;
+  status: StandaloneWorkoutStatus;
+  completedDate: string | null;
+}
+export interface StandaloneWorkoutGroup {
+  groupId: number;
+  name: string;
+  description: string | null;
+  occasions: StandaloneWorkoutOccasion[];
+}
 export interface PersonalProgramDetail {
   standalone?: boolean;
   id: number;

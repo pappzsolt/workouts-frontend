@@ -1,4 +1,19 @@
 {
+  "standaloneGroups": {
+    "last": "Utolsó elvégzett edzés napja",
+    "repeatSource": "Ismétlés forrása",
+    "all": "Összes",
+    "draft": "Piszkozat",
+    "planned": "Tervezett",
+    "inProgress": "Folyamatban",
+    "done": "Elvégzett",
+    "total": "Alkalmak száma",
+    "next": "Következő edzés",
+    "occasions": "Edzésalkalmak megtekintése",
+    "noDate": "Nincs dátum",
+    "actions": "További műveletek",
+    "filter": "Edzésállapot szűrése"
+  },
   "userExerciseLibrary": {
     "title": "Gyakorlattár",
     "intro": "Böngészd a gyakorlatokat és nézd meg a végrehajtásukat. A gyakorlatokat saját program vagy önálló edzés készítésekor választhatod ki.",
