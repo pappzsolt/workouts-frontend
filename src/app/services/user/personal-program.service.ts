@@ -10,6 +10,8 @@ import {
   PersonalProgramRequest,
   PersonalProgramSummary,
   StandaloneWorkoutGroup,
+  StandaloneWorkoutGroupSummary,
+  StandaloneWorkoutOccasion,
   PersonalDayTargets,
   PersonalDayTargetsUpdate,
   PersonalWorkoutSchedule,
@@ -45,6 +47,18 @@ export class PersonalProgramService {
     if (status !== null) params = params.set('status', status);
     return this.http.get<ApiResponse<PageResponse<StandaloneWorkoutGroup>>>(`${this.url}/standalone/groups`, { params })
       .pipe(map((response) => this.unwrap(response)));
+  }
+  listWorkoutGroupSummaries(page = 0, size = 12, search = '', status: string | null = null) {
+    let params = this.params().set('page', page).set('size', size).set('search', search);
+    if (status !== null) params = params.set('status', status);
+    return this.http.get<ApiResponse<PageResponse<StandaloneWorkoutGroupSummary>>>(`${this.url}/standalone/group-summaries`, { params })
+      .pipe(map(response => this.unwrap(response)));
+  }
+  listWorkoutGroupOccasions(groupId: number, page = 0, size = 12, search = '', status: string | null = null) {
+    let params = this.params().set('page', page).set('size', size).set('search', search);
+    if (status !== null) params = params.set('status', status);
+    return this.http.get<ApiResponse<PageResponse<StandaloneWorkoutOccasion>>>(`${this.url}/standalone/groups/${groupId}/occasions`, { params })
+      .pipe(map(response => this.unwrap(response)));
   }
   get(id: number) {
     return this.http

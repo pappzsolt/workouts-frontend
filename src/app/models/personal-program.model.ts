@@ -46,12 +46,27 @@ export interface StandaloneWorkoutOccasion extends PersonalProgramSummary {
   description: string | null;
   status: StandaloneWorkoutStatus;
   completedDate: string | null;
+  scheduledDate?: string | null;
 }
 export interface StandaloneWorkoutGroup {
   groupId: number;
   name: string;
   description: string | null;
   occasions: StandaloneWorkoutOccasion[];
+}
+export interface StandaloneWorkoutGroupSummary {
+  groupId: number;
+  name: string;
+  description: string | null;
+  total: number;
+  matchingTotal: number;
+  draft: number;
+  planned: number;
+  inProgress: number;
+  done: number;
+  lastCompletedDate: string | null;
+  nextDate: string | null;
+  repeatSource: StandaloneWorkoutOccasion | null;
 }
 export interface PersonalProgramDetail {
   standalone?: boolean;

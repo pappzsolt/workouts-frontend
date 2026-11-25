@@ -57,6 +57,23 @@ describe('PersonalProgramService', () => {
     expect(all.request.params.has('status')).toBeFalse();
     all.flush({ success: true, data: { content: [], page: 0, size: 12, totalElements: 0, totalPages: 0 } });
   });
+  it('requests group summaries and scoped occasion pages separately with the same filters', () => {
+    service.listWorkoutGroupSummaries(1, 12, '%_!', 'done').subscribe();
+    const summary = http.expectOne(request => request.url === API_ENDPOINTS.personalPrograms + '/standalone/group-summaries');
+    expect(summary.request.params.get('status')).toBe('done');
+    expect(summary.request.params.get('search')).toBe('%_!');
+    expect(summary.request.params.get('page')).toBe('1');
+    summary.flush({ success: true, data: { content: [], page: 1, size: 12, totalElements: 0, totalPages: 0 } });
+    service.listWorkoutGroupOccasions(45, 2, 12, '%_!', 'done').subscribe();
+    const occasions = http.expectOne(request => request.url === API_ENDPOINTS.personalPrograms + '/standalone/groups/45/occasions');
+    expect(occasions.request.params.get('languageCode')).toBe('de');
+    expect(occasions.request.params.get('status')).toBe('done');
+    expect(occasions.request.params.get('search')).toBe('%_!');
+    expect(occasions.request.params.get('page')).toBe('2');
+    expect(occasions.request.params.get('size')).toBe('12');
+    expect(occasions.request.params.has('userId')).toBeFalse();
+    occasions.flush({ success: true, data: { content: [], page: 2, size: 12, totalElements: 0, totalPages: 0 } });
+  });
   it('uses the private API and current language for lists and details', () => {
     service.list().subscribe((result) => expect(result).toEqual([]));
     http

@@ -21,9 +21,10 @@ describe('PersonalProgramsComponent pagination and personal actions', () => {
   let api: jasmine.SpyObj<PersonalProgramService>;
   let router: jasmine.SpyObj<Router>;
   beforeEach(() => {
-    api = jasmine.createSpyObj('PersonalProgramService', ['listPage', 'listWorkoutGroups', 'delete', 'copy', 'repeat']);
+    api = jasmine.createSpyObj('PersonalProgramService', ['listPage', 'listWorkoutGroupSummaries', 'listWorkoutGroupOccasions', 'delete', 'copy', 'repeat']);
     api.listPage.and.returnValue(of({ content: [], page: 0, size: 12, totalElements: 30, totalPages: 3 }));
-    api.listWorkoutGroups.and.returnValue(of({ content: [], page: 0, size: 12, totalElements: 30, totalPages: 3 }));
+    api.listWorkoutGroupSummaries.and.returnValue(of({ content: [], page: 0, size: 12, totalElements: 30, totalPages: 3 }));
+    api.listWorkoutGroupOccasions.and.returnValue(of({ content: [], page: 0, size: 12, totalElements: 0, totalPages: 0 }));
     router = jasmine.createSpyObj('Router', ['navigate']);
     router.navigate.and.returnValue(Promise.resolve(true));
     TestBed.configureTestingModule({ providers: [
@@ -59,34 +60,69 @@ describe('PersonalProgramsComponent pagination and personal actions', () => {
     TestBed.inject(ActivatedRoute).snapshot.data['standalone'] = true;
     const workouts = TestBed.runInInjectionContext(() => new PersonalProgramsComponent());
     workouts.ngOnInit();
-    expect(api.listWorkoutGroups).toHaveBeenCalledWith(0, 12, '', null);
+    expect(api.listWorkoutGroupSummaries).toHaveBeenCalledWith(0, 12, '', null);
     workouts.changePage(2);
-    expect(api.listWorkoutGroups).toHaveBeenCalledWith(1, 12, '', null);
+    expect(api.listWorkoutGroupSummaries).toHaveBeenCalledWith(1, 12, '', null);
     workouts.search = 'Solo';
     workouts.filtersChanged();
-    expect(api.listWorkoutGroups).toHaveBeenCalledWith(0, 12, 'Solo', null);
+    expect(api.listWorkoutGroupSummaries).toHaveBeenCalledWith(0, 12, 'Solo', null);
   });
-  it('loads groups, keeps occurrence identity and filters on the server', () => {
+  it('loads summaries first, pages occasions on expansion and reapplies server filters', () => {
     TestBed.inject(ActivatedRoute).snapshot.data['standalone'] = true;
-    const group = { groupId: 13, name: 'Solo workout', description: null, occasions: [
-      { ...startedWorkout, description: null, status: 'done' as const, completedDate: '2026-11-14' },
-      { ...draftWorkout, description: null, status: 'draft' as const, completedDate: null },
-    ] };
-    api.listWorkoutGroups.and.returnValue(of({ content: [group], page: 0, size: 12, totalElements: 1, totalPages: 1 }));
+    const completed = { ...startedWorkout, description: null, status: 'done' as const, completedDate: '2026-11-14', scheduledDate: '2026-11-13' };
+    const draft = { ...draftWorkout, description: null, status: 'draft' as const, completedDate: null, scheduledDate: null };
+    const group = { groupId: 13, name: 'Solo workout', description: null, total: 14, matchingTotal: 14,
+      draft: 13, planned: 0, inProgress: 0, done: 1, lastCompletedDate: '2026-11-14', nextDate: null, repeatSource: completed };
+    api.listWorkoutGroupSummaries.and.returnValue(of({ content: [group], page: 0, size: 12, totalElements: 1, totalPages: 1 }));
+    api.listWorkoutGroupOccasions.and.returnValue(of({ content: [completed], page: 0, size: 12, totalElements: 14, totalPages: 2 }));
     const workouts = TestBed.runInInjectionContext(() => new PersonalProgramsComponent());
     workouts.ngOnInit();
     expect(workouts.groups.length).toBe(1);
     expect(workouts.totalItems).toBe(1);
-    expect(workouts.repeatSource(group)?.id).toBe(13);
-    expect(workouts.expandedGroups.has(13)).toBeFalse();
+    expect(workouts.groups[0].repeatSource?.id).toBe(13);
+    expect(api.listWorkoutGroupOccasions).not.toHaveBeenCalled();
     workouts.toggleGroup(13);
     expect(workouts.expandedGroups.has(13)).toBeTrue();
+    expect(api.listWorkoutGroupOccasions).toHaveBeenCalledOnceWith(13, 0, 12, '', null);
+    expect(workouts.occasionPages.get(13)?.items.map(item => item.id)).toEqual([13]);
+    api.listWorkoutGroupOccasions.and.returnValue(of({ content: [draft], page: 1, size: 12, totalElements: 14, totalPages: 2 }));
+    workouts.loadOccasions(13, 1);
+    expect(api.listWorkoutGroupOccasions).toHaveBeenCalledWith(13, 1, 12, '', null);
+    expect(workouts.occasionPages.get(13)?.items.map(item => item.id)).toEqual([11]);
+    api.listWorkoutGroupSummaries.and.returnValue(of({ content: [{ ...group, matchingTotal: 13 }], page: 0, size: 12, totalElements: 1, totalPages: 1 }));
+    api.listWorkoutGroupOccasions.and.returnValue(of({ content: [draft], page: 0, size: 12, totalElements: 13, totalPages: 2 }));
     workouts.statusFilter = 'draft';
     workouts.filtersChanged();
-    expect(api.listWorkoutGroups).toHaveBeenCalledWith(0, 12, '', 'draft');
-    expect(workouts.visibleOccasions(group).map(item => item.id)).toEqual([11]);
+    expect(api.listWorkoutGroupSummaries).toHaveBeenCalledWith(0, 12, '', 'draft');
+    expect(api.listWorkoutGroupOccasions).toHaveBeenCalledWith(13, 0, 12, '', 'draft');
+    expect(workouts.occasionPages.get(13)?.items.map(item => item.id)).toEqual([11]);
     expect(workouts.countStatus(group, 'done')).toBe(1);
-    expect(workouts.lastCompletedDate(group)).toBe('2026-11-14');
+    expect(group.lastCompletedDate).toBe('2026-11-14');
+  });
+  it('uses the live execution schedule and formats calendar dates without a browser time zone', () => {
+    const planned = { ...startedWorkout, description: null, status: 'planned' as const, completedDate: null,
+      startDate: '2026-11-24', scheduledDate: '2026-11-26' };
+    expect(component.occasionDate(planned)).toBe('2026-11-26');
+    expect(component.displayDate(component.occasionDate(planned))).toBe('2026.11.26');
+    expect(component.occasionDate({ ...planned, scheduledDate: null })).toBeNull();
+  });
+  it('keeps summary data when loading occasions fails and allows a targeted retry', () => {
+    TestBed.inject(ActivatedRoute).snapshot.data['standalone'] = true;
+    const group = { groupId: 13, name: 'Solo workout', description: null, total: 1, matchingTotal: 1,
+      draft: 1, planned: 0, inProgress: 0, done: 0, lastCompletedDate: null, nextDate: null, repeatSource: null };
+    api.listWorkoutGroupSummaries.and.returnValue(of({ content: [group], page: 0, size: 12, totalElements: 1, totalPages: 1 }));
+    api.listWorkoutGroupOccasions.and.returnValue(throwError(() => new Error('Occasion request failed')));
+    const workouts = TestBed.runInInjectionContext(() => new PersonalProgramsComponent());
+    workouts.ngOnInit();
+    workouts.toggleGroup(13);
+    expect(workouts.occasionPages.get(13)?.error).toBe('Occasion request failed');
+    expect(workouts.groups).toEqual([group]);
+    expect(workouts.message).toBe('');
+    const draft = { ...draftWorkout, description: null, status: 'draft' as const, completedDate: null, scheduledDate: null };
+    api.listWorkoutGroupOccasions.and.returnValue(of({ content: [draft], page: 0, size: 12, totalElements: 1, totalPages: 1 }));
+    workouts.loadOccasions(13, 0);
+    expect(workouts.occasionPages.get(13)?.items).toEqual([draft]);
+    expect(workouts.occasionPages.get(13)?.error).toBe('');
   });
   it('opens a confirmation without deleting until confirmed and supports cancellation', () => {
     component.askDelete(draftProgram);

@@ -60,7 +60,7 @@
     } @else if (!message) {
       @if (standalone) {
         <section class="grid min-w-0 grid-cols-1 items-start gap-5 md:grid-cols-2">
-          @for (group of visibleGroups; track group.groupId) {
+          @for (group of groups; track group.groupId) {
             <app-card [hover]="false" class="block min-w-0">
               <header class="min-w-0 border-b border-primary-100 bg-primary-50 p-5">
                 <h2 class="break-words text-lg font-bold text-content-900">{{ group.name }}</h2>
@@ -68,7 +68,7 @@
                   <p class="mt-2 break-words text-sm text-content-600">{{ group.description }}</p>
                 }
                 <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
-                  <p>{{ 'standaloneGroups.total' | translate }}: <strong>{{ group.occasions.length }}</strong></p>
+                  <p>{{ 'standaloneGroups.total' | translate }}: <strong>{{ group.total }}</strong></p>
                   @for (status of statuses; track status) {
                     @if (status !== 'all') {
                       <p>{{ ('standaloneGroups.' + status) | translate }}: <strong>{{ countStatus(group, status) }}</strong></p>
@@ -77,45 +77,60 @@
                 </div>
               </header>
               <div class="flex flex-col gap-3 p-4 sm:p-5">
-                @if (lastCompletedDate(group); as last) {
-                  <p class="text-sm text-content-600">{{ 'standaloneGroups.last' | translate }}: {{ last | date:'yyyy.MM.dd' }}</p>
+                @if (group.lastCompletedDate; as last) {
+                  <p class="text-sm text-content-600">{{ 'standaloneGroups.last' | translate }}: {{ displayDate(last) }}</p>
                 }
-                @if (nextDate(group); as next) {
-                  <p class="text-sm text-content-600">{{ 'standaloneGroups.next' | translate }}: {{ next | date:'yyyy.MM.dd' }}</p>
+                @if (group.nextDate; as next) {
+                  <p class="text-sm text-content-600">{{ 'standaloneGroups.next' | translate }}: {{ displayDate(next) }}</p>
                 }
-                @if (repeatSource(group); as source) {
+                @if (group.repeatSource; as source) {
                   <button type="button" class="btn btn-primary w-full justify-center whitespace-normal" [disabled]="busy || loading || hasPendingCopy"
                           [attr.aria-describedby]="'repeat-source-' + group.groupId"
                           (click)="editCopy(source)">{{ 'personalWorkouts.editCopy' | translate }}</button>
-                  <p [id]="'repeat-source-' + group.groupId" class="break-words text-xs text-content-600">{{ 'standaloneGroups.repeatSource' | translate }}: {{ source.name }} · {{ source.startDate | date:'yyyy.MM.dd' }} · #{{ source.id }}</p>
+                  <p [id]="'repeat-source-' + group.groupId" class="break-words text-xs text-content-600">{{ 'standaloneGroups.repeatSource' | translate }}: {{ source.name }} · {{ displayDate(occasionDate(source)) || ('standaloneGroups.noDate' | translate) }} · #{{ source.id }}</p>
                 }
                 <button type="button" class="btn btn-neutral w-full justify-between" [attr.aria-expanded]="expandedGroups.has(group.groupId)"
                         [attr.aria-controls]="'standalone-group-' + group.groupId" (click)="toggleGroup(group.groupId)">
-                  {{ 'standaloneGroups.occasions' | translate }} ({{ visibleOccasions(group).length }})
+                  {{ 'standaloneGroups.occasions' | translate }} ({{ group.matchingTotal }})
                   <span aria-hidden="true">{{ expandedGroups.has(group.groupId) ? '−' : '+' }}</span>
                 </button>
                 <div [id]="'standalone-group-' + group.groupId" [hidden]="!expandedGroups.has(group.groupId)">
                   @if (expandedGroups.has(group.groupId)) {
-                    @for (program of visibleOccasions(group); track program.id) {
-                      <article class="border-t border-surface-200 py-3">
-                        <p class="break-words font-semibold text-content-900">{{ program.name }}</p>
-                        <p class="text-sm text-content-600">{{ program.startDate ? (program.startDate | date:'yyyy.MM.dd') : ('standaloneGroups.noDate' | translate) }} · {{ ('standaloneGroups.' + program.status) | translate }} · #{{ program.id }}</p>
-                        <div class="mt-2 flex flex-wrap gap-2">
-                          <a [routerLink]="['/user/personal-workouts', program.id]" class="btn" [class.btn-neutral]="!!program.startedAt" [class.btn-primary]="!program.startedAt">{{ (program.startedAt ? 'personalEditorUi.viewPlan' : 'personalWorkouts.editDraft') | translate }}</a>
-                          @if (program.startedAt) {
-                            <a [routerLink]="['/user/programs', program.id, 'workouts']" [queryParams]="{ programName: program.name }" class="btn btn-primary">{{ 'personalPrograms.workouts' | translate }}</a>
-                          }
-                          <details class="w-full rounded-lg border border-surface-200 p-2">
-                            <summary class="cursor-pointer text-sm font-semibold">{{ 'standaloneGroups.actions' | translate }}</summary>
+                    @if (occasionPages.get(group.groupId); as occasions) {
+                      @if (occasions.loading) {
+                        <app-loading message="personalPrograms.loading" />
+                      } @else if (occasions.error) {
+                        <app-message [message]="occasions.error" type="error" role="alert" />
+                        <button type="button" class="btn btn-neutral" (click)="loadOccasions(group.groupId, occasions.page)">{{ 'personalPrograms.retry' | translate }}</button>
+                      } @else {
+                        @for (program of occasions.items; track program.id) {
+                          <article class="border-t border-surface-200 py-3">
+                            <p class="break-words font-semibold text-content-900">{{ program.name }}</p>
+                            <p class="text-sm text-content-600">{{ occasionDate(program) ? displayDate(occasionDate(program)) : ('standaloneGroups.noDate' | translate) }} · {{ ('standaloneGroups.' + program.status) | translate }} · #{{ program.id }}</p>
                             <div class="mt-2 flex flex-wrap gap-2">
+                              <a [routerLink]="['/user/personal-workouts', program.id]" class="btn" [class.btn-neutral]="!!program.startedAt" [class.btn-primary]="!program.startedAt">{{ (program.startedAt ? 'personalEditorUi.viewPlan' : 'personalWorkouts.editDraft') | translate }}</a>
                               @if (program.startedAt) {
-                                <button type="button" class="btn btn-neutral" [disabled]="busy || loading || hasPendingCopy" (click)="editCopy(program)">{{ 'personalWorkouts.editCopy' | translate }}</button>
+                                <a [routerLink]="['/user/programs', program.id, 'workouts']" [queryParams]="{ programName: program.name }" class="btn btn-primary">{{ 'personalPrograms.workouts' | translate }}</a>
                               }
-                              <button type="button" class="btn btn-delete" [disabled]="busy || loading" (click)="askDelete(program)">{{ (program.startedAt ? 'personalLibrary.archiveWorkout' : 'personalWorkouts.delete') | translate }}</button>
+                              <details class="w-full rounded-lg border border-surface-200 p-2">
+                                <summary class="cursor-pointer text-sm font-semibold">{{ 'standaloneGroups.actions' | translate }}</summary>
+                                <div class="mt-2 flex flex-wrap gap-2">
+                                  @if (program.startedAt) {
+                                    <button type="button" class="btn btn-neutral" [disabled]="busy || loading || hasPendingCopy" (click)="editCopy(program)">{{ 'personalWorkouts.editCopy' | translate }}</button>
+                                  }
+                                  <button type="button" class="btn btn-delete" [disabled]="busy || loading" (click)="askDelete(program)">{{ (program.startedAt ? 'personalLibrary.archiveWorkout' : 'personalWorkouts.delete') | translate }}</button>
+                                </div>
+                              </details>
                             </div>
-                          </details>
-                        </div>
-                      </article>
+                          </article>
+                        } @empty {
+                          <app-empty-state message="personalPrograms.noResults" />
+                        }
+                        @if (occasions.total > occasionPageSize) {
+                          <app-pagination [totalItems]="occasions.total" [pageSize]="occasionPageSize" [currentPage]="occasions.page + 1"
+                            [showPageSize]="false" (pageChange)="loadOccasions(group.groupId, $event - 1)" />
+                        }
+                      }
                     }
                   }
                 </div>

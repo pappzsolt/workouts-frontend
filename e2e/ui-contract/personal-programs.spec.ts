@@ -24,18 +24,22 @@ async function install(page: Page) {
     if (path === '/api/exercises' && req.method() === 'GET') return ok([{ id: 11, name: 'Guggolás' }]);
     if (path === '/api/exercises/filter-options') return ok({ bodyParts: [], equipment: [] });
     if (path === '/api/exercises/search') return ok({ content: [{ id: 11, name: 'Guggolás' }], totalElements: 1, totalPages: 1 });
-    if (path === `${ROOT}/standalone/groups` && req.method() === 'GET') {
+    if ((path === `${ROOT}/standalone/groups` || path === `${ROOT}/standalone/group-summaries` || path === `${ROOT}/standalone/groups/7/occasions`) && req.method() === 'GET') {
       if (state.failList) return route.fulfill({ status: 503, json: { success: false, message: 'Átmeneti betöltési hiba' } });
       const query = new URL(req.url()).searchParams;
       const status = state.started ? 'planned' : 'draft';
       const matches = state.standalone && state.program.name.toLowerCase().includes((query.get('search') ?? '').toLowerCase())
         && (!query.has('status') || query.get('status') === status);
       const item = { id: state.id, name: state.program.name, description: state.program.description, durationDays: 1,
-        startDate: state.program.startDate, startedAt: state.started ? '2026-10-25T12:00:00' : null, standalone: true, status, completedDate: null };
+        startDate: state.program.startDate, startedAt: state.started ? '2026-10-25T12:00:00' : null, standalone: true, status, completedDate: null, scheduledDate: state.program.startDate };
       const groups = matches ? [{ groupId: 7, name: item.name, description: item.description, occasions: [item] }] : [];
+      const summaries = groups.map(group => ({ groupId: group.groupId, name: group.name, description: group.description,
+        total: 1, matchingTotal: 1, draft: status === 'draft' ? 1 : 0, planned: status === 'planned' ? 1 : 0, inProgress: 0, done: 0,
+        lastCompletedDate: null, nextDate: status === 'planned' ? item.scheduledDate : null, repeatSource: state.started ? item : null }));
+      const entries = path.endsWith('/occasions') ? (matches ? [item] : []) : path.endsWith('/group-summaries') ? summaries : groups;
       const pageIndex = Number(query.get('page') ?? 0), size = Number(query.get('size') ?? 12);
-      return ok({ content: groups.slice(pageIndex * size, (pageIndex + 1) * size), page: pageIndex, size,
-        totalElements: groups.length, totalPages: Math.ceil(groups.length / size) });
+      return ok({ content: entries.slice(pageIndex * size, (pageIndex + 1) * size), page: pageIndex, size,
+        totalElements: entries.length, totalPages: Math.ceil(entries.length / size) });
     }
     if (path === `${ROOT}/page` && req.method() === 'GET') {
       if (state.failList) return route.fulfill({ status: 503, json: { success: false, message: 'Átmeneti betöltési hiba' } });
@@ -469,7 +473,7 @@ test('Külön listák: az önálló edzések és programok lekérése, navigáci
   page.on('request', request => {
     const url = new URL(request.url());
     if (url.pathname === `${ROOT}/page`) queries.push(url.searchParams.get('standalone') ?? 'missing');
-    if (url.pathname === `${ROOT}/standalone/groups`) queries.push('groups');
+    if (url.pathname === `${ROOT}/standalone/group-summaries`) queries.push('groups');
   });
   await page.goto('/user/personal-workouts');
   const list = page.locator('app-personal-programs');
@@ -502,26 +506,41 @@ test('Önálló edzések: egy csoportkártyán külön alkalmak és állapotszű
   api.started = true;
   api.program.durationDays = 1;
   const group = { groupId: 7, name: 'Otthoni R nap', description: null, occasions: [
-    { id: 8, name: 'Otthoni R nap', description: null, startDate: '2030-01-05', durationDays: 1,
+    { id: 8, name: 'Otthoni R nap', description: null, startDate: '2030-01-05', scheduledDate: '2030-01-06', durationDays: 1,
       startedAt: '2026-10-25T12:00:00', standalone: true, status: 'planned', completedDate: null },
-    { id: 7, name: 'Otthoni R nap', description: null, startDate: '2026-10-25', durationDays: 1,
+    { id: 7, name: 'Otthoni R nap', description: null, startDate: '2026-10-25', scheduledDate: '2026-10-25', durationDays: 1,
       startedAt: '2026-10-25T12:00:00', standalone: true, status: 'done', completedDate: '2026-10-25' },
   ] };
-  await page.route('**/api/me/personal-programs/standalone/groups?**', route => route.fulfill({ json: {
-    success: true, data: { content: [group], page: 0, size: 12, totalElements: 1, totalPages: 1 },
-  } }));
+  let occasionReads = 0;
+  await page.route('**/api/me/personal-programs/standalone/group-summaries?**', route => {
+    const status = new URL(route.request().url()).searchParams.get('status');
+    const summary = { groupId: group.groupId, name: group.name, description: group.description, total: 2,
+      matchingTotal: status ? 1 : 2, draft: 0, planned: 1, inProgress: 0, done: 1,
+      lastCompletedDate: '2026-10-25', nextDate: '2030-01-06', repeatSource: group.occasions[1] };
+    return route.fulfill({ json: { success: true, data: { content: [summary], page: 0, size: 12, totalElements: 1, totalPages: 1 } } });
+  });
+  await page.route('**/api/me/personal-programs/standalone/groups/7/occasions?**', route => {
+    occasionReads++;
+    const status = new URL(route.request().url()).searchParams.get('status');
+    const occasions = group.occasions.filter(item => !status || item.status === status);
+    return route.fulfill({ json: { success: true, data: { content: occasions, page: 0, size: 12, totalElements: occasions.length, totalPages: 1 } } });
+  });
   await page.goto('/user/personal-workouts');
   const list = page.locator('app-personal-programs');
   await expect(list.locator('app-card')).toHaveCount(1);
   await expect(list.getByRole('heading', { name: group.name, exact: true })).toHaveCount(1);
   await expect(list.getByRole('link', { name: 'Terv megtekintése', exact: true })).toHaveCount(0);
+  expect(occasionReads).toBe(0);
+  await expect(list.getByText('Következő edzés: 2030.01.06', { exact: true })).toBeVisible();
   await list.getByRole('button', { name: 'Edzésalkalmak megtekintése (2)', exact: true }).click();
   await expect(list.getByRole('link', { name: 'Terv megtekintése', exact: true })).toHaveCount(2);
+  expect(occasionReads).toBe(1);
   const filtered = page.waitForRequest(request => new URL(request.url()).searchParams.get('status') === 'done');
   await list.getByRole('button', { name: 'Elvégzett', exact: true }).click();
   await filtered;
   await expect(list.getByRole('link', { name: 'Terv megtekintése', exact: true })).toHaveCount(1);
   await expect(list.getByRole('link', { name: 'Terv megtekintése', exact: true })).toHaveAttribute('href', '/user/personal-workouts/7');
+  expect(occasionReads).toBe(2);
   expect(api.calls.filter(call => call.method !== 'GET' && call.path.startsWith(ROOT))).toHaveLength(0);
   expect(api.unexpected).toEqual([]);
 });

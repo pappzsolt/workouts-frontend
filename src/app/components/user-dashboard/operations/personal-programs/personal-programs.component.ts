@@ -1,6 +1,6 @@
 import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Observable, Subject, catchError, map, merge, of, switchMap, tap } from 'rxjs';
+import { Observable, Subject, catchError, map, merge, of, switchMap, takeUntil, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppPageHeaderComponent } from '../../../shared/components/app-page-header/app-page-header.component';
 import { AppHeadingDirective } from '../../../shared/components/app-page-header/app-page-header.component';
@@ -18,12 +18,20 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { PersonalProgramService } from '../../../../services/user/personal-program.service';
 import { LanguageService } from '../../../../services/shared/language.service';
-import { PersonalProgramSummary, StandaloneWorkoutGroup, StandaloneWorkoutStatus } from '../../../../models/personal-program.model';
+import { PersonalProgramSummary, StandaloneWorkoutGroupSummary, StandaloneWorkoutOccasion, StandaloneWorkoutStatus } from '../../../../models/personal-program.model';
 import { errorMessage } from '../../../../models/backend-dto/common/api-response-message';
 import { programEndDate } from '../../../../shared/program-date';
 
+interface OccasionPageState {
+  items: StandaloneWorkoutOccasion[];
+  page: number;
+  total: number;
+  loading: boolean;
+  error: string;
+}
+
 interface PersonalProgramsListResult {
-  groups: StandaloneWorkoutGroup[];
+  groups: StandaloneWorkoutGroupSummary[];
   content: PersonalProgramSummary[];
   totalElements: number;
 }
@@ -56,35 +64,52 @@ export class PersonalProgramsComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
   readonly programEndDate = programEndDate;
   programs: PersonalProgramSummary[] = [];
-  groups: StandaloneWorkoutGroup[] = [];
+  groups: StandaloneWorkoutGroupSummary[] = [];
   statusFilter: StandaloneWorkoutStatus | 'all' = 'all';
   readonly statuses = ['all', 'draft', 'planned', 'inProgress', 'done'] as const;
   readonly expandedGroups = new Set<number>();
+  readonly occasionPageSize = 12;
+  readonly occasionPages = new Map<number, OccasionPageState>();
+  private readonly cancelOccasionRequests$ = new Subject<void>();
+
   toggleGroup(id: number): void {
-    if (this.expandedGroups.has(id)) this.expandedGroups.delete(id);
-    else this.expandedGroups.add(id);
+    if (this.expandedGroups.has(id)) {
+      this.expandedGroups.delete(id);
+      return;
+    }
+    this.expandedGroups.add(id);
+    if (!this.occasionPages.has(id)) this.loadOccasions(id, 0);
   }
-  visibleOccasions(group: StandaloneWorkoutGroup) {
-    return group.occasions.filter(item => this.statusFilter === 'all' || item.status === this.statusFilter);
+
+  loadOccasions(id: number, page: number): void {
+    const group = this.groups.find(item => item.groupId === id);
+    if (!group || this.loading || page < 0 || this.occasionPages.get(id)?.loading) return;
+    const previous = this.occasionPages.get(id);
+    this.occasionPages.set(id, { items: previous?.items ?? [], page, total: previous?.total ?? group.matchingTotal, loading: true, error: '' });
+    this.service.listWorkoutGroupOccasions(id, page, this.occasionPageSize, this.search,
+      this.statusFilter === 'all' ? null : this.statusFilter)
+      .pipe(takeUntil(this.cancelOccasionRequests$), takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: result => {
+          this.occasionPages.set(id, { items: result.content, page: result.page, total: result.totalElements, loading: false, error: '' });
+          if (result.content.length === 0 && page > 0 && page >= result.totalPages) {
+            this.loadOccasions(id, Math.max(0, result.totalPages - 1));
+          }
+        },
+        error: error => this.occasionPages.set(id, { items: [], page, total: group.matchingTotal, loading: false,
+          error: errorMessage(error, 'personalPrograms.loadError') }),
+      });
   }
-  countStatus(group: StandaloneWorkoutGroup, status: StandaloneWorkoutStatus): number {
-    return group.occasions.filter(item => item.status === status).length;
+
+  countStatus(group: StandaloneWorkoutGroupSummary, status: StandaloneWorkoutStatus): number {
+    return group[status];
   }
-  repeatSource(group: StandaloneWorkoutGroup) {
-    return group.occasions.find(item => !!item.startedAt);
+  occasionDate(item: StandaloneWorkoutOccasion): string | null {
+    return item.scheduledDate === undefined ? item.startDate : item.scheduledDate;
   }
-  lastCompletedDate(group: StandaloneWorkoutGroup): string | null {
-    return group.occasions.flatMap(item => item.status === 'done' && item.completedDate ? [item.completedDate] : [])
-      .sort().at(-1) ?? null;
-  }
-  nextDate(group: StandaloneWorkoutGroup): string | null {
-    const today = new Date();
-    const localDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-    return group.occasions.filter(item => item.status === 'planned' && item.startDate && item.startDate >= localDate)
-      .flatMap(item => item.startDate ? [item.startDate] : []).sort()[0] ?? null;
-  }
-  get visibleGroups(): StandaloneWorkoutGroup[] {
-    return this.groups.filter(group => this.visibleOccasions(group).length > 0);
+  displayDate(value: string | null): string {
+    // These are calendar dates, not instants. Never apply a browser time-zone conversion.
+    return value ? value.slice(0, 10).replaceAll('-', '.') : '';
   }
 
   private readonly reload$ = new Subject<void>();
@@ -107,10 +132,12 @@ export class PersonalProgramsComponent implements OnInit {
         tap(() => {
           this.loading = true;
           this.message = '';
+          this.cancelOccasionRequests$.next();
+          this.occasionPages.clear();
         }),
         switchMap(() => {
           const request$: Observable<PersonalProgramsListResult> = this.standalone
-            ? this.service.listWorkoutGroups(this.page, this.pageSize, this.search, this.statusFilter === 'all' ? null : this.statusFilter).pipe(
+            ? this.service.listWorkoutGroupSummaries(this.page, this.pageSize, this.search, this.statusFilter === 'all' ? null : this.statusFilter).pipe(
                 map(result => ({ groups: result.content, content: [], totalElements: result.totalElements })),
               )
             : this.service.listPage(this.page, this.pageSize, false, this.search).pipe(
@@ -133,6 +160,11 @@ export class PersonalProgramsComponent implements OnInit {
         if (this.standalone && !this.message && this.page > 0 && this.groups.length === 0 && this.page >= Math.ceil(this.totalItems / this.pageSize)) {
           this.page = Math.max(0, Math.ceil(this.totalItems / this.pageSize) - 1);
           this.reload$.next();
+          return;
+        }
+        for (const id of this.expandedGroups) {
+          if (this.groups.some(group => group.groupId === id)) this.loadOccasions(id, 0);
+          else this.expandedGroups.delete(id);
         }
       });
   }
