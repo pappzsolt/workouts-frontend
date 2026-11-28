@@ -38,8 +38,10 @@
         }
       </div>
     }
-    <app-message [message]="message" type="error" />
-    <app-message [message]="loadError" type="error" />
+    <div role="alert" aria-atomic="true" [class.absolute]="!message && !loadError">
+      <app-message [message]="message" type="error" />
+      <app-message [message]="loadError" type="error" />
+    </div>
     <app-message [message]="successMessage" type="success" role="status" />
     @if (hasPendingCopy) {
       <button type="button" class="btn btn-neutral self-start" (click)="retryOpenCopy()" [disabled]="busy">

@@ -40,6 +40,7 @@ export class LayoutComponent implements OnInit {
   menuOpen = false; // <-- hamburger menü állapota
   @ViewChild('mobileMenuButton', { read: ElementRef }) private mobileMenuButton?: ElementRef<HTMLElement>;
   @ViewChild('mobileMenuDrawer', { read: ElementRef }) private mobileMenuDrawer?: ElementRef<HTMLElement>;
+  @ViewChild(GuidedTourComponent) private guideOverlay?: GuidedTourComponent;
   private readonly injector = inject(Injector);
 
   toggleMobileMenu(): void {
@@ -144,8 +145,9 @@ export class LayoutComponent implements OnInit {
 
   }
 
-  openGuide(): void {
+  openGuide(opener: HTMLButtonElement): void {
     if (!this.guideRole) return;
+    this.guideOverlay?.rememberOpener(opener);
     this.closeMobileMenu();
     this.guidedTour.start(this.guideRole, this.authService.getUserId());
   }

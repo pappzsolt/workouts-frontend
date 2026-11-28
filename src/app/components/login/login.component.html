@@ -23,6 +23,9 @@
           appInput="admin"
           id="login-username"
           formControlName="username"
+          name="username"
+          autocomplete="username"
+          spellcheck="false"
           type="text"
           [placeholder]="'login.usernamePlaceholder' | translate"
           class="placeholder:text-content-400"
@@ -36,6 +39,8 @@
           appInput="admin"
           id="login-password"
           formControlName="password"
+          name="password"
+          autocomplete="current-password"
           type="password"
           [placeholder]="'login.passwordPlaceholder' | translate"
           class="placeholder:text-content-400"
@@ -43,9 +48,11 @@
       </app-form-field>
 
       <!-- Error -->
-      @if (errorMessage) {
-        <app-message [message]="errorMessage" type="error" class="block mb-4"></app-message>
-      }
+      <div role="alert" aria-atomic="true" [class.absolute]="!errorMessage">
+        @if (errorMessage) {
+          <app-message [message]="errorMessage" type="error" class="block mb-4"></app-message>
+        }
+      </div>
 
       <!-- Login button -->
       <app-button

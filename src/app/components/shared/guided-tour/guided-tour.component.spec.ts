@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { GuidedTourComponent } from './guided-tour.component';
 import { GuidedTourService, GUIDE_STEPS } from '../../../services/shared/guided-tour.service';
 import { LanguageService } from '../../../services/shared/language.service';
@@ -57,4 +57,38 @@ describe('GuidedTourComponent', () => {
     fixture.detectChanges();
     expect(fixture.nativeElement.querySelector('[role="dialog"]')).not.toBeNull();
   });
+  for (const navigated of [false, true]) {
+    it(`restores focus to the ${navigated ? 'page content after navigation' : 'guide opener on the same page'}`, async () => {
+      const fixture = TestBed.createComponent(GuidedTourComponent);
+      const opener = document.createElement('button');
+      const main = document.createElement('main');
+      main.tabIndex = -1;
+      document.body.append(opener, main);
+      try {
+        fixture.componentRef.setInput('focusFallback', main);
+        fixture.detectChanges();
+        opener.focus();
+        fixture.componentInstance.rememberOpener(opener);
+        tour.start('user', 90303);
+        fixture.detectChanges();
+        await fixture.whenStable();
+        const dialog: HTMLElement = fixture.nativeElement.querySelector('[role="dialog"]');
+        dialog.focus();
+        expect(document.activeElement).toBe(dialog);
+        if (navigated) {
+          routerStub.url = '/user/personal-programs';
+          routerEvents.next(new NavigationEnd(1, routerStub.url, routerStub.url));
+        }
+
+        fixture.componentInstance.onKeydown(new KeyboardEvent('keydown', { key: 'Escape' }));
+        fixture.detectChanges();
+        await fixture.whenStable();
+        expect(document.activeElement).toBe(navigated ? main : opener);
+      } finally {
+        opener.remove();
+        main.remove();
+      }
+    });
+  }
+
 });

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, ElementRef, HostListener, ViewChild, effect, inject } from '@angular/core';
+import { Component, DestroyRef, ElementRef, HostListener, Input, Injector, ViewChild, afterNextRender, effect, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
@@ -17,7 +17,12 @@ export class GuidedTourComponent {
   readonly tour = inject(GuidedTourService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly injector = inject(Injector);
+  private opener?: HTMLButtonElement;
+  private routeChanged = false;
+  private wasActive = false;
 
+  @Input() focusFallback?: HTMLElement;
   @ViewChild('tourDialog') private dialog?: ElementRef<HTMLElement>;
   spotlight: Record<string, string> | null = null;
   private pending: ReturnType<typeof setTimeout>[] = [];
@@ -44,7 +49,11 @@ export class GuidedTourComponent {
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
       takeUntilDestroyed(this.destroyRef),
-    ).subscribe(() => this.scheduleHighlight());
+    ).subscribe(() => {
+      if (!this.tour.active()) return;
+      this.routeChanged = true;
+      this.scheduleHighlight();
+    });
 
     this.destroyRef.onDestroy(() => this.cancelPending());
 
@@ -53,8 +62,11 @@ export class GuidedTourComponent {
       if (!state) {
         this.spotlight = null;
         this.cancelPending();
+        if (this.wasActive) this.restoreFocus();
+        this.wasActive = false;
         return;
       }
+      this.wasActive = true;
       const path = GUIDE_STEPS[state.role][state.index].route;
       this.spotlight = null;
       this.cancelPending();
@@ -74,6 +86,24 @@ export class GuidedTourComponent {
       }, 0));
       this.pending.push(setTimeout(() => this.dialog?.nativeElement.focus(), 0));
     });
+  }
+
+  rememberOpener(opener: HTMLButtonElement): void {
+    this.opener = opener;
+  }
+
+  private restoreFocus(): void {
+    const opener = this.routeChanged ? undefined : this.opener;
+    this.opener = undefined;
+    this.routeChanged = false;
+    afterNextRender(() => {
+      if (this.tour.active()) return;
+      if (opener?.isConnected && !opener.disabled && opener.getClientRects().length > 0) {
+        opener.focus();
+      } else {
+        this.focusFallback?.focus();
+      }
+    }, { injector: this.injector });
   }
 
   @HostListener('window:resize')
