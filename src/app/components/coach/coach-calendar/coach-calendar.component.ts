@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, OnChanges, SimpleChanges, Input, inject } from '@angular/core';
+import { Component, DestroyRef, NgZone, OnInit, OnChanges, SimpleChanges, Input, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -34,12 +34,14 @@ export class CoachCalendarComponent implements OnInit, OnChanges {
   private readonly workspace = inject(CoachWorkspaceService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly cancelled$ = new Subject<void>();
-  readonly today = new Date();
-  readonly todayKey = toIsoDate(this.today);
+  private readonly zone = inject(NgZone);
+  private readonly today = signal(new Date());
+  private midnightTimer: ReturnType<typeof setTimeout> | undefined;
+  get todayKey(): string { return toIsoDate(this.today()); }
   readonly weekdayKeys = WEEKDAY_KEYS;
   readonly monthKeys = ['january', 'february', 'march', 'april', 'may', 'june',
     'july', 'august', 'september', 'october', 'november', 'december'];
-  month = new Date(this.today.getFullYear(), this.today.getMonth(), 1);
+  month = new Date(this.today().getFullYear(), this.today().getMonth(), 1);
   selectedDate = this.todayKey;
   selectedUserId: number | null = null;
   clients: CoachClientOverview[] = [];
@@ -48,6 +50,8 @@ export class CoachCalendarComponent implements OnInit, OnChanges {
   private byDate = new Map<string, CalendarEntry[]>();
 
   ngOnInit(): void {
+    this.destroyRef.onDestroy(() => clearTimeout(this.midnightTimer));
+    this.scheduleMidnightRefresh();
     this.openInitialMonth();
     this.load();
   }
@@ -69,7 +73,18 @@ export class CoachCalendarComponent implements OnInit, OnChanges {
     this.selectedDate = this.initialDate;
   }
 
-  get days() { return buildCalendarMonth(this.month.getFullYear(), this.month.getMonth(), this.today); }
+  private scheduleMidnightRefresh(): void {
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    this.zone.runOutsideAngular(() => {
+      this.midnightTimer = setTimeout(() => {
+        this.today.set(new Date());
+        this.scheduleMidnightRefresh();
+      }, midnight.getTime() - now.getTime());
+    });
+  }
+
+  get days() { return buildCalendarMonth(this.month.getFullYear(), this.month.getMonth(), this.today()); }
 
   changeMonth(direction: -1 | 1): void {
     this.month = new Date(this.month.getFullYear(), this.month.getMonth() + direction, 1);
@@ -78,8 +93,10 @@ export class CoachCalendarComponent implements OnInit, OnChanges {
   }
 
   goToToday(): void {
-    this.month = new Date(this.today.getFullYear(), this.today.getMonth(), 1);
-    this.selectedDate = this.todayKey;
+    const today = new Date();
+    this.today.set(today);
+    this.month = new Date(today.getFullYear(), today.getMonth(), 1);
+    this.selectedDate = toIsoDate(today);
     this.load();
   }
 

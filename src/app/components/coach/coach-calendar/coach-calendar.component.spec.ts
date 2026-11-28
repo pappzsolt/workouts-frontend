@@ -88,6 +88,34 @@ describe('Coach calendar', () => {
     expect(next.observed).toBeFalse();
   });
 
+  it('updates the day and status at midnight while keeping the current selection', () => {
+    fixture.destroy();
+    jasmine.clock().install();
+    try {
+      jasmine.clock().mockDate(new Date(2026, 10, 30, 23, 59, 59));
+      fixture = TestBed.createComponent(CoachCalendarComponent);
+      fixture.detectChanges();
+      const component = fixture.componentInstance;
+      const scheduled = workout(101, '2026-11-30');
+      expect(component.status(scheduled)).toBe('planned');
+
+      jasmine.clock().tick(1000);
+      fixture.detectChanges();
+      expect(component.days.find(day => day.isToday)?.date).toEqual(new Date(2026, 11, 1));
+      expect(component.status(scheduled)).toBe('missed');
+      expect(component.selectedDate).toBe('2026-11-30');
+      expect(api.getOverview).toHaveBeenCalledTimes(1);
+
+      component.goToToday();
+      expect(component.selectedDate).toBe('2026-12-01');
+      expect(component.month).toEqual(new Date(2026, 11, 1));
+      expect(api.getOverview).toHaveBeenCalledTimes(2);
+    } finally {
+      fixture.destroy();
+      jasmine.clock().uninstall();
+    }
+  });
+
   it('clears old calendar entries on failure and supports retry', () => {
     api.getOverview.and.returnValues(of({ from: '', to: '', clients }), throwError(() => new Error('Failed')),
       of({ from: '', to: '', clients: [] }));

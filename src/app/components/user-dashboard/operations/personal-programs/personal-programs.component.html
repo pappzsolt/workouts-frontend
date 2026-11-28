@@ -39,13 +39,14 @@
       </div>
     }
     <app-message [message]="message" type="error" />
+    <app-message [message]="loadError" type="error" />
     <app-message [message]="successMessage" type="success" role="status" />
     @if (hasPendingCopy) {
       <button type="button" class="btn btn-neutral self-start" (click)="retryOpenCopy()" [disabled]="busy">
         {{ 'personalNavigation.retryOpen' | translate }}
       </button>
     }
-    @if (message) {
+    @if (loadError) {
       <button
         type="button"
         class="btn btn-neutral self-start"
@@ -57,7 +58,7 @@
     }
     @if (loading) {
       <app-loading message="personalPrograms.loading" />
-    } @else if (!message) {
+    } @else if (!loadError) {
       @if (standalone) {
         <section class="grid min-w-0 grid-cols-1 items-start gap-5 md:grid-cols-2">
           @for (group of groups; track group.groupId) {

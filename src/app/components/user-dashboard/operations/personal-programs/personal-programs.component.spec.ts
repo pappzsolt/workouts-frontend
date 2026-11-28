@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
+import { provideTranslateService } from '@ngx-translate/core';
+import { ActivatedRoute, provideRouter, Router } from '@angular/router';
 import { BehaviorSubject, of, Subject, throwError } from 'rxjs';
 import { PersonalProgramsComponent } from './personal-programs.component';
 import { PersonalProgramService } from '../../../../services/user/personal-program.service';
@@ -240,4 +241,44 @@ describe('PersonalProgramsComponent pagination and personal actions', () => {
     });
   }
 
+});
+
+describe('Personal program and workout list errors', () => {
+  for (const standalone of [false, true]) {
+    it(`keeps the loaded ${standalone ? 'workout' : 'program'} cards visible after a failed action`, () => {
+      const source = standalone ? startedWorkout : startedProgram;
+      const group = { groupId: source.id, name: source.name, description: null, total: 1, matchingTotal: 1,
+        draft: 0, planned: 1, inProgress: 0, done: 0, lastCompletedDate: null, nextDate: null, repeatSource: source };
+      const page = { page: 0, size: 12, totalElements: 1, totalPages: 1 };
+      const rejected = throwError(() => new Error('Action denied'));
+      TestBed.configureTestingModule({
+        imports: [PersonalProgramsComponent],
+        providers: [
+          provideRouter([]), provideTranslateService(),
+          { provide: PersonalProgramService, useValue: {
+            listPage: () => of({ ...page, content: [source] }),
+            listWorkoutGroupSummaries: () => of({ ...page, content: [group] }),
+            delete: () => rejected, repeat: () => rejected, copy: () => rejected,
+          } },
+          { provide: LanguageService, useValue: { language$: new BehaviorSubject('hu') } },
+        ],
+      });
+      TestBed.inject(ActivatedRoute).snapshot.data = { standalone };
+      const fixture = TestBed.createComponent(PersonalProgramsComponent);
+      fixture.detectChanges();
+      const component = fixture.componentInstance;
+      const pageElement: HTMLElement = fixture.nativeElement;
+
+      component.askDelete(source);
+      component.confirmDelete();
+      fixture.detectChanges();
+      expect(pageElement.querySelector('app-card h2')?.textContent).toContain(source.name);
+      expect(pageElement.textContent).toContain('Action denied');
+
+      component.editCopy(source);
+      fixture.detectChanges();
+      expect(pageElement.querySelector('app-card h2')?.textContent).toContain(source.name);
+      expect(pageElement.textContent).toContain('Action denied');
+    });
+  }
 });

@@ -120,6 +120,7 @@ export class PersonalProgramsComponent implements OnInit {
   readonly standalone = inject(ActivatedRoute).snapshot.data['standalone'] === true;
   loading = false;
   message = '';
+  loadError = '';
   successMessage = '';
   busy = false;
   pendingDelete: PersonalProgramSummary | null = null;
@@ -132,6 +133,7 @@ export class PersonalProgramsComponent implements OnInit {
         tap(() => {
           this.loading = true;
           this.message = '';
+          this.loadError = '';
           this.cancelOccasionRequests$.next();
           this.occasionPages.clear();
         }),
@@ -145,7 +147,7 @@ export class PersonalProgramsComponent implements OnInit {
               );
           return request$.pipe(
             catchError((error) => {
-              this.message = errorMessage(error, 'personalPrograms.loadError');
+              this.loadError = errorMessage(error, 'personalPrograms.loadError');
               return of({ groups: [], content: [], totalElements: 0 });
             }),
           );
@@ -157,7 +159,7 @@ export class PersonalProgramsComponent implements OnInit {
         this.groups = programs.groups;
         this.totalItems = programs.totalElements;
         this.loading = false;
-        if (this.standalone && !this.message && this.page > 0 && this.groups.length === 0 && this.page >= Math.ceil(this.totalItems / this.pageSize)) {
+        if (this.standalone && !this.loadError && this.page > 0 && this.groups.length === 0 && this.page >= Math.ceil(this.totalItems / this.pageSize)) {
           this.page = Math.max(0, Math.ceil(this.totalItems / this.pageSize) - 1);
           this.reload$.next();
           return;
