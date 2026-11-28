@@ -1,5 +1,6 @@
 import { MessageComponent } from '../components/message/message.component';
 import { Component } from '@angular/core';
+import { TranslatePipe } from '@ngx-translate/core';
 import { AppSelectComponent } from '../components/app-select/app-select.component';
 import type { SelectOption } from '../../../models/common/select-option.model';
 
@@ -8,9 +9,10 @@ import { LanguageCode, LanguageService } from '../../../services/shared/language
 @Component({
   selector: 'app-language-selector',
   standalone: true,
-  imports: [AppSelectComponent, MessageComponent],
+  imports: [AppSelectComponent, MessageComponent, TranslatePipe],
   template: `
     <app-select
+      [ariaLabel]="'landing.accessibility.language' | translate"
       [value]="languageService.getCurrentLanguage()"
       [options]="languageOptions"
       (valueChange)="onLanguageChange($event)"

@@ -184,8 +184,17 @@ for (const width of [375, 768, 1024, 1440]) {
     await expect(table.getByRole('spinbutton').first()).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width + 1);
     if (width === 375) {
-      expect(await table.evaluate(el => el.scrollWidth)).toBeGreaterThan(width);
+      await expect(table.locator('tbody tr').first()).toHaveCSS('display', 'grid');
+      expect(await table.evaluate(el => el.scrollWidth - el.clientWidth)).toBeLessThanOrEqual(1);
+    } else {
+      await expect(table.locator('tbody tr').first()).toHaveCSS('display', 'table-row');
     }
+    const targetReps = table.getByRole('spinbutton').first();
+    await targetReps.fill('0');
+    await expect(targetReps).toHaveAttribute('aria-invalid', 'true');
+    await expect(targetReps).toHaveAccessibleDescription(/Adj meg legalább 1 egész ismétlést\./);
+    await targetReps.fill('8');
+    await expect(targetReps).not.toHaveAttribute('aria-invalid', 'true');
     expect(api.writes()).toEqual([]);
   });
 }

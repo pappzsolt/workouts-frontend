@@ -23,9 +23,17 @@ describe('User profile optional coach directory', () => {
       expect(component.selectedUser.coachId).toBe(7);
       expect(component.coachesLoadFailed).toBe(directoryFails);
       expect(component.coachName).toBe(directoryFails ? '' : 'Coach');
+      expect(component.canLeave()).toBeTrue();
       component.selectedUser.weight = 65;
+      const decision = component.canLeave();
+      if (typeof decision === 'boolean') fail('Expected a confirmation for a changed profile');
+      else decision.subscribe(leave => expect(leave).toBeFalse());
+      expect(component.leaveConfirmationOpen).toBeTrue();
+      component.resolveLeave(false);
+      expect(component.leaveConfirmationOpen).toBeFalse();
       component.onSave();
       expect(updateUser).toHaveBeenCalledTimes(1);
+      expect(component.canLeave()).toBeTrue();
       expect(updateUser.calls.mostRecent().args[0]).toEqual(jasmine.objectContaining({
         id: 42, roles: ['ROLE_USER'], extraFields: jasmine.objectContaining({ coach_id: 7, weight: 65 }),
       }));

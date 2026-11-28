@@ -524,6 +524,8 @@
     "exportError": "Could not create the Excel file."
   },
   "userProfile": {
+    "unsavedTitle": "Unsaved profile changes",
+    "unsavedPrompt": "Discard your unsaved changes and leave your profile?",
     "currentPassword": "Current password",
     "noUserId": "No logged-in user!",
     "profileLoaded": "Profile loaded successfully!",
@@ -1100,6 +1102,10 @@
       "discardAndGo": "Discard and continue",
       "done": "Done",
       "feedback": "Feedback",
+      "setRepetitionError": "Enter a whole number of reps, at least 1.",
+      "setRestError": "Enter a whole number of seconds, 0 or more.",
+      "setWeightError": "Enter a weight of 0 or more.",
+      "setRpeError": "Enter an RPE from 0 to 10 in increments of 0.5.",
       "invalidSetValues": "Check the red rows: target reps are required (at least 1), weight and rest cannot be negative, actual reps at least 1.",
       "newProgramFor": "New program for them",
       "nextWorkout": "Next workout",

@@ -49,6 +49,26 @@ test('register: login links to registration and client-side validation blocks in
   expect(writes(calls, '/api/auth/register')).toEqual([]);
 });
 
+test('register: a hidden invalid field is expanded and focused on submit', async ({ page }) => {
+  const calls = await mockApi(page, null, () => null);
+  await page.goto('/register');
+  await expect(page.getByRole('combobox', { name: 'Nyelv' })).toBeVisible();
+  await page.locator('#register-username').fill('kiss.anna');
+  await page.locator('#register-email').fill('anna@example.com');
+  await page.locator('#register-password').fill('Jelszo123!');
+  await page.locator('#register-password-confirmation').fill('Jelszo123!');
+  const optionalDetails = page.locator('form details summary');
+  await optionalDetails.click();
+  const age = page.locator('#register-age');
+  await age.fill('0');
+  await optionalDetails.click();
+  await expect(age).toBeHidden();
+  await page.getByRole('button', { name: 'Regisztráció elküldése' }).click();
+  await expect(age).toBeVisible();
+  await expect(age).toBeFocused();
+  expect(writes(calls, '/api/auth/register')).toEqual([]);
+});
+
 test('register: client sends only client fields, trimmed, and shows the pending state', async ({ page }) => {
   const calls = await mockApi(page, null, c => c.path === '/api/auth/register'
     ? { status: 202, json: { success: true, data: { status: 'PENDING' }, message: 'A regisztrációt rögzítettük. A fiók az adminisztrátor jóváhagyása után használható.' } }

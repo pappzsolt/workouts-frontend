@@ -30,6 +30,8 @@ import { ExercisePickerComponent } from '../../exercise-picker/exercise-picker.c
   host: { class: 'contents' },
 })
 export class ProgramEmptyDayComponent {
+  private static nextId = 0;
+  readonly tabsId = `empty-day-${ProgramEmptyDayComponent.nextId++}`;
   @Input() pendingExercises: CoachExerciseSearchItem[] = [];
   @Input() pendingIds: number[] = [];
   @Input() busy = false;
@@ -42,6 +44,22 @@ export class ProgramEmptyDayComponent {
   readonly emptyMode = model<'new' | 'library'>('new');
   readonly workoutName = model('');
   readonly libraryFilter = model('');
+
+  onTabKeydown(event: KeyboardEvent): void {
+    let next: 'new' | 'library';
+    switch (event.key) {
+      case 'ArrowLeft':
+      case 'ArrowRight':
+        next = this.emptyMode() === 'new' ? 'library' : 'new';
+        break;
+      case 'Home': next = 'new'; break;
+      case 'End': next = 'library'; break;
+      default: return;
+    }
+    event.preventDefault();
+    this.emptyMode.set(next);
+    (event.currentTarget as HTMLElement).querySelector<HTMLElement>(`#${this.tabsId}-tab-${next}`)?.focus();
+  }
 
   @Output() readonly removePending = new EventEmitter<number>();
   @Output() readonly addPending = new EventEmitter<CoachExerciseSearchItem>();

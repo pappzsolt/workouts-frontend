@@ -50,6 +50,7 @@ export class AppSelectComponent<T extends SelectValue = string>
   implements OnChanges, OnDestroy, ControlValueAccessor, Validator
 {
   @Input({ transform: booleanAttribute }) required = false;
+  @Input() ariaLabel: string | null = null;
   validationMessage = '';
   private interacted = false;
   private control?: AbstractControl;

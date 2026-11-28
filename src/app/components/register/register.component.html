@@ -21,7 +21,7 @@
       <p class="mt-2 text-sm text-content-500">{{ 'register.description' | translate }}</p>
     </div>
 
-    <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-5" novalidate>
+    <form #registrationForm [formGroup]="form" (ngSubmit)="submit()" (invalidSubmit)="onInvalidSubmit()" class="flex flex-col gap-5" novalidate>
       <!-- Fióktípus -->
       <fieldset class="flex flex-col gap-2">
         <legend class="mb-2 text-sm font-semibold text-content-700">{{ 'register.accountType' | translate }} <span aria-hidden="true">*</span></legend>
@@ -120,9 +120,9 @@
         </div>
       </details>
 
-      @if (errorMessage) {
+      <div role="alert" aria-atomic="true" [class.absolute]="!errorMessage">
         <app-message [message]="errorMessage" type="error"></app-message>
-      }
+      </div>
 
       <app-button variant="primary" type="submit" [disabled]="loading"
                   [label]="(loading ? 'register.sending' : 'register.submit') | translate"></app-button>

@@ -524,6 +524,8 @@
     "exportError": "Die Excel-Datei konnte nicht erstellt werden."
   },
   "userProfile": {
+    "unsavedTitle": "Ungespeicherte Profiländerungen",
+    "unsavedPrompt": "Ungespeicherte Änderungen verwerfen und das Profil verlassen?",
     "currentPassword": "Aktuelles Passwort",
     "noUserId": "Kein angemeldeter Benutzer!",
     "profileLoaded": "Profil erfolgreich geladen!",
@@ -1100,6 +1102,10 @@
       "discardAndGo": "Verwerfen und weiter",
       "done": "Erledigt",
       "feedback": "Rückmeldung",
+      "setRepetitionError": "Gib eine ganze Wiederholungszahl ab 1 ein.",
+      "setRestError": "Gib ganze Sekunden ab 0 ein.",
+      "setWeightError": "Gib ein Gewicht ab 0 ein.",
+      "setRpeError": "Gib einen RPE-Wert von 0 bis 10 in 0,5er-Schritten ein.",
       "invalidSetValues": "Prüfe die roten Zeilen: Soll-Wiederholungen sind Pflicht (mindestens 1), Gewicht und Pause dürfen nicht negativ sein, Ist-Wiederholungen mindestens 1.",
       "newProgramFor": "Neues Programm für den Kunden",
       "nextWorkout": "Nächstes Training",

@@ -224,20 +224,38 @@ export function rebaseSet(draft: EditableSet, latest: EditableSet): EditableSet 
   return latest;
 }
 
+export type NumericSetField =
+  'targetRepetitions' | 'targetWeightKg' | 'restSeconds' | 'actualRepetitions' | 'actualWeightKg' | 'targetRpe';
+
+function parseSetField(field: NumericSetField, value: number | string | null | undefined): number | null | undefined {
+  if (field === 'targetRpe') {
+    const rpe = toNumber(value ?? null);
+    return rpe !== null && rpe !== undefined && (rpe < 0 || rpe > 10 || !Number.isInteger(rpe * 2))
+      ? undefined : rpe;
+  }
+  if (value === undefined) return undefined;
+  const repetitions = field === 'targetRepetitions' || field === 'actualRepetitions';
+  const parsed = repetitions || field === 'restSeconds'
+    ? toInt(value)
+    : toNumber(value);
+  if (parsed === null) return field === 'targetRepetitions' ? undefined : null;
+  return parsed !== undefined && parsed < (repetitions ? 1 : 0) ? undefined : parsed;
+}
+
+export function isSetFieldInvalid(row: EditableSet, field: NumericSetField): boolean {
+  return parseSetField(field, row[field]) === undefined;
+}
+
 /** A sor értékei mentésre kész formában; érvénytelen értéknél null. */
 export function setValues(row: EditableSet): ClientSetValues | null {
-  const targetRpe = toNumber(row.targetRpe ?? null);
-  if (targetRpe === undefined || (targetRpe !== null && (targetRpe < 0 || targetRpe > 10 || !Number.isInteger(targetRpe * 2)))) return null;
-  const target = toInt(row.targetRepetitions);
-  if (target === null || target === undefined || target < 1) return null;
-  const weight = toNumber(row.targetWeightKg);
-  const actualWeight = toNumber(row.actualWeightKg);
-  const actualReps = toInt(row.actualRepetitions);
-  const rest = toInt(row.restSeconds);
-  if (weight === undefined || actualWeight === undefined || actualReps === undefined || rest === undefined) return null;
-  if ((weight ?? 0) < 0 || (actualWeight ?? 0) < 0 || (actualReps !== null && actualReps < 1) || (rest ?? 0) < 0) {
-    return null;
-  }
+  const targetRpe = parseSetField('targetRpe', row.targetRpe);
+  const target = parseSetField('targetRepetitions', row.targetRepetitions);
+  const weight = parseSetField('targetWeightKg', row.targetWeightKg);
+  const actualWeight = parseSetField('actualWeightKg', row.actualWeightKg);
+  const actualReps = parseSetField('actualRepetitions', row.actualRepetitions);
+  const rest = parseSetField('restSeconds', row.restSeconds);
+  if (targetRpe === undefined || target == null || weight === undefined || actualWeight === undefined
+      || actualReps === undefined || rest === undefined) return null;
   const notes = (row.notes ?? '').trim();
   return {
     ...(row.targetRpe !== undefined ? { targetRpe } : {}),

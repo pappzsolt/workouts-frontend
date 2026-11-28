@@ -1,0 +1,47 @@
+.set-mobile-label {
+  display: none;
+}
+
+@media (max-width: 767.98px) {
+  .set-table,
+  .set-table tbody {
+    display: block;
+    min-width: 0;
+  }
+
+  .set-table thead {
+    @apply sr-only;
+  }
+
+  .set-row {
+    @apply mb-3 grid grid-cols-2 gap-2 rounded-xl border border-surface-200 p-2;
+  }
+
+  .set-table tbody > tr:not(.set-row),
+  .set-table tbody > tr:not(.set-row) > td {
+    display: block;
+  }
+
+  .set-row td {
+    min-width: 0;
+  }
+
+  .set-index,
+  .set-wide {
+    grid-column: 1 / -1;
+  }
+
+  .set-mobile-label {
+    @apply mb-1 block break-words text-sm font-medium text-content-700;
+  }
+
+  .set-row input:not([type='checkbox']) {
+    min-height: 44px;
+    font-size: 1rem;
+  }
+
+  .set-row input[type='checkbox'] {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+}

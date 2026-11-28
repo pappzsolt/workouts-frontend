@@ -93,6 +93,23 @@ test('editor: remove occurrence cancel then confirm leaves other occurrence', as
   await expect(editor(page).getByRole('button', { name: /Program 8\. napja · Workout\ B$/ })).toBeVisible();
   expect(api.writes()[0].path).toBe('/api/program-workouts/id/100');
 });
+test('editor: empty-day tabs support keyboard navigation and identify their panels', async ({ page, api }) => {
+  await page.goto('/coach/programs/1');
+  const panel = selected(page);
+  await editor(page).getByRole('button', { name: /Program 2\. napja$/ }).click();
+  const newTab = panel.getByRole('tab', { name: 'Új edzés' });
+  const library = panel.getByRole('tab', { name: 'Edzéstárból' });
+  await newTab.focus();
+  await newTab.press('ArrowRight');
+  await expect(library).toBeFocused();
+  await expect(library).toHaveAttribute('aria-selected', 'true');
+  await expect(newTab).toHaveAttribute('tabindex', '-1');
+  await expect(panel.getByRole('tabpanel', { name: 'Edzéstárból' })).toBeVisible();
+  await library.press('Home');
+  await expect(newTab).toBeFocused();
+  await expect(panel.getByRole('tabpanel', { name: 'Új edzés' })).toBeVisible();
+});
+
 for (const mode of ['link', 'copy'] as const) {
   test(`editor: library ${mode} to empty day`, async ({ page, api }) => {
     await page.goto('/coach/programs/1'); const root = editor(page); const panel = selected(page);

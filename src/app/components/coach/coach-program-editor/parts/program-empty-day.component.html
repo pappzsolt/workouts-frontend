@@ -10,19 +10,24 @@
 <h2 class="mb-3 text-xl font-bold text-content-900">{{ 'coachWorkspace.client.restDay' | translate }}</h2>
 <p class="mb-4 text-sm text-content-600">{{ 'coachWorkspace.editor.emptyDayHint' | translate }}</p>
 
-<div class="mb-4 flex gap-2" role="tablist">
-  <button type="button" role="tab" [attr.aria-selected]="emptyMode() === 'new'" (click)="emptyMode.set('new')"
+<div class="mb-4 flex gap-2" role="tablist" [attr.aria-label]="'coachWorkspace.editor.emptyDayHint' | translate"
+     (keydown)="onTabKeydown($event)">
+  <button type="button" role="tab" [id]="tabsId + '-tab-new'" [attr.aria-controls]="tabsId + '-panel-new'"
+          [attr.tabindex]="emptyMode() === 'new' ? 0 : -1" [attr.aria-selected]="emptyMode() === 'new'" (click)="emptyMode.set('new')"
           class="btn flex-1 px-3"
           [class.btn-primary]="emptyMode() === 'new'" [class.btn-neutral]="emptyMode() !== 'new'">
     {{ 'coachWorkspace.editor.newWorkout' | translate }}
   </button>
-  <button type="button" role="tab" [attr.aria-selected]="emptyMode() === 'library'" (click)="emptyMode.set('library')"
+  <button type="button" role="tab" [id]="tabsId + '-tab-library'" [attr.aria-controls]="tabsId + '-panel-library'"
+          [attr.tabindex]="emptyMode() === 'library' ? 0 : -1" [attr.aria-selected]="emptyMode() === 'library'" (click)="emptyMode.set('library')"
           class="btn flex-1 px-3"
           [class.btn-primary]="emptyMode() === 'library'" [class.btn-neutral]="emptyMode() !== 'library'">
     {{ 'coachWorkspace.editor.fromLibrary' | translate }}
   </button>
 </div>
 
+<section role="tabpanel" [id]="tabsId + '-panel-new'" [attr.aria-labelledby]="tabsId + '-tab-new'"
+         [hidden]="emptyMode() !== 'new'">
 @if (emptyMode() === 'new') {
   <label class="mb-3 flex flex-col gap-1 text-sm font-semibold text-content-800">
     {{ 'coachWorkspace.editor.workoutName' | translate }}
@@ -59,7 +64,11 @@
 
   <h3 class="mb-2 text-sm font-semibold text-content-800">{{ 'coachWorkspace.editor.browseExercises' | translate }}</h3>
   <app-exercise-picker [chosenIds]="pendingIds" (picked)="addPending.emit($event)"></app-exercise-picker>
-} @else {
+}
+</section>
+<section role="tabpanel" [id]="tabsId + '-panel-library'" [attr.aria-labelledby]="tabsId + '-tab-library'"
+         [hidden]="emptyMode() !== 'library'">
+@if (emptyMode() === 'library') {
   @if (!hasLibrary) {
     <p class="text-sm text-content-600">{{ 'coachWorkspace.editor.noWorkoutsToCopy' | translate }}</p>
   } @else {
@@ -110,5 +119,6 @@
   </p>
 }
 
+</section>
 </fieldset>
 }

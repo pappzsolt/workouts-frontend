@@ -271,6 +271,7 @@ export const routes: Routes = [
       {
         path: 'profile',
         loadComponent: () => import('./components/user-dashboard/operations/user-profile/user-profile.component').then(m => m.UserProfileComponent),
+        canDeactivate: [(component: { canLeave(): boolean | Observable<boolean> }) => component.canLeave()],
       },
 
       {

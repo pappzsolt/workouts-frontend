@@ -3,9 +3,9 @@ import {
   errorMessage,
   responseMessage,
 } from '../../../../models/backend-dto/common/api-response-message';
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 
-import { Subject, catchError, finalize, forkJoin, of, take, takeUntil } from 'rxjs';
+import { type Observable, Subject, catchError, finalize, forkJoin, of, take, takeUntil } from 'rxjs';
 
 import { AuthService } from '../../../../services/auth/auth.service';
 
@@ -31,7 +31,11 @@ import { MessageComponent } from '../../../shared/components/message/message.com
 import { AppButtonComponent } from '../../../shared/components/app-button/app-button.component';
 import { AppCardComponent } from '../../../shared/components/app-card/app-card.component';
 import { FormFieldComponent } from '../../../shared/components/form-field/form-field.component';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
+
+const profileFields = ['username', 'email', 'avatarUrl', 'coachId', 'age', 'weight', 'height', 'gender', 'goals'] as const;
+type ProfileFields = Pick<UserProfile, typeof profileFields[number]>;
 
 @Component({
   selector: 'app-user-profile',
@@ -47,6 +51,7 @@ import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.c
     AppButtonComponent,
     AppCardComponent,
     FormFieldComponent,
+    ConfirmDialogComponent,
     AppIconComponent,
     MatFormFieldModule,
     MatSelectModule,
@@ -57,6 +62,46 @@ import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.c
 export class UserProfileComponent implements OnInit, OnDestroy {
   private readonly validateInputs = createInputValidationGuard();
   private readonly destroy$ = new Subject<void>();
+  private baseline?: ProfileFields;
+  private leaveDecision?: Subject<boolean>;
+
+  get leaveConfirmationOpen(): boolean {
+    return this.leaveDecision !== undefined;
+  }
+
+  get hasUnsavedChanges(): boolean {
+    const baseline = this.baseline;
+    return !!baseline && (
+      profileFields.some(field => (this.selectedUser[field] ?? '') !== (baseline[field] ?? ''))
+      || !!this.selectedUser.password?.trim()
+      || !!this.selectedUser.currentPassword?.trim()
+    );
+  }
+
+  canLeave(): boolean | Observable<boolean> {
+    if (!this.hasUnsavedChanges) return true;
+    this.leaveDecision ??= new Subject<boolean>();
+    return this.leaveDecision.asObservable();
+  }
+
+  resolveLeave(leave: boolean): void {
+    const decision = this.leaveDecision;
+    this.leaveDecision = undefined;
+    decision?.next(leave);
+    decision?.complete();
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  beforeUnload(event: BeforeUnloadEvent): void {
+    if (!this.hasUnsavedChanges) return;
+    event.preventDefault();
+    event.returnValue = '';
+  }
+
+  private profileSnapshot(): ProfileFields {
+    const { username, email, avatarUrl, coachId, age, weight, height, gender, goals } = this.selectedUser;
+    return { username, email, avatarUrl, coachId, age, weight, height, gender, goals };
+  }
 
   users: RawUser[] = [];
 
@@ -112,6 +157,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.leaveDecision?.complete();
     this.destroy$.next();
     this.destroy$.complete();
   }
@@ -166,6 +212,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
             roleIds: [],
           };
 
+          this.baseline = this.profileSnapshot();
           const coach = this.coaches.find((c) => c.id === this.selectedUser.coachId);
 
           this.coachName = coach ? coach.name : '';
@@ -239,6 +286,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       },
     };
 
+    const submittedProfile = this.profileSnapshot();
     this.saving = true;
     this.userService
       .updateUser(rawUser)
@@ -255,6 +303,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
             response.success ? 'userProfile.updateSuccess' : 'userProfile.updateError',
           );
           this.messageType = response.success ? 'success' : 'error';
+          if (response.success) this.baseline = submittedProfile;
           if (response.success && this.selectedUser.password === rawUser.password) {
             this.selectedUser.password = '';
             this.selectedUser.currentPassword = '';

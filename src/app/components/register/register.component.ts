@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { Component, DestroyRef, ElementRef, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -76,6 +76,7 @@ export class RegisterComponent {
   private readonly destroyRef = inject(DestroyRef);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  @ViewChild('registrationForm') private registrationForm?: ElementRef<HTMLFormElement>;
 
   readonly limits = L;
 
@@ -160,8 +161,7 @@ export class RegisterComponent {
     this.submitted = true;
     this.errorMessage = '';
     if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      this.errorMessage = 'register.errors.fixFields';
+      this.onInvalidSubmit();
       return;
     }
 
@@ -176,6 +176,22 @@ export class RegisterComponent {
         next: (message) => (this.successMessage = message),
         error: (error) => (this.errorMessage = errorMessage(error, 'register.failed')),
       });
+  }
+
+  onInvalidSubmit(): void {
+    this.submitted = true;
+    this.form.markAllAsTouched();
+    this.errorMessage = 'register.errors.fixFields';
+    const fields = this.registrationForm?.nativeElement.querySelectorAll<HTMLElement>('[formControlName]');
+    const first = Array.from(fields ?? []).find(field => {
+      const name = field.getAttribute('formControlName') as keyof typeof this.form.controls;
+      return field.getAttribute('aria-invalid') === 'true' || this.form.controls[name].invalid
+        || (name === 'passwordConfirmation' && this.form.hasError('passwordMismatch'));
+    });
+    if (!first) return;
+    const details = first.closest('details');
+    if (details) details.open = true;
+    first.focus();
   }
 
   backToLogin(): void {

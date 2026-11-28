@@ -6,7 +6,7 @@ import { AppCheckboxDirective } from '../../../shared/components/form-controls/a
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.component';
-import { type EditableSet, type ExerciseSets, isSetChanged, isSetInvalid } from '../client-plan';
+import { type EditableSet, type ExerciseSets, type NumericSetField, isSetChanged, isSetFieldInvalid, isSetInvalid } from '../client-plan';
 
 /** Egy gyakorlat sorozatai soronként szerkeszthetően (cél, tényleges, RPE, teljesítés, megjegyzés). */
 @Component({
@@ -14,6 +14,7 @@ import { type EditableSet, type ExerciseSets, isSetChanged, isSetInvalid } from 
   standalone: true,
   imports: [AppInputDirective, AppCheckboxDirective, FormsModule, TranslatePipe, AppIconComponent],
   templateUrl: './client-exercise-sets.component.html',
+  styleUrl: './client-exercise-sets.component.css',
   host: { class: 'contents' },
 })
 export class ClientExerciseSetsComponent {
@@ -31,6 +32,15 @@ export class ClientExerciseSetsComponent {
 
   readonly isChanged = isSetChanged;
   readonly isInvalid = isSetInvalid;
+  readonly isFieldInvalid = isSetFieldInvalid;
+  readonly fieldErrors: Record<NumericSetField, string> = {
+    targetRepetitions: 'coachWorkspace.client.setRepetitionError',
+    actualRepetitions: 'coachWorkspace.client.setRepetitionError',
+    restSeconds: 'coachWorkspace.client.setRestError',
+    targetWeightKg: 'coachWorkspace.client.setWeightError',
+    actualWeightKg: 'coachWorkspace.client.setWeightError',
+    targetRpe: 'coachWorkspace.client.setRpeError',
+  };
 
   readonly fieldLabels = {
     targetRepetitions: 'coachWorkspace.client.targetReps',

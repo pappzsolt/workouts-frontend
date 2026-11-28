@@ -524,6 +524,8 @@
     "exportError": "Az Excel-fájl elkészítése nem sikerült."
   },
   "userProfile": {
+    "unsavedTitle": "Mentetlen profiladatok",
+    "unsavedPrompt": "Elveted a mentetlen módosításokat és elhagyod a profilt?",
     "currentPassword": "Jelenlegi jelszó",
     "noUserId": "Nincs bejelentkezett felhasználó!",
     "profileLoaded": "Profil sikeresen betöltve!",
@@ -1100,6 +1102,10 @@
       "discardAndGo": "Elvetés és tovább",
       "done": "Kész",
       "feedback": "Visszajelzés",
+      "setRepetitionError": "Adj meg legalább 1 egész ismétlést.",
+      "setRestError": "Adj meg 0 vagy nagyobb egész másodpercet.",
+      "setWeightError": "Adj meg 0 vagy nagyobb súlyt.",
+      "setRpeError": "Adj meg 0 és 10 közötti RPE-t félpontos lépésben.",
       "invalidSetValues": "Ellenőrizd a piros sorokat: a cél ismétlés kötelező (legalább 1), a súly és a pihenő nem lehet negatív, a tényleges ismétlés legalább 1.",
       "newProgramFor": "Új program neki",
       "nextWorkout": "Következő edzés",

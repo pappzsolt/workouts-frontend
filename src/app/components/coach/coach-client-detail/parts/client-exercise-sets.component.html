@@ -21,66 +21,116 @@
   } @else {
     <!-- relative: a táblán belüli abszolút (sr-only) elemek is ebben a görgethető dobozban maradjanak -->
     <div tabindex="0" class="workouts-table-scroll relative overflow-x-auto px-2 py-2">
-      <table class="w-full min-w-[1100px] border-collapse text-sm">
-        <thead>
-          <tr class="text-left text-xs text-content-600">
-            <th scope="col" class="w-10 px-1 py-1 font-semibold">#</th>
-            <th scope="col" class="px-1 py-1 font-semibold">{{ 'coachWorkspace.client.targetReps' | translate }}</th>
-            <th scope="col" class="px-1 py-1 font-semibold">{{ 'coachWorkspace.client.targetWeight' | translate }}</th>
-            <th scope="col" class="px-1 py-1 font-semibold">{{ 'coachWorkspace.restSeconds' | translate }}</th>
-            <th scope="col" class="px-1 py-1 font-semibold">{{ 'coachWorkspace.client.actualReps' | translate }}</th>
-            <th scope="col" class="px-1 py-1 font-semibold">{{ 'coachWorkspace.client.actualWeight' | translate }}</th>
-            <th scope="col" class="px-1 py-1 font-semibold">{{ 'setEffort.targetRpe' | translate }}</th>
-            <th scope="col" class="px-1 py-1 font-semibold">{{ 'setEffort.actualRpe' | translate }}</th>
-            <th scope="col" class="px-1 py-1 font-semibold">{{ 'setEffort.rir' | translate }}</th>
-            <th scope="col" class="w-16 px-1 py-1 font-semibold">{{ 'coachWorkspace.client.done' | translate }}</th>
-            <th scope="col" class="px-1 py-1 font-semibold">{{ 'coachWorkspace.client.notes' | translate }}</th>
-            <th scope="col" class="w-12 px-1 py-1"><span class="sr-only">{{ 'coachWorkspace.delete' | translate }}</span></th>
+      <table class="set-table w-full min-w-[1100px] border-collapse text-sm" role="table">
+        <thead role="rowgroup">
+          <tr role="row" class="text-left text-xs text-content-600">
+            <th role="columnheader" scope="col" class="w-10 px-1 py-1 font-semibold">#</th>
+            <th role="columnheader" scope="col" class="px-1 py-1 font-semibold">{{ 'coachWorkspace.client.targetReps' | translate }}</th>
+            <th role="columnheader" scope="col" class="px-1 py-1 font-semibold">{{ 'coachWorkspace.client.targetWeight' | translate }}</th>
+            <th role="columnheader" scope="col" class="px-1 py-1 font-semibold">{{ 'coachWorkspace.restSeconds' | translate }}</th>
+            <th role="columnheader" scope="col" class="px-1 py-1 font-semibold">{{ 'coachWorkspace.client.actualReps' | translate }}</th>
+            <th role="columnheader" scope="col" class="px-1 py-1 font-semibold">{{ 'coachWorkspace.client.actualWeight' | translate }}</th>
+            <th role="columnheader" scope="col" class="px-1 py-1 font-semibold">{{ 'setEffort.targetRpe' | translate }}</th>
+            <th role="columnheader" scope="col" class="px-1 py-1 font-semibold">{{ 'setEffort.actualRpe' | translate }}</th>
+            <th role="columnheader" scope="col" class="px-1 py-1 font-semibold">{{ 'setEffort.rir' | translate }}</th>
+            <th role="columnheader" scope="col" class="w-16 px-1 py-1 font-semibold">{{ 'coachWorkspace.client.done' | translate }}</th>
+            <th role="columnheader" scope="col" class="px-1 py-1 font-semibold">{{ 'coachWorkspace.client.notes' | translate }}</th>
+            <th role="columnheader" scope="col" class="w-12 px-1 py-1"><span class="sr-only">{{ 'coachWorkspace.delete' | translate }}</span></th>
           </tr>
         </thead>
-        <tbody>
+        <tbody role="rowgroup">
           @for (row of entry.sets; track row.id; let r = $index) {
-            <tr class="border-t border-surface-100"
+            <tr role="row" class="set-row border-t border-surface-100"
                 [class.bg-warning-50]="isChanged(row) && !isInvalid(row)"
                 [class.bg-delete-50]="isInvalid(row)">
-              <td class="px-1 py-1 font-semibold text-content-700">{{ r + 1 }}.</td>
-              <td class="px-1 py-1">
+              <td role="cell" class="set-index px-1 py-1 font-semibold text-content-700">{{ r + 1 }}.</td>
+              <td role="cell" class="px-1 py-1">
+                <span class="set-mobile-label" aria-hidden="true">{{ fieldLabels.targetRepetitions | translate }}</span>
                 <input appInput="compact" type="number" min="1" step="1" [name]="'tr' + index + '-' + r" [(ngModel)]="row.targetRepetitions"
-                       [attr.aria-label]="entry.exercise.name + ' ' + (r + 1) + '. ' + ('coachWorkspace.client.targetReps' | translate)" />
+                       [attr.aria-label]="entry.exercise.name + ' ' + (r + 1) + '. ' + ('coachWorkspace.client.targetReps' | translate)"
+                       [attr.aria-invalid]="isFieldInvalid(row, 'targetRepetitions') ? 'true' : null"
+                       [attr.aria-describedby]="isFieldInvalid(row, 'targetRepetitions') ? 'coach-set-targetRepetitions-' + row.id : null" />
+                @if (isFieldInvalid(row, 'targetRepetitions')) {
+                  <p [id]="'coach-set-targetRepetitions-' + row.id" class="mt-1 text-xs font-medium text-delete-700">
+                    {{ fieldErrors.targetRepetitions | translate }}
+                  </p>
+                }
               </td>
-              <td class="px-1 py-1">
+              <td role="cell" class="px-1 py-1">
+                <span class="set-mobile-label" aria-hidden="true">{{ fieldLabels.targetWeightKg | translate }}</span>
                 <input appInput="compact" type="number" min="0" step="0.25" [name]="'tw' + index + '-' + r" [(ngModel)]="row.targetWeightKg"
-                       [attr.aria-label]="entry.exercise.name + ' ' + (r + 1) + '. ' + ('coachWorkspace.client.targetWeight' | translate)" />
+                       [attr.aria-label]="entry.exercise.name + ' ' + (r + 1) + '. ' + ('coachWorkspace.client.targetWeight' | translate)"
+                       [attr.aria-invalid]="isFieldInvalid(row, 'targetWeightKg') ? 'true' : null"
+                       [attr.aria-describedby]="isFieldInvalid(row, 'targetWeightKg') ? 'coach-set-targetWeightKg-' + row.id : null" />
+                @if (isFieldInvalid(row, 'targetWeightKg')) {
+                  <p [id]="'coach-set-targetWeightKg-' + row.id" class="mt-1 text-xs font-medium text-delete-700">
+                    {{ fieldErrors.targetWeightKg | translate }}
+                  </p>
+                }
               </td>
-              <td class="px-1 py-1">
+              <td role="cell" class="px-1 py-1">
+                <span class="set-mobile-label" aria-hidden="true">{{ fieldLabels.restSeconds | translate }}</span>
                 <input appInput="compact" type="number" min="0" step="1" [name]="'rs' + index + '-' + r" [(ngModel)]="row.restSeconds"
                        [placeholder]="'' + (entry.exercise.templateRestSeconds ?? '')"
-                       [attr.aria-label]="entry.exercise.name + ' ' + (r + 1) + '. ' + ('coachWorkspace.restSeconds' | translate)" />
+                       [attr.aria-label]="entry.exercise.name + ' ' + (r + 1) + '. ' + ('coachWorkspace.restSeconds' | translate)"
+                       [attr.aria-invalid]="isFieldInvalid(row, 'restSeconds') ? 'true' : null"
+                       [attr.aria-describedby]="isFieldInvalid(row, 'restSeconds') ? 'coach-set-restSeconds-' + row.id : null" />
+                @if (isFieldInvalid(row, 'restSeconds')) {
+                  <p [id]="'coach-set-restSeconds-' + row.id" class="mt-1 text-xs font-medium text-delete-700">
+                    {{ fieldErrors.restSeconds | translate }}
+                  </p>
+                }
               </td>
-              <td class="px-1 py-1">
+              <td role="cell" class="px-1 py-1">
+                <span class="set-mobile-label" aria-hidden="true">{{ fieldLabels.actualRepetitions | translate }}</span>
                 <input appInput="compact" type="number" min="1" step="1" [name]="'ar' + index + '-' + r" [(ngModel)]="row.actualRepetitions"
-                       [attr.aria-label]="entry.exercise.name + ' ' + (r + 1) + '. ' + ('coachWorkspace.client.actualReps' | translate)" />
+                       [attr.aria-label]="entry.exercise.name + ' ' + (r + 1) + '. ' + ('coachWorkspace.client.actualReps' | translate)"
+                       [attr.aria-invalid]="isFieldInvalid(row, 'actualRepetitions') ? 'true' : null"
+                       [attr.aria-describedby]="isFieldInvalid(row, 'actualRepetitions') ? 'coach-set-actualRepetitions-' + row.id : null" />
+                @if (isFieldInvalid(row, 'actualRepetitions')) {
+                  <p [id]="'coach-set-actualRepetitions-' + row.id" class="mt-1 text-xs font-medium text-delete-700">
+                    {{ fieldErrors.actualRepetitions | translate }}
+                  </p>
+                }
               </td>
-              <td class="px-1 py-1">
+              <td role="cell" class="px-1 py-1">
+                <span class="set-mobile-label" aria-hidden="true">{{ fieldLabels.actualWeightKg | translate }}</span>
                 <input appInput="compact" type="number" min="0" step="0.25" [name]="'aw' + index + '-' + r" [(ngModel)]="row.actualWeightKg"
-                       [attr.aria-label]="entry.exercise.name + ' ' + (r + 1) + '. ' + ('coachWorkspace.client.actualWeight' | translate)" />
+                       [attr.aria-label]="entry.exercise.name + ' ' + (r + 1) + '. ' + ('coachWorkspace.client.actualWeight' | translate)"
+                       [attr.aria-invalid]="isFieldInvalid(row, 'actualWeightKg') ? 'true' : null"
+                       [attr.aria-describedby]="isFieldInvalid(row, 'actualWeightKg') ? 'coach-set-actualWeightKg-' + row.id : null" />
+                @if (isFieldInvalid(row, 'actualWeightKg')) {
+                  <p [id]="'coach-set-actualWeightKg-' + row.id" class="mt-1 text-xs font-medium text-delete-700">
+                    {{ fieldErrors.actualWeightKg | translate }}
+                  </p>
+                }
               </td>
-              <td class="px-1 py-1">
+              <td role="cell" class="px-1 py-1">
+                <span class="set-mobile-label" aria-hidden="true">{{ fieldLabels.targetRpe | translate }}</span>
                 <input appInput="compact" type="number" min="0" max="10" step="0.5" [name]="'rpe' + index + '-' + r" [(ngModel)]="row.targetRpe"
-                  [attr.aria-label]="entry.exercise.name + ' ' + (r + 1) + '. ' + ('setEffort.targetRpe' | translate)" />
+                  [attr.aria-label]="entry.exercise.name + ' ' + (r + 1) + '. ' + ('setEffort.targetRpe' | translate)"
+                       [attr.aria-invalid]="isFieldInvalid(row, 'targetRpe') ? 'true' : null"
+                       [attr.aria-describedby]="isFieldInvalid(row, 'targetRpe') ? 'coach-set-targetRpe-' + row.id : null" />
+                @if (isFieldInvalid(row, 'targetRpe')) {
+                  <p [id]="'coach-set-targetRpe-' + row.id" class="mt-1 text-xs font-medium text-delete-700">
+                    {{ fieldErrors.targetRpe | translate }}
+                  </p>
+                }
               </td>
-              <td class="px-1 py-1">{{ row.actualRpe ?? '—' }}</td>
-              <td class="px-1 py-1">{{ row.rir ?? '—' }}</td>
-              <td class="px-1 py-1 text-center">
+              <td role="cell" class="px-1 py-1"><span class="set-mobile-label">{{ fieldLabels.actualRpe | translate }}</span>{{ row.actualRpe ?? '—' }}</td>
+              <td role="cell" class="px-1 py-1"><span class="set-mobile-label">{{ fieldLabels.rir | translate }}</span>{{ row.rir ?? '—' }}</td>
+              <td role="cell" class="px-1 py-1 text-center">
+                <span class="set-mobile-label" aria-hidden="true">{{ fieldLabels.completed | translate }}</span>
                 <input appCheckbox="plain" type="checkbox" [name]="'dn' + index + '-' + r" [(ngModel)]="row.completed" class="h-5 w-5"
                        [attr.aria-label]="entry.exercise.name + ' ' + (r + 1) + '. ' + ('coachWorkspace.client.done' | translate)" />
               </td>
-              <td class="px-1 py-1">
+              <td role="cell" class="set-wide px-1 py-1">
+                <span class="set-mobile-label" aria-hidden="true">{{ fieldLabels.notes | translate }}</span>
                 <input appInput="compact" type="text" maxlength="1000" [name]="'nt' + index + '-' + r" [(ngModel)]="row.notes"
                        [placeholder]="'coachWorkspace.client.notes' | translate"
                        [attr.aria-label]="entry.exercise.name + ' ' + (r + 1) + '. ' + ('coachWorkspace.client.notes' | translate)" />
               </td>
-              <td class="px-1 py-1">
+              <td role="cell" class="px-1 py-1">
                 <button type="button" (click)="askDelete.emit(row)" [disabled]="setBusy"
                         [attr.aria-label]="('coachWorkspace.client.removeSet' | translate) + ': ' + entry.exercise.name + ' ' + (r + 1) + '.'"
                         class="btn btn-ghost-delete btn-icon">
@@ -89,8 +139,8 @@
               </td>
             </tr>
             @if (row.conflicts?.length) {
-              <tr>
-                <td colspan="12" class="px-2 pb-2">
+              <tr role="row">
+                <td role="cell" colspan="12" class="set-wide px-2 pb-2">
                   <div class="flex flex-wrap items-center gap-3 rounded-xl bg-warning-50 p-3 text-sm text-content-900">
                     <div class="flex-1">
                       <p>{{ 'coachWorkspace.client.setConflict' | translate }}</p>
@@ -114,8 +164,8 @@
               </tr>
             }
             @if (deleteSetId === row.id) {
-              <tr>
-                <td colspan="12" class="px-2 pb-2">
+              <tr role="row">
+                <td role="cell" colspan="12" class="set-wide px-2 pb-2">
                   <div class="flex flex-wrap items-center gap-3 rounded-xl bg-delete-50 p-3 text-sm text-delete-700">
                     <span class="flex-1">{{ 'coachWorkspace.client.deleteSetConfirm' | translate: { n: r + 1 } }}</span>
                     <button type="button" (click)="cancelDelete.emit()" class="btn btn-neutral px-3">
@@ -129,7 +179,7 @@
               </tr>
             }
           } @empty {
-            <tr><td colspan="12" class="px-2 py-3 text-content-600">{{ 'coachWorkspace.client.noSets' | translate }}</td></tr>
+            <tr role="row"><td role="cell" colspan="12" class="set-wide px-2 py-3 text-content-600">{{ 'coachWorkspace.client.noSets' | translate }}</td></tr>
           }
         </tbody>
       </table>

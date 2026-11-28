@@ -5,6 +5,7 @@
       type="text"
       [id]="id"
       [name]="name"
+      [attr.aria-label]="ariaLabel"
       [disabled]="isDisabled"
       [required]="required"
       [attr.aria-invalid]="validationMessage ? 'true' : null"
@@ -52,6 +53,7 @@
   <select
     [id]="id"
     [name]="name"
+    [attr.aria-label]="ariaLabel"
     [disabled]="isDisabled"
       [required]="required"
       [attr.aria-invalid]="validationMessage ? 'true' : null"

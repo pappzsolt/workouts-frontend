@@ -210,3 +210,13 @@ OLDAL
     </div>
   </div>
 </div>
+
+<app-confirm-dialog
+  [open]="leaveConfirmationOpen"
+  title="userProfile.unsavedTitle"
+  message="userProfile.unsavedPrompt"
+  confirmLabel="coachWorkspace.editor.leaveWithoutSaving"
+  cancelLabel="coachWorkspace.client.stay"
+  (confirmed)="resolveLeave(true)"
+  (cancelled)="resolveLeave(false)"
+></app-confirm-dialog>
