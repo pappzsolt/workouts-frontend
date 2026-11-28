@@ -15,6 +15,7 @@
     "filter": "Trainingsstatus filtern"
   },
   "userExerciseLibrary": {
+    "retryFilters": "Filter neu laden",
     "title": "Übungsbibliothek",
     "intro": "Sieh dir Übungen und ihre Ausführung an. Beim Erstellen eines eigenen Programms oder Einzeltrainings kannst du Übungen auswählen.",
     "createProgram": "Eigenes Programm erstellen",
@@ -432,6 +433,10 @@
     "loadError": "Übungen konnten nicht geladen werden."
   },
   "userExerciseDetail": {
+    "unsavedSet": "Die Änderungen an diesem Satz wurden noch nicht gespeichert.",
+    "retrySetSave": "Erneut versuchen",
+    "retryingSetSave": "Wird gespeichert…",
+    "undoCompletion": "Abschluss rückgängig machen",
     "exercise": "Übung",
     "sets": "Sätze",
     "reps": "Wiederholungen",
@@ -1029,6 +1034,8 @@
       "programEnded": "Programm beendet ({{date}}), kein neues"
     },
     "clients": {
+      "noSearchResults": "Keine passenden Kunden gefunden.",
+      "clearSearch": "Suche löschen",
       "title": "Kunden",
       "subtitle": "Klicke auf einen Kunden, um seinen Kalender zu sehen und seine Trainings anzupassen.",
       "search": "Suche",
@@ -1575,6 +1582,7 @@
     }
   },
   "personalPrograms": {
+    "results": "Ergebnisse",
     "cardActionsTitle": "Programmaktionen",
     "flow": {
         "calendar": "Programmkalender",

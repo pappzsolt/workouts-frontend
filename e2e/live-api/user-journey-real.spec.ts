@@ -15,7 +15,8 @@ test('Edzés: teljesítés után továbblép a következő gyakorlatra; kész ed
   await recordActuals(page, 8, 42.5);
   await done().click(); await expect(page).toHaveURL(new RegExp(`/exercises/${p.exercises[1].id}\\?`));
   await done().click(); await expect.poll(async () => (await detail(a.user, p.scheduled[0].user_workout_id)).completed).toBe(true);
-  await page.goto(detailURL(p)); const url = page.url(); await done().click();
+  await page.goto(detailURL(p)); const url = page.url();
+  await page.locator('app-user-exercise-detail').getByRole('button', { name: 'Teljesítés visszavonása', exact: true, pressed: true }).click();
   await expect.poll(async () => setsOf(await detail(a.user, p.scheduled[0].user_workout_id))[0].completed).toBe(false);
   await expect(page).toHaveURL(url);
 });

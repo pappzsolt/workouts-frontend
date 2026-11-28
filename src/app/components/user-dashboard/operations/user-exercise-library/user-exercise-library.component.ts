@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
-import { skip, Subscription } from 'rxjs';
+import { finalize, skip, Subscription } from 'rxjs';
 import { Exercise } from '../../../../models/exercise.model';
 import { UserExerciseCatalogueService } from '../../../../services/user/user-exercise-catalogue.service';
 import { LanguageService } from '../../../../services/shared/language.service';
@@ -61,6 +61,7 @@ export class UserExerciseLibraryComponent implements OnInit {
   loading = false;
   message = '';
   filterOptionsError = '';
+  loadingFilterOptions = false;
   searchTerm = '';
   private appliedSearchTerm = '';
   searchField = 'all';
@@ -92,10 +93,12 @@ export class UserExerciseLibraryComponent implements OnInit {
     });
   }
 
-  private loadFilterOptions(): void {
+  loadFilterOptions(): void {
+    if (this.loadingFilterOptions) return;
+    this.loadingFilterOptions = true;
     this.catalogue
       .filters()
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(takeUntilDestroyed(this.destroyRef), finalize(() => this.loadingFilterOptions = false))
       .subscribe({
         next: (response) => {
           if (!response.success) {

@@ -16,7 +16,7 @@ async function install(page: Page, mode: 'ready' | 'empty' | 'error' = 'ready', 
     ).toString('base64url'),
     'signature',
   ].join('.');
-  const state = { mode, writes: [] as string[], unexpected: [] as string[], saves: [] as unknown[] };
+  const state = { mode, failSave: false, writes: [] as string[], unexpected: [] as string[], saves: [] as unknown[] };
   const workout = {
     id: 5,
     name: 'Lábnap',
@@ -89,6 +89,7 @@ async function install(page: Page, mode: 'ready' | 'empty' | 'error' = 'ready', 
         programWorkoutId: 20, userWorkoutId: 10, completed: false }]);
     }
     if (withWorkout && path === '/api/exercises/user-workouts/sets/completed' && req.method() === 'PATCH') {
+      if (state.failSave) return route.fulfill({ status: 503, json: { success: false, message: 'Átmeneti mentési hiba' } });
       const { setId, completed, actualRepetitions, actualWeightKg } = req.postDataJSON();
       const set = sets.find(row => row.id === setId);
       if (set) {
@@ -147,6 +148,29 @@ test('Előzményhiba mellett is használható az edzés, és a lekérés újrapr
   await history.getByRole('button', { name: 'Újrapróbálás', exact: true }).click();
   await expect(history).toContainText('42.5 kg × 8');
   expect(api.writes).toEqual([]);
+  expect(api.unexpected).toEqual([]);
+});
+
+test('failed set save can be retried from the card and completion can be undone', async ({ page }) => {
+  const api = await install(page, 'ready', true);
+  api.failSave = true;
+  await page.goto(detailUrl);
+  const done = page.getByRole('button', { name: 'KÉSZ', exact: true });
+  await expect(done).toHaveAttribute('aria-pressed', 'false');
+  await page.getByLabel('Tényleges ismétlések', { exact: true }).fill('8');
+  await page.getByLabel('Tényleges súly', { exact: true }).fill('42.5');
+  await done.click();
+  const retry = page.getByRole('button', { name: 'Újrapróbálás', exact: true });
+  await expect(page.getByText('A sorozat módosításai még nincsenek mentve.')).toBeVisible();
+  await expect(retry).toBeEnabled();
+  api.failSave = false;
+  await retry.click();
+  await expect(retry).toBeHidden();
+  const undo = page.getByRole('button', { name: 'Teljesítés visszavonása', exact: true });
+  await expect(undo).toHaveAttribute('aria-pressed', 'true');
+  await undo.click();
+  await expect(done).toHaveAttribute('aria-pressed', 'false');
+  await expect.poll(() => api.saves.at(-1)).toMatchObject({ setId: 50, completed: false });
   expect(api.unexpected).toEqual([]);
 });
 

@@ -195,6 +195,27 @@ test('Saját program: sikertelen mentés megőrzi az adatokat és újrapróbálh
   expect(api.unexpected).toEqual([]);
 });
 
+for (const standalone of [false, true]) {
+  test(`pagination moves focus to the loaded results (standalone=${standalone})`, async ({ page }) => {
+    await install(page);
+    const endpoint = standalone ? 'standalone/group-summaries' : 'page';
+    await page.route(`**/api/me/personal-programs/${endpoint}?*`, async route => {
+      const pageIndex = Number(new URL(route.request().url()).searchParams.get('page'));
+      const item = { id: 7 + pageIndex, name: `Edzésterv ${pageIndex + 1}`, durationDays: 7, standalone };
+      const group = { groupId: item.id, name: item.name, total: 1, matchingTotal: 1, draft: 1 };
+      await route.fulfill({ json: { success: true, data: {
+        content: [standalone ? group : item], page: pageIndex, size: 12, totalElements: 13, totalPages: 2,
+      } } });
+    });
+    await page.goto(standalone ? '/user/personal-workouts' : '/user/personal-programs');
+    const next = page.getByRole('button', { name: 'Következő', exact: true });
+    await next.focus();
+    await next.press('Enter');
+    await expect(page.getByRole('heading', { name: 'Edzésterv 2' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Találatok.*2/ })).toBeFocused();
+  });
+}
+
 test('Saját program: betöltési hiba újrapróbálható, nem mutat hamis üres listát', async ({ page }) => {
   const api=await install(page); api.failList=true;
   await page.goto('/user/personal-programs');

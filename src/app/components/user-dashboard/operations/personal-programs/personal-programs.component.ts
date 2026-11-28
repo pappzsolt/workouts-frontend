@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, Injector, OnInit, afterNextRender, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Observable, Subject, catchError, map, merge, of, switchMap, takeUntil, tap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -62,6 +62,8 @@ export class PersonalProgramsComponent implements OnInit {
   private readonly language = inject(LanguageService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly injector = inject(Injector);
+  private pageFocusTarget?: HTMLElement;
   readonly programEndDate = programEndDate;
   programs: PersonalProgramSummary[] = [];
   groups: StandaloneWorkoutGroupSummary[] = [];
@@ -164,6 +166,9 @@ export class PersonalProgramsComponent implements OnInit {
           this.reload$.next();
           return;
         }
+        const target = this.pageFocusTarget;
+        this.pageFocusTarget = undefined;
+        this.focusAfterPageLoad(target);
         for (const id of this.expandedGroups) {
           if (this.groups.some(group => group.groupId === id)) this.loadOccasions(id, 0);
           else this.expandedGroups.delete(id);
@@ -171,15 +176,26 @@ export class PersonalProgramsComponent implements OnInit {
       });
   }
   filtersChanged(): void {
+    this.pageFocusTarget = undefined;
     this.successMessage = '';
     this.page = 0;
     this.reload$.next();
   }
-  changePage(page: number): void {
+  changePage(page: number, focusTarget?: HTMLElement): void {
+    this.pageFocusTarget = focusTarget;
     this.successMessage = '';
     this.page = page - 1;
     this.reload$.next();
   }
+  private focusAfterPageLoad(target?: HTMLElement): void {
+    if (!target) return;
+    afterNextRender(() => {
+      if (target.isConnected && target.ownerDocument.activeElement === target.ownerDocument.body) {
+        target.focus({ preventScroll: true });
+      }
+    }, { injector: this.injector });
+  }
+
   reload(): void {
     if (!this.loading && !this.busy) this.reload$.next();
   }

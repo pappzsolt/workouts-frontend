@@ -96,6 +96,10 @@ export class ExerciseSetSaves {
     return !this.session.pendingSetSaves.has(key) && !this.session.failedSetSaves.has(key);
   }
 
+  isSaving(set: UserWorkoutExerciseSetDto): boolean {
+    return this.session.pendingSetSaves.has(this.setKey(this.effects.context().userWorkoutId, set.id));
+  }
+
   failedSave(set: UserWorkoutExerciseSetDto): FailedSetSave | undefined {
     return this.session.failedSetSaves.get(this.setKey(this.effects.context().userWorkoutId, set.id));
   }

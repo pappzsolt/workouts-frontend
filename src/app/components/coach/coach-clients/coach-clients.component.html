@@ -8,7 +8,7 @@
       </div>
       <label class="flex w-full max-w-xs flex-col gap-1 text-sm font-semibold text-content-800">
         {{ 'coachWorkspace.clients.search' | translate }}
-        <input appInput="default" type="search" [(ngModel)]="search" name="clientSearch"
+        <input #clientSearch appInput="default" type="search" [(ngModel)]="search" name="clientSearch"
                [placeholder]="'coachWorkspace.clients.searchPlaceholder' | translate"
                class="min-h-11 font-normal" />
       </label>
@@ -61,7 +61,16 @@
             </span>
           </a>
         } @empty {
-          <app-empty-state message="coachWorkspace.clients.empty"></app-empty-state>
+          @if (search.trim()) {
+            <app-empty-state message="coachWorkspace.clients.noSearchResults"></app-empty-state>
+            <div class="flex justify-center px-4 pb-4">
+              <button type="button" class="btn btn-neutral" (click)="search = ''; clientSearch.focus()">
+                {{ 'coachWorkspace.clients.clearSearch' | translate }}
+              </button>
+            </div>
+          } @else {
+            <app-empty-state message="coachWorkspace.clients.empty"></app-empty-state>
+          }
         }
       </section>
     }

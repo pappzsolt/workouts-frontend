@@ -15,6 +15,7 @@
     "filter": "Edzésállapot szűrése"
   },
   "userExerciseLibrary": {
+    "retryFilters": "Szűrők újratöltése",
     "title": "Gyakorlattár",
     "intro": "Böngészd a gyakorlatokat és nézd meg a végrehajtásukat. A gyakorlatokat saját program vagy önálló edzés készítésekor választhatod ki.",
     "createProgram": "Saját program összeállítása",
@@ -432,6 +433,10 @@
     "loadError": "A gyakorlatok betöltése nem sikerült."
   },
   "userExerciseDetail": {
+    "unsavedSet": "A sorozat módosításai még nincsenek mentve.",
+    "retrySetSave": "Újrapróbálás",
+    "retryingSetSave": "Mentés folyamatban…",
+    "undoCompletion": "Teljesítés visszavonása",
     "exercise": "Exercise",
     "sets": "Sorozat",
     "reps": "Ismétlés",
@@ -1029,6 +1034,8 @@
       "programEnded": "Lejárt a programja ({{date}}), nincs új"
     },
     "clients": {
+      "noSearchResults": "Nincs a keresésnek megfelelő ügyfél.",
+      "clearSearch": "Keresés törlése",
       "title": "Ügyfelek",
       "subtitle": "Kattints egy ügyfélre a naptárához és az edzései testreszabásához.",
       "search": "Keresés",
@@ -1575,6 +1582,7 @@
     }
   },
   "personalPrograms": {
+    "results": "Találatok",
     "cardActionsTitle": "Program műveletei",
     "flow": {
         "calendar": "Programnaptár",

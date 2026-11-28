@@ -328,9 +328,13 @@ export class UserExerciseDetailComponent implements OnInit, OnDestroy {
     return this.setSaves.failedSave(set) !== undefined;
   }
 
+  isSavingSet(set: UserWorkoutExerciseSetDto): boolean {
+    return this.setSaves.isSaving(set);
+  }
+
   retrySetSave(set: UserWorkoutExerciseSetDto): void {
     const failed = this.setSaves.failedSave(set);
-    if (!failed) return;
+    if (!failed || this.isSavingSet(set)) return;
     if (failed.retryCompletion === undefined) this.saveSetDetails(set);
     else this.updateSetCompleted(set, failed.retryCompletion);
   }

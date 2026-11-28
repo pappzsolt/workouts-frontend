@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, Subject, of, throwError } from 'rxjs';
 import { UserExerciseLibraryComponent } from './user-exercise-library.component';
 import { UserExerciseCatalogueService } from '../../../../services/user/user-exercise-catalogue.service';
 import { LanguageService } from '../../../../services/shared/language.service';
@@ -18,15 +18,17 @@ const ok = <T>(data: T): ApiResponse<T> => ({ success: true, data, message: null
 describe('User exercise library', () => {
   let component: UserExerciseLibraryComponent;
   let search: jasmine.Spy;
+  let filters: jasmine.Spy;
   const language$ = new BehaviorSubject<'hu' | 'en' | 'de'>('hu');
 
   beforeEach(() => {
     language$.next('hu');
     search = jasmine.createSpy('search').and.returnValue(of(ok(list)));
+    filters = jasmine.createSpy('filters').and.returnValue(of(ok({ bodyParts: ['chest'], equipment: ['barbell'] })));
     TestBed.configureTestingModule({
       providers: [
         { provide: UserExerciseCatalogueService, useValue: {
-          search, filters: () => of(ok({ bodyParts: ['chest'], equipment: ['barbell'] })),
+          search, filters,
         } },
         { provide: LanguageService, useValue: { language$ } },
         { provide: TranslateService, useValue: { instant: (key: string) => key } },
@@ -57,6 +59,32 @@ describe('User exercise library', () => {
     expect(search.calls.mostRecent().args[0]).toBe('gugg');
     component.onSearchTermChange('');
     expect(search.calls.mostRecent().args[0]).toBe('');
+  });
+
+  it('retries only filter options and preserves the active search and results', () => {
+    component.onSearchTermChange('gugg');
+    component.search();
+    const currentResults = component.exercises;
+    const searchCalls = search.calls.count();
+    filters.and.returnValue(throwError(() => new Error('Unavailable')));
+    component.loadFilterOptions();
+    expect(component.filterOptionsError).toBe('Unavailable');
+
+    const response = new Subject<ApiResponse<{ bodyParts: string[]; equipment: string[] }>>();
+    filters.and.returnValue(response);
+    component.loadFilterOptions();
+    component.loadFilterOptions();
+    expect(component.loadingFilterOptions).toBeTrue();
+    expect(filters).toHaveBeenCalledTimes(3);
+    response.next(ok({ bodyParts: ['legs'], equipment: ['barbell'] }));
+    response.complete();
+
+    expect(component.loadingFilterOptions).toBeFalse();
+    expect(component.filterOptionsError).toBe('');
+    expect(component.bodyPartOptions).toEqual(['legs']);
+    expect(component.searchTerm).toBe('gugg');
+    expect(component.exercises).toBe(currentResults);
+    expect(search.calls.count()).toBe(searchCalls);
   });
 
   it('sorts, changes page and refreshes translated labels without write requests', () => {

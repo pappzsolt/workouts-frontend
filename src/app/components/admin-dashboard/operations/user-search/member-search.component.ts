@@ -14,6 +14,7 @@ import { AppTableDirective } from '../../../shared/components/app-table/app-tabl
 import { AppTableHeaderDirective } from '../../../shared/components/app-table/app-table.directive';
 import { AppTableCellDirective } from '../../../shared/components/app-table/app-table.directive';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { TranslatePipe } from '@ngx-translate/core';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { AppButtonComponent } from '../../../shared/components/app-button/app-button.component';
@@ -30,6 +31,7 @@ import { AppIconComponent } from '../../../shared/components/app-icon/app-icon.c
     AppTableHeaderDirective,
     AppTableCellDirective,
     CommonModule,
+    FormsModule,
     TranslatePipe,
     PaginationComponent,
     AppButtonComponent,
@@ -84,6 +86,7 @@ export class MemberSearchComponent {
   // =============================
 
   onSearch(): void {
+    if (this.loading) return;
     this.clearMessage();
 
     this.loading = true;

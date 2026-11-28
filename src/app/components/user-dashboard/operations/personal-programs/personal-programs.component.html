@@ -58,6 +58,9 @@
         {{ 'personalPrograms.retry' | translate }}
       </button>
     }
+    <h2 #resultsHeading tabindex="-1" aria-live="polite" class="sr-only rounded-lg text-lg font-semibold focus:not-sr-only">
+      {{ 'personalPrograms.results' | translate }} · {{ 'pagination.page' | translate }} {{ page + 1 }}
+    </h2>
     @if (loading) {
       <app-loading message="personalPrograms.loading" />
     } @else if (!loadError) {
@@ -255,7 +258,7 @@
       </section>
       }
       <app-pagination [totalItems]="totalItems" [pageSize]="pageSize" [currentPage]="page + 1"
-        [showPageSize]="false" (pageChange)="changePage($event)" />
+        [showPageSize]="false" (pageChange)="changePage($event, resultsHeading)" />
     }
     <app-confirm-dialog
       [open]="pendingDelete !== null"

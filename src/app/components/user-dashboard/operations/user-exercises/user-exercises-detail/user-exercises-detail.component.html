@@ -270,12 +270,22 @@ OLDAL
                       <app-button
                         [variant]="set.completed ? 'save' : 'secondary'"
                         type="button"
-                        [label]="'userExerciseDetail.done' | translate"
+                        [label]="(set.completed ? 'userExerciseDetail.undoCompletion' : 'userExerciseDetail.done') | translate"
+                        [ariaPressed]="set.completed === true"
                         [lucideIcon]="set.completed ? 'circle-check' : 'circle'"
                         [disabled]="false"
                         (buttonClick)="updateSetCompleted(set, !set.completed)"
                       ></app-button>
                     </div>
+                    @if (hasFailedSave(set)) {
+                      <div class="mt-3 flex flex-wrap items-center gap-2 rounded-xl bg-delete-50 p-3 text-sm text-delete-700">
+                        <p role="alert">{{ 'userExerciseDetail.unsavedSet' | translate }}</p>
+                        <button type="button" class="btn btn-neutral" [disabled]="isSavingSet(set)"
+                                (click)="retrySetSave(set)">
+                          {{ (isSavingSet(set) ? 'userExerciseDetail.retryingSetSave' : 'userExerciseDetail.retrySetSave') | translate }}
+                        </button>
+                      </div>
+                    }
                     <!-- =================================================
                     SET STATUS
                     ================================================= -->

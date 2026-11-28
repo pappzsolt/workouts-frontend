@@ -150,3 +150,24 @@ test('admin: approves a client with a coach and rejects a coach with a reason', 
   expect(writes(calls, '/api/admin/registrations/1/approve').map(c => c.body)).toEqual([{ coachId: 205 }]);
   expect(writes(calls, '/api/admin/registrations/2/reject').map(c => c.body)).toEqual([{ reason: 'Ismeretlen jelentkező' }]);
 });
+
+test('admin member search submits with Enter and with the search button', async ({ page }) => {
+  const keywords: string[] = [];
+  await mockApi(page, 'ROLE_ADMIN', () => null);
+  await page.route('**/api/members/search?*', async route => {
+    const keyword = new URL(route.request().url()).searchParams.get('keyword') ?? '';
+    keywords.push(keyword);
+    await route.fulfill({ json: { success: true, data: [{
+      id: 42, type: 'user', usernameOrName: keyword, email: 'member@example.test', roles: ['ROLE_USER'],
+    }] } });
+  });
+  await page.goto('/admin/users/search');
+  const input = page.locator('#memberSearch');
+  await input.fill('Anna');
+  await input.press('Enter');
+  const search = page.getByRole('button', { name: 'Keresés', exact: true });
+  await expect(search).toBeEnabled();
+  await input.fill('Béla');
+  await search.click();
+  await expect.poll(() => keywords).toEqual(['Anna', 'Béla']);
+});

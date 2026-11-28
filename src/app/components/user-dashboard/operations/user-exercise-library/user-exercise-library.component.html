@@ -93,7 +93,15 @@
         (buttonClick)="toggleSort()"
       ></app-button>
     </div>
-    <app-message [message]="filterOptionsError" type="error"></app-message>
+    @if (filterOptionsError) {
+      <div class="flex flex-wrap items-center gap-3">
+        <app-message [message]="filterOptionsError" type="error" role="alert"></app-message>
+        <button type="button" class="btn btn-neutral" [disabled]="loadingFilterOptions"
+                (click)="loadFilterOptions()">
+          {{ (loadingFilterOptions ? 'common.loading' : 'userExerciseLibrary.retryFilters') | translate }}
+        </button>
+      </div>
+    }
 
     @if (!loading) {
       @if (exercises.length) {

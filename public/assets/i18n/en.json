@@ -15,6 +15,7 @@
     "filter": "Filter workout status"
   },
   "userExerciseLibrary": {
+    "retryFilters": "Reload filters",
     "title": "Exercise library",
     "intro": "Browse exercises and learn how to perform them. Select exercises when building a personal program or a standalone workout.",
     "createProgram": "Create a personal program",
@@ -432,6 +433,10 @@
     "loadError": "Unable to load exercises."
   },
   "userExerciseDetail": {
+    "unsavedSet": "Changes to this set have not been saved.",
+    "retrySetSave": "Retry",
+    "retryingSetSave": "Saving…",
+    "undoCompletion": "Undo completion",
     "exercise": "Exercise",
     "sets": "Sets",
     "reps": "Reps",
@@ -1029,6 +1034,8 @@
       "programEnded": "Program ended ({{date}}), no new one"
     },
     "clients": {
+      "noSearchResults": "No clients match your search.",
+      "clearSearch": "Clear search",
       "title": "Clients",
       "subtitle": "Click a client to see their calendar and personalise their workouts.",
       "search": "Search",
@@ -1575,6 +1582,7 @@
     }
   },
   "personalPrograms": {
+    "results": "Results",
     "cardActionsTitle": "Program actions",
     "flow": {
         "calendar": "Program calendar",

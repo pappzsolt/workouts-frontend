@@ -67,8 +67,10 @@ for (const term of ['ALICE', 'alice@example.test', 'Program 01']) {
     await expect(root.locator('section a')).toContainText('Alice');
     await expect(root.getByRole('progressbar')).toHaveAttribute('aria-valuenow', '0');
     await root.locator('[name=clientSearch]').fill('no-such-client');
-    await expect(root.locator('app-empty-state')).toBeVisible();
-    await root.locator('[name=clientSearch]').clear(); await expect(root.locator('section a')).toHaveCount(2);
+    await expect(root.locator('app-empty-state')).toContainText('Nincs a keresésnek megfelelő ügyfél.');
+    await root.getByRole('button', { name: 'Keresés törlése' }).click();
+    await expect(root.locator('[name=clientSearch]')).toBeFocused();
+    await expect(root.locator('section a')).toHaveCount(2);
     await root.locator('section a[href="/coach/clients/7"]').click();
     await expect(page.locator('app-coach-client-detail h1')).toHaveText('Alice');
     expect(api.writes()).toEqual([]);
